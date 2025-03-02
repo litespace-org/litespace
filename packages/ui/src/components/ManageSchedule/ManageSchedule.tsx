@@ -91,12 +91,20 @@ export const ManageSchedule: React.FC<Props> = ({
       const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
       return [{ day, slots: daySlots }];
     }
+
     return range(WEEK_DAYS).map((index) => {
       const day = weekStart.add(index, "day").startOf("day");
       const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
       return { day, slots: daySlots };
     });
   }, [date, singleDay, slots, weekStart]);
+
+  const today = useMemo(() => dayjs(), []);
+
+  const isCurrentWeek = useMemo(
+    () => today.isBetween(weekStart, weekStart.add(1, "week")),
+    [weekStart, today]
+  );
 
   useEffect(() => {
     setSlots((prev) => {
@@ -209,7 +217,7 @@ export const ManageSchedule: React.FC<Props> = ({
       close={onClose}
       title={
         <Typography
-          tag="h1"
+          tag="p"
           className="text-natural-950 font-bold text-subtitle-2"
         >
           {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
@@ -218,16 +226,19 @@ export const ManageSchedule: React.FC<Props> = ({
       className="overflow-y-auto"
     >
       {!singleDay ? (
-        <div className="pt-6">
-          <div className="flex items-center justify-center gap-4">
-            <button
-              type="button"
-              onClick={prevWeek}
-              disabled={loading}
-              className="disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <ArrowRight className="[&>*]:stroke-brand-700" />
-            </button>
+        <div className="pt-6 pb-4">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            {!isCurrentWeek ? (
+              <button
+                type="button"
+                onClick={prevWeek}
+                disabled={loading}
+                className="disabled:cursor-not-allowed disabled:opacity-50 w-6 h-6"
+              >
+                <ArrowRight className="[&>*]:stroke-brand-700" />
+              </button>
+            ) : null}
+
             <Typography
               tag="span"
               className="text-natural-950 text-body font-bold"
@@ -235,6 +246,7 @@ export const ManageSchedule: React.FC<Props> = ({
               {weekStart.format("D MMMM")} -{" "}
               {weekStart.add(6, "days").format("D MMMM")}
             </Typography>
+
             <button
               type="button"
               onClick={nextWeek}
@@ -244,6 +256,7 @@ export const ManageSchedule: React.FC<Props> = ({
               <ArrowLeft className="[&>*]:stroke-brand-700" />
             </button>
           </div>
+
           <Typography
             tag="span"
             className="text-natural-950 mb-4 mt-6 font-bold text-body"
@@ -296,6 +309,8 @@ export const ManageSchedule: React.FC<Props> = ({
               <div className="flex flex-col gap-4 overflow-y-auto scrollbar-thin">
                 {days.map(({ day, slots }) => {
                   const iso = day.toISOString();
+                  const isDisabled = saving || day.isBefore(today, "day");
+
                   return (
                     <div className="flex gap-8" key={iso}>
                       <Typography
@@ -311,7 +326,7 @@ export const ManageSchedule: React.FC<Props> = ({
                         add={addSlot}
                         update={updateSlot}
                         remove={removeSlot}
-                        disabled={saving}
+                        disabled={isDisabled}
                       />
                     </div>
                   );
@@ -326,6 +341,7 @@ export const ManageSchedule: React.FC<Props> = ({
         <Button
           className="grow basis-1/2"
           onClick={() => save(slotActions)}
+          size="large"
           disabled={isEmpty(slotActions) || invalidSlots || saving}
           loading={saving}
         >
@@ -338,7 +354,8 @@ export const ManageSchedule: React.FC<Props> = ({
         </Button>
         <Button
           onClick={onClose}
-          variant={"secondary"}
+          variant="secondary"
+          size="large"
           className="grow basis-1/2"
           disabled={saving}
         >

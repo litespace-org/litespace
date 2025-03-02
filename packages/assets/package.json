@@ -28,6 +28,7 @@
     "./AccountPromotion": "./dist/AccountPromotion.tsx",
     "./AbstractLine": "./dist/AbstractLine.tsx",
     "./AddCircle": "./dist/AddCircle.tsx",
+    "./AddCircleFilled": "./dist/AddCircleFilled.tsx",
     "./AlertCircle": "./dist/AlertCircle.tsx",
     "./AllMessages": "./dist/AllMessages.tsx",
     "./ArrowDown": "./dist/ArrowDown.tsx",

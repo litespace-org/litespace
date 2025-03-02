@@ -207,10 +207,10 @@ export const SingleDay: Story = {
     open: true,
     initialSlots: [],
     singleDay: true,
+    date: dayjs().add(3, "day").toISOString(),
     close,
     save,
   },
-  render,
 };
 
 export default meta;

@@ -3,7 +3,7 @@ import { IAvailabilitySlot, Void } from "@litespace/types";
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import Close from "@litespace/assets/Close";
-import AddCircle from "@litespace/assets/AddCircle";
+import AddCircleFilled from "@litespace/assets/AddCircleFilled";
 import { Typography } from "@/components/Typography";
 import { Select, SelectList } from "@/components/Select";
 import { AnimatePresence, motion } from "framer-motion";
@@ -47,10 +47,13 @@ const SlotRow: React.FC<{
   onToChange,
 }) => {
   const intl = useFormatMessage();
+  const now = useMemo(() => dayjs(), []);
 
   const subslots = useMemo(() => {
-    return orderSlots(getSubSlotsBatch(freeSubSlots, 30), "asc");
-  }, [freeSubSlots]);
+    return orderSlots(getSubSlotsBatch(freeSubSlots, 30), "asc").filter(
+      (slot) => now.isBefore(slot.start) // include future slots only
+    );
+  }, [freeSubSlots, now]);
 
   const earliestStart = useMemo(() => {
     if (!end) return;
@@ -140,8 +143,8 @@ const SlotRow: React.FC<{
 
           {add ? (
             <Animate key="add">
-              <button type="button" onClick={add}>
-                <AddCircle className="w-6 h-6" />
+              <button type="button" className="w-6 h-6" onClick={add}>
+                <AddCircleFilled />
               </button>
             </Animate>
           ) : null}
