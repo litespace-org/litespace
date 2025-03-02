@@ -55,7 +55,8 @@ const VerifyEmail: React.FC = () => {
   const onResendSuccess = useCallback(() => {
     setVerificationState("resend");
     toast.success({
-      title: intl("verify-email.check-resend.success"),
+      title: intl("verify-email.check-resend.success.title"),
+      description: intl("verify-email.check-resend.success.desc"),
     });
   }, [toast, intl]);
 

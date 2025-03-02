@@ -2,11 +2,13 @@ import { LocalMap, messages } from "@/locales";
 import React, { useCallback, useMemo } from "react";
 import { PrimitiveType, useIntl } from "react-intl";
 
+type ReplaceParts = (text: string[]) => React.ReactNode;
+
 export function useFormatMessage() {
   const intl = useIntl();
 
   const format = useCallback(
-    (id: keyof LocalMap, values?: Record<string, PrimitiveType>) =>
+    (id: keyof LocalMap, values?: Record<string, PrimitiveType>): string =>
       intl.formatMessage({ id: messages[id] }, values),
     [intl]
   );
@@ -14,9 +16,12 @@ export function useFormatMessage() {
   return useMemo(
     () =>
       Object.assign(format, {
-        node: (
+        rich: (
           id: keyof LocalMap,
-          values?: Record<string, PrimitiveType | React.ReactNode>
+          values?: Record<
+            string,
+            React.ReactNode | PrimitiveType | ReplaceParts
+          >
         ): React.ReactNode => intl.formatMessage({ id: messages[id] }, values),
       }),
     [format, intl]

@@ -29,6 +29,8 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
+import { useSendVerifyEmail } from "@litespace/headless/auth";
+import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
 
 type IForm = {
   name: string;
@@ -159,7 +161,7 @@ export const ProfileForm: React.FC<{
   return (
     <Form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="flex flex-col w-fit"
+      className="flex flex-col w-full"
     >
       <div className="flex items-start justify-between mb-6 sm:mb-8">
         <UploadPhoto id={user.id} />
@@ -177,8 +179,14 @@ export const ProfileForm: React.FC<{
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-28 pb-[72px] sm:pb-0">
-        <div className="flex-1 flex flex-col lg:max-w-[400px]">
+      <div
+        id="cols-wrapper"
+        className="flex flex-col sm:flex-row sm:gap-10 lg:gap-28 pb-[72px] sm:pb-0 w-full"
+      >
+        <div
+          id="first-col"
+          className="flex flex-col flex-shrink-0 sm:max-w-[320px] lg:max-w-[400px]"
+        >
           <Typography
             tag="h2"
             className="text-natural-950 text-subtitle-2 font-bold"
@@ -253,7 +261,7 @@ export const ProfileForm: React.FC<{
           {mq.sm ? <TopicSelection /> : null}
         </div>
 
-        <div className="flex flex-col">
+        <div id="second-col" className="flex flex-col flex-1">
           <Typography
             tag="h2"
             className="text-natural-950 text-subtitle-2 font-bold"
@@ -261,7 +269,7 @@ export const ProfileForm: React.FC<{
             {intl("shared-settings.edit.password.title")}
           </Typography>
 
-          <div className="grid gap-2 sm:gap-4 my-4 sm:my-6 lg:max-w-[400px]">
+          <div className="grid gap-2 sm:gap-4 my-4 sm:my-6 w-full md:max-w-[400px]">
             <Controller.Password
               id="current-password"
               value={password.current}
@@ -318,8 +326,9 @@ export const ProfileForm: React.FC<{
           </div>
 
           <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0">
-            <div className="w-[640px]">
+            <div className="lg:max-w-[640px] flex flex-col gap-6">
               <NotificationSettings />
+              {!user.verified ? <ConfirmEmail /> : null}
             </div>
             {!mq.sm ? <TopicSelection /> : null}
           </div>
@@ -349,5 +358,53 @@ const SaveButton: React.FC<{
         {intl("shared-settings.save")}
       </Typography>
     </Button>
+  );
+};
+
+const ConfirmEmail: React.FC = () => {
+  const intl = useFormatMessage();
+  const toast = useToast();
+  const onSuccess = useCallback(() => {
+    toast.success({
+      title: intl("student-settings.confirm-email.success.title"),
+      description: intl("student-settings.confirm-email.success.desc"),
+    });
+  }, [toast, intl]);
+
+  const onError = useCallback(
+    (error: unknown) => {
+      capture(error);
+
+      toast.error({
+        title: intl("student-settings.confirm-email.error"),
+        description: intl(getErrorMessageId(error)),
+      });
+    },
+    [toast, intl]
+  );
+
+  const mutation = useSendVerifyEmail({ onSuccess, onError });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Typography tag="h3" className="text-subtitle-2 font-bold">
+        {intl("student-settings.confirm-email.title")}
+      </Typography>
+      <div className="flex flex-col lg:flex-row gap-4 items-start justify-between">
+        <Typography tag="p" className="text-body max-w-[410px]">
+          {intl("student-settings.confirm-email.desc")}
+        </Typography>
+        <Button
+          onClick={() => mutation.mutate(VERIFY_EMAIL_CALLBACK_URL)}
+          loading={mutation.isPending}
+          disabled={mutation.isPending}
+          htmlType="button"
+          size="large"
+          className="shrink-0"
+        >
+          {intl("student-settings.confirm-email.confirm")}
+        </Button>
+      </div>
+    </div>
   );
 };

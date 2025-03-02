@@ -15,9 +15,11 @@ import { useToast } from "@litespace/ui/Toast";
 import { useUpdateUserTopics } from "@litespace/headless/user";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const TopicSelection: React.FC = () => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
   const allTopicsQuery = useTopics({});
   const userTopicsQuery = useUserTopics();
   const [showDialog, setShowDialog] = useState(false);
@@ -81,7 +83,7 @@ const TopicSelection: React.FC = () => {
       <div className="flex items-center justify-between">
         <Typography
           tag="h2"
-          className="text-natural-950 text-caption lg:text-subtitle-2 font-bold"
+          className="text-natural-950 text-subtitle-2 font-bold"
         >
           {intl("student-settings.edit.personal.topics.title")}
         </Typography>
@@ -152,7 +154,7 @@ const TopicSelection: React.FC = () => {
               <div className="flex justify-center w-full my-3">
                 <Animate>
                   <Button
-                    size="large"
+                    size={mq.lg ? "large" : "medium"}
                     endIcon={
                       <AddCircle className="[&>*]:stroke-natural-50 w-4 h-4" />
                     }
@@ -160,7 +162,7 @@ const TopicSelection: React.FC = () => {
                   >
                     <Typography
                       tag="span"
-                      className="text-tiny sm:text-caption md:text-body font-medium"
+                      className="text-tiny md:text-caption lg:text-body font-medium"
                     >
                       {intl("student-settings.add-topics-button.label")}
                     </Typography>

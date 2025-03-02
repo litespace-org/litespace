@@ -17,8 +17,8 @@ import { useGoogle } from "@/hooks/google";
 import Google from "@litespace/assets/Google";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
-import { Web } from "@litespace/utils/routes";
-import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
+import { Landing, Web } from "@litespace/utils/routes";
+import { router, VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
 
 interface IForm {
   email: string;
@@ -150,7 +150,26 @@ const RegisterForm: React.FC = () => {
             tag="p"
             className="text-natural-600 text-caption font-medium"
           >
-            {intl("register.accept-terms")}
+            {intl.rich("register.accept-terms", {
+              terms: (text: string[]) => (
+                <Link
+                  target="_blank"
+                  className="text-brand-700 underline"
+                  to={router.landing({ route: Landing.Terms, full: true })}
+                >
+                  {text}
+                </Link>
+              ),
+              privacy: (text: string[]) => (
+                <Link
+                  target="_blank"
+                  className="text-brand-700 underline"
+                  to={router.landing({ route: Landing.Privacy, full: true })}
+                >
+                  {text}
+                </Link>
+              ),
+            })}
           </Typography>
         </div>
 
@@ -183,7 +202,7 @@ const RegisterForm: React.FC = () => {
             tag="p"
             className="text-natural-950 text-center text-caption font-medium"
           >
-            {intl.node("register.has-account", {
+            {intl.rich("register.has-account", {
               link: (
                 <Link to={Web.Login}>
                   <Typography
