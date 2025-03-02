@@ -51,7 +51,7 @@ const SlotRow: React.FC<{
 
   const subslots = useMemo(() => {
     return orderSlots(getSubSlotsBatch(freeSubSlots, 30), "asc").filter(
-      (slot) => now.isBefore(slot.start)
+      (slot) => now.isBefore(slot.start) // include future slots only
     );
   }, [freeSubSlots, now]);
 

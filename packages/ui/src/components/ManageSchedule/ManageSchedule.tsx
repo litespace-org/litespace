@@ -217,7 +217,7 @@ export const ManageSchedule: React.FC<Props> = ({
       close={onClose}
       title={
         <Typography
-          tag="h1"
+          tag="p"
           className="text-natural-950 font-bold text-subtitle-2"
         >
           {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
@@ -226,8 +226,8 @@ export const ManageSchedule: React.FC<Props> = ({
       className="overflow-y-auto"
     >
       {!singleDay ? (
-        <div className="pt-6">
-          <div className="flex items-center justify-center gap-4">
+        <div className="pt-6 pb-4">
+          <div className="flex items-center justify-center gap-4 mb-6">
             {!isCurrentWeek ? (
               <button
                 type="button"
@@ -238,6 +238,7 @@ export const ManageSchedule: React.FC<Props> = ({
                 <ArrowRight className="[&>*]:stroke-brand-700" />
               </button>
             ) : null}
+
             <Typography
               tag="span"
               className="text-natural-950 text-body font-bold"
@@ -245,6 +246,7 @@ export const ManageSchedule: React.FC<Props> = ({
               {weekStart.format("D MMMM")} -{" "}
               {weekStart.add(6, "days").format("D MMMM")}
             </Typography>
+
             <button
               type="button"
               onClick={nextWeek}
@@ -254,6 +256,7 @@ export const ManageSchedule: React.FC<Props> = ({
               <ArrowLeft className="[&>*]:stroke-brand-700" />
             </button>
           </div>
+
           <Typography
             tag="span"
             className="text-natural-950 mb-4 mt-6 font-bold text-body"
@@ -318,7 +321,7 @@ export const ManageSchedule: React.FC<Props> = ({
                       </Typography>
 
                       <DaySlots
-                        slots={isDisabled ? [] : slots}
+                        slots={slots}
                         iso={iso}
                         add={addSlot}
                         update={updateSlot}

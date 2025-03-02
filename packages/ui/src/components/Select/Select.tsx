@@ -3,7 +3,6 @@ import cn from "classnames";
 import {
   Root,
   Trigger,
-  Value,
   Icon,
   Portal,
   Content,
@@ -79,8 +78,8 @@ export const Select = <T extends string | number>({
             "bg-natural-50 transition-colors duration-200",
             "border border-natural-300",
             "transition-colors duration-200",
-            "disabled:cursor-not-allowed",
-            "focus:outline-none focus:border-1 focus:border-secondary-600",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            "focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:ring-inset",
             {
               "h-7": size === "small",
               "h-8": size === "medium",
@@ -88,26 +87,15 @@ export const Select = <T extends string | number>({
             }
           )}
         >
-          <Value
-            placeholder={
-              <Typography
-                tag="span"
-                className={cn(
-                  "text-natural-600 font-medium text-caption",
-                  disabled && "text-natural-300"
-                )}
-              >
-                {placeholder}
-              </Typography>
-            }
+          <Typography
+            tag="span"
+            className={cn(
+              "text-natural-600 font-medium text-caption",
+              disabled && "text-natural-300"
+            )}
           >
-            <Typography
-              tag="span"
-              className={cn("text-natural-800 text-caption font-meium")}
-            >
-              {text}
-            </Typography>
-          </Value>
+            {text || placeholder}
+          </Typography>
           {showDropdownIcon ? (
             <Icon>
               <ArrowDown
