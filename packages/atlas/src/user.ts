@@ -117,12 +117,20 @@ export class User extends Base {
     });
   }
 
-  async findTutorsForStudio(
-    pagination?: IFilter.Pagination
-  ): Promise<ITutor.FindTutorsForStudioApiResponse> {
+  async findStudioTutor(
+    payload: ITutor.FindStudioTutorPayload
+  ): Promise<ITutor.FindStudioTutorApiResponse> {
     return this.get({
-      route: `/api/v1/user/studio/tutors`,
-      params: pagination,
+      route: `/api/v1/user/tutor/${payload.tutorId}/for/${payload.studioId}`,
+    });
+  }
+
+  async findStudioTutors(
+    payload: ITutor.FindStudioTutorsPayload
+  ): Promise<ITutor.FindStudioTutorsApiResponse> {
+    return this.get({
+      route: `/api/v1/user/tutor/all/for/${payload.studioId}`,
+      params: { pagination: payload.pagination },
     });
   }
 

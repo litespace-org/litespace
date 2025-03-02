@@ -1,4 +1,5 @@
 import { IUser, Paginated, IFilter } from "@/index";
+import { Pagination } from "@/filter";
 
 export type Self = {
   id: number;
@@ -131,8 +132,16 @@ export type PublicTutorFieldsForStudio = {
   createdAt: string;
 };
 
-export type FindTutorsForStudioApiResponse =
-  Paginated<PublicTutorFieldsForStudio>;
+export type FindStudioTutorPayload = { studioId: number; tutorId: number };
+
+export type FindStudioTutorApiResponse = PublicTutorFieldsForStudio;
+
+export type FindStudioTutorsPayload = {
+  studioId: number;
+  pagination: Pagination;
+};
+
+export type FindStudioTutorsApiResponse = Paginated<PublicTutorFieldsForStudio>;
 
 export type FindTutorStatsApiResponse = {
   lessonCount: number;

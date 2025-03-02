@@ -100,4 +100,44 @@ describe(nameof(Tutors), () => {
       expect(ids).to.have.members(mockTutors.slice(2).map((e) => e.id));
     });
   });
+
+  describe(nameof(tutors.findForStudio), () => {
+    beforeEach(async () => {
+      return await fixtures.flush();
+    });
+
+    it("should retrieve tutors that subscribed to a specific studioId", async () => {
+      const studio1 = await fixtures.user({ role: Role.Studio });
+      const studio2 = await fixtures.user({ role: Role.Studio });
+
+      const mockTutors1 = await Promise.all(
+        range(0, 5).map(() => fixtures.tutor({ studioId: studio1.id }))
+      );
+      const mockTutors2 = await Promise.all(
+        range(0, 3).map(() => fixtures.tutor({ studioId: studio2.id }))
+      );
+
+      const all = await tutors.find();
+      expect(all.length).to.eq(8);
+
+      const res1 = await tutors.findForStudio({ studioId: studio1.id });
+      expect(res1.total).to.eq(5);
+      expect(res1.list.map((res) => res.id).sort()).to.deep.eq(
+        mockTutors1.map((tutor) => tutor.id).sort()
+      );
+
+      const res2 = await tutors.findForStudio({ studioId: studio2.id });
+      expect(res2.total).to.eq(3);
+      expect(res2.list.map((res) => res.id).sort()).to.deep.eq(
+        mockTutors2.map((tutor) => tutor.id).sort()
+      );
+
+      const res3 = await tutors.findForStudio({
+        studioId: studio1.id,
+        filter: { id: mockTutors1[3].id },
+      });
+      expect(res3.total).to.eq(1);
+      expect(first(res3.list)?.id).to.eq(mockTutors1[3].id);
+    });
+  });
 });

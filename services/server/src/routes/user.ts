@@ -27,7 +27,6 @@ export default function router(context: ApiContext) {
   );
   router.get("/:id", user.findById);
   router.put("/:id", user.update(context));
-  router.get("/studio/tutors", user.findTutorsForStudio);
   router.get("/tutor/meta/:tutorId", user.findTutorMeta);
   router.get("/tutor/info/:tutorId", user.findTutorInfo);
   router.get("/tutor/list/onboarded", user.findOnboardedTutors);
@@ -35,6 +34,8 @@ export default function router(context: ApiContext) {
   router.get("/tutor/list/uncontacted", user.findUncontactedTutors);
   router.get("/tutor/stats/:tutor", user.findTutorStats);
   router.get("/tutor/activity/:tutor", user.findTutorActivityScores);
+  router.get("/tutor/:tutorId/for/:studioId", user.findStudioTutor);
+  router.get("/tutor/all/for/:studioId", user.findStudioTutors);
   router.get("/student/stats/personalized", user.findPersonalizedStudentStats);
   router.get("/student/stats/:student", user.findStudentStats);
 

@@ -34,7 +34,7 @@ import {
   id,
 } from "@/validation/utils";
 import { jwtSecret, paginationDefaults } from "@/constants";
-import { drop, entries, groupBy, sample } from "lodash";
+import { drop, entries, first, groupBy, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
@@ -133,6 +133,16 @@ const uploadUserImageQuery = zod.object({
 
 const uploadTutorAssetsQuery = zod.object({
   tutorId: id,
+});
+
+const findStudioTutorQuery = zod.object({
+  studioId: id,
+  tutorId: id,
+});
+
+const findStudioTutorsQuery = zod.object({
+  studioId: id,
+  pagination,
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
@@ -423,19 +433,55 @@ async function findOnboardedTutors(req: Request, res: Response) {
   res.status(200).json(response);
 }
 
-async function findTutorsForStudio(
+async function findStudioTutor(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const allowed = isAdmin(req.user) || isStudio(req.user);
+  const allowed =
+    isSuperAdmin(req.user) || isAdmin(req.user) || isStudio(req.user);
   if (!allowed) return next(forbidden());
 
-  const query = pagination.parse(req.query);
-  const { list, total }: ITutor.FindTutorsForStudioApiResponse =
-    await tutors.findForStudio(query);
+  const { studioId, tutorId }: ITutor.FindStudioTutorPayload =
+    findStudioTutorQuery.parse(req.query);
 
-  const response: ITutor.FindTutorsForStudioApiResponse = {
+  if (isStudio(req.user) && req.user.id !== studioId) return next(forbidden());
+
+  const response: ITutor.FindStudioTutorApiResponse | undefined = first(
+    (
+      await tutors.findForStudio({
+        studioId,
+        filter: { id: tutorId },
+      })
+    ).list
+  );
+
+  if (!response) return next(notfound.tutor());
+
+  res.status(200).json(withImageUrl(response));
+}
+
+async function findStudioTutors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const allowed =
+    isSuperAdmin(req.user) || isAdmin(req.user) || isStudio(req.user);
+  if (!allowed) return next(forbidden());
+
+  const { studioId, pagination }: ITutor.FindStudioTutorsPayload =
+    findStudioTutorsQuery.parse(req.query);
+
+  if (isStudio(req.user) && req.user.id !== studioId) return next(forbidden());
+
+  const { list, total }: ITutor.FindStudioTutorsApiResponse =
+    await tutors.findForStudio({
+      studioId,
+      pagination,
+    });
+
+  const response: ITutor.FindStudioTutorsApiResponse = {
     list: await withImageUrls(list),
     total,
   };
@@ -946,7 +992,8 @@ export default {
   selectInterviewer: safeRequest(selectInterviewer),
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
-  findTutorsForStudio: safeRequest(findTutorsForStudio),
+  findStudioTutor: safeRequest(findStudioTutor),
+  findStudioTutors: safeRequest(findStudioTutors),
   findUncontactedTutors: safeRequest(findUncontactedTutors),
   findStudentStats: safeRequest(findStudentStats),
   findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),

@@ -153,10 +153,17 @@ export class Tutors {
     }).then();
   }
 
-  async findForStudio(
-    pagination?: IFilter.Pagination,
-    tx?: Knex.Transaction
-  ): Promise<Paginated<ITutor.PublicTutorFieldsForStudio>> {
+  async findForStudio({
+    studioId,
+    filter,
+    pagination,
+    tx,
+  }: {
+    studioId: number;
+    filter?: Partial<ITutor.Row>;
+    pagination?: IFilter.Pagination;
+    tx?: Knex.Transaction;
+  }): Promise<Paginated<ITutor.PublicTutorFieldsForStudio>> {
     const columns: Record<keyof ITutor.PublicTutorFieldsForStudio, string> = {
       id: this.column("id"),
       email: users.column("email"),
@@ -165,11 +172,17 @@ export class Tutors {
       video: this.column("video"),
       createdAt: this.column("created_at"),
     } as const;
-    const builder = this.builder(tx).join(
-      users.table,
-      this.column("id"),
-      users.column("id")
-    );
+    const builder = this.builder(tx)
+      .join(users.table, this.column("id"), users.column("id"))
+      .where(this.column("studio_id"), studioId);
+
+    if (filter) {
+      for (const key in filter) {
+        const k = key as keyof typeof filter;
+        builder.where(this.column(k), filter[k]);
+      }
+    }
+
     const total = await countRows(builder.clone());
     const main = builder
       .clone()
