@@ -63,10 +63,8 @@ export const DateSelection: React.FC<{
   }, [date, max]);
 
   return (
-    <div className="flex flex-col items-center text-foreground relative">
-      <div
-        className={cn("flex flex-row items-center justify-between mb-5 gap-4")}
-      >
+    <div className="px-4 md:px-0 flex flex-col gap-6 items-center text-foreground relative">
+      <div className={cn("flex flex-row items-center justify-between gap-4")}>
         <button
           type="button"
           disabled={!canGoBack || disable}
@@ -77,7 +75,7 @@ export const DateSelection: React.FC<{
         </button>
         <Typography
           tag="span"
-          className="flex items-center justify-center text-center text-natural-950 font-medium text-subtitle-2"
+          className="flex items-center justify-center text-center text-natural-950 font-semibold lg:font-medium text-caption lg:text-subtitle-2"
         >
           {date.format("MMMM")} {year}
         </Typography>
@@ -91,7 +89,7 @@ export const DateSelection: React.FC<{
         </button>
       </div>
 
-      <ul className={cn("grid grid-cols-7 gap-4")}>
+      <ul className={cn("grid grid-cols-7 gap-x-1 gap-y-[11px] md:gap-4")}>
         {grid.map((day) => {
           const isCurrentMonth = day.isSame(date, "month");
           const isSelected = selected?.isSame(day, "day");
@@ -102,9 +100,9 @@ export const DateSelection: React.FC<{
               disabled={disable || isOutOfRange(day) || !isSelectable(day)}
               data-selected={isSelected}
               className={cn(
-                "flex flex-col items-center justify-center gap-[7px]",
+                "px-[2px] py-[5px] flex flex-col items-center justify-center gap-[2px] lg:gap-[7px]",
                 "cursor-pointer disabled:cursor-not-allowed",
-                "text-center w-[60px] h-[60px] border border-natural-900 shadow-date-selection-item rounded-lg",
+                "text-center w-[43px] h-12 md:w-[60px] md:h-[60px] border border-natural-900 shadow-date-selection-item rounded-lg",
                 isCurrentMonth &&
                   "data-[selected=false]:hover:bg-brand-100 active:bg-brand-700 data-[selected=true]:bg-brand-700",
                 today.isSame(day, "day") && "ring ring-surface-300",
@@ -116,14 +114,14 @@ export const DateSelection: React.FC<{
               <Typography
                 tag="span"
                 data-selected={isSelected}
-                className="text-natural-950 data-[selected=true]:text-natural-50 text-tiny"
+                className="inline-block text-natural-950 data-[selected=true]:text-natural-50 text-tiny"
               >
                 {day.format("DD")}
               </Typography>
               <Typography
                 tag="span"
                 data-selected={isSelected}
-                className="text-natural-950 data-[selected=true]:text-natural-50 text-tiny"
+                className="inline-block px-[2px] text-natural-950 data-[selected=true]:text-natural-50 text-tiny"
               >
                 {day.format("dddd")}
               </Typography>
