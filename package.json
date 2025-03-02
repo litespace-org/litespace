@@ -71,16 +71,16 @@
     "blog": "pnpm --filter @litespace/blog"
   },
   "devDependencies": {
-    "@litespace/atlas": "workspace:^",
-    "@litespace/types": "workspace:^",
     "@eslint/compat": "^1.2.2",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.9.0",
+    "@litespace/atlas": "workspace:^",
+    "@litespace/types": "workspace:^",
     "@types/autocannon": "^7.12.5",
     "@types/ms": "^0.7.34",
+    "@types/node": "^22.7.5",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
     "@typescript-eslint/parser": "^8.12.2",
-    "@types/node": "^22.7.5",
     "autocannon": "^8.0.0",
     "axios": "^1.7.7",
     "commander": "^12.1.0",
@@ -106,5 +106,5 @@
       "dayjs@1.11.13": "patches/dayjs@1.11.13.patch"
     }
   },
-  "packageManager": "pnpm@10.5.0+sha256.e77bc3c5a9888f823fe061413f60ef02afad4b967c9b16b13458279473ba7d1c"
+  "packageManager": "pnpm@10.5.2"
 }
