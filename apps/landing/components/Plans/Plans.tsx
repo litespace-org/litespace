@@ -49,7 +49,7 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
   ];
 
   return (
-    <section className="flex flex-col gap-4 max-w-screen-3xl mx-auto px-4 pt-[120px] pb-[128px]">
+    <section className="flex flex-col gap-4 max-w-screen-3xl mx-auto px-4 py-14 md:py-20 lg:py-[120px]">
       <div className="flex flex-col gap-4 justify-center items-center text-center mb-16">
         <Typography
           tag="h3"
