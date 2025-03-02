@@ -88,7 +88,7 @@ const EmailVerification: React.FC<{
         {state === "success" ||
         errorMessage === "error.api.email-already-verified" ? (
           <Animate key="success">
-            <div className="flex flex-col gap-6 text-center w-full">
+            <div className="flex flex-col gap-6 text-center w-full max-w-[554px] mx-auto">
               <Typography tag="span" className="text-natural-700 text-body">
                 {intl("verify-email.success")}
               </Typography>

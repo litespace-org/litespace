@@ -175,7 +175,7 @@ const Login: React.FC = () => {
                   tag="p"
                   className="text-natural-950 text-center text-caption font-medium"
                 >
-                  {intl.node("login.has-no-account", {
+                  {intl.rich("login.has-no-account", {
                     link: (
                       <Link
                         to={router.web({
