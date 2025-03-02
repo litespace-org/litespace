@@ -423,19 +423,19 @@ async function findOnboardedTutors(req: Request, res: Response) {
   res.status(200).json(response);
 }
 
-async function findTutorsForStudio(
+async function findStudioTutors(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const allowed = isAdmin(req.user) || isStudio(req.user);
+  const allowed = isSuperAdmin(req.user) || isAdmin(req.user) || isStudio(req.user);
   if (!allowed) return next(forbidden());
 
   const query = pagination.parse(req.query);
-  const { list, total }: ITutor.FindTutorsForStudioApiResponse =
+  const { list, total }: ITutor.FindStudioTutorsApiResponse =
     await tutors.findForStudio(query);
 
-  const response: ITutor.FindTutorsForStudioApiResponse = {
+  const response: ITutor.FindStudioTutorsApiResponse = {
     list: await withImageUrls(list),
     total,
   };
@@ -946,7 +946,7 @@ export default {
   selectInterviewer: safeRequest(selectInterviewer),
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
-  findTutorsForStudio: safeRequest(findTutorsForStudio),
+  findTutorsForStudio: safeRequest(findStudioTutors),
   findUncontactedTutors: safeRequest(findUncontactedTutors),
   findStudentStats: safeRequest(findStudentStats),
   findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),

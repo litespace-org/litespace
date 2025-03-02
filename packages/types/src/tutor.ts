@@ -131,7 +131,7 @@ export type PublicTutorFieldsForStudio = {
   createdAt: string;
 };
 
-export type FindTutorsForStudioApiResponse =
+export type FindStudioTutorsApiResponse =
   Paginated<PublicTutorFieldsForStudio>;
 
 export type FindTutorStatsApiResponse = {

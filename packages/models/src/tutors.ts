@@ -154,6 +154,7 @@ export class Tutors {
   }
 
   async findForStudio(
+    studioId: number,
     pagination?: IFilter.Pagination,
     tx?: Knex.Transaction
   ): Promise<Paginated<ITutor.PublicTutorFieldsForStudio>> {
@@ -169,7 +170,9 @@ export class Tutors {
       users.table,
       this.column("id"),
       users.column("id")
-    );
+    )
+    .where(this.column("studio_id"), studioId);
+
     const total = await countRows(builder.clone());
     const main = builder
       .clone()
@@ -177,7 +180,7 @@ export class Tutors {
       .orderBy([
         { column: this.column("created_at"), order: "desc" },
         { column: this.column("id"), order: "asc" },
-      ]);
+      ])
     const list = await withPagination(main, pagination);
     return { list, total };
   }

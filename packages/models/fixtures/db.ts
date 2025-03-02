@@ -21,6 +21,7 @@ import {
   IMessage,
   ISession,
   IAvailabilitySlot,
+  ITutor,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -185,9 +186,11 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
   });
 }
 
-async function tutor() {
+async function tutor(payload?: ITutor.UpdatePayload) {
   const info = await user({ role: IUser.Role.Tutor });
-  return tutors.create(info.id);
+  const tutor = await tutors.create(info.id);
+  if (payload) await tutors.update(tutor.id, payload);
+  return tutor;
 }
 
 function student() {
