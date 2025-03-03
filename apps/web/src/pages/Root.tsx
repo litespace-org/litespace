@@ -18,6 +18,7 @@ const registerRoutes = [
 ];
 
 const gaId = zod.string();
+const GA_ID = gaId.parse(import.meta.env.VITE_GA);
 
 const Root: React.FC = () => {
   const mq = useMediaQuery();
@@ -25,7 +26,6 @@ const Root: React.FC = () => {
   const { user, meta } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();
-  const GA_ID = gaId.parse(process.env.VITE_GA);
 
   useEffect(() => {
     const root = location.pathname === Web.Root;
@@ -62,7 +62,7 @@ const Root: React.FC = () => {
         userId: user?.id,
       },
     });
-  }, [location.pathname, GA_ID, user]);
+  }, [location.pathname, user]);
 
   return (
     <div className="flex relative w-full">

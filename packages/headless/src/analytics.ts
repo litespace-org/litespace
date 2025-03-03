@@ -1,15 +1,16 @@
 import ReactGA from "react-ga4";
-import { useUserContext } from "@/user/context";
 import { useCallback } from "react";
 
 export type GoogleAnalyticsEventCategory =
   | "register"
   | "engagement"
+  | "landing"
   | "booking"
   | "purchase";
 
 export enum GoogleAnalyticsEventName {
   FAQ = "faq",
+  landing = "landing",
   PageView = "page-view",
   Register = "register",
   Login = "login",
@@ -33,19 +34,17 @@ type CustomGoogleAnalyticEvent = {
   params?: { [key: string]: string | number | undefined };
 };
 
-export function useSendCustomEvent() {
-  const { user } = useUserContext();
-
+export function useSendCustomEvent(userId?: string) {
   const sendEvent = useCallback(
     (event: CustomGoogleAnalyticEvent) => {
       ReactGA.event(event.name, {
         category: event.category,
         label: event.label,
-        uuid: user?.id || "un-authenticated",
+        uuid: userId || "un-authenticated",
         ...event.params,
       });
     },
-    [user]
+    [userId]
   );
   return sendEvent;
 }
