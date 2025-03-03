@@ -60,5 +60,9 @@ export function useInfinitePaginationQuery<T, K>(
     query.fetchNextPage();
   }, [query]);
 
-  return { query, list, more };
+  const thereAreMore: boolean = useMemo(() => {
+    return list?.length !== query.data?.pages[0].total;
+  }, [query.data, list?.length]);
+
+  return { query, list, more, thereAreMore };
 }

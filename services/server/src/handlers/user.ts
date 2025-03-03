@@ -141,7 +141,7 @@ const findStudioTutorParams = zod.object({
 });
 
 const findStudioTutorsQuery = zod.object({
-  studioId: id,
+  studioId: zod.optional(id),
   pagination: zod.optional(pagination),
   search: zod.optional(string),
 });
@@ -468,6 +468,7 @@ async function findStudioTutors(
   const { studioId, pagination, search }: ITutor.FindStudioTutorsQuery =
     findStudioTutorsQuery.parse(req.query);
 
+  if (isStudio(req.user) && studioId === undefined) return next(forbidden());
   if (isStudio(req.user) && req.user.id !== studioId) return next(forbidden());
 
   const { list, total }: ITutor.FindStudioTutorsApiResponse =

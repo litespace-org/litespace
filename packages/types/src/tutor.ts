@@ -150,7 +150,7 @@ export type FindStudioTutorPayload = { studioId: number; tutorId: number };
 export type FindStudioTutorApiResponse = StudioTutorFields;
 
 export type FindStudioTutorsQuery = {
-  studioId: number;
+  studioId?: number;
   pagination?: Pagination;
   search?: string;
 };

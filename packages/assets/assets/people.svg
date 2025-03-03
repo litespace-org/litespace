@@ -1,20 +1,20 @@
-<svg width="100%" height="100%" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="100%" height="100%" stroke="inherit" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
         d="M11.9997 5.27399C11.9597 5.26732 11.9131 5.26732 11.8731 5.27399C10.9531 5.24065 10.2197 4.48732 10.2197 3.55399C10.2197 2.60065 10.9864 1.83398 11.9397 1.83398C12.8931 1.83398 13.6597 2.60732 13.6597 3.55399C13.6531 4.48732 12.9197 5.24065 11.9997 5.27399Z"
-        stroke="#F2F2F2" stroke-linecap="round" stroke-linejoin="round" />
+        stroke="inherit" stroke-linecap="round" stroke-linejoin="round" />
     <path
         d="M11.313 10.1274C12.2263 10.2808 13.233 10.1208 13.9396 9.64742C14.8796 9.02076 14.8796 7.99409 13.9396 7.36743C13.2263 6.89409 12.2063 6.73409 11.293 6.89409"
-        stroke="#F2F2F2" stroke-linecap="round" stroke-linejoin="round" />
+        stroke="inherit" stroke-linecap="round" stroke-linejoin="round" />
     <path
         d="M3.98031 5.27399C4.02031 5.26732 4.06698 5.26732 4.10698 5.27399C5.02698 5.24065 5.76031 4.48732 5.76031 3.55399C5.76031 2.60065 4.99365 1.83398 4.04031 1.83398C3.08698 1.83398 2.32031 2.60732 2.32031 3.55399C2.32698 4.48732 3.06031 5.24065 3.98031 5.27399Z"
-        stroke="#F2F2F2" stroke-linecap="round" stroke-linejoin="round" />
+        stroke="inherit" stroke-linecap="round" stroke-linejoin="round" />
     <path
         d="M4.66663 10.1274C3.75329 10.2808 2.74663 10.1208 2.03996 9.64742C1.09996 9.02076 1.09996 7.99409 2.03996 7.36743C2.75329 6.89409 3.77329 6.73409 4.68663 6.89409"
-        stroke="#F2F2F2" stroke-linecap="round" stroke-linejoin="round" />
+        stroke="inherit" stroke-linecap="round" stroke-linejoin="round" />
     <path
         d="M8.0007 10.2525C7.9607 10.2458 7.91404 10.2458 7.87404 10.2525C6.95404 10.2192 6.2207 9.46583 6.2207 8.5325C6.2207 7.57917 6.98737 6.8125 7.9407 6.8125C8.89403 6.8125 9.6607 7.58583 9.6607 8.5325C9.65404 9.46583 8.9207 10.2258 8.0007 10.2525Z"
-        stroke="#F2F2F2" stroke-linecap="round" stroke-linejoin="round" />
+        stroke="inherit" stroke-linecap="round" stroke-linejoin="round" />
     <path
         d="M6.06047 12.3523C5.12047 12.9789 5.12047 14.0056 6.06047 14.6323C7.12714 15.3456 8.8738 15.3456 9.94047 14.6323C10.8805 14.0056 10.8805 12.9789 9.94047 12.3523C8.88047 11.6456 7.12714 11.6456 6.06047 12.3523Z"
-        stroke="#F2F2F2" stroke-linecap="round" stroke-linejoin="round" />
+        stroke="inherit" stroke-linecap="round" stroke-linejoin="round" />
 </svg>

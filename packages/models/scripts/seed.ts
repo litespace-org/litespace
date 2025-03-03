@@ -4,16 +4,10 @@ import {
   tutors,
   ratings,
   plans,
-  coupons,
-  invites,
-  reports,
-  reportReplies,
   messages,
   rooms,
   lessons,
   interviews,
-  withdrawMethods,
-  invoices,
   hashPassword,
   topics,
   availabilitySlots,
@@ -23,7 +17,6 @@ import {
   IInterview,
   ILesson,
   IUser,
-  IWithdrawMethod,
 } from "@litespace/types";
 import dayjs from "dayjs";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
@@ -120,9 +113,18 @@ async function main(): Promise<void> {
     )
   );
 
-  await users.create({
+  // seeding studios
+  const studio1 = await users.create({
     role: IUser.Role.Studio,
-    email: "media@litespace.org",
+    email: "media-1@litespace.org",
+    name: faker.person.fullName(),
+    birthYear: birthYear(),
+    password,
+  });
+
+  const studio2 = await users.create({
+    role: IUser.Role.Studio,
+    email: "media-2@litespace.org",
     name: faker.person.fullName(),
     birthYear: birthYear(),
     password,
@@ -130,7 +132,7 @@ async function main(): Promise<void> {
 
   const addedTutors: IUser.Self[] = await knex.transaction(async (tx) => {
     return await Promise.all(
-      range(1, 16).map(async (idx) => {
+      range(1, 25).map(async (idx) => {
         const email = `tutor-${idx}@litespace.org`;
         const tutor = await users.create(
           {
@@ -174,6 +176,15 @@ async function main(): Promise<void> {
       })
     );
   });
+
+  // assigning random tutors to studios
+  await Promise.all(
+    addedTutors
+      .slice(0, addedTutors.length / 2)
+      .map(async (tutor) =>
+        tutors.update(tutor.id, { studioId: sample([studio1.id, studio2.id]) })
+      )
+  );
 
   const addedTutorManagers: IUser.Self[] = await knex.transaction(
     async (tx) => {
@@ -326,12 +337,6 @@ async function main(): Promise<void> {
       .toISOString();
   }
 
-  const methods = [
-    IWithdrawMethod.Type.Wallet,
-    IWithdrawMethod.Type.Bank,
-    IWithdrawMethod.Type.Instapay,
-  ];
-
   async function createRandomLesson({
     tutorId,
     slotId,
@@ -424,86 +429,7 @@ async function main(): Promise<void> {
     });
   }
 
-  for (const method of methods) {
-    await withdrawMethods.create({
-      type: method,
-      min: 10_00,
-      max: 50000_00,
-      enabled: true,
-    });
-  }
-
-  // for (const tutor of addedTutors) {
-  //   for (const _ of range(1, 51)) {
-  //     const method = sample(methods)!;
-  //     const invoice = await invoices.create({
-  //       userId: tutor.id,
-  //       amount: random(1000_00, 100_000_00),
-  //       bank: method === IWithdrawMethod.Type.Bank ? "cib" : null,
-  //       method,
-  //       receiver:
-  //         method === IWithdrawMethod.Type.Bank
-  //           ? random(1_000_000_000, 5_000_000_000).toString()
-  //           : method === IWithdrawMethod.Type.Wallet
-  //             ? [
-  //                 sample(["015", "010", "011"])!,
-  //                 random(1_000_000_0, 9_999_999_9),
-  //               ].join("")
-  //             : Math.random().toString(36).slice(2),
-  //     });
-
-  //     const seed = sample([0, 1, 2, 3, 4, 5, 6]);
-  //     if (seed === 0) {
-  //       const { method, amount, bank, receiver } = randomWithdrawMethod();
-  //       await invoices.update(invoice.id, {
-  //         updateRequest: { method, amount, bank, receiver },
-  //         status: IInvoice.Status.UpdatedByReceiver,
-  //       });
-  //     }
-
-  //     if (seed === 1) {
-  //       await invoices.update(invoice.id, {
-  //         status: IInvoice.Status.Fulfilled,
-  //         addressedBy: admin.id,
-  //         note: aripsum.generateParagraph(20, 50),
-  //       });
-  //     }
-
-  //     if (seed === 2) {
-  //       await invoices.update(invoice.id, {
-  //         status: IInvoice.Status.CanceledByReceiver,
-  //       });
-  //     }
-
-  //     if (seed === 3) {
-  //       await invoices.update(invoice.id, {
-  //         status: IInvoice.Status.CanceledByAdmin,
-  //         addressedBy: admin.id,
-  //         note: aripsum.generateParagraph(20, 50),
-  //       });
-  //     }
-
-  //     if (seed === 4) {
-  //       await invoices.update(invoice.id, {
-  //         status: IInvoice.Status.CancellationApprovedByAdmin,
-  //         addressedBy: admin.id,
-  //         note: aripsum.generateParagraph(20, 50),
-  //       });
-  //     }
-
-  //     if (seed === 5) {
-  //       await invoices.update(invoice.id, {
-  //         status: IInvoice.Status.Rejected,
-  //         addressedBy: admin.id,
-  //         note: aripsum.generateParagraph(20, 50),
-  //       });
-  //     }
-  //   }
-  // }
-
-  // stdout.log("Created 50 invoice for each of the 100 tutors.");
-
-  const plan = await plans.create({
+  await plans.create({
     alias: "Basic",
     weeklyMinutes: 2.5 * 60,
     fullMonthPrice: 1000_00,
@@ -517,38 +443,6 @@ async function main(): Promise<void> {
     forInvitesOnly: false,
     active: true,
     createdBy: admin.id,
-  });
-
-  await coupons.create({
-    code: "LiteSpace2024",
-    planId: plan.id,
-    expiresAt: dayjs().add(1, "month").toISOString(),
-    fullMonthDiscount: 10_00,
-    fullQuarterDiscount: 20_00,
-    halfYearDiscount: 30_00,
-    fullYearDiscount: 40_00,
-    createdBy: admin.id,
-  });
-
-  await invites.create({
-    email: "atlas@litespace.com",
-    expiresAt: dayjs().add(1, "week").toISOString(),
-    createdBy: admin.id,
-    planId: plan.id,
-  });
-
-  await reports.create({
-    createdBy: student.id,
-    title: "Report title",
-    description: "Report description",
-    category: "Report Category",
-  });
-
-  await reportReplies.create({
-    createdBy: 3,
-    draft: false,
-    message: "Thanks 2",
-    reportId: 1,
   });
 
   await knex.transaction(async (tx) => {
@@ -582,16 +476,6 @@ async function main(): Promise<void> {
     lessonsNotCanceled / 100
   );
   stdout.info("Total sum for all past lessons in egp ", pastLessonsOnly / 100);
-
-  const invoicesSum = await invoices.sumAmounts({});
-  const fulfilledInvoices = await invoices.sumAmounts({ pending: false });
-  const pendingInvoices = invoicesSum - fulfilledInvoices;
-  stdout.info("Total sum for all invoices in egp", invoicesSum / 100);
-  stdout.info(
-    "Total sum for fulfilled invoices in egp",
-    fulfilledInvoices / 100
-  );
-  stdout.info("Total sum for pending invoices in egp", pendingInvoices / 100);
 }
 
 main()
