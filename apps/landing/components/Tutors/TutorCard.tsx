@@ -102,7 +102,7 @@ export const TutorCard: React.FC<{
             tag="span"
             className="ellipsis line-clamp-2 text-natural-950 underline text-caption font-semibold md:font-bold"
           >
-            {intl("home/tutors/card-label-read-more")}
+            {intl("home/tutors/card/read-more")}
           </Typography>
         </Link>
 
@@ -114,7 +114,7 @@ export const TutorCard: React.FC<{
                   tag="span"
                   className="text-natural-800 text-caption font-normal"
                 >
-                  {intl("home/tutors/card-label-students")}
+                  {intl("home/tutors/card/students")}
                 </Typography>
                 <Typography
                   tag="span"
@@ -131,7 +131,7 @@ export const TutorCard: React.FC<{
                   tag="span"
                   className="text-natural-800 font-regular text-caption"
                 >
-                  {intl("home/tutors/card-label-lessons")}
+                  {intl("home/tutors/card/lessons")}
                 </Typography>
                 <Typography
                   tag="span"
@@ -148,7 +148,7 @@ export const TutorCard: React.FC<{
                   tag="span"
                   className="text-natural-800 text-caption font-regular"
                 >
-                  {intl("home/tutors/card-label-rating")}
+                  {intl("home/tutors/card/rating")}
                 </Typography>
                 <div className="flex flex-row items-center gap-[5px] h-full">
                   <Typography
@@ -213,32 +213,36 @@ export const TutorCard: React.FC<{
         ) : null}
 
         <div className="flex flex-row gap-3 mt-auto -ms-[66px] md:ms-0">
-          <Button className="w-full" type="main" variant="primary" size="large">
-            <Link href={profileUrl}>
+          <Link href={profileUrl} className="w-full block">
+            <Button
+              className="w-full"
+              type="main"
+              variant="primary"
+              size="large"
+            >
               <Typography
-                tag="label"
+                tag="span"
                 className="text-caption font-semibold lg:text-body lg:font-medium"
               >
-                {intl("home/tutors/card-book-button-label")}
+                {intl("home/tutors/card/book-now")}
               </Typography>
-            </Link>
-          </Button>
-          <Link
-            href={profileUrl}
-            className={cn(
-              "w-full flex items-center justify-center text-base",
-              "text-center px-4 py-2 border border-brand-700 rounded-lg",
-              "hover:bg-brand-100 hover:border-brand-700",
-              "focus:bg-brand-200 focus:ring-1 focus:ring-brand-900",
-              "transition-colors ease-out duration-200"
-            )}
-          >
-            <Typography
-              tag="span"
-              className="text-brand-700 text-caption font-semibold lg:text-body lg:font-medium"
+            </Button>
+          </Link>
+
+          <Link href={profileUrl} className="w-full block">
+            <Button
+              type="main"
+              variant="secondary"
+              size="large"
+              className="w-full"
             >
-              {intl("home/tutors/card-profile-button-label")}
-            </Typography>
+              <Typography
+                tag="span"
+                className="text-brand-700 text-caption font-semibold lg:text-body lg:font-medium"
+              >
+                {intl("home/tutors/card/view-profile")}
+              </Typography>
+            </Button>
           </Link>
         </div>
       </div>

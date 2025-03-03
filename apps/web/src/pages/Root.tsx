@@ -24,14 +24,18 @@ const Root: React.FC = () => {
 
   useEffect(() => {
     const root = location.pathname === Web.Root;
-    const routes: string[] = [
+    const routes: Web[] = [
       Web.Login,
       Web.VerifyEmail,
       Web.ForgetPassword,
       Web.ResetPassword,
-      ...registerRoutes,
+      Web.Register,
+      Web.TutorProfile,
     ];
-    const ignore = routes.some((route) => route === location.pathname);
+
+    const ignore = routes.some((route) =>
+      router.isMatch.web(route, location.pathname)
+    );
     if (!user && !ignore) return navigate(Web.Login);
     if (!user || !root) return;
     const { tutor, student, tutorManager } = destructureRole(user.role);

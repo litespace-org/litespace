@@ -1,4 +1,3 @@
-import { Providers } from "@/app/providers";
 import Content from "@/components/Tutors/Content";
 import { atlas } from "@/lib/atlas";
 import { formatMessage } from "@/lib/intl";
@@ -26,9 +25,7 @@ export const Tutors: React.FC = async () => {
             {intl("home/tutors/description")}
           </Typography>
         </div>
-        <Providers>
-          <Content tutors={tutors} />
-        </Providers>
+        <Content tutors={tutors} />
       </div>
     </div>
   );
