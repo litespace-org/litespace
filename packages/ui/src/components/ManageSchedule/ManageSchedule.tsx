@@ -233,9 +233,9 @@ export const ManageSchedule: React.FC<Props> = ({
                 type="button"
                 onClick={prevWeek}
                 disabled={loading}
-                className="disabled:cursor-not-allowed disabled:opacity-50 w-6 h-6"
+                className="disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <ArrowRight className="[&>*]:stroke-brand-700" />
+                <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
               </button>
             ) : null}
 
@@ -243,7 +243,8 @@ export const ManageSchedule: React.FC<Props> = ({
               tag="span"
               className="text-natural-950 text-body font-bold"
             >
-              {weekStart.format("D MMMM")} -{" "}
+              {weekStart.format("D MMMM")}
+              {" - "}
               {weekStart.add(6, "days").format("D MMMM")}
             </Typography>
 
@@ -253,7 +254,7 @@ export const ManageSchedule: React.FC<Props> = ({
               disabled={loading}
               className="disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <ArrowLeft className="[&>*]:stroke-brand-700" />
+              <ArrowLeft className="[&>*]:stroke-brand-700 w-6 h-6" />
             </button>
           </div>
 

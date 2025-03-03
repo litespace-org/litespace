@@ -27,7 +27,7 @@ const Header: React.FC = () => {
           {intl("labels.back-to-site")}
         </Typography>
 
-        <ArrowLeft className="[&>*]:stroke-brand-700" />
+        <ArrowLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
       </Link>
     </div>
   );

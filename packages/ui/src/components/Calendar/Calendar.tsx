@@ -9,6 +9,7 @@ import {
 } from "@/components/Calendar/types";
 import cn from "classnames";
 import { WeekTable } from "@/components/Calendar/WeekTable";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 interface Props {
   date: Dayjs;
@@ -25,6 +26,7 @@ export const Calendar: React.FC<Props> = ({
   slots,
   slotActions,
 }) => {
+  const { lg } = useMediaQuery();
   return (
     <div
       className={cn(
@@ -35,11 +37,16 @@ export const Calendar: React.FC<Props> = ({
       <div
         className={cn(
           "w-full flex bg-natural-50 border border-natural-300",
-          "shadow-calendar rounded-2xl min-w-[1200px]"
+          "shadow-calendar rounded-2xl"
         )}
       >
         <Hours day={date} />
-        <div className="grid grid-cols-7 w-full rounded-tl-2xl">
+        <div
+          className={cn(
+            "grid w-full rounded-tl-2xl",
+            lg ? "grid-cols-7" : "grid-cols-4"
+          )}
+        >
           <WeekTable
             day={date}
             slots={slots}
