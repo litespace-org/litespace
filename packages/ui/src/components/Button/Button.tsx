@@ -171,9 +171,9 @@ export const Button: React.FC<{
           }
         )}
       >
-        {startIcon ? <div className="w-4 h-4">{startIcon}</div> : null}
+        {startIcon ? <div>{startIcon}</div> : null}
         {children}
-        {endIcon ? <div className="w-4 h-4">{endIcon}</div> : null}
+        {endIcon ? <div>{endIcon}</div> : null}
       </div>
     </button>
   );

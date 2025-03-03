@@ -20,6 +20,7 @@ import { useAuthRoutes } from "@/hooks/authRoutes";
 import { destructureRole } from "@litespace/utils/user";
 import { useUserContext } from "@litespace/headless/context/user";
 import { Dashboard } from "@litespace/utils/routes";
+import People from "@litespace/assets/People";
 
 const Root: React.FC = () => {
   const { user } = useUserContext();
@@ -41,6 +42,12 @@ const Root: React.FC = () => {
           label: intl("dashboard.sidebar.users"),
           route: Dashboard.Users,
           icon: Users,
+          show: role?.admin,
+        },
+        {
+          label: intl("dashboard.sidebar.photo-sessions"),
+          route: Dashboard.PhotoSessions,
+          icon: People,
           show: role?.admin,
         },
         {
@@ -125,7 +132,7 @@ const Root: React.FC = () => {
   return (
     <main
       className={cn(
-        "grid min-h-screen overflow-y-hidden text-foreground",
+        "grid min-h-screen overflow-y-hidden bg-natural-50",
         user ? "grid-cols-[5%,95%]" : ""
       )}
     >

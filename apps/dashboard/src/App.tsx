@@ -17,6 +17,7 @@ import PlatformSettings from "@/pages/PlatformSettings";
 import Topics from "@/pages/Topics";
 import VerifyEmail from "@/pages/VerifyEmail";
 import UserSettings from "@/pages/UserSettings";
+import PhotoSessions from "@/pages/PhotoSessions";
 import { Dashboard } from "@litespace/utils/routes";
 
 const router = createBrowserRouter([
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { path: Dashboard.PlatformSettings, element: <PlatformSettings /> },
       { path: Dashboard.VerifyEmail, element: <VerifyEmail /> },
       { path: Dashboard.UserSetting, element: <UserSettings /> },
+      { path: Dashboard.PhotoSessions, element: <PhotoSessions /> },
     ],
   },
 ]);

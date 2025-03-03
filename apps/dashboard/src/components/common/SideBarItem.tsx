@@ -26,7 +26,12 @@ function SideBarItem({
           variant={location.pathname === option.route ? "primary" : "tertiary"}
         >
           <div className="flex items-center justify-start w-full gap-2">
-            <option.icon className="w-6 h-6" />
+            <option.icon
+              className={cn("w-6 h-6", {
+                "stroke-natural-50": location.pathname === option.route,
+                "stroke-natural-700": location.pathname !== option.route,
+              })}
+            />
             <Typography tag="span" className="truncate text-body">
               {option.label}
             </Typography>

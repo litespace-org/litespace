@@ -51,4 +51,5 @@ export enum Dashboard {
   Topics = "/topics",
   VerifyEmail = "/verify-email",
   UserSetting = "/user-settings",
+  PhotoSessions = "/photo-sessions",
 }
