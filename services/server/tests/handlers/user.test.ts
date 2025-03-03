@@ -526,10 +526,10 @@ describe("/api/v1/user/", () => {
       expect(res).to.deep.eq(forbidden());
     });
 
-    it("should respond with forbidden if the requester is studio, and his id != studioId.", async () => {
+    it("should respond with forbidden if the studio doesn't have a permision to access the tutor data", async () => {
       const studio = await db.user({ role: IUser.Role.Studio });
       const res = await findStudioTutor({
-        query: {
+        params: {
           tutorId: 1,
           studioId: studio.id + 1,
         },
@@ -541,7 +541,7 @@ describe("/api/v1/user/", () => {
     it("should respond with not found in case the tutorId is not associated to the passed studioId.", async () => {
       const studio = await db.user({ role: IUser.Role.Studio });
       const res = await findStudioTutor({
-        query: {
+        params: {
           tutorId: 1,
           studioId: studio.id,
         },
@@ -558,7 +558,7 @@ describe("/api/v1/user/", () => {
       const tutor = await db.tutor({}, { studioId: studio.id });
 
       const res1 = await findStudioTutor({
-        query: {
+        params: {
           tutorId: tutor.id,
           studioId: studio.id,
         },
@@ -566,7 +566,7 @@ describe("/api/v1/user/", () => {
       });
 
       const res2 = await findStudioTutor({
-        query: {
+        params: {
           tutorId: tutor.id,
           studioId: studio.id,
         },
@@ -574,7 +574,7 @@ describe("/api/v1/user/", () => {
       });
 
       const res3 = await findStudioTutor({
-        query: {
+        params: {
           tutorId: tutor.id,
           studioId: studio.id,
         },

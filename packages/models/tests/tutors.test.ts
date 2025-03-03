@@ -4,54 +4,48 @@ import { faker } from "@faker-js/faker/locale/ar";
 import fixtures from "@fixtures/db";
 import { expect } from "chai";
 import { dayjs, nameof } from "@litespace/utils";
-import { IUser } from "@litespace/types";
 import { first, range } from "lodash";
 import { Role } from "@litespace/types/dist/esm/user";
-
-const mockUser = {
-  id: 0,
-  name: faker.person.fullName(),
-  bio: faker.person.bio(),
-  role: IUser.Role.Tutor,
-  email: faker.internet.email(),
-  password: "password",
-  birthYear: 2001,
-  gender: IUser.Gender.Male,
-};
+import { IUser } from "@litespace/types";
 
 describe(nameof(Tutors), () => {
+  beforeEach(async () => {
+    return await fixtures.flush();
+  });
+
   describe("testing CRUD on tutors table", () => {
     it("should insert new tutor row", async () => {
-      const newUser = await users.create(mockUser);
-      mockUser.id = newUser.id; // used in subsequent tests
-      const newTutor = await tutors.create(newUser.id);
-      expect(dayjs.utc(newTutor.createdAt).isValid()).to.be.true;
-      expect(dayjs.utc(newTutor.updatedAt).isValid()).to.be.true;
+      const user = await fixtures.user({ role: IUser.Role.Tutor });
+      const tutor = await tutors.create(user.id);
+      expect(dayjs.utc(tutor.createdAt).isValid()).to.be.true;
+      expect(dayjs.utc(tutor.updatedAt).isValid()).to.be.true;
     });
 
     it("should retrieve tutor row from the database", async () => {
-      const foundTutor = await tutors.findById(mockUser.id);
-      expect(foundTutor?.name).to.eq(mockUser.name);
+      const user = await fixtures.user({ role: IUser.Role.Tutor });
+      await tutors.create(user.id);
+      const foundTutor = await tutors.findById(user.id);
+      expect(foundTutor?.name).to.eq(user.name);
     });
 
     it("should update tutor info in the database", async () => {
-      await tutors.update(mockUser.id, { bio: "my new bio" });
-      const foundTutor = await tutors.findById(mockUser.id);
+      const user = await fixtures.user({ role: IUser.Role.Tutor });
+      await tutors.create(user.id);
+      await tutors.update(user.id, { bio: "my new bio" });
+      const foundTutor = await tutors.findById(user.id);
       expect(foundTutor?.bio).to.eq("my new bio");
     });
 
     it("should delete tutor from the database", async () => {
-      await tutors.delete(mockUser.id);
-      const foundTutor = await tutors.findById(mockUser.id);
+      const user = await fixtures.user({ role: IUser.Role.Tutor });
+      await tutors.create(user.id);
+      await tutors.delete(user.id);
+      const foundTutor = await tutors.findById(user.id);
       expect(foundTutor).to.eq(null);
     });
   });
 
   describe(nameof(tutors.findOnboardedTutors), () => {
-    beforeEach(async () => {
-      return await fixtures.flush();
-    });
-
     it("should retrieve onboarded (activated) tutors", async () => {
       const adminUser = await fixtures.user({ role: Role.SuperAdmin });
 
@@ -76,10 +70,6 @@ describe(nameof(Tutors), () => {
   });
 
   describe(nameof(tutors.findUncontactedTutorsForStudent), () => {
-    beforeEach(async () => {
-      return await fixtures.flush();
-    });
-
     it("should retrieve tutors that a specific student hasn't open a chat room with yet", async () => {
       const student = await fixtures.user({ role: Role.Student });
 
@@ -101,43 +91,42 @@ describe(nameof(Tutors), () => {
     });
   });
 
-  describe(nameof(tutors.findForStudio), () => {
-    beforeEach(async () => {
-      return await fixtures.flush();
-    });
-
+  describe(nameof(tutors.findStudioTutors), () => {
     it("should retrieve tutors that subscribed to a specific studioId", async () => {
       const studio1 = await fixtures.user({ role: Role.Studio });
       const studio2 = await fixtures.user({ role: Role.Studio });
 
-      const mockTutors1 = await Promise.all(
+      const tutorsSet1 = await Promise.all(
         range(0, 5).map(() => fixtures.tutor({ studioId: studio1.id }))
       );
-      const mockTutors2 = await Promise.all(
+      const tutorsSet2 = await Promise.all(
         range(0, 3).map(() => fixtures.tutor({ studioId: studio2.id }))
       );
 
-      const all = await tutors.find();
-      expect(all.length).to.eq(8);
-
-      const res1 = await tutors.findForStudio({ studioId: studio1.id });
+      const res1 = await tutors.findStudioTutors({ studioId: studio1.id });
       expect(res1.total).to.eq(5);
       expect(res1.list.map((res) => res.id).sort()).to.deep.eq(
-        mockTutors1.map((tutor) => tutor.id).sort()
+        tutorsSet1.map((tutor) => tutor.id).sort()
       );
 
-      const res2 = await tutors.findForStudio({ studioId: studio2.id });
+      const res2 = await tutors.findStudioTutors({ studioId: studio2.id });
       expect(res2.total).to.eq(3);
       expect(res2.list.map((res) => res.id).sort()).to.deep.eq(
-        mockTutors2.map((tutor) => tutor.id).sort()
+        tutorsSet2.map((tutor) => tutor.id).sort()
       );
+    });
+  });
 
-      const res3 = await tutors.findForStudio({
-        studioId: studio1.id,
-        filter: { id: mockTutors1[3].id },
-      });
-      expect(res3.total).to.eq(1);
-      expect(first(res3.list)?.id).to.eq(mockTutors1[3].id);
+  describe(nameof(tutors.findStudioTutor), () => {
+    it("should retrieve tutors that subscribed to a specific studioId", async () => {
+      const studio = await fixtures.user({ role: Role.Studio });
+      const tutor = await fixtures.tutor({ studioId: studio.id });
+
+      const res1 = await tutors.findStudioTutor(0);
+      expect(res1).to.eq(null);
+
+      const res2 = await tutors.findStudioTutor(tutor.id);
+      expect(res2?.studioId).to.eq(studio.id);
     });
   });
 });

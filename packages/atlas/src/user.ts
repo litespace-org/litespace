@@ -126,11 +126,11 @@ export class User extends Base {
   }
 
   async findStudioTutors(
-    payload: ITutor.FindStudioTutorsPayload
+    query: ITutor.FindStudioTutorsQuery
   ): Promise<ITutor.FindStudioTutorsApiResponse> {
     return this.get({
-      route: `/api/v1/user/tutor/all/for/${payload.studioId}`,
-      params: { pagination: payload.pagination },
+      route: `/api/v1/user/tutor/all/for/studio`,
+      params: query,
     });
   }
 

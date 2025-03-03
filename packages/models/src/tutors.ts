@@ -1,4 +1,11 @@
-import { column, countRows, knex, withFilter, withPagination } from "@/query";
+import {
+  column,
+  countRows,
+  knex,
+  withFilter,
+  WithOptionalTx,
+  withPagination,
+} from "@/query";
 import { first, isEmpty, merge, omit } from "lodash";
 import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
 import { Knex } from "knex";
@@ -153,46 +160,79 @@ export class Tutors {
     }).then();
   }
 
-  async findForStudio({
+  async findStudioTutors({
     studioId,
-    filter,
-    pagination,
+    search,
     tx,
-  }: {
+    ...pagination
+  }: WithOptionalTx<{
     studioId: number;
-    filter?: Partial<ITutor.Row>;
-    pagination?: IFilter.Pagination;
-    tx?: Knex.Transaction;
-  }): Promise<Paginated<ITutor.PublicTutorFieldsForStudio>> {
-    const columns: Record<keyof ITutor.PublicTutorFieldsForStudio, string> = {
+    search?: string;
+  }> &
+    IFilter.Pagination): Promise<Paginated<ITutor.StudioTutorFields>> {
+    const columns: Record<keyof ITutor.StudioTutorFields, string> = {
       id: this.column("id"),
       email: users.column("email"),
       name: users.column("name"),
       image: users.column("image"),
       video: this.column("video"),
+      thumbnail: this.column("thumbnail"),
+      studioId: this.column("studio_id"),
       createdAt: this.column("created_at"),
     } as const;
+
     const builder = this.builder(tx)
       .join(users.table, this.column("id"), users.column("id"))
       .where(this.column("studio_id"), studioId);
 
-    if (filter) {
-      for (const key in filter) {
-        const k = key as keyof typeof filter;
-        builder.where(this.column(k), filter[k]);
-      }
-    }
+    if (search)
+      builder
+        .where(users.column("email"), `%${search}%`)
+        .orWhere(users.column("name"), `%${search}%`);
 
     const total = await countRows(builder.clone());
+
     const main = builder
       .clone()
-      .select<ITutor.PublicTutorFieldsForStudio[]>(columns)
+      .select<ITutor.StudioTutorFieldsRow[]>(columns)
       .orderBy([
         { column: this.column("created_at"), order: "desc" },
         { column: this.column("id"), order: "asc" },
       ]);
+
     const list = await withPagination(main, pagination);
-    return { list, total };
+    return {
+      list: list.map((item) => ({
+        ...item,
+        createdAt: item.createdAt.toISOString(),
+      })),
+      total,
+    };
+  }
+
+  async findStudioTutor(
+    tutorId: number,
+    tx?: Knex.Transaction
+  ): Promise<ITutor.StudioTutorFields | null> {
+    const columns: Record<keyof ITutor.StudioTutorFields, string> = {
+      id: this.column("id"),
+      email: users.column("email"),
+      name: users.column("name"),
+      image: users.column("image"),
+      video: this.column("video"),
+      thumbnail: this.column("thumbnail"),
+      createdAt: this.column("created_at"),
+      studioId: this.column("studio_id"),
+    } as const;
+
+    const row = await this.builder(tx)
+      .join(users.table, this.column("id"), users.column("id"))
+      .where(users.column("id"), tutorId)
+      .select<ITutor.StudioTutorFieldsRow[]>(columns)
+      .first();
+
+    if (!row) return null;
+    return { ...row, createdAt: row.createdAt.toISOString() };
   }
 
   async findTutorAssets(

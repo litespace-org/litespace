@@ -12,10 +12,12 @@ export function isSamePassword(password: string, hash: string): boolean {
 export async function withImageUrl<
   T extends
     | { image: string | null }
+    | { thumbnail: string | null }
     | { video: string | null }
     | {
         image: string | null;
         video: string | null;
+        thumbnail: string | null;
       },
 >(user: T) {
   const cloned = structuredClone(user);
@@ -25,6 +27,9 @@ export async function withImageUrl<
 
   if ("video" in cloned && cloned.video)
     cloned.video = await s3.get(cloned.video);
+
+  if ("thumbnail" in cloned && cloned.thumbnail)
+    cloned.thumbnail = await s3.get(cloned.thumbnail);
 
   return cloned;
 }
