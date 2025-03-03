@@ -97,12 +97,8 @@ export const ProfileCard: React.FC<{
           />
         </div>
 
-        <div className="sm:flex sm:flex-col w-full sm:max-w-[235px] lg:max-w-[416px] sm:gap-5 min-w-max">
-          <div
-            className={cn(
-              "max-w-[220px] md:max-w-[290px] flex flex-col gap-1 md:gap-2"
-            )}
-          >
+        <div className="sm:flex sm:flex-col w-full sm:gap-5 min-w-max">
+          <div className="flex flex-col gap-1 md:gap-2">
             <Typography
               tag="h3"
               className="font-bold text-natural-950 dark:text-natural-50 text-body md:text-h2"
