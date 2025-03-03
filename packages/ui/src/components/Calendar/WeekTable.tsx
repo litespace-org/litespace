@@ -14,6 +14,9 @@ import {
 import { HOURS_IN_DAY } from "@litespace/utils/constants";
 import { AvailabilitySlot } from "@/components/Calendar/Events";
 import { LessonSlot } from "@/components/Calendar/Events/LessonSlot/LessonSlot";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+
+const TABLET_COLUMNS_NUM = 4;
 
 export const WeekTable: React.FC<{
   day: Dayjs;
@@ -22,16 +25,18 @@ export const WeekTable: React.FC<{
   slots?: AvailabilitySlotProps[];
   slotActions?: SlotActions;
 }> = ({ day, lessons, lessonActions, slots, slotActions }) => {
+  const { md, lg } = useMediaQuery();
+
   const week = useMemo(() => {
-    const weekStart = day.startOf("week");
-    return range(DAYS_IN_WEEK).map((day) => {
+    const weekStart = day;
+    return range(lg || !md ? DAYS_IN_WEEK : TABLET_COLUMNS_NUM).map((day) => {
       const dayStart = weekStart.add(day, "day").startOf("day");
       const hours = range(HOURS_IN_DAY).map((hour) =>
         dayStart.add(hour, "hour")
       );
       return { day: dayStart, hours };
     });
-  }, [day]);
+  }, [day, md, lg]);
 
   return (
     <>
