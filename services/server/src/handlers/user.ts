@@ -135,6 +135,17 @@ const uploadTutorAssetsQuery = zod.object({
   tutorId: id,
 });
 
+const findStudioTutorParams = zod.object({
+  studioId: id,
+  tutorId: id,
+});
+
+const findStudioTutorsQuery = zod.object({
+  studioId: id,
+  pagination: zod.optional(pagination),
+  search: zod.optional(string),
+});
+
 export async function create(req: Request, res: Response, next: NextFunction) {
   const payload = createUserPayload.parse(req.body);
   const admin = isAdmin(req.user);
@@ -423,22 +434,50 @@ async function findOnboardedTutors(req: Request, res: Response) {
   res.status(200).json(response);
 }
 
-async function findTutorsForStudio(
+async function findStudioTutor(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const allowed = isAdmin(req.user) || isStudio(req.user);
+  const user = req.user;
+  const allowed = isSuperAdmin(user) || isAdmin(user) || isStudio(user);
   if (!allowed) return next(forbidden());
 
-  const query = pagination.parse(req.query);
-  const { list, total }: ITutor.FindTutorsForStudioApiResponse =
-    await tutors.findForStudio(query);
+  const { studioId, tutorId }: ITutor.FindStudioTutorPayload =
+    findStudioTutorParams.parse(req.params);
 
-  const response: ITutor.FindTutorsForStudioApiResponse = {
+  if (isStudio(req.user) && req.user.id !== studioId) return next(forbidden());
+
+  const tutor = await tutors.findStudioTutor(tutorId);
+  if (!tutor) return next(notfound.tutor());
+
+  const response: ITutor.FindStudioTutorApiResponse = await withImageUrl(tutor);
+
+  res.status(200).json(response);
+}
+
+async function findStudioTutors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const allowed =
+    isSuperAdmin(req.user) || isAdmin(req.user) || isStudio(req.user);
+  if (!allowed) return next(forbidden());
+
+  const { studioId, pagination, search }: ITutor.FindStudioTutorsQuery =
+    findStudioTutorsQuery.parse(req.query);
+
+  if (isStudio(req.user) && req.user.id !== studioId) return next(forbidden());
+
+  const { list, total }: ITutor.FindStudioTutorsApiResponse =
+    await tutors.findStudioTutors({ studioId, search, ...pagination });
+
+  const response: ITutor.FindStudioTutorsApiResponse = {
     list: await withImageUrls(list),
     total,
   };
+
   res.status(200).json(response);
 }
 
@@ -946,7 +985,8 @@ export default {
   selectInterviewer: safeRequest(selectInterviewer),
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
-  findTutorsForStudio: safeRequest(findTutorsForStudio),
+  findStudioTutor: safeRequest(findStudioTutor),
+  findStudioTutors: safeRequest(findStudioTutors),
   findUncontactedTutors: safeRequest(findUncontactedTutors),
   findStudentStats: safeRequest(findStudentStats),
   findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),

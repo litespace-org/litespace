@@ -1,4 +1,5 @@
 import { IUser, Paginated, IFilter } from "@/index";
+import { Pagination } from "@/filter";
 
 export type Self = {
   id: number;
@@ -122,17 +123,39 @@ export type FindOnboardedTutorsApiResponse = {
   list: Array<Cache>;
 };
 
-export type PublicTutorFieldsForStudio = {
+export type StudioTutorFieldsRow = {
   id: number;
-  email: IUser.Self["email"];
-  name: IUser.Self["name"];
-  image: IUser.Self["image"];
-  video: Self["video"];
+  email: string;
+  name: string | null;
+  image: string | null;
+  video: string | null;
+  thumbnail: string | null;
+  studioId: number | null;
+  createdAt: Date;
+};
+
+export type StudioTutorFields = {
+  id: number;
+  email: string;
+  name: string | null;
+  image: string | null;
+  video: string | null;
+  thumbnail: string | null;
+  studioId: number | null;
   createdAt: string;
 };
 
-export type FindTutorsForStudioApiResponse =
-  Paginated<PublicTutorFieldsForStudio>;
+export type FindStudioTutorPayload = { studioId: number; tutorId: number };
+
+export type FindStudioTutorApiResponse = StudioTutorFields;
+
+export type FindStudioTutorsQuery = {
+  studioId: number;
+  pagination?: Pagination;
+  search?: string;
+};
+
+export type FindStudioTutorsApiResponse = Paginated<StudioTutorFields>;
 
 export type FindTutorStatsApiResponse = {
   lessonCount: number;

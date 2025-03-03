@@ -1,4 +1,4 @@
-import { IUser } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
@@ -17,6 +17,10 @@ const createUser = mockApi<IUser.CreateApiPayload>(handlers.create);
 const findPersonalizedStudentStats = mockApi(
   handlers.findPersonalizedStudentStats
 );
+
+const findStudioTutor = mockApi(handlers.findStudioTutor);
+
+const findStudioTutors = mockApi(handlers.findStudioTutors);
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
@@ -507,6 +511,155 @@ describe("/api/v1/user/", () => {
       const tutor = await db.user({ role: IUser.Role.Tutor });
       const res = await findPersonalizedStudentStats({ user: tutor });
       expect(res).to.deep.eq(forbidden());
+    });
+  });
+
+  describe("GET /api/v1/user/tutor/:tutorId/for/:studioId", () => {
+    it("should respond with forbidden if the user is neither admin nor studio.", async () => {
+      const res = await findStudioTutor({
+        query: {
+          tutorId: 1,
+          studioId: 1,
+        },
+        user: IUser.Role.Tutor,
+      });
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should respond with forbidden if the studio doesn't have a permision to access the tutor data", async () => {
+      const studio = await db.user({ role: IUser.Role.Studio });
+      const res = await findStudioTutor({
+        params: {
+          tutorId: 1,
+          studioId: studio.id + 1,
+        },
+        user: studio,
+      });
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should respond with not found in case the tutorId is not associated to the passed studioId.", async () => {
+      const studio = await db.user({ role: IUser.Role.Studio });
+      const res = await findStudioTutor({
+        params: {
+          tutorId: 1,
+          studioId: studio.id,
+        },
+        user: studio,
+      });
+      expect(res).to.deep.eq(notfound.tutor());
+    });
+
+    it("should respond with a list of the tutors associated to a specific studioId.", async () => {
+      const superAdmin = await db.user({ role: IUser.Role.SuperAdmin });
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+
+      const studio = await db.user({ role: IUser.Role.Studio });
+      const tutor = await db.tutor({}, { studioId: studio.id });
+
+      const res1 = await findStudioTutor({
+        params: {
+          tutorId: tutor.id,
+          studioId: studio.id,
+        },
+        user: superAdmin,
+      });
+
+      const res2 = await findStudioTutor({
+        params: {
+          tutorId: tutor.id,
+          studioId: studio.id,
+        },
+        user: admin,
+      });
+
+      const res3 = await findStudioTutor({
+        params: {
+          tutorId: tutor.id,
+          studioId: studio.id,
+        },
+        user: studio,
+      });
+
+      expect(res1).to.not.be.instanceof(Error);
+      expect(await res1.body).to.deep.eq(await res2.body);
+      expect(await res2.body).to.deep.eq(await res3.body);
+    });
+  });
+
+  describe("GET /api/v1/user/tutor/all/for/:studioId", () => {
+    it("should respond with forbidden if the user is neither admin nor studio.", async () => {
+      const res = await findStudioTutors({
+        query: { studioId: 1 },
+        user: IUser.Role.Tutor,
+      });
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should respond with forbidden if the requester is studio its id != studioId.", async () => {
+      const studio = await db.user({ role: IUser.Role.Studio });
+      const res = await findStudioTutors({
+        query: {
+          studioId: studio.id + 1,
+          pagination: {
+            page: 1,
+            size: 10,
+          },
+        },
+        user: studio,
+      });
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should respond with a list of the tutors associated to a specific studioId.", async () => {
+      const superAdmin = await db.user({ role: IUser.Role.SuperAdmin });
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+
+      const studio = await db.user({ role: IUser.Role.Studio });
+
+      await db.tutor({}, { studioId: studio.id });
+      await db.tutor({}, { studioId: studio.id });
+      await db.tutor({}, { studioId: studio.id });
+
+      const res1 = await findStudioTutors({
+        query: {
+          studioId: studio.id,
+          pagination: {
+            page: 1,
+            size: 10,
+          },
+        },
+        user: superAdmin,
+      });
+
+      const res2 = await findStudioTutors({
+        query: {
+          studioId: studio.id,
+          pagination: {
+            page: 1,
+            size: 10,
+          },
+        },
+        user: admin,
+      });
+
+      const res3 = await findStudioTutors({
+        query: {
+          studioId: studio.id,
+          pagination: {
+            page: 1,
+            size: 10,
+          },
+        },
+        user: studio,
+      });
+
+      expect(res1).to.not.be.instanceof(Error);
+      const res1Body = res1.body as ITutor.FindStudioTutorsApiResponse;
+      expect(res1Body.list).to.have.length(3);
+
+      expect(await res1.body).to.deep.eq(await res2.body);
+      expect(await res2.body).to.deep.eq(await res3.body);
     });
   });
 });
