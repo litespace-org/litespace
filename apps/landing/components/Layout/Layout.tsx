@@ -1,13 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import cn from "classnames";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
 import Footer from "@/components/Layout/Footer";
+import ReactGA from "react-ga4";
+import zod from "zod";
+
+const gaId = zod.string();
+const GA_ID = gaId.parse(process.env.NEXT_PUBLIC_GA_TRACKING_ID);
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showSidebar, setShowSidebar] = useState(false);
+
+  useEffect(() => {
+    ReactGA.initialize(GA_ID);
+  }, []);
 
   return (
     <body

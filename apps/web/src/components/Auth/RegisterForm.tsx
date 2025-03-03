@@ -75,6 +75,7 @@ const RegisterForm: React.FC = () => {
         label: "Registeration",
         params: {
           role: "Student",
+          id: info.id,
         },
       });
       navigate(Web.Root);

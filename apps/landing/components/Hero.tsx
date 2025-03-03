@@ -1,17 +1,32 @@
 "use client";
 
+import React, { useEffect } from "react";
 import Ellipse from "@/components/Ellipse";
 import { useFormatMessage } from "@/hooks/intl";
 import { router } from "@/lib/routes";
 import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
-import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import Link from "next/link";
-import React from "react";
+import { Web } from "@litespace/utils/routes";
+import {
+  GoogleAnalyticsEventName,
+  useSendCustomEvent,
+} from "@litespace/headless/analytics";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
+  const sendGoogleEvent = useSendCustomEvent();
+
+  useEffect(
+    () =>
+      sendGoogleEvent({
+        category: "landing",
+        name: GoogleAnalyticsEventName.landing,
+        label: "Home Page",
+      }),
+    [sendGoogleEvent]
+  );
 
   return (
     <div

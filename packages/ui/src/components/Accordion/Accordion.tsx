@@ -15,7 +15,8 @@ import { Typography } from "@/components/Typography";
 
 export const Accordion: React.FC<{
   items: AccordionItem[];
-}> = ({ items }) => {
+  trackEvent?: (id: string | number) => void;
+}> = ({ items, trackEvent }) => {
   return (
     <Root
       collapsible
@@ -33,6 +34,7 @@ export const Accordion: React.FC<{
         >
           <Header>
             <Trigger
+              onClick={() => trackEvent && trackEvent(item.title)}
               className={cn(
                 "flex items-start justify-between w-full px-8 py-6 data-[state=open]:pb-0",
                 "[&>.title]:data-[state=open]:border-brand-500",
