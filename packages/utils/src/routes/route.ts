@@ -27,7 +27,6 @@ export enum Web {
 
 export enum Landing {
   Home = "/",
-  Subscriptions = "/subscriptions",
   Tutor = "/tutor",
   Terms = "/terms",
   Privacy = "/privacy",
