@@ -48,6 +48,27 @@ export function useFindTutorStats(
   });
 }
 
+export function useFindStudioTutors(studioId?: number, search?: string) {
+  const atlas = useAtlas();
+
+  const findStudioTutors = useCallback(
+    async ({ pageParam }: { pageParam: number }) => {
+      return await atlas.user.findStudioTutors({
+        studioId,
+        search,
+        pagination: { page: pageParam },
+      });
+    },
+    [atlas.user, studioId, search]
+  );
+
+  return useInfinitePaginationQuery(findStudioTutors, [
+    QueryKey.FindStudioTutors,
+    studioId,
+    search,
+  ]);
+}
+
 export function useFindPersonalizedTutorStats() {
   const atlas = useAtlas();
   const findStats = useCallback(async () => {

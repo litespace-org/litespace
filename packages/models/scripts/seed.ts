@@ -120,9 +120,18 @@ async function main(): Promise<void> {
     )
   );
 
-  await users.create({
+  // seeding studios
+  const studio1 = await users.create({
     role: IUser.Role.Studio,
-    email: "media@litespace.org",
+    email: "media-1@litespace.org",
+    name: faker.person.fullName(),
+    birthYear: birthYear(),
+    password,
+  });
+
+  const studio2 = await users.create({
+    role: IUser.Role.Studio,
+    email: "media-2@litespace.org",
     name: faker.person.fullName(),
     birthYear: birthYear(),
     password,
@@ -130,7 +139,7 @@ async function main(): Promise<void> {
 
   const addedTutors: IUser.Self[] = await knex.transaction(async (tx) => {
     return await Promise.all(
-      range(1, 16).map(async (idx) => {
+      range(1, 25).map(async (idx) => {
         const email = `tutor-${idx}@litespace.org`;
         const tutor = await users.create(
           {
@@ -174,6 +183,15 @@ async function main(): Promise<void> {
       })
     );
   });
+
+  // assigning random tutors to studios
+  await Promise.all(
+    addedTutors
+      .slice(0, addedTutors.length / 2)
+      .map(async (tutor) =>
+        tutors.update(tutor.id, { studioId: sample([studio1.id, studio2.id]) })
+      )
+  );
 
   const addedTutorManagers: IUser.Self[] = await knex.transaction(
     async (tx) => {
