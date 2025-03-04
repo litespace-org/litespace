@@ -12,11 +12,11 @@ export const TimeSelection: React.FC<{
   select: (slotId: number, start: string) => void;
 }> = ({ slots, start, slotId, select }) => {
   return (
-    <div className="px-5">
+    <div className="lg:px-8">
       <div
         className={cn(
-          "grid grid-cols-7 gap-4 max-h-96 overflow-y-auto",
-          "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent pt-2 p-5"
+          "grid grid-cols-[repeat(auto-fill,minmax(60px,1fr))] gap-2 md:gap-4 max-h-96 overflow-y-auto",
+          "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent px-4 md:px-6"
         )}
       >
         {slots.map((slot) => {
@@ -31,7 +31,7 @@ export const TimeSelection: React.FC<{
               data-selected={slot.start === start && slot.parent === slotId}
               className={cn(
                 "bg-natural-50 border border-natural-800 shadow-time-selection-item",
-                "h-[60px] w-[60px] rounded-lg flex items-center justify-center",
+                "mx-auto h-12 w-[59px] md:h-[60px] md:w-[60px] rounded-lg flex items-center justify-center",
                 "data-[selected=false]:hover:bg-brand-100 transition-colors duration-300",
                 "data-[selected=true]:bg-brand-700 data-[selected=true]:border-brand-800",
                 "disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-natural-50"

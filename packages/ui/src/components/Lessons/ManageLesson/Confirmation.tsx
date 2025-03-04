@@ -1,15 +1,15 @@
 import { Avatar } from "@/components/Avatar";
+import { Button } from "@/components/Button";
 import { Typography } from "@/components/Typography";
-import { orUndefined } from "@litespace/utils/utils";
-import React from "react";
+import { formatMinutes } from "@/components/utils";
+import { useFormatMessage } from "@/hooks";
+import dayjs from "@/lib/dayjs";
 import Calendar from "@litespace/assets/Calendar";
 import Clock from "@litespace/assets/Clock";
 import Timer from "@litespace/assets/Timer";
-import dayjs from "@/lib/dayjs";
-import { formatMinutes } from "@/components/utils";
-import { Button } from "@/components/Button";
-import { useFormatMessage } from "@/hooks";
 import { Void } from "@litespace/types";
+import { orUndefined } from "@litespace/utils/utils";
+import React from "react";
 
 export const Confirmation: React.FC<{
   tutorId: number;
@@ -32,51 +32,51 @@ export const Confirmation: React.FC<{
 }) => {
   const intl = useFormatMessage();
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-row gap-6">
-        <div className="w-[120px] h-[120px] overflow-hidden rounded-full">
+    <div className="flex flex-col gap-10 md:gap-6 mt-[34px] md:mt-6">
+      <div className="flex flex-row gap-4 md:gap-6">
+        <div className="w-[73px] h-[73px] md:w-[120px] md:h-[120px] overflow-hidden rounded-full">
           <Avatar
             src={orUndefined(imageUrl)}
             alt={orUndefined(name)}
             seed={tutorId.toString()}
           />
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2 md:gap-4">
           <Typography
             tag="span"
-            className="text-natural-950 text-subtitle-1 font-bold"
+            className="text-natural-950 text-caption md:text-subtitle-1 font-bold"
           >
             {name}
           </Typography>
 
           <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-2 items-center">
-              <Calendar className="h-6 w-6" />
+              <Calendar className="h-4 w-4 md:h-6 md:w-6" />
               <Typography
                 tag="span"
-                className="text-natural-950 text-subtitle-1 font-semibold"
+                className="text-natural-950 text-tiny md:text-subtitle-2 font-normal md:font-semibold"
               >
                 {dayjs(start).format("dddd, D MMMM")}
               </Typography>
             </div>
 
-            <div className="flex flex-row gap-[88px]">
+            <div className="flex flex-row gap-[45px] md:gap-[88px]">
               <div className="flex flex-row gap-2 items-center">
-                <Clock className="w-6 h-6" />
+                <Clock className="w-4 h-4 md:h-6 md:w-6" />
 
                 <Typography
                   tag="span"
-                  className="text-natural-950 font-semibold text-subtitle-2"
+                  className="text-natural-950 font-normal md:font-semibold text-tiny md:text-subtitle-2"
                 >
                   {dayjs(start).format("h:mm a")}
                 </Typography>
               </div>
               <div className="flex flex-row gap-2 items-center">
-                <Timer className="w-6 h-6" />
+                <Timer className="h-4 w-4 md:h-6 md:w-6" />
 
                 <Typography
                   tag="span"
-                  className="text-natural-950 font-semibold text-subtitle-2"
+                  className="text-natural-950 font-normal md:font-semibold text-tiny md:text-subtitle-2"
                 >
                   {formatMinutes(duration)}
                 </Typography>
@@ -86,7 +86,7 @@ export const Confirmation: React.FC<{
         </div>
       </div>
 
-      <div className="flex flex-row gap-6 pb-5">
+      <div className="flex flex-row gap-3 md:gap-6">
         <Button
           className="w-full"
           loading={confirmationLoading}
@@ -94,7 +94,9 @@ export const Confirmation: React.FC<{
           onClick={onConfrim}
           size="large"
         >
-          {intl("book-lesson.confirm")}
+          <Typography tag="label" className="font-medium">
+            {intl("book-lesson.confirm")}
+          </Typography>
         </Button>
         <Button
           className="w-full"
@@ -103,7 +105,9 @@ export const Confirmation: React.FC<{
           onClick={onEdit}
           size="large"
         >
-          {intl("book-lesson.edit")}
+          <Typography tag="label" className="font-medium">
+            {intl("book-lesson.edit")}
+          </Typography>
         </Button>
       </div>
     </div>

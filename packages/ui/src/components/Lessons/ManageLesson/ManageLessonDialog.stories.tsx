@@ -168,4 +168,20 @@ export const EmptySchedule: Story = {
   },
 };
 
+export const ErrorSchedule: Story = {
+  args: {
+    open: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    slots: [],
+    bookedSlots: [],
+    onSubmit() {
+      alert("Lesson booked!!");
+    },
+    error: true,
+  },
+};
+
 export default meta;

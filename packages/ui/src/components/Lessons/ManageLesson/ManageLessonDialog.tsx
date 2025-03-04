@@ -18,19 +18,24 @@ import { Dayjs } from "dayjs";
 import { concat, isEmpty } from "lodash";
 import cn from "classnames";
 import CalendarEmpty from "@litespace/assets/CalendarEmpty";
-import { Loader } from "@/components/Loading";
+import { Loader, LoadingError } from "@/components/Loading";
 import {
   getSubSlotsBatch as getSubSlots,
   orderSlots,
   subtractSlotsBatch as subtractSlots,
 } from "@litespace/utils";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
-const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
+const Loading: React.FC<{
+  tutorName: string | null;
+}> = ({ tutorName }) => {
   const intl = useFormatMessage();
+  const { md } = useMediaQuery();
+
   return (
-    <div className="w-[628px] flex flex-col justify-center items-center gap-8 mt-[134px] mb-[146px]">
+    <div className="md:w-[580px] flex flex-col justify-center items-center gap-8 md:mt-[81px] md:mb-[106px]">
       <Loader
-        size="medium"
+        size={md ? "medium" : "small"}
         text={
           tutorName
             ? intl("book-lesson.loading-slots", { tutor: tutorName })
@@ -41,18 +46,36 @@ const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   );
 };
 
+const Error: React.FC<{
+  tutorName: string | null;
+  retry: Void;
+}> = ({ tutorName, retry }) => {
+  const intl = useFormatMessage();
+  const { md } = useMediaQuery();
+
+  return (
+    <div className="md:w-[580px] flex flex-col justify-center items-center gap-8 md:mt-[47px] md:mb-[71px]">
+      <LoadingError
+        error={intl("book-lesson.error-slots", { tutor: tutorName })}
+        retry={retry}
+        size={md ? "medium" : "small"}
+      />
+    </div>
+  );
+};
+
 const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   const intl = useFormatMessage();
   return (
     <div
       className={cn(
-        "flex items-center flex-col w-[22rem] gap-8 justify-center mx-auto mt-[82px] mb-[148px]"
+        "flex items-center flex-col w-[22rem] gap-8 justify-center mx-auto mt-4 md:mt-[82px] mb-6 md:mb-[142px]"
       )}
     >
       <CalendarEmpty />
       <Typography
         tag="span"
-        className="text-brand-700 text-center font-bold text-subtitle-2"
+        className="text-brand-700 text-center font-bold text-body lg:text-subtitle-2"
       >
         {tutorName
           ? intl("book-lesson.empty-slots", { tutor: tutorName })
@@ -63,7 +86,7 @@ const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
 };
 
 const Animation: React.FC<{
-  id?: Step | "loading" | "busy-tutor";
+  id?: Step | "loading" | "busy-tutor" | "error";
   children: React.ReactNode;
 }> = ({ id, children }) => {
   const duration = useMemo(() => {
@@ -117,12 +140,14 @@ export const ManageLessonDialog: React.FC<{
    */
   imageUrl: string | null;
   loading?: boolean;
+  error?: boolean;
   confirmationLoading?: boolean;
   slotId?: number;
   start?: string;
   duration?: number;
   slots: IAvailabilitySlot.Self[];
   bookedSlots: IAvailabilitySlot.SubSlot[];
+  retry: Void;
   /**
    * Generic function that will submit data either to be booked or edited
    */
@@ -145,9 +170,12 @@ export const ManageLessonDialog: React.FC<{
   bookedSlots,
   onSubmit,
   loading,
+  error,
   confirmationLoading,
+  retry,
   ...initials
 }) => {
+  const { sm } = useMediaQuery();
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>("date-selection");
   const [duration, setDuration] = useState<number>(initials.duration || 15);
@@ -217,25 +245,36 @@ export const ManageLessonDialog: React.FC<{
     <Dialog
       open={open}
       close={close}
+      position={sm ? "center" : "bottom"}
       title={
         <Typography
-          tag="h1"
-          className="text-natural-950 font-bold text-subtitle-2"
+          tag="header"
+          className="text-natural-950 font-bold text-body md:text-subtitle-2"
         >
           {name
             ? intl("book-lesson.title", { tutor: name })
             : intl("book-lesson.title.placeholder")}
         </Typography>
       }
-      className="!p-0 !pt-6 !pb-3 [&>div:first-child]:!px-6"
+      className={cn(
+        "px-0 py-4 lg:!py-6 [&>div:first-child]:!px-4 md:[&>div:first-child]:!px-0 lg:[&>div:first-child]:!px-6",
+        {
+          "!left-0 right-0 translate-x-0": !sm,
+        }
+      )}
     >
-      {!loading ? (
-        <div className="mt-6 px-6">
+      {!loading && !error ? (
+        <div className="mt-6 md:mt-8 px-4 md:px-0">
           <Stepper step={step} />
         </div>
       ) : null}
 
-      <div className="mt-6">
+      <div
+        className={cn({
+          "mt-6": step === "date-selection",
+          "mt-6 md:mt-8": step === "time-selection",
+        })}
+      >
         <AnimatePresence initial={false} mode="wait">
           {loading ? (
             <Animation key="loading" id="loading">
@@ -243,13 +282,19 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {isTutorBusy && !loading ? (
+          {error ? (
+            <Animation key="error" id="error">
+              <Error retry={retry} tutorName={name} />
+            </Animation>
+          ) : null}
+
+          {isTutorBusy && !loading && !error ? (
             <Animation key="busy-tutor" id="busy-tutor">
               <BusyTutor tutorName={name} />
             </Animation>
           ) : null}
 
-          {step === "date-selection" && !loading && !isTutorBusy ? (
+          {step === "date-selection" && !loading && !error && !isTutorBusy ? (
             <Animation key="date-selection" id="date-selection">
               <DateSelection
                 min={dateBounds.min}
@@ -261,15 +306,18 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {!isTutorBusy && step === "duration-selection" && !loading ? (
+          {!isTutorBusy &&
+          step === "duration-selection" &&
+          !loading &&
+          !error ? (
             <Animation key="duration-selection" id="duration-selection">
-              <div className="px-6 mt-8 mb-[58px]">
+              <div className="px-4 md:px-0 mt-6 md:mt-14 mb-10 md:mb-[82px]">
                 <DurationSelection value={duration} onChange={setDuration} />
               </div>
             </Animation>
           ) : null}
 
-          {!isTutorBusy && step === "time-selection" && !loading ? (
+          {!isTutorBusy && step === "time-selection" && !loading && !error ? (
             <Animation key="time-selection" id="time-selection">
               <TimeSelection
                 slots={allSlots}
@@ -288,9 +336,10 @@ export const ManageLessonDialog: React.FC<{
           {!isTutorBusy &&
           step === "confirmation" &&
           lessonDetails.start &&
-          !loading ? (
+          !loading &&
+          !error ? (
             <Animation key="confimration" id="confirmation">
-              <div className="px-6">
+              <div className="px-4 md:px-0">
                 <Confirmation
                   tutorId={tutorId}
                   name={name}
@@ -316,26 +365,42 @@ export const ManageLessonDialog: React.FC<{
         </AnimatePresence>
       </div>
 
-      {step !== "confirmation" && !loading && !isTutorBusy ? (
-        <div className="flex flex-row gap-[14px] ms-auto w-fit mt-6 px-6 pb-3">
+      {step !== "confirmation" && !loading && !error && !isTutorBusy ? (
+        <div
+          className={cn(
+            "flex flex-row gap-4 md:gap-[14px] w-full md:ms-auto md:w-fit px-4 md:px-0",
+            {
+              "mt-6": step === "date-selection",
+              "mt-10 md:mt-6": step === "time-selection",
+            }
+          )}
+        >
           {step !== "date-selection" ? (
             <Button
-              startIcon={<LongRightArrow />}
+              startIcon={
+                <LongRightArrow className="w-6 h-6 -ms-2 -mt-1 icon" />
+              }
               size="large"
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
                 if (step === "duration-selection") setStep("date-selection");
               }}
               className={cn({
-                "w-[128px]": step === "duration-selection",
+                "flex-1 md:w-[133px]":
+                  step === "duration-selection" || step === "time-selection",
               })}
             >
-              {intl("book-lesson.steps.prev")}
+              <Typography
+                tag="label"
+                className="text-caption md:text-body font-semibold md:font-medium text-natural-50 inline-block"
+              >
+                {intl("book-lesson.steps.prev")}
+              </Typography>
             </Button>
           ) : null}
 
           <Button
-            endIcon={<LongLeftArrow />}
+            endIcon={<LongLeftArrow className="w-6 h-6 -mt-1 icon" />}
             size="large"
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");
@@ -347,11 +412,14 @@ export const ManageLessonDialog: React.FC<{
               !isValidDate(date)
             }
             className={cn({
-              "w-[196px]": step === "date-selection",
-              "w-[128px]": step === "duration-selection",
+              "!w-[156px] lg:w-[196px] ms-auto": step === "date-selection",
+              "flex-1 lg:w-[128px]":
+                step === "duration-selection" || step === "time-selection",
             })}
           >
-            {intl("book-lesson.steps.next")}
+            <Typography tag="label" className="font-semibold text-natural-50">
+              {intl("book-lesson.steps.next")}
+            </Typography>
           </Button>
         </div>
       ) : null}
