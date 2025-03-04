@@ -5,6 +5,7 @@ import {
   Overlay,
   Content,
   Portal,
+  Title,
 } from "@radix-ui/react-dialog";
 import cn from "classnames";
 import React from "react";
@@ -132,13 +133,15 @@ export const ConfirmationDialog: React.FC<{
               <X className="text-natural-600 w-6 h-6" />
             </Close>
           </div>
-          <div className="flex gap-1 flex-col mb-4 lg:mb-6">
+          <Title>
             <Typography
-              tag="h2"
+              tag="span"
               className="text-natural-950 mb-1 font-semibold text-body"
             >
               {title}
             </Typography>
+          </Title>
+          <div className="flex gap-1 flex-col mb-4 lg:mb-6">
             {description ? (
               <Typography
                 tag="p"
