@@ -32,6 +32,10 @@ export type ChatSummaryProps = {
      */
     message: string | undefined;
     /**
+     * isUserOnline as a placeholder if no message is available
+     */
+    isOnline?: boolean;
+    /**
      * ISO UTC datetime that the latest message was sent at.
      */
     sentAt: string;
@@ -135,7 +139,10 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                             room.read ? "text-brand-700" : "text-natural-600"
                           )}
                         >
-                          {room.message}
+                          {room.message ||
+                            intl(
+                              room.isOnline ? "chat.active" : "chat.inactive"
+                            )}
                         </Typography>
                       </div>
                     </Link>

@@ -6,7 +6,6 @@ import {
 } from "@litespace/ui/Chat";
 import { orUndefined } from "@litespace/utils/utils";
 import { IRoom } from "@litespace/types";
-import dayjs from "dayjs";
 import { useMemo } from "react";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
@@ -24,8 +23,9 @@ function asRooms(
     }),
     name: orUndefined(room.otherMember?.name),
     image: orUndefined(room.otherMember?.image),
-    message: room.latestMessage?.text || "TODO",
-    sentAt: room.latestMessage?.updatedAt || dayjs().toString(), // TODO
+    message: room.latestMessage?.text,
+    isOnline: room.otherMember.online,
+    sentAt: room.latestMessage?.updatedAt || room.otherMember.lastSeen,
     read: room.unreadMessagesCount === 0,
   }));
 }
