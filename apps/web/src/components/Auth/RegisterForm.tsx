@@ -16,9 +16,13 @@ import {
 import { useGoogle } from "@/hooks/google";
 import Google from "@litespace/assets/Google";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { capture } from "@/lib/sentry";
 import { Landing, Web } from "@litespace/utils/routes";
 import { router, VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
+import { capture } from "@/lib/sentry";
+import {
+  GoogleAnalyticsEventName,
+  useSendCustomEvent,
+} from "@litespace/headless/analytics";
 
 interface IForm {
   email: string;
@@ -44,6 +48,7 @@ const RegisterForm: React.FC = () => {
     },
   });
   const errors = formState.errors;
+  const sendGoogleEvent = useSendCustomEvent();
 
   const validateEmail = useValidateEmail(true);
   const validatePassword = useValidatePassword(true);
@@ -60,9 +65,18 @@ const RegisterForm: React.FC = () => {
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
       user.set({ user: info, token });
+      sendGoogleEvent({
+        category: "register",
+        name: GoogleAnalyticsEventName.Register,
+        label: "Registeration",
+        params: {
+          role: "Student",
+          id: info.id,
+        },
+      });
       navigate(Web.Root);
     },
-    [user, navigate]
+    [user, navigate, sendGoogleEvent]
   );
 
   const onError = useCallback(

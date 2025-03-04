@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import cn from "classnames";
 import { Accordion } from "@litespace/ui/Accordion";
@@ -8,6 +9,10 @@ import { router } from "@/lib/routes";
 import { Landing, Web } from "@litespace/utils/routes";
 import { IUser } from "@litespace/types";
 import { LITESPACE_TUTORS_TELEGRAM } from "@/constants/links";
+import {
+  GoogleAnalyticsEventName,
+  useSendCustomEvent,
+} from "@litespace/headless/analytics";
 
 type Question = {
   title: string;
@@ -16,6 +21,7 @@ type Question = {
 
 const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
   const intl = useFormatMessage();
+  const sendGoogleEvent = useSendCustomEvent();
 
   const sharedQuestions: Question[] = [
     {
@@ -284,6 +290,16 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
         </div>
 
         <Accordion
+          trackEvent={(title) =>
+            sendGoogleEvent({
+              category: "engagement",
+              name: GoogleAnalyticsEventName.FAQ,
+              label: "FAQ",
+              params: {
+                title,
+              },
+            })
+          }
           items={questions.map(({ title, content }, i) => ({
             id: i,
             title,

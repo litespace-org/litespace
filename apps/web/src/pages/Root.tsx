@@ -9,11 +9,16 @@ import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import ReactGA from "react-ga4";
+import zod from "zod";
 
 const registerRoutes = [
   router.web({ route: Web.Register, role: IUser.Role.Student }),
   router.web({ route: Web.Register, role: IUser.Role.Tutor }),
 ];
+
+const gaId = zod.string();
+const GA_ID = gaId.parse(import.meta.env.VITE_GA);
 
 const Root: React.FC = () => {
   const mq = useMediaQuery();
@@ -54,6 +59,14 @@ const Root: React.FC = () => {
     ];
     return !routes.includes(location.pathname);
   }, [location.pathname]);
+
+  useEffect(() => {
+    ReactGA.initialize(GA_ID, {
+      gaOptions: {
+        userId: user?.id,
+      },
+    });
+  }, [location.pathname, user]);
 
   return (
     <div className="flex relative w-full">
