@@ -1,105 +1,19 @@
-import React, { useEffect, useMemo } from "react";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { IUser } from "@litespace/types";
-import SidebarNav from "@/components/common/SideBar";
-import {
-  BarChart,
-  FileText,
-  Users,
-  Video,
-  Columns,
-  BookOpen,
-  Server,
-  Settings,
-  List,
-  User,
-} from "react-feather";
+import React, { useEffect } from "react";
 import cn from "classnames";
-import { useAuthRoutes } from "@/hooks/authRoutes";
-import { destructureRole } from "@litespace/utils/user";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+
+import { IUser } from "@litespace/types";
 import { useUserContext } from "@litespace/headless/context/user";
 import { Dashboard } from "@litespace/utils/routes";
+
+import Sidebar from "@/components/common/SideBar";
+import { useAuthRoutes } from "@/hooks/authRoutes";
 
 const Root: React.FC = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();
-  const intl = useFormatMessage();
-
   useAuthRoutes();
-
-  const role = useMemo(
-    () => user?.role && destructureRole(user?.role),
-    [user?.role]
-  );
-
-  const routes = useMemo(
-    () =>
-      [
-        {
-          label: intl("dashboard.sidebar.users"),
-          route: Dashboard.Users,
-          icon: Users,
-          show: role?.admin,
-        },
-        {
-          label: intl("dashboard.sidebar.invoices"),
-          route: Dashboard.Invoices,
-          icon: FileText,
-          show: role?.admin,
-        },
-        {
-          label: intl("dashboard.sidebar.media"),
-          route: Dashboard.Media,
-          icon: Video,
-          show: role?.admin || role?.studio,
-        },
-        {
-          label: intl("dashboard.sidebar.plans"),
-          route: Dashboard.Plans,
-          icon: BarChart,
-          show: role?.admin,
-        },
-        {
-          label: intl("dashboard.sidebar.interviews"),
-          route: Dashboard.Interviews,
-          icon: Columns,
-          show: role?.admin,
-        },
-        {
-          label: intl("dashboard.sidebar.lessons"),
-          route: Dashboard.Lessons,
-          icon: BookOpen,
-          show: role?.admin,
-        },
-        {
-          label: intl("dashboard.topics.title"),
-          route: Dashboard.Topics,
-          icon: List,
-          show: role?.admin,
-        },
-        {
-          label: intl("dashboard.sidebar.server.stats"),
-          route: Dashboard.ServerStats,
-          icon: Server,
-          show: role?.admin,
-        },
-        {
-          label: intl("dashboard.sidebar.platform.settings"),
-          route: Dashboard.PlatformSettings,
-          icon: Settings,
-          show: role?.admin,
-        },
-        {
-          label: intl("dashboard.sidebar.user.settings"),
-          route: Dashboard.UserSetting,
-          icon: User,
-          show: role?.admin || role?.studio,
-        },
-      ].filter((route) => route.show),
-    [intl, role?.admin, role?.studio]
-  );
 
   useEffect(() => {
     if (location.pathname === Dashboard.Login) return;
@@ -123,17 +37,23 @@ const Root: React.FC = () => {
   }, [location.pathname, navigate, user]);
 
   return (
-    <main
-      className={cn(
-        "grid min-h-screen overflow-y-hidden text-foreground",
-        user ? "grid-cols-[5%,95%]" : ""
-      )}
-    >
-      <div className={cn(!user ? "hidden" : "")}>
-        <SidebarNav options={routes} />
-      </div>
-      <Outlet />
-    </main>
+    <>
+      <main
+        className={cn(
+          "flex min-h-screen overflow-y-hidden bg-natural-50 pr-[166px] md:pr-[98px] lg:pr-60",
+          user ? "grid-cols-[5%,95%]" : ""
+        )}
+      >
+        <div
+          className={cn("fixed top-0 right-0 h-screen bg-brand-700 z-20", {
+            hidden: !user,
+          })}
+        >
+          <Sidebar hide={() => {}} />
+        </div>
+        <Outlet />
+      </main>
+    </>
   );
 };
 
