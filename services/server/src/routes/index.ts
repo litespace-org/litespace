@@ -1,3 +1,4 @@
+import analytics from "@/routes/analytics";
 import user from "@/routes/user";
 import interview from "@/routes/interview";
 import availabilitySlot from "@/routes/availabilitySlot";
@@ -19,6 +20,7 @@ import session from "@/routes/session";
 import contactRequest from "@/routes/contactRequest";
 
 export default {
+  analytics,
   user,
   lesson,
   invoice,
