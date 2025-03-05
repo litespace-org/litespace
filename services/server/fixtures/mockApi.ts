@@ -48,7 +48,7 @@ export function mockApi<Body = object, Params = object, Query = object>(
   return async <Response>(
     request: MockRequest<Body, Params, Query>
   ): Promise<{ status: number | null; body: Response | null }> => {
-    if (typeof request.user === "string")
+    if (typeof request.user === "number")
       request.user = await db.user({ role: request.user });
 
     const response = new MockResponse<Response>();

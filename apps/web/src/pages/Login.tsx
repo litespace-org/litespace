@@ -180,7 +180,7 @@ const Login: React.FC = () => {
                       <Link
                         to={router.web({
                           route: Web.Register,
-                          role: IUser.Role.Student,
+                          role: "student",
                         })}
                       >
                         <Typography

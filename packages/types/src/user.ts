@@ -2,12 +2,12 @@ import { Paginated } from "@/utils";
 import { IFilter } from "@/index";
 
 export enum Role {
-  SuperAdmin = "super-admin",
-  RegularAdmin = "reg-admin",
-  Tutor = "tutor",
-  Student = "student",
-  TutorManager = "tutor-manager",
-  Studio = "studio",
+  SuperAdmin = 1,
+  RegularAdmin = 2,
+  Tutor = 3,
+  Student = 4,
+  TutorManager = 5,
+  Studio = 6,
 }
 
 export enum Gender {

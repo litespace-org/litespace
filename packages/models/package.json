@@ -17,7 +17,7 @@
     "migrate:test:local": "env-cmd -f .env.test pnpm base:migrate",
     "migrate:test:ci": "env-cmd -f .env.test.ci pnpm base:migrate",
     "seed": "env-cmd -f .env vite-node scripts/seed.ts",
-    "reseed": "pnpm migrate down && pnpm migrate up && pnpm seed",
+    "reseed": "pnpm migrate down 0 && pnpm migrate up && pnpm seed",
     "test": "jest --runInBand --detectOpenHandles --forceExit",
     "test:local": "env-cmd -f .env.test pnpm run test",
     "test:ci": "env-cmd -f .env.test.ci pnpm run test"

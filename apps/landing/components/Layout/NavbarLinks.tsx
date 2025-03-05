@@ -6,7 +6,7 @@ import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import Link from "next/link";
 import cn from "classnames";
-import { IUser, Void } from "@litespace/types";
+import { Void } from "@litespace/types";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 
@@ -43,7 +43,7 @@ export function NavbarLinks({
         <Link
           href={router.web({
             route: Web.Register,
-            role: IUser.Role.Student,
+            role: "student",
             full: true,
           })}
           className="max-w-[134px] lg:max-w-[144px] flex-1"

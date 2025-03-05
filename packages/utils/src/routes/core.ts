@@ -1,5 +1,5 @@
 import { Dashboard, Landing, Web } from "@/routes/route";
-import { Env, IUser } from "@litespace/types";
+import { Env } from "@litespace/types";
 import { clients } from "@/routes/clients";
 
 function isStrictMatch(
@@ -64,7 +64,7 @@ type WebPayload =
     }
   | {
       route: Web.Register;
-      role: IUser.Role.Student | IUser.Role.Tutor;
+      role: "student" | "tutor";
     }
   | {
       route: Exclude<Web, Web.TutorProfile | Web.Lesson | Web.Register>;
@@ -73,7 +73,7 @@ type WebPayload =
 type LandingPayload =
   | {
       route: Landing.FaqRole;
-      role: IUser.Role.Student | IUser.Role.Tutor;
+      role: "student" | "tutor";
     }
   | {
       route: Exclude<Landing, Landing.FaqRole>;

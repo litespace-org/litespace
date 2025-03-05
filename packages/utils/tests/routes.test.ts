@@ -1,18 +1,17 @@
 import { RoutesManager } from "@/routes";
 import { Dashboard, Landing, Web } from "@/routes/route";
-import { IUser } from "@litespace/types";
 import { expect } from "chai";
 
 describe("Routes", () => {
   it("should populate url route with the required params", () => {
     const routes = new RoutesManager("local");
-    expect(
-      routes.web({ route: Web.Register, role: IUser.Role.Student })
-    ).to.be.eq("/student/register");
+    expect(routes.web({ route: Web.Register, role: "student" })).to.be.eq(
+      "/student/register"
+    );
 
-    expect(
-      routes.web({ route: Web.Register, role: IUser.Role.Tutor })
-    ).to.be.eq("/tutor/register");
+    expect(routes.web({ route: Web.Register, role: "tutor" })).to.be.eq(
+      "/tutor/register"
+    );
 
     expect(routes.web({ route: Web.Lesson, id: 1 })).to.be.eq("/lesson/1");
 
@@ -26,7 +25,7 @@ describe("Routes", () => {
     expect(
       routes.web({
         route: Web.Register,
-        role: IUser.Role.Student,
+        role: "student",
         full: true,
       })
     ).to.be.eq("https://app.litespace.org/student/register");
@@ -45,7 +44,7 @@ describe("Routes", () => {
     expect(
       routes.web({
         route: Web.Register,
-        role: IUser.Role.Student,
+        role: "student",
         query: { src: "fb" },
         full: true,
       })
