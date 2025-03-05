@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { IUser, Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
@@ -10,23 +10,18 @@ import dayjs from "dayjs";
 export const Ready: React.FC<{
   otherMember: {
     id: number;
-    name: string | null;
-    imageUrl: string | null;
     role: IUser.Role;
     gender: IUser.Gender;
     incall: boolean;
   };
   error?: boolean;
-  sessionDetails: {
-    sessionStart: string;
-    sessionEnd: string;
-  };
+  start: string;
+  duration: number;
   join: Void;
   loading?: boolean;
   disabled?: boolean;
-}> = ({ otherMember, join, error, sessionDetails, loading, disabled }) => {
+}> = ({ otherMember, join, error, start, duration, loading, disabled }) => {
   const intl = useFormatMessage();
-  const [hasSessionEnded, setHasSessionEnded] = useState<boolean>(false);
 
   const explaination = useMemo(() => {
     if (
@@ -54,25 +49,24 @@ export const Ready: React.FC<{
 
   const sessionStartMessage = useMemo(() => {
     const now = dayjs();
-    const sessionStartTime = dayjs(sessionDetails.sessionStart);
-    const sessionEndTime = dayjs(sessionDetails.sessionEnd);
+    const sessionStart = dayjs(start);
+    const end = sessionStart.add(duration, "minutes");
 
-    if (now.isBefore(sessionStartTime))
+    if (now.isBefore(start))
       return intl("session.ready.session-will-start-in", {
-        minutes: sessionStartTime.diff(now, "minutes"),
+        time: sessionStart.fromNow(true),
       });
 
-    if (now.isAfter(sessionEndTime)) {
-      setHasSessionEnded(true);
+    if (now.isAfter(end)) {
       return intl("session.ready.session-ended-since", {
-        minutes: now.diff(sessionEndTime, "minutes"),
+        time: end.fromNow(true),
       });
     }
 
     return intl("session.ready.session-started-since", {
-      minutes: now.diff(sessionStartTime, "minutes"),
+      time: end.fromNow(true),
     });
-  }, [sessionDetails, intl]);
+  }, [start, duration, intl]);
 
   return (
     <div
@@ -108,9 +102,13 @@ export const Ready: React.FC<{
           </Typography>
         ) : null}
         <Button
-          size={"large"}
+          size="large"
           onClick={join}
-          disabled={disabled || loading || hasSessionEnded}
+          disabled={
+            disabled ||
+            loading ||
+            dayjs(start).add(duration, "minutes").isBefore(dayjs())
+          }
           loading={loading}
         >
           {intl("session.ready.join")}

@@ -7,33 +7,36 @@ import FocusedStream from "@/components/Session/FocusedStream";
 
 export type Props = {
   stream: MediaStream | null;
-  otherMember: {
-    id: number;
-    imageUrl: string | null;
-    name: string | null;
-    gender: IUser.Gender;
-    role: IUser.Role;
-    incall: boolean;
+  members: {
+    current: {
+      id: number;
+      imageUrl: string | null;
+      name: string | null;
+      role: IUser.Role;
+    };
+    other: {
+      id: number;
+      gender: IUser.Gender;
+      role: IUser.Role;
+      incall: boolean;
+    };
   };
-  currentMember: {
-    id: number;
-    imageUrl: string | null;
-    name: string | null;
-    role: IUser.Role;
-  };
-  camera: {
+  video: {
     enabled: boolean;
     toggle: Void;
     error?: boolean;
   };
-  mic: {
+  audio: {
     enabled: boolean;
     toggle: Void;
     error?: boolean;
   };
-  sessionDetails: {
-    sessionStart: string;
-    sessionEnd: string;
+  session: {
+    /**
+     * ISO UTC date.
+     */
+    start: string;
+    duration: number;
   };
   speaking: boolean;
   joining: boolean;
@@ -42,11 +45,10 @@ export type Props = {
 
 export const PreSession: React.FC<Props> = ({
   stream,
-  otherMember,
-  currentMember,
-  camera,
-  sessionDetails,
-  mic,
+  members,
+  video,
+  session,
+  audio,
   speaking,
   joining,
   join,
@@ -59,27 +61,28 @@ export const PreSession: React.FC<Props> = ({
       )}
     >
       <FocusedStream
-        muted={!mic.enabled}
+        muted
         stream={{
           stream,
           speaking,
-          audio: mic.enabled,
-          video: camera.enabled,
-          user: currentMember,
+          audio: audio.enabled,
+          video: video.enabled,
+          user: members.current,
           cast: false,
         }}
       />
-      <div className="grow w-[306px] flex justify-center items-center h-full lg:min-h-max lg:h-[550px]">
+      <div className="grow w-[306px] flex justify-center items-center h-full">
         <Ready
-          error={mic.error}
-          otherMember={otherMember}
-          sessionDetails={sessionDetails}
-          disabled={mic.error}
+          error={audio.error}
+          otherMember={members.other}
+          start={session.start}
+          duration={session.duration}
+          disabled={video.error}
           join={join}
           loading={joining}
         />
       </div>
-      <Actions camera={camera} microphone={mic} />
+      <Actions video={video} audio={audio} />
     </div>
   );
 };

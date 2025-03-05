@@ -30,10 +30,8 @@ export const UserAvatar: React.FC<{
       )}
     >
       <motion.div
-        initial={{
-          scale: 0,
-        }}
-        animate={{ scale: speaking ? 1 : 0.5 }}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: speaking ? 1 : 0.5, opacity: speaking ? 1 : 0 }}
         transition={{
           delay: 0.1,
           duration: 1,
@@ -52,12 +50,8 @@ export const UserAvatar: React.FC<{
         )}
       />
       <motion.div
-        initial={{
-          scale: 0,
-        }}
-        animate={{
-          scale: speaking ? 1 : 0.5,
-        }}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: speaking ? 1 : 0.5, opacity: speaking ? 1 : 0 }}
         transition={{
           duration: 1,
           repeatType: "reverse",

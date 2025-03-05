@@ -31,15 +31,15 @@ export const AloneWithCamera: StoryObj<Component> = {
       enabled: true,
       toggle: () => alert("toggle chat"),
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
-      toggle: () => alert("toggle camera"),
+      toggle: () => alert("toggle video"),
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
-      toggle: () => alert("toggle mic"),
+      toggle: () => alert("toggle audio"),
     },
     cast: {
       enabled: false,
@@ -67,15 +67,15 @@ export const Alert: StoryObj<Component> = {
       enabled: true,
       toggle: () => alert("toggle chat"),
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
-      toggle: () => alert("toggle camera"),
+      toggle: () => alert("toggle video"),
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
-      toggle: () => alert("toggle mic"),
+      toggle: () => alert("toggle audio"),
     },
     cast: {
       enabled: false,
@@ -104,12 +104,12 @@ export const AloneWithoutCamera: StoryObj<Component> = {
       enabled: true,
       toggle: () => {},
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
       toggle: () => {},
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
       toggle: () => {},
@@ -140,12 +140,12 @@ export const FocusedWithUnfocusedWithoutCamera: StoryObj<Component> = {
       enabled: true,
       toggle: () => {},
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
       toggle: () => {},
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
       toggle: () => {},
@@ -178,12 +178,12 @@ export const FocusedWithoutUnfocusedWithCamera: StoryObj<Component> = {
       enabled: true,
       toggle: () => {},
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
       toggle: () => {},
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
       toggle: () => {},
@@ -215,12 +215,12 @@ export const FullRoomWithoutCameras: StoryObj<Component> = {
       enabled: true,
       toggle: () => {},
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
       toggle: () => {},
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
       toggle: () => {},
@@ -255,12 +255,12 @@ export const FullRoomWithCastWithCameras: StoryObj<Component> = {
       enabled: true,
       toggle: () => {},
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
       toggle: () => {},
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
       toggle: () => {},
@@ -298,12 +298,12 @@ export const FullRoomWithCastWithoutCameras: StoryObj<Component> = {
       enabled: true,
       toggle: () => {},
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
       toggle: () => {},
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
       toggle: () => {},
@@ -341,12 +341,12 @@ export const FullRoomWithCastWithCameraWithoutCamera: StoryObj<Component> = {
       enabled: true,
       toggle: () => {},
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
       toggle: () => {},
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
       toggle: () => {},
@@ -383,12 +383,12 @@ export const FullRoomWithFullCast: StoryObj<Component> = {
       enabled: true,
       toggle: () => {},
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
       toggle: () => {},
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
       toggle: () => {},
@@ -427,12 +427,12 @@ export const NewUserEntering: StoryObj<Component> = {
       enabled: true,
       toggle: () => {},
     },
-    camera: {
+    video: {
       enabled: true,
       error: false,
       toggle: () => {},
     },
-    mic: {
+    audio: {
       enabled: true,
       error: false,
       toggle: () => {},

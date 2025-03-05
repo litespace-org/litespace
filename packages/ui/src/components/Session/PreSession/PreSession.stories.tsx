@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { PreSession, PreSessionProps } from "@/components/Session";
 import { faker } from "@faker-js/faker/locale/ar";
 import { IUser } from "@litespace/types";
-import React from "react";
+import React, { useState } from "react";
 import { useUserMedia } from "@/internal/hooks/stream";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 type Component = typeof PreSession;
 
@@ -27,26 +27,26 @@ const toggleMic = () => alert("toggle mic");
 
 export const WithMedia: StoryObj<Component> = {
   args: {
-    otherMember: {
-      id: 5,
-      gender: IUser.Gender.Male,
-      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-      name: faker.person.fullName(),
-      role: IUser.Role.Tutor,
-      incall: true,
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
     },
-    currentMember: {
-      id: 5,
-      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-      name: faker.person.fullName(),
-      role: IUser.Role.Student,
+    session: {
+      start: dayjs().add(5, "minutes").toString(),
+      duration: 10,
     },
-    sessionDetails: {
-      sessionStart: dayjs().add(5, "minutes").toString(),
-      sessionEnd: dayjs().add(30, "minutes").toString(),
-    },
-    camera: { enabled: true, error: false, toggle: toggleCamera },
-    mic: { enabled: true, error: false, toggle: toggleMic },
+    video: { enabled: true, error: false, toggle: toggleCamera },
+    audio: { enabled: true, error: false, toggle: toggleMic },
     join,
   },
   render(props: PreSessionProps) {
@@ -55,33 +55,32 @@ export const WithMedia: StoryObj<Component> = {
   },
 };
 
-export const WithoutMedia: StoryObj<Component> = {
+export const Controllable: StoryObj<Component> = {
   args: {
-    otherMember: {
-      id: 5,
-      gender: IUser.Gender.Male,
-      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-      name: faker.person.fullName(),
-      role: IUser.Role.Tutor,
-      incall: true,
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
     },
-    currentMember: {
-      id: 5,
-      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-      name: faker.person.fullName(),
-      role: IUser.Role.Student,
+    session: {
+      start: dayjs().add(5, "minutes").toString(),
+      duration: 10,
     },
-    sessionDetails: {
-      sessionStart: dayjs().add(5, "minutes").toString(),
-      sessionEnd: dayjs().add(30, "minutes").toString(),
-    },
-
-    camera: {
+    video: {
       enabled: false,
       toggle: toggleCamera,
       error: false,
     },
-    mic: {
+    audio: {
       enabled: true,
       toggle: toggleMic,
       error: false,
@@ -89,37 +88,46 @@ export const WithoutMedia: StoryObj<Component> = {
     join,
   },
   render(props: PreSessionProps) {
-    return <PreSession {...props} />;
+    const stream = useUserMedia();
+    const [camera, setCamera] = useState<boolean>(false);
+    const [mic, setMic] = useState<boolean>(false);
+    return (
+      <PreSession
+        {...props}
+        stream={stream}
+        video={{ enabled: camera, toggle: () => setCamera(!camera) }}
+        audio={{ enabled: mic, toggle: () => setMic(!mic) }}
+      />
+    );
   },
 };
 
 export const OnlyMic: StoryObj<Component> = {
   args: {
-    otherMember: {
-      id: 5,
-      gender: IUser.Gender.Male,
-      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-      name: faker.person.fullName(),
-      role: IUser.Role.Tutor,
-      incall: true,
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
     },
-    currentMember: {
-      id: 5,
-      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-      name: faker.person.fullName(),
-      role: IUser.Role.Student,
+    session: {
+      start: dayjs().add(5, "minutes").toString(),
+      duration: 10,
     },
-    sessionDetails: {
-      sessionStart: dayjs().add(5, "minutes").toString(),
-      sessionEnd: dayjs().add(30, "minutes").toString(),
-    },
-
-    camera: {
+    video: {
       enabled: false,
       toggle: toggleCamera,
       error: false,
     },
-    mic: {
+    audio: {
       enabled: true,
       toggle: toggleCamera,
       error: false,
@@ -134,31 +142,30 @@ export const OnlyMic: StoryObj<Component> = {
 
 export const OnlyCamera: StoryObj<Component> = {
   args: {
-    otherMember: {
-      id: 5,
-      gender: IUser.Gender.Male,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Tutor,
-      incall: true,
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: "https://picsum.photos/400",
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
     },
-    currentMember: {
-      id: 5,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Student,
+    session: {
+      start: dayjs().add(5, "minutes").toString(),
+      duration: 10,
     },
-    sessionDetails: {
-      sessionStart: dayjs().add(5, "minutes").toString(),
-      sessionEnd: dayjs().add(30, "minutes").toString(),
-    },
-
-    camera: {
+    video: {
       enabled: true,
       toggle: toggleCamera,
       error: false,
     },
-    mic: {
+    audio: {
       enabled: false,
       toggle: toggleMic,
       error: false,
@@ -173,31 +180,30 @@ export const OnlyCamera: StoryObj<Component> = {
 
 export const MicProblem: StoryObj<Component> = {
   args: {
-    otherMember: {
-      id: 5,
-      gender: IUser.Gender.Male,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Tutor,
-      incall: false,
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: false,
+      },
+      current: {
+        id: 5,
+        imageUrl: "https://picsum.photos/400",
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
     },
-    currentMember: {
-      id: 5,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Student,
+    session: {
+      start: dayjs().add(5, "minutes").toString(),
+      duration: 10,
     },
-    sessionDetails: {
-      sessionStart: dayjs().add(5, "minutes").toString(),
-      sessionEnd: dayjs().add(30, "minutes").toString(),
-    },
-
-    camera: {
+    video: {
       enabled: false,
       toggle: toggleCamera,
       error: false,
     },
-    mic: {
+    audio: {
       enabled: false,
       toggle: toggleMic,
       error: true,
@@ -206,105 +212,159 @@ export const MicProblem: StoryObj<Component> = {
   },
 };
 
-export const ForTutor: StoryObj<Component> = {
+export const TutorInSession: StoryObj<Component> = {
   args: {
-    otherMember: {
-      id: 5,
-      gender: IUser.Gender.Male,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Student,
-      incall: false,
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: faker.image.avatarGitHub(),
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
     },
-    currentMember: {
-      id: 5,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Tutor,
+    session: {
+      start: dayjs().add(5, "minutes").toString(),
+      duration: 10,
     },
-    sessionDetails: {
-      sessionStart: dayjs().add(5, "minutes").toString(),
-      sessionEnd: dayjs().add(30, "minutes").toString(),
-    },
-
-    camera: { enabled: false, toggle: toggleCamera, error: false },
-    mic: { enabled: true, toggle: toggleMic, error: false },
+    video: { enabled: false, toggle: toggleCamera, error: false },
+    audio: { enabled: true, toggle: toggleMic, error: false },
+    speaking: true,
     join,
   },
 };
 
-export const sessionStarted: StoryObj<Component> = {
+export const StudentInSession: StoryObj<Component> = {
   args: {
-    otherMember: {
-      id: 5,
-      gender: IUser.Gender.Male,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Tutor,
-      incall: true,
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Student,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: faker.image.avatarGitHub(),
+        name: faker.person.fullName(),
+        role: IUser.Role.Tutor,
+      },
     },
-    currentMember: {
-      id: 5,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Student,
+    session: {
+      start: dayjs().add(5, "minutes").toString(),
+      duration: 10,
     },
-    sessionDetails: {
-      sessionStart: dayjs().subtract(45, "minutes").toString(),
-      sessionEnd: dayjs().add(5, "minutes").toString(),
+    video: { enabled: false, toggle: toggleCamera, error: false },
+    audio: { enabled: true, toggle: toggleMic, error: false },
+    speaking: true,
+    join,
+  },
+};
+
+export const FutureSession: StoryObj<Component> = {
+  args: {
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: "https://picsum.photos/400",
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
     },
-    camera: {
+    session: {
+      start: dayjs().add(10, "minutes").toString(),
+      duration: 15,
+    },
+    video: {
       enabled: false,
       toggle: toggleCamera,
       error: false,
     },
-    mic: {
+    audio: {
       enabled: true,
       toggle: toggleMic,
       error: false,
     },
     join,
   },
-  render(props: PreSessionProps) {
-    return <PreSession {...props} />;
+};
+
+export const SessionStarted: StoryObj<Component> = {
+  args: {
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: "https://picsum.photos/400",
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
+    },
+    session: {
+      start: dayjs().subtract(5, "minutes").toString(),
+      duration: 15,
+    },
+    video: {
+      enabled: false,
+      toggle: toggleCamera,
+      error: false,
+    },
+    audio: {
+      enabled: true,
+      toggle: toggleMic,
+      error: false,
+    },
+    join,
   },
 };
 
 export const SessionEnded: StoryObj<Component> = {
   args: {
-    otherMember: {
-      id: 5,
-      gender: IUser.Gender.Male,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Tutor,
-      incall: false,
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: false,
+      },
+      current: {
+        id: 5,
+        imageUrl: "https://picsum.photos/400",
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
     },
-    currentMember: {
-      id: 5,
-      imageUrl: "https://picsum.photos/400",
-      name: faker.person.fullName(),
-      role: IUser.Role.Student,
+    session: {
+      start: dayjs().subtract(15, "minutes").toString(),
+      duration: 10,
     },
-    sessionDetails: {
-      sessionStart: dayjs().subtract(45, "minutes").toString(),
-      sessionEnd: dayjs().subtract(5, "minutes").toString(),
-    },
-
-    camera: {
+    video: {
       enabled: false,
       toggle: toggleCamera,
       error: false,
     },
-    mic: {
+    audio: {
       enabled: true,
       toggle: toggleMic,
       error: false,
     },
     join,
-  },
-  render(props: PreSessionProps) {
-    return <PreSession {...props} />;
   },
 };
 

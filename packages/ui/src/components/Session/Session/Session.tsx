@@ -12,11 +12,7 @@ type Props = {
   streams: StreamInfo[];
   currentUserId: number;
   chat: { enabled: boolean; toggle: Void };
-  fullScreen: {
-    enabled: boolean;
-    toggle: Void;
-  };
-  camera: {
+  video: {
     enabled: boolean;
     error?: boolean;
     toggle: Void;
@@ -26,7 +22,7 @@ type Props = {
     error?: boolean;
     toggle: Void;
   };
-  mic: {
+  audio: {
     enabled: boolean;
     toggle: Void;
     error?: boolean;
@@ -43,8 +39,8 @@ type Props = {
 export const Session: React.FC<Props> = ({
   chatPanel,
   leave,
-  camera,
-  mic,
+  audio,
+  video,
   cast,
   streams,
   currentUserId,
@@ -92,8 +88,8 @@ export const Session: React.FC<Props> = ({
       <Actions
         leave={leave}
         screen={cast}
-        camera={camera}
-        microphone={mic}
+        video={video}
+        audio={audio}
         chat={chat}
       />
     </div>

@@ -78,10 +78,10 @@ export const Toggle: React.FC<{
 export const Actions: React.FC<{
   chat?: { toggle: Void; enabled: boolean };
   screen?: { toggle: Void; enabled: boolean; error?: boolean };
-  camera?: { toggle: Void; enabled: boolean; error?: boolean };
-  microphone?: { toggle: Void; enabled: boolean; error?: boolean };
+  video?: { toggle: Void; enabled: boolean; error?: boolean };
+  audio?: { toggle: Void; enabled: boolean; error?: boolean };
   leave?: Void;
-}> = ({ leave, chat, screen, camera, microphone }) => {
+}> = ({ leave, chat, screen, video, audio }) => {
   return (
     <div
       dir="ltr"
@@ -94,20 +94,20 @@ export const Actions: React.FC<{
         <Toggle toggle={chat.toggle} enabled={chat.enabled} icon="chat" />
       ) : null}
 
-      {microphone ? (
+      {audio ? (
         <Toggle
-          toggle={microphone.toggle}
-          enabled={microphone.enabled}
-          error={microphone.error}
+          toggle={audio.toggle}
+          enabled={audio.enabled}
+          error={audio.error}
           icon="microphone"
         />
       ) : null}
 
-      {camera ? (
+      {video ? (
         <Toggle
-          toggle={camera.toggle}
-          enabled={camera.enabled}
-          error={camera.error}
+          toggle={video.toggle}
+          enabled={video.enabled}
+          error={video.error}
           icon="camera"
         />
       ) : null}
