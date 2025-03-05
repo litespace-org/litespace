@@ -17,6 +17,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ["react", "react-dom", "react-router-dom"],
           lodash: ["lodash"],
+          motion: ["framer-motion"],
           tanstack: ["@tanstack/react-query", "@tanstack/react-table"],
         },
       },

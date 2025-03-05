@@ -9,7 +9,6 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import logger from "morgan";
 import { onlyForHandshake } from "@/middleware/util";
-import { capitalize } from "lodash";
 import { ApiContext } from "@/types/api";
 import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware, adminOnly } from "@litespace/auth";
@@ -49,12 +48,7 @@ io.on("connection", wssHandler);
 
 app.use(
   logger(function (tokens, req, res) {
-    const role =
-      typeof req.user === "string"
-        ? req.user
-        : req.user?.role || "unauthorized";
     return [
-      capitalize(role),
       tokens.method(req, res),
       tokens.url(req, res),
       tokens.status(req, res),
@@ -89,8 +83,6 @@ app.use("/api/v1/chat", routes.chat);
 app.use("/api/v1/plan", routes.plan);
 app.use("/api/v1/coupon", routes.coupon);
 app.use("/api/v1/invite", routes.invite);
-app.use("/api/v1/report", routes.report);
-app.use("/api/v1/report/reply", routes.reportReply);
 app.use("/api/v1/invoice", routes.invoice(context));
 app.use("/api/v1/topic", routes.topic);
 app.use("/api/v1/withdraw-method/", routes.withdrawMethod);

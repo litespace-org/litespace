@@ -44,6 +44,7 @@ export class Interviews {
         interviewee_id: payload.interviewee,
         session_id: payload.session,
         slot_id: payload.slot,
+        status: IInterview.Status.Pending,
         created_at: now,
         updated_at: now,
       })

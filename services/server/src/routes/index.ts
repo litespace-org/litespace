@@ -6,8 +6,6 @@ import chat from "@/routes/chat";
 import plan from "@/routes/plan";
 import coupon from "@/routes/coupon";
 import invite from "@/routes/invite";
-import report from "@/routes/report";
-import reportReply from "@/routes/reportReply";
 import asset from "@/routes/asset";
 import lesson from "@/routes/lesson";
 import invoice from "@/routes/invoice";
@@ -29,8 +27,6 @@ export default {
   rating,
   coupon,
   invite,
-  report,
-  reportReply,
   interview,
   asset,
   auth,

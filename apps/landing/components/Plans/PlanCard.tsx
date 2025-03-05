@@ -8,7 +8,6 @@ import Link from "next/link";
 import { PlanCardProps } from "@/types/plans";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
-import { IUser } from "@litespace/types";
 
 export const PlanCard: React.FC<PlanCardProps> = ({
   title,
@@ -119,7 +118,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
       <Link
         href={router.web({
           route: Web.Register,
-          role: IUser.Role.Student,
+          role: "student",
           full: true,
         })}
       >

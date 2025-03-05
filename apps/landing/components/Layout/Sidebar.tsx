@@ -11,7 +11,7 @@ import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
 import Link from "next/link";
 import React, { useEffect, useCallback } from "react";
-import { IUser, Void } from "@litespace/types";
+import { Void } from "@litespace/types";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 
@@ -57,7 +57,7 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
         <Link
           href={router.web({
             route: Web.Register,
-            role: IUser.Role.Student,
+            role: "tutor",
             full: true,
           })}
           className="w-[134px] flex-1"

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { destructureRole } from "@litespace/utils/user";
-import { IUser } from "@litespace/types";
 import cn from "classnames";
 import Sidebar from "@/components/Layout/Sidebar";
 import Navbar from "@/components/Layout/Navbar";
@@ -9,11 +8,6 @@ import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
-
-const registerRoutes = [
-  router.web({ route: Web.Register, role: IUser.Role.Student }),
-  router.web({ route: Web.Register, role: IUser.Role.Tutor }),
-];
 
 const Root: React.FC = () => {
   const mq = useMediaQuery();
@@ -46,11 +40,11 @@ const Root: React.FC = () => {
   const showNavigation = useMemo(() => {
     const routes: string[] = [
       Web.Login,
+      Web.Register,
       Web.ForgetPassword,
       Web.ResetPassword,
       Web.CompleteProfile,
       Web.VerifyEmail,
-      ...registerRoutes,
     ];
     return !routes.includes(location.pathname);
   }, [location.pathname]);

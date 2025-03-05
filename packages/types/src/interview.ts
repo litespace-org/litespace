@@ -1,10 +1,10 @@
 import { ISession, IFilter } from ".";
 
 export enum Status {
-  Pending = "pending",
-  Passed = "passed",
-  Rejected = "rejected",
-  Canceled = "canceled",
+  Pending = 1,
+  Passed = 2,
+  Rejected = 3,
+  Canceled = 4,
 }
 
 export type Self = {

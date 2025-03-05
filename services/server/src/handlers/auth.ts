@@ -28,7 +28,9 @@ const credentials = zod.object({
 const authGooglePayload = zod.object({
   token: zod.string(),
   type: zod.union([zod.literal("bearer"), zod.literal("id-token")]),
-  role: zod.optional(zod.enum([IUser.Role.Tutor, IUser.Role.Student])),
+  role: zod.optional(
+    zod.union([zod.literal(IUser.Role.Tutor), zod.literal(IUser.Role.Student)])
+  ),
 });
 
 const googleUserInfo = zod.object({

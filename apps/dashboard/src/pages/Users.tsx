@@ -43,7 +43,7 @@ export const Users: React.FC = () => {
       return {
         id,
         label: intl(rolesMap[roleOption]),
-        value: roleOption,
+        value: roleOption.toString(),
         checked: role === roleOption,
         onClick: () => setRole(roleOption),
       };

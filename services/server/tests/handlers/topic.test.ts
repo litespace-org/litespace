@@ -28,7 +28,7 @@ const replaceUserTopics = mockApi<ITopic.ReplaceUserTopicsApiPayload>(
 
 describe("/api/v1/topic/", () => {
   beforeEach(async () => {
-    await db.flush();
+    return await db.flush();
   });
 
   describe("POST /api/v1/topic/user", () => {

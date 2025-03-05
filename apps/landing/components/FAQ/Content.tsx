@@ -6,7 +6,6 @@ import { useFormatMessage } from "@/hooks/intl";
 import Link from "next/link";
 import { router } from "@/lib/routes";
 import { Landing, Web } from "@litespace/utils/routes";
-import { IUser } from "@litespace/types";
 import { LITESPACE_TUTORS_TELEGRAM } from "@/constants/links";
 
 type Question = {
@@ -65,7 +64,7 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
             className="text-brand-700"
             href={router.web({
               route: Web.Register,
-              role: IUser.Role.Tutor,
+              role: "tutor",
               full: true,
             })}
           >
@@ -303,10 +302,7 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
                     <Link
                       href={router.landing({
                         route: Landing.FaqRole,
-                        role:
-                          role === "student"
-                            ? IUser.Role.Tutor
-                            : IUser.Role.Student,
+                        role: role === "student" ? "tutor" : "student",
                       })}
                       className="text-brand-700"
                     >

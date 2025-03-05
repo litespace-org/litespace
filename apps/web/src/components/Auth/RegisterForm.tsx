@@ -26,16 +26,14 @@ interface IForm {
   confirmedPassword: string;
 }
 
-type Role = (typeof roles)[number];
-
-const roles = [IUser.Role.Tutor, IUser.Role.Student] as const;
+type Role = "student" | "tutor";
 
 const RegisterForm: React.FC = () => {
   const intl = useFormatMessage();
   const user = useUserContext();
   const navigate = useNavigate();
   const toast = useToast();
-  const { role } = useParams<{ role: Role }>();
+  const params = useParams<{ role: Role }>();
   const { watch, handleSubmit, control, formState } = useForm<IForm>({
     defaultValues: {
       email: "",
@@ -47,15 +45,21 @@ const RegisterForm: React.FC = () => {
 
   const validateEmail = useValidateEmail(true);
   const validatePassword = useValidatePassword(true);
-  const isValidRole = useMemo(() => role && roles.includes(role), [role]);
-  const google = useGoogle({ role: isValidRole ? role : undefined });
+  const role = useMemo(() => {
+    if (params.role === "student") return IUser.Role.Student;
+    if (params.role === "tutor") return IUser.Role.Tutor;
+    return null;
+  }, [params.role]);
+  const google = useGoogle({
+    role: role || undefined,
+  });
   const email = watch("email");
   const password = watch("password");
   const confirmedPassword = watch("confirmedPassword");
 
   useEffect(() => {
-    if (!isValidRole) return navigate(Web.Root);
-  }, [isValidRole, navigate]);
+    if (!role) return navigate(Web.Root);
+  }, [navigate, role]);
 
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
@@ -82,15 +86,15 @@ const RegisterForm: React.FC = () => {
   const onSubmit = useMemo(
     () =>
       handleSubmit((payload: IForm) => {
-        if (!isValidRole || !role) return;
+        if (!role) return;
         return mutation.mutate({
           email: payload.email,
           password: payload.password,
-          role,
           callbackUrl: VERIFY_EMAIL_CALLBACK_URL,
+          role,
         });
       }),
-    [handleSubmit, isValidRole, mutation, role]
+    [handleSubmit, mutation, role]
   );
 
   return (

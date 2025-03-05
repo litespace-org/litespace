@@ -11,7 +11,6 @@ import Link from "next/link";
 import { Button } from "@litespace/ui/Button";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
-import { IUser } from "@litespace/types";
 
 const features: Array<{
   title: LocalId;
@@ -92,7 +91,7 @@ export const Features: React.FC = () => {
                 <Link
                   href={router.web({
                     route: Web.Register,
-                    role: IUser.Role.Student,
+                    role: "student",
                     full: true,
                   })}
                 >

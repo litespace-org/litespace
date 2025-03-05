@@ -2,32 +2,7 @@ import { MigrationBuilder } from "node-pg-migrate";
 
 export function up(pgm: MigrationBuilder) {
   // types
-  pgm.createType("user_role", [
-    "super-admin",
-    "reg-admin",
-    "tutor",
-    "student",
-    "tutor-manager",
-    "studio",
-  ]);
   pgm.createType("user_gender", ["male", "female"]);
-  pgm.createType("plan_cycle", ["month", "quarter", "biannual", "year"]);
-  pgm.createType("interview_status", [
-    "pending",
-    "passed",
-    "rejected",
-    "canceled",
-  ]);
-  pgm.createType("withdraw_method", ["wallet", "bank", "instapay"]);
-  pgm.createType("invoice_status", [
-    "pending",
-    "updated-by-receiver",
-    "canceled-by-receiver",
-    "canceled-by-admin",
-    "cancellation-approved-by-admin",
-    "fulfilled",
-    "rejected",
-  ]);
 
   // tables
   pgm.createTable("users", {
@@ -36,7 +11,7 @@ export function up(pgm: MigrationBuilder) {
     password: { type: "CHAR(64)", default: null },
     name: { type: "VARCHAR(50)", default: null },
     image: { type: "VARCHAR(255)", default: null },
-    role: { type: "user_role", default: null },
+    role: { type: "smallint", default: null },
     birth_year: { type: "INT", default: null },
     gender: { type: "user_gender", default: null },
     verified: { type: "BOOLEAN", notNull: true, default: false },
@@ -111,7 +86,7 @@ export function up(pgm: MigrationBuilder) {
     },
     note: { type: "TEXT", default: null },
     level: { type: "INT", default: null },
-    status: { type: "interview_status", default: "pending" },
+    status: { type: "smallint", notNull: true },
     signer: { type: "INT", references: "users(id)" },
     canceled_by: { type: "INT", references: "users(id)", default: null },
     canceled_at: { type: "TIMESTAMP", default: null },
@@ -153,21 +128,6 @@ export function up(pgm: MigrationBuilder) {
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
-  pgm.createTable("coupons", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    code: { type: "VARCHAR(255)", notNull: true, unique: true },
-    plan_id: { type: "SERIAL", notNull: true, references: "plans(id)" },
-    full_month_discount: { type: "INT", notNull: true, default: 0 },
-    full_quarter_discount: { type: "INT", notNull: true, default: 0 },
-    half_year_discount: { type: "INT", notNull: true, default: 0 },
-    full_year_discount: { type: "INT", notNull: true, default: 0 },
-    expires_at: { type: "TIMESTAMP", notNull: true },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-  });
-
   pgm.createTable("topics", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     name_ar: { type: "VARCHAR(50)", notNull: true, unique: true },
@@ -184,69 +144,6 @@ export function up(pgm: MigrationBuilder) {
     },
     { constraints: { primaryKey: ["user_id", "topic_id"] } }
   );
-
-  pgm.createTable("invites", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    email: { type: "VARCHAR(50)", notNull: true, unique: true },
-    plan_id: { type: "SERIAL", notNull: true, references: "plans(id)" },
-    expires_at: { type: "TIMESTAMP", notNull: true },
-    accepted_at: { type: "TIMESTAMP" },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-  });
-
-  pgm.createTable("subscriptions", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    user_id: {
-      type: "SERIAL",
-      notNull: true,
-      references: "users(id)",
-      unique: true,
-    },
-    plan_id: { type: "SERIAL", notNull: true, references: "plans(id)" },
-    plan_cycle: { type: "plan_cycle", notNull: true },
-    remaining_monthly_minutes: { type: "SMALLINT", notNull: true },
-    auto_renewal: { type: "BOOLEAN", notNull: true, default: false },
-    start: { type: "TIMESTAMP", notNull: true },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-  });
-
-  pgm.createTable("reports", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    title: { type: "VARCHAR(255)", notNull: true },
-    description: { type: "VARCHAR(1000)", notNull: true },
-    category: { type: "VARCHAR(255)", notNull: true },
-    resolved: { type: "BOOLEAN", notNull: true, default: false },
-    resolved_at: { type: "TIMESTAMP" },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-  });
-
-  pgm.createTable("report_replies", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    report_id: { type: "SERIAL", notNull: true, references: "reports(id)" },
-    message: { type: "VARCHAR(1000)", notNull: true },
-    draft: { type: "BOOLEAN", default: true },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-  });
-
-  pgm.createTable("gifts", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    sender_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    receiver_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    value: { type: "INT", notNull: true },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-  });
 
   pgm.createTable("rooms", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
@@ -277,36 +174,6 @@ export function up(pgm: MigrationBuilder) {
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
-  pgm.createTable("withdraw_methods", {
-    type: {
-      type: "withdraw_method",
-      primaryKey: true,
-      unique: true,
-      notNull: true,
-    },
-    min: { type: "INT", notNull: true },
-    max: { type: "INT", notNull: true },
-    enabled: { type: "BOOLEAN", notNull: true, default: false },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-  });
-
-  pgm.createTable("invoices", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    user_id: { type: "INT", references: "users(id)", notNull: true },
-    method: { type: "withdraw_method", notNull: true },
-    receiver: { type: "VARCHAR(255)", notNull: true },
-    bank: { type: "VARCHAR(5)" },
-    amount: { type: "INT", notNull: true },
-    update: { type: "JSONB", default: null },
-    note: { type: "TEXT", default: null },
-    status: { type: "invoice_status", notNull: true, default: "pending" },
-    receipt: { type: "VARCHAR(255)", default: null },
-    addressed_by: { type: "INT", references: "users(id)" },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    updated_at: { type: "TIMeSTAMP", notNull: true },
-  });
-
   pgm.createTable("contact_requests", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     name: { type: "VARCHAR(50)", notNull: true },
@@ -324,31 +191,17 @@ export function up(pgm: MigrationBuilder) {
   pgm.createIndex("users", "id");
   pgm.createIndex("ratings", "id");
   pgm.createIndex("plans", "id");
-  pgm.createIndex("coupons", "id");
-  pgm.createIndex("invites", "id");
-  pgm.createIndex("subscriptions", "id");
-  pgm.createIndex("reports", "id");
-  pgm.createIndex("report_replies", "id");
-  pgm.createIndex("gifts", "id");
   pgm.createIndex("rooms", "id");
   pgm.createIndex("messages", "id");
-  pgm.createIndex("invoices", "id");
 }
 
 export function down(pgm: MigrationBuilder) {
   // indexes
   pgm.dropIndex("availability_slots", "id", { ifExists: true });
   pgm.dropIndex("contact_requests", "id", { ifExists: true });
-  pgm.dropIndex("invoices", "id", { ifExists: true });
   pgm.dropIndex("messages", "id", { ifExists: true });
   pgm.dropIndex("rooms", "id", { ifExists: true });
   pgm.dropIndex("plans", "id", { ifExists: true });
-  pgm.dropIndex("coupons", "id", { ifExists: true });
-  pgm.dropIndex("invites", "id", { ifExists: true });
-  pgm.dropIndex("subscriptions", "id", { ifExists: true });
-  pgm.dropIndex("report_replies", "id", { ifExists: true });
-  pgm.dropIndex("reports", "id", { ifExists: true });
-  pgm.dropIndex("gifts", "id", { ifExists: true });
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("lessons", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
@@ -358,7 +211,6 @@ export function down(pgm: MigrationBuilder) {
   pgm.dropTable("user_topics", { ifExists: true });
   pgm.dropTable("topics", { ifExists: true });
   pgm.dropTable("withdraw_methods", { ifExists: true });
-  pgm.dropTable("invoices", { ifExists: true });
   pgm.dropTable("messages", { ifExists: true });
   pgm.dropTable("room_members", { ifExists: true });
   pgm.dropTable("rooms", { ifExists: true });
@@ -379,10 +231,5 @@ export function down(pgm: MigrationBuilder) {
   pgm.dropTable("contact_requests", { ifExists: true });
 
   // types
-  pgm.dropType("user_role", { ifExists: true });
   pgm.dropType("user_gender", { ifExists: true });
-  pgm.dropType("plan_cycle", { ifExists: true });
-  pgm.dropType("interview_status", { ifExists: true });
-  pgm.dropType("withdraw_method", { ifExists: true });
-  pgm.dropType("invoice_status", { ifExists: true });
 }

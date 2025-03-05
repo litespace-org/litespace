@@ -83,44 +83,17 @@ export const birthYear = zod.coerce
 
 export const datetime = zod.coerce.string().datetime();
 
-export const role = zod.enum([
-  IUser.Role.SuperAdmin,
-  IUser.Role.RegularAdmin,
-  IUser.Role.TutorManager,
-  IUser.Role.Studio,
-  IUser.Role.Tutor,
-  IUser.Role.Student,
-]);
+export const role = zod.nativeEnum(IUser.Role);
 
 export const url = zod.string().url().trim();
 
-export const subscriptionPeriod = zod.enum([
-  ISubscription.Period.Month,
-  ISubscription.Period.Quarter,
-  ISubscription.Period.Year,
-]);
+export const subscriptionPeriod = zod.nativeEnum(ISubscription.Period);
 
-export const interviewStatus = zod.enum([
-  IInterview.Status.Pending,
-  IInterview.Status.Passed,
-  IInterview.Status.Rejected,
-  IInterview.Status.Canceled,
-]);
+export const interviewStatus = zod.nativeEnum(IInterview.Status);
 
-export const withdrawMethod = zod.enum([
-  IWithdrawMethod.Type.Wallet,
-  IWithdrawMethod.Type.Bank,
-  IWithdrawMethod.Type.Instapay,
-]);
+export const withdrawMethod = zod.nativeEnum(IWithdrawMethod.Type);
 
-export const invoiceStatus = zod.enum([
-  IInvoice.Status.Pending,
-  IInvoice.Status.CanceledByReceiver,
-  IInvoice.Status.CancellationApprovedByAdmin,
-  IInvoice.Status.Fulfilled,
-  IInvoice.Status.Rejected,
-  IInvoice.Status.UpdatedByReceiver,
-]);
+export const invoiceStatus = zod.nativeEnum(IInvoice.Status);
 
 export const bank = zod.enum(banks);
 
