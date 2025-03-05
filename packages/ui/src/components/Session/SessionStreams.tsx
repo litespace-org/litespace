@@ -3,13 +3,11 @@ import cn from "classnames";
 import { FocusedStream } from "@/components/Session/FocusedStream";
 import { UnFocusedStream } from "@/components/Session/UnFocusedStream";
 import { StreamInfo } from "@/components/Session/types";
-import { Void } from "@litespace/types";
 import { MovableMedia } from "@/components/MovableMedia";
 import { organizeStreams } from "@/lib/stream";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 export const SessionStreams: React.FC<{
-  alert?: string;
   currentUserId: number;
   streams: StreamInfo[];
   containerRef: React.RefObject<HTMLDivElement>;
@@ -18,23 +16,7 @@ export const SessionStreams: React.FC<{
    * @default false
    */
   chat?: boolean;
-  timer: {
-    duration: number;
-    startAt: string;
-  };
-  fullScreen: {
-    enabled: boolean;
-    toggle: Void;
-  };
-}> = ({
-  alert,
-  streams,
-  chat,
-  timer,
-  fullScreen,
-  currentUserId,
-  containerRef,
-}) => {
+}> = ({ streams, chat, currentUserId, containerRef }) => {
   const mq = useMediaQuery();
   const organizedStreams = useMemo(
     () => organizeStreams(streams, currentUserId, !!chat && !mq.lg),
@@ -56,9 +38,6 @@ export const SessionStreams: React.FC<{
         <FocusedStream
           muted={organizedStreams.focused.user.id === currentUserId}
           stream={organizedStreams.focused}
-          fullScreen={fullScreen}
-          timer={timer}
-          alert={alert}
           chat={chat}
         />
       ) : null}

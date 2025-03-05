@@ -1,15 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { VideoBar } from "@/components/Session/VideoBar";
 import { UserAvatar } from "@/components/Session/UserAvatar";
 import { StreamInfo } from "@/components/Session/types";
-import { Void } from "@litespace/types";
 import cn from "classnames";
+import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
+import speaking from "@/components/Session/speechIndicatorAnimation.json";
+import Lottie from "react-lottie";
 
-const Animate: React.FC<{ children: React.ReactNode; chat?: boolean }> = ({
-  children,
-  chat,
-}) => {
+const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <motion.div
       initial={{
@@ -30,10 +28,7 @@ const Animate: React.FC<{ children: React.ReactNode; chat?: boolean }> = ({
         duration: 0.3,
         ease: "easeInOut",
       }}
-      className={cn(
-        "relative w-full h-full grow rounded-lg overflow-hidden",
-        !chat && "lg:aspect-video "
-      )}
+      className="relative w-full !h-full grow rounded-2xl overflow-hidden"
     >
       {children}
     </motion.div>
@@ -55,10 +50,7 @@ const Stream: React.FC<{
     <video
       ref={videoRef}
       autoPlay
-      className={cn(
-        "w-full h-full lg:aspect-video absolute top-0",
-        hidden && "opacity-0"
-      )}
+      className={cn("w-full h-full absolute top-0", hidden && "opacity-0")}
       muted={muted}
       playsInline
     />
@@ -67,60 +59,54 @@ const Stream: React.FC<{
 
 export const FocusedStream: React.FC<{
   chat?: boolean;
-  alert?: string;
   muted: boolean;
   stream: StreamInfo;
-  timer: {
-    duration: number;
-    startAt: string;
-  };
-  fullScreen: {
-    enabled: boolean;
-    toggle: Void;
-  };
-}> = ({ stream, timer, alert, fullScreen, muted, chat }) => {
+}> = ({ stream, muted }) => {
   return (
     <motion.div
       layout
       transition={{ duration: 0.3 }}
-      style={{
-        marginInlineStart:
-          chat && (stream.video || stream.cast) ? "1.5rem" : "0rem",
-        marginTop: chat && (stream.video || stream.cast) ? "3.5rem" : "0rem",
-      }}
-      className={cn(
-        "rounded-2xl lg:rounded-lg grow",
-        !chat && "h-full",
-        chat && "relative"
-      )}
+      className="rounded-2xl grow relative w-full h-full bg-natural-100 min-h-[398px] md:min-h-[744px] lg:min-h-max lg:h-[550px]"
     >
       <AnimatePresence mode="wait">
         {stream.video || stream.cast ? (
-          <Animate chat={chat} key="stream">
+          <Animate key="stream">
             <Stream stream={stream.stream} muted={muted} />
           </Animate>
         ) : (
-          <Animate chat={chat} key="avatar">
-            <div
-              className={cn(
-                "w-full h-full bg-brand-100 flex items-center justify-center"
-              )}
-            >
-              <UserAvatar user={stream.user} speaking={stream.speaking} />
+          <Animate key="avatar">
+            <div className="w-full h-full flex items-center justify-center">
+              <UserAvatar
+                user={stream.user}
+                speaking={stream.speaking && !muted}
+              />
               <Stream stream={stream.stream} muted={muted} hidden />
             </div>
           </Animate>
         )}
       </AnimatePresence>
 
-      <VideoBar
-        chat={chat}
-        alert={alert}
-        timer={timer}
-        fullScreen={fullScreen}
-        speaking={stream.speaking}
-        muted={!stream.audio}
-      />
+      {muted ? (
+        <div className="top-6 left-6 absolute rounded-full overflow-hidden">
+          <div className="w-10 h-10 flex items-center justify-center relative">
+            <div className="absolute w-full z-[9] h-full blur-[15px] bg-[#0000004D]" />
+            <MicrophoneSlash className="w-6 z-10 h-6 [&_*]:stroke-natural-50" />
+          </div>
+        </div>
+      ) : (
+        <div
+          className={cn(
+            "absolute w-10 h-10 top-6 left-6 pointer-events-none",
+            !stream.speaking && "opacity-0"
+          )}
+        >
+          <Lottie
+            width={40}
+            height={40}
+            options={{ loop: true, autoplay: true, animationData: speaking }}
+          />
+        </div>
+      )}
     </motion.div>
   );
 };

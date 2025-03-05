@@ -159,6 +159,7 @@
     "@types/mersenne-twister": "^1.1.7",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
+    "@types/react-lottie": "^1.2.10",
     "@types/sanitize-html": "^2",
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",
@@ -200,6 +201,7 @@
     "mersenne-twister": "^1.1.0",
     "react-contenteditable": "^3.3.7",
     "react-feather": "^2.0.10",
+    "react-lottie": "^1.2.10",
     "react-number-format": "^5.4.2",
     "sanitize-html": "^2.13.0",
     "tailwind-scrollbar": "^3.1.0"

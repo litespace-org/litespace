@@ -49,7 +49,12 @@ export const Toggle: React.FC<{
           enabled ? (
             <icons.on className="icon w-4 h-4" />
           ) : (
-            <icons.off className="icon w-4 h-4" />
+            <icons.off
+              className={cn(
+                "icon w-4 h-4",
+                error && "[&_*]:stroke-destructive-700"
+              )}
+            />
           )
         }
         variant={varient}
@@ -60,10 +65,10 @@ export const Toggle: React.FC<{
         <div
           className={cn(
             "absolute -top-2 -left-2",
-            "bg-destructive-400 absolute w-6 h-6 flex items-center justify-center rounded-full"
+            "bg-destructive-50 absolute w-6 h-6 flex items-center justify-center rounded-full"
           )}
         >
-          <Error className="w-4 h-4 [&>g>path]:stroke-white" />
+          <Error className="w-4 h-4 [&>g>path]:stroke-destructive-600" />
         </div>
       ) : null}
     </div>
@@ -78,7 +83,13 @@ export const Actions: React.FC<{
   leave?: Void;
 }> = ({ leave, chat, screen, camera, microphone }) => {
   return (
-    <div dir="ltr" className="flex items-center justify-center gap-3 lg:gap-5">
+    <div
+      dir="ltr"
+      className={cn("flex justify-center", {
+        "gap-3 lg:gap-5": leave,
+        "gap-6": !leave,
+      })}
+    >
       {chat ? (
         <Toggle toggle={chat.toggle} enabled={chat.enabled} icon="chat" />
       ) : null}

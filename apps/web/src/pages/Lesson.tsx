@@ -30,6 +30,7 @@ import { asOtherMember, isOnline, isTyping } from "@/lib/room";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import ArrowRightLong from "@litespace/assets/ArrowRightLong";
+import dayjs from "dayjs";
 
 /**
  * @todos
@@ -236,6 +237,8 @@ const Lesson: React.FC = () => {
     session,
   ]);
 
+  if (!lesson.data) return null;
+
   return (
     <div className="max-w-screen-3xl mx-auto w-full grow p-6 overflow-hidden">
       <div className="mb-4 lg:mb-6 flex flex-row items-center justify-start gap-2">
@@ -333,6 +336,12 @@ const Lesson: React.FC = () => {
       {!sessionManager.joined && lessonMembers && !lesson.isLoading ? (
         <PreSession
           stream={session.members.current.stream}
+          sessionDetails={{
+            sessionStart: lesson.data?.lesson.start,
+            sessionEnd: dayjs(lesson.data?.lesson.start)
+              .add(lesson.data?.lesson.duration, "minutes")
+              .toISOString(),
+          }}
           currentMember={{
             id: lessonMembers.current.userId,
             imageUrl: lessonMembers.current.image || null,

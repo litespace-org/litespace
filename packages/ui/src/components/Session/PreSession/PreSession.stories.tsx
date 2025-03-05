@@ -4,6 +4,7 @@ import { faker } from "@faker-js/faker/locale/ar";
 import { IUser } from "@litespace/types";
 import React from "react";
 import { useUserMedia } from "@/internal/hooks/stream";
+import dayjs from "dayjs";
 
 type Component = typeof PreSession;
 
@@ -13,7 +14,7 @@ const meta: Meta<Component> = {
   parameters: { layout: "centered" },
   decorators: [
     (Story) => (
-      <div className="lg:w-[1200px]">
+      <div className="w-[425px] md:w-[780px] lg:w-[1200px]">
         <Story />
       </div>
     ),
@@ -39,6 +40,10 @@ export const WithMedia: StoryObj<Component> = {
       imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       name: faker.person.fullName(),
       role: IUser.Role.Student,
+    },
+    sessionDetails: {
+      sessionStart: dayjs().add(5, "minutes").toString(),
+      sessionEnd: dayjs().add(30, "minutes").toString(),
     },
     camera: { enabled: true, error: false, toggle: toggleCamera },
     mic: { enabled: true, error: false, toggle: toggleMic },
@@ -66,6 +71,11 @@ export const WithoutMedia: StoryObj<Component> = {
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
+    sessionDetails: {
+      sessionStart: dayjs().add(5, "minutes").toString(),
+      sessionEnd: dayjs().add(30, "minutes").toString(),
+    },
+
     camera: {
       enabled: false,
       toggle: toggleCamera,
@@ -99,6 +109,11 @@ export const OnlyMic: StoryObj<Component> = {
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
+    sessionDetails: {
+      sessionStart: dayjs().add(5, "minutes").toString(),
+      sessionEnd: dayjs().add(30, "minutes").toString(),
+    },
+
     camera: {
       enabled: false,
       toggle: toggleCamera,
@@ -133,6 +148,11 @@ export const OnlyCamera: StoryObj<Component> = {
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
+    sessionDetails: {
+      sessionStart: dayjs().add(5, "minutes").toString(),
+      sessionEnd: dayjs().add(30, "minutes").toString(),
+    },
+
     camera: {
       enabled: true,
       toggle: toggleCamera,
@@ -167,6 +187,11 @@ export const MicProblem: StoryObj<Component> = {
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
+    sessionDetails: {
+      sessionStart: dayjs().add(5, "minutes").toString(),
+      sessionEnd: dayjs().add(30, "minutes").toString(),
+    },
+
     camera: {
       enabled: false,
       toggle: toggleCamera,
@@ -197,13 +222,55 @@ export const ForTutor: StoryObj<Component> = {
       name: faker.person.fullName(),
       role: IUser.Role.Tutor,
     },
+    sessionDetails: {
+      sessionStart: dayjs().add(5, "minutes").toString(),
+      sessionEnd: dayjs().add(30, "minutes").toString(),
+    },
+
     camera: { enabled: false, toggle: toggleCamera, error: false },
     mic: { enabled: true, toggle: toggleMic, error: false },
     join,
   },
 };
 
-export const EmptyRoom: StoryObj<Component> = {
+export const sessionStarted: StoryObj<Component> = {
+  args: {
+    otherMember: {
+      id: 5,
+      gender: IUser.Gender.Male,
+      imageUrl: "https://picsum.photos/400",
+      name: faker.person.fullName(),
+      role: IUser.Role.Tutor,
+      incall: true,
+    },
+    currentMember: {
+      id: 5,
+      imageUrl: "https://picsum.photos/400",
+      name: faker.person.fullName(),
+      role: IUser.Role.Student,
+    },
+    sessionDetails: {
+      sessionStart: dayjs().subtract(45, "minutes").toString(),
+      sessionEnd: dayjs().add(5, "minutes").toString(),
+    },
+    camera: {
+      enabled: false,
+      toggle: toggleCamera,
+      error: false,
+    },
+    mic: {
+      enabled: true,
+      toggle: toggleMic,
+      error: false,
+    },
+    join,
+  },
+  render(props: PreSessionProps) {
+    return <PreSession {...props} />;
+  },
+};
+
+export const SessionEnded: StoryObj<Component> = {
   args: {
     otherMember: {
       id: 5,
@@ -219,8 +286,13 @@ export const EmptyRoom: StoryObj<Component> = {
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
+    sessionDetails: {
+      sessionStart: dayjs().subtract(45, "minutes").toString(),
+      sessionEnd: dayjs().subtract(5, "minutes").toString(),
+    },
+
     camera: {
-      enabled: true,
+      enabled: false,
       toggle: toggleCamera,
       error: false,
     },
@@ -232,8 +304,7 @@ export const EmptyRoom: StoryObj<Component> = {
     join,
   },
   render(props: PreSessionProps) {
-    const stream = useUserMedia();
-    return <PreSession {...props} stream={stream} />;
+    return <PreSession {...props} />;
   },
 };
 

@@ -1,9 +1,9 @@
 import React from "react";
 import { Ready } from "@/components/Session/Ready";
-import { PreSessionUserPreview } from "@/components/Session/PreSession/PreSessionUserPreview";
 import { IUser, Void } from "@litespace/types";
 import Actions from "@/components/Session/Actions";
 import cn from "classnames";
+import FocusedStream from "@/components/Session/FocusedStream";
 
 export type Props = {
   stream: MediaStream | null;
@@ -31,6 +31,10 @@ export type Props = {
     toggle: Void;
     error?: boolean;
   };
+  sessionDetails: {
+    sessionStart: string;
+    sessionEnd: string;
+  };
   speaking: boolean;
   joining: boolean;
   join: Void;
@@ -41,6 +45,7 @@ export const PreSession: React.FC<Props> = ({
   otherMember,
   currentMember,
   camera,
+  sessionDetails,
   mic,
   speaking,
   joining,
@@ -49,30 +54,32 @@ export const PreSession: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "rounded-2xl w-full p-10 lg:border lg:border-natural-100 lg:bg-natural-50 lg:shadow-pre-call",
-        "flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between gap-6 lg:gap-[76px]"
+        "rounded-2xl w-full h-full",
+        "flex flex-col lg:grid lg:grid-cols-[1fr,auto] lg:grid-rows-[auto,1fr] items-center lg:items-start gap-4 lg:gap-6"
       )}
     >
-      <div className="flex grow flex-col justify-center items-center gap-3 lg:gap-10 lg:max-w-[calc(100%-280px)]">
-        <PreSessionUserPreview
-          camera={camera.enabled}
-          stream={stream}
-          user={currentMember}
-          speaking={speaking}
-        />
-
-        <Actions camera={camera} microphone={mic} />
-      </div>
-
-      <div className="shrink-0">
+      <FocusedStream
+        muted={!mic.enabled}
+        stream={{
+          stream,
+          speaking,
+          audio: mic.enabled,
+          video: camera.enabled,
+          user: currentMember,
+          cast: false,
+        }}
+      />
+      <div className="grow w-[306px] flex justify-center items-center h-full lg:min-h-max lg:h-[550px]">
         <Ready
-          currentMember={currentMember}
+          error={mic.error}
           otherMember={otherMember}
+          sessionDetails={sessionDetails}
           disabled={mic.error}
           join={join}
           loading={joining}
         />
       </div>
+      <Actions camera={camera} microphone={mic} />
     </div>
   );
 };
