@@ -1,12 +1,13 @@
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
 import { JazzIcon } from "@/components/Avatar/JazzIcon";
+import { orUndefined } from "@litespace/utils";
 type Status = "loading" | "loaded" | "error";
 
 export const Avatar: React.FC<{
-  src?: string;
-  alt?: string;
-  seed?: string;
+  src?: string | null;
+  alt?: string | null;
+  seed?: string | number;
   /**
    * property sets how the image should be resized to fit its container.
    */
@@ -37,8 +38,8 @@ export const Avatar: React.FC<{
             "object-scale-down": object === "scale-down",
           }
         )}
-        src={src}
-        alt={alt}
+        src={orUndefined(src)}
+        alt={orUndefined(alt)}
         onLoad={onLoad}
         onError={onError}
       />
@@ -51,7 +52,10 @@ export const Avatar: React.FC<{
           "absolute top-0 left-0 w-full h-full z-chat-avatar"
         )}
       >
-        <JazzIcon seed={seed || alt || src || "litespace"} className="h-full" />
+        <JazzIcon
+          seed={seed?.toString() || alt || src || "litespace"}
+          className="h-full"
+        />
       </div>
     </div>
   );

@@ -116,7 +116,7 @@ async function main(): Promise<void> {
   // seeding studios
   const studio1 = await users.create({
     role: IUser.Role.Studio,
-    email: "media-1@litespace.org",
+    email: "studio-1@litespace.org",
     name: faker.person.fullName(),
     birthYear: birthYear(),
     password,
@@ -124,7 +124,7 @@ async function main(): Promise<void> {
 
   const studio2 = await users.create({
     role: IUser.Role.Studio,
-    email: "media-2@litespace.org",
+    email: "studio-2@litespace.org",
     name: faker.person.fullName(),
     birthYear: birthYear(),
     password,

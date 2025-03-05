@@ -1,17 +1,12 @@
-import { useMemo, useState } from "react";
-
+import { useState } from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Input } from "@litespace/ui/Input";
 import { Typography } from "@litespace/ui/Typography";
-
 import { useUserContext } from "@litespace/headless/context/user";
 import { useFindStudioTutors } from "@litespace/headless/tutor";
-
 import Search from "@litespace/assets/Search";
 import { IUser } from "@litespace/types";
-
-import { TutorCardProps } from "@/types/tutor";
-import CardsWrapper from "@/components/Tutor/CardsWrapper";
+import Tutors from "@/components/PhotoSessions/TutorsList";
 
 const PhotoSessions = () => {
   const intl = useFormatMessage();
@@ -26,17 +21,6 @@ const PhotoSessions = () => {
     user?.role === IUser.Role.Studio ? user.id : undefined,
     search
   );
-
-  const cards: TutorCardProps[] = useMemo(() => {
-    return (
-      tutorsQuery.list?.map((item) => ({
-        name: item.name || "",
-        email: item.email || "",
-        image: item.image || "",
-        registrationDate: new Date(item.createdAt),
-      })) || []
-    );
-  }, [tutorsQuery.list]);
 
   return (
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6 gap-6">
@@ -60,12 +44,12 @@ const PhotoSessions = () => {
         />
       </div>
 
-      <CardsWrapper
-        cards={cards}
+      <Tutors
+        list={tutorsQuery.list || []}
         more={tutorsQuery.more}
         loading={tutorsQuery.query.isPending}
         error={tutorsQuery.query.isError}
-        thereAreMore={tutorsQuery.thereAreMore}
+        hasMore={tutorsQuery.hasMore}
       />
     </div>
   );

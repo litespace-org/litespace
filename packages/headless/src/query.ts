@@ -5,7 +5,7 @@ import {
   useInfiniteQuery,
 } from "@tanstack/react-query";
 import { Paginated, Void } from "@litespace/types";
-import { flatten, sum } from "lodash";
+import { first, flatten, sum } from "lodash";
 import { useCallback, useMemo } from "react";
 
 export function useInvalidateQuery() {
@@ -56,13 +56,17 @@ export function useInfinitePaginationQuery<T, K>(
     return flatten(query.data.pages.map((page) => page.list));
   }, [query.data]);
 
+  const total = useMemo(() => {
+    return first(query.data?.pages)?.total || 0;
+  }, [query.data?.pages]);
+
   const more = useCallback(() => {
     query.fetchNextPage();
   }, [query]);
 
-  const thereAreMore: boolean = useMemo(() => {
-    return list?.length !== query.data?.pages[0].total;
-  }, [query.data, list?.length]);
+  const hasMore: boolean = useMemo(() => {
+    return list?.length !== total;
+  }, [list?.length, total]);
 
-  return { query, list, more, thereAreMore };
+  return { query, list, more, hasMore };
 }

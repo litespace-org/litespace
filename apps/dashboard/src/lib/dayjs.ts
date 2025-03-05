@@ -8,3 +8,4 @@ dayjs.extend(relativeTime);
 dayjs.extend(isBetween);
 
 export { dayjs };
+export default dayjs;

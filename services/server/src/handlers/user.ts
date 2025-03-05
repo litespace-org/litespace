@@ -468,7 +468,6 @@ async function findStudioTutors(
   const { studioId, pagination, search }: ITutor.FindStudioTutorsQuery =
     findStudioTutorsQuery.parse(req.query);
 
-  if (isStudio(req.user) && studioId === undefined) return next(forbidden());
   if (isStudio(req.user) && req.user.id !== studioId) return next(forbidden());
 
   const { list, total }: ITutor.FindStudioTutorsApiResponse =

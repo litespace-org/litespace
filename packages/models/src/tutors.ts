@@ -161,8 +161,8 @@ export class Tutors {
   }
 
   /**
-   * @description retrieves all tutors for a specific studio if @param studioId is defined,
-   * otherwise retrieves all tutors for all studios.
+   * @description retrieves all tutors for a specific studio if `studioId` is
+   * defined, otherwise retrieves all tutors for all studios.
    */
   async findStudioTutors({
     studioId,
@@ -185,13 +185,14 @@ export class Tutors {
       createdAt: this.column("created_at"),
     } as const;
 
-    const builder = studioId
-      ? this.builder(tx)
-          .join(users.table, this.column("id"), users.column("id"))
-          .where(this.column("studio_id"), studioId)
-      : this.builder(tx)
-          .join(users.table, this.column("id"), users.column("id"))
-          .whereNot(this.column("studio_id"), null);
+    const builder = this.builder(tx).join(
+      users.table,
+      this.column("id"),
+      users.column("id")
+    );
+
+    if (studioId) builder.where(this.column("studio_id"), studioId);
+    else builder.whereNot(this.column("studio_id"), null);
 
     if (search)
       builder
