@@ -103,6 +103,8 @@
   "session.permissions.note": "يجب تفعيل المايكروفون علي الاقل  لكي تستطيع الانضمام للحصة.",
   "session.permissions.enable-mic-and-camera": "تفعيل المايكروفون و الكاميرا",
   "session.permissions.enable-mic-only": "تفعيل المايكروفون فقط",
+  "session.permissions.enable-mic-and-camera.mobile": "تفعيل المايك و الكاميرا",
+  "session.permissions.enable-mic-only.mobile": "تفعيل المايك",
   "session.permissions.no-camera-or-mic": "عذرًا، لم نتمكن من العثور على كاميرا أو ميكروفون متصل بجهازك",
   "session.permissions.no-speakers": "عذرًا، لم نتمكن من العثور على سماعات متصلة بجهازك.",
   "session.permissions.no-mic": "عذرًا، لم نتمكن من العثور على ميكروفون متصل بجهازك",

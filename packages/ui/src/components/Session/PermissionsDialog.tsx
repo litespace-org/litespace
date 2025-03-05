@@ -6,6 +6,7 @@ import { Typography } from "@/components/Typography";
 import { Button } from "@/components/Button";
 import cn from "classnames";
 import { Void } from "@litespace/types";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 export type Props = {
   onSubmit: (permission: "mic-and-camera" | "mic-only") => void;
@@ -35,6 +36,7 @@ export const PermissionsDialog: React.FC<Props> = ({
   devices,
   close,
 }) => {
+  const mq = useMediaQuery();
   const intl = useFormatMessage();
 
   const errorMessage = useMemo(() => {
@@ -47,60 +49,75 @@ export const PermissionsDialog: React.FC<Props> = ({
 
   return (
     <Dialog open={open} close={close}>
-      <div className="flex flex-col items-center justify-center">
-        <div className="mb-8">
-          <Devices />
+      <div
+        className={cn(
+          "flex flex-col items-center h-full justify-center",
+          "min-w-[328px] md:w-[586px]"
+        )}
+      >
+        <div className="mb-4 md:mb-8">
+          <Devices className="w-[196px] h-[172px] md:w-[298px] md:h-[260px]" />
         </div>
 
         <div
-          className={cn(
-            "flex flex-col gap-4 items-center justify-center",
-            errorMessage ? "mb-[19px]" : "mb-14"
-          )}
+          className={cn("flex flex-col grow gap-2 items-center text-center")}
         >
           <Typography
             tag="span"
-            className="text-natural-950 font-bold text-subtitle-1"
+            className="text-natural-950 font-bold text-body md:text-subtitle-1"
           >
             {intl("session.permissions.title")}
           </Typography>
           {errorMessage ? (
             <Typography
               tag="span"
-              className="text-destructive-700 font-medium text-caption"
+              className="text-destructive-700 font-normal md:font-medium text-tiny md:text-caption"
             >
               {errorMessage}
             </Typography>
           ) : null}
           <Typography
             tag="span"
-            className="text-natural-700 font-medium text-caption"
+            className="text-natural-700 font-normal md:font-medium text-tiny md:text-caption"
           >
             {intl("session.permissions.note")}
           </Typography>
         </div>
-        <div className="flex items-center justify-center gap-6 w-fit">
+
+        <div
+          className={cn(
+            "flex items-center justify-center gap-2 md:gap-3 mt-4 w-full"
+          )}
+        >
           <Button
-            className="shrink-0 min-w-[274px]"
-            size={"large"}
+            className="flex-1 md:w-full md:flex-auto"
+            size={mq.md ? "large" : "medium"}
             onClick={() => onSubmit("mic-and-camera")}
             loading={loading === "mic-and-camera"}
             disabled={!!loading || !devices.camera || !devices.mic}
           >
-            <Typography tag="span">
-              {intl("session.permissions.enable-mic-and-camera")}
+            <Typography tag="span" className="shrink-0">
+              {intl(
+                mq.lg
+                  ? "session.permissions.enable-mic-and-camera"
+                  : "session.permissions.enable-mic-and-camera.mobile"
+              )}
             </Typography>
           </Button>
           <Button
-            className="shrink-0 min-w-[274px]"
-            size={"large"}
-            variant={"secondary"}
+            className="md:w-full"
+            size={mq.md ? "large" : "medium"}
+            variant="secondary"
             onClick={() => onSubmit("mic-only")}
             loading={loading === "mic-only"}
             disabled={!!loading || !devices.mic}
           >
-            <Typography tag="span">
-              {intl("session.permissions.enable-mic-only")}
+            <Typography tag="span" className="shrink-0">
+              {intl(
+                mq.lg
+                  ? "session.permissions.enable-mic-only"
+                  : "session.permissions.enable-mic-only.mobile"
+              )}
             </Typography>
           </Button>
         </div>
