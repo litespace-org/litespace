@@ -11,4 +11,15 @@ export default defineConfig({
     },
     dedupe: ["react", "react-dom"],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+          lodash: ["lodash"],
+          tanstack: ["@tanstack/react-query", "@tanstack/react-table"],
+        },
+      },
+    },
+  },
 });

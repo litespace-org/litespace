@@ -13,6 +13,7 @@
     "deploy:vercel": "pnpm vercel deploy --prebuilt"
   },
   "dependencies": {
+    "@litespace/assets": "workspace:^",
     "@litespace/atlas": "workspace:^",
     "@litespace/headless": "workspace:^",
     "@litespace/ui": "workspace:^",

@@ -1,4 +1,4 @@
-import PageTitle from "@/components/common/PageTitle";
+import PageTitle from "@/components/Common/PageTitle";
 import List from "@/components/Interviews/List";
 import {
   useFindInterviews,

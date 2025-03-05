@@ -2,15 +2,15 @@ import { useMemo } from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ILesson, Void } from "@litespace/types";
-import { Table } from "@/components/common/Table";
+import { Table } from "@/components/Common/Table";
 import { UseQueryResult } from "@tanstack/react-query";
 import { formatCurrency } from "@litespace/ui/utils";
 import { Duration } from "@litespace/utils/duration";
 import { Loading } from "@litespace/ui/Loading";
-import Error from "@/components/common/Error";
+import Error from "@/components/Common/Error";
 import { price } from "@litespace/utils/value";
-import UserPopover from "@/components/common/UserPopover";
-import DateField from "@/components/common/DateField";
+import UserPopover from "@/components/Common/UserPopover";
+import DateField from "@/components/Common/DateField";
 import { dayjs } from "@/lib/dayjs";
 
 const List: React.FC<{

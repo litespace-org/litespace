@@ -6,10 +6,9 @@ const ImageDialog: React.FC<{
   image: string;
   close: Void;
   open: boolean;
-  name: string;
-}> = ({ image, open, close, name }) => {
+}> = ({ image, open, close }) => {
   return (
-    <Dialog className="min-w-[40rem]" title={name} close={close} open={open}>
+    <Dialog className="min-w-[40rem]" close={close} open={open}>
       <div className="max-h-[80vh] overflow-hidden">
         <img className="object-contain w-full h-full" src={image} />
       </div>

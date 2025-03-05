@@ -1,4 +1,4 @@
-import PageTitle from "@/components/common/PageTitle";
+import PageTitle from "@/components/Common/PageTitle";
 import StatsContent from "@/components/Tutor/StatsContent";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IInvoice } from "@litespace/types";

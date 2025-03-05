@@ -1,11 +1,11 @@
 import { Element, ITopic, Void } from "@litespace/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
-import DateField from "@/components/common/DateField";
-import Error from "@/components/common/Error";
+import DateField from "@/components/Common/DateField";
+import Error from "@/components/Common/Error";
 import { Loading } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Table } from "@/components/common/Table";
+import { Table } from "@/components/Common/Table";
 import { UsePaginateResult } from "@/types/query";
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import DeleteTopic from "@/components/Topics/DeleteTopic";

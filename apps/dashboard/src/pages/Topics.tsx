@@ -1,4 +1,4 @@
-import PageTitle from "@/components/common/PageTitle";
+import PageTitle from "@/components/Common/PageTitle";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useTopics } from "@litespace/headless/topic";
 import List from "@/components/Topics/List";

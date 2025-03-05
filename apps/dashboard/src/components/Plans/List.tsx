@@ -1,8 +1,8 @@
-import BooleanField from "@/components/common/BooleanField";
-import DateField from "@/components/common/DateField";
+import BooleanField from "@/components/Common/BooleanField";
+import DateField from "@/components/Common/DateField";
 import PlanForm from "@/components/Plans/PlanForm";
 import Price from "@/components/Plans/Price";
-import { Table } from "@/components/common/Table";
+import { Table } from "@/components/Common/Table";
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import { formatMinutes } from "@litespace/ui/utils";
 import { Loading } from "@litespace/ui/Loading";
@@ -13,7 +13,7 @@ import { IPlan, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo, useState } from "react";
-import Error from "@/components/common/Error";
+import Error from "@/components/Common/Error";
 import { useDeletePlan } from "@litespace/headless/plans";
 
 const List: React.FC<{

@@ -1,5 +1,5 @@
-import Error from "@/components/common/Error";
-import PageTitle from "@/components/common/PageTitle";
+import Error from "@/components/Common/Error";
+import PageTitle from "@/components/Common/PageTitle";
 import List from "@/components/Invoices/List";
 import { isEqual } from "lodash";
 import { Loading } from "@litespace/ui/Loading";

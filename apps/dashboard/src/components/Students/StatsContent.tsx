@@ -1,10 +1,10 @@
-import LablesTable, { TableLablesRow } from "@/components/common/LabelsTable";
+import LablesTable, { TableLablesRow } from "@/components/Common/LabelsTable";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Loading } from "@litespace/ui/Loading";
 import { formatNumber } from "@litespace/ui/utils";
 import { Duration } from "@litespace/utils/duration";
 import { IUser, Void } from "@litespace/types";
-import ErrorElement from "@/components/common/Error";
+import ErrorElement from "@/components/Common/Error";
 import React, { useMemo } from "react";
 
 const StatsContent: React.FC<{

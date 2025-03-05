@@ -1,7 +1,7 @@
 import React from "react";
 import List from "@/components/Lessons/List";
-import Error from "@/components/common/Error";
-import PageTitle from "@/components/common/PageTitle";
+import Error from "@/components/Common/Error";
+import PageTitle from "@/components/Common/PageTitle";
 import { useFindLessons } from "@litespace/headless/lessons";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";

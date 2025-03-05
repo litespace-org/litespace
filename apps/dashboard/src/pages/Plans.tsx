@@ -1,5 +1,5 @@
 import React from "react";
-import PageTitle from "@/components/common/PageTitle";
+import PageTitle from "@/components/Common/PageTitle";
 import List from "@/components/Plans/List";
 import PlanForm from "@/components/Plans/PlanForm";
 import { usePlans } from "@litespace/headless/plans";

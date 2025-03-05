@@ -1,5 +1,5 @@
 import React from "react";
-import RecordsCount from "@/components/common/RecordsCount";
+import RecordsCount from "@/components/Common/RecordsCount";
 import { Spinner } from "@litespace/ui/Spinner";
 import cn from "classnames";
 import { Typography } from "@litespace/ui/Typography";

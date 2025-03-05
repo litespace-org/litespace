@@ -1,22 +1,22 @@
 import { IInvoice, IWithdrawMethod, Paginated, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
-import { Table } from "@/components/common/Table";
+import { Table } from "@/components/Common/Table";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { formatCurrency } from "@litespace/ui/utils";
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
-import DateField from "@/components/common/DateField";
+import DateField from "@/components/Common/DateField";
 import { UseQueryResult } from "@tanstack/react-query";
 import Process from "@/components/Invoices/Process";
 import { Action } from "@/components/Invoices/type";
-import UserPopover from "@/components/common/UserPopover";
+import UserPopover from "@/components/Common/UserPopover";
 import {
   invoiceStatusIntlMap,
   withdrawMethodsIntlMap,
 } from "@/components/utils/invoice";
 import { Typography } from "@litespace/ui/Typography";
-import ImageField from "@/components/common/ImageField";
+import ImageField from "@/components/Common/ImageField";
 
 const List: React.FC<{
   data: Paginated<IInvoice.Self>;
@@ -82,7 +82,7 @@ const List: React.FC<{
       }),
       columnHelper.accessor("receipt", {
         header: intl("dashboard.invoices.receipt"),
-        cell: (info) => <ImageField name={info.getValue()} type="private" />,
+        cell: (info) => <ImageField url={info.getValue()} />,
       }),
       columnHelper.accessor("addressedBy", {
         header: intl("dashboard.invoices.addressedBy"),
