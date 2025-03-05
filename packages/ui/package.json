@@ -56,7 +56,6 @@
     "./Stepper": "./dist/components/Stepper/index.js",
     "./StudentOverview": "./dist/components/StudentOverview/index.js",
     "./Switch": "./dist/components/Switch/index.js",
-    "./Sidebar": "./dist/components/Sidebar/index.js",
     "./Textarea": "./dist/components/Textarea/index.js",
     "./TextEditor": "./dist/components/TextEditor/index.js",
     "./Timeline": "./dist/components/Timeline/index.js",

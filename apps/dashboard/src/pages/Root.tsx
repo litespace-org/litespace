@@ -6,7 +6,7 @@ import { IUser } from "@litespace/types";
 import { useUserContext } from "@litespace/headless/context/user";
 import { Dashboard } from "@litespace/utils/routes";
 
-import Sidebar from "@/components/common/SideBar";
+import Sidebar from "@/components/Layout/Sidebar";
 import { useAuthRoutes } from "@/hooks/authRoutes";
 
 const Root: React.FC = () => {
@@ -38,19 +38,8 @@ const Root: React.FC = () => {
 
   return (
     <>
-      <main
-        className={cn(
-          "flex min-h-screen overflow-y-hidden bg-natural-50 pr-[166px] md:pr-[98px] lg:pr-60",
-          user ? "grid-cols-[5%,95%]" : ""
-        )}
-      >
-        <div
-          className={cn("fixed top-0 right-0 h-screen bg-brand-700 z-20", {
-            hidden: !user,
-          })}
-        >
-          <Sidebar hide={() => {}} />
-        </div>
+      <main className={cn("flex min-h-screen overflow-y-hidden bg-natural-50")}>
+        {user ? <Sidebar /> : null}
         <Outlet />
       </main>
     </>

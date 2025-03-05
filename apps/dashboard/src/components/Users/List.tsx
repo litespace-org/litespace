@@ -6,13 +6,13 @@ import { IUser, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
-import { Table } from "@/components/common/Table";
-import BooleanField from "@/components/common/BooleanField";
-import DateField from "@/components/common/DateField";
-import TruncateField from "@/components/common/TruncateField";
-import Error from "@/components/common/Error";
+import { Table } from "@/components/Common/Table";
+import BooleanField from "@/components/Common/BooleanField";
+import DateField from "@/components/Common/DateField";
+import TruncateField from "@/components/Common/TruncateField";
+import Error from "@/components/Common/Error";
 import { Link } from "react-router-dom";
-import ImageField from "@/components/common/ImageField";
+import ImageField from "@/components/Common/ImageField";
 
 const List: React.FC<{
   query: UseQueryResult<IUser.FindUsersApiResponse, Error>;
@@ -48,7 +48,7 @@ const List: React.FC<{
       }),
       columnHelper.accessor("image", {
         header: intl("dashboard.user.image"),
-        cell: (info) => <ImageField name={info.getValue()} type="public" />,
+        cell: (info) => <ImageField url={info.getValue()} />,
       }),
       columnHelper.accessor("birthYear", {
         header: intl("dashboard.user.birthYear"),

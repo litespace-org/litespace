@@ -1,4 +1,4 @@
-import PageTitle from "@/components/common/PageTitle";
+import PageTitle from "@/components/Common/PageTitle";
 import List from "@/components/Users/List";
 import UserForm from "@/components/Users/UserForm";
 import { useUsers } from "@litespace/headless/users";

@@ -1,54 +1,50 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Root from "@/pages/Root";
 import { ErrorPage } from "@litespace/ui/ErrorPage";
-import Invoices from "@/pages/Invoices";
-import Login from "@/pages/Login";
-import Plans from "@/pages/Plans";
-import Users from "@/pages/Users";
-import ServerStats from "@/pages/ServerStats";
-import Interviews from "@/pages/Interviews";
-import UserDetails from "@/pages/UserDetails";
-import { useAtlas } from "@litespace/headless/atlas";
-import { useEffect } from "react";
-import { useAppDispatch } from "@/redux/store";
-import { findCurrentUser } from "@/redux/user/profile";
-import Lessons from "@/pages/Lessons";
-import PlatformSettings from "@/pages/PlatformSettings";
-import Topics from "@/pages/Topics";
-import VerifyEmail from "@/pages/VerifyEmail";
-import UserSettings from "@/pages/UserSettings";
+import { lazy } from "react";
 import { Dashboard } from "@litespace/utils/routes";
+import Page from "@/components/Layout/Page";
+
+const Root = lazy(() => import("@/pages/Root"));
+const Invoices = lazy(() => import("@/pages/Invoices"));
+const Login = lazy(() => import("@/pages/Login"));
+const Plans = lazy(() => import("@/pages/Plans"));
+const Users = lazy(() => import("@/pages/Users"));
+const Interviews = lazy(() => import("@/pages/Interviews"));
+const UserDetails = lazy(() => import("@/pages/UserDetails"));
+const Lessons = lazy(() => import("@/pages/Lessons"));
+const PlatformSettings = lazy(() => import("@/pages/PlatformSettings"));
+const Topics = lazy(() => import("@/pages/Topics"));
+const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
+const UserSettings = lazy(() => import("@/pages/UserSettings"));
 
 const router = createBrowserRouter([
   {
     path: Dashboard.Root,
-    element: <Root />,
+    element: <Page page={<Root />} />,
     errorElement: <ErrorPage />,
     children: [
-      { path: Dashboard.Invoices, element: <Invoices /> },
-      { path: Dashboard.Login, element: <Login /> },
-      { path: Dashboard.Plans, element: <Plans /> },
-      { path: Dashboard.Users, element: <Users /> },
-      { path: Dashboard.User, element: <UserDetails /> },
-      { path: Dashboard.Interviews, element: <Interviews /> },
-      { path: Dashboard.Lessons, element: <Lessons /> },
-      { path: Dashboard.Topics, element: <Topics /> },
-      { path: Dashboard.ServerStats, element: <ServerStats /> },
-      { path: Dashboard.PlatformSettings, element: <PlatformSettings /> },
-      { path: Dashboard.VerifyEmail, element: <VerifyEmail /> },
-      { path: Dashboard.UserSetting, element: <UserSettings /> },
+      { path: Dashboard.Invoices, element: <Page page={<Invoices />} /> },
+      { path: Dashboard.Login, element: <Page page={<Login />} /> },
+      { path: Dashboard.Plans, element: <Page page={<Plans />} /> },
+      { path: Dashboard.Users, element: <Page page={<Users />} /> },
+      { path: Dashboard.User, element: <Page page={<UserDetails />} /> },
+      { path: Dashboard.Interviews, element: <Page page={<Interviews />} /> },
+      { path: Dashboard.Lessons, element: <Page page={<Lessons />} /> },
+      { path: Dashboard.Topics, element: <Page page={<Topics />} /> },
+      {
+        path: Dashboard.PlatformSettings,
+        element: <Page page={<PlatformSettings />} />,
+      },
+      { path: Dashboard.VerifyEmail, element: <Page page={<VerifyEmail />} /> },
+      {
+        path: Dashboard.UserSetting,
+        element: <Page page={<UserSettings />} />,
+      },
     ],
   },
 ]);
 
 function App() {
-  const atlas = useAtlas();
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(findCurrentUser.call(atlas));
-  }, [atlas, dispatch]);
-
   return <RouterProvider router={router} />;
 }
 

@@ -1,12 +1,12 @@
-import Error from "@/components/common/Error";
-import { Table } from "@/components/common/Table";
-import UserPopover from "@/components/common/UserPopover";
+import Error from "@/components/Common/Error";
+import { Table } from "@/components/Common/Table";
+import UserPopover from "@/components/Common/UserPopover";
 import { Loading } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Element, IInterview, IUser, Void } from "@litespace/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { dayjs } from "@/lib/dayjs";
-import DateField from "@/components/common/DateField";
+import DateField from "@/components/Common/DateField";
 import React, { useCallback, useMemo, useState } from "react";
 import { interviewStatusMap } from "@/components/utils/interview";
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";

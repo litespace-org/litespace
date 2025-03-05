@@ -1,5 +1,5 @@
 import Lessons from "@/components/Lessons/Content";
-import BackLink from "@/components/common/BackLink";
+import BackLink from "@/components/Common/BackLink";
 import Interviews from "@/components/Interviews/Content";
 import StudentStats from "@/components/Students/Stats";
 import TutorStats from "@/components/Tutor/Stats";
