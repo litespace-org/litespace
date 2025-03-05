@@ -160,13 +160,17 @@ export class Tutors {
     }).then();
   }
 
+  /**
+   * @description retrieves all tutors for a specific studio if `studioId` is
+   * defined, otherwise retrieves all tutors for all studios.
+   */
   async findStudioTutors({
     studioId,
     search,
     tx,
     ...pagination
   }: WithOptionalTx<{
-    studioId: number;
+    studioId?: number;
     search?: string;
   }> &
     IFilter.Pagination): Promise<Paginated<ITutor.StudioTutorFields>> {
@@ -181,14 +185,19 @@ export class Tutors {
       createdAt: this.column("created_at"),
     } as const;
 
-    const builder = this.builder(tx)
-      .join(users.table, this.column("id"), users.column("id"))
-      .where(this.column("studio_id"), studioId);
+    const builder = this.builder(tx).join(
+      users.table,
+      this.column("id"),
+      users.column("id")
+    );
+
+    if (studioId) builder.where(this.column("studio_id"), studioId);
+    else builder.whereNot(this.column("studio_id"), null);
 
     if (search)
       builder
-        .where(users.column("email"), `%${search}%`)
-        .orWhere(users.column("name"), `%${search}%`);
+        .whereLike(users.column("email"), `%${search}%`)
+        .orWhereLike(users.column("name"), `%${search}%`);
 
     const total = await countRows(builder.clone());
 

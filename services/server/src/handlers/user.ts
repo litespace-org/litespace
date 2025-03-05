@@ -141,7 +141,7 @@ const findStudioTutorParams = zod.object({
 });
 
 const findStudioTutorsQuery = zod.object({
-  studioId: id,
+  studioId: zod.optional(id),
   pagination: zod.optional(pagination),
   search: zod.optional(string),
 });
