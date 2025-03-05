@@ -104,6 +104,9 @@
   "pnpm": {
     "patchedDependencies": {
       "dayjs@1.11.13": "patches/dayjs@1.11.13.patch"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "core-js"
+    ]
   }
 }

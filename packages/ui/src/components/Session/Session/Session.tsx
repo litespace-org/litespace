@@ -12,11 +12,7 @@ type Props = {
   streams: StreamInfo[];
   currentUserId: number;
   chat: { enabled: boolean; toggle: Void };
-  fullScreen: {
-    enabled: boolean;
-    toggle: Void;
-  };
-  camera: {
+  video: {
     enabled: boolean;
     error?: boolean;
     toggle: Void;
@@ -26,7 +22,7 @@ type Props = {
     error?: boolean;
     toggle: Void;
   };
-  mic: {
+  audio: {
     enabled: boolean;
     toggle: Void;
     error?: boolean;
@@ -43,13 +39,10 @@ type Props = {
 export const Session: React.FC<Props> = ({
   chatPanel,
   leave,
-  camera,
-  mic,
+  audio,
+  video,
   cast,
   streams,
-  timer,
-  alert,
-  fullScreen,
   currentUserId,
   chat,
 }) => {
@@ -63,7 +56,7 @@ export const Session: React.FC<Props> = ({
     >
       <div
         className={cn(
-          "w-full aspect-video grow border border-brand-700 bg-brand-100",
+          "w-full grow border bg-natural-100",
           "rounded-lg overflow-hidden",
           chat.enabled
             ? "lg:grid relative lg:grid-cols-[auto,minmax(35%,326px)]"
@@ -75,11 +68,8 @@ export const Session: React.FC<Props> = ({
             <SessionStreams
               containerRef={containerRef}
               currentUserId={currentUserId}
-              fullScreen={fullScreen}
               streams={streams}
               chat={chat.enabled}
-              timer={timer}
-              alert={alert}
             />
           </AnimateWidth>
         </AnimatePresence>
@@ -98,8 +88,8 @@ export const Session: React.FC<Props> = ({
       <Actions
         leave={leave}
         screen={cast}
-        camera={camera}
-        microphone={mic}
+        video={video}
+        audio={audio}
         chat={chat}
       />
     </div>

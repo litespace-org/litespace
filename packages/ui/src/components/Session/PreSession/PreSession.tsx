@@ -1,35 +1,42 @@
 import React from "react";
 import { Ready } from "@/components/Session/Ready";
-import { PreSessionUserPreview } from "@/components/Session/PreSession/PreSessionUserPreview";
 import { IUser, Void } from "@litespace/types";
 import Actions from "@/components/Session/Actions";
 import cn from "classnames";
+import FocusedStream from "@/components/Session/FocusedStream";
 
 export type Props = {
   stream: MediaStream | null;
-  otherMember: {
-    id: number;
-    imageUrl: string | null;
-    name: string | null;
-    gender: IUser.Gender;
-    role: IUser.Role;
-    incall: boolean;
+  members: {
+    current: {
+      id: number;
+      imageUrl: string | null;
+      name: string | null;
+      role: IUser.Role;
+    };
+    other: {
+      id: number;
+      gender: IUser.Gender;
+      role: IUser.Role;
+      incall: boolean;
+    };
   };
-  currentMember: {
-    id: number;
-    imageUrl: string | null;
-    name: string | null;
-    role: IUser.Role;
-  };
-  camera: {
+  video: {
     enabled: boolean;
     toggle: Void;
     error?: boolean;
   };
-  mic: {
+  audio: {
     enabled: boolean;
     toggle: Void;
     error?: boolean;
+  };
+  session: {
+    /**
+     * ISO UTC date.
+     */
+    start: string;
+    duration: number;
   };
   speaking: boolean;
   joining: boolean;
@@ -38,10 +45,10 @@ export type Props = {
 
 export const PreSession: React.FC<Props> = ({
   stream,
-  otherMember,
-  currentMember,
-  camera,
-  mic,
+  members,
+  video,
+  session,
+  audio,
   speaking,
   joining,
   join,
@@ -49,30 +56,33 @@ export const PreSession: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "rounded-2xl w-full p-10 lg:border lg:border-natural-100 lg:bg-natural-50 lg:shadow-pre-call",
-        "flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between gap-6 lg:gap-[76px]"
+        "rounded-2xl w-full h-full",
+        "flex flex-col lg:grid lg:grid-cols-[1fr,auto] lg:grid-rows-[auto,1fr] items-center lg:items-start gap-4 lg:gap-6"
       )}
     >
-      <div className="flex grow flex-col justify-center items-center gap-3 lg:gap-10 lg:max-w-[calc(100%-280px)]">
-        <PreSessionUserPreview
-          camera={camera.enabled}
-          stream={stream}
-          user={currentMember}
-          speaking={speaking}
-        />
-
-        <Actions camera={camera} microphone={mic} />
-      </div>
-
-      <div className="shrink-0">
+      <FocusedStream
+        muted
+        stream={{
+          stream,
+          speaking,
+          audio: audio.enabled,
+          video: video.enabled,
+          user: members.current,
+          cast: false,
+        }}
+      />
+      <div className="grow w-[306px] flex justify-center items-center h-full">
         <Ready
-          currentMember={currentMember}
-          otherMember={otherMember}
-          disabled={mic.error}
+          error={audio.error}
+          otherMember={members.other}
+          start={session.start}
+          duration={session.duration}
+          disabled={video.error}
           join={join}
           loading={joining}
         />
       </div>
+      <Actions video={video} audio={audio} />
     </div>
   );
 };

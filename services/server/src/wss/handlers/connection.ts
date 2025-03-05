@@ -1,11 +1,10 @@
-import { isGhost, isStudent, isTutor } from "@litespace/auth";
+import { isGhost, isStudent } from "@litespace/auth";
 import { logger, safe } from "@litespace/utils";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { rooms } from "@litespace/models";
 import { asSessionRoomId, asChatRoomId } from "@/wss/utils";
 import { cache } from "@/lib/cache";
-import { getGhostSession } from "@litespace/utils/ghost";
 
 const stdout = logger("wss");
 
@@ -38,7 +37,6 @@ export class Connection extends WssHandler {
       await cache.onlineStatus.removeUser(user.id);
       this.announceStatus({ userId: user.id, online: false });
 
-      await this.deregisterPeer();
       await this.removeUserFromSessions();
     });
     if (error instanceof Error) stdout.error(error.message);
@@ -73,24 +71,6 @@ export class Connection extends WssHandler {
       this.socket.join(list.map((roomId) => asChatRoomId(roomId)));
     });
     if (error instanceof Error) stdout.error(error.message);
-  }
-
-  /**
-   * Remove ghost and tutor peer id from the cache.
-   *
-   * @note should be called when the socket disconnects from the server.
-   *
-   * @deprecated It should be removed in favor of the new `session` architecture.
-   */
-  private async deregisterPeer() {
-    // todo: notify peers that the current user got disconnected
-    const user = this.user;
-    const display = isGhost(user) ? user : user.email;
-    stdout.info(`Deregister peer for: ${display}`);
-
-    if (isGhost(user))
-      return await cache.peer.removeGhostPeerId(getGhostSession(user));
-    if (isTutor(user)) await cache.peer.removeUserPeerId(user.id);
   }
 
   private async removeUserFromSessions() {

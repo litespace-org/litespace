@@ -207,7 +207,7 @@ const Lesson: React.FC = () => {
     return streams;
   }, [lessonMembers, session.members]);
 
-  const cameraConfig = useMemo(
+  const videoConfig = useMemo(
     () => ({
       enabled: session.members.current.video,
       toggle: onCameraToggle,
@@ -235,6 +235,8 @@ const Lesson: React.FC = () => {
     devices.loading,
     session,
   ]);
+
+  if (!lesson.data) return null;
 
   return (
     <div className="max-w-screen-3xl mx-auto w-full grow p-6 overflow-hidden">
@@ -333,24 +335,30 @@ const Lesson: React.FC = () => {
       {!sessionManager.joined && lessonMembers && !lesson.isLoading ? (
         <PreSession
           stream={session.members.current.stream}
-          currentMember={{
-            id: lessonMembers.current.userId,
-            imageUrl: lessonMembers.current.image || null,
-            name: lessonMembers.current.name,
-            role: lessonMembers.current.role,
+          session={{
+            start: lesson.data.lesson.start,
+            duration: lesson.data.lesson.duration,
           }}
-          otherMember={{
-            id: lessonMembers.other.userId,
-            imageUrl: lessonMembers.other.image || null,
-            name: lessonMembers.other.name,
-            //! TODO: gender is not in the response.
-            //! TODO: gender should be optional
-            gender: IUser.Gender.Male,
-            incall: sessionManager.members.includes(lessonMembers.other.userId),
-            role: lessonMembers.other.role,
+          members={{
+            current: {
+              id: lessonMembers.current.userId,
+              imageUrl: lessonMembers.current.image || null,
+              name: lessonMembers.current.name,
+              role: lessonMembers.current.role,
+            },
+            other: {
+              id: lessonMembers.other.userId,
+              //! TODO: gender is not in the response.
+              //! TODO: gender should be optional
+              gender: IUser.Gender.Male,
+              incall: sessionManager.members.includes(
+                lessonMembers.other.userId
+              ),
+              role: lessonMembers.other.role,
+            },
           }}
-          camera={cameraConfig}
-          mic={{
+          video={videoConfig}
+          audio={{
             enabled: session.members.current.audio,
             toggle: session.toggleMic,
             error:
@@ -378,8 +386,8 @@ const Lesson: React.FC = () => {
           streams={streams}
           currentUserId={lessonMembers.current.userId}
           chat={{ enabled: chatEnabled, toggle: toggleChat }}
-          camera={cameraConfig}
-          mic={{
+          video={videoConfig}
+          audio={{
             enabled: session.members.current.audio,
             toggle: session.toggleMic,
             error: !devices.info.microphone.connected,
@@ -393,10 +401,6 @@ const Lesson: React.FC = () => {
               return await session.screen.share();
             },
             error: !!session.screen.error,
-          }}
-          fullScreen={{
-            enabled: false,
-            toggle: () => alert("todo"),
           }}
           timer={{
             duration: lesson.data.lesson.duration,

@@ -3,40 +3,27 @@ import { IUser, Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { useMemo } from "react";
-import { Avatar } from "@/components/Avatar";
-import { orUndefined } from "@litespace/utils/utils";
 import { Button } from "@/components/Button";
+import cn from "classnames";
+import dayjs from "dayjs";
 
 export const Ready: React.FC<{
   otherMember: {
     id: number;
-    name: string | null;
-    imageUrl: string | null;
     role: IUser.Role;
     gender: IUser.Gender;
     incall: boolean;
   };
-  currentMember: {
-    name: string | null;
-    imageUrl: string | null;
-    role: IUser.Role;
-    id: number;
-  };
+  error?: boolean;
+  start: string;
+  duration: number;
   join: Void;
   loading?: boolean;
   disabled?: boolean;
-}> = ({ currentMember, otherMember, join, loading, disabled }) => {
+}> = ({ otherMember, join, error, start, duration, loading, disabled }) => {
   const intl = useFormatMessage();
 
-  // TODO: add type of call to intl to differentiate between lessons and interview
   const explaination = useMemo(() => {
-    const isCurrentMemberTutor = currentMember.role === IUser.Role.Tutor;
-    if (!otherMember.incall && isCurrentMemberTutor)
-      return intl("session.ready.explaination.empty.student");
-
-    if (!otherMember.incall && !isCurrentMemberTutor)
-      return intl("session.ready.explaination.empty.tutor");
-
     if (
       otherMember.role === IUser.Role.Tutor &&
       otherMember.gender === IUser.Gender.Male
@@ -58,53 +45,75 @@ export const Ready: React.FC<{
       otherMember.gender !== IUser.Gender.Male
     )
       return intl("session.ready.explaination.full.female-student");
-  }, [
-    otherMember.incall,
-    otherMember.role,
-    otherMember.gender,
-    currentMember.role,
-    intl,
-  ]);
+  }, [otherMember.role, otherMember.gender, intl]);
+
+  const sessionStartMessage = useMemo(() => {
+    const now = dayjs();
+    const sessionStart = dayjs(start);
+    const end = sessionStart.add(duration, "minutes");
+
+    if (now.isBefore(start))
+      return intl("session.ready.session-will-start-in", {
+        time: sessionStart.fromNow(true),
+      });
+
+    if (now.isAfter(end)) {
+      return intl("session.ready.session-ended-since", {
+        time: end.fromNow(true),
+      });
+    }
+
+    return intl("session.ready.session-started-since", {
+      time: end.fromNow(true),
+    });
+  }, [start, duration, intl]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 lg:gap-8 w-full text-center">
-      <div className="flex flex-col gap-2 lg:gap-4 items-center">
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center md:justify-start lg:justify-center h-full w-full text-center",
+        error ? "gap-2 md:gap-6" : "gap-4 md:gap-6"
+      )}
+    >
+      <div className="flex flex-col gap-1 lg:gap-2 items-center">
         <Typography
           tag="h3"
           className="font-bold text-natural-950 text-body lg:text-subtitle-1"
         >
           {intl("session.ready.title")}
         </Typography>
-        <Typography
-          tag="p"
-          className="text-success-700 font-semibold text-caption"
-        >
-          {explaination}
+        {otherMember.incall ? (
+          <Typography
+            tag="p"
+            className="text-natural-800 font-semibold text-caption"
+          >
+            {explaination}
+          </Typography>
+        ) : null}
+
+        <Typography tag="p" className="text-body font-bold text-natural-800">
+          {sessionStartMessage}
         </Typography>
       </div>
-      <div className="flex gap-2 lg:flex-col lg:gap-4 items-center">
-        <div className="w-16 h-16 lg:w-24 lg:h-24 overflow-hidden rounded-full">
-          <Avatar
-            seed={otherMember.id.toString()}
-            src={orUndefined(otherMember.imageUrl)}
-            alt={orUndefined(otherMember.name)}
-          />
-        </div>
-        <Typography
-          tag="span"
-          className="font-bold text-subtitle-2 lg:text-subtitle-1"
+      <div className="flex flex-col items-center gap-4 lg:gap-2">
+        {error ? (
+          <Typography tag="p" className="text-destructive-700 text-caption">
+            {intl("session.ready.error")}
+          </Typography>
+        ) : null}
+        <Button
+          size="large"
+          onClick={join}
+          disabled={
+            disabled ||
+            loading ||
+            dayjs(start).add(duration, "minutes").isBefore(dayjs())
+          }
+          loading={loading}
         >
-          {otherMember.name}
-        </Typography>
+          {intl("session.ready.join")}
+        </Button>
       </div>
-      <Button
-        size={"large"}
-        onClick={join}
-        disabled={disabled || loading}
-        loading={loading}
-      >
-        {intl("session.ready.join")}
-      </Button>
     </div>
   );
 };
