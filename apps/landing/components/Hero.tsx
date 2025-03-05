@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
@@ -9,9 +9,25 @@ import cn from "classnames";
 import Link from "next/link";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import {
+  GoogleAnalyticsEventName,
+  useSendCustomEvent,
+} from "@litespace/headless/analytics";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
+  const sendGoogleEvent = useSendCustomEvent();
+
+  useEffect(
+    () =>
+      sendGoogleEvent({
+        category: "landing",
+        name: GoogleAnalyticsEventName.landing,
+        label: "Home Page",
+      }),
+    [sendGoogleEvent]
+  );
+
   return (
     <div
       className={cn(
