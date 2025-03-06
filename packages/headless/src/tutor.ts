@@ -30,6 +30,28 @@ export function useTutors() {
   return useInfinitePaginationQuery(findTutors, [QueryKey.FindTutors]);
 }
 
+export function useFindStudioTutor(
+  studioId: number | null,
+  tutorId: number | null
+) {
+  const atlas = useAtlas();
+
+  const findStudioTutor = useCallback(async () => {
+    if (!studioId || !tutorId) return;
+    return await atlas.user.findStudioTutor({
+      studioId,
+      tutorId,
+    });
+  }, [atlas.user, studioId, tutorId]);
+
+  return useQuery({
+    queryFn: findStudioTutor,
+    queryKey: [QueryKey.FindStudioTutor, studioId, tutorId],
+    enabled: !!studioId && !!tutorId,
+    retry: false,
+  });
+}
+
 export function useFindTutorStats(
   id: number | null
 ): UseQueryResult<ITutor.FindTutorStatsApiResponse | null, Error> {

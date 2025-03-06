@@ -60,12 +60,14 @@ import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/utils/validation";
 import {
+  isRegularUser,
   isSuperAdmin,
   isTutor,
   isTutorManager,
 } from "@litespace/auth/dist/authorization";
 import { getRequestFile, upload } from "@/lib/assets";
 import bytes from "bytes";
+import s3 from "@/lib/s3";
 
 const createUserPayload = zod.object({
   role,
@@ -89,6 +91,7 @@ const updateUserPayload = zod.object({
   drop: zod.optional(
     zod.object({
       image: zod.optional(zod.boolean()),
+      thumbnail: zod.optional(zod.boolean()),
       video: zod.optional(zod.boolean()),
     })
   ),
@@ -192,11 +195,13 @@ function update(context: ApiContext) {
       const { id } = identityObject.parse(req.params);
 
       const currentUser = req.user;
-      const allowed = isAdmin(currentUser) || isUser(currentUser);
+      const allowed = isUser(currentUser);
       if (!allowed) return next(forbidden());
 
       const targetUser = await users.findById(id);
       if (!targetUser) return next(notfound.user());
+
+      const targetTutor = await tutors.findById(targetUser.id);
 
       const {
         email,
@@ -211,6 +216,17 @@ function update(context: ApiContext) {
         phone,
         city,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
+
+      // return forbidden if the currentUser is neither admin nor studio and tring to update other user data
+      if (currentUser.id !== targetUser.id && isRegularUser(currentUser))
+        return next(forbidden());
+
+      // return forbidden if the studio is trying to drop user image
+      if (isStudio(currentUser) && drop?.image) return next(forbidden());
+
+      // return forbidden if the studio is trying to drop media for an unassociated user
+      if (isStudio(currentUser) && targetTutor?.studioId !== currentUser.id)
+        return next(forbidden());
 
       if (password) {
         const expectedPasswordHash = await users.findUserPasswordHash(
@@ -228,37 +244,60 @@ function update(context: ApiContext) {
         if (validPassword !== true) return next(apierror(validPassword, 400));
       }
 
-      const user = await knex.transaction(async (tx: Knex.Transaction) => {
-        const user = await users.update(
-          id,
-          {
-            city,
-            name,
-            email,
-            gender,
-            birthYear,
-            phone,
-            // Reset user verification status incase the user email got updated.
-            verifiedEmail: email ? false : undefined,
-            password: password ? hashPassword(password.new) : undefined,
-          },
-          tx
-        );
+      // Remove assets from the CDN
+      if (drop?.image && targetUser.image) s3.drop(targetUser.image);
 
-        const tutorData = bio || about || drop?.video || notice;
-        if (tutorData && (isTutor(targetUser) || isTutorManager(targetUser)))
-          await tutors.update(targetUser.id, { bio, about, notice }, tx);
+      if (targetTutor) {
+        if (drop?.video && targetTutor.video) s3.drop(targetTutor.video);
+        if (drop?.thumbnail && targetTutor.thumbnail)
+          s3.drop(targetTutor.thumbnail);
+      }
 
-        return user;
-      });
+      // Remove assets ids from the database / update user data
+      const updatedUser = await knex.transaction(
+        async (tx: Knex.Transaction) => {
+          const updatePayload = isStudio(currentUser)
+            ? {}
+            : {
+                city,
+                name,
+                email,
+                gender,
+                birthYear,
+                phone,
+                image: drop?.image ? null : undefined,
+                // Reset user verification status incase his email updated.
+                verifiedEmail: email ? false : undefined,
+                password: password ? hashPassword(password.new) : undefined,
+              };
+          const user = await users.update(id, updatePayload, tx);
+
+          const tutorData =
+            bio || about || notice || drop?.video || drop?.thumbnail;
+          if (tutorData && targetTutor)
+            await tutors.update(
+              targetUser.id,
+              {
+                bio,
+                about,
+                notice,
+                video: drop?.video ? null : undefined,
+                thumbnail: drop?.thumbnail ? null : undefined,
+              },
+              tx
+            );
+
+          return user;
+        }
+      );
 
       // todo: remove the tutor from the cache incase tutor is no longer fully onboarded
-      res.status(200).json(await withImageUrl(user));
+      res.status(200).json(await withImageUrl(updatedUser));
       // todo: handle cache update using a specific worker
-      if (!isTutor(user) && !isTutorManager(user)) return;
+      if (!isTutor(updatedUser) && !isTutorManager(updatedUser)) return;
 
       const error = await safe(async () => {
-        const tutor = await tutors.findById(user.id);
+        const tutor = await tutors.findById(updatedUser.id);
         if (!tutor) return;
         // should only update the cache if it's an onboard (activated) tutor
         if (!isOnboard(tutor)) return;
@@ -928,7 +967,7 @@ async function uploadTutorAssets(
         data: image.buffer,
         type: image.mimetype,
         // Use the existing image name as the key. The new image will override
-        // the previous onc. There is no need to remove the previous image. Also
+        // the previous one. There is no need to remove the previous image. Also
         // there is not need to update the user row in the database in this case.
         key: tutor.image,
       })
@@ -954,7 +993,7 @@ async function uploadTutorAssets(
     await knex.transaction(async (tx) => {
       if (!tutor.image) await users.update(tutorId, { image: imageId }, tx);
 
-      if (tutor.video || !tutor.thumbnail)
+      if (!tutor.video || !tutor.thumbnail)
         await tutors.update(
           tutorId,
           {

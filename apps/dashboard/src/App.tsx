@@ -3,6 +3,7 @@ import { ErrorPage } from "@litespace/ui/ErrorPage";
 import { lazy } from "react";
 import { Dashboard } from "@litespace/utils/routes";
 import Page from "@/components/Layout/Page";
+import PhotoSession from "./pages/PhotoSession";
 
 const Root = lazy(() => import("@/pages/Root"));
 const Invoices = lazy(() => import("@/pages/Invoices"));
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: Dashboard.UserSetting,
         element: <Page page={<UserSettings />} />,
+      },
+      {
+        path: Dashboard.PhotoSession,
+        element: <Page page={<PhotoSession />} />,
       },
       {
         path: Dashboard.PhotoSessions,

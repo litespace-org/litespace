@@ -5,6 +5,7 @@ import {
   Overlay,
   Content,
   Portal,
+  Title,
 } from "@radix-ui/react-dialog";
 import cn from "classnames";
 import React from "react";
@@ -75,7 +76,10 @@ export const ConfirmationDialog: React.FC<{
       disabled?: boolean;
     };
   };
-  close: Void;
+  /**
+   * the close button is disabled when close is undefined
+   */
+  close?: Void;
   type?: DialogType;
   icon: React.ReactNode;
 }> = ({
@@ -97,6 +101,7 @@ export const ConfirmationDialog: React.FC<{
           onClick={close}
           className="fixed inset-0 backdrop-blur-[15px] bg-overlay-dialog z-dialog-overlay"
         />
+        <Title className="hidden">{title}</Title>
         <Content
           dir="rtl"
           className={cn(
@@ -127,7 +132,11 @@ export const ConfirmationDialog: React.FC<{
             </div>
             <Close
               onClick={close}
-              className="rounded-full h-11 w-11 flex items-center justify-center"
+              disabled={!close}
+              className={cn(
+                "rounded-full h-11 w-11 flex items-center justify-center",
+                { "cursor-not-allowed opacity-50": !close }
+              )}
             >
               <X className="text-natural-600 w-6 h-6" />
             </Close>

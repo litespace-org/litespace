@@ -1,11 +1,15 @@
 import { useState } from "react";
+
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Input } from "@litespace/ui/Input";
 import { Typography } from "@litespace/ui/Typography";
+
 import { useUserContext } from "@litespace/headless/context/user";
 import { useFindStudioTutors } from "@litespace/headless/tutor";
+
 import Search from "@litespace/assets/Search";
 import { IUser } from "@litespace/types";
+
 import Tutors from "@/components/PhotoSessions/TutorsList";
 
 const PhotoSessions = () => {

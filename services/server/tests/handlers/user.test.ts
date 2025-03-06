@@ -671,5 +671,38 @@ describe("/api/v1/user/", () => {
       expect(await res1.body).to.deep.eq(await res2.body);
       expect(await res2.body).to.deep.eq(await res3.body);
     });
+
+    it("should respond with a list of all tutors associated to any studioId.", async () => {
+      const superAdmin = await db.user({ role: IUser.Role.SuperAdmin });
+
+      const studio1 = await db.user({ role: IUser.Role.Studio });
+      const studio2 = await db.user({ role: IUser.Role.Studio });
+
+      await Promise.all([
+        db.tutor({}, { studioId: studio1.id }),
+        db.tutor({}, { studioId: studio1.id }),
+
+        db.tutor({}, { studioId: studio2.id }),
+        db.tutor({}, { studioId: studio2.id }),
+
+        db.tutor({}),
+        db.tutor({}),
+      ]);
+
+      const res = await findStudioTutors({
+        query: {
+          studioId: undefined,
+          pagination: {
+            page: 1,
+            size: 10,
+          },
+        },
+        user: superAdmin,
+      });
+
+      expect(res).to.not.be.instanceof(Error);
+      const resBody = res.body as ITutor.FindStudioTutorsApiResponse;
+      expect(resBody.list).to.have.length(4);
+    });
   });
 });

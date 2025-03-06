@@ -126,7 +126,7 @@ export type UpdateApiPayload = {
   gender?: Gender;
   notice?: number;
   birthYear?: number;
-  drop?: { image?: boolean; video?: boolean };
+  drop?: { image?: boolean; video?: boolean; thumbnail?: boolean };
   bio?: string;
   about?: string;
   phone?: string | null;

@@ -1,21 +1,35 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React from "react";
+import { ArrowLeft } from "react-feather";
+import { useNavigate } from "react-router-dom";
+import dayjs from "@/lib/dayjs";
+
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
-import { ArrowLeft } from "react-feather";
 import { Avatar } from "@litespace/ui/Avatar";
-import dayjs from "@/lib/dayjs";
+
+import { Dashboard } from "@litespace/utils/routes";
+import { router } from "@/lib/route";
 
 type Props = {
   id: number;
+  studioId: number | null;
   image: string | null;
   name: string | null;
   email: string | null;
   createdAt: string;
 };
 
-const TutorCard: React.FC<Props> = ({ image, name, email, createdAt, id }) => {
+const TutorCard: React.FC<Props> = ({
+  image,
+  name,
+  email,
+  createdAt,
+  id,
+  studioId,
+}) => {
   const intl = useFormatMessage();
+  const navigate = useNavigate();
   return (
     <div className="relative flex flex-col p-4 gap-1 bg-natural-50 border border-natural-200 rounded">
       <div className="w-10 h-10 rounded-full overflow-hidden">
@@ -40,7 +54,15 @@ const TutorCard: React.FC<Props> = ({ image, name, email, createdAt, id }) => {
         <Button
           variant="tertiary"
           startIcon={<ArrowLeft className="w-4 h-4" />}
-          onClick={() => alert("TODO")}
+          onClick={() =>
+            navigate(
+              router.dashboard({
+                route: Dashboard.PhotoSession,
+                tutorId: id,
+                studioId: studioId || 0,
+              })
+            )
+          }
         />
       </div>
     </div>

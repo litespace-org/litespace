@@ -1,6 +1,6 @@
 import { ITopic, IUser } from "@litespace/types";
 import { useAtlas } from "@/atlas";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
 import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
@@ -149,14 +149,17 @@ export function useUploadTutorAssets({
 }) {
   const atlas = useAtlas();
   const [progress, setProgress] = useState<number>(0);
+  const abortController = useRef(new AbortController());
+
+  type MutationParams = {
+    tutorId: number;
+    image?: File;
+    video?: File;
+    thumbnail?: File;
+  };
 
   const upload = useCallback(
-    (payload: {
-      tutorId: number;
-      image?: File;
-      video?: File;
-      thumbnail?: File;
-    }) =>
+    (payload: MutationParams) =>
       atlas.user.uploadTutorAssets({
         ...payload,
         onUploadProgress(event) {
@@ -165,16 +168,21 @@ export function useUploadTutorAssets({
           const progress = Math.round((event.loaded * 100) / total);
           setProgress(progress);
         },
+        abortSignal: abortController.current.signal,
       }),
     [atlas.user]
   );
 
-  const muation = useMutation({
+  const mutation = useMutation({
     mutationFn: upload,
-    mutationKey: [MutationKey.UploadUserAssets],
+    mutationKey: [MutationKey.UploadUserAssets, abortController],
     onSuccess,
     onError,
   });
 
-  return { muation, progress };
+  return {
+    mutation,
+    progress,
+    abort: () => abortController.current.abort(),
+  };
 }

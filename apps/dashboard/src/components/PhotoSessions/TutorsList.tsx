@@ -23,6 +23,7 @@ const TutorsList: React.FC<{
           >
             <TutorCard
               id={item.id}
+              studioId={item.studioId}
               name={item.name}
               image={item.image}
               email={item.email}

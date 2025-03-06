@@ -170,7 +170,6 @@ async function main(): Promise<void> {
             bio: faker.lorem.words(9),
             activated: true,
             activatedBy: admin.id,
-            video: "/video.mp4",
           },
           tx
         );
@@ -228,7 +227,6 @@ async function main(): Promise<void> {
               bio: faker.lorem.words(9),
               activated: true,
               activatedBy: admin.id,
-              video: "/video.mp4",
             },
             tx
           );

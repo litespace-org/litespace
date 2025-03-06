@@ -85,6 +85,11 @@ type DashboardPayload =
       id: number;
     }
   | {
+      route: Dashboard.PhotoSession;
+      tutorId: number;
+      studioId: number;
+    }
+  | {
       route: Exclude<Dashboard, Dashboard.User>;
     };
 

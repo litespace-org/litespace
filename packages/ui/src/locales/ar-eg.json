@@ -380,6 +380,15 @@
   "dashboard.photo-sessions.title": "جلسات التصوير",
   "dashboard.photo-sessions.search-placeholder": "ابحث عن معلم",
   "dashboard.photo-sessions.tutor-card.registration-date": "تم التسجيل في {date}",
+  "dashboard.photo-session.label.intro-video": "الفيديو التعريفي",
+  "dashboard.photo-session.label.thumbnail-image": "الصورة المصغرة",
+  "dashboard.photo-session.label.upload-video": "تعديل الفيديو",
+  "dashboard.photo-session.label.upload-image": "تعديل الصورة",
+  "dashboard.photo-session.button.upload-video": "قم برفع الفيديو التعريفي الخاص بالمعلم",
+  "dashboard.photo-session.button.upload-image": "قم برفع الصورة المصغرة الخاصة بالمعلم",
+  "dashboard.photo-session.confirmation-dialog.video-title": "جاري رفع الفيديو الخاص بالمعلم",
+  "dashboard.photo-session.confirmation-dialog.avatar-title": "جاري رفع الصورة الخاص بالمعلم",
+  "dashboard.photo-session.confirmation-dialog.thumbnail-title": "جاري رفع الصورة المصغرة الخاص بالمعلم",
   "chat.loading": "برجاء الانتظار... جاري تحميل المحادثات!",
   "chat.start-message": "لا تتردد في بدء المحادثة مع معلمك! كل سؤال هو خطوة نحو إتقانك للغة الإنجليزية",
   "chat.no": "إطرح جميع إسئلتك علي معلمك المفضل",
@@ -626,6 +635,7 @@
   "labels.go-dashboard": "الذهاب الي لوحة التحكم",
   "labels.skip": "تخطي",
   "labels.retry": "حاول مرة اخري",
+  "labels.try-again": "إعادة المحاولة",
   "labels.email": "البريد الالكتروني",
   "labels.email.placeholder": "ادخل بريدك الالكتروني",
   "labels.password": "كلمة المرور",
@@ -645,7 +655,13 @@
   "labels.share": "مشاركة",
   "labels.go-back": "الرجوع",
   "labels.coming-soon": "قريبا 🎉",
+  "labels.done": "تم",
+  "labels.file-upload-done": "اكتمل رفع الملف",
+  "labels.file-upload-failed": "تعذر رفع الملف",
+  "labels.file-upload-inprogress": "جاري رفع الملف",
+  "labels.file-upload-canceled": "تم إلغاء التحميل",
   "labels.cancel": "إلغاء",
+  "labels.close": "إغلاق",
   "labels.back-to-site": "الرجوع الي الموقع",
   "labels.login": "تسجيل الدخول",
   "placeholders.from": "من",
