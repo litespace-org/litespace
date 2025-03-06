@@ -25,6 +25,7 @@ import {
   subtractSlotsBatch as subtractSlots,
 } from "@litespace/utils";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { CannotBookDialog } from "@/components/Lessons/ManageLesson/CannotBookDialog";
 
 const Loading: React.FC<{
   tutorName: string | null;
@@ -86,7 +87,13 @@ const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
 };
 
 const Animation: React.FC<{
-  id?: Step | "loading" | "busy-tutor" | "error";
+  id?:
+    | Step
+    | "loading"
+    | "busy-tutor"
+    | "error"
+    | "has-booked-lesson"
+    | "unverified";
   children: React.ReactNode;
 }> = ({ id, children }) => {
   const duration = useMemo(() => {
@@ -147,6 +154,9 @@ export const ManageLessonDialog: React.FC<{
   duration?: number;
   slots: IAvailabilitySlot.Self[];
   bookedSlots: IAvailabilitySlot.SubSlot[];
+  isVerified: boolean;
+  hasBookedLessons: boolean;
+  sendVerifyEmail?: Void;
   retry: Void;
   /**
    * Generic function that will submit data either to be booked or edited
@@ -162,16 +172,19 @@ export const ManageLessonDialog: React.FC<{
   }) => void;
 }> = ({
   open,
-  close,
   tutorId,
   name,
   imageUrl,
   slots,
   bookedSlots,
-  onSubmit,
   loading,
   error,
   confirmationLoading,
+  isVerified,
+  hasBookedLessons,
+  sendVerifyEmail,
+  close,
+  onSubmit,
   retry,
   ...initials
 }) => {
@@ -241,6 +254,16 @@ export const ManageLessonDialog: React.FC<{
 
   const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
 
+  const canBook = useMemo(
+    () => !error && !loading && isVerified && !hasBookedLessons,
+    [error, loading, isVerified, hasBookedLessons]
+  );
+
+  const canProceed = useMemo(
+    () => canBook && !isTutorBusy,
+    [canBook, isTutorBusy]
+  );
+
   return (
     <Dialog
       open={open}
@@ -257,13 +280,13 @@ export const ManageLessonDialog: React.FC<{
         </Typography>
       }
       className={cn(
-        "px-0 py-4 lg:!py-6 [&>div:first-child]:!px-4 md:[&>div:first-child]:!px-0 lg:[&>div:first-child]:!px-6",
+        "px-0 py-4 lg:!py-6 [&>div:first-child]:!px-4 md:[&>div:first-child]:!px-0 lg:[&>div:first-child]:!px-0",
         {
           "!left-0 right-0 translate-x-0": !sm,
         }
       )}
     >
-      {!loading && !error ? (
+      {canBook ? (
         <div className="mt-6 md:mt-8 px-4 md:px-0">
           <Stepper step={step} />
         </div>
@@ -271,6 +294,7 @@ export const ManageLessonDialog: React.FC<{
 
       <div
         className={cn({
+          "!mt-4": !isVerified || hasBookedLessons,
           "mt-6": step === "date-selection",
           "mt-6 md:mt-8": step === "time-selection",
         })}
@@ -288,13 +312,29 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {isTutorBusy && !loading && !error ? (
+          {!isVerified && !error && !loading ? (
+            <Animation key="unverified" id="unverified">
+              <CannotBookDialog
+                close={close}
+                submit={sendVerifyEmail}
+                type="unverified"
+              />
+            </Animation>
+          ) : null}
+
+          {hasBookedLessons && isVerified && !error && !loading ? (
+            <Animation key="has-booked-lesson" id="has-booked-lesson">
+              <CannotBookDialog close={close} type="has-booked" />
+            </Animation>
+          ) : null}
+
+          {isTutorBusy && canBook ? (
             <Animation key="busy-tutor" id="busy-tutor">
               <BusyTutor tutorName={name} />
             </Animation>
           ) : null}
 
-          {step === "date-selection" && !loading && !error && !isTutorBusy ? (
+          {step === "date-selection" && canProceed ? (
             <Animation key="date-selection" id="date-selection">
               <DateSelection
                 min={dateBounds.min}
@@ -306,10 +346,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {!isTutorBusy &&
-          step === "duration-selection" &&
-          !loading &&
-          !error ? (
+          {step === "duration-selection" && canProceed ? (
             <Animation key="duration-selection" id="duration-selection">
               <div className="px-4 md:px-0 mt-6 md:mt-14 mb-10 md:mb-[82px]">
                 <DurationSelection value={duration} onChange={setDuration} />
@@ -317,7 +354,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {!isTutorBusy && step === "time-selection" && !loading && !error ? (
+          {step === "time-selection" && canProceed ? (
             <Animation key="time-selection" id="time-selection">
               <TimeSelection
                 slots={allSlots}
@@ -333,11 +370,10 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {!isTutorBusy &&
-          step === "confirmation" &&
+          {step === "confirmation" &&
+          !isTutorBusy &&
           lessonDetails.start &&
-          !loading &&
-          !error ? (
+          canBook ? (
             <Animation key="confimration" id="confirmation">
               <div className="px-4 md:px-0">
                 <Confirmation
@@ -365,7 +401,7 @@ export const ManageLessonDialog: React.FC<{
         </AnimatePresence>
       </div>
 
-      {step !== "confirmation" && !loading && !error && !isTutorBusy ? (
+      {step !== "confirmation" && canProceed ? (
         <div
           className={cn(
             "flex flex-row gap-4 md:gap-[14px] w-full md:ms-auto md:w-fit px-4 md:px-0",

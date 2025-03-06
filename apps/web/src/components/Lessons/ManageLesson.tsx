@@ -1,6 +1,10 @@
 import { ManageLessonDialog } from "@litespace/ui/Lessons";
 import { ILesson, Void } from "@litespace/types";
-import { useCreateLesson, useUpdateLesson } from "@litespace/headless/lessons";
+import {
+  useCreateLesson,
+  useInfiniteLessons,
+  useUpdateLesson,
+} from "@litespace/headless/lessons";
 import { useMemo, useCallback } from "react";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -12,6 +16,9 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import dayjs from "@/lib/dayjs";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { capture } from "@/lib/sentry";
+import { useUserContext } from "@litespace/headless/context/user";
+import { useSendVerifyEmail } from "@litespace/headless/auth";
+import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
 
 type Base = {
   close: Void;
@@ -38,6 +45,7 @@ type Props = Base & ManageLessonPayload;
  * book new lessons or edit existing lesson
  */
 const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
+  const { user } = useUserContext();
   const toast = useToast();
   const intl = useFormatMessage();
   const invalidate = useInvalidateQuery();
@@ -50,6 +58,13 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     }),
     [tutorId]
   );
+
+  const lessons = useInfiniteLessons({
+    canceled: false,
+    users: user ? [user?.id] : [],
+    userOnly: true,
+    future: true,
+  });
 
   const tutorAvailabilitySlots = useFindAvailabilitySlots(
     availabilitySlotsQuery
@@ -143,6 +158,30 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     [payload, createLessonMutation, tutorId, updateLessonMutation]
   );
 
+  const onSendVerifyEmailSuccess = useCallback(() => {
+    toast.success({
+      title: intl("student-settings.confirm-email.success.title"),
+      description: intl("student-settings.confirm-email.success.desc"),
+    });
+  }, [toast, intl]);
+
+  const onSendVerifyEmailError = useCallback(
+    (error: unknown) => {
+      capture(error);
+
+      toast.error({
+        title: intl("student-settings.confirm-email.error"),
+        description: intl(getErrorMessageId(error)),
+      });
+    },
+    [toast, intl]
+  );
+
+  const sendVerifyEmail = useSendVerifyEmail({
+    onSuccess: onSendVerifyEmailSuccess,
+    onError: onSendVerifyEmailError,
+  });
+
   const bookedSlots = useMemo(() => {
     if (!tutorAvailabilitySlots.data?.subslots) return [];
     if (payload.type === "book") return tutorAvailabilitySlots.data.subslots;
@@ -152,6 +191,8 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
       (slot) => !start.isSame(slot.start) || !end.isSame(slot.end)
     );
   }, [tutorAvailabilitySlots.data?.subslots, payload]);
+
+  if (!user) return null;
 
   return (
     <ManageLessonDialog
@@ -164,14 +205,21 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
       close={close}
       confirmationLoading={createLessonMutation.isPending}
       loading={
-        tutorAvailabilitySlots.isLoading || tutor.isLoading || tutor.isFetching
+        tutorAvailabilitySlots.isLoading ||
+        tutor.isPending ||
+        lessons.query.isPending
       }
+      sendVerifyEmail={() => sendVerifyEmail.mutate(VERIFY_EMAIL_CALLBACK_URL)}
       bookedSlots={bookedSlots}
       slots={tutorAvailabilitySlots.data?.slots.list || []}
       onSubmit={onSubmit}
+      isVerified={user?.verified}
+      hasBookedLessons={lessons.list ? lessons.list.length > 0 : false}
       open
       retry={tutorAvailabilitySlots.refetch}
-      error={tutorAvailabilitySlots.isError}
+      error={
+        tutorAvailabilitySlots.isError || lessons.query.isError || tutor.isError
+      }
     />
   );
 };
