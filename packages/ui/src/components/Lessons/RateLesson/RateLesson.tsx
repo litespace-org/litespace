@@ -77,7 +77,7 @@ export const RateLesson: React.FC<{
         </Typography>
         <Typography
           tag="span"
-          className="text-natural-950 text-center font-regular text-caption"
+          className="text-natural-950 text-center font-normal text-caption"
         >
           {type === "session"
             ? intl("session.rating.question.description")

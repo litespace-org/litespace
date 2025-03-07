@@ -186,7 +186,7 @@ export const ChatMessage: React.FC<{
             lineBreak: "anywhere",
           }}
           className={cn(
-            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] text-caption font-regular",
+            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] text-caption font-normal",
             {
               "text-natural-950": !error,
               "text-natural-50": error && !pending,

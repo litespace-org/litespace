@@ -109,7 +109,7 @@ const TopicSelection: React.FC = () => {
       <div className="flex flex-col gap-2">
         <Typography
           tag="span"
-          className="text-natural-950 hidden text-subtitle-2 font-regular"
+          className="text-natural-950 hidden text-subtitle-2 font-normal"
         >
           {intl("student-settings.edit.personal.topics")}
         </Typography>
@@ -143,7 +143,7 @@ const TopicSelection: React.FC = () => {
                   <Animate>
                     <Typography
                       tag="span"
-                      className="bg-brand-700 text-natural-50 px-4 py-3 rounded-[24px] text-caption font-regular"
+                      className="bg-brand-700 text-natural-50 px-4 py-3 rounded-[24px] text-caption font-normal"
                     >
                       {topic.name.ar}
                     </Typography>

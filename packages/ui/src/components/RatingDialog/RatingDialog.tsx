@@ -91,7 +91,7 @@ const RatingDialog: React.FC<DialogProps> = ({
         </Typography>
         <Typography
           tag="p"
-          className="text-natural-950 text-center text-caption font-regular"
+          className="text-natural-950 text-center text-caption font-normal"
         >
           {description}
         </Typography>

@@ -62,7 +62,7 @@ export const Accordion: React.FC<{
             <div className="overflow-hidden">
               <Typography
                 tag="p"
-                className="text-tiny sm:text-caption font-regular pt-5 pb-6"
+                className="text-tiny sm:text-caption font-normal pt-5 pb-6"
               >
                 {item.content}
               </Typography>

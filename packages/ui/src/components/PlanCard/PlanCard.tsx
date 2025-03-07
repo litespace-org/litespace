@@ -65,7 +65,7 @@ export const PlanCard: React.FC<Props> = ({
         <Typography
           tag="span"
           className={cn(
-            "text-tiny lg:text-body font-regular lg:font-semibold",
+            "text-tiny lg:text-body font-normal lg:font-semibold",
             "absolute top-0 left-[34px] md:left-1/2 md:-translate-x-1/2 -translate-y-full",
             "border-t border-r border-l border-natural-300 rounded-t-lg md:rounded-t-2xl py-[7px] px-[8px] md:p-[10px] shadow-plan-card-label -z-10",
             { "bg-natural-100 text-brand-700": label === "most-common" },
@@ -93,7 +93,7 @@ export const PlanCard: React.FC<Props> = ({
               <Typography
                 tag="span"
                 className={cn(
-                  "text-brand-700 py-[2px] px-3 rounded-[30px] text-tiny font-regular",
+                  "text-brand-700 py-[2px] px-3 rounded-[30px] text-tiny font-normal",
                   primary ? "bg-discount-primary" : "bg-discount-default"
                 )}
               >
@@ -108,7 +108,7 @@ export const PlanCard: React.FC<Props> = ({
         <Typography
           tag="p"
           className={cn(
-            "inline-block mb-2 md:mb-4 text-tiny font-regular lg:font-semibold",
+            "inline-block mb-2 md:mb-4 text-tiny font-normal lg:font-semibold",
             primary ? "text-natural-100" : "text-natural-700"
           )}
         >
@@ -148,7 +148,7 @@ export const PlanCard: React.FC<Props> = ({
               <Typography
                 tag="span"
                 className={cn(
-                  "text-tiny font-regular",
+                  "text-tiny font-normal",
                   primary ? "text-natural-100" : "text-natural-700"
                 )}
               >
@@ -157,7 +157,7 @@ export const PlanCard: React.FC<Props> = ({
               <Typography
                 tag="span"
                 className={cn(
-                  "block relative text-tiny font-regular",
+                  "block relative text-tiny font-normal",
                   primary ? "text-destructive-400" : "text-destructive-600"
                 )}
               >

@@ -12,7 +12,7 @@ export const FullSwitch: React.FC<
         <Typography
           tag="h2"
           className={cn(
-            "text-natural-950 mb-1 font-semibold md:font-regular text-body md:text-subtitle-2"
+            "text-natural-950 mb-1 font-semibold md:font-normal text-body md:text-subtitle-2"
           )}
         >
           {title}
@@ -20,7 +20,7 @@ export const FullSwitch: React.FC<
         <Typography
           tag="p"
           className={cn(
-            "text-natural-600 font-regular text-caption md:text-body"
+            "text-natural-600 font-normal text-caption md:text-body"
           )}
         >
           {description}

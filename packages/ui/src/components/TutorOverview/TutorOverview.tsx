@@ -141,7 +141,7 @@ export const Card: React.FC<{
         </div>
         <Typography
           tag="h2"
-          className="text-natural-600 text-caption font-regular"
+          className="text-natural-600 text-caption font-normal"
         >
           {intl(title)}
         </Typography>
