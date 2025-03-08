@@ -7,6 +7,7 @@ import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import speaking from "@/components/Session/speechIndicatorAnimation.json";
 import Lottie from "react-lottie";
 import { Animate as AnimateOpacity } from "@/components/Animate";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -29,14 +30,14 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         duration: 0.3,
         ease: "easeInOut",
       }}
-      className="relative w-full !h-full grow rounded-2xl overflow-hidden"
+      className="relative w-full min-h-full !h-full grow"
     >
       {children}
     </motion.div>
   );
 };
 
-const Stream: React.FC<{
+const VideoStream: React.FC<{
   stream: MediaStream | null;
   muted: boolean;
   hidden?: boolean;
@@ -58,23 +59,33 @@ const Stream: React.FC<{
   );
 };
 
-export const FocusedStream: React.FC<{
+export const Stream: React.FC<{
   chat?: boolean;
   muted: boolean;
+  size?: "small" | "large";
   stream: StreamInfo;
-}> = ({ stream, muted }) => {
+}> = ({ stream, muted, size = "large" }) => {
+  const mq = useMediaQuery();
+
   return (
     <motion.div
       layout
       transition={{ duration: 0.3 }}
-      className="rounded-2xl grow relative w-full h-full bg-natural-100 min-h-[398px] md:min-h-[744px] lg:min-h-max lg:h-[550px]"
+      className={cn("relative h-full !min-h-full w-full")}
     >
-      <Stream stream={stream.stream} muted={muted} />
+      {size === "small" ? (
+        <div className="absolute w-full h-full bg-natural-100 blur-[15px] z-stream-background" />
+      ) : null}
+      <VideoStream stream={stream.stream} muted={muted} />
       <AnimatePresence mode="wait">
         {!stream.video && !stream.cast ? (
           <Animate key="avatar">
-            <div className="w-full h-full flex items-center justify-center absolute top-0 left-0 bg-natural-100">
-              <UserAvatar user={stream.user} speaking={stream.speaking} />
+            <div className="w-full h-full min-h-full flex items-center z-stream-avatar justify-center absolute top-0 left-0 bg-natural-100">
+              <UserAvatar
+                variant={size}
+                user={stream.user}
+                speaking={stream.speaking}
+              />
             </div>
           </Animate>
         ) : null}
@@ -83,10 +94,26 @@ export const FocusedStream: React.FC<{
       <AnimatePresence mode="wait" initial={false}>
         {!stream.audio ? (
           <AnimateOpacity key="muted-mic">
-            <div className="top-6 left-6 absolute rounded-full overflow-hidden">
-              <div className="w-10 h-10 flex items-center justify-center relative">
-                <div className="absolute w-full z-[9] h-full blur-[15px] bg-[#0000004D]" />
-                <MicrophoneSlash className="w-6 z-10 h-6 [&_*]:stroke-natural-50" />
+            <div
+              className={cn("absolute rounded-full overflow-hidden", {
+                "top-2 left-2": size === "small",
+                "top-4 left-[14px] md:top-[25px] md:left-6 lg:top-8 lg:left-8":
+                  size === "large",
+              })}
+            >
+              <div
+                className={cn("flex items-center justify-center relative", {
+                  "w-8 h-8 md:w-10 md:h-10": size === "large",
+                  "w-6 h-6 md:w-8 md:h-8": size === "small",
+                })}
+              >
+                <div className="absolute w-full z-stream-icon-background h-full blur-[15px] bg-[#0000004D]" />
+                <MicrophoneSlash
+                  className={cn("z-stream-icon [&_*]:stroke-natural-50", {
+                    "w-6 h-6": size === "large",
+                    "w-4 h-4": size === "small",
+                  })}
+                />
               </div>
             </div>
           </AnimateOpacity>
@@ -96,13 +123,19 @@ export const FocusedStream: React.FC<{
           <AnimateOpacity key="speaking-indicator">
             <div
               className={cn(
-                "absolute w-8 h-8 top-6 left-6 pointer-events-none",
+                "absolute z-stream-icon pointer-events-none flex items-center justify-center",
+                {
+                  "w-6 h-6 top-2 left-2": size === "small" && !mq.md,
+                  "w-8 h-8 top-2 left-2": size === "small" && mq.md,
+                  "w-8 h-8 top-4 left-[14px] md:top-8 md:left-8":
+                    size === "large",
+                },
                 !stream.speaking && "opacity-0"
               )}
             >
               <Lottie
-                width={32}
-                height={32}
+                width={size === "small" && !mq.md ? 24 : 32}
+                height={size === "small" && !mq.md ? 24 : 32}
                 options={{
                   loop: true,
                   autoplay: true,
@@ -117,4 +150,4 @@ export const FocusedStream: React.FC<{
   );
 };
 
-export default FocusedStream;
+export default Stream;

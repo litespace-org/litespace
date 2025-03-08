@@ -1,5 +1,5 @@
 import { Void } from "@litespace/types";
-import React, { useRef } from "react";
+import React from "react";
 import { Actions } from "@/components/Session/Actions";
 import { SessionStreams } from "@/components/Session/SessionStreams";
 import { StreamInfo } from "@/components/Session/types";
@@ -47,26 +47,20 @@ export const Session: React.FC<Props> = ({
   chat,
 }) => {
   const mq = useMediaQuery();
-  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div
-      ref={containerRef}
-      className="flex flex-col h-full gap-4 lg:gap-10 pb-[66px]"
-    >
+    <div className="flex relative flex-col h-full gap-4 lg:gap-6 pb-[78px]">
       <div
         className={cn(
-          "w-full grow border bg-natural-100",
-          "rounded-lg overflow-hidden",
+          "w-full grow",
           chat.enabled
-            ? "lg:grid relative lg:grid-cols-[auto,minmax(35%,326px)]"
+            ? "lg:grid relative gap-6 lg:grid-cols-[auto,minmax(35%,326px)]"
             : "flex"
         )}
       >
         <AnimatePresence mode="wait">
-          <AnimateWidth className="!w-full">
+          <AnimateWidth className="!w-full h-full">
             <SessionStreams
-              containerRef={containerRef}
               currentUserId={currentUserId}
               streams={streams}
               chat={chat.enabled}
@@ -76,15 +70,15 @@ export const Session: React.FC<Props> = ({
 
         {chat.enabled && mq.lg ? (
           <AnimatePresence mode="wait">
-            <AnimateWidth key="chat" className="h-full">
+            <AnimateWidth
+              key="chat"
+              className="h-full shadow shadow-message-panel rounded-2xl"
+            >
               {chatPanel}
             </AnimateWidth>
           </AnimatePresence>
         ) : null}
-
-        {chat.enabled && !mq.lg ? chatPanel : null}
       </div>
-      <div className="hidden lg:block border-t border-natural-400" />
       <Actions
         leave={leave}
         screen={cast}
@@ -92,6 +86,11 @@ export const Session: React.FC<Props> = ({
         audio={audio}
         chat={chat}
       />
+      {chat.enabled && !mq.lg ? (
+        <div className="absolute w-full h-full top-0 left-0 z-stream-chat">
+          {chatPanel}
+        </div>
+      ) : null}
     </div>
   );
 };

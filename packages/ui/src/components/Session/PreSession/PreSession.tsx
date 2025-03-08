@@ -3,7 +3,7 @@ import { Ready } from "@/components/Session/Ready";
 import { IUser, Void } from "@litespace/types";
 import Actions from "@/components/Session/Actions";
 import cn from "classnames";
-import FocusedStream from "@/components/Session/FocusedStream";
+import Stream from "@/components/Session/Stream";
 
 export type Props = {
   stream: MediaStream | null;
@@ -60,17 +60,19 @@ export const PreSession: React.FC<Props> = ({
         "flex flex-col lg:grid lg:grid-cols-[1fr,auto] lg:grid-rows-[auto,1fr] items-center lg:items-start gap-4 lg:gap-6"
       )}
     >
-      <FocusedStream
-        muted
-        stream={{
-          stream,
-          speaking,
-          audio: audio.enabled,
-          video: video.enabled,
-          user: members.current,
-          cast: false,
-        }}
-      />
+      <div className="h-full w-full rounded-2xl flex items-stretch relative overflow-hidden min-h-[398px] bg-natural-100 md:min-h-[744px] lg:min-h-max lg:h-[550px]">
+        <Stream
+          muted
+          stream={{
+            stream,
+            speaking,
+            audio: audio.enabled,
+            video: video.enabled,
+            user: members.current,
+            cast: false,
+          }}
+        />
+      </div>
       <div className="grow w-[306px] flex justify-center items-center h-full">
         <Ready
           error={audio.error}
