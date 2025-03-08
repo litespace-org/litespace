@@ -58,7 +58,7 @@ const TutorSettings: React.FC = () => {
               info={{
                 ...tutorInfo.data,
                 city: user.city,
-                phoneNumber: user.phoneNumber,
+                phone: user.phone,
                 email: user.email,
               }}
             />

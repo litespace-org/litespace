@@ -8,8 +8,7 @@ export function isValidInvoiceReceiver(
   bankName?: Bank
 ) {
   if (type === WithdrawMethod.Wallet) {
-    if (!PHONE_NUMBER_REGEX.test(receiver))
-      return FieldError.InvalidPhoneNumber;
+    if (!PHONE_NUMBER_REGEX.test(receiver)) return FieldError.InvalidPhone;
     return true;
   }
   if (type === WithdrawMethod.Instapay) {

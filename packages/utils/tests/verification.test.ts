@@ -25,7 +25,7 @@ import {
   isValidInvoiceAmount,
   isValidInvoiceNote,
   isValidTopicName,
-  isValidPhoneNumber,
+  isValidPhone,
   isValidContactRequestMessage,
   isValidContactRequestTitle,
 } from "@/validation";
@@ -92,29 +92,23 @@ describe("validate username", () => {
   });
 });
 
-describe(nameof(isValidPhoneNumber), () => {
+describe(nameof(isValidPhone), () => {
   it("should reject invalid input types", () => {
-    expect(isValidPhoneNumber(-10)).toBe(FieldError.InvalidPhoneNumber);
-    expect(isValidPhoneNumber(true)).toBe(FieldError.InvalidPhoneNumber);
+    expect(isValidPhone(-10)).toBe(FieldError.InvalidPhone);
+    expect(isValidPhone(true)).toBe(FieldError.InvalidPhone);
   });
 
   it("should reject invalid phone numbers", () => {
-    expect(isValidPhoneNumber("010123456789")).toBe(
-      FieldError.InvalidPhoneNumber
-    );
-    expect(isValidPhoneNumber("0101234567")).toBe(
-      FieldError.InvalidPhoneNumber
-    );
-    expect(isValidPhoneNumber("01312345678")).toBe(
-      FieldError.InvalidPhoneNumber
-    );
+    expect(isValidPhone("010123456789")).toBe(FieldError.InvalidPhone);
+    expect(isValidPhone("0101234567")).toBe(FieldError.InvalidPhone);
+    expect(isValidPhone("01312345678")).toBe(FieldError.InvalidPhone);
   });
 
   it("should accept valid phone numbers", () => {
-    expect(isValidPhoneNumber("01012345678")).toBe(true);
-    expect(isValidPhoneNumber("01112345678")).toBe(true);
-    expect(isValidPhoneNumber("01212345678")).toBe(true);
-    expect(isValidPhoneNumber("01512345678")).toBe(true);
+    expect(isValidPhone("01012345678")).toBe(true);
+    expect(isValidPhone("01112345678")).toBe(true);
+    expect(isValidPhone("01212345678")).toBe(true);
+    expect(isValidPhone("01512345678")).toBe(true);
   });
 });
 

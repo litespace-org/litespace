@@ -19,7 +19,7 @@ import { Typography } from "@litespace/ui/Typography";
 
 const TutorSettings: React.FC<{
   info: ITutor.FindTutorInfoApiResponse & {
-    phoneNumber: string | null;
+    phone: string | null;
     city: IUser.City | null;
     email: string;
   };
@@ -35,7 +35,7 @@ const TutorSettings: React.FC<{
       bio: info.bio || "",
       about: info.about || "",
       email: info.email || "",
-      phoneNumber: info.phoneNumber || "",
+      phone: info.phone || "",
       city: orUndefined(info.city),
     },
   });
@@ -44,7 +44,7 @@ const TutorSettings: React.FC<{
   const bio = form.watch("bio");
   const about = form.watch("about");
   const email = form.watch("email");
-  const phoneNumber = form.watch("phoneNumber");
+  const phone = form.watch("phone");
   const city = form.watch("city");
   const password = form.watch("password.new");
 
@@ -54,10 +54,10 @@ const TutorSettings: React.FC<{
       orNull(bio.trim()) !== info.bio ||
       orNull(about.trim()) !== info.about ||
       orNull(email.trim()) !== info.email ||
-      orNull(phoneNumber.trim()) !== info.phoneNumber ||
+      orNull(phone.trim()) !== info.phone ||
       orNull(city) !== info.city ||
       !!password,
-    [about, bio, name, city, phoneNumber, email, info, password]
+    [about, bio, name, city, phone, email, info, password]
   );
 
   const onSuccess = useCallback(() => {
@@ -92,16 +92,15 @@ const TutorSettings: React.FC<{
       return updateTutor.mutate({
         id: info.id,
         payload: {
+          // TODO: use form utils
           name: data.name.trim() !== info.name ? data.name.trim() : undefined,
           bio: data.bio.trim() !== info.bio ? data.bio.trim() : undefined,
           about:
             data.about.trim() !== info.about ? data.about.trim() : undefined,
           email:
             data.email.trim() !== info.email ? data.email.trim() : undefined,
-          phoneNumber:
-            data.phoneNumber.trim() !== info.phoneNumber
-              ? data.phoneNumber.trim()
-              : undefined,
+          phone:
+            data.phone.trim() !== info.phone ? data.phone.trim() : undefined,
           city: data.city !== info.city ? data.city : undefined,
           password:
             data.password.current && data.password.new

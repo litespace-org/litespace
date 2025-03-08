@@ -5,6 +5,7 @@ import {
   withFilter,
   WithOptionalTx,
   withPagination,
+  withSkippablePagination,
 } from "@/query";
 import { first, isEmpty, merge, omit } from "lodash";
 import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
@@ -28,10 +29,11 @@ const fullTutorFields: FullTutorFieldsMap = {
   password: users.column("password"),
   birthYear: users.column("birth_year"),
   gender: users.column("gender"),
-  verified: users.column("verified"),
+  verifiedEmail: users.column("verified_email"),
+  verifiedPhone: users.column("verified_phone"),
   creditScore: users.column("credit_score"),
   city: users.column("city"),
-  phoneNumber: users.column("phone_number"),
+  phone: users.column("phone"),
   createdAt: users.column("created_at"),
   updatedAt: users.column("updated_at"),
   metaUpdatedAt: tutorColumn("updated_at"),
@@ -150,14 +152,20 @@ export class Tutors {
     return !isEmpty(rows);
   }
 
-  async find(filter?: IFilter.Self): Promise<ITutor.FullTutor[]> {
-    return await withFilter({
-      builder: this.fullTutorQuery(),
-      defaults: {
-        search: { columns: this.columns.fullTutorFields.filterable },
-      },
-      filter,
-    }).then();
+  async find({
+    tx,
+    ...pagination
+  }: WithOptionalTx<IFilter.SkippablePagination>): Promise<
+    Paginated<ITutor.FullTutor>
+  > {
+    const base = this.builder(tx)
+      .from<IUser.Row>(users.table)
+      .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"));
+    const total = await countRows(base.clone(), { distinct: true });
+    const query = base.select<ITutor.FullTutorRow[]>(fullTutorFields);
+    const rows = await withSkippablePagination(query, pagination);
+    const list = rows.map((row) => this.asFullTutor(row));
+    return { list, total };
   }
 
   /**
@@ -309,7 +317,7 @@ export class Tutors {
       .andWhereNot(users.column("birth_year"), null)
       .andWhereNot(users.column("name"), null)
       .andWhereNot(users.column("gender"), null)
-      .andWhere(users.column("verified"), true);
+      .andWhere(users.column("verified_email"), true);
     return rows.map((row) => this.asFullTutor(row));
   }
 

@@ -9,7 +9,7 @@ import { telegram } from "@/lib/telegram";
 import {
   isValidContactRequestMessage,
   isValidContactRequestTitle,
-  isValidPhoneNumber,
+  isValidPhone,
   isValidUserName,
   safe,
 } from "@litespace/utils";
@@ -27,7 +27,7 @@ async function create(req: Request, res: Response, next: NextFunction) {
 
   const validations = [
     isValidUserName(payload.name),
-    isValidPhoneNumber(payload.phone),
+    isValidPhone(payload.phone),
     isValidContactRequestTitle(payload.title),
     isValidContactRequestMessage(payload.message),
   ];

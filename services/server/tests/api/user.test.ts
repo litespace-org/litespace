@@ -92,9 +92,10 @@ describe.skip("/api/v1/user/", () => {
         const newTutor = await db.tutor();
 
         await users.update(newTutor.id, {
-          verified: true,
+          verifiedEmail: true,
+          verifiedPhone: true,
           image: "/image.jpg",
-          phoneNumber: "01012345678",
+          phone: "01012345678",
         });
         await tutors.update(newTutor.id, {
           about: faker.lorem.paragraphs(),
@@ -135,7 +136,8 @@ describe.skip("/api/v1/user/", () => {
         };
 
         await users.update(newTutor.id, {
-          verified: true,
+          verifiedEmail: true,
+          verifiedPhone: true,
           // NOTE: image is not in tutors table.
           image: "/image.jpg",
         });
@@ -161,7 +163,8 @@ describe.skip("/api/v1/user/", () => {
         };
 
         await users.update(newTutor.id, {
-          verified: true,
+          verifiedEmail: true,
+          verifiedPhone: true,
           // NOTE: image is not in tutors table.
           image: "/image.jpg",
         });
@@ -222,7 +225,8 @@ describe.skip("/api/v1/user/", () => {
         for (const data of mockData) {
           const newTutor = await db.tutor({ name: data.name });
           await users.update(newTutor.id, {
-            verified: true,
+            verifiedEmail: true,
+            verifiedPhone: true,
             image: "/image.jpg",
           });
           await tutors.update(newTutor.id, data);
@@ -305,10 +309,11 @@ describe.skip("/api/v1/user/", () => {
       };
 
       await users.update(newTutor.id, {
-        verified: true,
+        verifiedEmail: true,
+        verifiedPhone: true,
         // NOTE: image is not in tutors table.
         image: "/image.jpg",
-        phoneNumber: "01012345678",
+        phone: "01012345678",
       });
       await tutors.update(newTutor.id, mockData);
 
@@ -334,10 +339,11 @@ describe.skip("/api/v1/user/", () => {
       };
 
       await users.update(newTutor.id, {
-        verified: true,
+        verifiedEmail: true,
+        verifiedPhone: true,
         // NOTE: image is not in tutors table.
         image: "/image.jpg",
-        phoneNumber: "01012345678",
+        phone: "01012345678",
       });
       await tutors.update(newTutor.id, mockData);
 
@@ -381,11 +387,12 @@ describe.skip("/api/v1/user/", () => {
         notice: 10,
       });
       await users.update(tutor.user.id, {
-        verified: true,
+        verifiedEmail: true,
+        verifiedPhone: true,
         image: "/image.jpg",
         gender: IUser.Gender.Female,
         name: "Sara",
-        phoneNumber: "01112223334",
+        phone: "01112223334",
       });
 
       // defining slots

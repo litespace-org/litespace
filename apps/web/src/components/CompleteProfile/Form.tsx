@@ -10,7 +10,7 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import {
   useValidatePassword,
-  useValidatePhoneNumber,
+  useValidatePhone,
   useValidateUserName,
 } from "@litespace/ui/hooks/validation";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -23,7 +23,7 @@ import { Web } from "@litespace/utils/routes";
 
 type IForm = {
   name: string;
-  phoneNumber: string;
+  phone: string;
   city: IUser.City;
   password: string;
 };
@@ -39,21 +39,21 @@ const CompleteProfile: React.FC = () => {
   const { control, handleSubmit, watch, formState } = useForm<IForm>({
     defaultValues: {
       name: user?.name || "",
-      phoneNumber: user?.phoneNumber || "",
+      phone: user?.phone || "",
       city: user?.city || undefined,
       password: "",
     },
   });
 
   const name = watch("name");
-  const phoneNumber = watch("phoneNumber");
+  const phone = watch("phone");
   const city = watch("city");
   const password = watch("password");
   const errors = formState.errors;
 
   const validatePassword = useValidatePassword();
   const validateUserName = useValidateUserName();
-  const validatePhoneNumber = useValidatePhoneNumber();
+  const validatePhone = useValidatePhone();
 
   const goRoot = useCallback(() => navigate(Web.Root), [navigate]);
 
@@ -92,10 +92,7 @@ const CompleteProfile: React.FC = () => {
         id: user.id,
         payload: {
           name: getNullableFiledUpdatedValue(user.name, data.name.trim()),
-          phoneNumber: getNullableFiledUpdatedValue(
-            user.phoneNumber,
-            data.phoneNumber.trim()
-          ),
+          phone: getNullableFiledUpdatedValue(user.phone, data.phone.trim()),
           city: getNullableFiledUpdatedValue(user.city, data.city),
           password: data.password
             ? { new: data.password, current: null }
@@ -127,20 +124,19 @@ const CompleteProfile: React.FC = () => {
 
           <Controller.PatternInput
             mask=" "
-            id="phoneNumber"
+            id="phone"
             control={control}
             idleDir="rtl"
             inputSize="large"
-            name="phoneNumber"
-            value={phoneNumber}
+            name="phone"
+            value={phone}
             format="### #### ####"
-            label={intl("labels.phoneNumber")}
-            rules={{ validate: validatePhoneNumber }}
-            placeholder={intl("labels.phoneNumber.placeholder")}
-            state={errors.phoneNumber ? "error" : undefined}
+            label={intl("labels.phone")}
+            rules={{ validate: validatePhone }}
+            placeholder={intl("labels.phone.placeholder")}
+            state={errors.phone ? "error" : undefined}
             helper={
-              errors.phoneNumber?.message ||
-              intl("complete-profile.phone.helper")
+              errors.phone?.message || intl("complete-profile.phone.helper")
             }
             autoComplete="off"
           />

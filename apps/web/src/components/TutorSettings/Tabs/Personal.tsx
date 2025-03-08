@@ -7,7 +7,7 @@ import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import {
   useRequired,
   useValidatePassword,
-  useValidatePhoneNumber,
+  useValidatePhone,
 } from "@litespace/ui/hooks/validation";
 import { governorates } from "@/constants/user";
 import NotificationSettings from "@/components/Common/NotificationSettings";
@@ -17,7 +17,7 @@ const PersonalSettings: React.FC<{
 }> = ({ form }) => {
   const intl = useFormatMessage();
   const validatePassword = useValidatePassword();
-  const validatePhoneNumber = useValidatePhoneNumber();
+  const validatePhone = useValidatePhone();
   const errors = form.formState.errors;
 
   const cityOptions = useMemo(
@@ -56,12 +56,12 @@ const PersonalSettings: React.FC<{
             dir="rtl"
           />
           <Controller.Input
-            label={intl("labels.phoneNumber")}
-            value={form.watch("phoneNumber")}
+            label={intl("labels.phone")}
+            value={form.watch("phone")}
             control={form.control}
-            rules={{ validate: validatePhoneNumber }}
+            rules={{ validate: validatePhone }}
             autoComplete="off"
-            name="phoneNumber"
+            name="phone"
             dir="rtl"
           />
           <Controller.Select

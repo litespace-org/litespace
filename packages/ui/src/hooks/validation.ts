@@ -9,7 +9,7 @@ import { FieldError } from "@litespace/types";
 import {
   isValidEmail,
   isValidPassword,
-  isValidPhoneNumber,
+  isValidPhone,
   isValidTutorBio,
   isValidUserName,
 } from "@litespace/utils/validation";
@@ -129,14 +129,14 @@ export function useValidateBio(required: boolean = false) {
   );
 }
 
-export function useValidatePhoneNumber(required?: boolean) {
+export function useValidatePhone(required?: boolean) {
   const intl = useFormatMessage();
 
   return useCallback(
     (value: unknown) => {
       if (!required && !value) return true;
-      const valid = isValidPhoneNumber(value);
-      if (valid === FieldError.InvalidPhoneNumber)
+      const valid = isValidPhone(value);
+      if (valid === FieldError.InvalidPhone)
         return intl("error.phone-number.invlaid");
       return true;
     },

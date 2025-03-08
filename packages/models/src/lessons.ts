@@ -52,6 +52,12 @@ type SearchFilter = {
    */
   before?: string;
   /**
+   * @description when provided with the `before` or `after` flag, it will not
+   * include lessons that are partially out the query time boundaries.
+   * @default false
+   */
+  strict?: boolean;
+  /**
    * Filter only lessons that blogs to the provided slot ids.
    */
   slots?: number[];
@@ -201,6 +207,8 @@ export class Lessons {
       name: users.column("name"),
       image: users.column("image"),
       role: users.column("role"),
+      phone: users.column("phone"),
+      verified_phone: users.column("verified_phone"),
     };
 
     const rows: ILesson.PopuldatedMemberRow[] = await users
@@ -461,6 +469,7 @@ export class Lessons {
       future = true,
       past = true,
       now = false,
+      strict = false,
       after,
       before,
       slots = [],
@@ -507,15 +516,14 @@ export class Lessons {
 
     if (after)
       builder.where((builder) => {
-        builder
-          .where(start, ">=", dayjs.utc(after).toDate())
-          .orWhere(end, ">", dayjs.utc(after).toDate());
+        builder.where(start, ">=", dayjs.utc(after).toDate());
+        if (!strict) builder.orWhere(end, ">", dayjs.utc(after).toDate());
       });
+
     if (before)
       builder.where((builder) => {
-        builder
-          .where(end, "<=", dayjs.utc(before).toDate())
-          .orWhere(start, "<", dayjs.utc(before).toDate());
+        builder.where(end, "<=", dayjs.utc(before).toDate());
+        if (!strict) builder.orWhere(start, "<", dayjs.utc(before).toDate());
       });
 
     if (!isEmpty(slots))
@@ -552,6 +560,8 @@ export class Lessons {
       name: row.name,
       image: row.image,
       role: row.role,
+      phone: row.phone,
+      verifiedPhone: row.verified_phone,
     };
   }
 

@@ -67,7 +67,7 @@ describe("/api/v1/topic/", () => {
         },
       })
     );
-    expect(res1).to.deep.eq(apierror(FieldError.InvalidPhoneNumber, 400));
+    expect(res1).to.deep.eq(apierror(FieldError.InvalidPhone, 400));
   });
 
   it("should respond with bad request in case the title is invalid", async () => {

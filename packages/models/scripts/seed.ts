@@ -35,7 +35,7 @@ dayjs.extend(utc);
 const birthYear = () =>
   faker.date.birthdate({ max: 70, min: 1, mode: "age" }).getFullYear();
 
-const phoneNumber = () =>
+const phone = () =>
   [
     sample(["011", "012", "010", "015"]),
     faker.number
@@ -100,10 +100,11 @@ async function main(): Promise<void> {
           await users.update(
             student.id,
             {
-              phoneNumber: phoneNumber(),
+              phone: phone(),
               city: city(),
               image: `/image-${idx + 1}.png`,
-              verified: true,
+              verifiedEmail: true,
+              verifiedPhone: true,
             },
             tx
           );
@@ -152,11 +153,12 @@ async function main(): Promise<void> {
         await users.update(
           tutor.id,
           {
-            phoneNumber: phoneNumber(),
+            phone: phone(),
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
             city: city(),
             image: "/image.png",
-            verified: true,
+            verifiedEmail: true,
+            verifiedPhone: true,
           },
           tx
         );
@@ -209,11 +211,12 @@ async function main(): Promise<void> {
           await users.update(
             tutor.id,
             {
-              phoneNumber: phoneNumber(),
+              phone: phone(),
               gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
               city: city(),
               image: "/image.png",
-              verified: true,
+              verifiedEmail: true,
+              verifiedPhone: true,
             },
             tx
           );

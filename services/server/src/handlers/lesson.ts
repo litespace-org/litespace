@@ -267,9 +267,14 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
 
   const result: ILesson.FindUserLessonsApiResponse = {
     list: userLessons.map((lesson) => {
-      const members = lessonMembers.filter(
-        (member) => member.lessonId === lesson.id
-      );
+      const members = lessonMembers
+        .filter((member) => member.lessonId === lesson.id)
+        .map((member) => ({
+          ...member,
+          // mask private information
+          phone: null,
+          verifiedPhone: false,
+        }));
       return { lesson, members };
     }),
     total,
@@ -295,7 +300,12 @@ async function findLessonById(req: Request, res: Response, next: NextFunction) {
 
   const response: ILesson.FindLessonByIdApiResponse = {
     lesson,
-    members,
+    members: members.map((member) => ({
+      ...member,
+      // mask private information
+      phone: null,
+      verifiedPhone: false,
+    })),
   };
 
   res.status(200).json(response);

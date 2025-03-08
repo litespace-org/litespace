@@ -95,9 +95,7 @@ const updateUserPayload = zod.object({
   bio: zod.optional(zod.string().trim()),
   about: zod.optional(zod.string().trim()),
   city: zod.optional(zod.union([zod.nativeEnum(IUser.City), zod.null()])),
-  phoneNumber: zod.optional(
-    zod.union([zod.string().max(15).trim(), zod.null()])
-  ),
+  phone: zod.optional(zod.union([zod.string().max(15).trim(), zod.null()])),
 });
 
 const orderByOptions = ["created_at", "updated_at"] as const satisfies Array<
@@ -210,7 +208,7 @@ function update(context: ApiContext) {
         bio,
         about,
         notice,
-        phoneNumber,
+        phone,
         city,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
@@ -239,9 +237,9 @@ function update(context: ApiContext) {
             email,
             gender,
             birthYear,
-            phoneNumber,
-            // Reset user verification status incase his email updated.
-            verified: email ? false : undefined,
+            phone,
+            // Reset user verification status incase the user email got updated.
+            verifiedEmail: email ? false : undefined,
             password: password ? hashPassword(password.new) : undefined,
           },
           tx

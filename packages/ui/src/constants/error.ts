@@ -112,7 +112,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [FieldError.EmptyInvoiceNote]: "error.field.empty-invoice-note",
   [FieldError.InvalidInvoiceNote]: "error.field.invalid-invoice-note",
   [FieldError.TooLongInvoiceNote]: "error.field.too-long-invoice-note",
-  [FieldError.InvalidPhoneNumber]: "error.field.invalid-phone-number",
+  [FieldError.InvalidPhone]: "error.field.invalid-phone-number",
   [FieldError.InvalidInstapayIPA]: "error.field.invalid-instapay-ipa",
   [FieldError.EmptyBankName]: "error.field.empty-bank-name",
   [FieldError.InvalidBankName]: "error.field.invalid-bank-name",

@@ -8,6 +8,7 @@
     "jsx": "react",
     "module": "ESNext",
     "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
     "outDir": "dist",
     "moduleResolution": "node",
