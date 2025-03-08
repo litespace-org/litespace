@@ -128,7 +128,7 @@ export const ProfileCard: React.FC<{
               <div className="flex items-center gap-2">
                 <Typography
                   tag="span"
-                  className="font-regular md:font-semibold text-tiny md:text-body lg:text-subtitle-2 text-natural-950 dark:text-natural-50 inline-block md:-mt-1"
+                  className="font-normal md:font-semibold text-tiny md:text-body lg:text-subtitle-2 text-natural-950 dark:text-natural-50 inline-block md:-mt-1"
                 >
                   {formatNumber(avgRating, {
                     maximumFractionDigits: 1,

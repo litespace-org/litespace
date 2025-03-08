@@ -142,7 +142,7 @@ export const ConfirmationDialog: React.FC<{
             {description ? (
               <Typography
                 tag="p"
-                className="text-natural-700 text-caption font-regular"
+                className="text-natural-700 text-caption font-normal"
               >
                 {description}
               </Typography>

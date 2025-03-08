@@ -24,7 +24,7 @@ const Complete: React.FC = () => {
             </Typography>
             <Typography
               tag="p"
-              className="text-natural-700 font-semibold sm:font-regular text-tiny-text sm:text-body"
+              className="text-natural-700 font-semibold sm:font-normal text-tiny-text sm:text-body"
             >
               {intl("complete-profile.description")}
             </Typography>

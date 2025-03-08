@@ -102,7 +102,7 @@ export const TutorCard: React.FC<CardProps> = ({
             <div className="flex flex-col gap-1 w-[46px]">
               <Typography
                 tag="span"
-                className="text-natural-800 font-regular text-tiny"
+                className="text-natural-800 font-normal text-tiny"
               >
                 {intl("tutors.card.label.students")}
               </Typography>
@@ -119,7 +119,7 @@ export const TutorCard: React.FC<CardProps> = ({
             <div className="flex flex-col gap-1 w-[46px]">
               <Typography
                 tag="span"
-                className="text-natural-800 font-regular text-tiny"
+                className="text-natural-800 font-normal text-tiny"
               >
                 {intl("tutors.card.label.lessons")}
               </Typography>
@@ -136,7 +136,7 @@ export const TutorCard: React.FC<CardProps> = ({
             <div className="flex flex-col gap-1 w-[46px]">
               <Typography
                 tag="span"
-                className="text-natural-800 font-regular text-tiny"
+                className="text-natural-800 font-normal text-tiny"
               >
                 {intl("tutors.card.label.rating")}
               </Typography>
@@ -177,7 +177,7 @@ export const TutorCard: React.FC<CardProps> = ({
                   <div className="w-16">
                     <Typography
                       tag="span"
-                      className="block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl text-center truncate font-regular text-tiny"
+                      className="block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl text-center truncate font-normal text-tiny"
                     >
                       {topic}
                     </Typography>
@@ -187,7 +187,7 @@ export const TutorCard: React.FC<CardProps> = ({
           })}
           <Typography
             tag="span"
-            className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-regular text-tiny"
+            className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
           >
             {remainingTopicsCount}
             {"+"}

@@ -66,7 +66,7 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
         </Typography>
         <Typography
           tag="p"
-          className="text-natural-700 max-w-[328px] md:max-w-[808px] sm:max-w-4xl inline text-body md:text-subtitle-2 font-regular lg:font-semibold"
+          className="text-natural-700 max-w-[328px] md:max-w-[808px] sm:max-w-4xl inline text-body md:text-subtitle-2 font-normal lg:font-semibold"
         >
           {intl("plans/message/description")}
         </Typography>
@@ -78,7 +78,7 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
               <>
                 <Typography
                   tag="span"
-                  className="absolute -top-[50px] md:-top-[57px] -right-[130px] md:-right-[115px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2 text-tiny font-regular"
+                  className="absolute -top-[50px] md:-top-[57px] -right-[130px] md:-right-[115px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2 text-tiny font-normal"
                 >
                   {intl("plans/installments/three-month")}
                 </Typography>
@@ -91,7 +91,7 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
               <>
                 <Typography
                   tag="span"
-                  className="absolute min-w-[106px] -bottom-[50px] md:-bottom-[20px] left-9 md:-left-[145px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2 text-tiny font-regular"
+                  className="absolute min-w-[106px] -bottom-[50px] md:-bottom-[20px] left-9 md:-left-[145px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2 text-tiny font-normal"
                 >
                   {intl("plans/installments/six-month")}
                 </Typography>

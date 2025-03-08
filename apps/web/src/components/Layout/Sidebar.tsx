@@ -72,7 +72,7 @@ const SidebarItem = ({
           tag="span"
           className={cn(
             active ? "text-natural-50" : "text-natural-700",
-            "text-tiny lg:text-caption font-regular lg:font-semibold"
+            "text-tiny lg:text-caption font-normal lg:font-semibold"
           )}
         >
           {label}
@@ -306,7 +306,7 @@ const Sidebar: React.FC<{
             </Typography>
             <Typography
               tag="p"
-              className="text-natural-700 inline-block text-tiny lg:text-caption font-regular lg:font-medium"
+              className="text-natural-700 inline-block text-tiny lg:text-caption font-normal lg:font-medium"
             >
               {intl("sidebar.account-promotion.description")}
             </Typography>

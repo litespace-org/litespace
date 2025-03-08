@@ -71,7 +71,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
 
         <Typography
           tag="p"
-          className="ellipsis line-clamp-2 text-natural-800 font-regular text-caption"
+          className="ellipsis line-clamp-2 text-natural-800 font-normal text-caption"
         >
           {about}
         </Typography>
@@ -91,7 +91,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
               <div className="flex flex-col gap-1">
                 <Typography
                   tag="span"
-                  className="text-natural-800 text-caption font-regular"
+                  className="text-natural-800 text-caption font-normal"
                 >
                   {intl("tutors.card.label.students")}
                 </Typography>
@@ -108,7 +108,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
               <div className="flex flex-col gap-1">
                 <Typography
                   tag="span"
-                  className="text-natural-800 font-regular text-caption"
+                  className="text-natural-800 font-normal text-caption"
                 >
                   {intl("tutors.card.label.lessons")}
                 </Typography>
@@ -125,7 +125,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
               <div className="flex flex-col gap-1">
                 <Typography
                   tag="span"
-                  className="text-natural-800 text-caption font-regular"
+                  className="text-natural-800 text-caption font-normal"
                 >
                   {intl("tutors.card.label.rating")}
                 </Typography>
@@ -170,7 +170,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
                     <div className="w-16">
                       <Typography
                         tag="span"
-                        className="block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl text-center truncate font-regular text-tiny"
+                        className="block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl text-center truncate font-normal text-tiny"
                       >
                         {topic}
                       </Typography>
@@ -180,7 +180,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
             })}
             <Typography
               tag="span"
-              className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-regular text-tiny"
+              className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
             >
               {remainingTopicsCount}
               {"+"}

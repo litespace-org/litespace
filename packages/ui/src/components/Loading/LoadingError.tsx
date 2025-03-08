@@ -33,7 +33,7 @@ export const LoadingError: React.FC<{
           "text-natural-950 text-center w-[226px] sm:w-full mt-6 sm:mt-4 mb-4",
           {
             "text-tiny font-semibold": size === "small",
-            "text-caption font-regular": size !== "small",
+            "text-caption font-normal": size !== "small",
           }
         )}
       >

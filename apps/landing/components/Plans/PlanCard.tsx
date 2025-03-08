@@ -65,7 +65,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
               <Typography
                 tag="span"
                 className={cn(
-                  "text-brand-700 py-[2px] px-3 rounded-[30px] text-tiny font-regular",
+                  "text-brand-700 py-[2px] px-3 rounded-[30px] text-tiny font-normal",
                   primary ? "bg-discount-primary" : "bg-discount-default"
                 )}
               >
@@ -80,7 +80,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
         <Typography
           tag="p"
           className={cn(
-            "inline-block mb-2 md:mb-4 text-tiny font-regular md:font-semibold",
+            "inline-block mb-2 md:mb-4 text-tiny font-normal md:font-semibold",
             primary ? "text-natural-100" : "text-natural-700"
           )}
         >

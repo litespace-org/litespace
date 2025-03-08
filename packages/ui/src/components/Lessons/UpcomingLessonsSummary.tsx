@@ -130,7 +130,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                         <div>
                           <Typography
                             tag="span"
-                            className="block text-natural-600 me-1 truncate max-w-16 font-regular text-tiny"
+                            className="block text-natural-600 me-1 truncate max-w-16 font-normal text-tiny"
                           >
                             {lesson.name}
                           </Typography>
@@ -138,7 +138,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                       </Tooltip>
                       <Typography
                         tag="span"
-                        className="block text-natural-600 ms-[18px] text-tiny font-regular"
+                        className="block text-natural-600 ms-[18px] text-tiny font-normal"
                       >
                         {dayjs(lesson.start).format("h:mm")}
                         {" - "}

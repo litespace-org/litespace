@@ -129,7 +129,7 @@ export const TutorCard: React.FC<{
               <div className="flex flex-col gap-1">
                 <Typography
                   tag="span"
-                  className="text-natural-800 font-regular text-caption"
+                  className="text-natural-800 font-normal text-caption"
                 >
                   {intl("home/tutors/card/lessons")}
                 </Typography>
@@ -146,7 +146,7 @@ export const TutorCard: React.FC<{
               <div className="flex flex-col gap-1">
                 <Typography
                   tag="span"
-                  className="text-natural-800 text-caption font-regular"
+                  className="text-natural-800 text-caption font-normal"
                 >
                   {intl("home/tutors/card/rating")}
                 </Typography>
@@ -204,7 +204,7 @@ export const TutorCard: React.FC<{
             })}
             <Typography
               tag="span"
-              className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-regular text-tiny"
+              className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
             >
               {remainingTopicsCount}
               {"+"}

@@ -66,7 +66,7 @@ export const Hours: React.FC<{
                 <Typography
                   tag="span"
                   className={cn(
-                    "text-natural-700 text-center text-body font-regular"
+                    "text-natural-700 text-center text-body font-normal"
                   )}
                 >
                   {!last ? display : null}
