@@ -30,6 +30,11 @@ import { asOtherMember, isOnline, isTyping } from "@/lib/room";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import ArrowRightLong from "@litespace/assets/ArrowRightLong";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import cn from "classnames";
+import CalendarFilled from "@litespace/assets/CalendarFilled";
+import dayjs from "@/lib/dayjs";
+import TimerIndicator from "@/components/Session/TimerIndicator";
 
 /**
  * @todos
@@ -41,6 +46,7 @@ import ArrowRightLong from "@litespace/assets/ArrowRightLong";
 const Lesson: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
   const { user } = useUserContext();
   const navigate = useNavigate();
 
@@ -239,29 +245,53 @@ const Lesson: React.FC = () => {
   if (!lesson.data) return null;
 
   return (
-    <div className="max-w-screen-3xl mx-auto w-full grow p-6 overflow-hidden">
-      <div className="mb-4 lg:mb-6 flex flex-row items-center justify-start gap-2">
-        <Link className="lg:hidden w-6 h-6" to={Web.StudentDashboard}>
-          <ArrowRightLong />
-        </Link>
-        <div className="flex items-center gap-1">
-          <Typography
-            tag="h4"
-            className="text-natural-950 font-bold text-body lg:text-subtitle-2"
-          >
-            {intl("lesson.title")}
-            {lessonMembers?.other.name ? "/" : null}
-          </Typography>
-          {lessonMembers?.other.name ? (
-            <Typography
-              tag="span"
-              className="text-brand-700 font-bold text-body lg:text-subtitle-2"
-            >
-              {lessonMembers.other.name}
-            </Typography>
-          ) : null}
+    <div
+      className={cn(
+        "max-w-screen-3xl mx-auto w-full grow overflow-hidden",
+        chatEnabled && !mq.lg ? "" : "p-6"
+      )}
+    >
+      {chatEnabled && !mq.lg ? null : (
+        <div className="mb-4 lg:mb-6 flex gap-2 flex-wrap items-center justify-between">
+          <div className="flex flex-row items-center justify-start gap-2">
+            <Link className="lg:hidden w-6 h-6" to={Web.StudentDashboard}>
+              <ArrowRightLong />
+            </Link>
+            <div className="flex items-center gap-1">
+              <Typography
+                tag="h4"
+                className="text-natural-950 font-bold text-body lg:text-subtitle-2"
+              >
+                {intl("lesson.title")}
+                {lessonMembers?.other.name ? "/" : null}
+              </Typography>
+              {lessonMembers?.other.name ? (
+                <Typography
+                  tag="span"
+                  className="text-brand-700 font-bold text-body lg:text-subtitle-2"
+                >
+                  {lessonMembers.other.name}
+                </Typography>
+              ) : null}
+            </div>
+          </div>
+          <div className="flex gap-2 md:gap-4 items-center">
+            <div className="flex gap-1 items-center">
+              <CalendarFilled className="w-4 h-4 md:w-6 md:h-6" />
+              <Typography
+                className="text-natural-700 text-tiny md:text-caption md:font-semibold"
+                tag="p"
+              >
+                {dayjs(lesson.data.lesson.start).format("DD MMMM YYYY")}
+              </Typography>
+            </div>
+            <TimerIndicator
+              start={lesson.data.lesson.start}
+              duration={lesson.data.lesson.duration}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <PermissionsDialog
         onSubmit={(permission) => {

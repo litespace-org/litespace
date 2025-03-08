@@ -25,7 +25,8 @@ export const UserAvatar: React.FC<{
         {
           "w-[140px] h-[140px] md:w-[302px] md:h-[302px]": variant === "large",
           "w-[112px] h-[112px] lg:w-[205px] lg:h-[205px]": variant === "medium",
-          "w-[80px] h-[80px] lg:w-[132px] lg:h-[132px]": variant === "small",
+          "w-[80px] h-[80px] md:w-[100px] md:h-[100px] lg:w-[132px] lg:h-[132px]":
+            variant === "small",
         }
       )}
     >
@@ -75,7 +76,8 @@ export const UserAvatar: React.FC<{
         className={cn("overflow-hidden rounded-full", {
           "w-[104px] h-[104px] md:w-[242px] md:h-[242px]": variant === "large",
           "w-[76px] h-[76px] lg:w-[145px] lg:h-[145px]": variant === "medium",
-          "w-[56px] h-[56px] lg:w-[96px] lg:h-[96px]": variant === "small",
+          "w-16 h-16 md:w-[84px] md:h-[84px] lg:w-[96px] lg:h-[96px]":
+            variant === "small",
         })}
       >
         <Avatar

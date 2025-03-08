@@ -86,7 +86,7 @@ export const Actions: React.FC<{
     <div
       dir="ltr"
       className={cn("flex justify-center", {
-        "gap-3 lg:gap-5": leave,
+        "gap-[22px] md:gap-6": leave,
         "gap-6": !leave,
       })}
     >

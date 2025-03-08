@@ -39,6 +39,7 @@
     "./Book": "./dist/Book.tsx",
     "./BottomRightArch": "./dist/BottomRightArch.tsx",
     "./CalendarAdd": "./dist/CalendarAdd.tsx",
+    "./CalendarFilled": "./dist/CalendarFilled.tsx",
     "./CalendarEdit": "./dist/CalendarEdit.tsx",
     "./CalendarEmpty": "./dist/CalendarEmpty.tsx",
     "./CalendarRemove": "./dist/CalendarRemove.tsx",
