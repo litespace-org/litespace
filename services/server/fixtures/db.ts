@@ -202,9 +202,10 @@ async function onboardedTutor() {
   const newTutor = await tutor();
 
   await users.update(newTutor.id, {
-    phoneNumber: "01012345678",
+    phone: "01012345678",
     image: "/image.jpg",
-    verified: true,
+    verifiedEmail: true,
+    verifiedPhone: true,
   });
 
   await tutors.update(newTutor.id, {

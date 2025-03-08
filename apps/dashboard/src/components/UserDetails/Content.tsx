@@ -59,7 +59,7 @@ const Content: React.FC<{
         <div>
           <h2 className="flex items-center gap-2 text-2xl">
             <p>{user.name || "-"}</p>
-            {user.verified ? (
+            {user.verifiedEmail ? (
               <CheckCircledIcon className="w-6 h-6 text-green-400" />
             ) : null}
           </h2>

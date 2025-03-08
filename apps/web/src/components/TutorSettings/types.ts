@@ -5,7 +5,7 @@ export type ITutorSettingsForm = {
   bio: string;
   about: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
   city: IUser.City;
   password: {
     new: string;

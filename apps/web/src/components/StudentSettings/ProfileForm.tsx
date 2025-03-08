@@ -20,7 +20,7 @@ import {
   useRequired,
   useValidateEmail,
   useValidatePassword,
-  useValidatePhoneNumber,
+  useValidatePhone,
   useValidateUserName,
 } from "@litespace/ui/hooks/validation";
 import { useToast } from "@litespace/ui/Toast";
@@ -35,7 +35,7 @@ import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
 type IForm = {
   name: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
   password: {
     new: string;
     current: string;
@@ -48,7 +48,7 @@ function canSubmit(formData: IForm, user: IUser.Self) {
   const initial = {
     name: user.name,
     email: user.email,
-    phoneNumber: user.phoneNumber || "",
+    phone: user.phone || "",
     password: { new: "", current: "", confirm: "" },
     city: user.city || null,
   };
@@ -67,7 +67,7 @@ export const ProfileForm: React.FC<{
     defaultValues: {
       name: user?.name || "",
       email: user?.email || "",
-      phoneNumber: user?.phoneNumber || "",
+      phone: user?.phone || "",
       password: {
         new: "",
         current: "",
@@ -81,7 +81,7 @@ export const ProfileForm: React.FC<{
   const invalidateQuery = useInvalidateQuery();
   const validateUserName = useValidateUserName();
   const validateEmail = useValidateEmail();
-  const validatePhoneNumber = useValidatePhoneNumber();
+  const validatePhone = useValidatePhone();
   const validatePassword = useValidatePassword();
 
   const required = useRequired();
@@ -94,7 +94,7 @@ export const ProfileForm: React.FC<{
   const name = form.watch("name");
   const email = form.watch("email");
   const password = form.watch("password");
-  const phoneNumber = form.watch("phoneNumber");
+  const phone = form.watch("phone");
 
   const onSuccess = useCallback(() => {
     form.resetField("password");
@@ -132,10 +132,7 @@ export const ProfileForm: React.FC<{
         payload: {
           name: getNullableFiledUpdatedValue(user.name, data.name),
           email: getOptionalFieldUpdatedValue(user.email, data.email),
-          phoneNumber: getNullableFiledUpdatedValue(
-            user.phoneNumber,
-            data.phoneNumber
-          ),
+          phone: getNullableFiledUpdatedValue(user.phone, data.phone),
           password:
             data.password.new && data.password.current
               ? {
@@ -230,15 +227,15 @@ export const ProfileForm: React.FC<{
             <Controller.PatternInput
               mask=" "
               idleDir="rtl"
-              id="phone-number"
-              name="phoneNumber"
+              id="phone"
+              name="phone"
               autoComplete="off"
-              value={phoneNumber}
+              value={phone}
               format="### #### ####"
               control={form.control}
-              helper={errors.phoneNumber?.message}
-              rules={{ validate: validatePhoneNumber }}
-              state={errors.phoneNumber ? "error" : undefined}
+              helper={errors.phone?.message}
+              rules={{ validate: validatePhone }}
+              state={errors.phone ? "error" : undefined}
               label={intl("student-settings.edit.personal.phone-number")}
               placeholder={intl(
                 "student-settings.edit.personal.phone-number.placeholder"
@@ -328,7 +325,7 @@ export const ProfileForm: React.FC<{
           <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0">
             <div className="lg:max-w-[640px] flex flex-col gap-6">
               <NotificationSettings />
-              {!user.verified ? <ConfirmEmail /> : null}
+              {!user.verifiedEmail ? <ConfirmEmail /> : null}
             </div>
             {!mq.sm ? <TopicSelection /> : null}
           </div>

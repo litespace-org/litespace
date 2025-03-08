@@ -57,10 +57,11 @@ export type Self = {
   birthYear: number | null;
   gender: Gender | null;
   role: Role;
-  verified: boolean;
+  verifiedEmail: boolean;
+  verifiedPhone: boolean;
   creditScore: number;
   city: City | null;
-  phoneNumber: string | null;
+  phone: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -74,10 +75,11 @@ export type Row = {
   birth_year: number | null;
   gender: Gender | null;
   role: Role;
-  verified: boolean;
+  verified_email: boolean;
+  verified_phone: boolean;
   credit_score: number;
   city: City | null;
-  phone_number: string | null;
+  phone: string | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -90,7 +92,8 @@ export type Credentials = {
 export type CreatePayload = {
   role?: Role;
   email?: string;
-  verified?: boolean;
+  verifiedEmail?: boolean;
+  verifiedPhone?: boolean;
   password?: string;
   name?: string;
   birthYear?: number;
@@ -104,9 +107,10 @@ export type UpdatePayload = {
   image?: string | null;
   birthYear?: number;
   gender?: Gender;
-  verified?: boolean;
+  verifiedEmail?: boolean;
+  verifiedPhone?: boolean;
   creditScore?: number;
-  phoneNumber?: string | null;
+  phone?: string | null;
   city?: City | null;
 };
 
@@ -125,7 +129,7 @@ export type UpdateApiPayload = {
   drop?: { image?: boolean; video?: boolean };
   bio?: string;
   about?: string;
-  phoneNumber?: string | null;
+  phone?: string | null;
   city?: City | null;
 };
 

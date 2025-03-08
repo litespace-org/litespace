@@ -11,7 +11,6 @@ import LessonsSchedule from "@/pages/LessonsSchedule";
 import StudentSettings from "@/pages/StudentSettings";
 import Payments from "@/pages/Payments";
 import Tutors from "@/pages/Tutors";
-import Invoices from "@/pages/Invoices";
 import Chat from "@/pages/Chat";
 import ResetPassword from "@/pages/ResetPassword";
 import VerifyEmail from "@/pages/VerifyEmail";
@@ -34,7 +33,6 @@ const router = createRouter([
     children: [
       { path: Web.Chat, element: <Chat /> },
       { path: Web.CompleteProfile, element: <CompleteProfile /> },
-      { path: Web.Invoices, element: <Invoices /> },
       { path: Web.Login, element: <Login /> },
       { path: Web.Payments, element: <Payments /> },
       { path: Web.Register, element: <Register /> },

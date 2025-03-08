@@ -11,6 +11,7 @@ import {
   initMemoryStore,
 } from "@/whatsapp/store";
 import { isBoom } from "@hapi/boom";
+import { pino } from "pino";
 
 function shouldReconnect(error: unknown): boolean {
   return (
@@ -24,17 +25,18 @@ export class WhatsApp {
   store: InitializedStore | null = null;
   qr: string | null = null;
 
-  async withStore(type: "memory" | "file") {
+  async withStore(type: "memory" | "file"): Promise<WhatsApp> {
     if (type === "memory") {
       this.store = initMemoryStore();
-      return;
+      return this;
     }
 
     const folder = `__whatsapp__`;
     this.store = await initFileStore(folder);
+    return this;
   }
 
-  connect(): WhatsApp {
+  private init() {
     if (!this.store)
       throw new Error(
         "No store is currently selected. Use WhatsApp.withStore to configure one."
@@ -43,31 +45,27 @@ export class WhatsApp {
     this.socket = init({
       auth: this.store.state,
       printQRInTerminal: true,
+      logger: pino({ level: "error" }),
+      generateHighQualityLinkPreview: true,
     });
+  }
 
+  connect(): WhatsApp {
+    this.init();
     this.onConnectionUpdate();
     this.onCredsUpdate();
     return this;
   }
 
-  async connectAsync(): Promise<void> {
-    if (!this.store)
-      throw new Error(
-        "No store is currently selected. Use WhatsApp.withStore to configure one."
-      );
-
-    this.socket = init({
-      auth: this.store.state,
-      printQRInTerminal: true,
-    });
-
+  async connectAsync(): Promise<WhatsApp> {
+    this.init();
     this.onCredsUpdate();
 
-    return await new Promise<void>((resolve, reject) => {
+    return await new Promise<WhatsApp>((resolve, reject) => {
       if (!this.socket) return reject(new Error("Socket is not initialized"));
 
       this.socket.ev.on("connection.update", (update) => {
-        this.connection = update.connection || "close";
+        if (update.connection) this.connection = update.connection;
         if (update.qr) this.qr = update.qr;
 
         if (
@@ -76,7 +74,7 @@ export class WhatsApp {
         )
           return this.connectAsync();
 
-        if (update.connection === "open") return resolve();
+        if (update.connection === "open") return resolve(this);
       });
     });
   }
@@ -85,13 +83,9 @@ export class WhatsApp {
     if (!this.socket) throw new Error("Socket is not initialized");
 
     this.socket.ev.on("connection.update", (update) => {
+      console.log({ update });
       this.connection = update.connection || "close";
-
-      console.log({
-        reconnect:
-          update.connection === "close" &&
-          shouldReconnect(update.lastDisconnect?.error),
-      });
+      if (update.qr) this.qr = update.qr;
 
       if (
         update.connection === "close" &&

@@ -32,9 +32,9 @@ export function isValidEmail(email: unknown): FieldError.InvalidEmail | true {
   return true;
 }
 
-export function isValidPhoneNumber(phone: unknown) {
+export function isValidPhone(phone: unknown) {
   if (typeof phone !== "string" || !PHONE_NUMBER_REGEX.test(phone))
-    return FieldError.InvalidPhoneNumber;
+    return FieldError.InvalidPhone;
   return true;
 }
 

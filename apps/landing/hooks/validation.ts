@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import {
   isValidContactRequestMessage,
   isValidContactRequestTitle,
-  isValidPhoneNumber,
+  isValidPhone,
   isValidUserName,
 } from "@litespace/utils";
 import { useFormatMessage } from "@/hooks/intl";
@@ -39,9 +39,8 @@ export function useValidatePhone() {
 
   return useCallback(
     (value: unknown) => {
-      const valid = isValidPhoneNumber(value);
-      if (valid === FieldError.InvalidPhoneNumber)
-        return intl("error/phone/invalid");
+      const valid = isValidPhone(value);
+      if (valid === FieldError.InvalidPhone) return intl("error/phone/invalid");
       return true;
     },
     [intl]

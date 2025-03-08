@@ -43,7 +43,7 @@ const VerificationDetails: React.FC = () => {
           <Input value={user.email} readOnly />
         </div>
 
-        {user.verified ? (
+        {user.verifiedEmail ? (
           <Tooltip
             content={
               <Typography tag="span">

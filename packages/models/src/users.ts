@@ -6,23 +6,6 @@ import dayjs from "@/lib/dayjs";
 
 export class Users {
   public readonly table = "users" as const;
-  public readonly columns: {
-    filterable: [keyof IUser.Row, ...Array<keyof IUser.Row>];
-  } = {
-    filterable: [
-      "id",
-      "email",
-      "name",
-      "role",
-      "birth_year",
-      "gender",
-      "verified",
-      "city",
-      "credit_score",
-      "created_at",
-      "updated_at",
-    ],
-  } as const;
 
   async create(
     user: IUser.CreatePayload,
@@ -37,7 +20,8 @@ export class Users {
         birth_year: user.birthYear,
         gender: user.gender,
         role: user.role,
-        verified: user.verified,
+        verified_email: user.verifiedEmail,
+        verified_phone: user.verifiedPhone,
         created_at: now,
         updated_at: now,
       },
@@ -61,10 +45,11 @@ export class Users {
         image: payload.image,
         gender: payload.gender,
         name: payload.name,
-        verified: payload.verified,
+        verified_email: payload.verifiedEmail,
+        verified_phone: payload.verifiedPhone,
         password: payload.password,
         birth_year: payload.birthYear,
-        phone_number: payload.phoneNumber,
+        phone: payload.phone,
         city: payload.city,
         credit_score: payload.creditScore,
         updated_at: now,
@@ -131,7 +116,7 @@ export class Users {
       .orderBy(this.column(orderBy || "created_at"), orderDirection || "desc");
 
     if (role) base.andWhere(this.column("role"), role);
-    if (verified) base.andWhere(this.column("verified"), verified);
+    if (verified) base.andWhere(this.column("verified_email"), verified);
     if (gender) base.andWhere(this.column("gender"), gender);
     //if (online) base.andWhere(this.column("online"), online); TODO: to be removed
     if (city) base.andWhere(this.column("city"), city);
@@ -177,9 +162,10 @@ export class Users {
       birthYear: row.birth_year,
       gender: row.gender,
       role: row.role,
-      verified: row.verified,
+      verifiedEmail: row.verified_email,
+      verifiedPhone: row.verified_phone,
       creditScore: row.credit_score,
-      phoneNumber: row.phone_number,
+      phone: row.phone,
       city: row.city,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),

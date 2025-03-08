@@ -134,7 +134,7 @@ async function loginWithGoogle(
   if (role) {
     const freshUser = await knex.transaction(async (tx) => {
       const user = await users.create(
-        { email: data.email, role, verified: data.verified },
+        { email: data.email, role, verifiedEmail: data.verified },
         tx
       );
       if (role === IUser.Role.Tutor) await tutors.create(user.id, tx);
@@ -212,9 +212,9 @@ async function verifyEmail(req: Request, res: Response, next: NextFunction) {
 
   const user = await users.findById(id);
   if (!user) return next(notfound.user());
-  if (user.verified) return next(emailAlreadyVerified());
+  if (user.verifiedEmail) return next(emailAlreadyVerified());
 
-  await users.update(id, { verified: true });
+  await users.update(id, { verifiedEmail: true });
   res.status(200).send();
 }
 
@@ -229,7 +229,7 @@ async function sendVerificationEmail(
 
   const { callbackUrl } = sendVerificationEmailPayload.parse(req.body);
 
-  if (user.verified) return next(already.verified());
+  if (user.verifiedEmail) return next(already.verified());
 
   sendBackgroundMessage({
     type: WorkerMessageType.SendUserVerificationEmail,

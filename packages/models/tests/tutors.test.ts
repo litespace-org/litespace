@@ -1,10 +1,8 @@
 import { tutors, Tutors } from "@/tutors";
-import { users } from "@/users";
-import { faker } from "@faker-js/faker/locale/ar";
 import fixtures from "@fixtures/db";
 import { expect } from "chai";
 import { dayjs, nameof } from "@litespace/utils";
-import { first, range } from "lodash";
+import { range } from "lodash";
 import { Role } from "@litespace/types/dist/esm/user";
 import { IUser } from "@litespace/types";
 
@@ -42,30 +40,6 @@ describe(nameof(Tutors), () => {
       await tutors.delete(user.id);
       const foundTutor = await tutors.findById(user.id);
       expect(foundTutor).to.eq(null);
-    });
-  });
-
-  describe(nameof(tutors.findOnboardedTutors), () => {
-    it("should retrieve onboarded (activated) tutors", async () => {
-      const adminUser = await fixtures.user({ role: Role.SuperAdmin });
-
-      const tutor = await fixtures.tutor();
-      await users.update(tutor.id, {
-        verified: true,
-        // NOTE: image is not in tutors table.
-        image: "/image.jpg",
-      });
-      await tutors.update(tutor.id, {
-        about: faker.lorem.paragraphs(),
-        bio: faker.person.bio(),
-        activated: true,
-        activatedBy: adminUser.id,
-        video: "/video.mp4",
-        notice: 10,
-      });
-
-      const onboardedTutors = await tutors.findOnboardedTutors();
-      expect(first(onboardedTutors)?.id).to.eq(tutor.id);
     });
   });
 

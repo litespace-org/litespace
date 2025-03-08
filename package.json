@@ -68,7 +68,8 @@
     "dashboard": "pnpm --filter @litespace/dashboard",
     "landing": "pnpm --filter @litespace/landing",
     "mobile": "pnpm --filter @litespace/mobile",
-    "blog": "pnpm --filter @litespace/blog"
+    "blog": "pnpm --filter @litespace/blog",
+    "tasks": "pnpm --filter @litespace/tasks"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.2",
@@ -83,7 +84,7 @@
     "@typescript-eslint/parser": "^8.12.2",
     "autocannon": "^8.0.0",
     "axios": "^1.7.7",
-    "commander": "^12.1.0",
+    "commander": "^13.1.0",
     "concurrently": "^8.2.2",
     "danger": "^12.3.3",
     "env-cmd": "^10.1.0",
@@ -109,5 +110,6 @@
       "core-js",
       "protobufjs"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.6.1+sha256.81204845a396962a9c4b49cc2d6cafbb49a758652d3c243f2128cbc638084fe2"
 }

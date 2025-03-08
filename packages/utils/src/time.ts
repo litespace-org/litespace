@@ -1,3 +1,7 @@
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 const DAY_HOUR_COUNT = 24;
 const HOUR_MINUTE_COUNT = 60;
 const DAY_MINUTE_COUNT = DAY_HOUR_COUNT * HOUR_MINUTE_COUNT;

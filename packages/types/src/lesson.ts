@@ -69,6 +69,8 @@ export type PopuldatedMemberRow = {
   name: IUser.Row["name"];
   image: IUser.Row["image"];
   role: IUser.Role;
+  phone: string | null;
+  verified_phone: boolean;
 };
 
 export type PopuldatedMember = {
@@ -77,6 +79,8 @@ export type PopuldatedMember = {
   name: IUser.Self["name"];
   image: IUser.Self["image"];
   role: IUser.Role;
+  phone: string | null;
+  verifiedPhone: boolean;
 };
 
 export type CreatePayload = {

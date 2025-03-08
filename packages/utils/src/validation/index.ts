@@ -1,7 +1,7 @@
 export {
   isValidUserName,
   isValidEmail,
-  isValidPhoneNumber,
+  isValidPhone,
   isValidPassword,
   isValidUserBirthYear,
 } from "@/validation/user";

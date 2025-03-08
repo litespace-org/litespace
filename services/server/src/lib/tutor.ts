@@ -1,4 +1,4 @@
-import { ITutor } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import { Knex } from "knex";
 import { tutors, knex, lessons, topics, ratings } from "@litespace/models";
 import { first, orderBy } from "lodash";
@@ -17,11 +17,12 @@ export async function constructTutorsCache(): Promise<TutorsCache> {
     tutorsLessonsCount,
     tutorsStudentsCount,
   ] = await knex.transaction(async (tx: Knex.Transaction) => {
-    const onboardedTutors = await tutors.findOnboardedTutors(tx);
-    const tutorIds = onboardedTutors.map((tutor) => tutor.id);
+    const { list } = await tutors.find({ tx, full: true });
+    const onboarded = list.filter((tutor) => isOnboard(tutor));
+    const tutorIds = onboarded.map((tutor) => tutor.id);
 
     return await Promise.all([
-      onboardedTutors,
+      list,
       topics.findUserTopics({ users: tutorIds, tx }),
       ratings.findAvgRatings({ users: tutorIds, tx }),
       lessons.countLessonsBatch({ users: tutorIds, canceled: false, tx }),
@@ -165,19 +166,43 @@ export async function joinTutorCache(
 /*
  * check whether a tutor is activated (onboard) or not.
  */
-export function isOnboard(tutor: ITutor.FullTutor): boolean {
+export function isOnboard({
+  activated,
+  activatedBy,
+  verifiedEmail,
+  verifiedPhone,
+  video,
+  image,
+  thumbnail,
+  name,
+  birthYear,
+  about,
+  bio,
+  phone,
+  role,
+  city,
+  studioId,
+}: ITutor.FullTutor): boolean {
+  const base =
+    !!verifiedEmail &&
+    !!verifiedPhone &&
+    !!image &&
+    !!name &&
+    !!about &&
+    !!bio &&
+    !!phone &&
+    !!city;
+
+  if (role === IUser.Role.TutorManager) return base;
+
   return (
-    tutor.activated === true &&
-    tutor.verified === true &&
-    tutor.activatedBy !== null &&
-    tutor.image !== null &&
-    tutor.video !== null &&
-    tutor.gender !== null &&
-    tutor.name !== null &&
-    tutor.birthYear !== null &&
-    tutor.about !== null &&
-    tutor.bio !== null &&
-    tutor.phoneNumber !== null
+    base &&
+    !!activated &&
+    !!activatedBy &&
+    !!video &&
+    !!thumbnail &&
+    !!birthYear &&
+    !!studioId
   );
 }
 

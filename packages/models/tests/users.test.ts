@@ -48,9 +48,10 @@ describe("Users", () => {
         image: "/hi/2",
         birthYear: 2003,
         gender: IUser.Gender.Female,
-        verified: true,
+        verifiedEmail: true,
+        verifiedPhone: true,
         creditScore: 2382001,
-        phoneNumber: "01018303125",
+        phone: "01018303125",
         city: 2,
       });
 
@@ -61,9 +62,10 @@ describe("Users", () => {
       expect(updated.image).to.be.eq("/hi/2");
       expect(updated.birthYear).to.be.eq(2003);
       expect(updated.gender).to.be.eq(IUser.Gender.Female);
-      expect(updated.verified).to.be.eq(true);
+      expect(updated.verifiedEmail).to.be.eq(true);
+      expect(updated.verifiedPhone).to.be.eq(true);
       expect(updated.creditScore).to.be.eq(2382001);
-      expect(updated.phoneNumber).to.be.eq("01018303125");
+      expect(updated.phone).to.be.eq("01018303125");
       expect(updated.city).to.be.eq(2);
 
       expect(updated.createdAt).to.be.eq(

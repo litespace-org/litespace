@@ -56,7 +56,7 @@ export enum FieldError {
   EmptyInvoiceNote = "empty-invoice-note",
   InvalidInvoiceNote = "invoice-note-invalid-html",
   TooLongInvoiceNote = "invoice-note-too-long",
-  InvalidPhoneNumber = "phone-number-invalid",
+  InvalidPhone = "invalid-phone",
   InvalidInstapayIPA = "instapay-username-invalid",
   EmptyBankName = "empty-bank-name",
   InvalidBankName = "invalid-bank-name",
