@@ -78,7 +78,7 @@ const ContactRequestForm: React.FC = () => {
   return (
     <Form onSubmit={handleSubmit(onSubmit)} className="h-full">
       <div className="flex flex-col sm:mx-auto gap-6 sm:max-w-[502px] h-full">
-        <div className="flex flex-col gap-2 sm:gap-4 h-full">
+        <div className="flex flex-col gap-4 h-full">
           <Controller.Input
             id="name"
             name="name"
