@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 
-export class Telegram {
+export class TelegramBot {
   private client: AxiosInstance;
 
   constructor(token: string) {

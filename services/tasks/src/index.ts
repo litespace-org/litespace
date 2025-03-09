@@ -1,5 +1,6 @@
 import { Command } from "commander";
-import { Telegram, WhatsApp } from "@litespace/radio";
+import { TelegramBot } from "@litespace/radio/telegram/bot";
+import { WhatsApp } from "@litespace/radio/whatsapp";
 import { config } from "@/lib/config";
 import { Lesson } from "@/tasks/lesson";
 import {
@@ -13,7 +14,7 @@ import dayjs from "@/lib/dayjs";
 import { faker } from "@faker-js/faker";
 
 async function main() {
-  const telegram = new Telegram(config.telegram.token);
+  const telegram = new TelegramBot(config.telegram.token);
   const whatsapp = await new WhatsApp();
   await whatsapp.withStore("file");
   await whatsapp.connectAsync();
