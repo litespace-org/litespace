@@ -55,6 +55,9 @@
   "home/tutors/card/rating": "التقييم",
   "home/tutors/card/book-now": "احجز الآن",
   "home/tutors/card/view-profile": "عرض الملف",
+  "home/not-found/title": "حدث خطأ",
+  "home/not-found/description": "عذراً، لم نستطع إيجاد الصفحة التي تبحث عنها",
+  "home/not-found/go-back": "الرجوع للرئيسية",
 
   "terms/hero/title": "الشروط و الاحكام",
   "terms/hero/description": "مرحبًا بك في منصة LiteSpace لتعليم اللغةِ الإنجليزية، نرجو منك الاطلاع على الشروط والأحكام بعناية قبل الاشتراك في إحدى الخطط التي توفرها المنصة، مع الأخذ بعين الاعتبار أن الانضمام لواحدةٍ من هذه الخطط يُعَد موافقةً منك على جميع البنود الواردة أدناه.",
