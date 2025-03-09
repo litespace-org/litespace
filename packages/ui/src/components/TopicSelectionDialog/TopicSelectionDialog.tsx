@@ -184,7 +184,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
               onClick={() => confirm(selection)}
               disabled={loading || error || confirming || !dataChanged}
             >
-              <Typography tag="label" className="text-body font-medium">
+              <Typography tag="span" className="text-body font-medium">
                 {intl("labels.confirm")}
               </Typography>
             </Button>
@@ -195,7 +195,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
               className="w-full"
               disabled={confirming}
             >
-              <Typography tag="label" className="text-body font-medium">
+              <Typography tag="span" className="text-body font-medium">
                 {intl("labels.cancel")}
               </Typography>
             </Button>

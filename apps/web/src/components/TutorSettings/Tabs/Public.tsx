@@ -81,10 +81,7 @@ const Topics: React.FC<{
             }
             className="mx-auto mt-[34px] md:mt-[37px] md:mb-[29px] lg:mt-[17px] lg:mb-[41px] lg:h-14 lg:px-8"
           >
-            <Typography
-              tag="label"
-              className="text-body font-medium lg:font-bold"
-            >
+            <Typography tag="p" className="text-body font-medium lg:font-bold">
               {intl("tutor-settings.topics.selection-dialog.trigger")}
             </Typography>
           </Button>
@@ -189,35 +186,24 @@ const PublicSettings: React.FC<{
         {intl("tutor-settings.personal-info.title")}
       </Typography>
       <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 -mt-2 lg:mt-0">
-        <div className="grow flex flex-col gap-1">
-          {/* TODO: update label */}
-          {/* <Label className="mb-1">
-            {intl("tutor-settings.personal-info.name")}
-          </Label> */}
-          <Typography tag="label" className="text-natural-950 font-semibold">
-            {intl("tutor-settings.personal-info.name")}
-          </Typography>
-          <Controller.Input
-            value={form.watch("name")}
-            control={form.control}
-            rules={{ validate: validateUserName }}
-            autoComplete="off"
-            name="name"
-          />
-        </div>
-        <div className="grow flex flex-col gap-1">
-          {/* <Label>{intl("tutor-settings.personal-info.bio")}</Label> */}
-          <Typography tag="label" className="font-semibold text-natural-950">
-            {intl("tutor-settings.personal-info.bio")}
-          </Typography>
-          <Controller.Input
-            value={form.watch("bio")}
-            control={form.control}
-            rules={{ validate: validateBio }}
-            autoComplete="off"
-            name="bio"
-          />
-        </div>
+        <Controller.Input
+          id="name"
+          value={form.watch("name")}
+          control={form.control}
+          rules={{ validate: validateUserName }}
+          autoComplete="off"
+          label={intl("tutor-settings.personal-info.name")}
+          name="name"
+        />
+        <Controller.Input
+          id="bio"
+          value={form.watch("bio")}
+          control={form.control}
+          rules={{ validate: validateBio }}
+          autoComplete="off"
+          label={intl("tutor-settings.personal-info.bio")}
+          name="bio"
+        />
       </div>
 
       <Topics
@@ -228,20 +214,16 @@ const PublicSettings: React.FC<{
         retry={userTopics.refetch}
       />
 
-      <Typography
-        tag="h2"
-        className="-mb-2 lg:mb-0 text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"
-      >
-        {intl("tutor-settings.personal-info.about")}
-      </Typography>
-
       <Controller.Textarea
+        id="about"
         value={form.watch("about")}
         control={form.control}
         autoComplete="off"
         className="min-h-[172px]"
         name="about"
+        label={intl("tutor-settings.personal-info.about")}
       />
+
       <Typography
         tag="h2"
         className="-mb-2 lg:mb-0 text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"

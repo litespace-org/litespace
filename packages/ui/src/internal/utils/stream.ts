@@ -43,6 +43,7 @@ export function createStreamInfo(
     };
     video: boolean;
     cast: boolean;
+    isOwner: boolean;
   }
 ): StreamInfo {
   return {

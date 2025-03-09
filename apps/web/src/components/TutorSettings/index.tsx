@@ -124,7 +124,7 @@ const TutorSettings: React.FC<{
         size="large"
         className="self-end sm:self-start shrink-0"
       >
-        <Typography tag="label" className="font-medium">
+        <Typography tag="p" className="font-medium">
           {intl("shared-settings.save")}
         </Typography>
       </Button>

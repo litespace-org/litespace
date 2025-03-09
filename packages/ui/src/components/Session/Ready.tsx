@@ -71,7 +71,7 @@ export const Ready: React.FC<{
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center md:justify-start lg:justify-center h-full w-full text-center",
+        "flex flex-col items-center justify-center md:justify-start lg:justify-center lg:h-full lg:w-full text-center",
         error ? "gap-2 md:gap-6" : "gap-4 md:gap-6"
       )}
     >
@@ -104,11 +104,7 @@ export const Ready: React.FC<{
         <Button
           size="large"
           onClick={join}
-          disabled={
-            disabled ||
-            loading ||
-            dayjs(start).add(duration, "minutes").isBefore(dayjs())
-          }
+          disabled={disabled || loading}
           loading={loading}
         >
           {intl("session.ready.join")}

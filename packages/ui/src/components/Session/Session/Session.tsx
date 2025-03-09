@@ -1,11 +1,9 @@
 import { Void } from "@litespace/types";
-import React, { useRef } from "react";
+import React from "react";
 import { Actions } from "@/components/Session/Actions";
 import { SessionStreams } from "@/components/Session/SessionStreams";
 import { StreamInfo } from "@/components/Session/types";
 import cn from "classnames";
-import { AnimatePresence } from "framer-motion";
-import { AnimateWidth } from "@/components/Animate";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
@@ -47,44 +45,32 @@ export const Session: React.FC<Props> = ({
   chat,
 }) => {
   const mq = useMediaQuery();
-  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div
-      ref={containerRef}
-      className="flex flex-col h-full gap-4 lg:gap-10 pb-[66px]"
-    >
+    <div className="flex relative flex-col h-full gap-4 lg:gap-6 pb-[78px]">
       <div
         className={cn(
-          "w-full grow border bg-natural-100",
-          "rounded-lg overflow-hidden",
-          chat.enabled
-            ? "lg:grid relative lg:grid-cols-[auto,minmax(35%,326px)]"
-            : "flex"
+          "w-full grow",
+          chat.enabled ? "relative lg:flex lg:flex-row lg:gap-6" : "flex"
         )}
       >
-        <AnimatePresence mode="wait">
-          <AnimateWidth className="!w-full">
-            <SessionStreams
-              containerRef={containerRef}
-              currentUserId={currentUserId}
-              streams={streams}
-              chat={chat.enabled}
-            />
-          </AnimateWidth>
-        </AnimatePresence>
+        <SessionStreams
+          currentUserId={currentUserId}
+          streams={streams}
+          chat={chat.enabled}
+        />
 
-        {chat.enabled && mq.lg ? (
-          <AnimatePresence mode="wait">
-            <AnimateWidth key="chat" className="h-full">
-              {chatPanel}
-            </AnimateWidth>
-          </AnimatePresence>
-        ) : null}
-
-        {chat.enabled && !mq.lg ? chatPanel : null}
+        <div
+          key="chat"
+          className={cn(
+            "h-full shadow shadow-message-panel rounded-2xl overflow-hidden w-[344px] flex-shrink-0",
+            chat.enabled && mq.lg ? "visible" : "hidden"
+          )}
+        >
+          {chatPanel}
+        </div>
       </div>
-      <div className="hidden lg:block border-t border-natural-400" />
+
       <Actions
         leave={leave}
         screen={cast}
@@ -92,6 +78,15 @@ export const Session: React.FC<Props> = ({
         audio={audio}
         chat={chat}
       />
+
+      <div
+        className={cn(
+          "absolute w-full h-full top-0 left-0 z-stream-chat",
+          chat.enabled && !mq.lg ? "visible" : "hidden"
+        )}
+      >
+        {chatPanel}
+      </div>
     </div>
   );
 };

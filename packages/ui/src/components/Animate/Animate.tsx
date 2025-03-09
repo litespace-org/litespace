@@ -15,7 +15,7 @@ export const Animate: React.FC<{
         opacity: 1,
         height: "auto",
         transition: {
-          duration: 0.4,
+          duration: 0.3,
           ease: "linear",
         },
       }}

@@ -391,7 +391,7 @@ export const ManageLessonDialog: React.FC<{
               })}
             >
               <Typography
-                tag="label"
+                tag="span"
                 className="text-caption md:text-body font-semibold md:font-medium text-natural-50 inline-block"
               >
                 {intl("book-lesson.steps.prev")}
@@ -417,7 +417,7 @@ export const ManageLessonDialog: React.FC<{
                 step === "duration-selection" || step === "time-selection",
             })}
           >
-            <Typography tag="label" className="font-semibold text-natural-50">
+            <Typography tag="span" className="font-semibold text-natural-50">
               {intl("book-lesson.steps.next")}
             </Typography>
           </Button>

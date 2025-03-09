@@ -3,7 +3,7 @@ import { Ready } from "@/components/Session/Ready";
 import { IUser, Void } from "@litespace/types";
 import Actions from "@/components/Session/Actions";
 import cn from "classnames";
-import FocusedStream from "@/components/Session/FocusedStream";
+import Stream from "@/components/Session/Stream";
 
 export type Props = {
   stream: MediaStream | null;
@@ -56,28 +56,31 @@ export const PreSession: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "rounded-2xl w-full h-full",
+        "rounded-2xl lg:w-full lg:h-full",
         "flex flex-col lg:grid lg:grid-cols-[1fr,auto] lg:grid-rows-[auto,1fr] items-center lg:items-start gap-4 lg:gap-6"
       )}
     >
-      <FocusedStream
-        muted
-        stream={{
-          stream,
-          speaking,
-          audio: audio.enabled,
-          video: video.enabled,
-          user: members.current,
-          cast: false,
-        }}
-      />
-      <div className="grow w-[306px] flex justify-center items-center h-full">
+      <div className="h-full w-full rounded-2xl flex items-stretch relative overflow-hidden bg-natural-100">
+        <Stream
+          muted
+          mirror
+          stream={{
+            stream,
+            speaking,
+            audio: audio.enabled,
+            video: video.enabled,
+            user: members.current,
+            cast: false,
+          }}
+        />
+      </div>
+      <div className="grow w-[306px] flex justify-center items-center lg:h-full">
         <Ready
           error={audio.error}
           otherMember={members.other}
           start={session.start}
           duration={session.duration}
-          disabled={video.error}
+          disabled={audio.error}
           join={join}
           loading={joining}
         />

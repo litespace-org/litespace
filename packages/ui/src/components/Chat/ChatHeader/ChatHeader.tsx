@@ -57,7 +57,7 @@ export const ChatHeader: React.FC<{
               />
             </div>
           </div>
-          <div>
+          <div className="flex flex-col gap-[5px]">
             <Typography
               tag="h4"
               className={cn(

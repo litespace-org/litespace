@@ -2,10 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Session } from "@/components/Session";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import React, { useEffect, useState } from "react";
-import { useCreateStream } from "@/internal/hooks/stream";
+import { useUserMediaStreamInfo } from "@/internal/hooks/stream";
 import dayjs from "dayjs";
 import { StreamInfo } from "@/components/Session/types";
-import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Session;
 
@@ -15,7 +14,7 @@ const meta: Meta<Component> = {
   parameters: { layout: "centered" },
   decorators: [
     (Story) => (
-      <div className="w-[1000px]">
+      <div className="w-[360px] p-4 h-[calc(100vh-72px-48px-21px)] md:w-[736px] lg:w-[1000px]">
         <Story />
       </div>
     ),
@@ -28,7 +27,7 @@ const CURRENT_USER_ID = 5;
 export const AloneWithCamera: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: true,
+      enabled: false,
       toggle: () => alert("toggle chat"),
     },
     video: {
@@ -50,48 +49,11 @@ export const AloneWithCamera: StoryObj<Component> = {
       duration: 30,
       startAt: dayjs().toISOString(),
     },
-    leave: () => {},
-    chatPanel: <div>This is a Message Component</div>,
+    leave: () => alert("leave session"),
+    chatPanel: <div>This is the message component</div>,
   },
   render(props) {
-    const stream = useCreateStream(true, CURRENT_USER_ID);
-    return (
-      <Session {...props} streams={[stream]} currentUserId={CURRENT_USER_ID} />
-    );
-  },
-};
-
-export const Alert: StoryObj<Component> = {
-  args: {
-    chat: {
-      enabled: true,
-      toggle: () => alert("toggle chat"),
-    },
-    video: {
-      enabled: true,
-      error: false,
-      toggle: () => alert("toggle video"),
-    },
-    audio: {
-      enabled: true,
-      error: false,
-      toggle: () => alert("toggle audio"),
-    },
-    cast: {
-      enabled: false,
-      error: false,
-      toggle: () => alert("toggle cast"),
-    },
-    timer: {
-      duration: 30,
-      startAt: dayjs().toISOString(),
-    },
-    leave: () => {},
-    chatPanel: <div>This is a Message Component</div>,
-    alert: faker.lorem.words(3),
-  },
-  render(props) {
-    const stream = useCreateStream(true, CURRENT_USER_ID);
+    const stream = useUserMediaStreamInfo(CURRENT_USER_ID, true);
     return (
       <Session {...props} streams={[stream]} currentUserId={CURRENT_USER_ID} />
     );
@@ -101,7 +63,7 @@ export const Alert: StoryObj<Component> = {
 export const AloneWithoutCamera: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: true,
+      enabled: false,
       toggle: () => {},
     },
     video: {
@@ -124,10 +86,10 @@ export const AloneWithoutCamera: StoryObj<Component> = {
       startAt: dayjs().toISOString(),
     },
     leave: () => {},
-    chatPanel: <div>This is a Message Component</div>,
+    chatPanel: <div>This is the message component</div>,
   },
   render(props) {
-    const stream = useCreateStream(false, CURRENT_USER_ID);
+    const stream = useUserMediaStreamInfo(CURRENT_USER_ID, false);
     return (
       <Session {...props} streams={[stream]} currentUserId={CURRENT_USER_ID} />
     );
@@ -137,7 +99,7 @@ export const AloneWithoutCamera: StoryObj<Component> = {
 export const FocusedWithUnfocusedWithoutCamera: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: true,
+      enabled: false,
       toggle: () => {},
     },
     video: {
@@ -160,12 +122,11 @@ export const FocusedWithUnfocusedWithoutCamera: StoryObj<Component> = {
       startAt: dayjs().toISOString(),
     },
     leave: () => {},
-    chatPanel: <div>This is a Message Component</div>,
+    chatPanel: <div>This is the message component</div>,
   },
   render(props) {
-    const s1 = useCreateStream(true, CURRENT_USER_ID);
-    const s2 = useCreateStream(false);
-
+    const s1 = useUserMediaStreamInfo(CURRENT_USER_ID, true);
+    const s2 = useUserMediaStreamInfo(undefined, false);
     return (
       <Session {...props} streams={[s1, s2]} currentUserId={CURRENT_USER_ID} />
     );
@@ -175,7 +136,7 @@ export const FocusedWithUnfocusedWithoutCamera: StoryObj<Component> = {
 export const FocusedWithoutUnfocusedWithCamera: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: true,
+      enabled: false,
       toggle: () => {},
     },
     video: {
@@ -198,11 +159,11 @@ export const FocusedWithoutUnfocusedWithCamera: StoryObj<Component> = {
       startAt: dayjs().toISOString(),
     },
     leave: () => {},
-    chatPanel: <div>This is a Message Component</div>,
+    chatPanel: <div>This is the message component</div>,
   },
   render(props) {
-    const s1 = useCreateStream(false, CURRENT_USER_ID);
-    const s2 = useCreateStream(true);
+    const s1 = useUserMediaStreamInfo(CURRENT_USER_ID, false);
+    const s2 = useUserMediaStreamInfo(undefined, true);
     return (
       <Session {...props} streams={[s1, s2]} currentUserId={CURRENT_USER_ID} />
     );
@@ -212,7 +173,7 @@ export const FocusedWithoutUnfocusedWithCamera: StoryObj<Component> = {
 export const FullRoomWithoutCameras: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: true,
+      enabled: false,
       toggle: () => {},
     },
     video: {
@@ -238,21 +199,18 @@ export const FullRoomWithoutCameras: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const s1 = useCreateStream(false, CURRENT_USER_ID);
-    const s2 = useCreateStream(false);
-    if (!s1 || !s2) return <div></div>;
+    const s1 = useUserMediaStreamInfo(CURRENT_USER_ID, false);
+    const s2 = useUserMediaStreamInfo(undefined, false);
     return (
       <Session {...props} streams={[s1, s2]} currentUserId={CURRENT_USER_ID} />
     );
   },
 };
 
-// 3 users
-
 export const FullRoomWithCastWithCameras: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: true,
+      enabled: false,
       toggle: () => {},
     },
     video: {
@@ -278,10 +236,9 @@ export const FullRoomWithCastWithCameras: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const cast = useCreateStream(true, CURRENT_USER_ID, true);
-    const s1 = useCreateStream(true, CURRENT_USER_ID);
-    const s2 = useCreateStream(true);
-    if (!s1 || !s2 || !cast) return <div></div>;
+    const s1 = useUserMediaStreamInfo(CURRENT_USER_ID, true);
+    const s2 = useUserMediaStreamInfo(undefined, true);
+    const cast = useUserMediaStreamInfo(undefined, true, true);
     return (
       <Session
         {...props}
@@ -295,7 +252,7 @@ export const FullRoomWithCastWithCameras: StoryObj<Component> = {
 export const FullRoomWithCastWithoutCameras: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: true,
+      enabled: false,
       toggle: () => {},
     },
     video: {
@@ -318,102 +275,16 @@ export const FullRoomWithCastWithoutCameras: StoryObj<Component> = {
       startAt: dayjs().toISOString(),
     },
     leave: () => {},
-    chatPanel: <div>This is a Message Component</div>,
+    chatPanel: <div>This is the message component</div>,
   },
   render(props) {
-    const cast = useCreateStream(true, CURRENT_USER_ID, true);
-    const s1 = useCreateStream(false, CURRENT_USER_ID);
-    const s2 = useCreateStream(false);
-    if (!s1 || !s2 || !cast) return <div></div>;
+    const s1 = useUserMediaStreamInfo(CURRENT_USER_ID, false);
+    const s2 = useUserMediaStreamInfo(undefined, false);
+    const cast = useUserMediaStreamInfo(undefined, true, true);
     return (
       <Session
         {...props}
         streams={[s1, s2, cast]}
-        currentUserId={CURRENT_USER_ID}
-      />
-    );
-  },
-};
-
-export const FullRoomWithCastWithCameraWithoutCamera: StoryObj<Component> = {
-  args: {
-    chat: {
-      enabled: true,
-      toggle: () => {},
-    },
-    video: {
-      enabled: true,
-      error: false,
-      toggle: () => {},
-    },
-    audio: {
-      enabled: true,
-      error: false,
-      toggle: () => {},
-    },
-    cast: {
-      enabled: false,
-      error: false,
-      toggle: () => {},
-    },
-    timer: {
-      duration: 30,
-      startAt: dayjs().toISOString(),
-    },
-    leave: () => {},
-    chatPanel: <div>This is a Message Component</div>,
-  },
-  render(props) {
-    const cast = useCreateStream(true, CURRENT_USER_ID, true);
-    const s1 = useCreateStream(true, CURRENT_USER_ID);
-    const s2 = useCreateStream(false);
-    return (
-      <Session
-        {...props}
-        streams={[s1, s2, cast]}
-        currentUserId={CURRENT_USER_ID}
-      />
-    );
-  },
-};
-
-export const FullRoomWithFullCast: StoryObj<Component> = {
-  args: {
-    chat: {
-      enabled: true,
-      toggle: () => {},
-    },
-    video: {
-      enabled: true,
-      error: false,
-      toggle: () => {},
-    },
-    audio: {
-      enabled: true,
-      error: false,
-      toggle: () => {},
-    },
-    cast: {
-      enabled: false,
-      error: false,
-      toggle: () => {},
-    },
-    timer: {
-      duration: 30,
-      startAt: dayjs().toISOString(),
-    },
-    leave: () => {},
-    chatPanel: <div>This is a Message Component</div>,
-  },
-  render(props) {
-    const cast = useCreateStream(true, CURRENT_USER_ID, true);
-    const cast2 = useCreateStream(true, 8, true);
-    const s1 = useCreateStream(true, CURRENT_USER_ID);
-    const s2 = useCreateStream(false, 8);
-    return (
-      <Session
-        {...props}
-        streams={[s1, s2, cast, cast2]}
         currentUserId={CURRENT_USER_ID}
       />
     );
@@ -424,7 +295,7 @@ export const FullRoomWithFullCast: StoryObj<Component> = {
 export const NewUserEntering: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: true,
+      enabled: false,
       toggle: () => {},
     },
     video: {
@@ -447,18 +318,13 @@ export const NewUserEntering: StoryObj<Component> = {
       startAt: dayjs().toISOString(),
     },
     leave: () => {},
-    chatPanel: <div>This is a Message Component</div>,
+    chatPanel: <div>This is the message component</div>,
   },
   render(props) {
-    const initialStream = useCreateStream(false, CURRENT_USER_ID);
-    const unfocusedStream = useCreateStream(false);
+    const initialStream = useUserMediaStreamInfo(CURRENT_USER_ID, false);
+    const unfocusedStream = useUserMediaStreamInfo(undefined, false);
 
     const [streams, setStreams] = useState<StreamInfo[]>([]);
-
-    useEffect(() => {
-      setStreams([initialStream]);
-      //eslint-disable-next-line
-    }, []);
 
     useEffect(() => {
       const timeout = setTimeout(() => {
@@ -466,11 +332,14 @@ export const NewUserEntering: StoryObj<Component> = {
       }, 5_000);
 
       return () => clearTimeout(timeout);
-      //eslint-disable-next-line
-    }, []);
+    }, [unfocusedStream]);
 
     return (
-      <Session {...props} streams={streams} currentUserId={CURRENT_USER_ID} />
+      <Session
+        {...props}
+        streams={[initialStream, ...streams]}
+        currentUserId={CURRENT_USER_ID}
+      />
     );
   },
 };

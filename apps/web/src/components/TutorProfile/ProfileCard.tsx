@@ -49,7 +49,7 @@ export const ProfileCard: React.FC<{
         className="w-full max-w-[360px] sm:max-w-[289px]"
       >
         <Typography
-          tag="label"
+          tag="span"
           className="text-caption md:text-body font-semibold md:font-medium"
         >
           {intl("tutor.book")}

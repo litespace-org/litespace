@@ -41,6 +41,7 @@
     "./CalendarAdd": "./dist/CalendarAdd.tsx",
     "./CalendarEdit": "./dist/CalendarEdit.tsx",
     "./CalendarEmpty": "./dist/CalendarEmpty.tsx",
+    "./CalendarFilled": "./dist/CalendarFilled.tsx",
     "./CalendarRemove": "./dist/CalendarRemove.tsx",
     "./Calendar": "./dist/Calendar.tsx",
     "./CallIncoming": "./dist/CallIncoming.tsx",
