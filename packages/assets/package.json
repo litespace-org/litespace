@@ -102,6 +102,7 @@
     "./More": "./dist/More.tsx",
     "./Muted": "./dist/Muted.tsx",
     "./NewTutor": "./dist/NewTutor.tsx",
+    "./NotFound404": "./dist/NotFound404.tsx",
     "./Notification2": "./dist/Notification2.tsx",
     "./Notification": "./dist/Notification.tsx",
     "./PaperMessage1": "./dist/PaperMessage1.tsx",
