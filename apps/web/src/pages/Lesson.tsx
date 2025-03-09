@@ -369,6 +369,7 @@ const Lesson: React.FC = () => {
             start: lesson.data.lesson.start,
             duration: lesson.data.lesson.duration,
           }}
+          type="lesson"
           members={{
             current: {
               id: lessonMembers.current.userId,
@@ -378,9 +379,6 @@ const Lesson: React.FC = () => {
             },
             other: {
               id: lessonMembers.other.userId,
-              //! TODO: gender is not in the response.
-              //! TODO: gender should be optional
-              gender: IUser.Gender.Male,
               incall: sessionManager.members.includes(
                 lessonMembers.other.userId
               ),
