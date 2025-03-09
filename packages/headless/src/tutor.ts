@@ -30,6 +30,22 @@ export function useTutors() {
   return useInfinitePaginationQuery(findTutors, [QueryKey.FindTutors]);
 }
 
+export function useFindStudioTutor(tutorId: number | null) {
+  const atlas = useAtlas();
+
+  const findStudioTutor = useCallback(async () => {
+    if (!tutorId) return null;
+    return await atlas.user.findStudioTutor({ tutorId });
+  }, [atlas.user, tutorId]);
+
+  return useQuery({
+    queryFn: findStudioTutor,
+    queryKey: [QueryKey.FindStudioTutor, tutorId],
+    enabled: !!tutorId,
+    retry: false,
+  });
+}
+
 export function useFindTutorStats(
   id: number | null
 ): UseQueryResult<ITutor.FindTutorStatsApiResponse | null, Error> {
@@ -59,13 +75,12 @@ export function useFindStudioTutors(studioId?: number, search?: string) {
         pagination: { page: pageParam },
       });
     },
-    [atlas.user, studioId, search]
+    [atlas.user, search, studioId]
   );
 
   return useInfinitePaginationQuery(findStudioTutors, [
     QueryKey.FindStudioTutors,
     studioId,
-    search,
   ]);
 }
 

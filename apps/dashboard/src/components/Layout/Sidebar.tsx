@@ -135,9 +135,8 @@ const Sidebar: React.FC = () => {
   return (
     <div
       className={cn(
-        "static bottom-0 start-0 z-20 lg:z-sidebar h-screen flex-shrink-0",
-        "bg-natural-50 h-full w-[98px] lg:w-60 p-4 lg:p-6 shadow-app-sidebar",
-        "flex flex-col gap-10"
+        "flex flex-col gap-10",
+        "bg-natural-50 w-[98px] lg:w-60 p-4 lg:p-6 shadow-app-sidebar"
       )}
     >
       <Link

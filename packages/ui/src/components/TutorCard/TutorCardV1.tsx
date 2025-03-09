@@ -147,7 +147,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
           </div>
         ) : null}
 
-        {!isEmpty(topics) && topics.join("").length > 0 ? (
+        {!isEmpty(topics) ? (
           <div
             className={cn("flex gap-2 flex-wrap justify-start mb-4", {
               "mt-4": isFreshTutor,

@@ -17,6 +17,7 @@ const Topics = lazy(() => import("@/pages/Topics"));
 const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
 const UserSettings = lazy(() => import("@/pages/UserSettings"));
 const PhotoSessions = lazy(() => import("@/pages/PhotoSessions"));
+const PhotoSession = lazy(() => import("./pages/PhotoSession"));
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: Dashboard.UserSetting,
         element: <Page page={<UserSettings />} />,
+      },
+      {
+        path: Dashboard.PhotoSession,
+        element: <Page page={<PhotoSession />} />,
       },
       {
         path: Dashboard.PhotoSessions,

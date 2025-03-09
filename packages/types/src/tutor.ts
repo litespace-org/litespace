@@ -145,7 +145,7 @@ export type StudioTutorFields = {
   createdAt: string;
 };
 
-export type FindStudioTutorPayload = { studioId: number; tutorId: number };
+export type FindStudioTutorParams = { tutorId: number };
 
 export type FindStudioTutorApiResponse = StudioTutorFields;
 

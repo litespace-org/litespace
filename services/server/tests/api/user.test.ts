@@ -115,7 +115,7 @@ describe.skip("/api/v1/user/", () => {
 
       it("should NOT load unverified tutors from db to cache", async () => {
         const newTutor = await db.tutor();
-        await users.update(newTutor.id, { verified: false });
+        await users.update(newTutor.id, { verifiedEmail: false });
 
         await cacheTutors();
 

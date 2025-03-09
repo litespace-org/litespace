@@ -200,6 +200,7 @@ export class Tutors {
     );
 
     if (studioId) builder.where(this.column("studio_id"), studioId);
+    else builder.whereNot(this.column("studio_id"), null);
 
     if (search)
       builder

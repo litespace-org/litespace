@@ -108,6 +108,13 @@ export function isAdmin(user: unknown): user is IUser.Self {
   return isRegAdmin(user) || isSuperAdmin(user);
 }
 
+/**
+ * Returns true if the user is a student, tutor, or tutor-manager
+ */
+export function isRegularUser(user: unknown): user is IUser.Self {
+  return isTutorManager(user) || isTutor(user) || isStudent(user);
+}
+
 export function isTutor(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.Tutor;
 }

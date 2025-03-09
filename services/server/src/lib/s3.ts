@@ -3,6 +3,7 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -45,7 +46,17 @@ async function get(key: string): Promise<string> {
   return url;
 }
 
+async function drop(key: string) {
+  await s3.send(
+    new DeleteObjectCommand({
+      Bucket: spaceConfig.bucketName,
+      Key: key,
+    })
+  );
+}
+
 export default {
   put,
   get,
+  drop,
 };

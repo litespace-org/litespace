@@ -68,12 +68,14 @@ export class User extends Base {
     video,
     thumbnail,
     onUploadProgress,
+    abortSignal,
   }: {
     tutorId: number;
     image?: File;
     video?: File;
     thumbnail?: File;
     onUploadProgress?: (event: AxiosProgressEvent) => void;
+    abortSignal?: AbortSignal;
   }): Promise<void> {
     const formData = new FormData();
     if (image) formData.append(IUser.AssetFileName.Image, image);
@@ -82,16 +84,12 @@ export class User extends Base {
 
     const params: IUser.UploadTutorAssetsQuery = { tutorId };
 
-    const { data } = await this.client.put<void>(
-      `/api/v1/user/asset/tutor`,
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-        params,
-        onUploadProgress,
-      }
-    );
-    return data;
+    await this.client.put<void>(`/api/v1/user/asset/tutor`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      params,
+      onUploadProgress,
+      signal: abortSignal,
+    });
   }
 
   async selectInterviewer(): Promise<IUser.Self> {
@@ -117,11 +115,11 @@ export class User extends Base {
     });
   }
 
-  async findStudioTutor(
-    payload: ITutor.FindStudioTutorPayload
-  ): Promise<ITutor.FindStudioTutorApiResponse> {
+  async findStudioTutor({
+    tutorId,
+  }: ITutor.FindStudioTutorParams): Promise<ITutor.FindStudioTutorApiResponse> {
     return this.get({
-      route: `/api/v1/user/tutor/${payload.tutorId}/for/${payload.studioId}`,
+      route: `/api/v1/user/tutor/${tutorId}/for/studio`,
     });
   }
 

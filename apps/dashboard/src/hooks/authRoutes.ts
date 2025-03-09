@@ -65,6 +65,9 @@ const routeConfigMap: Record<Dashboard, RouteConfig> = {
   [Dashboard.UserSetting]: {
     whitelist: [regularAdmin, studio],
   },
+  [Dashboard.PhotoSession]: {
+    whitelist: [regularAdmin, studio],
+  },
   [Dashboard.PhotoSessions]: {
     whitelist: [regularAdmin, studio],
   },
