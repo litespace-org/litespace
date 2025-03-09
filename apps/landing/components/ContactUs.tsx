@@ -69,12 +69,15 @@ const ContactUs: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
     <section className="flex flex-col items-center justify-center w-full h-auto bg-natural-50">
       <div
         className={cn(
-          "flex flex-col justify-center items-center w-full lg:w-[943px] h-full gap-16 lg:gap-20",
+          "flex flex-col justify-center items-center w-full lg:w-[943px] h-full gap-8 md:gap-16 lg:gap-20",
           "py-14 sm:py-20 lg:py-40 px-4 sm:px-8 lg:px-auto"
         )}
       >
-        <div className="hidden md:flex flex-col gap-4 text-center">
-          <Typography tag="h1" className="text-natural-950 text-h4 font-bold">
+        <div className="flex flex-col gap-4 text-center">
+          <Typography
+            tag="h1"
+            className="text-natural-950 text-subtitle-2 md:text-h4 font-bold"
+          >
             {intl.rich("contact-us/title", {
               highlight: (chunks) => (
                 <Typography tag="span" className="text-brand-500">
@@ -85,7 +88,7 @@ const ContactUs: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
           </Typography>
           <Typography
             tag="p"
-            className="text-natural-700 text-subtitle-2 font-semibold"
+            className="text-natural-700 text-body md:text-subtitle-2 font-medium md:font-semibold"
           >
             {intl("contact-us/description")}
           </Typography>
@@ -94,22 +97,22 @@ const ContactUs: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
         <div
           className={cn(
             "flex flex-col md:flex-row w-full rounded-2xl",
-            "sm:p-6 gap-6 h-full bg-natural-50 sm:shadow-header"
+            "sm:p-6 gap-4 md:gap-6 h-full bg-natural-50 sm:shadow-header"
           )}
         >
-          <div className="flex flex-col w-full md:w-3/5 h-auto bg-brand-700 rounded-xl">
-            <div className="flex flex-col p-6">
-              <div className="mb-10">
+          <div className="flex flex-col w-full md:w-3/5 h-auto bg-brand-700 rounded-xl sm:max-w-[502px] sm:mx-auto md:m-0">
+            <div className="flex flex-col pt-4 px-4 md:p-6">
+              <div className="mb-4 md:mb-10">
                 <Typography
                   tag="h2"
-                  className="text-white mb-2 text-subtitle-1 font-bold"
+                  className="text-white mb-2 text-subtitle-2 md:text-subtitle-1 font-bold"
                 >
                   {intl("contact-us/card/title")}
                 </Typography>
 
                 <Typography
                   tag="p"
-                  className="text-white text-body font-medium"
+                  className="text-white text-caption md:text-body font-medium"
                 >
                   {intl("contact-us/card/description")}
                 </Typography>
@@ -118,7 +121,7 @@ const ContactUs: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
               <Contacts tutor={tutor} />
             </div>
 
-            <div className="flex justify-between gap-1.5 mt-auto mb-6">
+            <div className="flex justify-between gap-1.5 mt-auto md:mb-6">
               <div className="flex justify-start w-auto">
                 <PaperMessage2 />
               </div>
