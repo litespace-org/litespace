@@ -2,7 +2,6 @@ import { Button } from "@litespace/ui/Button";
 import { Form, Controller } from "@litespace/ui/Form";
 import { useKeys } from "@litespace/ui/hooks/keys";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { sanitizeMessage } from "@litespace/utils/chat";
 import { Void } from "@litespace/types";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -20,15 +19,13 @@ const MessageBox: React.FC<{
   const intl = useFormatMessage();
   const form = useForm<IForm>({ defaultValues: { message: "" } });
   const message = form.watch("message");
-  const sanitizedMessage = useMemo(() => sanitizeMessage(message), [message]);
   const errors = form.formState.errors;
 
   const send = useCallback(
     (message: string) => {
-      const sanitized = sanitizeMessage(message);
-      if (!sanitized) return;
+      if (!message) return;
       form.reset();
-      return submit(sanitized);
+      return submit(message);
     },
     [form, submit]
   );
@@ -69,7 +66,7 @@ const MessageBox: React.FC<{
       />
       <div className="flex flex-row gap-2">
         <Button
-          disabled={!sanitizedMessage || sanitizedMessage === defaultMessage}
+          disabled={!message || message === defaultMessage}
           size={"medium"}
         >
           {intl(update ? "global.labels.edit" : "global.labels.send")}

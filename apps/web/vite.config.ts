@@ -32,6 +32,19 @@ export default defineConfig({
     // Sentry NOTE: Generating sourcemaps may expose them to the public,
     // potentially causing your source code to be leaked.
     sourcemap: !!process.env.TAURI_DEBUG || !development,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          lodash: ["lodash"],
+          motion: ["framer-motion"],
+          lottie: ["react-lottie"],
+          sentry: ["@sentry/react"],
+          zod: ["zod"],
+          vendor: ["react", "react-dom", "react-router-dom"],
+          tanstack: ["@tanstack/react-query", "@tanstack/react-table"],
+        },
+      },
+    },
   },
   plugins: [
     react({}),
