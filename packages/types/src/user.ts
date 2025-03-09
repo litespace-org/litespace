@@ -54,6 +54,7 @@ export type Self = {
   password: boolean;
   name: string | null;
   image: string | null;
+  address: string | null;
   birthYear: number | null;
   gender: Gender | null;
   role: Role;
@@ -72,6 +73,7 @@ export type Row = {
   password: string | null;
   name: string | null;
   image: string | null;
+  address: string | null;
   birth_year: number | null;
   gender: Gender | null;
   role: Role;
@@ -96,6 +98,7 @@ export type CreatePayload = {
   verifiedPhone?: boolean;
   password?: string;
   name?: string;
+  address?: string;
   birthYear?: number;
   gender?: Gender;
 };
@@ -105,6 +108,7 @@ export type UpdatePayload = {
   password?: string;
   name?: string | null;
   image?: string | null;
+  address?: string | null;
   birthYear?: number;
   gender?: Gender;
   verifiedEmail?: boolean;
@@ -123,6 +127,7 @@ export type UpdateApiPayload = {
    * - Passing `undefine` will not update the user name.
    */
   name?: string | null;
+  address?: string | null;
   gender?: Gender;
   notice?: number;
   birthYear?: number;
@@ -249,3 +254,12 @@ export type UploadUserImageQuery = {
 export type UploadTutorAssetsQuery = {
   tutorId: number;
 };
+
+export type PublicStudioDetails = {
+  id: number;
+  name: string | null;
+  address: string | null;
+  image: string | null;
+};
+
+export type FindStudiosApiResponse = Paginated<PublicStudioDetails>;
