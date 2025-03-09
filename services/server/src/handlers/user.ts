@@ -133,6 +133,11 @@ const uploadTutorAssetsQuery = zod.object({
   tutorId: id,
 });
 
+const findStudiosQuery = zod.object({
+  page: zod.optional(pageNumber).default(paginationDefaults.page),
+  size: zod.optional(pageSize).default(paginationDefaults.size),
+});
+
 const findStudioTutorParams = zod.object({
   studioId: id,
   tutorId: id,
@@ -426,6 +431,31 @@ async function findOnboardedTutors(req: Request, res: Response) {
   // DONE: Update the response to match the new design in (@/architecture/v1.0/tutors.md)
   const response: ITutor.FindOnboardedTutorsApiResponse = {
     list: await withImageUrls(list),
+    total,
+  };
+
+  res.status(200).json(response);
+}
+
+async function findStudios(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  if (!isUser(user)) return next(forbidden());
+
+  const { size, page } = findStudiosQuery.parse(req.query);
+
+  const { list, total } = await users.find({
+    role: IUser.Role.Studio,
+    page,
+    size,
+  });
+
+  const response: IUser.FindStudiosApiResponse = {
+    list: list.map((studio) => ({
+      id: studio.id,
+      name: studio.name,
+      address: studio.address,
+      image: studio.image,
+    })),
     total,
   };
 
@@ -983,6 +1013,7 @@ export default {
   selectInterviewer: safeRequest(selectInterviewer),
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
+  findStudios: safeRequest(findStudios),
   findStudioTutor: safeRequest(findStudioTutor),
   findStudioTutors: safeRequest(findStudioTutors),
   findUncontactedTutors: safeRequest(findUncontactedTutors),

@@ -18,6 +18,8 @@ const findPersonalizedStudentStats = mockApi(
   handlers.findPersonalizedStudentStats
 );
 
+const findStudios = mockApi(handlers.findStudios);
+
 const findStudioTutor = mockApi(handlers.findStudioTutor);
 
 const findStudioTutors = mockApi(handlers.findStudioTutors);
@@ -670,6 +672,45 @@ describe("/api/v1/user/", () => {
 
       expect(await res1.body).to.deep.eq(await res2.body);
       expect(await res2.body).to.deep.eq(await res3.body);
+    });
+  });
+
+  describe("GET /api/v1/user/studios", () => {
+    it("should retrieve all studios successfully", async () => {
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+
+      await Promise.all([
+        db.user({ role: IUser.Role.Studio }),
+        db.user({ role: IUser.Role.Studio }),
+        db.user({ role: IUser.Role.Studio }),
+
+        db.user({ role: IUser.Role.Tutor }),
+        db.user({ role: IUser.Role.Student }),
+      ]);
+
+      const res = await findStudios({
+        query: {
+          page: 1,
+          size: 10,
+        },
+        user: admin,
+      });
+
+      expect(res).to.not.be.instanceof(Error);
+
+      const resBody = res.body as IUser.FindStudiosApiResponse;
+      expect(resBody.list).to.have.length(3);
+
+      const sample = first(resBody.list) as IUser.Self;
+      expect(sample.email).to.be.undefined;
+      expect(sample.password).to.be.undefined;
+      expect(sample.creditScore).to.be.undefined;
+      expect(sample.phone).to.be.undefined;
+
+      expect(sample.id).to.not.be.undefined;
+      expect(sample.name).to.not.be.undefined;
+      expect(sample.address).to.not.be.undefined;
+      expect(sample.image).to.not.be.undefined;
     });
   });
 });
