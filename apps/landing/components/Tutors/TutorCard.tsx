@@ -70,7 +70,7 @@ export const TutorCard: React.FC<{
           src={orUndefined(imageUrl)}
           alt={orUndefined(name)}
           seed={id.toString()}
-          object="cover"
+          object="fill"
         />
       </div>
       <div className="flex flex-col">
@@ -171,7 +171,7 @@ export const TutorCard: React.FC<{
         {!isEmpty(topics) && topics.join("").length > 0 ? (
           <div
             className={cn(
-              "flex gap-2 flex-wrap justify-start mb-2 md:mb-4 -ms-[66px] md:ms-0",
+              "flex gap-2 flex-wrap justify-start -ms-[66px] md:ms-0",
               {
                 "mt-4": isFreshTutor,
               }
@@ -212,7 +212,7 @@ export const TutorCard: React.FC<{
           </div>
         ) : null}
 
-        <div className="flex flex-row gap-3 mt-auto -ms-[66px] md:ms-0">
+        <div className="flex flex-row gap-3 mt-2 md:mt-4 -ms-[66px] md:ms-0">
           <Link href={profileUrl} className="w-full block">
             <Button
               className="w-full"

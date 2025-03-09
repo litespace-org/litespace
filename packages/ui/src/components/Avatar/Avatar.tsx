@@ -54,7 +54,7 @@ export const Avatar: React.FC<{
       >
         <JazzIcon
           seed={seed?.toString() || alt || src || "litespace"}
-          className="h-full"
+          className="w-full h-full"
         />
       </div>
     </div>

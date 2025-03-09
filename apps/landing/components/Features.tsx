@@ -96,9 +96,7 @@ export const Features: React.FC = () => {
                   })}
                 >
                   <Button
-                    endIcon={
-                      <LongLeftArrow className="w-6 h-6 -translate-y-1" />
-                    }
+                    endIcon={<LongLeftArrow className="icon" />}
                     size="large"
                   >
                     <Typography
