@@ -6,46 +6,53 @@ import { useMemo } from "react";
 import { Button } from "@/components/Button";
 import cn from "classnames";
 import dayjs from "dayjs";
+import { LocalId } from "@/locales";
+import { SessionType } from "@/components/Session/types";
 
 export const Ready: React.FC<{
   otherMember: {
     id: number;
     role: IUser.Role;
-    gender: IUser.Gender;
     incall: boolean;
   };
+  type?: SessionType;
   error?: boolean;
   start: string;
   duration: number;
   join: Void;
   loading?: boolean;
   disabled?: boolean;
-}> = ({ otherMember, join, error, start, duration, loading, disabled }) => {
+}> = ({
+  otherMember,
+  join,
+  error,
+  start,
+  duration,
+  loading,
+  disabled,
+  type = "lesson",
+}) => {
   const intl = useFormatMessage();
+  const sessionType: LocalId =
+    type === "lesson" ? "session.lesson" : "session.interview";
 
-  const explaination = useMemo(() => {
-    if (
-      otherMember.role === IUser.Role.Tutor &&
-      otherMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.explaination.full.male-tutor");
-    if (
-      otherMember.role === IUser.Role.Tutor &&
-      otherMember.gender !== IUser.Gender.Male
-    )
-      return intl("session.ready.explaination.full.female-tutor");
+  const otherMemberRole: LocalId = useMemo(() => {
+    if (otherMember.role === IUser.Role.TutorManager)
+      return "session.tutor-manager";
 
-    if (
-      otherMember.role === IUser.Role.Student &&
-      otherMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.explaination.full.male-student");
-    if (
-      otherMember.role === IUser.Role.Student &&
-      otherMember.gender !== IUser.Gender.Male
-    )
-      return intl("session.ready.explaination.full.female-student");
-  }, [otherMember.role, otherMember.gender, intl]);
+    if (otherMember.role === IUser.Role.Tutor) return "session.tutor";
+
+    return "session.student";
+  }, [otherMember]);
+
+  const explaination = useMemo(
+    () =>
+      intl("session.ready.explaination.full", {
+        role: intl(otherMemberRole),
+        type: intl(sessionType),
+      }),
+    [otherMemberRole, sessionType, intl]
+  );
 
   const sessionStartMessage = useMemo(() => {
     const now = dayjs();
@@ -55,18 +62,21 @@ export const Ready: React.FC<{
     if (now.isBefore(start))
       return intl("session.ready.session-will-start-in", {
         time: sessionStart.fromNow(true),
+        type: intl(sessionType),
       });
 
     if (now.isAfter(end)) {
       return intl("session.ready.session-ended-since", {
         time: end.fromNow(true),
+        type: intl(sessionType),
       });
     }
 
     return intl("session.ready.session-started-since", {
       time: end.fromNow(true),
+      type: intl(sessionType),
     });
-  }, [start, duration, intl]);
+  }, [start, duration, sessionType, intl]);
 
   return (
     <div
@@ -111,7 +121,11 @@ export const Ready: React.FC<{
           }
           loading={loading}
         >
-          {intl("session.ready.join")}
+          {intl(
+            type === "lesson"
+              ? "session.lesson-ready.join"
+              : "session.interview-ready.join"
+          )}
         </Button>
       </div>
     </div>

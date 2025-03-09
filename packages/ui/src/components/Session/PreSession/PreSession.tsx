@@ -4,6 +4,7 @@ import { IUser, Void } from "@litespace/types";
 import Actions from "@/components/Session/Actions";
 import cn from "classnames";
 import Stream from "@/components/Session/Stream";
+import { SessionType } from "@/components/Session/types";
 
 export type Props = {
   stream: MediaStream | null;
@@ -16,7 +17,6 @@ export type Props = {
     };
     other: {
       id: number;
-      gender: IUser.Gender;
       role: IUser.Role;
       incall: boolean;
     };
@@ -38,12 +38,14 @@ export type Props = {
     start: string;
     duration: number;
   };
+  type?: SessionType;
   speaking: boolean;
   joining: boolean;
   join: Void;
 };
 
 export const PreSession: React.FC<Props> = ({
+  type = "lesson",
   stream,
   members,
   video,
@@ -60,7 +62,7 @@ export const PreSession: React.FC<Props> = ({
         "flex flex-col lg:grid lg:grid-cols-[1fr,auto] lg:grid-rows-[auto,1fr] items-center lg:items-start gap-4 lg:gap-6"
       )}
     >
-      <div className="h-full w-full rounded-2xl flex items-stretch relative overflow-hidden min-h-[398px] bg-natural-100 md:min-h-[744px] lg:min-h-max lg:h-[550px]">
+      <div className="h-full w-full rounded-2xl flex items-stretch relative overflow-hidden min-h-[398px] bg-natural-100 md:min-h-[744px] md:h-[744px] lg:min-h-max lg:h-[550px]">
         <Stream
           muted
           stream={{
@@ -75,6 +77,7 @@ export const PreSession: React.FC<Props> = ({
       </div>
       <div className="grow w-[306px] flex justify-center items-center h-full">
         <Ready
+          type={type}
           error={audio.error}
           otherMember={members.other}
           start={session.start}

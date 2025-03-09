@@ -28,3 +28,5 @@ export type StreamInfo = {
     name: string | null;
   };
 };
+
+export type SessionType = "lesson" | "interview";
