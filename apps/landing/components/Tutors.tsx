@@ -6,7 +6,14 @@ import React from "react";
 
 export const Tutors: React.FC = async () => {
   const intl = await formatMessage();
-  const tutors = await atlas.user.findOnboardedTutors();
+  const tutors = await atlas.user
+    .findOnboardedTutors({
+      page: 1,
+      size: 2,
+    })
+    .catch(() => {
+      return { list: [], total: 0 };
+    });
 
   return (
     <div className="bg-secondary-50 w-screen">
@@ -25,7 +32,7 @@ export const Tutors: React.FC = async () => {
             {intl("home/tutors/description")}
           </Typography>
         </div>
-        <Content tutors={tutors} />
+        <Content tutors={tutors.list} />
       </div>
     </div>
   );

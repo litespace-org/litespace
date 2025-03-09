@@ -71,7 +71,7 @@ export const JazzIcon: React.FC<{ seed: string } & SVGProps<SVGSVGElement>> = ({
 
     for (let i = 0; i < DEFAULT_SHAPE_COUNT; i++) {
       shapes.push(
-        '<rect x="0" y="0" width="100%" height="100%" transform="' +
+        '<rect x="0" y="0" width="100%" height="100%" rx="8" transform="' +
           nextTransform(i) +
           '" fill="' +
           nextColor() +
@@ -88,6 +88,7 @@ export const JazzIcon: React.FC<{ seed: string } & SVGProps<SVGSVGElement>> = ({
       x="0"
       y="0"
       viewBox="0 0 100 100"
+      preserveAspectRatio="none"
       dangerouslySetInnerHTML={{ __html: shapes.join("") }}
       {...props}
     />

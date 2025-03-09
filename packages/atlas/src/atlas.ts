@@ -15,7 +15,7 @@ import { Lesson } from "@/lesson";
 import { WithdrawMethod } from "@/withdrawMethod";
 import { Invoice } from "@/invoice";
 import { Topic } from "@/topic";
-import { AuthToken } from "@/client";
+import { AuthToken, createClient } from "@/client";
 import { Cache } from "@/cache";
 import { Session } from "@/session";
 import { ContactRequest } from "@/contactRequest";
@@ -42,24 +42,25 @@ export class Atlas {
   public readonly session: Session;
 
   constructor(server: Env.Server, token: AuthToken | null) {
-    this.user = new User(server, token);
-    this.auth = new Auth(server, token);
-    this.availabilitySlot = new AvailabilitySlot(server, token);
-    this.contactRequest = new ContactRequest(server, token);
-    this.plan = new Plan(server, token);
-    this.coupon = new Coupon(server, token);
-    this.invite = new Invite(server, token);
-    this.report = new Report(server, token);
-    this.reportReply = new ReportReply(server, token);
-    this.asset = new Asset(server, token);
-    this.rating = new Rating(server, token);
-    this.chat = new Chat(server, token);
-    this.interview = new Interview(server, token);
-    this.lesson = new Lesson(server, token);
-    this.withdrawMethod = new WithdrawMethod(server, token);
-    this.invoice = new Invoice(server, token);
-    this.cache = new Cache(server, token);
-    this.topic = new Topic(server, token);
-    this.session = new Session(server, token);
+    const client = createClient(server, token);
+    this.user = new User(client);
+    this.auth = new Auth(client);
+    this.availabilitySlot = new AvailabilitySlot(client);
+    this.contactRequest = new ContactRequest(client);
+    this.plan = new Plan(client);
+    this.coupon = new Coupon(client);
+    this.invite = new Invite(client);
+    this.report = new Report(client);
+    this.reportReply = new ReportReply(client);
+    this.asset = new Asset(client);
+    this.rating = new Rating(client);
+    this.chat = new Chat(client);
+    this.interview = new Interview(client);
+    this.lesson = new Lesson(client);
+    this.withdrawMethod = new WithdrawMethod(client);
+    this.invoice = new Invoice(client);
+    this.cache = new Cache(client);
+    this.topic = new Topic(client);
+    this.session = new Session(client);
   }
 }

@@ -8,12 +8,12 @@ import { motion } from "framer-motion";
 import React from "react";
 
 const Content: React.FC<{
-  tutors: FindOnboardedTutorsApiResponse;
+  tutors: FindOnboardedTutorsApiResponse["list"];
 }> = ({ tutors }) => {
   if (!tutors) return null;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 lg:gap-6">
-      {tutors.list.slice(0, 2).map((tutor) => {
+      {tutors.slice(0, 2).map((tutor) => {
         const profileUrl = router.web({
           route: Web.TutorProfile,
           id: tutor.id,
