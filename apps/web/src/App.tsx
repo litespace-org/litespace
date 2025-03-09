@@ -1,28 +1,31 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Root from "@/pages/Root";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import ErrorPage from "@/pages/Error";
-import TutorProfile from "@/pages/TutorProfile";
-import CompleteProfile from "@/pages/CompleteProfile";
-import StudentDashboard from "@/pages/StudentDashboard";
-import LessonsSchedule from "@/pages/LessonsSchedule";
-import StudentSettings from "@/pages/StudentSettings";
-import Payments from "@/pages/Payments";
-import Tutors from "@/pages/Tutors";
-import Chat from "@/pages/Chat";
-import ResetPassword from "@/pages/ResetPassword";
-import VerifyEmail from "@/pages/VerifyEmail";
-import UpcomingLessons from "@/pages/UpcomingLessons";
-import Plans from "@/pages/Plans";
-import Lesson from "@/pages/Lesson";
-import TutorSettings from "@/pages/TutorSettings";
-import ScheduleManagement from "@/pages/ScheduleManagement";
-import ForgetPassword from "@/pages/ForgetPassword";
-import TutorDashboard from "@/pages/TutorDashboard";
+
 import { Web } from "@litespace/utils/routes";
 import * as Sentry from "@sentry/react";
+import { Loader } from "@litespace/ui/Loading";
+
+const Root = lazy(() => import("@/pages/Root"));
+const Login = lazy(() => import("@/pages/Login"));
+const Register = lazy(() => import("@/pages/Register"));
+const ErrorPage = lazy(() => import("@/pages/Error"));
+const TutorProfile = lazy(() => import("@/pages/TutorProfile"));
+const CompleteProfile = lazy(() => import("@/pages/CompleteProfile"));
+const StudentDashboard = lazy(() => import("@/pages/StudentDashboard"));
+const LessonsSchedule = lazy(() => import("@/pages/LessonsSchedule"));
+const StudentSettings = lazy(() => import("@/pages/StudentSettings"));
+const Payments = lazy(() => import("@/pages/Payments"));
+const Tutors = lazy(() => import("@/pages/Tutors"));
+const Chat = lazy(() => import("@/pages/Chat"));
+const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
+const UpcomingLessons = lazy(() => import("@/pages/UpcomingLessons"));
+const Plans = lazy(() => import("@/pages/Plans"));
+const Lesson = lazy(() => import("@/pages/Lesson"));
+const TutorSettings = lazy(() => import("@/pages/TutorSettings"));
+const ScheduleManagement = lazy(() => import("@/pages/ScheduleManagement"));
+const ForgetPassword = lazy(() => import("@/pages/ForgetPassword"));
+const TutorDashboard = lazy(() => import("@/pages/TutorDashboard"));
 
 const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
@@ -55,8 +58,20 @@ const router = createRouter([
   },
 ]);
 
+const Fallback: React.FC = () => (
+  <div className="h-screen w-full">
+    <div className="mt-[20vh]">
+      <Loader size="medium" />
+    </div>
+  </div>
+);
+
 function App(): React.JSX.Element {
-  return <RouterProvider router={router} />;
+  return (
+    <Suspense fallback={<Fallback />}>
+      <RouterProvider router={router} />
+    </Suspense>
+  );
 }
 
 export default App;
