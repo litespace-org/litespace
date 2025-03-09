@@ -140,6 +140,13 @@ export function useUploadUserImage({
   return { muation, progress };
 }
 
+export type UploadTutorAssetsPayload = {
+  tutorId: number;
+  image?: File;
+  video?: File;
+  thumbnail?: File;
+};
+
 export function useUploadTutorAssets({
   onSuccess,
   onError,
@@ -151,15 +158,8 @@ export function useUploadTutorAssets({
   const [progress, setProgress] = useState<number>(0);
   const abortController = useRef(new AbortController());
 
-  type MutationParams = {
-    tutorId: number;
-    image?: File;
-    video?: File;
-    thumbnail?: File;
-  };
-
   const upload = useCallback(
-    (payload: MutationParams) =>
+    (payload: UploadTutorAssetsPayload) =>
       atlas.user.uploadTutorAssets({
         ...payload,
         onUploadProgress(event) {
@@ -176,6 +176,9 @@ export function useUploadTutorAssets({
   const mutation = useMutation({
     mutationFn: upload,
     mutationKey: [MutationKey.UploadUserAssets, abortController],
+    onMutate() {
+      abortController.current = new AbortController();
+    },
     onSuccess,
     onError,
   });

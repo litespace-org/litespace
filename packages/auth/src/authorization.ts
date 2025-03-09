@@ -109,7 +109,7 @@ export function isAdmin(user: unknown): user is IUser.Self {
 }
 
 /**
- * returns true if the user is a student, tutor, or tutor-manager
+ * Returns true if the user is a student, tutor, or tutor-manager
  */
 export function isRegularUser(user: unknown): user is IUser.Self {
   return isTutorManager(user) || isTutor(user) || isStudent(user);

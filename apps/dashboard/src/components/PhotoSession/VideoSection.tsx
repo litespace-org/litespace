@@ -1,56 +1,49 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 
-import { useFindStudioTutor } from "@litespace/headless/tutor";
 import { useUpdateUser, useUploadTutorAssets } from "@litespace/headless/user";
 
 import Trash from "@litespace/assets/Trash";
 import Video from "@litespace/assets/VideoClip";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
+import { Void } from "@litespace/types";
+import { ConfirmDialog } from "@/components/PhotoSession/ConfirmDialog";
+import VideoClip from "@litespace/assets/VideoClip";
 
 export const VideoSection: React.FC<{
-  tutorQuery: ReturnType<typeof useFindStudioTutor>;
-  mutateAsset: ReturnType<typeof useUploadTutorAssets>;
-  mutateUser: ReturnType<typeof useUpdateUser>;
-  disabled?: boolean;
-  onUpload?: (asset: File | undefined) => void;
-}> = ({ tutorQuery, mutateAsset, mutateUser, disabled, onUpload }) => {
+  tutorId: number | null;
+  video: string | null;
+  refetch: Void;
+}> = ({ tutorId, video, refetch }) => {
   const intl = useFormatMessage();
-  const videoInput = useRef<HTMLInputElement>(null);
-  // NOTE: read the comments in AvatarCard.ts file for this state type explanation.
-  const [videoFile, setVideoFile] = useState<File | undefined | null>(null);
+  const ref = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
 
-  const video = useMemo(() => {
-    if (videoFile === undefined) return undefined;
-    if (videoFile === null) return tutorQuery.data?.video;
-    if (typeof videoFile === "string") return videoFile;
-    return URL.createObjectURL(videoFile);
-  }, [videoFile, tutorQuery.data?.video]);
+  const update = useUpdateUser({
+    onSuccess() {
+      refetch();
+    },
+  });
 
-  const onUploadVideo = useCallback(() => {
-    const video = videoInput.current?.files?.item(0) || undefined;
-    mutateAsset.mutation.mutateAsync({
-      tutorId: tutorQuery.data?.id || 0,
-      video,
-    });
-    setVideoFile(video);
-    if (onUpload) onUpload(video);
-  }, [mutateAsset.mutation, tutorQuery.data?.id, onUpload]);
+  const upload = useUploadTutorAssets({
+    onSuccess() {
+      refetch();
+    },
+  });
 
-  const onDeleteVideo = useCallback(() => {
-    mutateUser.mutate(
-      {
-        id: tutorQuery.data?.id || 0,
-        payload: {
-          drop: { video: true },
-        },
-      },
-      { onSuccess: () => setVideoFile(undefined) }
-    );
-  }, [tutorQuery.data?.id, mutateUser]);
+  const state = useMemo(() => {
+    if (upload.mutation.isPending) return "pending";
+    if (upload.mutation.isError) return "error";
+    if (upload.mutation.isSuccess) return "success";
+    return null;
+  }, [
+    upload.mutation.isError,
+    upload.mutation.isPending,
+    upload.mutation.isSuccess,
+  ]);
 
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -58,33 +51,45 @@ export const VideoSection: React.FC<{
         type="file"
         accept="video/*"
         className="hidden"
-        ref={videoInput}
-        onChange={onUploadVideo}
+        ref={ref}
+        onChange={(event) => {
+          if (!tutorId) return;
+          const video = event.target.files?.item(0) || undefined;
+          if (!video) return;
+          setFile(video);
+          upload.mutation.reset();
+          upload.mutation.mutate({ tutorId: tutorId, video });
+        }}
       />
 
       <div className="flex justify-between">
         <Typography tag="h2" className="text-subtitle-1 font-bold">
           {intl("dashboard.photo-session.label.intro-video")}
         </Typography>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="large"
-            onClick={() => videoInput.current?.click()}
-            disabled={disabled}
-          >
-            {intl("dashboard.photo-session.label.upload-video")}
-          </Button>
-          <Button
-            type="error"
-            size="large"
-            variant="secondary"
-            onClick={onDeleteVideo}
-            endIcon={<Trash className="w-4 h-4 [&>*]:stroke-destructive-700" />}
-            loading={mutateUser.isPending}
-            disabled={disabled}
-          />
-        </div>
+        {video ? (
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="large"
+              onClick={() => ref.current?.click()}
+              disabled={!tutorId || upload.mutation.isPending}
+            >
+              {intl("dashboard.photo-session.label.upload-video")}
+            </Button>
+            <Button
+              type="error"
+              size="large"
+              variant="secondary"
+              onClick={() => {
+                if (!tutorId) return;
+                update.mutate({ id: tutorId, payload: { video: null } });
+              }}
+              endIcon={<Trash className="icon" />}
+              loading={update.isPending}
+              disabled={upload.mutation.isPending || update.isPending}
+            />
+          </div>
+        ) : null}
       </div>
 
       {video ? <VideoPlayer src={video || undefined} /> : null}
@@ -93,12 +98,37 @@ export const VideoSection: React.FC<{
         <Button
           size="large"
           className="text-body font-medium self-center"
-          endIcon={<Video className="w-4 h-4 [&>*]:stroke-natural-50" />}
-          onClick={() => videoInput.current?.click()}
-          disabled={disabled}
+          endIcon={<Video className="icon" />}
+          onClick={() => ref.current?.click()}
+          disabled={upload.mutation.isPending || update.isPending}
+          loading={upload.mutation.isPending}
         >
           {intl("dashboard.photo-session.button.upload-video")}
         </Button>
+      ) : null}
+
+      {state ? (
+        <ConfirmDialog
+          title={intl(
+            "dashboard.photo-session.confirmation-dialog.video-title"
+          )}
+          icon={<VideoClip />}
+          onClose={() => {
+            upload.mutation.reset();
+          }}
+          onTryAgain={() => {
+            if (!tutorId || !file) return;
+            upload.mutation.reset();
+            upload.mutation.mutate({ tutorId: tutorId, image: file });
+          }}
+          progress={upload.progress}
+          state={state}
+          cancel={() => {
+            upload.mutation.reset();
+            upload.abort();
+          }}
+          open
+        />
       ) : null}
     </div>
   );

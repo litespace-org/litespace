@@ -20,19 +20,12 @@ type Props = {
   createdAt: string;
 };
 
-const TutorCard: React.FC<Props> = ({
-  image,
-  name,
-  email,
-  createdAt,
-  id,
-  studioId,
-}) => {
+const TutorCard: React.FC<Props> = ({ image, name, email, createdAt, id }) => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
   return (
     <div className="relative flex flex-col p-4 gap-1 bg-natural-50 border border-natural-200 rounded">
-      <div className="w-10 h-10 rounded-full overflow-hidden">
+      <div key={image} className="w-10 h-10 rounded-full overflow-hidden">
         <Avatar src={image} alt={name || email} seed={id.toString()} />
       </div>
 
@@ -56,11 +49,7 @@ const TutorCard: React.FC<Props> = ({
           startIcon={<ArrowLeft className="w-4 h-4" />}
           onClick={() =>
             navigate(
-              router.dashboard({
-                route: Dashboard.PhotoSession,
-                tutorId: id,
-                studioId: studioId || 0,
-              })
+              router.dashboard({ route: Dashboard.PhotoSession, tutorId: id })
             )
           }
         />

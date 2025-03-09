@@ -661,7 +661,6 @@
   "labels.file-upload-inprogress": "جاري رفع الملف",
   "labels.file-upload-canceled": "تم إلغاء التحميل",
   "labels.cancel": "إلغاء",
-  "labels.close": "إغلاق",
   "labels.back-to-site": "الرجوع الي الموقع",
   "labels.login": "تسجيل الدخول",
   "placeholders.from": "من",

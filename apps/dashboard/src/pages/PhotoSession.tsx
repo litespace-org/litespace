@@ -1,125 +1,61 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
-
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-
 import { Dashboard } from "@litespace/utils/routes";
 import ArrowRight from "@litespace/assets/ArrowRight";
-import Video from "@litespace/assets/VideoClip";
-import UploadImage from "@litespace/assets/UploadImage";
-
 import { useFindStudioTutor } from "@litespace/headless/tutor";
-import { useUpdateUser, useUploadTutorAssets } from "@litespace/headless/user";
-
 import {
   AvatarSection,
-  ConfirmDialog,
   ThumbnailSection,
   VideoSection,
 } from "@/components/PhotoSession";
 
 const PhotoSession = () => {
   const intl = useFormatMessage();
-  const params = useParams();
+  const params = useParams<{ tutorId: string }>();
 
-  const studioId = useMemo(() => Number(params["studioId"]), [params]);
-  const tutorId = useMemo(() => Number(params["tutorId"]), [params]);
+  const tutorId = useMemo(() => {
+    const id = Number(params.tutorId);
+    if (Number.isNaN(id)) return null;
+    return id;
+  }, [params]);
 
-  const tutorQuery = useFindStudioTutor(studioId, tutorId);
-
-  const [dialogVisibility, setDialogVisibility] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState("");
-  const [dialogIcon, setDialogIcon] = useState<React.ReactNode>(<Video />);
-
-  // used for dialog retry action
-  const [mutateAssetParam, setMutateAssetParam] = useState({ tutorId });
-
-  const mutateAsset = useUploadTutorAssets({});
-  const mutateUser = useUpdateUser({});
-
-  const actionsDisabled = useMemo(
-    () => mutateAsset.mutation.isPending || mutateUser.isPending,
-    [mutateAsset.mutation.isPending, mutateUser.isPending]
-  );
+  const tutorQuery = useFindStudioTutor(tutorId);
 
   return (
-    <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
-      <ConfirmDialog
-        mutateUser={mutateUser}
-        mutateAsset={mutateAsset}
-        title={dialogTitle}
-        icon={dialogIcon}
-        open={dialogVisibility}
-        onClose={() => setDialogVisibility(false)}
-        onTryAgain={() => {
-          mutateAsset.mutation.reset();
-          mutateAsset.mutation.mutateAsync(mutateAssetParam);
-        }}
-      />
-
+    <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6 mb-10">
       <div className="flex items-center w-full gap-6 mb-6">
         <Link to={Dashboard.PhotoSessions}>
           <ArrowRight className="w-6 h-6 stroke-brand-700" />
         </Link>
-        <Typography tag="h1" className="text-subtitle-2 font-bold">
-          {intl("dashboard.photo-sessions.title")}
-          {" / "}
-          <Typography
-            tag="span"
-            className="text-subtitle-2 font-bold text-brand-700 underline"
-          >
-            {tutorQuery.data?.name}
+        {tutorQuery.data?.name ? (
+          <Typography tag="h1" className="text-subtitle-2 font-bold">
+            {intl("dashboard.photo-sessions.title")}
+            {" / "}
+            <Typography
+              tag="span"
+              className="text-subtitle-2 font-bold text-brand-700 underline"
+            >
+              {tutorQuery.data?.name}
+            </Typography>
           </Typography>
-        </Typography>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-10">
-        <AvatarSection
-          tutorQuery={tutorQuery}
-          mutateUser={mutateUser}
-          mutateAsset={mutateAsset}
-          disabled={actionsDisabled}
-          onUpload={() => {
-            setDialogVisibility(true);
-            setDialogIcon(<UploadImage />);
-            setMutateAssetParam((asset) => ({ tutorId, image: asset }));
-            setDialogTitle(
-              intl("dashboard.photo-session.confirmation-dialog.avatar-title")
-            );
-          }}
-        />
+        <AvatarSection tutor={tutorQuery.data} refetch={tutorQuery.refetch} />
 
         <VideoSection
-          tutorQuery={tutorQuery}
-          mutateAsset={mutateAsset}
-          mutateUser={mutateUser}
-          disabled={actionsDisabled}
-          onUpload={(asset) => {
-            setDialogVisibility(true);
-            setDialogIcon(<Video />);
-            setMutateAssetParam(() => ({ tutorId, video: asset }));
-            setDialogTitle(
-              intl("dashboard.photo-session.confirmation-dialog.video-title")
-            );
-          }}
+          tutorId={tutorId}
+          video={tutorQuery.data?.video || null}
+          refetch={tutorQuery.refetch}
         />
 
         <ThumbnailSection
-          tutorQuery={tutorQuery}
-          mutateAsset={mutateAsset}
-          mutateUser={mutateUser}
-          disabled={actionsDisabled}
-          onUpload={(asset) => {
-            setDialogVisibility(true);
-            setDialogIcon(<UploadImage />);
-            setMutateAssetParam(() => ({ tutorId, thumbnail: asset }));
-            setDialogTitle(
-              intl(
-                "dashboard.photo-session.confirmation-dialog.thumbnail-title"
-              )
-            );
-          }}
+          tutorId={tutorId}
+          thumbnail={tutorQuery.data?.thumbnail || null}
+          refetch={tutorQuery.refetch}
         />
       </div>
     </div>

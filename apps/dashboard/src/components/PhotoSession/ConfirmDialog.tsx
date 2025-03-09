@@ -1,63 +1,43 @@
 import { useMemo } from "react";
-
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
-import { useUpdateUser, useUploadTutorAssets } from "@litespace/headless/user";
 import { Void } from "@litespace/types";
 
 export const ConfirmDialog: React.FC<{
   title: string;
   icon: React.ReactNode;
   open: boolean;
-  mutateAsset: ReturnType<typeof useUploadTutorAssets>;
-  mutateUser: ReturnType<typeof useUpdateUser>;
+  state?: "pending" | "success" | "error";
+  progress: number;
   onClose: Void;
   onTryAgain: Void;
-}> = ({ mutateAsset, mutateUser, title, icon, open, onClose, onTryAgain }) => {
+  cancel: Void;
+}> = ({ state, progress, title, icon, open, onClose, onTryAgain, cancel }) => {
   const intl = useFormatMessage();
-  const succeeded = useMemo(
-    () => mutateAsset.mutation.isSuccess,
-    [mutateAsset.mutation.isSuccess]
-  );
-  const failed = useMemo(
-    () => mutateAsset.mutation.isError,
-    [mutateAsset.mutation.isError]
-  );
-  const pending = useMemo(
-    () => mutateAsset.mutation.isPending || mutateUser.isPending,
-    [mutateAsset.mutation.isPending, mutateUser.isPending]
-  );
 
   const progressInfo = useMemo(() => {
-    if (succeeded) return intl("labels.file-upload-done");
-    if (failed) return intl("labels.file-upload-failed");
-    if (pending) return intl("labels.file-upload-inprogress");
+    if (state === "success") return intl("labels.file-upload-done");
+    if (state === "error") return intl("labels.file-upload-failed");
+    if (state === "pending") return intl("labels.file-upload-inprogress");
     return intl("labels.file-upload-canceled");
-  }, [succeeded, failed, pending, intl]);
+  }, [state, intl]);
 
-  const dialogPrimaryAction = useMemo(() => {
-    const action = {
-      label: intl("labels.close"),
-      onClick: () => onClose(),
-    };
+  const primaryAction = useMemo(() => {
+    if (state === "success")
+      return { label: intl("labels.done"), onClick: onClose };
 
-    if (succeeded) {
-      action.label = intl("labels.done");
-    }
-    // TODO: swap between labels.retry and labels.try-again in ar-eg file and all codebase
-    if (failed) {
-      action.label = intl("labels.try-again");
-      action.onClick = () => onTryAgain();
-    }
-    if (pending) {
-      action.label = intl("labels.cancel");
-      action.onClick = () => {
-        mutateAsset.abort();
-        mutateAsset.mutation.reset();
+    if (state === "error")
+      return {
+        label: intl("labels.try-again"),
+        onClick: onTryAgain,
       };
-    }
-    return action;
-  }, [succeeded, failed, pending, onClose, onTryAgain, mutateAsset, intl]);
+
+    return {
+      label: intl("labels.cancel"),
+      onClick: cancel,
+      disabled: progress === 100,
+    };
+  }, [state, intl, onClose, onTryAgain, cancel, progress]);
 
   return (
     <ConfirmationDialog
@@ -65,20 +45,21 @@ export const ConfirmDialog: React.FC<{
       title={title}
       progress={{
         label: progressInfo,
-        value: mutateAsset.progress,
+        value: progress,
       }}
       actions={{
-        primary: dialogPrimaryAction,
-        secondary: failed
-          ? {
-              label: intl("labels.cancel"),
-              disabled: pending,
-              onClick: () => onClose(),
-            }
-          : undefined,
+        primary: primaryAction,
+        secondary:
+          state === "error"
+            ? {
+                label: intl("labels.cancel"),
+                onClick: () => onClose(),
+              }
+            : undefined,
       }}
-      close={pending ? undefined : () => onClose()}
-      type={failed ? "error" : "main"}
+      close={onClose}
+      closable={state !== "pending"}
+      type={state === "error" ? "error" : "main"}
       icon={icon}
     />
   );

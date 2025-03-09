@@ -1,59 +1,52 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-
-import { useFindStudioTutor } from "@litespace/headless/tutor";
 import { useUpdateUser, useUploadTutorAssets } from "@litespace/headless/user";
-
 import Trash from "@litespace/assets/Trash";
 import UploadImage from "@litespace/assets/UploadImage";
+import { ConfirmDialog } from "@/components/PhotoSession/ConfirmDialog";
+import VideoClip from "@litespace/assets/VideoClip";
+import { Void } from "@litespace/types";
+import { Loader } from "@litespace/ui/Loading";
+import cn from "classnames";
 
 export const ThumbnailSection: React.FC<{
-  tutorQuery: ReturnType<typeof useFindStudioTutor>;
-  mutateAsset: ReturnType<typeof useUploadTutorAssets>;
-  mutateUser: ReturnType<typeof useUpdateUser>;
-  disabled?: boolean;
-  onUpload?: (asset: File | undefined) => void;
-}> = ({ tutorQuery, mutateAsset, mutateUser, disabled, onUpload }) => {
+  tutorId: number | null;
+  thumbnail: string | null;
+  refetch: Void;
+}> = ({ tutorId, thumbnail, refetch }) => {
   const intl = useFormatMessage();
-  const thumbnailInput = useRef<HTMLInputElement>(null);
-  // NOTE: read the comments in AvatarCard.ts file for this state type explanation.
-  const [thumbnailFile, setThumbnailFile] = useState<File | undefined | null>(
-    null
-  );
+  const ref = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const thumbnail = useMemo(() => {
-    if (thumbnailFile === undefined) return undefined;
-    if (thumbnailFile === null) return tutorQuery.data?.thumbnail;
-    if (typeof thumbnailFile === "string") return thumbnailFile;
-    return URL.createObjectURL(thumbnailFile);
-  }, [thumbnailFile, tutorQuery.data?.thumbnail]);
+  const update = useUpdateUser({
+    onSuccess() {
+      refetch();
+    },
+  });
 
-  const onUploadThumbnail = useCallback(() => {
-    const thumbnail = thumbnailInput.current?.files?.item(0) || undefined;
+  const upload = useUploadTutorAssets({
+    onSuccess() {
+      refetch();
+    },
+  });
 
-    mutateAsset.mutation.mutateAsync({
-      tutorId: tutorQuery.data?.id || 0,
-      thumbnail,
-    });
+  const state = useMemo(() => {
+    if (upload.mutation.isPending) return "pending";
+    if (upload.mutation.isError) return "error";
+    if (upload.mutation.isSuccess) return "success";
+    return null;
+  }, [
+    upload.mutation.isError,
+    upload.mutation.isPending,
+    upload.mutation.isSuccess,
+  ]);
 
-    setThumbnailFile(thumbnail);
-    if (onUpload) onUpload(thumbnail);
-  }, [mutateAsset.mutation, tutorQuery.data?.id, onUpload]);
-
-  const onDeleteThumbnail = useCallback(() => {
-    mutateUser.mutate(
-      {
-        id: tutorQuery.data?.id || 0,
-        payload: {
-          drop: { thumbnail: true },
-        },
-      },
-      { onSuccess: () => setThumbnailFile(undefined) }
-    );
-  }, [tutorQuery.data?.id, mutateUser]);
+  useEffect(() => {
+    setLoading(!!thumbnail);
+  }, [thumbnail]);
 
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -61,52 +54,104 @@ export const ThumbnailSection: React.FC<{
         type="file"
         accept="image/*"
         className="hidden"
-        ref={thumbnailInput}
-        onChange={onUploadThumbnail}
+        ref={ref}
+        onChange={(event) => {
+          if (!tutorId) return;
+          const thumbnail = event.target.files?.item(0) || undefined;
+          if (!thumbnail) return;
+          setFile(thumbnail);
+          upload.mutation.reset();
+          upload.mutation.mutate({ tutorId: tutorId, thumbnail });
+        }}
       />
 
       <div className="flex justify-between">
         <Typography tag="h2" className="text-subtitle-1 font-bold">
           {intl("dashboard.photo-session.label.thumbnail-image")}
         </Typography>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="large"
-            onClick={() => thumbnailInput.current?.click()}
-            disabled={disabled}
-          >
-            {intl("dashboard.photo-session.label.upload-image")}
-          </Button>
-          <Button
-            type="error"
-            size="large"
-            variant="secondary"
-            onClick={onDeleteThumbnail}
-            endIcon={<Trash className="w-4 h-4 [&>*]:stroke-destructive-700" />}
-            loading={mutateUser.isPending}
-            disabled={disabled}
-          />
-        </div>
+
+        {thumbnail ? (
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="large"
+              onClick={() => ref.current?.click()}
+              disabled={!tutorId || upload.mutation.isPending}
+            >
+              {intl("dashboard.photo-session.label.upload-image")}
+            </Button>
+            <Button
+              type="error"
+              size="large"
+              variant="secondary"
+              onClick={() => {
+                if (!tutorId) return;
+                update.mutate({ id: tutorId, payload: { thumbnail: null } });
+              }}
+              endIcon={
+                <Trash className="w-4 h-4 [&>*]:stroke-destructive-700" />
+              }
+              loading={update.isPending}
+              disabled={
+                upload.mutation.isPending || update.isPending || !thumbnail
+              }
+            />
+          </div>
+        ) : null}
       </div>
 
-      {thumbnail ? (
+      <div className="bg-natural-100 rounded-xl overflow-hidden flex items-center justify-center py-3">
+        <div className={cn("py-6", loading ? "opacity-100" : "opacity-0")}>
+          <Loader />
+        </div>
+
         <img
+          onLoadCapture={() => {
+            setLoading(false);
+          }}
           src={thumbnail || undefined}
-          className="self-center h-[559px] object-contain rounded-xl"
+          className={cn(
+            "object-contain transition-opacity duration-300",
+            thumbnail && !loading ? "opacity-100 visible" : "opacity-0 hidden"
+          )}
         />
-      ) : null}
+      </div>
 
       {!thumbnail ? (
         <Button
           size="large"
           className="text-body font-medium self-center"
-          endIcon={<UploadImage className="w-4 h-4 [&>*]:stroke-natural-50" />}
-          onClick={() => thumbnailInput.current?.click()}
-          disabled={disabled}
+          endIcon={<UploadImage className="icon" />}
+          onClick={() => ref.current?.click()}
+          disabled={upload.mutation.isPending || update.isPending}
+          loading={upload.mutation.isPending}
         >
           {intl("dashboard.photo-session.button.upload-image")}
         </Button>
+      ) : null}
+
+      {state ? (
+        <ConfirmDialog
+          title={intl(
+            "dashboard.photo-session.confirmation-dialog.thumbnail-title"
+          )}
+          icon={<VideoClip />}
+          onClose={() => {
+            upload.mutation.reset();
+          }}
+          onTryAgain={() => {
+            if (!tutorId || !file) return;
+            upload.mutation.reset();
+            upload.mutation.mutate({ tutorId: tutorId, image: file });
+          }}
+          progress={upload.progress}
+          state={state}
+          cancel={() => {
+            upload.mutation.reset();
+            upload.abort();
+          }}
+          open
+        />
       ) : null}
     </div>
   );

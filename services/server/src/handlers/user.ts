@@ -88,13 +88,9 @@ const updateUserPayload = zod.object({
   gender: zod.optional(gender),
   notice: zod.optional(zod.number().positive().int()),
   birthYear: zod.optional(zod.number().positive()),
-  drop: zod.optional(
-    zod.object({
-      image: zod.optional(zod.boolean()),
-      thumbnail: zod.optional(zod.boolean()),
-      video: zod.optional(zod.boolean()),
-    })
-  ),
+  image: zod.optional(zod.null()),
+  thumbnail: zod.optional(zod.null()),
+  video: zod.optional(zod.null()),
   bio: zod.optional(zod.string().trim()),
   about: zod.optional(zod.string().trim()),
   city: zod.optional(zod.union([zod.nativeEnum(IUser.City), zod.null()])),
@@ -137,7 +133,6 @@ const uploadTutorAssetsQuery = zod.object({
 });
 
 const findStudioTutorParams = zod.object({
-  studioId: id,
   tutorId: id,
 });
 
@@ -209,7 +204,9 @@ function update(context: ApiContext) {
         password,
         gender,
         birthYear,
-        drop,
+        image,
+        thumbnail,
+        video,
         bio,
         about,
         notice,
@@ -222,7 +219,7 @@ function update(context: ApiContext) {
         return next(forbidden());
 
       // return forbidden if the studio is trying to drop user image
-      if (isStudio(currentUser) && drop?.image) return next(forbidden());
+      if (isStudio(currentUser) && image === null) return next(forbidden());
 
       // return forbidden if the studio is trying to drop media for an unassociated user
       if (isStudio(currentUser) && targetTutor?.studioId !== currentUser.id)
@@ -244,14 +241,12 @@ function update(context: ApiContext) {
         if (validPassword !== true) return next(apierror(validPassword, 400));
       }
 
-      // Remove assets from the CDN
-      if (drop?.image && targetUser.image) s3.drop(targetUser.image);
-
-      if (targetTutor) {
-        if (drop?.video && targetTutor.video) s3.drop(targetTutor.video);
-        if (drop?.thumbnail && targetTutor.thumbnail)
-          s3.drop(targetTutor.thumbnail);
-      }
+      // Remove assets from the object store
+      if (image === null && targetUser.image) s3.drop(targetUser.image);
+      if (targetTutor && video === null && targetTutor.video)
+        await s3.drop(targetTutor.video);
+      if (targetTutor && thumbnail === null && targetTutor.thumbnail)
+        await s3.drop(targetTutor.thumbnail);
 
       // Remove assets ids from the database / update user data
       const updatedUser = await knex.transaction(
@@ -265,7 +260,7 @@ function update(context: ApiContext) {
                 gender,
                 birthYear,
                 phone,
-                image: drop?.image ? null : undefined,
+                image,
                 // Reset user verification status incase his email updated.
                 verifiedEmail: email ? false : undefined,
                 password: password ? hashPassword(password.new) : undefined,
@@ -273,7 +268,8 @@ function update(context: ApiContext) {
           const user = await users.update(id, updatePayload, tx);
 
           const tutorData =
-            bio || about || notice || drop?.video || drop?.thumbnail;
+            bio || about || notice || video === null || thumbnail === null;
+
           if (tutorData && targetTutor)
             await tutors.update(
               targetUser.id,
@@ -281,8 +277,8 @@ function update(context: ApiContext) {
                 bio,
                 about,
                 notice,
-                video: drop?.video ? null : undefined,
-                thumbnail: drop?.thumbnail ? null : undefined,
+                video,
+                thumbnail,
               },
               tx
             );
@@ -480,13 +476,14 @@ async function findStudioTutor(
   const allowed = isSuperAdmin(user) || isAdmin(user) || isStudio(user);
   if (!allowed) return next(forbidden());
 
-  const { studioId, tutorId }: ITutor.FindStudioTutorPayload =
-    findStudioTutorParams.parse(req.params);
-
-  if (isStudio(req.user) && req.user.id !== studioId) return next(forbidden());
+  const { tutorId }: ITutor.FindStudioTutorParams = findStudioTutorParams.parse(
+    req.params
+  );
 
   const tutor = await tutors.findStudioTutor(tutorId);
   if (!tutor) return next(notfound.tutor());
+
+  if (isStudio(user) && tutor.studioId !== user.id) return next(forbidden());
 
   const response: ITutor.FindStudioTutorApiResponse = await withImageUrl(tutor);
 

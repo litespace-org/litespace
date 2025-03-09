@@ -538,9 +538,10 @@ describe("/api/v1/user/", () => {
 
     it("should respond with forbidden if the studio doesn't have a permision to access the tutor data", async () => {
       const studio = await db.user({ role: IUser.Role.Studio });
+      const tutor = await db.tutor();
       const res = await findStudioTutor({
         params: {
-          tutorId: 1,
+          tutorId: tutor.id,
           studioId: studio.id + 1,
         },
         user: studio,

@@ -87,7 +87,6 @@ type DashboardPayload =
   | {
       route: Dashboard.PhotoSession;
       tutorId: number;
-      studioId: number;
     }
   | {
       route: Exclude<Dashboard, Dashboard.User>;

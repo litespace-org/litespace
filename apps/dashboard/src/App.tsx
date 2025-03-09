@@ -3,7 +3,6 @@ import { ErrorPage } from "@litespace/ui/ErrorPage";
 import { lazy } from "react";
 import { Dashboard } from "@litespace/utils/routes";
 import Page from "@/components/Layout/Page";
-import PhotoSession from "./pages/PhotoSession";
 
 const Root = lazy(() => import("@/pages/Root"));
 const Invoices = lazy(() => import("@/pages/Invoices"));
@@ -18,6 +17,7 @@ const Topics = lazy(() => import("@/pages/Topics"));
 const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
 const UserSettings = lazy(() => import("@/pages/UserSettings"));
 const PhotoSessions = lazy(() => import("@/pages/PhotoSessions"));
+const PhotoSession = lazy(() => import("./pages/PhotoSession"));
 
 const router = createBrowserRouter([
   {

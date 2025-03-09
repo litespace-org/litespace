@@ -38,7 +38,11 @@ const Root: React.FC = () => {
 
   return (
     <>
-      <main className={cn("flex min-h-screen overflow-y-hidden bg-natural-50")}>
+      <main
+        className={cn(
+          "flex flex-row items-stretch min-h-screen overflow-y-hidden bg-natural-50"
+        )}
+      >
         {user ? <Sidebar /> : null}
         <Outlet />
       </main>

@@ -1,58 +1,44 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-
+import { useMemo, useRef, useState } from "react";
 import { Avatar } from "@litespace/ui/Avatar";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-
-import { useFindStudioTutor } from "@litespace/headless/tutor";
 import { useUpdateUser, useUploadTutorAssets } from "@litespace/headless/user";
-
 import Trash from "@litespace/assets/Trash";
+import { ITutor, Void } from "@litespace/types";
+import { ConfirmDialog } from "./ConfirmDialog";
+import VideoClip from "@litespace/assets/VideoClip";
 
 export const AvatarSection: React.FC<{
-  tutorQuery: ReturnType<typeof useFindStudioTutor>;
-  mutateAsset: ReturnType<typeof useUploadTutorAssets>;
-  mutateUser: ReturnType<typeof useUpdateUser>;
-  disabled?: boolean;
-  onUpload?: (asset: File | undefined) => void;
-}> = ({ tutorQuery, mutateAsset, mutateUser, disabled, onUpload }) => {
+  tutor?: ITutor.StudioTutorFields | null;
+  refetch: Void;
+}> = ({ tutor, refetch }) => {
   const intl = useFormatMessage();
-  const avatarInput = useRef<HTMLInputElement>(null);
-  // NOTE: this undefined | null union is mandatory for better UX;
-  // the delete button sets the state to undefined to force reflecting
-  // the effect on views. However the default value is null to allow
-  // using the image link from the server in case it exists.
-  const [avatarFile, setAvatarFile] = useState<File | undefined | null>(null);
+  const ref = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
 
-  const avatar = useMemo(() => {
-    if (avatarFile === undefined) return undefined;
-    if (avatarFile === null) return tutorQuery.data?.image;
-    if (typeof avatarFile === "string") return avatarFile;
-    return URL.createObjectURL(avatarFile);
-  }, [avatarFile, tutorQuery.data?.image]);
+  const update = useUpdateUser({
+    onSuccess() {
+      refetch();
+    },
+  });
 
-  const onUploadAvatar = useCallback(() => {
-    const image = avatarInput.current?.files?.item(0) || undefined;
-    mutateAsset.mutation.mutateAsync({
-      tutorId: tutorQuery.data?.id || 0,
-      image,
-    });
-    setAvatarFile(image);
-    if (onUpload) onUpload(image);
-  }, [mutateAsset.mutation, tutorQuery.data?.id, onUpload]);
+  const upload = useUploadTutorAssets({
+    onSuccess() {
+      refetch();
+    },
+  });
 
-  const onDeleteAvatar = useCallback(() => {
-    mutateUser.mutate(
-      {
-        id: tutorQuery.data?.id || 0,
-        payload: {
-          drop: { image: true },
-        },
-      },
-      { onSuccess: () => setAvatarFile(undefined) }
-    );
-  }, [tutorQuery.data?.id, mutateUser]);
+  const state = useMemo(() => {
+    if (upload.mutation.isPending) return "pending";
+    if (upload.mutation.isError) return "error";
+    if (upload.mutation.isSuccess) return "success";
+    return null;
+  }, [
+    upload.mutation.isError,
+    upload.mutation.isPending,
+    upload.mutation.isSuccess,
+  ]);
 
   return (
     <div className="flex w-full gap-4">
@@ -60,29 +46,46 @@ export const AvatarSection: React.FC<{
         type="file"
         accept="image/*"
         className="hidden"
-        ref={avatarInput}
-        onChange={onUploadAvatar}
+        ref={ref}
+        onChange={(event) => {
+          if (!tutor) return;
+          const image = event.target.files?.item(0) || undefined;
+          if (!image) return;
+          setFile(image);
+          upload.mutation.reset();
+          upload.mutation.mutate({ tutorId: tutor.id, image });
+        }}
       />
 
-      <div className="w-[174px] h-auto rounded-full overflow-hidden">
-        <Avatar src={avatar} />
+      <div className="w-[174px] h-[174px] rounded-full overflow-hidden">
+        <Avatar
+          key={tutor?.image}
+          src={tutor?.image}
+          alt={tutor?.name}
+          seed={tutor?.id}
+        />
       </div>
 
       <div className="flex flex-col gap-4 h-full">
-        <Typography tag="span" className="text-h2 font-bold">
-          {tutorQuery.data?.name}
-        </Typography>
+        {tutor?.name ? (
+          <Typography tag="span" className="text-h2 font-bold">
+            {tutor.name}
+          </Typography>
+        ) : null}
 
-        <Typography tag="span" className="text-subtitle-2 font-semibold">
-          {tutorQuery.data?.email}
-        </Typography>
+        {tutor?.email ? (
+          <Typography tag="span" className="text-subtitle-2 font-semibold">
+            {tutor?.email}
+          </Typography>
+        ) : null}
 
         <div className="flex gap-2">
           <Button
             variant="secondary"
             size="large"
-            onClick={() => avatarInput.current?.click()}
-            disabled={disabled}
+            onClick={() => ref.current?.click()}
+            disabled={upload.mutation.isPending || update.isPending}
+            loading={upload.mutation.isPending}
           >
             {intl("dashboard.photo-session.label.upload-image")}
           </Button>
@@ -90,13 +93,42 @@ export const AvatarSection: React.FC<{
             type="error"
             size="large"
             variant="secondary"
-            onClick={onDeleteAvatar}
-            endIcon={<Trash className="w-4 h-4 [&>*]:stroke-destructive-700" />}
-            loading={mutateUser.isPending}
-            disabled={disabled}
+            onClick={() => {
+              if (!tutor) return;
+              update.mutate({ id: tutor.id, payload: { image: null } });
+            }}
+            endIcon={<Trash className="icon" />}
+            loading={update.isPending}
+            disabled={
+              upload.mutation.isPending || update.isPending || !tutor?.image
+            }
           />
         </div>
       </div>
+
+      {state ? (
+        <ConfirmDialog
+          title={intl(
+            "dashboard.photo-session.confirmation-dialog.avatar-title"
+          )}
+          icon={<VideoClip />}
+          onClose={() => {
+            upload.mutation.reset();
+          }}
+          onTryAgain={() => {
+            if (!tutor || !file) return;
+            upload.mutation.reset();
+            upload.mutation.mutate({ tutorId: tutor.id, image: file });
+          }}
+          progress={upload.progress}
+          state={state}
+          cancel={() => {
+            upload.mutation.reset();
+            upload.abort();
+          }}
+          open
+        />
+      ) : null}
     </div>
   );
 };

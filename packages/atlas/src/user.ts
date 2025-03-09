@@ -115,11 +115,11 @@ export class User extends Base {
     });
   }
 
-  async findStudioTutor(
-    payload: ITutor.FindStudioTutorPayload
-  ): Promise<ITutor.FindStudioTutorApiResponse> {
+  async findStudioTutor({
+    tutorId,
+  }: ITutor.FindStudioTutorParams): Promise<ITutor.FindStudioTutorApiResponse> {
     return this.get({
-      route: `/api/v1/user/tutor/${payload.tutorId}/for/${payload.studioId}`,
+      route: `/api/v1/user/tutor/${tutorId}/for/studio`,
     });
   }
 

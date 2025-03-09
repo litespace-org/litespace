@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Input } from "@litespace/ui/Input";
@@ -11,19 +11,25 @@ import Search from "@litespace/assets/Search";
 import { IUser } from "@litespace/types";
 
 import Tutors from "@/components/PhotoSessions/TutorsList";
+import { debounce } from "lodash";
 
 const PhotoSessions = () => {
   const intl = useFormatMessage();
   const { user } = useUserContext();
 
   const [search, setSearch] = useState("");
-  const [searchInputTimeout, setSearchInputTimeout] = useState<ReturnType<
-    typeof setTimeout
-  > | null>(null);
 
   const tutorsQuery = useFindStudioTutors(
     user?.role === IUser.Role.Studio ? user.id : undefined,
     search
+  );
+
+  const refetch = useMemo(
+    () =>
+      debounce(() => {
+        tutorsQuery.query.refetch();
+      }, 500),
+    [tutorsQuery.query]
   );
 
   return (
@@ -39,11 +45,10 @@ const PhotoSessions = () => {
         <Input
           placeholder={intl("dashboard.photo-sessions.search-placeholder")}
           icon={<Search width={16} height={16} />}
-          onChange={(e) => {
-            if (searchInputTimeout) clearTimeout(searchInputTimeout);
-            setSearchInputTimeout(
-              setTimeout(() => setSearch(e.target.value), 750)
-            );
+          onChange={(event) => {
+            const value = event.target.value;
+            setSearch(value);
+            refetch();
           }}
         />
       </div>
