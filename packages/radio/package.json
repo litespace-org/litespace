@@ -24,14 +24,24 @@
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
     },
-    "./telegram": {
-      "import": "./dist/esm/telegram.js",
-      "require": "./dist/cjs/telegram.js"
+    "./whatsapp": {
+      "import": "./dist/esm/whatsapp/index.js",
+      "require": "./dist/cjs/whatsapp/index.js"
+    },
+    "./telegram/bot": {
+      "import": "./dist/esm/telegram/bot.js",
+      "require": "./dist/cjs/telegram/bot.js"
+    },
+    "./telegram/client": {
+      "import": "./dist/esm/telegram/client.js",
+      "require": "./dist/cjs/telegram/client.js"
     }
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
-    "baileys": "^6.7.13"
+    "baileys": "^6.7.13",
+    "telegram": "^2.26.22",
+    "prompts": "^2.4.2"
   },
   "peerDependencies": {
     "axios": "^1.7.2"
@@ -40,6 +50,7 @@
     "npm-watch": "^0.13.0",
     "qrcode-terminal": "^0.12.0",
     "ts-patch": "^3.2.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@types/prompts": "^2.4.9"
   }
 }

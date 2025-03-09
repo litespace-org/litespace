@@ -1,4 +1,4 @@
-import { Telegram } from "@litespace/radio/telegram";
+import { TelegramBot } from "@litespace/radio/telegram/bot";
 import { config } from "@/config";
 
-export const telegram = new Telegram(config.telegram.token);
+export const telegram = new TelegramBot(config.telegram.token);
