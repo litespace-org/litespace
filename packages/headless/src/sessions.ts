@@ -111,18 +111,19 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
         async () =>
           await navigator.mediaDevices.getUserMedia({
             audio: true,
-            video: video
-              ? {
-                  /**
-                   * We must sure that the aspect ratio for the video stream is
-                   * 16:9 for two reasons.
-                   * 1. The ratio 16:9 is the standard when working with videos.
-                   * 2. The UI is built around this aspect ratio.
-                   */
-                  width: 1280,
-                  height: 720,
-                }
-              : undefined,
+            video: !!video,
+            // video: video
+            //   ? {
+            //       /**
+            //        * We must sure that the aspect ratio for the video stream is
+            //        * 16:9 for two reasons.
+            //        * 1. The ratio 16:9 is the standard when working with videos.
+            //        * 2. The UI is built around this aspect ratio.
+            //        */
+            //       width: 1280,
+            //       height: 720,
+            //     }
+            //   : undefined,
           })
       );
     },
@@ -440,10 +441,11 @@ export function useShareScreen(onStop?: Void) {
       async () =>
         await navigator.mediaDevices.getDisplayMedia({
           audio: true,
-          video: {
-            width: 1280,
-            height: 720,
-          },
+          video: true,
+          // video: {
+          //   width: 1280,
+          //   height: 720,
+          // },
         })
     );
     setLoading(false);

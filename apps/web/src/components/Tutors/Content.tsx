@@ -150,10 +150,7 @@ const Content: React.FC<{
             })
           }
         >
-          <Typography
-            tag="label"
-            className="text-natural-50 text-body font-medium"
-          >
+          <Typography tag="p" className="text-natural-50 text-body font-medium">
             {intl("tutors.coming.set-notifications")}
           </Typography>
         </Button>

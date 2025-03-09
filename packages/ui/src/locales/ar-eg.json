@@ -111,7 +111,7 @@
   "session.permissions.no-camera": "عذرًا، لم نتمكن من العثور على كاميرا متصلة بجهازك",
   "session.share-screen.title": "هل تريد مشاركة الشاشة؟",
   "session.share-screen.description": "سيؤدي مشاركة الشاشة لديك الي ايقاف مشاركة الشاشة الحالية.",
-  "session.timer": "متبقي من زمن الحصة <timer> {time} </timer> دقيقة",
+  "session.timer": "متبقي من زمن الحصة {time} دقيقة",
   "platform.rating.question": "شاركنا رأيك لتحسين تجربتك!",
   "platform.rating.question.description": "رأيك يهمنا لتحسين تجربتك على منصتنا. أخبرنا بما أعجبك وما يمكننا تطويره لنكون دائماً عند توقعاتك.",
   "student-dashboard.overview.title": "نظرة عامة",

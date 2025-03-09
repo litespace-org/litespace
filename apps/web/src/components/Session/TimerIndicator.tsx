@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
@@ -9,17 +9,25 @@ const Timer: React.FC<{ start: string; duration: number }> = ({
   duration,
 }) => {
   const intl = useFormatMessage();
-  const remainingTime = useMemo(() => {
+  const [minutes, setMinutes] = useState<number>(0);
+
+  const getMinutes = useCallback(() => {
     const now = dayjs();
     const startTime = dayjs(start);
     const endTime = startTime.add(duration, "m");
-
-    if (now.isBefore(startTime)) return `${duration}:00`;
-    if (now.isAfter(endTime)) return `00:00`;
-
-    const remaining = now.diff(startTime, "m");
-    return `${remaining}:00`;
+    if (now.isBefore(startTime)) return duration;
+    if (now.isAfter(endTime)) return 0;
+    return now.diff(startTime, "m");
   }, [start, duration]);
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setMinutes(getMinutes());
+    }, 1_000);
+    return () => {
+      clearTimeout(id);
+    };
+  }, [getMinutes]);
 
   return (
     <div className="flex gap-1 md:gap-2 items-center">
@@ -29,10 +37,9 @@ const Timer: React.FC<{ start: string; duration: number }> = ({
         className="text-tiny md:font-semibold text-natural-700 md:text-caption"
       >
         {intl.rich("session.timer", {
-          time: remainingTime,
-          timer: () => (
+          time: (
             <span className="font-bold text-brand-700 text-caption">
-              {remainingTime}
+              {minutes || "00"}:00
             </span>
           ),
         })}

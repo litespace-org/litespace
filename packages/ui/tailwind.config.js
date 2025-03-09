@@ -46,10 +46,7 @@ export default {
         "select-dropdown": "12",
         tooltip: "13",
         toast: "14",
-        "stream-background": "15",
         "stream-avatar": "16",
-        "stream-icon-background": "16",
-        "stream-icon": "17",
         "stream-chat": "18",
       },
       screens: {

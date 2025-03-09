@@ -6,7 +6,6 @@ import cn from "classnames";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import speaking from "@/components/Session/speechIndicatorAnimation.json";
 import Lottie from "react-lottie";
-import { Animate as AnimateOpacity } from "@/components/Animate";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -14,15 +13,12 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <motion.div
       initial={{
         opacity: 0,
-        scale: 0.5,
+        scale: 0.9,
       }}
-      animate={{
-        scale: 1,
-        opacity: 1,
-      }}
+      animate={{ scale: 1, opacity: 1 }}
       exit={{
         opacity: 0,
-        scale: 0.5,
+        scale: 0.9,
         borderRadius: "32px",
         overflow: "hidden",
       }}
@@ -30,7 +26,31 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         duration: 0.3,
         ease: "easeInOut",
       }}
-      className="relative w-full min-h-full !h-full grow"
+      className="absolute top-0 left-0 w-full h-full"
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+export const AnimateOpacity: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        height: 0,
+      }}
+      animate={{
+        opacity: 1,
+        height: "auto",
+        transition: {
+          duration: 0.2,
+          ease: "linear",
+        },
+      }}
+      exit={{ opacity: 0, height: 0 }}
     >
       {children}
     </motion.div>
@@ -41,7 +61,8 @@ const VideoStream: React.FC<{
   stream: MediaStream | null;
   muted: boolean;
   hidden?: boolean;
-}> = ({ stream, muted, hidden }) => {
+  mirror?: boolean;
+}> = ({ stream, muted, hidden, mirror }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -52,7 +73,8 @@ const VideoStream: React.FC<{
     <video
       ref={videoRef}
       autoPlay
-      className={cn("w-full h-full absolute top-0", hidden && "opacity-0")}
+      className={cn("aspect-video w-full", hidden && "opacity-0")}
+      style={{ transform: mirror ? "scale(-1,1)" : "none" }}
       muted={muted}
       playsInline
     />
@@ -64,23 +86,22 @@ export const Stream: React.FC<{
   muted: boolean;
   size?: "small" | "large";
   stream: StreamInfo;
-}> = ({ stream, muted, size = "large" }) => {
+  mirror?: boolean;
+}> = ({ stream, muted, size = "large", mirror }) => {
   const mq = useMediaQuery();
 
   return (
-    <motion.div
-      layout
-      transition={{ duration: 0.3 }}
-      className={cn("relative h-full !min-h-full w-full")}
+    <div
+      className={cn(
+        "relative rounded-2xl bg-natural-100 w-full h-full flex items-center justify-center"
+      )}
     >
-      {size === "small" ? (
-        <div className="absolute w-full h-full bg-natural-100 blur-[15px] z-stream-background" />
-      ) : null}
-      <VideoStream stream={stream.stream} muted={muted} />
+      <VideoStream stream={stream.stream} muted={muted} mirror={mirror} />
+
       <AnimatePresence mode="wait">
         {!stream.video && !stream.cast ? (
           <Animate key="avatar">
-            <div className="w-full h-full min-h-full flex items-center z-stream-avatar justify-center absolute top-0 left-0 bg-natural-100">
+            <div className="w-full h-full flex items-center justify-center bg-natural-100">
               <UserAvatar
                 variant={size}
                 user={stream.user}
@@ -102,14 +123,16 @@ export const Stream: React.FC<{
               })}
             >
               <div
-                className={cn("flex items-center justify-center relative", {
-                  "w-8 h-8 md:w-10 md:h-10": size === "large",
-                  "w-6 h-6 md:w-8 md:h-8": size === "small",
-                })}
+                className={cn(
+                  "flex items-center justify-center bg-[#0000004D] backdrop-blur-[7.5px]",
+                  {
+                    "w-8 h-8 md:w-10 md:h-10": size === "large",
+                    "w-6 h-6 md:w-8 md:h-8": size === "small",
+                  }
+                )}
               >
-                <div className="absolute w-full z-stream-icon-background h-full blur-[15px] bg-[#0000004D]" />
                 <MicrophoneSlash
-                  className={cn("z-stream-icon [&_*]:stroke-natural-50", {
+                  className={cn("[&_*]:stroke-natural-50", {
                     "w-6 h-6": size === "large",
                     "w-4 h-4": size === "small",
                   })}
@@ -146,7 +169,7 @@ export const Stream: React.FC<{
           </AnimateOpacity>
         ) : null}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };
 

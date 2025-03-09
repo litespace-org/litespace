@@ -44,7 +44,7 @@ export const Menu: React.FC<{
         >
           {title ? (
             <Typography
-              tag="label"
+              tag="p"
               className={cn(
                 "text-tiny font-semibold",
                 danger ? "text-destructive-600" : "text-natural-600",

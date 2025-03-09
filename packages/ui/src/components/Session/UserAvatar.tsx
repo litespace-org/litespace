@@ -1,6 +1,5 @@
 import React from "react";
 import { Avatar } from "@/components/Avatar";
-import { orUndefined } from "@litespace/utils/utils";
 import { motion } from "framer-motion";
 import cn from "classnames";
 
@@ -80,11 +79,7 @@ export const UserAvatar: React.FC<{
             variant === "small",
         })}
       >
-        <Avatar
-          src={orUndefined(user.imageUrl)}
-          alt={orUndefined(user.name)}
-          seed={user.id.toString()}
-        />
+        <Avatar src={user.imageUrl} alt={user.name} seed={user.id.toString()} />
       </div>
     </div>
   );

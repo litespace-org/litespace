@@ -23,31 +23,40 @@ export const SessionStreams: React.FC<{
   return (
     <div
       id="session-streams"
-      className="flex flex-col gap-4 lg:gap-6 h-full"
+      className="flex flex-col gap-4 lg:gap-6 w-full h-full"
       data-info={chat ? "with-chat" : "without-chat"}
     >
       {organizedStreams.focused ? (
         <div className="w-full h-full lg:min-h-[553px] relative rounded-2xl overflow-hidden">
           <Stream
             muted={
-              currentUserId === organizedStreams.focused.user.id ||
-              organizedStreams.focused.audio
+              currentUserId === organizedStreams.focused.user.id &&
+              !organizedStreams.focused.cast
             }
             stream={organizedStreams.focused}
+            mirror={
+              currentUserId === organizedStreams.focused.user.id &&
+              !organizedStreams.focused.cast
+            }
           />
         </div>
       ) : null}
 
       {!isEmpty(organizedStreams.unfocused) ? (
-        <div className="grid w-full !h-[153px] grid-cols-2 lg:flex lg:items-center gap-4 lg:gap-6">
+        <div className="grid w-full grid-cols-2 lg:flex lg:items-center gap-4 lg:gap-6">
           {organizedStreams.unfocused.map(
-            (ele, idx) =>
-              ele && (
+            (item, idx) =>
+              item && (
                 <div
                   key={idx}
-                  className="lg:w-[219px] border border-natural-200 lg:h-[123px] w-full h-[109px] md:h-[153px] relative rounded-lg overflow-hidden"
+                  className="border border-natural-200 lg:h-[123px] lg:w-[219px] w-full md:w-1/2  relative rounded-lg overflow-hidden"
                 >
-                  <Stream size="small" muted={ele?.audio} stream={ele} />
+                  <Stream
+                    size="small"
+                    stream={item}
+                    muted={currentUserId === item.user.id && !item.cast}
+                    mirror={currentUserId === item.user.id && !item.cast}
+                  />
                 </div>
               )
           )}

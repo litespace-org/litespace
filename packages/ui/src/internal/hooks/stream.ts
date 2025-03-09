@@ -25,6 +25,7 @@ export function useCreateStream(
     },
     video: video || false,
     cast: cast || false,
+    isOwner: false,
   });
 }
 
@@ -67,5 +68,6 @@ export function useUserMediaStreamInfo(
     },
     video: video || false,
     cast: cast || false,
+    isOwner: false,
   });
 }

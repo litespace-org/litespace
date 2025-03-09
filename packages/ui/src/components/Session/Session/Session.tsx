@@ -4,8 +4,6 @@ import { Actions } from "@/components/Session/Actions";
 import { SessionStreams } from "@/components/Session/SessionStreams";
 import { StreamInfo } from "@/components/Session/types";
 import cn from "classnames";
-import { AnimatePresence } from "framer-motion";
-import { AnimateWidth } from "@/components/Animate";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
@@ -53,32 +51,26 @@ export const Session: React.FC<Props> = ({
       <div
         className={cn(
           "w-full grow",
-          chat.enabled
-            ? "lg:grid relative gap-6 lg:grid-cols-[auto,minmax(35%,326px)]"
-            : "flex"
+          chat.enabled ? "relative lg:flex lg:flex-row lg:gap-6" : "flex"
         )}
       >
-        <AnimatePresence mode="wait">
-          <AnimateWidth className="!w-full h-full">
-            <SessionStreams
-              currentUserId={currentUserId}
-              streams={streams}
-              chat={chat.enabled}
-            />
-          </AnimateWidth>
-        </AnimatePresence>
+        <SessionStreams
+          currentUserId={currentUserId}
+          streams={streams}
+          chat={chat.enabled}
+        />
 
-        {chat.enabled && mq.lg ? (
-          <AnimatePresence mode="wait">
-            <AnimateWidth
-              key="chat"
-              className="h-full shadow shadow-message-panel rounded-2xl"
-            >
-              {chatPanel}
-            </AnimateWidth>
-          </AnimatePresence>
-        ) : null}
+        <div
+          key="chat"
+          className={cn(
+            "h-full shadow shadow-message-panel rounded-2xl overflow-hidden w-[344px] flex-shrink-0",
+            chat.enabled && mq.lg ? "visible" : "hidden"
+          )}
+        >
+          {chatPanel}
+        </div>
       </div>
+
       <Actions
         leave={leave}
         screen={cast}
@@ -86,11 +78,15 @@ export const Session: React.FC<Props> = ({
         audio={audio}
         chat={chat}
       />
-      {chat.enabled && !mq.lg ? (
-        <div className="absolute w-full h-full top-0 left-0 z-stream-chat">
-          {chatPanel}
-        </div>
-      ) : null}
+
+      <div
+        className={cn(
+          "absolute w-full h-full top-0 left-0 z-stream-chat",
+          chat.enabled && !mq.lg ? "visible" : "hidden"
+        )}
+      >
+        {chatPanel}
+      </div>
     </div>
   );
 };

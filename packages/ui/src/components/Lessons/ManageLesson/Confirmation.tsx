@@ -94,7 +94,7 @@ export const Confirmation: React.FC<{
           onClick={onConfrim}
           size="large"
         >
-          <Typography tag="label" className="font-medium">
+          <Typography tag="span" className="font-medium">
             {intl("book-lesson.confirm")}
           </Typography>
         </Button>
@@ -105,7 +105,7 @@ export const Confirmation: React.FC<{
           onClick={onEdit}
           size="large"
         >
-          <Typography tag="label" className="font-medium">
+          <Typography tag="span" className="font-medium">
             {intl("book-lesson.edit")}
           </Typography>
         </Button>

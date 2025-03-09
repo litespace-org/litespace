@@ -56,13 +56,14 @@ export const PreSession: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "rounded-2xl w-full h-full",
+        "rounded-2xl lg:w-full lg:h-full",
         "flex flex-col lg:grid lg:grid-cols-[1fr,auto] lg:grid-rows-[auto,1fr] items-center lg:items-start gap-4 lg:gap-6"
       )}
     >
-      <div className="h-full w-full rounded-2xl flex items-stretch relative overflow-hidden min-h-[398px] bg-natural-100 md:min-h-[744px] lg:min-h-max lg:h-[550px]">
+      <div className="h-full w-full rounded-2xl flex items-stretch relative overflow-hidden bg-natural-100">
         <Stream
           muted
+          mirror
           stream={{
             stream,
             speaking,
@@ -73,13 +74,13 @@ export const PreSession: React.FC<Props> = ({
           }}
         />
       </div>
-      <div className="grow w-[306px] flex justify-center items-center h-full">
+      <div className="grow w-[306px] flex justify-center items-center lg:h-full">
         <Ready
           error={audio.error}
           otherMember={members.other}
           start={session.start}
           duration={session.duration}
-          disabled={video.error}
+          disabled={audio.error}
           join={join}
           loading={joining}
         />
