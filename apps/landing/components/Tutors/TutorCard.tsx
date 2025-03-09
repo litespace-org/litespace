@@ -60,12 +60,12 @@ export const TutorCard: React.FC<{
   return (
     <div
       className={cn(
-        "h-full bg-natural-50 flex gap-2 md:gap-4",
+        "h-full bg-natural-50 flex gap-2 md:gap-4 max-w-[500px] md:max-w-[574px] lg:max-w-[600px]",
         "border border-transparent hover:border hover:border-natural-100",
-        "p-4 shadow-ls-small rounded-lg"
+        "p-4 shadow-tutor-card rounded-lg"
       )}
     >
-      <div className="rounded-lg overflow-hidden shrink-0 w-[58px] h-[58px] md:h-auto md:w-[200px]">
+      <div className="hidden md:block rounded-lg overflow-hidden shrink-0 w-[200px]">
         <Avatar
           src={orUndefined(imageUrl)}
           alt={orUndefined(name)}
@@ -74,30 +74,41 @@ export const TutorCard: React.FC<{
         />
       </div>
       <div className="flex flex-col">
-        <Typography
-          tag="h3"
-          className="text-brand-700 mb-[2px] md:mb-1 line-clamp-1 font-bold text-caption md:text-subtitle-1"
-        >
-          {name}
-        </Typography>
+        <div className="flex gap-2">
+          <div className="block md:hidden w-[58px] h-[58px] rounded-lg overflow-hidden shrink-0">
+            <Avatar
+              src={orUndefined(imageUrl)}
+              alt={orUndefined(name)}
+              seed={id.toString()}
+              object="fill"
+            />
+          </div>
+          <div>
+            <Typography
+              tag="h3"
+              className="text-brand-700 mb-[2px] md:mb-1 line-clamp-1 font-bold text-caption md:text-subtitle-1"
+            >
+              {name}
+            </Typography>
 
-        {bio ? (
-          <Typography
-            tag="p"
-            className="ellipsis line-clamp-2 text-natural-800 font-normal text-tiny md:text-caption h-[35px] md:h-auto"
-          >
-            {bio}
-          </Typography>
-        ) : null}
-
+            {bio ? (
+              <Typography
+                tag="p"
+                className="ellipsis line-clamp-2 text-natural-800 font-normal text-tiny md:text-caption h-[35px] md:h-auto"
+              >
+                {bio}
+              </Typography>
+            ) : null}
+          </div>
+        </div>
         <Typography
           tag="p"
-          className="-ms-[66px] md:ms-0 mt-2 md:mt-0 ellipsis line-clamp-2 text-natural-800 font-normal text-caption"
+          className="mt-2 md:mt-0 ellipsis line-clamp-2 text-natural-800 font-normal text-caption"
         >
           {about}
         </Typography>
 
-        <Link href={profileUrl} className="cursor-pointer -ms-[66px] md:ms-0">
+        <Link href={profileUrl} className="cursor-pointer">
           <Typography
             tag="span"
             className="ellipsis line-clamp-2 text-natural-950 underline text-caption font-semibold md:font-bold"
@@ -107,7 +118,7 @@ export const TutorCard: React.FC<{
         </Link>
 
         {!isFreshTutor ? (
-          <div className={cn("flex gap-8 my-2 md:my-4 -ms-[66px] md:ms-0")}>
+          <div className={cn("flex gap-8 my-2 md:my-4")}>
             {studentCount ? (
               <div className="flex flex-col gap-1">
                 <Typography
@@ -170,12 +181,9 @@ export const TutorCard: React.FC<{
 
         {!isEmpty(topics) && topics.join("").length > 0 ? (
           <div
-            className={cn(
-              "flex gap-2 flex-wrap justify-start -ms-[66px] md:ms-0",
-              {
-                "mt-4": isFreshTutor,
-              }
-            )}
+            className={cn("flex gap-2 flex-wrap justify-start", {
+              "mt-4": isFreshTutor,
+            })}
           >
             {topics.map((topic, idx) => {
               if (
@@ -212,7 +220,7 @@ export const TutorCard: React.FC<{
           </div>
         ) : null}
 
-        <div className="flex flex-row gap-3 mt-2 md:mt-4 -ms-[66px] md:ms-0">
+        <div className="flex flex-row gap-3 mt-2 md:mt-4">
           <Link href={profileUrl} className="w-full block">
             <Button
               className="w-full"
