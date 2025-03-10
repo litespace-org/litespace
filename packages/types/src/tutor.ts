@@ -26,6 +26,7 @@ export type Cache = {
   name: string | null;
   image: string | null;
   video: string | null;
+  thumbnail: string | null;
   bio: string | null;
   about: string | null;
   gender: IUser.Gender | null;

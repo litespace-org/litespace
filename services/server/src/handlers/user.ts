@@ -1,5 +1,5 @@
 import { tutors, users, knex, lessons } from "@litespace/models";
-import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
+import { ILesson, ITutor, IUser } from "@litespace/types";
 import {
   apierror,
   bad,
@@ -46,7 +46,6 @@ import {
   orderTutors,
 } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { safe } from "@litespace/utils/error";
 import { asIsoDate } from "@litespace/utils/dayjs";
 import {
   encodeAuthJwt,
@@ -57,7 +56,6 @@ import {
 } from "@litespace/auth";
 import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
-import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/utils/validation";
 import {
   isRegularUser,
@@ -173,10 +171,12 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   });
 
   sendBackgroundMessage({
-    type: WorkerMessageType.SendUserVerificationEmail,
-    callbackUrl: payload.callbackUrl,
-    email: user.email,
-    user: user.id,
+    type: "send-user-verification-email",
+    payload: {
+      callbackUrl: payload.callbackUrl,
+      email: user.email,
+      user: user.id,
+    },
   });
 
   const token = encodeAuthJwt(user.id, jwtSecret);
@@ -184,7 +184,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-function update(context: ApiContext) {
+function update(_: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = identityObject.parse(req.params);
@@ -287,28 +287,14 @@ function update(context: ApiContext) {
         }
       );
 
-      // todo: remove the tutor from the cache incase tutor is no longer fully onboarded
+      if (targetTutor) {
+        sendBackgroundMessage({
+          type: "update-tutor-in-cache",
+          payload: { tutorId: targetTutor.id },
+        });
+      }
+
       res.status(200).json(await withImageUrl(updatedUser));
-      // todo: handle cache update using a specific worker
-      if (!isTutor(updatedUser) && !isTutorManager(updatedUser)) return;
-
-      const error = await safe(async () => {
-        const tutor = await tutors.findById(updatedUser.id);
-        if (!tutor) return;
-        // should only update the cache if it's an onboard (activated) tutor
-        if (!isOnboard(tutor)) return;
-
-        const tutorCache = await cache.tutors.getOne(tutor.id);
-        const joinedCache = await joinTutorCache(tutor, tutorCache);
-        await cache.tutors.setOne(joinedCache);
-
-        // notify clients
-        context.io
-          .to(Wss.Room.TutorsCache)
-          .emit(Wss.ServerEvent.TutorUpdated, tutor);
-      });
-
-      if (error instanceof Error) console.error(error);
     }
   );
 }
@@ -986,7 +972,7 @@ async function uploadTutorAssets(
       })
     : undefined;
 
-  if (!tutor.image || !tutor.video || !tutor.thumbnail)
+  if (!tutor.image || !tutor.video || !tutor.thumbnail) {
     await knex.transaction(async (tx) => {
       if (!tutor.image) await users.update(tutorId, { image: imageId }, tx);
 
@@ -1001,7 +987,11 @@ async function uploadTutorAssets(
         );
     });
 
-  // TODO: update tutor cache
+    sendBackgroundMessage({
+      type: "update-tutor-in-cache",
+      payload: { tutorId: tutor.tutorId },
+    });
+  }
 
   res.sendStatus(200);
 }

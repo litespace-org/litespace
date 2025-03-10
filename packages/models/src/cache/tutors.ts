@@ -9,14 +9,14 @@ export class Tutors extends CacheBase {
   async setOne(tutor: ITutor.Cache) {
     const exists = await this.exists();
     const key = this.key;
-    const filed = this.asField(tutor.id);
+    const field = this.asField(tutor.id);
     const value = this.encode(tutor);
 
-    if (exists) return await this.client.hSet(key, filed, value);
+    if (exists) return await this.client.hSet(key, field, value);
 
     await this.client
       .multi()
-      .hSet(key, filed, value)
+      .hSet(key, field, value)
       .expire(this.key, this.ttl)
       .exec();
   }
@@ -51,6 +51,10 @@ export class Tutors extends CacheBase {
   async exists(): Promise<boolean> {
     const output = await this.client.exists(this.key);
     return !!output;
+  }
+
+  async removeOne(id: number): Promise<void> {
+    await this.client.hDel(this.key, this.asField(id));
   }
 
   asField(id: number): string {

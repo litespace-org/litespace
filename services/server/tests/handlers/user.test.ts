@@ -115,6 +115,7 @@ describe("/api/v1/user/", () => {
           activated: true,
           activatedBy: newUser.id,
           video: "/video.mp4",
+          thumbnail: "/thumbnail.jpg",
           notice: 10,
         });
 
@@ -147,6 +148,7 @@ describe("/api/v1/user/", () => {
           activated: true,
           activatedBy: newUser.id,
           video: "/video.mp4",
+          thumbnail: "/thumbnail.jpg",
           notice: 10,
         };
 
@@ -174,6 +176,7 @@ describe("/api/v1/user/", () => {
           activated: true,
           activatedBy: newUser.id,
           video: "/video.mp4",
+          thumbnail: "/thumbnail.jpg",
           notice: 10,
         };
 
@@ -206,6 +209,7 @@ describe("/api/v1/user/", () => {
             activated: true,
             activatedBy: newUser.id,
             video: "/video1.mp4",
+            thumbnail: "/thumbnail.jpg",
             notice: 7,
           },
           {
@@ -215,6 +219,7 @@ describe("/api/v1/user/", () => {
             activated: true,
             activatedBy: newUser.id,
             video: "/video2.mp4",
+            thumbnail: "/thumbnail.jpg",
             notice: 12,
           },
           {
@@ -224,6 +229,7 @@ describe("/api/v1/user/", () => {
             activated: true,
             activatedBy: newUser.id,
             video: "/video3.mp4",
+            thumbnail: "/thumbnail.jpg",
             notice: 14,
           },
           {
@@ -233,6 +239,7 @@ describe("/api/v1/user/", () => {
             activated: true,
             activatedBy: newUser.id,
             video: "/video4.mp4",
+            thumbnail: "/thumbnail.jpg",
             notice: 7,
           },
         ];
@@ -320,6 +327,7 @@ describe("/api/v1/user/", () => {
         activated: true,
         activatedBy: newUser.id,
         video: "/video.mp4",
+        thumbnail: "/thumbnail.jpg",
         notice: 10,
       };
 
@@ -350,6 +358,7 @@ describe("/api/v1/user/", () => {
         activated: true,
         activatedBy: newUser.id,
         video: "/video.mp4",
+        thumbnail: "/thumbnail.jpg",
         notice: 10,
       };
 
@@ -399,6 +408,7 @@ describe("/api/v1/user/", () => {
         activated: true,
         activatedBy: tutor.user.id,
         video: "/video.mp4",
+        thumbnail: "/thumbnail.jpg",
         notice: 10,
       });
       await users.update(tutor.user.id, {

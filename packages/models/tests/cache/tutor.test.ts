@@ -9,6 +9,7 @@ const getMockTutorCache = (id: number) => ({
   name: faker.word.noun(),
   image: faker.internet.url(),
   video: faker.internet.url(),
+  thumbnail: faker.internet.url(),
   email: faker.internet.email(),
   city: faker.number.int({ min: 1, max: 15 }),
   phone: faker.string.numeric({ length: 11 }),
