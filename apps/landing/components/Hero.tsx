@@ -1,17 +1,18 @@
 "use client";
 
-import React from "react";
-import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@/hooks/intl";
-import { Typography } from "@litespace/ui/Typography";
 import Ellipse from "@/components/Ellipse";
+import { useFormatMessage } from "@/hooks/intl";
+import { router } from "@/lib/routes";
+import { Button } from "@litespace/ui/Button";
+import { Typography } from "@litespace/ui/Typography";
+import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import Link from "next/link";
-import { router } from "@/lib/routes";
-import { Web } from "@litespace/utils/routes";
+import React from "react";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
+
   return (
     <div
       className={cn(
