@@ -7,8 +7,9 @@ import { safe } from "@litespace/utils/error";
 import { nameof } from "@litespace/utils/utils";
 import { WorkerMessageOf } from "@/workers/types";
 import { tutors } from "@litespace/models";
-import { isOnboard, joinTutorCache } from "@/lib/tutor";
+import { joinTutorCache } from "@/lib/tutor";
 import { cache } from "@/lib/cache";
+import { isOnboard } from "@litespace/utils/tutor";
 
 export async function sendAuthTokenEmail({
   email,

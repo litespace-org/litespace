@@ -9,7 +9,7 @@ import { useUserContext } from "@litespace/headless/context/user";
 import StartMessaging from "@litespace/assets/StartMessaging";
 import { Typography } from "@litespace/ui/Typography";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
-import { ITutor } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
@@ -104,7 +104,11 @@ const Chat: React.FC = () => {
             tag="span"
             className="text-natural-950 max-w-[496px] text-center text-subtitle-2 font-bold"
           >
-            {intl("chat.start-message")}
+            {intl(
+              user?.role === IUser.Role.Student
+                ? "chat.start-message-student"
+                : "chat.start-message-tutor"
+            )}
           </Typography>
         </div>
       ) : null}

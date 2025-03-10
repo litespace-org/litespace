@@ -37,6 +37,11 @@ const TutorSettings: React.FC<{
       email: info.email || "",
       phone: info.phone || "",
       city: orUndefined(info.city),
+      password: {
+        current: "",
+        confirm: "",
+        new: "",
+      },
     },
   });
 
@@ -119,6 +124,7 @@ const TutorSettings: React.FC<{
     () => (
       <Button
         htmlType="submit"
+        onClick={() => form.handleSubmit(submit)}
         loading={updateTutor.isPending}
         disabled={updateTutor.isPending || !dataChanged}
         size="large"
@@ -129,7 +135,7 @@ const TutorSettings: React.FC<{
         </Typography>
       </Button>
     ),
-    [dataChanged, intl, updateTutor.isPending]
+    [dataChanged, intl, form, submit, updateTutor.isPending]
   );
 
   return (

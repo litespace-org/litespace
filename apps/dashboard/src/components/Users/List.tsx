@@ -126,7 +126,7 @@ const List: React.FC<{
   if (!query.data) return null;
 
   return (
-    <div>
+    <div className="w-[calc(100vw-98px)] lg:w-[calc(100vw-240px)]">
       <Table
         {...props}
         columns={columns}

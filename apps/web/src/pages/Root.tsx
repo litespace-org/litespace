@@ -8,11 +8,13 @@ import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
 
 const Root: React.FC = () => {
   const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const { user, meta } = useUserContext();
+  const { user } = useUserContext();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -35,7 +37,7 @@ const Root: React.FC = () => {
     const { tutor, student, tutorManager } = destructureRole(user.role);
     if (tutor || tutorManager) return navigate(Web.TutorDashboard);
     if (student) return navigate(Web.StudentDashboard);
-  }, [navigate, location.pathname, user, meta]);
+  }, [navigate, location.pathname, user]);
 
   const showNavigation = useMemo(() => {
     const routes: Web[] = [
@@ -64,6 +66,7 @@ const Root: React.FC = () => {
             showMobileSidebar && !mq.lg,
         })}
       >
+        <CompleteProfileBanner />
         {showNavigation ? (
           <Navbar toggleSidebar={() => setShowMobileSidebar((prev) => !prev)} />
         ) : null}

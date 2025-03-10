@@ -41,7 +41,6 @@ import dayjs from "@/lib/dayjs";
 import {
   asTutorInfoResponseBody,
   cacheTutors,
-  isOnboard,
   joinTutorCache,
   orderTutors,
 } from "@/lib/tutor";
@@ -66,6 +65,7 @@ import {
 import { getRequestFile, upload } from "@/lib/assets";
 import bytes from "bytes";
 import s3 from "@/lib/s3";
+import { isOnboard } from "@litespace/utils/tutor";
 
 const createUserPayload = zod.object({
   role,
@@ -364,6 +364,7 @@ async function selectInterviewer(
 async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
   const { tutorId } = withNamedId("tutorId").parse(req.params);
   const tutor = await tutors.findSelfById(tutorId);
+
   if (!tutor) return next(notfound.tutor());
   const response: ITutor.FindTutorMetaApiResponse = await withImageUrl(tutor);
   res.status(200).json(response);
@@ -374,8 +375,10 @@ async function findTutorInfo(
   res: Response,
   next: NextFunction
 ): Promise<void> {
+  const { user } = req;
   const { tutorId } = withNamedId("tutorId").parse(req.params);
   const ctutor = await cache.tutors.getOne(tutorId);
+
   if (ctutor !== null) {
     const response: ITutor.FindTutorInfoApiResponse =
       await asTutorInfoResponseBody(ctutor);
@@ -384,15 +387,19 @@ async function findTutorInfo(
   }
 
   const tutor = await tutors.findById(tutorId);
-  if (tutor !== null && isOnboard(tutor)) {
+  if (!tutor) return next(notfound.tutor());
+  const isAllowed =
+    isOnboard(tutor) ||
+    (user && typeof user !== "string" && user.id === tutorId);
+
+  if (isAllowed) {
     const ctutor = await joinTutorCache(tutor, null);
-    await cache.tutors.setOne(ctutor);
+    if (isOnboard(tutor)) await cache.tutors.setOne(ctutor);
     const response: ITutor.FindTutorInfoApiResponse =
       await asTutorInfoResponseBody(ctutor);
     res.status(200).json(response);
     return;
   }
-
   return next(notfound.tutor());
 }
 
@@ -408,7 +415,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
     : // DONE: Update the tutors cache according to the new design in (@/architecture/v1.0/tutors.md)
       await cacheTutors();
 
-  // order tutors based on time of the first event, genger of the user
+  // order tutors based on time of the first event, gender of the user
   // online state, and notice.
   const user = req.user;
   const userGender =
@@ -540,7 +547,7 @@ async function findPersonalizedTutorStats(
 
   const id = user.id;
   const tutor = await tutors.findById(id);
-  if (!tutor || !isOnboard(tutor)) return next(notfound.tutor());
+  if (!tutor) return next(notfound.tutor());
 
   const now = dayjs.utc().toISOString();
   const [
@@ -825,6 +832,7 @@ async function findTutorActivityScores(
   res.status(200).json(response);
 }
 
+// TODO: filter based on if he is onboarded or not
 /**
  * handles requests from students and responds with data of tutors
  * who the student (requester) didn't open a chat room with.
@@ -934,8 +942,6 @@ async function uploadTutorAssets(
   const tutor = await tutors.findTutorAssets(tutorId);
   if (!tutor) return next(notfound.tutor());
 
-  // Tutor assets cannot be updated before selecting a studio.
-  if (!tutor.studioId) return next(bad());
   // Studio can only update its tutors (tutors who selected it).
   if (isStudio(user) && tutor.studioId !== user.id) return next(forbidden());
 

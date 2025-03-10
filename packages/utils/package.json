@@ -73,6 +73,10 @@
       "import": "./dist/esm/time.js",
       "require": "./dist/cjs/time.js"
     },
+    "./tutor": {
+      "import": "./dist/esm/tutor.js",
+      "require": "./dist/cjs/tutor.js"
+    },
     "./user": {
       "import": "./dist/esm/user.js",
       "require": "./dist/cjs/user.js"
@@ -117,6 +121,7 @@
     "./lesson": "./dist/cjs/lesson.js",
     "./log": "./dist/cjs/log.js",
     "./time": "./dist/cjs/time.js",
+    "./tutor": "./dist/cjs/tutor.js",
     "./user": "./dist/cjs/user.js",
     "./utils": "./dist/cjs/utils.js",
     "./value": "./dist/cjs/value.js",
