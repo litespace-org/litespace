@@ -1,38 +1,28 @@
 import { parentPort } from "node:worker_threads";
-import {
-  WorkerMessage,
-  WorkerMessagePayloadMap,
-  WorkerMessageType,
-} from "@/workers/types";
+import { WorkerMessage } from "@/workers/types";
 import { IToken } from "@litespace/types";
-import { sendAuthTokenEmail, updateTutorCache } from "@/workers/functions";
+import { sendAuthTokenEmail, updateTutorCache } from "@/workers/handlers";
 
-function _postMessage(message: WorkerMessage<WorkerMessageType>) {
+function _postMessage(message: WorkerMessage) {
   if (!parentPort) return;
   parentPort.postMessage(message);
 }
 
-parentPort?.on("message", async (message: WorkerMessage<WorkerMessageType>) => {
+parentPort?.on("message", async ({ type, payload }: WorkerMessage) => {
   if (
-    message.type === "send-user-verification-email" ||
-    message.type === "send-forget-password-email"
+    type === "send-user-verification-email" ||
+    type === "send-forget-password-email"
   ) {
-    const payload =
-      message.payload as WorkerMessagePayloadMap["send-forget-password-email"];
     return await sendAuthTokenEmail({
       callbackUrl: payload.callbackUrl,
       email: payload.email,
       user: payload.user,
       type:
-        message.type === "send-user-verification-email"
+        type === "send-user-verification-email"
           ? IToken.Type.VerifyEmail
           : IToken.Type.ForgetPassword,
     });
   }
 
-  if (message.type === "update-tutor-in-cache") {
-    const payload =
-      message.payload as WorkerMessagePayloadMap["update-tutor-in-cache"];
-    return await updateTutorCache(payload);
-  }
+  if (type === "update-tutor-cache") return await updateTutorCache(payload);
 });

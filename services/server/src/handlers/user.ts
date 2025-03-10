@@ -287,12 +287,11 @@ function update(_: ApiContext) {
         }
       );
 
-      if (targetTutor) {
+      if (targetTutor)
         sendBackgroundMessage({
-          type: "update-tutor-in-cache",
+          type: "update-tutor-cache",
           payload: { tutorId: targetTutor.id },
         });
-      }
 
       res.status(200).json(await withImageUrl(updatedUser));
     }
@@ -988,7 +987,7 @@ async function uploadTutorAssets(
     });
 
     sendBackgroundMessage({
-      type: "update-tutor-in-cache",
+      type: "update-tutor-cache",
       payload: { tutorId: tutor.tutorId },
     });
   }

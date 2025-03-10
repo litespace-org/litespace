@@ -4,7 +4,7 @@ import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
 import { Role } from "@litespace/types/dist/esm/user";
 import { nameof } from "@litespace/utils";
-import { updateTutorCache } from "@/workers/functions";
+import { updateTutorCache } from "@/workers/handlers";
 import { sendBackgroundMessage } from "@/workers";
 
 function wait(seconds: number) {
