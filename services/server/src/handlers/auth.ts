@@ -17,7 +17,6 @@ import { OAuth2Client } from "google-auth-library";
 import zod from "zod";
 import jwt from "jsonwebtoken";
 import { sendBackgroundMessage } from "@/workers";
-import { WorkerMessageType } from "@/workers/messages";
 import axios from "axios";
 
 const credentials = zod.object({
@@ -171,10 +170,12 @@ async function forgetPassword(req: Request, res: Response) {
 
   if (user) {
     sendBackgroundMessage({
-      type: WorkerMessageType.SendForgetPasswordEmail,
-      email: user.email,
-      user: user.id,
-      callbackUrl,
+      type: "send-forget-password-email",
+      payload: {
+        email: user.email,
+        user: user.id,
+        callbackUrl,
+      },
     });
   }
 
@@ -232,10 +233,12 @@ async function sendVerificationEmail(
   if (user.verifiedEmail) return next(already.verified());
 
   sendBackgroundMessage({
-    type: WorkerMessageType.SendUserVerificationEmail,
-    callbackUrl: callbackUrl,
-    email: user.email,
-    user: user.id,
+    type: "send-user-verification-email",
+    payload: {
+      callbackUrl: callbackUrl,
+      email: user.email,
+      user: user.id,
+    },
   });
 
   res.status(200).send();

@@ -45,6 +45,7 @@ export async function constructTutorsCache(): Promise<TutorsCache> {
       name: tutor.name,
       image: tutor.image,
       video: tutor.video,
+      thumbnail: tutor.thumbnail,
       bio: tutor.bio,
       about: tutor.about,
       gender: tutor.gender,
@@ -154,6 +155,7 @@ export async function joinTutorCache(
     id: tutor.id,
     name: tutor.name,
     image: tutor.image,
+    thumbnail: tutor.thumbnail,
     video: tutor.video,
     bio: tutor.bio,
     about: tutor.about,
@@ -212,6 +214,7 @@ export async function asTutorInfoResponseBody(
   const assets = await withImageUrl({
     image: ctutor.image,
     video: ctutor.video,
+    thumbnail: ctutor.thumbnail,
   });
   return {
     id: ctutor.id,

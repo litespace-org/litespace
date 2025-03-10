@@ -1,63 +1,28 @@
 import { parentPort } from "node:worker_threads";
-import { WorkerMessage, WorkerMessageType } from "@/workers/messages";
-import { emailer } from "@/lib/email";
-import { EmailTemplate } from "@litespace/emails";
+import { WorkerMessage } from "@/workers/types";
 import { IToken } from "@litespace/types";
-import jwt from "jsonwebtoken";
-import { tokensExpireTime, jwtSecret } from "@/constants";
-import { safe } from "@litespace/utils/error";
-import { nameof } from "@litespace/utils/utils";
-import { PartentPortMessage } from "@/workers/messages";
+import { sendAuthTokenEmail, updateTutorCache } from "@/workers/handlers";
 
-function _postMessage(message: PartentPortMessage) {
+function _postMessage(message: WorkerMessage) {
   if (!parentPort) return;
   parentPort.postMessage(message);
 }
 
-async function sendAuthTokenEmail({
-  email,
-  user,
-  callbackUrl,
-  type,
-}: {
-  email: string;
-  user: number;
-  callbackUrl: string;
-  type: IToken.Type.ForgetPassword | IToken.Type.VerifyEmail;
-}) {
-  const error = await safe(async () => {
-    const payload: IToken.AuthTokenEmail = { type, user };
-    const token = jwt.sign(payload, jwtSecret, {
-      expiresIn: tokensExpireTime[type],
-    });
-    const url = new URL(callbackUrl);
-    url.searchParams.set("token", token);
-
-    await emailer.send({
-      to: email,
-      template:
-        type === IToken.Type.VerifyEmail
-          ? EmailTemplate.VerifyEmail
-          : EmailTemplate.ForgetPassword,
-      props: { redirectUrl: url.toString() },
-    });
-  });
-
-  if (error instanceof Error) console.error(nameof(sendAuthTokenEmail), error);
-}
-
-parentPort?.on("message", async (message: WorkerMessage) => {
+parentPort?.on("message", async ({ type, payload }: WorkerMessage) => {
   if (
-    message.type === WorkerMessageType.SendUserVerificationEmail ||
-    message.type === WorkerMessageType.SendForgetPasswordEmail
-  )
+    type === "send-user-verification-email" ||
+    type === "send-forget-password-email"
+  ) {
     return await sendAuthTokenEmail({
-      callbackUrl: message.callbackUrl,
-      email: message.email,
-      user: message.user,
+      callbackUrl: payload.callbackUrl,
+      email: payload.email,
+      user: payload.user,
       type:
-        message.type === WorkerMessageType.SendUserVerificationEmail
+        type === "send-user-verification-email"
           ? IToken.Type.VerifyEmail
           : IToken.Type.ForgetPassword,
     });
+  }
+
+  if (type === "update-tutor-cache") return await updateTutorCache(payload);
 });
