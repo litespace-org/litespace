@@ -25,6 +25,7 @@ const fullTutorFields: FullTutorFieldsMap = {
   email: users.column("email"),
   name: users.column("name"),
   image: users.column("image"),
+  address: users.column("address"),
   role: users.column("role"),
   password: users.column("password"),
   birthYear: users.column("birth_year"),
