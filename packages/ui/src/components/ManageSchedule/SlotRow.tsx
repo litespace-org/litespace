@@ -104,9 +104,9 @@ const SlotRow: React.FC<{
   }, [farthestEnd, start, subslots]);
 
   return (
-    <div className="flex items-center gap-6 w-[400px]">
-      <div className="flex items-center justify-center gap-4">
-        <div className="w-[136px]">
+    <div className="flex items-center gap-1 lg:gap-6 md:w-[220px] lg:w-full">
+      <div className="w-[calc(100%-40px)] lg:w-[calc(100%-90px)] flex items-center justify-center md:justify-start gap-2 lg:gap-4">
+        <div className="w-full min-w-[76px] lg:min-w-[136px]">
           <Select
             value={start}
             options={fromOptions}
@@ -119,7 +119,7 @@ const SlotRow: React.FC<{
         <Typography tag="span" className="text-natural-500 text-base font-bold">
           -
         </Typography>
-        <div className="w-[136px]">
+        <div className="w-full min-w-[76px] lg:min-w-[136px]">
           <Select
             value={end}
             options={toOptions}
@@ -131,20 +131,20 @@ const SlotRow: React.FC<{
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-1 lg:gap-4">
         <AnimatePresence initial={false}>
           {remove ? (
             <Animate key="remove">
               <button type="button" onClick={remove}>
-                <Close />
+                <Close className="w-4 h-4 lg:w-6 lg:h-6 [&>*]:stroke-natural-600" />
               </button>
             </Animate>
           ) : null}
 
           {add ? (
             <Animate key="add">
-              <button type="button" className="w-6 h-6" onClick={add}>
-                <AddCircleFilled />
+              <button type="button" onClick={add}>
+                <AddCircleFilled className="w-4 h-4 lg:w-6 lg:h-6 [&>*]:fill-brand-700" />
               </button>
             </Animate>
           ) : null}

@@ -137,16 +137,18 @@ export const ConfirmationDialog: React.FC<{
                 { "cursor-not-allowed opacity-50": !closable }
               )}
             >
-              <X className="text-natural-600 w-6 h-6" />
+              <X className="text-natural-600 w-4 h-4 lg:w-6 lg:h-6" />
             </Close>
           </div>
-          <div className="flex gap-1 flex-col mb-4 lg:mb-6">
+          <Title>
             <Typography
-              tag="h2"
+              tag="span"
               className="text-natural-950 mb-1 font-semibold text-body"
             >
               {title}
             </Typography>
+          </Title>
+          <div className="flex gap-1 flex-col mb-4 lg:mb-6">
             {description ? (
               <Typography
                 tag="p"

@@ -71,7 +71,7 @@ export const DateSelection: React.FC<{
           onClick={prevMonth}
           className="disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ArrowRight className="[&>*]:stroke-brand-700" />
+          <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
         </button>
         <Typography
           tag="span"
@@ -85,7 +85,7 @@ export const DateSelection: React.FC<{
           onClick={nextMonth}
           className="disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ArrowLeft className="[&>*]:stroke-brand-700" />
+          <ArrowLeft className="[&>*]:stroke-brand-700 w-6 h-6" />
         </button>
       </div>
 
