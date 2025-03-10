@@ -97,9 +97,9 @@ export class RoutesManager {
 
   public readonly isMatch = {
     web(base: Web, target: string): boolean {
-      // https://regex101.com/r/INHWi0/1
+      // https://regex101.com/r/8Y2LKA/1
       if (base === Web.Register)
-        return /\/(tutor|student)\/register\/?/.test(target);
+        return /\/register\/(tutor|student)\/?/.test(target);
       // https://regex101.com/r/a1B4Dw/1
       if (base === Web.TutorProfile) return /\/?t\/([^/]+)\/?/.test(target);
       // https://regex101.com/r/jbiJh7/1

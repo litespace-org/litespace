@@ -38,7 +38,7 @@ const Root: React.FC = () => {
   }, [navigate, location.pathname, user, meta]);
 
   const showNavigation = useMemo(() => {
-    const routes: string[] = [
+    const routes: Web[] = [
       Web.Login,
       Web.Register,
       Web.ForgetPassword,
@@ -46,7 +46,10 @@ const Root: React.FC = () => {
       Web.CompleteProfile,
       Web.VerifyEmail,
     ];
-    return !routes.includes(location.pathname);
+    const match = routes.some((route) =>
+      router.isMatch.web(route, location.pathname)
+    );
+    return !match;
   }, [location.pathname]);
 
   return (

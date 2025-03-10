@@ -7,7 +7,7 @@ export enum Web {
   Login = "/login",
   Payments = "/payments",
   Profile = "/profile",
-  Register = "/:role/register",
+  Register = "/register/:role",
   ResetPassword = "/reset-password",
   LessonsSchedule = "/lessons-schedule",
   ScheduleManagement = "/schedule-management",
