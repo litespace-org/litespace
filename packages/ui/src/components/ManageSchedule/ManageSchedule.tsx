@@ -13,6 +13,7 @@ import cn from "classnames";
 import { concat, isEmpty, range, unionBy } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const WEEK_DAYS = 7;
 
@@ -84,6 +85,7 @@ export const ManageSchedule: React.FC<Props> = ({
   const intl = useFormatMessage();
   const [slots, setSlots] = useState<Slot[]>([]);
   const weekStart = useMemo(() => dayjs(date).startOf("week"), [date]);
+  const { md } = useMediaQuery();
 
   const days = useMemo(() => {
     if (singleDay) {
@@ -218,22 +220,23 @@ export const ManageSchedule: React.FC<Props> = ({
       title={
         <Typography
           tag="p"
-          className="text-natural-950 font-bold text-subtitle-2"
+          className="text-natural-950 font-bold text-caption lg:text-subtitle-2"
         >
           {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
         </Typography>
       }
-      className="overflow-y-auto"
+      className="overflow-y-auto !rounded-t-2xl lg:!rounded-[32px] sm:!p-4 lg:!p-6 w-full md:w-auto lg:w-[565px]"
+      position={md ? "center" : "bottom"}
     >
       {!singleDay ? (
-        <div className="pt-6 pb-4">
-          <div className="flex items-center justify-center gap-4 mb-6">
+        <div className="pt-4 lg:pt-6 pb-4">
+          <div className="flex items-center justify-center gap-4 mb-4 lg:mb-6">
             {!isCurrentWeek ? (
               <button
                 type="button"
                 onClick={prevWeek}
                 disabled={loading}
-                className="disabled:cursor-not-allowed disabled:opacity-50 w-6 h-6"
+                className="disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
               </button>
@@ -241,9 +244,10 @@ export const ManageSchedule: React.FC<Props> = ({
 
             <Typography
               tag="span"
-              className="text-natural-950 text-body font-bold"
+              className="text-natural-950 text-caption lg:text-body font-semibold lg:font-bold"
             >
-              {weekStart.format("D MMMM")} -{" "}
+              {weekStart.format("D MMMM")}
+              {" - "}
               {weekStart.add(6, "days").format("D MMMM")}
             </Typography>
 
@@ -259,7 +263,7 @@ export const ManageSchedule: React.FC<Props> = ({
 
           <Typography
             tag="span"
-            className="text-natural-950 mb-4 mt-6 font-bold text-body"
+            className="text-natural-950 mb-4 mt-6 font-semibold lg:font-bold text-caption lg:text-body"
           >
             {intl("manage-schedule.manage-dialog.available-days")}
           </Typography>
@@ -268,7 +272,7 @@ export const ManageSchedule: React.FC<Props> = ({
 
       <div
         className={cn(
-          "flex flex-col gap-4 mb-10",
+          "flex flex-col gap-4 mb-6",
           /**
            * 160px - the vertical space that should be around the dialog (80 at
            * the top and 80 at the bottom).
@@ -283,7 +287,7 @@ export const ManageSchedule: React.FC<Props> = ({
         <AnimatePresence initial={false} mode="wait">
           {loading ? (
             <Animate key="loading">
-              <div className="w-[517px] mt-[42px] mb-[72px] flex justify-center items-center">
+              <div className="md:w-[304px] lg:w-[517px] mt-[42px] mb-[72px] flex justify-center items-center">
                 <Loader
                   size="medium"
                   text={intl("manage-schedule.manage-dialog.loading.message")}
@@ -294,7 +298,7 @@ export const ManageSchedule: React.FC<Props> = ({
 
           {error ? (
             <Animate key="error">
-              <div className="w-[342px] mx-[103px] mt-[42px] mb-[72px] flex justify-center items-center">
+              <div className="md:w-[342px] mx-[103px] mt-[42px] mb-[72px] flex justify-center items-center">
                 <LoadingError
                   size="medium"
                   error={intl("manage-schedule.manage-dialog.error.message")}
@@ -306,16 +310,16 @@ export const ManageSchedule: React.FC<Props> = ({
 
           {!loading && !error ? (
             <Animate key="days">
-              <div className="flex flex-col gap-4 overflow-y-auto scrollbar-thin">
+              <div className="flex flex-col gap-4 lg:gap-8 overflow-y-auto scrollbar-thin max-w-[450px] lg:max-w-none mx-auto md:m-0">
                 {days.map(({ day, slots }) => {
                   const iso = day.toISOString();
                   const isDisabled = saving || day.isBefore(today, "day");
 
                   return (
-                    <div className="flex gap-8" key={iso}>
+                    <div className="flex gap-6 md:gap-2 lg:gap-8" key={iso}>
                       <Typography
                         tag="span"
-                        className="text-natural-950 w-[88px] font-medium text-caption"
+                        className="inline-block shrink-0 text-natural-950 w-[76px] lg:w-[88px] font-medium text-tiny lg:text-caption"
                       >
                         {day.format("dddd M/D")}
                       </Typography>
@@ -347,7 +351,7 @@ export const ManageSchedule: React.FC<Props> = ({
         >
           <Typography
             tag="span"
-            className="text-natural-50 font-semibold text-body"
+            className="text-natural-50 font-medium lg:font-semibold text-body"
           >
             {intl("manage-schedule.save")}
           </Typography>
@@ -361,7 +365,7 @@ export const ManageSchedule: React.FC<Props> = ({
         >
           <Typography
             tag="span"
-            className="text-brand-700 font-semibold text-body"
+            className="text-brand-700 font-medium lg:font-semibold text-body"
           >
             {intl("global.labels.cancel")}
           </Typography>

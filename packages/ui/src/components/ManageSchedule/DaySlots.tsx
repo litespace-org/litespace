@@ -91,7 +91,7 @@ const DaySlots: React.FC<{
   );
 
   return (
-    <div className={cn("flex flex-col gap-2")}>
+    <div className={cn("flex flex-col gap-2 grow")}>
       <AnimatePresence initial={false}>
         {slots.map((slot, idx) => {
           const last = slots.length - 1 === idx;

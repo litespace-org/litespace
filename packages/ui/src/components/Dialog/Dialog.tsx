@@ -50,7 +50,7 @@ export const Dialog: React.FC<{
             {
               "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[32px]":
                 position === "center",
-              "bottom-0 left-1/2 -translate-x-1/2 rounded-t-[24px]":
+              "left-1/2 bottom-0 -translate-x-1/2 rounded-t-[24px]":
                 position === "bottom",
             },
             className

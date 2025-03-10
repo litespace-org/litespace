@@ -146,8 +146,8 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                       </Typography>
                     </div>
                   </div>
-                  <div className="w-6 h-6 mr-auto">
-                    <ArrowLeft className="[&>*]:stroke-natural-950" />
+                  <div className="mr-auto">
+                    <ArrowLeft className="w-6 h-6 [&>*]:stroke-natural-950" />
                   </div>
                 </Link>
               ))}

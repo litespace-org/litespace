@@ -30,7 +30,7 @@ const Header: React.FC<Props> = ({ date, nextWeek, prevWeek }) => {
         </Typography>
         <div className="flex flex-row gap-4 items-center justify-center">
           <button onClick={prevWeek} type="button">
-            <ArrowRight className="[&>*]:stroke-brand-700" />
+            <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
           </button>
           <Typography
             tag="span"
@@ -40,7 +40,7 @@ const Header: React.FC<Props> = ({ date, nextWeek, prevWeek }) => {
             {date.endOf("week").format("DD MMMM")}
           </Typography>
           <button onClick={nextWeek} type="button">
-            <ArrowLeft className="[&>*]:stroke-brand-700" />
+            <ArrowLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
           </button>
         </div>
       </div>

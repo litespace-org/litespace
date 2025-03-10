@@ -341,6 +341,7 @@ export default {
       "select-menu": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       "form-submit-container": "0px -4px 20px 0px rgba(0, 0, 0, .08)",
       "tutor-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
+      slot: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
     },
   },
   plugins: [

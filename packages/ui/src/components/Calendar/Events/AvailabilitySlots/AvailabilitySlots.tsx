@@ -114,7 +114,7 @@ export const AvailabilitySlot: React.FC<Props> = ({
   );
 };
 
-const OptionsMenu: React.FC<{
+export const OptionsMenu: React.FC<{
   open?: boolean;
   setOpen?: (open: boolean) => void;
   onEdit: Void;
