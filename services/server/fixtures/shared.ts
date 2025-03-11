@@ -11,6 +11,7 @@ import {
   tutors,
   availabilitySlots,
   contactRequests,
+  events,
 } from "@litespace/models";
 
 async function execute(command: string): Promise<string> {
@@ -39,6 +40,7 @@ export async function flush() {
     /**
      * ! Order matters becuase of the relations
      */
+    await events.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
     await messages.builder(tx).del();

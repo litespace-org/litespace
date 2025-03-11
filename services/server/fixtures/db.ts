@@ -11,6 +11,7 @@ import {
   tutors,
   availabilitySlots,
   contactRequests,
+  events,
 } from "@litespace/models";
 import {
   IInterview,
@@ -36,6 +37,7 @@ dayjs.extend(utc);
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await events.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
     await messages.builder(tx).del();

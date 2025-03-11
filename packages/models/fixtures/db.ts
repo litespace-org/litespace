@@ -5,6 +5,7 @@ import {
   lessons,
   messages,
   rooms,
+  events,
   topics,
   users,
   ratings,
@@ -32,6 +33,7 @@ import { randomUUID } from "crypto";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await events.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
     await messages.builder(tx).del();
