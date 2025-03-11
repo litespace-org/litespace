@@ -6,7 +6,7 @@ import { tokensExpireTime, jwtSecret } from "@/constants";
 import { safe } from "@litespace/utils/error";
 import { nameof } from "@litespace/utils/utils";
 import { WorkerMessageOf } from "@/workers/types";
-import { tutors } from "@litespace/models";
+import { events, knex, tutors } from "@litespace/models";
 import { isOnboard, joinTutorCache } from "@/lib/tutor";
 import { cache } from "@/lib/cache";
 
@@ -61,5 +61,19 @@ export async function updateTutorCache(
     await cache.tutors.setOne(joinedCache);
   });
 
+  if (error instanceof Error) console.error(error);
+}
+
+/**
+ * Insert new event record in the database `events` table
+ */
+export async function insertEventRecord(
+  payload: WorkerMessageOf<"insert-event-record">["payload"]
+) {
+  const error = await safe(async () => {
+    await knex.transaction(async (tx) => {
+      return events.create([payload], tx);
+    });
+  });
   if (error instanceof Error) console.error(error);
 }

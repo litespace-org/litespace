@@ -1,0 +1,23 @@
+export enum EventType {
+  UserJoined = 1,
+  UserLeft = 2,
+}
+
+export type Row = {
+  id: number;
+  type: EventType;
+  user_id: number;
+  created_at: Date;
+};
+
+export type Self = {
+  id: number;
+  type: EventType;
+  userId: number;
+  createdAt: string;
+};
+
+export type CreatePayload = {
+  type: EventType;
+  userId: number;
+};
