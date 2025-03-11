@@ -1,3 +1,5 @@
+import { IEvent } from "@litespace/types";
+
 export type WorkerMessage =
   | {
       type: "send-user-verification-email" | "send-forget-password-email";
@@ -10,6 +12,13 @@ export type WorkerMessage =
   | {
       type: "update-tutor-cache";
       payload: { tutorId: number };
+    }
+  | {
+      type: "insert-event-record";
+      payload: {
+        type: IEvent.EventType;
+        userId: number;
+      };
     };
 
 export type WorkerMessageType = WorkerMessage["type"];
