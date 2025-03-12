@@ -53,6 +53,7 @@ const router = createRouter([
     children: [
       { path: Web.Chat, element: <Fallback children={<Chat />} /> },
       { path: Web.Invoices, element: <Fallback children={<Invoices />} /> },
+      { path: Web.Invoices, element: <Fallback children={<Invoices />} /> },
       {
         path: Web.CompleteProfile,
         element: <Fallback children={<CompleteProfile />} />,
