@@ -126,15 +126,13 @@ const List: React.FC<{
   if (!query.data) return null;
 
   return (
-    <div>
-      <Table
-        {...props}
-        columns={columns}
-        data={query.data.list}
-        loading={query.isLoading}
-        fetching={query.isFetching}
-      />
-    </div>
+    <Table
+      {...props}
+      columns={columns}
+      data={query.data.list}
+      loading={query.isLoading}
+      fetching={query.isFetching}
+    />
   );
 };
 

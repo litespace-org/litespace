@@ -19,6 +19,7 @@ import Receipt from "@litespace/assets/Receipt";
 import Users from "@litespace/assets/Users";
 import Video from "@litespace/assets/Video";
 import Book from "@litespace/assets/Book";
+import Rate from "@litespace/assets/Rate";
 
 import { router } from "@/lib/route";
 import { Icon } from "@/types/common";
@@ -127,9 +128,16 @@ const Sidebar: React.FC = () => {
       Icon: Book,
     };
 
+    const topics: LinkInfo = {
+      label: intl("dashboard.topics.title"),
+      route: Dashboard.Topics,
+      isActive: match(Dashboard.Topics),
+      Icon: Rate,
+    };
+
     if (user?.role === IUser.Role.Studio) return [photoSession];
 
-    return [users, invoices, plans, interviews, photoSession, lessons];
+    return [users, invoices, plans, topics, interviews, photoSession, lessons];
   }, [intl, location.pathname, user?.role]);
 
   return (

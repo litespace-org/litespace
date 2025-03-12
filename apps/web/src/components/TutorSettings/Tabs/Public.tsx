@@ -16,7 +16,6 @@ import { UseFormReturn } from "react-hook-form";
 import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { orUndefined } from "@litespace/utils/utils";
 import { Void } from "@litespace/types";
 import { capture } from "@/lib/sentry";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
@@ -116,6 +115,7 @@ const PublicSettings: React.FC<{
   const userTopics = useUserTopics();
   const validateUserName = useValidateUserName(form.watch("name") !== null);
   const validateBio = useValidateBio(form.watch("bio") !== null);
+  const errors = form.formState.errors;
 
   const allTopics = useMemo(() => {
     if (!topics.query.data) return [];
@@ -194,6 +194,8 @@ const PublicSettings: React.FC<{
           autoComplete="off"
           label={intl("tutor-settings.personal-info.name")}
           name="name"
+          state={errors.name ? "error" : undefined}
+          helper={errors.name?.message}
         />
         <Controller.Input
           id="bio"
@@ -202,6 +204,8 @@ const PublicSettings: React.FC<{
           rules={{ validate: validateBio }}
           autoComplete="off"
           label={intl("tutor-settings.personal-info.bio")}
+          state={errors.bio ? "error" : undefined}
+          helper={errors.bio?.message}
           name="bio"
         />
       </div>
@@ -222,15 +226,22 @@ const PublicSettings: React.FC<{
         className="min-h-[172px]"
         name="about"
         label={intl("tutor-settings.personal-info.about")}
+        state={errors.about ? "error" : undefined}
+        helper={errors.about?.message}
       />
 
-      <Typography
-        tag="h2"
-        className="-mb-2 lg:mb-0 text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"
-      >
-        {intl("tutor-settings.personal-info.video")}
-      </Typography>
-      <VideoPlayer src={orUndefined(video)} />
+      {video ? (
+        <div>
+          <Typography
+            tag="h2"
+            className="-mb-2 lg:mb-0 text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"
+          >
+            {intl("tutor-settings.personal-info.video")}
+          </Typography>
+
+          <VideoPlayer src={video} />
+        </div>
+      ) : null}
 
       <TopicSelectionDialog
         title={intl("tutor-settings.topics.selection-dialog.title")}

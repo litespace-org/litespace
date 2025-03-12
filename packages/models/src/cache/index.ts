@@ -26,10 +26,10 @@ export class Cache {
   }
 
   async connect() {
-    await this.client.connect();
+    if (!this.client.isOpen) await this.client.connect();
   }
 
   async disconnect() {
-    await this.client.quit();
+    if (this.client.isOpen) await this.client.quit();
   }
 }

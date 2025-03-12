@@ -713,7 +713,7 @@ describe("/api/v1/user/", () => {
 
       expect(res).to.not.be.instanceof(Error);
       const resBody = res.body as ITutor.FindStudioTutorsApiResponse;
-      expect(resBody.list).to.have.length(4);
+      expect(resBody.list).to.have.length(6);
     });
   });
 });

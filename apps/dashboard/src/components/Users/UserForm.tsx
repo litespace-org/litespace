@@ -1,6 +1,6 @@
 import { useCreateUser } from "@litespace/headless/users";
 import { Button } from "@litespace/ui/Button";
-import { Controller, Field, Form, Label } from "@litespace/ui/Form";
+import { Controller, Form } from "@litespace/ui/Form";
 import { Dialog } from "@litespace/ui/Dialog";
 import { useToast } from "@litespace/ui/Toast";
 import { useRender } from "@litespace/ui/hooks/common";
@@ -13,7 +13,9 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IUser, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { CALLBACK_URL } from "@/lib/route";
+import { router } from "@/lib/route";
+import { Web } from "@litespace/utils/routes";
+import { Typography } from "@litespace/ui/Typography";
 
 type IForm = {
   email: string;
@@ -64,7 +66,10 @@ const UserForm: React.FC<{
     (data: IForm) => {
       createUser.mutate({
         ...data,
-        callbackUrl: CALLBACK_URL,
+        callbackUrl: router.web({
+          route: Web.VerifyEmail,
+          full: true,
+        }),
       });
     },
     [createUser]
@@ -80,13 +85,18 @@ const UserForm: React.FC<{
         setOpen={render.setOpen}
         open={render.open}
         close={onClose}
-        title={intl("dashboard.user.form.create")}
+        title={
+          <Typography tag="p" className="font-bold text-subtitle-2">
+            {intl("dashboard.user.form.create")}
+          </Typography>
+        }
       >
         <Form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="min-w-96 max-h-[32rem] flex flex-col gap-4"
+          className="min-w-96 max-h-[32rem] flex flex-col gap-4 mt-4"
         >
           <Controller.Input
+            id="email"
             control={form.control}
             name="email"
             value={form.watch("email")}
@@ -97,48 +107,45 @@ const UserForm: React.FC<{
           />
 
           <Controller.Password
+            id="password"
             control={form.control}
             name="password"
             value={form.watch("password")}
             rules={{ validate: validatePassword }}
-            type="password"
             label={intl("dashboard.user.password")}
             state={errors.password ? "error" : undefined}
             helper={errors.password?.message}
           />
-          <Field
-            label={<Label>{intl("dashboard.user.role")}</Label>}
-            field={
-              <Controller.Select
-                options={[
-                  {
-                    label: intl("global.role.super-admin"),
-                    value: IUser.Role.SuperAdmin,
-                  },
-                  {
-                    label: intl("global.role.regular-admin"),
-                    value: IUser.Role.RegularAdmin,
-                  },
-                  {
-                    label: intl("global.role.studio"),
-                    value: IUser.Role.Studio,
-                  },
-                  {
-                    label: intl("global.role.tutor-manager"),
-                    value: IUser.Role.TutorManager,
-                  },
-                ]}
-                control={form.control}
-                value={form.watch("role")}
-                name="role"
-              />
-            }
+
+          <Controller.Select
+            options={[
+              {
+                label: intl("global.role.super-admin"),
+                value: IUser.Role.SuperAdmin,
+              },
+              {
+                label: intl("global.role.regular-admin"),
+                value: IUser.Role.RegularAdmin,
+              },
+              {
+                label: intl("global.role.studio"),
+                value: IUser.Role.Studio,
+              },
+              {
+                label: intl("global.role.tutor-manager"),
+                value: IUser.Role.TutorManager,
+              },
+            ]}
+            control={form.control}
+            value={form.watch("role")}
+            name="role"
+            label={intl("dashboard.user.role")}
           />
 
           <Button
             disabled={createUser.isPending}
             loading={createUser.isPending}
-            size={"medium"}
+            size="medium"
           >
             {intl("labels.create")}
           </Button>

@@ -3,8 +3,8 @@ import { Knex } from "knex";
 import { tutors, knex, lessons, topics, ratings } from "@litespace/models";
 import { first, orderBy } from "lodash";
 import { cache } from "@/lib/cache";
-import { Gender } from "@litespace/types/dist/esm/user";
 import { withImageUrl } from "@/lib/user";
+import { isOnboard } from "@litespace/utils/tutor";
 
 export type TutorsCache = ITutor.Cache[];
 
@@ -22,7 +22,7 @@ export async function constructTutorsCache(): Promise<TutorsCache> {
     const tutorIds = onboarded.map((tutor) => tutor.id);
 
     return await Promise.all([
-      list,
+      onboarded,
       topics.findUserTopics({ users: tutorIds, tx }),
       ratings.findAvgRatings({ users: tutorIds, tx }),
       lessons.countLessonsBatch({ users: tutorIds, canceled: false, tx }),
@@ -93,7 +93,7 @@ export function orderTutors({
   userGender,
 }: {
   tutors: ITutor.Cache[];
-  userGender?: Gender;
+  userGender?: IUser.Gender;
 }): ITutor.Cache[] {
   const iteratees = [
     (tutor: ITutor.Cache) => {
@@ -163,49 +163,6 @@ export async function joinTutorCache(
     notice: tutor.notice,
     ...meta,
   };
-}
-
-/*
- * check whether a tutor is activated (onboard) or not.
- */
-export function isOnboard({
-  activated,
-  activatedBy,
-  verifiedEmail,
-  verifiedPhone,
-  video,
-  image,
-  thumbnail,
-  name,
-  birthYear,
-  about,
-  bio,
-  phone,
-  role,
-  city,
-  studioId,
-}: ITutor.FullTutor): boolean {
-  const base =
-    !!verifiedEmail &&
-    !!verifiedPhone &&
-    !!image &&
-    !!name &&
-    !!about &&
-    !!bio &&
-    !!phone &&
-    !!city;
-
-  if (role === IUser.Role.TutorManager) return base;
-
-  return (
-    base &&
-    !!activated &&
-    !!activatedBy &&
-    !!video &&
-    !!thumbnail &&
-    !!birthYear &&
-    !!studioId
-  );
 }
 
 export async function asTutorInfoResponseBody(

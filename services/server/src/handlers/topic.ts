@@ -25,6 +25,7 @@ import { Knex } from "knex";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
 import { FindUserTopicsApiResponse } from "@litespace/types/dist/esm/topic";
 import { isEmpty } from "lodash";
+import { sendBackgroundMessage } from "@/workers";
 
 const createTopicPayload = zod.object({
   arabicName: string,
@@ -226,6 +227,11 @@ async function replaceUserTopics(
       );
   });
 
+  if (isTutor(user))
+    sendBackgroundMessage({
+      type: "update-tutor-cache",
+      payload: { tutorId: user.id },
+    });
   res.sendStatus(200);
 }
 

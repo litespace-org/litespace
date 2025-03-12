@@ -129,8 +129,8 @@ export type UpdateApiPayload = {
   image?: null;
   thumbnail?: null;
   video?: null;
-  bio?: string;
-  about?: string;
+  bio?: string | null;
+  about?: string | null;
   phone?: string | null;
   city?: City | null;
 };

@@ -33,7 +33,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const query = useCurrentUser(!!token);
 
   const tutorId = useMemo(() => {
-    const tutor = userData.user?.role === IUser.Role.Tutor;
+    if (!userData.user?.role) return;
+    const tutor = [IUser.Role.Tutor, IUser.Role.TutorManager].includes(
+      userData.user.role
+    );
     if (!tutor) return;
     return userData.user?.id;
   }, [userData.user?.id, userData.user?.role]);

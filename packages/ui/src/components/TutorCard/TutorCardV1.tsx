@@ -58,7 +58,6 @@ export const TutorCardV1: React.FC<CardProps> = ({
           src={orUndefined(imageUrl)}
           alt={orUndefined(name)}
           seed={id.toString()}
-          object="cover"
         />
       </div>
       <div className="flex flex-col">
@@ -167,7 +166,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
                       </Typography>
                     }
                   >
-                    <div className="w-16">
+                    <div className="w-24">
                       <Typography
                         tag="span"
                         className="block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl text-center truncate font-normal text-tiny"
@@ -178,13 +177,14 @@ export const TutorCardV1: React.FC<CardProps> = ({
                   </Tooltip>
                 );
             })}
-            <Typography
-              tag="span"
-              className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
-            >
-              {remainingTopicsCount}
-              {"+"}
-            </Typography>
+            {remainingTopicsCount ? (
+              <Typography
+                tag="span"
+                className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
+              >
+                {remainingTopicsCount}+
+              </Typography>
+            ) : null}
           </div>
         ) : null}
 
@@ -203,20 +203,15 @@ export const TutorCardV1: React.FC<CardProps> = ({
               {intl("tutors.card.book-button.label")}
             </Typography>
           </Button>
-          <Link
-            to={profileUrl}
-            className={cn(
-              "block grow basis-1/2 text-center px-4 py-2 border border-brand-700 rounded-lg w-full",
-              "hover:bg-brand-100 hover:border-brand-700 focus:bg-brand-200 focus:ring-1 focus:ring-brand-900",
-              "transition-colors ease-out duration-200"
-            )}
-          >
-            <Typography
-              tag="span"
-              className="text-brand-700 font-semibold text-caption"
-            >
-              {intl("tutors.card.profile-button.label")}
-            </Typography>
+          <Link to={profileUrl} className="grow basis-1/2">
+            <Button variant="secondary" size="large" className="w-full">
+              <Typography
+                tag="span"
+                className="text-brand-700 font-semibold text-caption"
+              >
+                {intl("tutors.card.profile-button.label")}
+              </Typography>
+            </Button>
           </Link>
         </div>
       </div>

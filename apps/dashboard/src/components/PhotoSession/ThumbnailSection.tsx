@@ -99,23 +99,24 @@ export const ThumbnailSection: React.FC<{
           </div>
         ) : null}
       </div>
+      {thumbnail ? (
+        <div className="bg-natural-100 rounded-xl overflow-hidden flex items-center justify-center py-3">
+          <div className={cn("py-6", loading ? "opacity-100" : "opacity-0")}>
+            <Loader />
+          </div>
 
-      <div className="bg-natural-100 rounded-xl overflow-hidden flex items-center justify-center py-3">
-        <div className={cn("py-6", loading ? "opacity-100" : "opacity-0")}>
-          <Loader />
+          <img
+            onLoadCapture={() => {
+              setLoading(false);
+            }}
+            src={thumbnail || undefined}
+            className={cn(
+              "object-contain transition-opacity duration-300",
+              thumbnail && !loading ? "opacity-100 visible" : "opacity-0 hidden"
+            )}
+          />
         </div>
-
-        <img
-          onLoadCapture={() => {
-            setLoading(false);
-          }}
-          src={thumbnail || undefined}
-          className={cn(
-            "object-contain transition-opacity duration-300",
-            thumbnail && !loading ? "opacity-100 visible" : "opacity-0 hidden"
-          )}
-        />
-      </div>
+      ) : null}
 
       {!thumbnail ? (
         <Button
