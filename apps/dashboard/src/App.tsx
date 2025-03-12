@@ -17,13 +17,13 @@ const Topics = lazy(() => import("@/pages/Topics"));
 const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
 const UserSettings = lazy(() => import("@/pages/UserSettings"));
 const PhotoSessions = lazy(() => import("@/pages/PhotoSessions"));
-const PhotoSession = lazy(() => import("./pages/PhotoSession"));
+const PhotoSession = lazy(() => import("@/pages/PhotoSession"));
 
 const router = createBrowserRouter([
   {
     path: Dashboard.Root,
     element: <Page page={<Root />} />,
-    errorElement: <ErrorPage />,
+    errorElement: <Page page={<ErrorPage />} />,
     children: [
       { path: Dashboard.Invoices, element: <Page page={<Invoices />} /> },
       { path: Dashboard.Login, element: <Page page={<Login />} /> },

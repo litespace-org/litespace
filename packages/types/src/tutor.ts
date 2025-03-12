@@ -60,8 +60,8 @@ export type TutorMedia = {
 };
 
 export type UpdatePayload = {
-  bio?: string;
-  about?: string;
+  bio?: string | null;
+  about?: string | null;
   video?: string | null;
   thumbnail?: string | null;
   studioId?: number | null;

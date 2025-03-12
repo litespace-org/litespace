@@ -126,15 +126,13 @@ const List: React.FC<{
   if (!query.data) return null;
 
   return (
-    <div className="w-[calc(100vw-98px)] lg:w-[calc(100vw-240px)]">
-      <Table
-        {...props}
-        columns={columns}
-        data={query.data.list}
-        loading={query.isLoading}
-        fetching={query.isFetching}
-      />
-    </div>
+    <Table
+      {...props}
+      columns={columns}
+      data={query.data.list}
+      loading={query.isLoading}
+      fetching={query.isFetching}
+    />
   );
 };
 

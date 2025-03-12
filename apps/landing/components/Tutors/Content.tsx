@@ -29,7 +29,6 @@ const Content: React.FC<{
           >
             <TutorCard
               id={tutor.id}
-              bio={tutor.bio}
               about={tutor.about}
               name={tutor.name}
               lessonCount={tutor.lessonCount}

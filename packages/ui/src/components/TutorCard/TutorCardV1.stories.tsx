@@ -102,4 +102,17 @@ export const TutorWithoutRating: Story = {
   },
 };
 
+export const WithShortAbout: Story = {
+  args: {
+    id: faker.number.int(),
+    name: null,
+    about: faker.lorem.words(5),
+    studentCount: faker.number.int({ min: 10, max: 1_000 }),
+    lessonCount: faker.number.int({ min: 10, max: 500 }),
+    rating: faker.number.int({ min: 0, max: 5 }),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 1_000, height: 1_000 }),
+    topics: makeTopics(12),
+  },
+};
+
 export default meta;

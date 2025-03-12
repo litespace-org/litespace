@@ -224,7 +224,7 @@ export const Users: React.FC = () => {
   );
 
   return (
-    <div className={cn("w-full flex flex-col mx-auto p-6")}>
+    <div className={cn("w-full flex flex-col p-6 max-w-screen-3xl mx-auto ")}>
       <header className="flex items-center justify-between mb-3">
         <div className="flex items-center justify-center gap-2">
           <PageTitle

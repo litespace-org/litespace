@@ -10,7 +10,12 @@ import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import { ITutor, IUser } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { orNull, orUndefined } from "@litespace/utils/utils";
+import {
+  getNullableFiledUpdatedValue,
+  getOptionalFieldUpdatedValue,
+  orNull,
+  orUndefined,
+} from "@litespace/utils/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
 import ProfileCard from "@/components/TutorSettings/ProfileCard";
@@ -97,16 +102,12 @@ const TutorSettings: React.FC<{
       return updateTutor.mutate({
         id: info.id,
         payload: {
-          // TODO: use form utils
-          name: data.name.trim() !== info.name ? data.name.trim() : undefined,
-          bio: data.bio.trim() !== info.bio ? data.bio.trim() : undefined,
-          about:
-            data.about.trim() !== info.about ? data.about.trim() : undefined,
-          email:
-            data.email.trim() !== info.email ? data.email.trim() : undefined,
-          phone:
-            data.phone.trim() !== info.phone ? data.phone.trim() : undefined,
-          city: data.city !== info.city ? data.city : undefined,
+          name: getNullableFiledUpdatedValue(info.name, data.name.trim()),
+          bio: getNullableFiledUpdatedValue(info.bio, data.bio.trim()),
+          about: getNullableFiledUpdatedValue(info.about, data.about.trim()),
+          email: getOptionalFieldUpdatedValue(info.email, data.email.trim()),
+          phone: getNullableFiledUpdatedValue(info.phone, data.phone.trim()),
+          city: getNullableFiledUpdatedValue(info.city, data.city),
           password:
             data.password.current && data.password.new
               ? {
@@ -124,7 +125,6 @@ const TutorSettings: React.FC<{
     () => (
       <Button
         htmlType="submit"
-        onClick={() => form.handleSubmit(submit)}
         loading={updateTutor.isPending}
         disabled={updateTutor.isPending || !dataChanged}
         size="large"
@@ -135,7 +135,7 @@ const TutorSettings: React.FC<{
         </Typography>
       </Button>
     ),
-    [dataChanged, intl, form, submit, updateTutor.isPending]
+    [dataChanged, intl, updateTutor.isPending]
   );
 
   return (

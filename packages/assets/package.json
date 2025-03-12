@@ -55,6 +55,8 @@
     "./Check16X16": "./dist/Check16X16.tsx",
     "./Check2": "./dist/Check2.tsx",
     "./Check3": "./dist/Check3.tsx",
+    "./ChevronDoubleLeft": "./dist/ChevronDoubleLeft.tsx",
+    "./ChevronDoubleRight": "./dist/ChevronDoubleRight.tsx",
     "./Clock": "./dist/Clock.tsx",
     "./Clock16X16": "./dist/Clock16X16.tsx",
     "./Close": "./dist/Close.tsx",

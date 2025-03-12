@@ -24,6 +24,7 @@ import { RateTutor } from "@/components/TutorProfile/RateTutor";
 import cn from "classnames";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
+import { IUser } from "@litespace/types";
 
 const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   tutorName,
@@ -236,7 +237,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
         />
       ) : null}
 
-      {!currentUserRated ? (
+      {!currentUserRated && user?.role === IUser.Role.Student ? (
         <RateTutor tutorName={tutorName || ""} tutorId={id} />
       ) : null}
     </div>

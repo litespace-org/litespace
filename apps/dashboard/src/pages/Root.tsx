@@ -40,7 +40,7 @@ const Root: React.FC = () => {
     <>
       <main
         className={cn(
-          "flex flex-row items-stretch min-h-screen max-w-screen-2xl overflow-y-hidden bg-natural-50"
+          "flex flex-row items-stretch min-h-screen overflow-y-hidden bg-natural-50"
         )}
       >
         {user ? <Sidebar /> : null}

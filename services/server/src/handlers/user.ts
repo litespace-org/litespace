@@ -89,8 +89,8 @@ const updateUserPayload = zod.object({
   image: zod.optional(zod.null()),
   thumbnail: zod.optional(zod.null()),
   video: zod.optional(zod.null()),
-  bio: zod.optional(zod.string().trim()),
-  about: zod.optional(zod.string().trim()),
+  bio: zod.optional(zod.union([zod.null(), string])),
+  about: zod.optional(zod.union([zod.null(), string])),
   city: zod.optional(zod.union([zod.nativeEnum(IUser.City), zod.null()])),
   phone: zod.optional(zod.union([zod.string().max(15).trim(), zod.null()])),
 });
@@ -268,7 +268,11 @@ function update(_: ApiContext) {
           const user = await users.update(id, updatePayload, tx);
 
           const tutorData =
-            bio || about || notice || video === null || thumbnail === null;
+            bio !== undefined ||
+            about !== undefined ||
+            notice !== undefined ||
+            video === null ||
+            thumbnail === null;
 
           if (tutorData && targetTutor)
             await tutors.update(
@@ -375,7 +379,6 @@ async function findTutorInfo(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  const { user } = req;
   const { tutorId } = withNamedId("tutorId").parse(req.params);
   const ctutor = await cache.tutors.getOne(tutorId);
 
@@ -388,18 +391,17 @@ async function findTutorInfo(
 
   const tutor = await tutors.findById(tutorId);
   if (!tutor) return next(notfound.tutor());
-  const isAllowed =
-    isOnboard(tutor) ||
-    (user && typeof user !== "string" && user.id === tutorId);
+  const isAllowed = isOnboard(tutor);
 
   if (isAllowed) {
     const ctutor = await joinTutorCache(tutor, null);
-    if (isOnboard(tutor)) await cache.tutors.setOne(ctutor);
+    await cache.tutors.setOne(ctutor);
     const response: ITutor.FindTutorInfoApiResponse =
       await asTutorInfoResponseBody(ctutor);
     res.status(200).json(response);
     return;
   }
+
   return next(notfound.tutor());
 }
 

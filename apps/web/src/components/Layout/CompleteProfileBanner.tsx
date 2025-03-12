@@ -1,13 +1,13 @@
 import { router } from "@/lib/routes";
 import { useUserContext } from "@litespace/headless/context/user";
-import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { ITutor, IUser } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Web } from "@litespace/utils/routes";
 import { isOnboard } from "@litespace/utils/tutor";
-import { Link } from "react-router-dom";
+import React, { useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 function asFullTutor(
   user: IUser.Self | null,
@@ -17,36 +17,38 @@ function asFullTutor(
   return {
     ...user,
     ...metaData,
-    metaUpdatedAt: "",
+    metaUpdatedAt: metaData.updatedAt,
   };
 }
 
-const CompleteProfileBanner = () => {
+const CompleteProfileBanner: React.FC = () => {
   const intl = useFormatMessage();
   const { user, meta } = useUserContext();
+  const location = useLocation();
+  const isTutor = useMemo(
+    () =>
+      !!user && [IUser.Role.Tutor, IUser.Role.TutorManager].includes(user.role),
+    [user]
+  );
 
-  const isTutor =
-    user && [IUser.Role.Tutor, IUser.Role.TutorManager].includes(user.role);
+  const isOnboarded = useMemo(() => {
+    const info = asFullTutor(user, meta);
+    return isTutor && !!info && isOnboard(info);
+  }, [meta, isTutor, user]);
 
-  const tutorDetails = useFindTutorInfo(isTutor ? user?.id : null);
-
-  if (!tutorDetails || !isTutor) return null;
-
-  const fullTutor = asFullTutor(user, meta);
-  const isOnboarded = !!fullTutor && isOnboard(fullTutor);
-
-  if (isOnboarded) return null;
+  if (
+    isOnboarded ||
+    !isTutor ||
+    router.isMatch.web(Web.TutorSettings, location.pathname)
+  )
+    return null;
 
   return (
     <div className="bg-brand-700 flex items-center justify-center gap-4 h-[72px] w-full">
       <Typography tag="p" className="text-tiny md:text-caption text-white">
         {intl("layout.banner.complete-profile")}
       </Typography>
-      <Link
-        to={router.web({
-          route: Web.TutorSettings,
-        })}
-      >
+      <Link to={router.web({ route: Web.TutorSettings })}>
         <Button size="large" variant="secondary">
           {intl("layout.banner.complete-profile.action")}
         </Button>

@@ -19,7 +19,6 @@ const TUTOR_MAX_TOPIC_COUNT = 3;
 export const TutorCard: React.FC<{
   id: number;
   name: string | null;
-  bio: string | null;
   about: string | null;
   imageUrl: string | null;
   lessonCount: number;
@@ -30,7 +29,6 @@ export const TutorCard: React.FC<{
 }> = ({
   id,
   name,
-  bio,
   about,
   imageUrl,
   lessonCount,
@@ -66,12 +64,7 @@ export const TutorCard: React.FC<{
       )}
     >
       <div className="hidden md:block rounded-lg overflow-hidden shrink-0 w-[200px]">
-        <Avatar
-          src={orUndefined(imageUrl)}
-          alt={orUndefined(name)}
-          seed={id.toString()}
-          object="fill"
-        />
+        <Avatar src={imageUrl} alt={name} seed={id.toString()} />
       </div>
       <div className="flex flex-col">
         <div className="flex gap-2">
@@ -83,23 +76,12 @@ export const TutorCard: React.FC<{
               object="fill"
             />
           </div>
-          <div>
-            <Typography
-              tag="h3"
-              className="text-brand-700 mb-[2px] md:mb-1 line-clamp-1 font-bold text-caption md:text-subtitle-1"
-            >
-              {name}
-            </Typography>
-
-            {bio ? (
-              <Typography
-                tag="p"
-                className="ellipsis line-clamp-2 text-natural-800 font-normal text-tiny md:text-caption h-[35px] md:h-auto"
-              >
-                {bio}
-              </Typography>
-            ) : null}
-          </div>
+          <Typography
+            tag="h3"
+            className="text-brand-700 mb-[2px] md:mb-1 line-clamp-1 font-bold text-caption md:text-subtitle-1"
+          >
+            {name}
+          </Typography>
         </div>
         <Typography
           tag="p"
@@ -199,7 +181,7 @@ export const TutorCard: React.FC<{
                       </Typography>
                     }
                   >
-                    <div className="w-16">
+                    <div className="w-24">
                       <Typography
                         tag="span"
                         className="block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl text-center truncate font-normal md:font-semibold text-tiny md:text-caption"
@@ -210,13 +192,15 @@ export const TutorCard: React.FC<{
                   </Tooltip>
                 );
             })}
-            <Typography
-              tag="span"
-              className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
-            >
-              {remainingTopicsCount}
-              {"+"}
-            </Typography>
+
+            {remainingTopicsCount ? (
+              <Typography
+                tag="span"
+                className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
+              >
+                {remainingTopicsCount}+
+              </Typography>
+            ) : null}
           </div>
         ) : null}
 

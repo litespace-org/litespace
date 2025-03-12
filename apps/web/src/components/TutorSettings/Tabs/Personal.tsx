@@ -46,6 +46,7 @@ const PersonalSettings: React.FC<{
           >
             {intl("tutor-settings.account-settings.title")}
           </Typography>
+
           <Controller.Input
             label={intl("labels.email")}
             value={form.watch("email")}
@@ -54,16 +55,23 @@ const PersonalSettings: React.FC<{
             name="email"
             disabled
             dir="rtl"
+            state={errors.email ? "error" : undefined}
+            helper={errors.email?.message}
           />
+
           <Controller.Input
+            id="phone"
             label={intl("labels.phone")}
             value={form.watch("phone")}
             control={form.control}
             rules={{ validate: validatePhone }}
             autoComplete="off"
             name="phone"
-            dir="rtl"
+            placeholder={intl("labels.phone.placeholder")}
+            state={errors.phone ? "error" : undefined}
+            helper={errors.phone?.message}
           />
+
           <Controller.Select
             id="city"
             label={intl("labels.city")}
@@ -89,7 +97,7 @@ const PersonalSettings: React.FC<{
             control={form.control}
             label={intl("shared-settings.edit.password.current")}
             helper={errors.password?.current?.message}
-            state={errors.password ? "error" : undefined}
+            state={errors.password?.current ? "error" : undefined}
             rules={{
               required: requirePassword ? required : undefined,
               validate: validatePassword,
@@ -109,6 +117,8 @@ const PersonalSettings: React.FC<{
             }}
             name="password.new"
             idleDir="rtl"
+            helper={errors.password?.new?.message}
+            state={errors.password?.new ? "error" : undefined}
           />
 
           <Controller.Password
@@ -124,7 +134,9 @@ const PersonalSettings: React.FC<{
               },
             }}
             name="password.confirm"
-            dir="rtl"
+            helper={errors.password?.confirm?.message}
+            state={errors.password?.confirm ? "error" : undefined}
+            idleDir="rtl"
           />
         </div>
       </div>
