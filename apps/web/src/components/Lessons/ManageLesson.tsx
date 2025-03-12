@@ -2,7 +2,7 @@ import { ManageLessonDialog } from "@litespace/ui/Lessons";
 import { ILesson, Void } from "@litespace/types";
 import {
   useCreateLesson,
-  useInfiniteLessons,
+  useFindLessons,
   useUpdateLesson,
 } from "@litespace/headless/lessons";
 import { useMemo, useCallback } from "react";
@@ -59,11 +59,12 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     [tutorId]
   );
 
-  const lessons = useInfiniteLessons({
+  const lessons = useFindLessons({
     canceled: false,
     users: user ? [user?.id] : [],
     userOnly: true,
     future: true,
+    size: 1,
   });
 
   const tutorAvailabilitySlots = useFindAvailabilitySlots(
@@ -79,6 +80,7 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
       });
     invalidate([QueryKey.FindAvailabilitySlots]);
     invalidate([QueryKey.FindLesson]);
+    invalidate([QueryKey.FindInfiniteLessons]);
     invalidate([QueryKey.FindTutors]);
     close();
   }, [close, tutor.data?.name, toast, intl, invalidate]);
@@ -196,6 +198,7 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
 
   return (
     <ManageLessonDialog
+      type={payload.type}
       slotId={payload.type === "update" ? payload.slotId : undefined}
       start={payload.type === "update" ? payload.start : undefined}
       duration={payload.type === "update" ? payload.duration : undefined}
@@ -213,8 +216,10 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
       bookedSlots={bookedSlots}
       slots={tutorAvailabilitySlots.data?.slots.list || []}
       onSubmit={onSubmit}
-      isVerified={user?.verified}
-      hasBookedLessons={lessons.list ? lessons.list.length > 0 : false}
+      isVerified={user?.verifiedEmail}
+      hasBookedLessons={
+        lessons.query.data ? lessons.query.data.list.length > 0 : false
+      }
       open
       retry={tutorAvailabilitySlots.refetch}
       error={

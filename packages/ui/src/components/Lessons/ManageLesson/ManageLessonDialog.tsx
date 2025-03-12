@@ -25,7 +25,7 @@ import {
   subtractSlotsBatch as subtractSlots,
 } from "@litespace/utils";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { CannotBookDialog } from "@/components/Lessons/ManageLesson/CannotBookDialog";
+import { Block } from "@/components/Lessons/ManageLesson/Block";
 
 const Loading: React.FC<{
   tutorName: string | null;
@@ -170,6 +170,7 @@ export const ManageLessonDialog: React.FC<{
     start: string;
     duration: ILesson.Duration;
   }) => void;
+  type?: "book" | "update";
 }> = ({
   open,
   tutorId,
@@ -186,6 +187,7 @@ export const ManageLessonDialog: React.FC<{
   close,
   onSubmit,
   retry,
+  type = "book",
   ...initials
 }) => {
   const { sm } = useMediaQuery();
@@ -255,8 +257,12 @@ export const ManageLessonDialog: React.FC<{
   const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
 
   const canBook = useMemo(
-    () => !error && !loading && isVerified && !hasBookedLessons,
-    [error, loading, isVerified, hasBookedLessons]
+    () =>
+      !error &&
+      !loading &&
+      isVerified &&
+      (!hasBookedLessons || type === "update"),
+    [error, loading, isVerified, hasBookedLessons, type]
   );
 
   const canProceed = useMemo(
@@ -296,7 +302,7 @@ export const ManageLessonDialog: React.FC<{
         className={cn({
           "!mt-4": !isVerified || hasBookedLessons,
           "mt-6": step === "date-selection",
-          "mt-6 md:mt-8": step === "time-selection",
+          "mt-3 lg:mt-4": step === "time-selection",
         })}
       >
         <AnimatePresence initial={false} mode="wait">
@@ -312,19 +318,19 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {!isVerified && !error && !loading ? (
+          {!isVerified && !error && !loading && type === "book" ? (
             <Animation key="unverified" id="unverified">
-              <CannotBookDialog
-                close={close}
-                submit={sendVerifyEmail}
-                type="unverified"
-              />
+              <Block close={close} submit={sendVerifyEmail} type="unverified" />
             </Animation>
           ) : null}
 
-          {hasBookedLessons && isVerified && !error && !loading ? (
+          {hasBookedLessons &&
+          isVerified &&
+          !error &&
+          !loading &&
+          type === "book" ? (
             <Animation key="has-booked-lesson" id="has-booked-lesson">
-              <CannotBookDialog close={close} type="has-booked" />
+              <Block close={close} type="has-booked" />
             </Animation>
           ) : null}
 
@@ -407,7 +413,7 @@ export const ManageLessonDialog: React.FC<{
             "flex flex-row gap-4 md:gap-[14px] w-full md:ms-auto md:w-fit px-4 md:px-0",
             {
               "mt-6": step === "date-selection",
-              "mt-10 md:mt-6": step === "time-selection",
+              "mt-5 md:mt-3": step === "time-selection",
             }
           )}
         >

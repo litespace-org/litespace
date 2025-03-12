@@ -4,7 +4,7 @@ import {
   countRows,
   knex,
   WithOptionalTx,
-  withPagination,
+  withSkippablePagination,
 } from "@/query";
 import { first, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
@@ -145,25 +145,24 @@ export class Interviews {
     levels,
     signed,
     users,
-    page,
-    size,
     slots = [],
-    cancelled,
+    canceled,
     tx,
-  }: {
-    users?: number[];
-    statuses?: IInterview.Status[];
-    levels?: IInterview.Self["level"][];
-    tx?: Knex.Transaction;
-    signed?: boolean;
-    signers?: number[];
-    /**
-     * slots ids to be included in the query result
-     */
-    slots?: number[];
-    cancelled?: boolean;
-    pagination?: IFilter.SkippablePagination;
-  } & IFilter.Pagination): Promise<Paginated<IInterview.Self>> {
+    ...pagination
+  }: WithOptionalTx<
+    {
+      users?: number[];
+      statuses?: IInterview.Status[];
+      levels?: IInterview.Self["level"][];
+      signed?: boolean;
+      signers?: number[];
+      /**
+       * slots ids to be included in the query result
+       */
+      slots?: number[];
+      canceled?: boolean;
+    } & IFilter.SkippablePagination
+  >): Promise<Paginated<IInterview.Self>> {
     const baseBuilder = this.builder(tx);
 
     if (users && !isEmpty(users))
@@ -189,9 +188,9 @@ export class Interviews {
 
     if (!isEmpty(slots)) baseBuilder.whereIn(this.column("slot_id"), slots);
 
-    if (cancelled === true)
+    if (canceled === true)
       baseBuilder.where(this.column("canceled_at"), "IS NOT", null);
-    else if (cancelled === false)
+    else if (canceled === false)
       baseBuilder.where(this.column("canceled_at"), "IS", null);
 
     const total = await countRows(baseBuilder.clone());
@@ -200,7 +199,7 @@ export class Interviews {
       .clone()
       .select<IInterview.Row[]>(this.columns)
       .orderBy(this.column("start"), "desc");
-    const rows = await withPagination(queryBuilder, { page, size });
+    const rows = await withSkippablePagination(queryBuilder, pagination);
     return { list: rows.map((row) => this.from(row)), total };
   }
 

@@ -8,13 +8,13 @@ import { Button } from "@/components/Button";
 import { LocalId } from "@/locales";
 
 type DialogData = {
-  icon: React.ReactNode;
+  icon: React.FC<{ className?: string }>;
   title: LocalId;
   description: LocalId;
   action: LocalId;
 };
 
-export const CannotBookDialog: React.FC<{
+export const Block: React.FC<{
   type: "unverified" | "has-booked";
   submit?: Void;
   close: Void;
@@ -24,13 +24,13 @@ export const CannotBookDialog: React.FC<{
   const data: DialogData = useMemo(() => {
     if (type === "unverified")
       return {
-        icon: <SmsTracking />,
+        icon: SmsTracking,
         title: "book-lesson.not-verified.title",
         description: "book-lesson.not-verified.description",
         action: "book-lesson.not-verified.action",
       };
     return {
-      icon: <Calendar />,
+      icon: Calendar,
       title: "book-lesson.has-booked-lessons.title",
       description: "book-lesson.has-booked-lessons.description",
       action: "book-lesson.has-booked-lessons.action",
@@ -38,9 +38,11 @@ export const CannotBookDialog: React.FC<{
   }, [type]);
 
   return (
-    <div className="px-4 md:px-0">
-      <div className="w-6 h-6 bg-brand-100 rounded-full [&_*]:stroke-brand-700">
-        {data.icon}
+    <div className="px-4 md:px-0 md:w-[580px]">
+      <div className="w-12 h-12 flex items-center justify-center bg-brand-50 rounded-full">
+        <div className="w-7 h-7 flex items-center justify-center bg-brand-100 rounded-full ">
+          {<data.icon className="[&>*]:stroke-brand-700 w-6 h-6" />}
+        </div>
       </div>
       <div className="flex flex-col gap-1 mt-4 mb-6">
         <Typography
@@ -61,6 +63,7 @@ export const CannotBookDialog: React.FC<{
         >
           {intl(data.action)}
         </Button>
+
         {type === "unverified" ? (
           <Button
             variant="secondary"

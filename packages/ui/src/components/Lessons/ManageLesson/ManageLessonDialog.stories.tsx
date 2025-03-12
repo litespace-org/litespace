@@ -180,7 +180,7 @@ export const EmptySchedule: Story = {
   },
 };
 
-export const UnVerified: Story = {
+export const Unverified: Story = {
   args: {
     open: true,
     close: identity,
@@ -191,8 +191,8 @@ export const UnVerified: Story = {
     isVerified: false,
     hasBookedLessons: false,
     bookedSlots: [],
-    onSubmit() {
-      alert("Lesson booked!!");
+    sendVerifyEmail() {
+      alert("Send verify email");
     },
   },
 };
@@ -227,6 +227,34 @@ export const ErrorSchedule: Story = {
       alert("Lesson booked!!");
     },
     error: true,
+  },
+};
+
+export const LoadingThenBlocked: Story = {
+  args: {
+    open: true,
+    loading: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    slots: makeSlots(5),
+    isVerified: true,
+    hasBookedLessons: true,
+    bookedSlots: [],
+    onSubmit() {
+      alert("Lesson booked!!");
+    },
+  },
+  render: (props) => {
+    const [loading, setIsLoading] = useState(true);
+    useEffect(() => {
+      const id = setTimeout(() => {
+        setIsLoading(false);
+      }, 2_000);
+      return () => clearTimeout(id);
+    }, []);
+    return <ManageLessonDialog {...props} loading={loading} />;
   },
 };
 

@@ -240,7 +240,7 @@ export const LessonCard: React.FC<Props> = ({
           <div className="flex flex-col gap-1">
             <Typography
               tag="span"
-              className="text-caption font-bold text-[14px] leading-[21px] text-natural-950"
+              className="text-caption font-bold leading-[21px] text-natural-950"
             >
               {member.name}
             </Typography>
