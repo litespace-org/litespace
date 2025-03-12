@@ -69,7 +69,8 @@
     "landing": "pnpm --filter @litespace/landing",
     "mobile": "pnpm --filter @litespace/mobile",
     "blog": "pnpm --filter @litespace/blog",
-    "tasks": "pnpm --filter @litespace/tasks"
+    "tasks": "pnpm --filter @litespace/tasks",
+    "messenger": "pnpm --filter @litespace/messenger"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.2",

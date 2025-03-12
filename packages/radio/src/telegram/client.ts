@@ -1,7 +1,7 @@
-import { TelegramClient } from "telegram";
+import { TelegramClient as Telegram } from "telegram";
 import { StoreSession } from "telegram/sessions";
 import prompts from "prompts";
-import { Entity } from "telegram/define";
+import { EntityLike } from "telegram/define";
 import { SendMessageParams } from "telegram/client/messages";
 
 type Config = {
@@ -11,16 +11,11 @@ type Config = {
   };
 };
 
-export class Telegram {
-  public readonly client: TelegramClient;
+export class TelegramClient {
+  public readonly client: Telegram;
   constructor(public readonly config: Config) {
     const session = new StoreSession("__telegram__", "_");
-    this.client = new TelegramClient(
-      session,
-      config.api.id,
-      config.api.hash,
-      {}
-    );
+    this.client = new Telegram(session, config.api.id, config.api.hash, {});
   }
 
   async start() {
@@ -66,7 +61,7 @@ export class Telegram {
     this.client.session.save();
   }
 
-  async sendMessage(entity: Entity, params: SendMessageParams) {
+  async sendMessage(entity: EntityLike, params: SendMessageParams) {
     return await this.client.sendMessage(entity, params);
   }
 }

@@ -1,0 +1,24 @@
+{
+  "name": "@litespace/messenger",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "env-cmd node dist/index.js",
+    "prepare": "ts-patch install -s"
+  },
+  "dependencies": {
+    "@litespace/radio": "workspace:^",
+    "@litespace/types": "workspace:^",
+    "@litespace/utils": "workspace:^",
+    "express": "^4.19.2",
+    "express-async-handler": "^1.2.0",
+    "zod": "^3.23.8",
+    "ms": "^2.1.3"
+  },
+  "devDependencies": {
+    "ts-patch": "^3.2.1",
+    "typescript": "^5.4.5",
+    "typescript-transform-paths": "^3.5.2"
+  }
+}
