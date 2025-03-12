@@ -29,49 +29,87 @@ const TutorDashboard = lazy(() => import("@/pages/TutorDashboard"));
 
 const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
+const Fallback: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Suspense
+    fallback={
+      <div className="h-screen w-full">
+        <div className="mt-[20vh]">
+          <Loader size="medium" />
+        </div>
+      </div>
+    }
+  >
+    {children}
+  </Suspense>
+);
+
 const router = createRouter([
   {
     path: Web.Root,
-    element: <Root />,
+    element: <Fallback children={<Root />} />,
     children: [
-      { path: Web.Chat, element: <Chat /> },
-      { path: Web.CompleteProfile, element: <CompleteProfile /> },
-      { path: Web.Login, element: <Login /> },
-      { path: Web.Payments, element: <Payments /> },
-      { path: Web.Register, element: <Register /> },
-      { path: Web.ResetPassword, element: <ResetPassword /> },
-      { path: Web.StudentDashboard, element: <StudentDashboard /> },
-      { path: Web.StudentSettings, element: <StudentSettings /> },
-      { path: Web.TutorDashboard, element: <TutorDashboard /> },
-      { path: Web.TutorSettings, element: <TutorSettings /> },
-      { path: Web.LessonsSchedule, element: <LessonsSchedule /> },
-      { path: Web.ScheduleManagement, element: <ScheduleManagement /> },
-      { path: Web.Subscription, element: <Plans /> },
-      { path: Web.TutorProfile, element: <TutorProfile /> },
-      { path: Web.Tutors, element: <Tutors /> },
-      { path: Web.UpcomingLessons, element: <UpcomingLessons /> },
-      { path: Web.Lesson, element: <Lesson /> },
-      { path: Web.VerifyEmail, element: <VerifyEmail /> },
-      { path: Web.ForgetPassword, element: <ForgetPassword /> },
+      { path: Web.Chat, element: <Fallback children={<Chat />} /> },
+      {
+        path: Web.CompleteProfile,
+        element: <Fallback children={<CompleteProfile />} />,
+      },
+      { path: Web.Login, element: <Fallback children={<Login />} /> },
+      { path: Web.Payments, element: <Fallback children={<Payments />} /> },
+      { path: Web.Register, element: <Fallback children={<Register />} /> },
+      {
+        path: Web.ResetPassword,
+        element: <Fallback children={<ResetPassword />} />,
+      },
+      {
+        path: Web.StudentDashboard,
+        element: <Fallback children={<StudentDashboard />} />,
+      },
+      {
+        path: Web.StudentSettings,
+        element: <Fallback children={<StudentSettings />} />,
+      },
+      {
+        path: Web.TutorDashboard,
+        element: <Fallback children={<TutorDashboard />} />,
+      },
+      {
+        path: Web.TutorSettings,
+        element: <Fallback children={<TutorSettings />} />,
+      },
+      {
+        path: Web.LessonsSchedule,
+        element: <Fallback children={<LessonsSchedule />} />,
+      },
+      {
+        path: Web.ScheduleManagement,
+        element: <Fallback children={<ScheduleManagement />} />,
+      },
+      { path: Web.Subscription, element: <Fallback children={<Plans />} /> },
+      {
+        path: Web.TutorProfile,
+        element: <Fallback children={<TutorProfile />} />,
+      },
+      { path: Web.Tutors, element: <Fallback children={<Tutors />} /> },
+      {
+        path: Web.UpcomingLessons,
+        element: <Fallback children={<UpcomingLessons />} />,
+      },
+      { path: Web.Lesson, element: <Fallback children={<Lesson />} /> },
+      {
+        path: Web.VerifyEmail,
+        element: <Fallback children={<VerifyEmail />} />,
+      },
+      {
+        path: Web.ForgetPassword,
+        element: <Fallback children={<ForgetPassword />} />,
+      },
     ],
-    errorElement: <ErrorPage />,
+    errorElement: <Fallback children={<ErrorPage />} />,
   },
 ]);
 
-const Fallback: React.FC = () => (
-  <div className="h-screen w-full">
-    <div className="mt-[20vh]">
-      <Loader size="medium" />
-    </div>
-  </div>
-);
-
 function App(): React.JSX.Element {
-  return (
-    <Suspense fallback={<Fallback />}>
-      <RouterProvider router={router} />
-    </Suspense>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

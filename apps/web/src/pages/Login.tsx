@@ -24,6 +24,7 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
 import { isValidRoute, Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
+import { omit } from "lodash";
 
 interface IForm {
   email: string;
@@ -41,9 +42,10 @@ const Login: React.FC = () => {
   const validatePassword = useValidatePassword(true);
 
   const redirect = useMemo(() => {
+    const query = Object.fromEntries(searchParams);
     const route = searchParams.get("redirect");
     if (!route || !isValidRoute(route)) return null;
-    return route;
+    return router.generic({ route, query: omit(query, "redirect") });
   }, [searchParams]);
 
   const google = useGoogle({ redirect });

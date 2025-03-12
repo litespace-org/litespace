@@ -17,7 +17,6 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   const intl = useFormatMessage();
   const { user } = useUserContext();
 
-  if (!user) return null;
   return (
     <div className="shadow-app-navbar shadow lg:shadow-app-navbar-mobile w-full z-navbar bg-natural-50">
       <div
@@ -25,7 +24,7 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
           "max-w-screen-3xl mx-auto": location.pathname !== Web.Chat,
         })}
       >
-        {user.role === IUser.Role.Student &&
+        {user?.role === IUser.Role.Student &&
         location.pathname !== Web.Subscription &&
         lg ? (
           <Link to={Web.Subscription}>
@@ -55,12 +54,39 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
         ) : null}
 
         <div className="ms-auto">
-          <ProfileInfo
-            imageUrl={user.image}
-            name={user.name}
-            email={user.email}
-            id={user.id}
-          />
+          {user ? (
+            <ProfileInfo
+              imageUrl={user.image}
+              name={user.name}
+              email={user.email}
+              id={user.id}
+            />
+          ) : null}
+
+          {!user ? (
+            <div className="flex gap-2">
+              <Link to={Web.Register}>
+                <Button size="large">
+                  <Typography
+                    tag="p"
+                    className="text-body text-natural-50 font-medium"
+                  >
+                    {intl("navbar.register")}
+                  </Typography>
+                </Button>
+              </Link>
+              <Link to={Web.Login}>
+                <Button size="large" variant="secondary">
+                  <Typography
+                    tag="p"
+                    className="text-body text-brand-700 font-medium"
+                  >
+                    {intl("navbar.login")}
+                  </Typography>
+                </Button>
+              </Link>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

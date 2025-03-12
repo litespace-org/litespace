@@ -54,7 +54,7 @@ const Root: React.FC = () => {
 
   return (
     <div className="flex relative w-full">
-      {showNavigation && (mq.md || showMobileSidebar) ? (
+      {showNavigation && (mq.md || showMobileSidebar) && !!user ? (
         <Sidebar hide={() => setShowMobileSidebar(false)} />
       ) : null}
 

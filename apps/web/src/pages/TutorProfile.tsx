@@ -1,6 +1,11 @@
 import { Loader, LoadingError } from "@litespace/ui/Loading";
-import React, { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import RightArrow from "@litespace/assets/ArrowRight";
 import { Typography } from "@litespace/ui/Typography";
@@ -10,12 +15,17 @@ import ManageLesson from "@/components/Lessons/ManageLesson";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Web } from "@litespace/utils/routes";
 import ProfileCard from "@/components/TutorProfile/ProfileCard";
+import { useUserContext } from "@litespace/headless/context/user";
+import { router } from "@/lib/routes";
 
 const TutorProfile: React.FC = () => {
   const { md, lg } = useMediaQuery();
   const params = useParams<{ id: string }>();
   const intl = useFormatMessage();
   const [open, setOpen] = useState<boolean>(false);
+  const { user } = useUserContext();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const id = useMemo(() => {
     const id = Number(params.id);
@@ -24,6 +34,10 @@ const TutorProfile: React.FC = () => {
   }, [params.id]);
 
   const tutor = useFindTutorInfo(id);
+
+  useEffect(() => {
+    if (searchParams.get("book")) setOpen(true);
+  }, [searchParams, setSearchParams]);
 
   return (
     <div className="w-full max-w-screen-3xl p-4 lg:p-6 mx-auto">
@@ -73,7 +87,28 @@ const TutorProfile: React.FC = () => {
 
       {!tutor.isLoading && !tutor.isError && tutor.data ? (
         <div className="md:bg-natural-50 md:border md:border-natural-100 md:shadow-tutor-profile md:rounded-2xl flex flex-col gap-8 md:gap-14 lg:gap-12">
-          <ProfileCard {...tutor.data} onBook={() => setOpen(true)} />
+          <ProfileCard
+            {...tutor.data}
+            onBook={() => {
+              if (!tutor.data) return;
+              if (!user)
+                return navigate(
+                  router.web({
+                    route: Web.Login,
+                    query: {
+                      redirect: router.web({
+                        route: Web.TutorProfile,
+                        id: tutor.data.id,
+                      }),
+                      book: "true",
+                      ...Object.fromEntries(searchParams),
+                    },
+                  })
+                );
+
+              setOpen(true);
+            }}
+          />
           <TutorTabs tutor={tutor.data} />
         </div>
       ) : null}
@@ -82,7 +117,11 @@ const TutorProfile: React.FC = () => {
         <ManageLesson
           type="book"
           tutorId={tutor.data.id}
-          close={() => setOpen(false)}
+          close={() => {
+            setOpen(false);
+            searchParams.delete("book");
+            setSearchParams(searchParams);
+          }}
         />
       ) : null}
     </div>
