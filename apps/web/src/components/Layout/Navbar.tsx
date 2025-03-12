@@ -17,7 +17,6 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   const intl = useFormatMessage();
   const { user } = useUserContext();
 
-  if (!user) return null;
   return (
     <div className="shadow-app-navbar shadow lg:shadow-app-navbar-mobile w-full z-navbar bg-natural-50">
       <div
@@ -25,7 +24,7 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
           "max-w-screen-3xl mx-auto": location.pathname !== Web.Chat,
         })}
       >
-        {user.role === IUser.Role.Student &&
+        {user?.role === IUser.Role.Student &&
         location.pathname !== Web.Subscription &&
         lg ? (
           <Link to={Web.Subscription}>
@@ -69,7 +68,7 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
               <Link to={Web.Register}>
                 <Button size="large">
                   <Typography
-                    tag="body"
+                    tag="p"
                     className="text-body text-natural-50 font-medium"
                   >
                     {intl("navbar.register")}
@@ -79,7 +78,7 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
               <Link to={Web.Login}>
                 <Button size="large" variant="secondary">
                   <Typography
-                    tag="body"
+                    tag="p"
                     className="text-body text-brand-700 font-medium"
                   >
                     {intl("navbar.login")}

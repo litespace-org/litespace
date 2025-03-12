@@ -25,7 +25,7 @@ function withUrl({
 }
 
 function withParams(
-  route: Web | Landing | Dashboard,
+  route: Web | Landing | Dashboard | Exclude<string, Web | Landing | Dashboard>,
   params?: Record<string, string | number>
 ): string {
   if (!params) return route;
@@ -55,6 +55,10 @@ type BasePayload = {
    */
   full?: boolean;
   query?: Record<string, string> | string;
+};
+
+type GenericPayload = {
+  route: Exclude<string, Web | Landing | Dashboard>;
 };
 
 type WebPayload =
@@ -127,10 +131,12 @@ export class RoutesManager {
       | WithProp<WebPayload, { app: "web" }>
       | WithProp<LandingPayload, { app: "landing" }>
       | WithProp<DashboardPayload, { app: "dashboard" }>
+      | WithProp<GenericPayload, { app: "noapp" }>
     )) {
     const populated = withParams(route, params);
     const updated = query ? withQuery(populated, query) : populated;
-    if (full) return withUrl({ client: this.client, app, route: updated });
+    if (full && app !== "noapp")
+      return withUrl({ client: this.client, app, route: updated });
     return updated;
   }
 
@@ -144,6 +150,10 @@ export class RoutesManager {
 
   dashboard(payload: BasePayload & DashboardPayload) {
     return this.make({ ...payload, app: "dashboard" });
+  }
+
+  generic(payload: BasePayload & GenericPayload) {
+    return this.make({ ...payload, app: "noapp" });
   }
 }
 

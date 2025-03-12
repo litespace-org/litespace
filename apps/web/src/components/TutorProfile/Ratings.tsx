@@ -141,7 +141,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
       </div>
     );
 
-  if (ratingsQuery.error || !user)
+  if (ratingsQuery.error)
     return (
       <div className="h-96 flex items-center justify-center">
         <LoadingError
@@ -168,7 +168,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
           {ratings.map((rating, index) => {
             if (
               "userId" in rating &&
-              (rating.feedback || rating.userId === user.id)
+              (rating.feedback || rating.userId === user?.id)
             )
               return (
                 <TutorRatingCard
@@ -179,7 +179,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
                   studentId={rating.userId}
                   studentName={rating.name}
                   tutorName={tutorName}
-                  owner={rating.userId === user.id}
+                  owner={rating.userId === user?.id}
                   onDelete={() => setDeleteDialog(rating.id)}
                   onEdit={() =>
                     setEditDialog({
