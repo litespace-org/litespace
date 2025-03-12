@@ -26,6 +26,7 @@ const TutorSettings = lazy(() => import("@/pages/TutorSettings"));
 const ScheduleManagement = lazy(() => import("@/pages/ScheduleManagement"));
 const ForgetPassword = lazy(() => import("@/pages/ForgetPassword"));
 const TutorDashboard = lazy(() => import("@/pages/TutorDashboard"));
+const Invoices = lazy(() => import("@/pages/Invoices"));
 
 const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
@@ -49,6 +50,7 @@ const router = createRouter([
     element: <Fallback children={<Root />} />,
     children: [
       { path: Web.Chat, element: <Fallback children={<Chat />} /> },
+      { path: Web.Invoices, element: <Fallback children={<Invoices />} /> },
       {
         path: Web.CompleteProfile,
         element: <Fallback children={<CompleteProfile />} />,
