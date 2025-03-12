@@ -76,7 +76,7 @@ export const AvailabilitySlot: React.FC<Props> = ({
         <div className="flex relative h-9">
           {members.slice(0, VISIBLE_AVATAR_COUNT + 1).map((member, idx) => (
             <motion.div
-              key={member.id}
+              key={idx}
               initial={{
                 x: idx >= 1 ? -idx * (AVATAR_WIDTH - AVATARS_OVERLAPPING) : 0,
               }}

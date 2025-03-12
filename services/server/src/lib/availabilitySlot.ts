@@ -121,19 +121,24 @@ export async function getSubslots({
   after?: string;
   before?: string;
 }): Promise<IAvailabilitySlot.SubSlot[]> {
-  const paginatedLessons = await lessons.find({
-    users: [userId],
-    slots: slotIds,
-    after,
-    before,
-  });
+  const [lessonsResult, interviewsResult] = await Promise.all([
+    await lessons.find({
+      users: [userId],
+      slots: slotIds,
+      canceled: false,
+      after,
+      before,
+      full: true,
+    }),
+    await interviews.find({
+      users: [userId],
+      slots: slotIds,
+      canceled: false,
+      full: true,
+    }),
+  ]);
 
-  const paginatedInterviews = await interviews.find({
-    users: [userId],
-    slots: slotIds,
-  });
-
-  return asSubSlots([...paginatedLessons.list, ...paginatedInterviews.list]);
+  return asSubSlots([...lessonsResult.list, ...interviewsResult.list]);
 }
 
 function asUpdatedSlots(

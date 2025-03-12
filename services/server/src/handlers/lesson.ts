@@ -106,8 +106,8 @@ function create(context: ApiContext) {
 
       const slotInterviews = await interviews.find({
         slots: [slot.id],
-        pagination: { full: true },
-        cancelled: false,
+        full: true,
+        canceled: false,
       });
 
       const canBookLesson = canBook({
@@ -186,8 +186,8 @@ function update(context: ApiContext) {
 
       const slotInterviews = await interviews.find({
         slots: [slot.id],
-        pagination: { full: true },
-        cancelled: false,
+        canceled: false,
+        full: true,
       });
 
       const canBookLesson = canBook({

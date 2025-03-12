@@ -52,6 +52,8 @@ export const Primary: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     bookedSlots: [],
+    isVerified: true,
+    hasBookedLessons: false,
     slots: makeSlots(5),
     onSubmit() {
       alert("Lesson booked!!");
@@ -66,6 +68,8 @@ export const WithBookedSlots: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    isVerified: true,
+    hasBookedLessons: false,
     slots: [
       {
         id: 1,
@@ -104,6 +108,8 @@ export const LoadingSlots: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     bookedSlots: [],
+    isVerified: true,
+    hasBookedLessons: false,
     slots: [],
     onSubmit() {
       alert("Lesson booked!!");
@@ -120,6 +126,8 @@ export const ConfirmationLoading: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: makeSlots(5),
     bookedSlots: [],
+    isVerified: true,
+    hasBookedLessons: false,
     confirmationLoading: true,
     onSubmit() {
       alert("Lesson booked!!");
@@ -136,6 +144,8 @@ export const LoadingThenShowingSchedule: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: makeSlots(5),
+    isVerified: true,
+    hasBookedLessons: false,
     bookedSlots: [],
     onSubmit() {
       alert("Lesson booked!!");
@@ -162,6 +172,42 @@ export const EmptySchedule: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: [],
     bookedSlots: [],
+    isVerified: true,
+    hasBookedLessons: false,
+    onSubmit() {
+      alert("Lesson booked!!");
+    },
+  },
+};
+
+export const Unverified: Story = {
+  args: {
+    open: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    slots: [],
+    isVerified: false,
+    hasBookedLessons: false,
+    bookedSlots: [],
+    sendVerifyEmail() {
+      alert("Send verify email");
+    },
+  },
+};
+
+export const HasBookedLessons: Story = {
+  args: {
+    open: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    slots: [],
+    isVerified: true,
+    hasBookedLessons: true,
+    bookedSlots: [],
     onSubmit() {
       alert("Lesson booked!!");
     },
@@ -181,6 +227,34 @@ export const ErrorSchedule: Story = {
       alert("Lesson booked!!");
     },
     error: true,
+  },
+};
+
+export const LoadingThenBlocked: Story = {
+  args: {
+    open: true,
+    loading: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    slots: makeSlots(5),
+    isVerified: true,
+    hasBookedLessons: true,
+    bookedSlots: [],
+    onSubmit() {
+      alert("Lesson booked!!");
+    },
+  },
+  render: (props) => {
+    const [loading, setIsLoading] = useState(true);
+    useEffect(() => {
+      const id = setTimeout(() => {
+        setIsLoading(false);
+      }, 2_000);
+      return () => clearTimeout(id);
+    }, []);
+    return <ManageLessonDialog {...props} loading={loading} />;
   },
 };
 

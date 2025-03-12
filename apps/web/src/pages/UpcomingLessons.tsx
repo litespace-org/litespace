@@ -136,6 +136,7 @@ const UpcomingLessons: React.FC = () => {
   return (
     <div className="p-6 max-w-screen-3xl mx-auto w-full h-full">
       <PageTitle title={intl("upcoming-lessons.title")} className="mb-6" />
+
       <Content
         list={lessons.list}
         loading={lessons.query.isPending}

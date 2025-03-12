@@ -235,7 +235,7 @@ export const ManageSchedule: React.FC<Props> = ({
                 disabled={loading}
                 className="disabled:cursor-not-allowed disabled:opacity-50 w-6 h-6"
               >
-                <ArrowRight className="[&>*]:stroke-brand-700" />
+                <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
               </button>
             ) : null}
 
@@ -253,7 +253,7 @@ export const ManageSchedule: React.FC<Props> = ({
               disabled={loading}
               className="disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <ArrowLeft className="[&>*]:stroke-brand-700" />
+              <ArrowLeft className="[&>*]:stroke-brand-700 w-6 h-6" />
             </button>
           </div>
 

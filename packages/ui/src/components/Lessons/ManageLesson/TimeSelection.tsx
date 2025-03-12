@@ -16,7 +16,7 @@ export const TimeSelection: React.FC<{
       <div
         className={cn(
           "grid grid-cols-[repeat(auto-fill,minmax(60px,1fr))] gap-2 md:gap-4 max-h-96 overflow-y-auto",
-          "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent px-4 md:px-6"
+          "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent px-4 md:px-6 pt-3 lg:pt-4 pb-5 md:mb-3"
         )}
       >
         {slots.map((slot) => {
