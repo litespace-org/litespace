@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3004",
     "build": "next build",
-    "start": "next start"
+    "start": "next start --port 3004"
   },
   "dependencies": {
     "@litespace/assets": "workspace:^",

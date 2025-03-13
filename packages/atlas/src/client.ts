@@ -15,7 +15,7 @@ export type AuthToken = { type: TokenType; value: string };
 
 export const sockets: Record<"main", Record<Env.Server, string>> = {
   main: {
-    local: `ws://localhost:8080`,
+    local: `ws://localhost:4000`,
     staging: "wss://api.staging.litespace.org",
     production: "wss://api.litespace.org",
   },
@@ -23,7 +23,7 @@ export const sockets: Record<"main", Record<Env.Server, string>> = {
 
 export const servers: Record<"main", Record<Env.Server, string>> = {
   main: {
-    local: "http://localhost:8080",
+    local: "http://localhost:4000",
     staging: "https://api.staging.litespace.org",
     production: "https://api.litespace.org",
   },
@@ -35,7 +35,7 @@ export const peers: Record<
 > = {
   local: {
     host: "localhost",
-    port: 7070,
+    port: 4001,
     secure: false,
     key: "peer",
     path: "/ls",

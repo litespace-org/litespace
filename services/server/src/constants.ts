@@ -59,7 +59,7 @@ export enum FileType {
 }
 
 export const serverConfig = {
-  port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
+  port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 4000,
   host: SERVER_HOST ? schema.string.parse(SERVER_HOST) : "127.0.0.1",
   /**
    * @deprecated should be removed

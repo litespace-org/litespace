@@ -154,7 +154,7 @@ export const WithoutIcon: StoryObj<Component> = {
   },
 };
 
-export const withoutEndAction: StoryObj<Component> = {
+export const WithoutEndAction: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: faker.internet.email(),

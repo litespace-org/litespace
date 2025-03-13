@@ -1,6 +1,6 @@
 import type { Preview } from "@storybook/react";
-// eslint-disable-next-line
-import Decorator from "./decorator";
+// eslint-disable-next-line no-restricted-imports
+import Decorator from "./decorator.tsx";
 import "@/index.css";
 
 const preview: Preview = {
@@ -11,7 +11,6 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
-    layout: "centered",
   },
   decorators: [Decorator],
 };

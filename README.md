@@ -98,3 +98,18 @@ Verify pnpm installation by running `pnpm -v`. You should see no errors.
 ### Docker
 
 Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) (recommended but feel free to use any linux distro)
+
+# Port Map
+
+| Process              | Location           | Port |
+| -------------------- | ------------------ | ---- |
+| Web interface (vite) | apps/web           | 3000 |
+| Dashboard (vite)     | apps/dashboard     | 3001 |
+| Web storybook (vite) | apps/web           | 3002 |
+| UI storybook (vite)  | packages/ui        | 3003 |
+| Landing (next)       | apps/landing       | 3004 |
+| API server           | services/server    | 4000 |
+| Peer server          | services/server    | 4001 |
+| Messenger            | services/messenger | 4002 |
+| PostgreSQL           | System             | 5432 |
+| Redis                | System             | 6379 |

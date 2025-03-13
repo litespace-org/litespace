@@ -6,7 +6,6 @@ type Component = typeof Header;
 const meta: Meta<Component> = {
   title: "Auth/Header",
   component: Header,
-  parameters: { layout: "centered" },
 };
 
 export const Primary: StoryObj<Component> = {
