@@ -4,7 +4,7 @@ import { ApiContext } from "@/types/api";
 import { uploadMiddleware } from "@/lib/assets";
 import { IUser } from "@litespace/types";
 
-export default function router(context: ApiContext) {
+export default function router(_: ApiContext) {
   const router = Router();
 
   router.route("/").post(user.create);
@@ -26,7 +26,7 @@ export default function router(context: ApiContext) {
     user.uploadTutorAssets
   );
   router.get("/:id", user.findById);
-  router.put("/:id", user.update(context));
+  router.put("/:id", user.update);
   router.get("/tutor/meta/:tutorId", user.findTutorMeta);
   router.get("/tutor/info/:tutorId", user.findTutorInfo);
   router.get("/tutor/list/onboarded", user.findOnboardedTutors);

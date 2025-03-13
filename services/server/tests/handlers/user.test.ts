@@ -12,6 +12,7 @@ import { Role } from "@litespace/types/dist/esm/user";
 import { first, range } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
 import handlers from "@/handlers/user";
+import { Readable } from "stream";
 
 const createUser = mockApi<IUser.CreateApiPayload>(handlers.create);
 const findPersonalizedStudentStats = mockApi(
@@ -21,8 +22,24 @@ const findPersonalizedStudentStats = mockApi(
 const findStudios = mockApi(handlers.findStudios);
 
 const findStudioTutor = mockApi(handlers.findStudioTutor);
-
 const findStudioTutors = mockApi(handlers.findStudioTutors);
+
+const update = mockApi(handlers.update);
+const uploadUserImage = mockApi(handlers.uploadUserImage);
+const uploadTutorAssets = mockApi(handlers.uploadTutorAssets);
+
+const getMockFile = (): Express.Multer.File => ({
+  filename: "mockfile",
+  fieldname: "mockfield",
+  originalname: "mockname",
+  encoding: "testing",
+  mimetype: "testing",
+  size: 1,
+  stream: new Readable(),
+  destination: "empty",
+  path: "/tmp",
+  buffer: Buffer.from(new ArrayBuffer()),
+});
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
@@ -754,5 +771,53 @@ describe("/api/v1/user/", () => {
       expect(sample.address).to.not.be.undefined;
       expect(sample.image).to.not.be.undefined;
     });
+
+  it("should successfully upload and drop user assets", async () => {
+    const admin = await db.user({ role: IUser.Role.SuperAdmin });
+    const studio = await db.user({ role: IUser.Role.Studio });
+    const tutor = await db.tutor({}, { studioId: studio.id });
+
+    // update image asset
+    let res = await uploadUserImage({
+      query: { forUser: tutor.id },
+      files: {
+        [IUser.AssetFileName.Image]: [getMockFile()],
+      },
+      user: admin,
+    });
+    expect(res.status).to.eq(200);
+
+    // update video and thumbnail assets
+    res = await uploadTutorAssets({
+      query: { tutorId: tutor.id },
+      files: {
+        [IUser.AssetFileName.Image]: [getMockFile()],
+        [IUser.AssetFileName.Video]: [getMockFile()],
+        [IUser.AssetFileName.Thumbnail]: [getMockFile()],
+      },
+      user: studio,
+    });
+    expect(res.status).to.eq(200);
+
+    // ensure that all assets have been updated
+    let updated = await tutors.findById(tutor.id);
+    expect(updated).to.not.be.null;
+    expect(updated?.video).to.not.be.null;
+    expect(updated?.thumbnail).to.not.be.null;
+
+    // Delete all assets
+    res = await update({
+      params: { id: tutor.id },
+      body: { image: null, video: null, thumbnail: null },
+      user: admin,
+    });
+    expect(res.status).to.eq(200);
+
+    // ensure that all assets have been deleted
+    updated = await tutors.findById(tutor.id);
+    expect(updated).to.not.be.null;
+    expect(updated?.image).to.be.null;
+    expect(updated?.video).to.be.null;
+    expect(updated?.thumbnail).to.be.null;
   });
 });

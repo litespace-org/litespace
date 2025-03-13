@@ -44,7 +44,6 @@ import {
   joinTutorCache,
   orderTutors,
 } from "@/lib/tutor";
-import { ApiContext } from "@/types/api";
 import { asIsoDate } from "@litespace/utils/dayjs";
 import {
   isAdmin,
@@ -187,19 +186,17 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-function update(_: ApiContext) {
-  return safeRequest(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const { id } = identityObject.parse(req.params);
+export async function update(req: Request, res: Response, next: NextFunction) {
+  const { id } = identityObject.parse(req.params);
 
-      const currentUser = req.user;
-      const allowed = isUser(currentUser);
-      if (!allowed) return next(forbidden());
+  const currentUser = req.user;
+  const allowed = isUser(currentUser);
+  if (!allowed) return next(forbidden());
 
-      const targetUser = await users.findById(id);
-      if (!targetUser) return next(notfound.user());
+  const targetUser = await users.findById(id);
+  if (!targetUser) return next(notfound.user());
 
-      const targetTutor = await tutors.findById(targetUser.id);
+  const targetTutor = await tutors.findById(targetUser.id);
 
       const {
         email,
@@ -219,39 +216,39 @@ function update(_: ApiContext) {
         enabledWhatsapp,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
-      // return forbidden if the currentUser is neither admin nor studio and tring to update other user data
-      if (currentUser.id !== targetUser.id && isRegularUser(currentUser))
-        return next(forbidden());
+  // return forbidden if the currentUser is neither admin nor studio and tring to update other user data
+  if (currentUser.id !== targetUser.id && isRegularUser(currentUser))
+    return next(forbidden());
 
-      // return forbidden if the studio is trying to drop user image
-      if (isStudio(currentUser) && image === null) return next(forbidden());
+  // return forbidden if the studio is trying to drop user image
+  if (isStudio(currentUser) && image === null) return next(forbidden());
 
-      // return forbidden if the studio is trying to drop media for an unassociated user
-      if (isStudio(currentUser) && targetTutor?.studioId !== currentUser.id)
-        return next(forbidden());
+  // return forbidden if the studio is trying to drop media for an unassociated user
+  if (isStudio(currentUser) && targetTutor?.studioId !== currentUser.id)
+    return next(forbidden());
 
-      if (password) {
-        const expectedPasswordHash = await users.findUserPasswordHash(
-          targetUser.id
-        );
+  if (password) {
+    const expectedPasswordHash = await users.findUserPasswordHash(
+      targetUser.id
+    );
 
-        const isValidCurrentPassword =
-          (password.current === null && expectedPasswordHash === null) ||
-          (password.current &&
-            expectedPasswordHash &&
-            isSamePassword(password.current, expectedPasswordHash));
-        if (!isValidCurrentPassword) return next(wrongPassword());
+    const isValidCurrentPassword =
+      (password.current === null && expectedPasswordHash === null) ||
+      (password.current &&
+        expectedPasswordHash &&
+        isSamePassword(password.current, expectedPasswordHash));
+    if (!isValidCurrentPassword) return next(wrongPassword());
 
-        const validPassword = isValidPassword(password.new);
-        if (validPassword !== true) return next(apierror(validPassword, 400));
-      }
+    const validPassword = isValidPassword(password.new);
+    if (validPassword !== true) return next(apierror(validPassword, 400));
+  }
 
-      // Remove assets from the object store
-      if (image === null && targetUser.image) s3.drop(targetUser.image);
-      if (targetTutor && video === null && targetTutor.video)
-        await s3.drop(targetTutor.video);
-      if (targetTutor && thumbnail === null && targetTutor.thumbnail)
-        await s3.drop(targetTutor.thumbnail);
+  // Remove assets from the object store
+  if (image === null && targetUser.image) s3.drop(targetUser.image);
+  if (targetTutor && video === null && targetTutor.video)
+    s3.drop(targetTutor.video);
+  if (targetTutor && thumbnail === null && targetTutor.thumbnail)
+    s3.drop(targetTutor.thumbnail);
 
       // Remove assets ids from the database / update user data
       const updatedUser = await knex.transaction(
@@ -274,39 +271,36 @@ function update(_: ApiContext) {
               };
           const user = await users.update(id, updatePayload, tx);
 
-          const tutorData =
-            bio !== undefined ||
-            about !== undefined ||
-            notice !== undefined ||
-            video === null ||
-            thumbnail === null;
+    const tutorData =
+      bio !== undefined ||
+      about !== undefined ||
+      notice !== undefined ||
+      video === null ||
+      thumbnail === null;
 
-          if (tutorData && targetTutor)
-            await tutors.update(
-              targetUser.id,
-              {
-                bio,
-                about,
-                notice,
-                video,
-                thumbnail,
-              },
-              tx
-            );
-
-          return user;
-        }
+    if (tutorData && targetTutor)
+      await tutors.update(
+        targetUser.id,
+        {
+          bio,
+          about,
+          notice,
+          video,
+          thumbnail,
+        },
+        tx
       );
 
-      if (targetTutor)
-        sendBackgroundMessage({
-          type: "update-tutor-cache",
-          payload: { tutorId: targetTutor.id },
-        });
+    return user;
+  });
 
-      res.status(200).json(await withImageUrl(updatedUser));
-    }
-  );
+  if (targetTutor)
+    sendBackgroundMessage({
+      type: "update-tutor-cache",
+      payload: { tutorId: targetTutor.id },
+    });
+
+  res.status(200).json(await withImageUrl(updatedUser));
 }
 
 async function findById(req: Request, res: Response, next: NextFunction) {
@@ -1041,7 +1035,7 @@ async function uploadTutorAssets(
 }
 
 export default {
-  update,
+  update: safeRequest(update),
   create: safeRequest(create),
   findById: safeRequest(findById),
   findUsers: safeRequest(findUsers),
