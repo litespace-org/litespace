@@ -342,6 +342,7 @@ export default {
       "form-submit-container": "0px -4px 20px 0px rgba(0, 0, 0, .08)",
       "tutor-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       slot: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
+      "previous-interview": "4px 0px 25px 0px #0000000D",
     },
   },
   plugins: [
