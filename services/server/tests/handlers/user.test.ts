@@ -1,9 +1,7 @@
 import { ITutor, IUser } from "@litespace/types";
-import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
 import { mockApi } from "@fixtures/mockApi";
-import { safe } from "@litespace/utils/error";
 import { cacheTutors } from "@/lib/tutor";
 import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
@@ -20,6 +18,11 @@ const findPersonalizedStudentStats = mockApi(
 );
 
 const findStudios = mockApi(handlers.findStudios);
+const findById = mockApi(handlers.findById);
+const findOnboardedTutors = mockApi(handlers.findOnboardedTutors);
+const findUncontactedTutors = mockApi(handlers.findUncontactedTutors);
+const findTutorInfo = mockApi(handlers.findTutorInfo);
+const findPersonalizedTutorStats = mockApi(handlers.findPersonalizedTutorStats);
 
 const findStudioTutor = mockApi(handlers.findStudioTutor);
 const findStudioTutors = mockApi(handlers.findStudioTutors);
@@ -42,6 +45,14 @@ const getMockFile = (): Express.Multer.File => ({
 });
 
 describe("/api/v1/user/", () => {
+  beforeAll(async () => {
+    await cache.connect();
+  });
+
+  afterAll(async () => {
+    await cache.disconnect();
+  });
+
   beforeEach(async () => {
     await db.flush();
   });
@@ -65,50 +76,49 @@ describe("/api/v1/user/", () => {
     });
   });
 
-  describe.skip("/api/v1/user/:id", () => {
+  describe("/api/v1/user/:id", () => {
     describe("GET /api/v1/user/:id", () => {
       it("should be able to find a user by id", async () => {
-        const adminApi = await Api.forSuperAdmin();
+        const admin = await db.user({ role: IUser.Role.SuperAdmin });
         const dbUser = await db.user();
-        const user = await adminApi.api.user.findById(dbUser.id);
+
+        const res = await findById({
+          params: { id: dbUser.id },
+          user: admin,
+        });
+        const user = res.body as IUser.Self;
+
         expect(user.id).to.be.eq(dbUser.id);
         expect(user.email).to.be.eq(dbUser.email);
         expect(user.role).to.be.eq(dbUser.role);
       });
 
       it("should response with 404 incase user is not found", async () => {
-        const adminApi = await Api.forSuperAdmin();
-        const result = await safe(async () => adminApi.api.user.findById(100));
-        expect(result).to.be.deep.eq(new Error("User not found"));
+        const admin = await db.user({ role: IUser.Role.SuperAdmin });
+        const res = await findById({
+          params: { id: 1000 },
+          user: admin,
+        });
+        expect(res).to.deep.eq(notfound.user());
       });
     });
 
     describe("PUT /api/v1/user/:id", () => {
       it("should update a user", async () => {
-        const userApi = await Api.forStudent();
-        const u0 = await userApi.api.user.findCurrentUser();
-        await userApi.api.user.update(u0.user.id, {
-          name: "updated-1",
+        const student = await db.student();
+
+        await update({
+          params: { id: student.id },
+          body: { name: "just-a-new-name" },
+          user: student,
         });
-        const u1 = await userApi.api.user.findCurrentUser();
-        await userApi.api.user.update(u0.user.id, {
-          name: "updated-2",
-        });
-        const u2 = await userApi.api.user.findCurrentUser();
-        expect(u1.user.name).to.be.eq("updated-1");
-        expect(u2.user.name).to.be.eq("updated-2");
+
+        const user = await users.findById(student.id);
+        expect(user?.name).to.be.eq("just-a-new-name");
       });
     });
 
     describe("GET /api/v1/user/tutor/list/onboarded", () => {
-      beforeAll(async () => {
-        await cache.connect();
-      });
-
-      afterAll(async () => {
-        await cache.disconnect();
-      });
-
       beforeEach(async () => {
         await db.flush();
         await cache.flush();
@@ -117,22 +127,25 @@ describe("/api/v1/user/", () => {
       it("should successfully load onboard tutors from db to cache", async () => {
         expect(await cache.tutors.exists()).to.eql(false);
 
-        const newUser = await db.user({ role: Role.SuperAdmin });
-        const newTutor = await db.tutor();
+        const admin = await db.user({ role: Role.SuperAdmin });
+        const tutor = await db.tutor();
+        const studio = await db.user({ role: Role.Studio });
 
-        await users.update(newTutor.id, {
+        await users.update(tutor.id, {
           verifiedEmail: true,
           verifiedPhone: true,
           image: "/image.jpg",
           phone: "01012345678",
+          city: IUser.City.Giza,
         });
-        await tutors.update(newTutor.id, {
+        await tutors.update(tutor.id, {
           about: faker.lorem.paragraphs(),
           bio: faker.person.bio(),
           activated: true,
-          activatedBy: newUser.id,
+          activatedBy: admin.id,
           video: "/video.mp4",
           thumbnail: "/thumbnail.jpg",
+          studioId: studio.id,
           notice: 10,
         });
 
@@ -155,68 +168,9 @@ describe("/api/v1/user/", () => {
         expect(await cache.tutors.exists()).to.eql(false);
       });
 
-      it("should retrieve onboard tutors data from the cache with HTTP request", async () => {
-        const newUser = await db.user({ role: Role.SuperAdmin });
-        const newTutor = await db.tutor();
-
-        const mockData = {
-          about: faker.lorem.paragraphs(),
-          bio: faker.person.bio(),
-          activated: true,
-          activatedBy: newUser.id,
-          video: "/video.mp4",
-          thumbnail: "/thumbnail.jpg",
-          notice: 10,
-        };
-
-        await users.update(newTutor.id, {
-          verifiedEmail: true,
-          verifiedPhone: true,
-          // NOTE: image is not in tutors table.
-          image: "/image.jpg",
-        });
-        await tutors.update(newTutor.id, mockData);
-
-        const studentApi = await Api.forStudent();
-        const res = await studentApi.api.user.findOnboardedTutors();
-
-        expect(res.total).to.eq(1);
-      });
-
-      it("should load onboard tutors data from db to cache on first HTTP request", async () => {
-        const newUser = await db.user({ role: Role.SuperAdmin });
-        const newTutor = await db.tutor();
-
-        const mockData = {
-          about: faker.lorem.paragraphs(),
-          bio: faker.person.bio(),
-          activated: true,
-          activatedBy: newUser.id,
-          video: "/video.mp4",
-          thumbnail: "/thumbnail.jpg",
-          notice: 10,
-        };
-
-        await users.update(newTutor.id, {
-          verifiedEmail: true,
-          verifiedPhone: true,
-          // NOTE: image is not in tutors table.
-          image: "/image.jpg",
-        });
-        await tutors.update(newTutor.id, mockData);
-
-        expect(await cache.tutors.exists()).to.eql(false);
-
-        const studentApi = await Api.forStudent();
-        await studentApi.api.user.findOnboardedTutors();
-
-        const ctutors = await cache.tutors.getAll();
-        expect(await cache.tutors.exists()).to.eql(true);
-        expect(first(ctutors)?.id).to.eql(newTutor.id);
-      });
-
       it("should retrieve onboard tutors data ordered/searched by name and topic", async () => {
         const newUser = await db.user({ role: Role.SuperAdmin });
+        const studio = await db.user({ role: Role.Studio });
 
         const mockData = [
           {
@@ -228,6 +182,7 @@ describe("/api/v1/user/", () => {
             video: "/video1.mp4",
             thumbnail: "/thumbnail.jpg",
             notice: 7,
+            studioId: studio.id,
           },
           {
             name: "Ahmed",
@@ -238,6 +193,7 @@ describe("/api/v1/user/", () => {
             video: "/video2.mp4",
             thumbnail: "/thumbnail.jpg",
             notice: 12,
+            studioId: studio.id,
           },
           {
             name: "Mostafa",
@@ -248,6 +204,7 @@ describe("/api/v1/user/", () => {
             video: "/video3.mp4",
             thumbnail: "/thumbnail.jpg",
             notice: 14,
+            studioId: studio.id,
           },
           {
             name: "Mahmoud",
@@ -258,6 +215,7 @@ describe("/api/v1/user/", () => {
             video: "/video4.mp4",
             thumbnail: "/thumbnail.jpg",
             notice: 7,
+            studioId: studio.id,
           },
         ];
 
@@ -267,68 +225,66 @@ describe("/api/v1/user/", () => {
             verifiedEmail: true,
             verifiedPhone: true,
             image: "/image.jpg",
+            phone: "01012345678",
+            city: IUser.City.Giza,
           });
           await tutors.update(newTutor.id, data);
         }
 
-        const studentApi = await Api.forStudent();
-        const res = await studentApi.api.user.findOnboardedTutors({
-          search: "mos",
+        const student = await db.student();
+        const res = await findOnboardedTutors({
+          user: student,
+          query: { search: "mos" },
         });
+        expect(res.status).to.eq(200);
 
-        expect(res.total).to.eq(1);
-        expect(mockData[2].name).to.deep.eq(res.list[0].name);
+        const body = res.body as ITutor.FindOnboardedTutorsApiResponse;
+        expect(body.total).to.eq(1);
+        expect(mockData[2].name).to.deep.eq(body.list[0].name);
       });
 
       // There was a bug in which every user update request stores tutor info in the cache
       it("should NOT add (non-onboard) tutor data to cache on every update HTTP request", async () => {
-        const tutorApi = await Api.forTutor();
-        const newTutor = await db.tutor();
-        // any dump update
-        await tutorApi.api.user.update(newTutor.id, { bio: "my new bio" });
+        const tutor = await db.user({ role: IUser.Role.Tutor });
+        await update({
+          params: { id: tutor.id },
+          body: { bio: "my new bio" },
+          user: tutor,
+        });
         expect(await cache.tutors.exists()).to.eql(false);
       });
     });
   });
 
-  describe.skip("GET /api/v1/user/tutor/list/uncontacted", () => {
+  describe("GET /api/v1/user/tutor/list/uncontacted", () => {
     beforeEach(async () => {
       await db.flush();
+      await cache.flush();
     });
 
-    it("should successfully retrieve list of tutors with which the student has not chat room yet.", async () => {
-      const studentApi = await Api.forStudent();
-      const student = (await studentApi.findCurrentUser()).user;
+    it("should successfully retrieve list of tutors with which the student has no chat room yet.", async () => {
+      const student = await db.student();
 
       const mockTutors = await Promise.all(range(0, 5).map(() => db.tutor()));
 
       await db.room([student.id, mockTutors[0].id]);
       await db.room([student.id, mockTutors[1].id]);
 
-      const res = await studentApi.api.user.findUncontactedTutors();
+      const res = await findUncontactedTutors({ user: student });
+      const body = res.body as ITutor.FindFullUncontactedTutorsApiResponse;
 
-      expect(res.total).to.eq(3);
-      expect(res.list).to.have.length(3);
+      expect(body.total).to.eq(3);
+      expect(body.list).to.have.length(3);
     });
 
     it("should respond with forbidden in case the requester is not a student.", async () => {
-      const tutorApi = await Api.forTutor();
-      const res = await safe(async () =>
-        tutorApi.api.user.findUncontactedTutors()
-      );
+      const tutor = await db.user({ role: IUser.Role.Tutor });
+      const res = await findUncontactedTutors({ user: tutor });
       expect(res).to.deep.eq(forbidden());
     });
   });
 
-  describe.skip("/api/v1/user/tutor/info/:tutorId", () => {
-    beforeAll(async () => {
-      await cache.connect();
-    });
-
-    afterAll(async () => {
-      await cache.disconnect();
-    });
-
+  describe("/api/v1/user/tutor/info/:tutorId", () => {
     beforeEach(async () => {
       await db.flush();
       await cache.flush();
@@ -337,6 +293,7 @@ describe("/api/v1/user/", () => {
     it("should retrieve tutor info successfully", async () => {
       const newUser = await db.user({ role: Role.SuperAdmin });
       const newTutor = await db.tutor();
+      const studio = await db.user({ role: Role.Studio });
 
       const mockData = {
         about: faker.lorem.paragraphs(),
@@ -346,21 +303,26 @@ describe("/api/v1/user/", () => {
         video: "/video.mp4",
         thumbnail: "/thumbnail.jpg",
         notice: 10,
+        studioId: studio.id,
       };
 
       await users.update(newTutor.id, {
         verifiedEmail: true,
         verifiedPhone: true,
-        // NOTE: image is not in tutors table.
         image: "/image.jpg",
         phone: "01012345678",
+        city: IUser.City.Giza,
       });
       await tutors.update(newTutor.id, mockData);
 
-      const studentApi = await Api.forStudent();
-      const res = await studentApi.api.user.findTutorInfo(newTutor.id);
+      const student = await db.student();
+      const res = await findTutorInfo({
+        user: student,
+        params: { tutorId: newTutor.id },
+      });
+      const body = res.body as ITutor.FindTutorInfoApiResponse;
 
-      expect(res.id).to.eq(newTutor.id);
+      expect(body.id).to.eq(newTutor.id);
     });
 
     it("should retrieve tutor info from db, in case it's not in the cache, and then save it in the cache.", async () => {
@@ -368,6 +330,7 @@ describe("/api/v1/user/", () => {
 
       const newUser = await db.user({ role: Role.SuperAdmin });
       const newTutor = await db.tutor();
+      const studio = await db.user({ role: Role.Studio });
 
       const mockData = {
         about: faker.lorem.paragraphs(),
@@ -377,77 +340,84 @@ describe("/api/v1/user/", () => {
         video: "/video.mp4",
         thumbnail: "/thumbnail.jpg",
         notice: 10,
+        studioId: studio.id,
       };
 
       await users.update(newTutor.id, {
         verifiedEmail: true,
         verifiedPhone: true,
-        // NOTE: image is not in tutors table.
         image: "/image.jpg",
         phone: "01012345678",
+        city: IUser.City.Giza,
       });
       await tutors.update(newTutor.id, mockData);
 
-      const studentApi = await Api.forStudent();
+      const student = await db.student();
       // this shall save tutor in cache if not found
-      const res = await studentApi.api.user.findTutorInfo(newTutor.id);
+      const res = await findTutorInfo({
+        user: student,
+        params: { tutorId: newTutor.id },
+      });
+      const body = res.body as ITutor.FindTutorInfoApiResponse;
 
       // ensure data is saved and can be retrieved from the cache
       expect(await cache.tutors.exists()).to.eq(true);
-      expect(first(await cache.tutors.getAll())?.id).to.eq(res.id);
+      expect(first(await cache.tutors.getAll())?.id).to.eq(body.id);
     });
 
     it("should response with 404 in case tutor is not onboard", async () => {
       const newTutor = await db.tutor();
-
-      const studentApi = await Api.forStudent();
-      const res = await safe(async () =>
-        studentApi.api.user.findTutorInfo(newTutor.id)
-      );
-
-      expect(res).to.be.deep.eq(notfound.tutor());
+      const student = await db.student();
+      const res = await findTutorInfo({
+        user: student,
+        params: { tutorId: newTutor.id },
+      });
+      expect(res).to.deep.eq(notfound.tutor());
     });
   });
 
-  describe.skip("GET /api/v1/user/tutor/stats/personalized", () => {
+  describe("GET /api/v1/user/tutor/stats/personalized", () => {
     beforeEach(async () => {
       await db.flush();
     });
 
     it("should retrieve tutor stats by current logged-in user id.", async () => {
-      const tutorApi = await Api.forTutor();
-      const tutor = await tutorApi.findCurrentUser();
+      const admin = await db.user({ role: Role.SuperAdmin });
+      const tutor = await db.tutor();
+      const studio = await db.user({ role: Role.Studio });
 
       // make the tutor onboard
-      await tutors.update(tutor.user.id, {
+      await tutors.update(tutor.id, {
         about: faker.lorem.paragraphs(),
         bio: faker.person.bio(),
         activated: true,
-        activatedBy: tutor.user.id,
+        activatedBy: admin.id,
         video: "/video.mp4",
         thumbnail: "/thumbnail.jpg",
         notice: 10,
+        studioId: studio.id,
       });
-      await users.update(tutor.user.id, {
+      await users.update(tutor.id, {
+        name: "Sara",
+        gender: IUser.Gender.Female,
         verifiedEmail: true,
         verifiedPhone: true,
         image: "/image.jpg",
-        gender: IUser.Gender.Female,
-        name: "Sara",
         phone: "01112223334",
+        city: IUser.City.Giza,
       });
 
       // defining slots
       const slot1 = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: dayjs.utc().subtract(2, "days").toISOString(),
       });
       const slot2 = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: dayjs.utc().add(2, "days").toISOString(),
       });
       const slot3 = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: dayjs.utc().add(3, "days").toISOString(),
       });
 
@@ -455,38 +425,39 @@ describe("/api/v1/user/", () => {
       const students = await db.students(3);
 
       const { lesson: lesson1 } = await db.lesson({
-        tutor: tutor.user.id,
+        tutor: tutor.id,
         student: students[0].id,
         slot: slot1.id,
         start: slot1.start,
       });
 
       await db.lesson({
-        tutor: tutor.user.id,
+        tutor: tutor.id,
         student: students[1].id,
         slot: slot2.id,
       });
 
       await db.lesson({
-        tutor: tutor.user.id,
+        tutor: tutor.id,
         student: students[2].id,
         slot: slot3.id,
         canceled: true, // should not be counted
       });
 
-      const res = await tutorApi.api.user.findPersonalizedTutorStats();
+      const user = (await users.findById(tutor.id))!;
+      expect(user).to.not.be.null;
+      const res = await findPersonalizedTutorStats({ user });
+      const body = res.body as ITutor.FindPersonalizedTutorStatsApiResponse;
 
-      expect(res.studentCount).to.eq(2);
-      expect(res.completedLessonCount).to.eq(1);
-      expect(res.totalLessonCount).to.eq(2);
-      expect(res.totalTutoringTime).to.eq(lesson1.duration);
+      expect(body.studentCount).to.eq(2);
+      expect(body.completedLessonCount).to.eq(1);
+      expect(body.totalLessonCount).to.eq(2);
+      expect(body.totalTutoringTime).to.eq(lesson1.duration);
     });
 
     it("should respond with forbidden if the user is not a tutor.", async () => {
-      const studentApi = await Api.forStudent();
-      const res = await safe(async () =>
-        studentApi.api.user.findPersonalizedTutorStats()
-      );
+      const student = await db.student();
+      const res = await findPersonalizedTutorStats({ user: student });
       expect(res).to.deep.eq(forbidden());
     });
   });
@@ -772,52 +743,53 @@ describe("/api/v1/user/", () => {
       expect(sample.image).to.not.be.undefined;
     });
 
-  it("should successfully upload and drop user assets", async () => {
-    const admin = await db.user({ role: IUser.Role.SuperAdmin });
-    const studio = await db.user({ role: IUser.Role.Studio });
-    const tutor = await db.tutor({}, { studioId: studio.id });
+    it("should successfully upload and drop user assets", async () => {
+      const admin = await db.user({ role: IUser.Role.SuperAdmin });
+      const studio = await db.user({ role: IUser.Role.Studio });
+      const tutor = await db.tutor({}, { studioId: studio.id });
 
-    // update image asset
-    let res = await uploadUserImage({
-      query: { forUser: tutor.id },
-      files: {
-        [IUser.AssetFileName.Image]: [getMockFile()],
-      },
-      user: admin,
+      // update image asset
+      let res = await uploadUserImage({
+        query: { forUser: tutor.id },
+        files: {
+          [IUser.AssetFileName.Image]: [getMockFile()],
+        },
+        user: admin,
+      });
+      expect(res.status).to.eq(200);
+
+      // update video and thumbnail assets
+      res = await uploadTutorAssets({
+        query: { tutorId: tutor.id },
+        files: {
+          [IUser.AssetFileName.Image]: [getMockFile()],
+          [IUser.AssetFileName.Video]: [getMockFile()],
+          [IUser.AssetFileName.Thumbnail]: [getMockFile()],
+        },
+        user: studio,
+      });
+      expect(res.status).to.eq(200);
+
+      // ensure that all assets have been updated
+      let updated = await tutors.findById(tutor.id);
+      expect(updated).to.not.be.null;
+      expect(updated?.video).to.not.be.null;
+      expect(updated?.thumbnail).to.not.be.null;
+
+      // Delete all assets
+      res = await update({
+        params: { id: tutor.id },
+        body: { image: null, video: null, thumbnail: null },
+        user: admin,
+      });
+      expect(res.status).to.eq(200);
+
+      // ensure that all assets have been deleted
+      updated = await tutors.findById(tutor.id);
+      expect(updated).to.not.be.null;
+      expect(updated?.image).to.be.null;
+      expect(updated?.video).to.be.null;
+      expect(updated?.thumbnail).to.be.null;
     });
-    expect(res.status).to.eq(200);
-
-    // update video and thumbnail assets
-    res = await uploadTutorAssets({
-      query: { tutorId: tutor.id },
-      files: {
-        [IUser.AssetFileName.Image]: [getMockFile()],
-        [IUser.AssetFileName.Video]: [getMockFile()],
-        [IUser.AssetFileName.Thumbnail]: [getMockFile()],
-      },
-      user: studio,
-    });
-    expect(res.status).to.eq(200);
-
-    // ensure that all assets have been updated
-    let updated = await tutors.findById(tutor.id);
-    expect(updated).to.not.be.null;
-    expect(updated?.video).to.not.be.null;
-    expect(updated?.thumbnail).to.not.be.null;
-
-    // Delete all assets
-    res = await update({
-      params: { id: tutor.id },
-      body: { image: null, video: null, thumbnail: null },
-      user: admin,
-    });
-    expect(res.status).to.eq(200);
-
-    // ensure that all assets have been deleted
-    updated = await tutors.findById(tutor.id);
-    expect(updated).to.not.be.null;
-    expect(updated?.image).to.be.null;
-    expect(updated?.video).to.be.null;
-    expect(updated?.thumbnail).to.be.null;
   });
 });

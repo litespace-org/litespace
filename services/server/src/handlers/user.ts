@@ -198,45 +198,52 @@ export async function update(req: Request, res: Response, next: NextFunction) {
 
   const targetTutor = await tutors.findById(targetUser.id);
 
-      const {
-        email,
-        name,
-        password,
-        gender,
-        birthYear,
-        image,
-        thumbnail,
-        video,
-        bio,
-        about,
-        notice,
-        phone,
-        city,
-        enabledTelegram,
-        enabledWhatsapp,
-      }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
+  const {
+    email,
+    name,
+    password,
+    gender,
+    birthYear,
+    image,
+    thumbnail,
+    video,
+    bio,
+    about,
+    notice,
+    phone,
+    city,
+    enabledTelegram,
+    enabledWhatsapp,
+  }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
-  // return forbidden if the currentUser is neither admin nor studio and tring to update other user data
-  if (currentUser.id !== targetUser.id && isRegularUser(currentUser))
-    return next(forbidden());
+  // It is forbidden for regular users to update other users.
+  const updatingSelf = currentUser.id === targetUser.id;
+  if (!updatingSelf && isRegularUser(currentUser)) return next(forbidden());
 
-  // return forbidden if the studio is trying to drop user image
-  if (isStudio(currentUser) && image === null) return next(forbidden());
+  // Studios are not allowed to update other users other than tutors (including tutor managers)
+  // Studios can only update image, video, and thumbnail and nothing else.
+  const eligibleStudio =
+    isStudio(currentUser) &&
+    targetTutor &&
+    targetTutor.studioId === currentUser.id &&
+    (image === null || video === null || thumbnail === null);
 
-  // return forbidden if the studio is trying to drop media for an unassociated user
-  if (isStudio(currentUser) && targetTutor?.studioId !== currentUser.id)
-    return next(forbidden());
+  if (isStudio(currentUser) && !eligibleStudio) return next(forbidden());
 
   if (password) {
     const expectedPasswordHash = await users.findUserPasswordHash(
       targetUser.id
     );
 
-    const isValidCurrentPassword =
-      (password.current === null && expectedPasswordHash === null) ||
-      (password.current &&
-        expectedPasswordHash &&
-        isSamePassword(password.current, expectedPasswordHash));
+    const noPassword =
+      password.current === null && expectedPasswordHash === null;
+
+    const samePassword =
+      password.current &&
+      expectedPasswordHash &&
+      isSamePassword(password.current, expectedPasswordHash);
+
+    const isValidCurrentPassword = noPassword || samePassword;
     if (!isValidCurrentPassword) return next(wrongPassword());
 
     const validPassword = isValidPassword(password.new);
@@ -250,26 +257,27 @@ export async function update(req: Request, res: Response, next: NextFunction) {
   if (targetTutor && thumbnail === null && targetTutor.thumbnail)
     s3.drop(targetTutor.thumbnail);
 
-      // Remove assets ids from the database / update user data
-      const updatedUser = await knex.transaction(
-        async (tx: Knex.Transaction) => {
-          const updatePayload = isStudio(currentUser)
-            ? {}
-            : {
-                city,
-                name,
-                gender,
-                birthYear,
-                phone,
-                image,
-                email,
-                // Reset user verification status incase his email updated.
-                verifiedEmail: email ? false : undefined,
-                password: password ? hashPassword(password.new) : undefined,
-                enabledTelegram,
-                enabledWhatsapp,
-              };
-          const user = await users.update(id, updatePayload, tx);
+  // Remove assets ids from the database / update user data
+  const updatedUser = await knex.transaction(async (tx: Knex.Transaction) => {
+    const updatePayload = isStudio(currentUser)
+      ? {
+          image,
+        }
+      : {
+          city,
+          name,
+          gender,
+          birthYear,
+          phone,
+          image,
+          email,
+          // Reset user verification status incase his email updated.
+          verifiedEmail: email ? false : undefined,
+          password: password ? hashPassword(password.new) : undefined,
+          enabledTelegram,
+          enabledWhatsapp,
+        };
+    const user = await users.update(id, updatePayload, tx);
 
     const tutorData =
       bio !== undefined ||

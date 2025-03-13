@@ -76,7 +76,16 @@ export async function user(payload?: Partial<IUser.CreatePayload>) {
     name: payload?.name || faker.internet.username(),
     password: hashPassword(payload?.password || "Password@8"),
     birthYear: payload?.birthYear || faker.number.int({ min: 2000, max: 2024 }),
-    role: payload?.role || (sample(Object.values(IUser.Role)) as IUser.Role),
+    role:
+      payload?.role ||
+      sample([
+        IUser.Role.SuperAdmin,
+        IUser.Role.RegularAdmin,
+        IUser.Role.TutorManager,
+        IUser.Role.Tutor,
+        IUser.Role.Student,
+        IUser.Role.Studio,
+      ])!,
   });
 }
 
