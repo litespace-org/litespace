@@ -2,9 +2,9 @@ import { Env } from "@litespace/types";
 
 export const clients: Record<Env.Client, Record<Env.App, string>> = {
   local: {
-    web: "http://localhost:5173",
-    landing: "http://localhost:3000",
-    dashboard: "http://localhost:5174",
+    web: "http://localhost:3000",
+    landing: "http://localhost:3004",
+    dashboard: "http://localhost:3001",
   },
   staging: {
     web: "https://app.staging.litespace.org",

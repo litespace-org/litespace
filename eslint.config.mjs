@@ -29,6 +29,7 @@ export default [
       "**/apps/dashboard",
       "**/apps/mobile",
       "**/apps/blog",
+      "**/landing/.vercel",
       "**/migrations",
       "**/jest.config.js",
       "**/jest.config.cjs",
@@ -44,7 +45,8 @@ export default [
     compat.extends(
       "eslint:recommended",
       "plugin:@typescript-eslint/recommended",
-      "plugin:react-hooks/recommended"
+      "plugin:react-hooks/recommended",
+      "plugin:storybook/recommended"
     )
   ),
   {
