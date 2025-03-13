@@ -136,6 +136,7 @@
     "./Settings": "./dist/Settings.tsx",
     "./SingleCheck": "./dist/SingleCheck.tsx",
     "./SmsTracking": "./dist/SmsTracking.tsx",
+    "./SocialTelegram": "./dist/SocialTelegram.tsx",
     "./SoundSmall": "./dist/SoundSmall.tsx",
     "./Sound": "./dist/Sound.tsx",
     "./Spinner": "./dist/Spinner.tsx",
