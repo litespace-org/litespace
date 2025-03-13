@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      script: "pnpm start --port 6060",
+      script: "pnpm start",
       name: "landing",
     },
   ],
