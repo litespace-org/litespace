@@ -1,4 +1,4 @@
-import Express from "express";
+import * as ExpressLib from "express";
 import { IUser } from "@litespace/types";
 import db from "@fixtures/db";
 import { ApiContext } from "@/types/api";
@@ -9,6 +9,7 @@ type MockRequest<Body = object, Params = object, Query = object> = {
   params?: Params;
   query?: Query;
   user?: IUser.Self | IUser.Role;
+  files?: Record<string, Express.Multer.File[]> | Express.Multer.File[];
 };
 
 class MockResponse<T> {
@@ -40,9 +41,9 @@ class MockResponse<T> {
 
 export function mockApi<Body = object, Params = object, Query = object>(
   handler: (
-    req: Express.Request,
-    res: Express.Response,
-    next: Express.NextFunction
+    req: ExpressLib.Request,
+    res: ExpressLib.Response,
+    next: ExpressLib.NextFunction
   ) => Promise<void> | void
 ) {
   return async <Response>(
@@ -54,8 +55,8 @@ export function mockApi<Body = object, Params = object, Query = object>(
     const response = new MockResponse<Response>();
     return await new Promise((resolve) => {
       const result = handler(
-        request as unknown as Express.Request,
-        response as unknown as Express.Response,
+        request as unknown as ExpressLib.Request,
+        response as unknown as ExpressLib.Response,
         (next) => resolve(next)
       );
 
