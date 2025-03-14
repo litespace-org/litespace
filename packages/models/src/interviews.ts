@@ -147,6 +147,9 @@ export class Interviews {
     users,
     slots = [],
     canceled,
+    after,
+    before,
+    strict = false,
     tx,
     ...pagination
   }: WithOptionalTx<
@@ -156,6 +159,24 @@ export class Interviews {
       levels?: IInterview.Self["level"][];
       signed?: boolean;
       signers?: number[];
+      /**
+       * Start date time (ISO datetime format)
+       *
+       * All lessons after (or the same as) this date will be included.
+       */
+      after?: string;
+      /**
+       * End date time (ISO datetime format)
+       *
+       * All lessons before (or the same as) this date will be included.
+       */
+      before?: string;
+      /**
+       * When provided with the `before` or `after` flag, it will not
+       * include lessons that are partially out the query time boundaries.
+       * @default false
+       */
+      strict?: boolean;
       /**
        * slots ids to be included in the query result
        */
@@ -192,6 +213,21 @@ export class Interviews {
       baseBuilder.where(this.column("canceled_at"), "IS NOT", null);
     else if (canceled === false)
       baseBuilder.where(this.column("canceled_at"), "IS", null);
+
+    const start = this.column("start");
+    const end = knex.raw("?? + INTERVAL '30 Minutes'", [start]);
+
+    if (after)
+      baseBuilder.where((builder) => {
+        builder.where(start, ">=", dayjs.utc(after).toDate());
+        if (!strict) builder.orWhere(end, ">", dayjs.utc(after).toDate());
+      });
+
+    if (before)
+      baseBuilder.where((builder) => {
+        builder.where(end, "<=", dayjs.utc(before).toDate());
+        if (!strict) builder.orWhere(start, "<", dayjs.utc(before).toDate());
+      });
 
     const total = await countRows(baseBuilder.clone());
 

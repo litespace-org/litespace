@@ -23,6 +23,7 @@ export enum Web {
   VerifyEmail = "/verify-email",
   ForgetPassword = "/forget-password",
   Lesson = "/lesson/:id",
+  Session = "/session",
 }
 
 export enum Landing {

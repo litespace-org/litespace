@@ -3,15 +3,30 @@
   "version": "1.0.0",
   "description": "LiteSpace recording server",
   "scripts": {
-    "guest": "vite-node src/guest/index.ts"
+    "start": "env-cmd node dist/index.js",
+    "prepare": "ts-patch install -s",
+    "build": "tsc -p tsconfig.build.json"
   },
   "keywords": [],
   "author": "LiteSpace Foundation <core@litespace.org>",
   "license": "ISC",
   "dependencies": {
-    "playwright": "^1.48.2"
+    "@litespace/models": "workspace:^",
+    "@litespace/types": "workspace:^",
+    "@litespace/utils": "workspace:^",
+    "@litespace/radio": "workspace:^",
+    "dayjs": "^1.11.13",
+    "node-schedule": "^2.1.1",
+    "playwright": "^1.48.2",
+    "zod": "^3.23.8",
+    "ms": "^2.1.3",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "vite-node": "^2.1.2"
+    "@types/node-schedule": "^2.1.7",
+    "ts-patch": "^3.2.1",
+    "typescript": "^5.4.5",
+    "typescript-transform-paths": "^3.5.2",
+    "env-cmd": "^10.1.0"
   }
 }

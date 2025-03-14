@@ -33,6 +33,7 @@ export class Lesson extends BaseTask {
         before: end.toISOString(),
         ratified: true,
         full: true,
+        strict: true,
       });
 
       await this.sendTelegramMessage(
