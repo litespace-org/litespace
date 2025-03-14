@@ -1,9 +1,9 @@
 import { config } from "@/lib/config";
-import { Telegram, WhatsApp } from "@litespace/radio";
+import { TelegramBot, WhatsApp } from "@litespace/radio";
 
 export class BaseTask {
   constructor(
-    public readonly telegram: Telegram,
+    public readonly telegram: TelegramBot,
     public readonly whatsapp: WhatsApp
   ) {}
 

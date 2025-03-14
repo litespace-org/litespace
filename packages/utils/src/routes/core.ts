@@ -1,5 +1,5 @@
 import { Dashboard, Landing, Web } from "@/routes/route";
-import { Env } from "@litespace/types";
+import { Env, ISession } from "@litespace/types";
 import { clients } from "@/routes/clients";
 
 function isStrictMatch(
@@ -49,51 +49,71 @@ function withQuery<T extends Record<string, string> | string>(
 
 type WithProp<U, T> = U extends U ? U & T : never;
 
+type BaseQuery = Record<string, string> | string;
+
 type BasePayload = {
   /**
-   * Add full url prefix to the provided route e.g., `https://app.litespace.org/t/1`
+   * Add full url prefix with the provided route e.g., `https://app.litespace.org/t/1`
    */
   full?: boolean;
-  query?: Record<string, string> | string;
 };
 
 type GenericPayload = {
   route: Exclude<string, Web | Landing | Dashboard>;
+  query?: BaseQuery;
 };
 
 type WebPayload =
   | {
       route: Web.TutorProfile | Web.Lesson;
       id: number;
+      query?: BaseQuery;
+    }
+  | {
+      route: Web.Session;
+      query: {
+        type: ISession.Type;
+        id: string;
+      };
     }
   | {
       route: Web.Register;
       role: "student" | "tutor";
+      query?: BaseQuery;
     }
   | {
-      route: Exclude<Web, Web.TutorProfile | Web.Lesson | Web.Register>;
+      route: Exclude<
+        Web,
+        Web.TutorProfile | Web.Lesson | Web.Register | Web.Session
+      >;
+      query?: BaseQuery;
     };
 
 type LandingPayload =
   | {
       route: Landing.FaqRole;
       role: "student" | "tutor";
+      query?: BaseQuery;
     }
   | {
       route: Exclude<Landing, Landing.FaqRole>;
+      query?: BaseQuery;
     };
 
 type DashboardPayload =
   | {
       route: Dashboard.User;
       id: number;
+      query?: BaseQuery;
     }
   | {
       route: Dashboard.PhotoSession;
       tutorId: number;
+      query?: BaseQuery;
     }
   | {
       route: Exclude<Dashboard, Dashboard.User>;
+      query?: BaseQuery;
     };
 
 export class RoutesManager {
