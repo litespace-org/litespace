@@ -11,7 +11,7 @@ export const StudentOverview: React.FC = () => {
     <div className="grid gap-4 sm:gap-6 justify-items-start w-full">
       <Typography
         tag="h1"
-        className="text-natural-950 text-body text-subtitle-2 font-bold"
+        className="text-natural-950 text-body md:text-subtitle-2 font-bold"
       >
         {intl("student-dashboard.overview.title")}
       </Typography>

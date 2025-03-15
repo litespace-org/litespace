@@ -10,6 +10,7 @@ import Settings from "@litespace/assets/Settings";
 import Tag from "@litespace/assets/Tag";
 import Video from "@litespace/assets/Video";
 import AccountPromotion from "@litespace/assets/AccountPromotion";
+import TrendUp from "@litespace/assets/TrendUp";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { IUser, Void } from "@litespace/types";
@@ -152,10 +153,24 @@ const Sidebar: React.FC<{
       isActive: match(Web.Subscription),
     };
 
-    if (
-      user?.role === IUser.Role.Tutor ||
-      user?.role === IUser.Role.TutorManager
-    )
+    const invoices = {
+      label: intl("sidebar.invoices"),
+      route: Web.Invoices,
+      Icon: TrendUp,
+      isActive: match(Web.Invoices),
+    };
+
+    if (user?.role === IUser.Role.Tutor)
+      return [
+        dashboard,
+        upcomingLessons,
+        lessonsSchedule,
+        scheduleManagement,
+        chat,
+        invoices,
+      ];
+
+    if (user?.role === IUser.Role.TutorManager)
       return [
         dashboard,
         upcomingLessons,
