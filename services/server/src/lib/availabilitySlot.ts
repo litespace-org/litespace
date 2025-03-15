@@ -20,35 +20,29 @@ export async function deleteSlots({
   tx: Knex.Transaction;
 }): Promise<void> {
   if (isEmpty(ids)) return;
-  const now = dayjs.utc();
-  /**
-   * Get "all (skip the pagination)" lessons that are not canceled and still in
-   * the future (didn't happen yet).
-   */
-  const associatedLessons = await lessons.find({
-    after: now.toISOString(),
-    canceled: false,
+  const slotLessons = await lessons.find({
+    slots: ids,
     full: true,
-    slots: ids,
-    tx,
-  });
-  // TODO: extend `interviews.find` with `after`, `before`, and the `full` params.
-  const associatedInterviews = await interviews.find({
-    slots: ids,
     tx,
   });
 
-  const associatesCount = associatedLessons.total + associatedInterviews.total;
-  if (associatesCount <= 0) return await availabilitySlots.delete(ids, tx);
+  const slotInterviews = await interviews.find({
+    slots: ids,
+    full: true,
+    tx,
+  });
+
+  const count = slotLessons.total + slotInterviews.total;
+  if (count === 0) return await availabilitySlots.delete(ids, tx);
 
   await Promise.all([
     lessons.cancel({
-      ids: associatedLessons.list.map((lesson) => lesson.id),
+      ids: slotLessons.list.map((lesson) => lesson.id),
       canceledBy: userId,
       tx,
     }),
     interviews.cancel({
-      ids: associatedInterviews.list.map((lesson) => lesson.ids.self),
+      ids: slotInterviews.list.map((lesson) => lesson.ids.self),
       canceledBy: userId,
       tx,
     }),
@@ -185,7 +179,7 @@ export async function isValidSlots({
   for (const slot of [...creates, ...updatedSlots]) {
     const start = dayjs.utc(slot.start);
     const end = dayjs.utc(slot.end);
-    if (start.isAfter(end) || start.isSame(end) || start.isBefore(now))
+    if (start.isAfter(end) || start.isSame(end) || end.isBefore(now))
       return "malformed";
   }
 

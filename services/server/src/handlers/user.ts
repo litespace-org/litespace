@@ -384,30 +384,31 @@ async function findTutorInfo(
   res: Response,
   next: NextFunction
 ): Promise<void> {
+  const user = req.user;
   const { tutorId } = withNamedId("tutorId").parse(req.params);
-  const ctutor = await cache.tutors.getOne(tutorId);
+  const cached = await cache.tutors.getOne(tutorId);
 
-  if (ctutor !== null) {
+  if (cached !== null) {
     const response: ITutor.FindTutorInfoApiResponse =
-      await asTutorInfoResponseBody(ctutor);
+      await asTutorInfoResponseBody(cached);
     res.status(200).json(response);
     return;
   }
 
   const tutor = await tutors.findById(tutorId);
   if (!tutor) return next(notfound.tutor());
-  const isAllowed = isOnboard(tutor);
 
-  if (isAllowed) {
-    const ctutor = await joinTutorCache(tutor, null);
-    await cache.tutors.setOne(ctutor);
-    const response: ITutor.FindTutorInfoApiResponse =
-      await asTutorInfoResponseBody(ctutor);
-    res.status(200).json(response);
-    return;
-  }
+  const onboarded = isOnboard(tutor);
+  const owner = isTutor(user) && user.id === tutorId;
+  const allowed = onboarded || owner;
+  if (!allowed) return next(notfound.tutor());
 
-  return next(notfound.tutor());
+  const cacheable = await joinTutorCache(tutor, null);
+  if (onboarded) await cache.tutors.setOne(cacheable);
+
+  const response: ITutor.FindTutorInfoApiResponse =
+    await asTutorInfoResponseBody(cacheable);
+  res.status(200).json(response);
 }
 
 async function findOnboardedTutors(req: Request, res: Response) {

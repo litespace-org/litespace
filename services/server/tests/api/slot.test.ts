@@ -47,7 +47,7 @@ async function genMockData(tutorId: number, datetime: dayjs.Dayjs) {
 
 describe("/api/v1/availability-slot/", () => {
   beforeEach(async () => {
-    await db.flush();
+    return await db.flush();
   });
 
   describe("GET api/v1/availability-slot/:userId", () => {
@@ -166,8 +166,8 @@ describe("/api/v1/availability-slot/", () => {
           actions: [
             {
               type: "create",
-              start: now.subtract(1, "hour").toISOString(),
-              end: now.add(6, "hours").toISOString(),
+              start: now.subtract(2, "hour").toISOString(),
+              end: now.subtract(1, "hours").toISOString(),
             },
           ],
         })

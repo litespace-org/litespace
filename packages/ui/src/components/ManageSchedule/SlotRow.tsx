@@ -6,26 +6,9 @@ import Close from "@litespace/assets/Close";
 import AddCircleFilled from "@litespace/assets/AddCircleFilled";
 import { Typography } from "@/components/Typography";
 import { Select, SelectList } from "@/components/Select";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { getSubSlotsBatch, orderSlots } from "@litespace/utils";
-
-const variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.3 } },
-};
-
-const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <motion.div
-      variants={variants}
-      initial="hidden"
-      animate="visible"
-      exit="hidden"
-    >
-      {children}
-    </motion.div>
-  );
-};
+import { Button } from "@/components/Button";
 
 const SlotRow: React.FC<{
   freeSubSlots: IAvailabilitySlot.SubSlot[];
@@ -47,13 +30,10 @@ const SlotRow: React.FC<{
   onToChange,
 }) => {
   const intl = useFormatMessage();
-  const now = useMemo(() => dayjs(), []);
 
   const subslots = useMemo(() => {
-    return orderSlots(getSubSlotsBatch(freeSubSlots, 30), "asc").filter(
-      (slot) => now.isBefore(slot.start) // include future slots only
-    );
-  }, [freeSubSlots, now]);
+    return orderSlots(getSubSlotsBatch(freeSubSlots, 30), "asc");
+  }, [freeSubSlots]);
 
   const earliestStart = useMemo(() => {
     if (!end) return;
@@ -104,9 +84,9 @@ const SlotRow: React.FC<{
   }, [farthestEnd, start, subslots]);
 
   return (
-    <div className="flex items-center gap-6 w-[400px]">
-      <div className="flex items-center justify-center gap-4">
-        <div className="w-[136px]">
+    <div className="flex items-center gap-1 lg:gap-6 lg:w-full">
+      <div className="w-full flex items-center justify-center md:justify-start gap-2 lg:gap-4">
+        <div className="w-full min-w-[76px] lg:min-w-[135px]">
           <Select
             value={start}
             options={fromOptions}
@@ -119,7 +99,7 @@ const SlotRow: React.FC<{
         <Typography tag="span" className="text-natural-500 text-base font-bold">
           -
         </Typography>
-        <div className="w-[136px]">
+        <div className="w-full min-w-[76px] lg:min-w-[135px]">
           <Select
             value={end}
             options={toOptions}
@@ -131,24 +111,24 @@ const SlotRow: React.FC<{
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <AnimatePresence initial={false}>
-          {remove ? (
-            <Animate key="remove">
-              <button type="button" onClick={remove}>
-                <Close />
-              </button>
-            </Animate>
-          ) : null}
+      <div className="flex gap-1 lg:gap-2">
+        <motion.div style={{ visibility: remove ? "visible" : "hidden" }}>
+          <Button
+            size="small"
+            variant="tertiary"
+            onClick={remove}
+            startIcon={<Close className="icon" />}
+          />
+        </motion.div>
 
-          {add ? (
-            <Animate key="add">
-              <button type="button" className="w-6 h-6" onClick={add}>
-                <AddCircleFilled />
-              </button>
-            </Animate>
-          ) : null}
-        </AnimatePresence>
+        <motion.div
+          className="flex items-center justify-center"
+          style={{ visibility: add ? "visible" : "hidden" }}
+        >
+          <button type="button" onClick={add}>
+            <AddCircleFilled className="w-4 h-4 lg:w-6 lg:h-6 [&>*]:fill-brand-700" />
+          </button>
+        </motion.div>
       </div>
     </div>
   );
