@@ -19,17 +19,22 @@ export async function withImageUrl<
         video: string | null;
         thumbnail: string | null;
       },
->(user: T) {
-  const cloned = structuredClone(user);
+>(data: T) {
+  const cloned = structuredClone(data);
 
-  if ("image" in cloned && cloned.image)
-    cloned.image = await s3.get(cloned.image);
+  const imageId = "image" in cloned && cloned.image;
+  const videoId = "video" in cloned && cloned.video;
+  const thumbnailId = "thumbnail" in cloned && cloned.thumbnail;
 
-  if ("video" in cloned && cloned.video)
-    cloned.video = await s3.get(cloned.video);
+  const [imageUrl, videoUrl, thumbnailUrl] = await Promise.all([
+    imageId ? s3.get(imageId) : null,
+    videoId ? s3.get(videoId) : null,
+    thumbnailId ? s3.get(thumbnailId) : null,
+  ]);
 
-  if ("thumbnail" in cloned && cloned.thumbnail)
-    cloned.thumbnail = await s3.get(cloned.thumbnail);
+  if (imageId && imageUrl) cloned.image = imageUrl;
+  if (videoId && videoUrl) cloned.video = videoUrl;
+  if (thumbnailId && thumbnailUrl) cloned.thumbnail = thumbnailUrl;
 
   return cloned;
 }
