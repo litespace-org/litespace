@@ -2,7 +2,7 @@ import { parentPort } from "node:worker_threads";
 import { WorkerMessage } from "@/workers/types";
 import { IToken } from "@litespace/types";
 import {
-  insertEventRecord,
+  createSessionEvent,
   sendAuthTokenEmail,
   updateTutorCache,
 } from "@/workers/handlers";
@@ -29,5 +29,5 @@ parentPort?.on("message", async ({ type, payload }: WorkerMessage) => {
   }
 
   if (type === "update-tutor-cache") return await updateTutorCache(payload);
-  if (type === "insert-event-record") return await insertEventRecord(payload);
+  if (type === "create-session-event") return await createSessionEvent(payload);
 });

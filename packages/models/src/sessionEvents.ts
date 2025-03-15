@@ -5,15 +5,14 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 
 export class SessionEvents {
-  table = "events";
+  table = "session_events";
 
   async create(
     event: ISessionEvent.CreatePayload,
-    tx: Knex.Transaction
+    tx?: Knex.Transaction
   ): Promise<ISessionEvent.Self> {
     const now = dayjs.utc().toDate();
-    const rows = await knex<ISessionEvent.Row>(this.table)
-      .transacting(tx)
+    const rows = await this.builder(tx)
       .insert({
         type: event.type,
         user_id: event.userId,

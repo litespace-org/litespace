@@ -2,7 +2,7 @@ import { cache } from "@/lib/cache";
 import { canAccessSession } from "@/lib/session";
 import { isGhost, isUser } from "@litespace/auth";
 import { asSessionId, isSessionId, logger, safe } from "@litespace/utils";
-import { IEvent, Wss } from "@litespace/types";
+import { ISessionEvent, Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { asSessionRoomId } from "@/wss/utils";
 
@@ -89,10 +89,11 @@ export class Session extends WssHandler {
         return this.call(callback, { code: Wss.AcknowledgeCode.Unallowed });
 
       sendBackgroundMessage({
-        type: "insert-event-record",
+        type: "create-session-event",
         payload: {
-          type: IEvent.EventType.UserJoined,
+          type: ISessionEvent.EventType.UserJoined,
           userId: user.id,
+          sessionId,
         },
       });
 
@@ -126,17 +127,18 @@ export class Session extends WssHandler {
       if (isGhost(user)) return;
 
       sendBackgroundMessage({
-        type: "insert-event-record",
+        type: "create-session-event",
         payload: {
-          type: IEvent.EventType.UserLeft,
+          type: ISessionEvent.EventType.UserLeft,
           userId: user.id,
+          sessionId,
         },
       });
 
       // remove user from the session by removing its id from the cache
       await cache.session.removeMember({
         userId: user.id,
-        sessionId: asSessionId(sessionId),
+        sessionId,
       });
 
       // notify members that a member has left the session

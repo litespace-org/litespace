@@ -1,4 +1,4 @@
-import { ISession } from ".";
+import { ISession } from "@/index";
 
 export enum EventType {
   UserJoined = 1,

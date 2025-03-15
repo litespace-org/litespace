@@ -1,4 +1,4 @@
-import { IEvent } from "@litespace/types";
+import { ISessionEvent, ISession } from "@litespace/types";
 
 export type WorkerMessage =
   | {
@@ -14,10 +14,11 @@ export type WorkerMessage =
       payload: { tutorId: number };
     }
   | {
-      type: "insert-event-record";
+      type: "create-session-event";
       payload: {
-        type: IEvent.EventType;
+        type: ISessionEvent.EventType;
         userId: number;
+        sessionId: ISession.Id;
       };
     };
 

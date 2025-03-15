@@ -112,5 +112,5 @@
       "protobufjs"
     ]
   },
-  "packageManager": "pnpm@10.6.1+sha256.81204845a396962a9c4b49cc2d6cafbb49a758652d3c243f2128cbc638084fe2"
+  "packageManager": "pnpm@10.6.3+sha256.bc1efe92ee4d40b1a7a644e5ca9e1855c5c5eafc6b1512f9017b31b9245419db"
 }
