@@ -218,7 +218,7 @@ const Sidebar: React.FC<{
         to={Web.Root}
         className="flex justify-start md:justify-center lg:justify-start items-center gap-1 md:gap-2"
       >
-        <Logo className="h-6 md:h-10 md:w-10 md:my-[5px] lg:my-0" />
+        <Logo className=" h-6 md:h-10 md:w-10 md:my-[5px] lg:my-0" />
         {lg || !md ? (
           <Typography
             tag="h1"
