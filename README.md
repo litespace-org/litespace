@@ -111,5 +111,6 @@ Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker
 | API server           | services/server    | 4000 |
 | Peer server          | services/server    | 4001 |
 | Messenger            | services/messenger | 4002 |
+| Apollo               | services/apollo    | 4003 |
 | PostgreSQL           | System             | 5432 |
 | Redis                | System             | 6379 |
