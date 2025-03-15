@@ -19,3 +19,5 @@ export {
 } from "@/components/Invoices/Fields";
 
 export * as Admin from "@/components/Invoices/Admin";
+
+export { InvoicesTable } from "@/components/Invoices/InvoicesTable/InvoicesTable";
