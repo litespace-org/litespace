@@ -11,6 +11,7 @@ import {
   tutors,
   availabilitySlots,
   contactRequests,
+  sessionEvents,
 } from "@litespace/models";
 import {
   IInterview,
@@ -36,6 +37,7 @@ dayjs.extend(utc);
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
     await messages.builder(tx).del();
@@ -74,7 +76,7 @@ export async function user(payload?: Partial<IUser.CreatePayload>) {
     name: payload?.name || faker.internet.username(),
     password: hashPassword(payload?.password || faker.internet.password()),
     birthYear: payload?.birthYear || faker.number.int({ min: 2000, max: 2024 }),
-    role: payload?.role || sample(Object.values(IUser.Role))!,
+    role: payload?.role || (sample(Object.values(IUser.Role)) as IUser.Role),
   });
 }
 

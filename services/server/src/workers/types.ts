@@ -1,3 +1,5 @@
+import { ISessionEvent, ISession } from "@litespace/types";
+
 export type WorkerMessage =
   | {
       type: "send-user-verification-email" | "send-forget-password-email";
@@ -10,6 +12,14 @@ export type WorkerMessage =
   | {
       type: "update-tutor-cache";
       payload: { tutorId: number };
+    }
+  | {
+      type: "create-session-event";
+      payload: {
+        type: ISessionEvent.EventType;
+        userId: number;
+        sessionId: ISession.Id;
+      };
     };
 
 export type WorkerMessageType = WorkerMessage["type"];

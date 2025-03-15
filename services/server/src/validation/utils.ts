@@ -10,6 +10,7 @@ import {
   IInvoice,
   banks,
   IFilter,
+  ISession,
 } from "@litespace/types";
 import zod from "zod";
 
@@ -17,10 +18,11 @@ export const id = zod.coerce.number({ message: "Invalid id" }).positive();
 
 export const ids = zod.array(id);
 
-export const sessionId = zod
-  .string()
-  .startsWith("lesson:")
-  .or(zod.string().startsWith("interview:"));
+export const sessionId = zod.custom<ISession.Id>(
+  (value) =>
+    typeof value === "string" &&
+    (value.startsWith("lesson:") || value.startsWith("interview:"))
+);
 
 export const password = zod
   .string({ message: "Invalid password" })
