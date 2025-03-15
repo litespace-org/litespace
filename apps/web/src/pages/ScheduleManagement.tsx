@@ -9,7 +9,8 @@ import { useUserContext } from "@litespace/headless/context/user";
 
 import { AvailabilitySlotProps, Calendar } from "@litespace/ui/Calendar";
 import { DeleteSlotDialog } from "@litespace/ui/DeleteSlotDialog";
-import { ManageSchedule, MobileDaySlots } from "@litespace/ui/ManageSchedule";
+import { ManageSchedule } from "@litespace/ui/ManageSchedule";
+import { SlotsList } from "@litespace/ui/SlotsList";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
@@ -20,16 +21,13 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { IAvailabilitySlot } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isEmpty } from "lodash";
+import { useCalendarController } from "@/hooks/calendar";
 
 const ScheduleManagement: React.FC = () => {
-  const { md, lg } = useMediaQuery();
+  const { md } = useMediaQuery();
   const { user } = useUserContext();
-  const [date, setDate] = useState(
-    () =>
-      lg || !md
-        ? dayjs().startOf("week")
-        : dayjs().subtract(1, "day").startOf("day") // So the 4 represented days in tablet mood start from yesterday not today.
-  );
+  const { start, end, next, prev } = useCalendarController();
+
   const toast = useToast();
   const intl = useFormatMessage();
 
@@ -40,7 +38,7 @@ const ScheduleManagement: React.FC = () => {
     open: boolean;
   }>({
     initialSlots: [],
-    date: date.toISOString(),
+    date: start.toISOString(),
     singleDay: false,
     open: false,
   });
@@ -57,22 +55,16 @@ const ScheduleManagement: React.FC = () => {
 
   const slotsQuery = useFindAvailabilitySlots({
     userId: user?.id || 0,
-    after: date.toISOString(),
-    before:
-      lg || !md
-        ? date.add(1, "week").toISOString()
-        : date.add(4, "days").toISOString(),
+    after: start.toISOString(),
+    before: end.toISOString(),
     full: true,
   });
 
   const lessonsQuery = useInfiniteLessons({
     users: user ? [user.id] : [],
     userOnly: true,
-    after: date.toISOString(),
-    before:
-      lg || !md
-        ? date.add(1, "week").toISOString()
-        : date.add(4, "days").toISOString(),
+    after: start.toISOString(),
+    before: end.toISOString(),
     full: true,
   });
 
@@ -86,10 +78,9 @@ const ScheduleManagement: React.FC = () => {
     },
     onError(error) {
       capture(error);
-      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("manage-schedule.update.error"),
-        description: errorMessage,
+        description: intl(getErrorMessageId(error)),
       });
     },
   });
@@ -132,10 +123,10 @@ const ScheduleManagement: React.FC = () => {
   useEffect(() => {
     setManageScheduleProps((prev) => ({
       ...prev,
-      date: date.toISOString(),
+      date: start.toISOString(),
       initialSlots: calendarSlots,
     }));
-  }, [date, calendarSlots]);
+  }, [calendarSlots, start]);
 
   const onEdit = useCallback(
     (slotInfo: IAvailabilitySlot.Slot) =>
@@ -167,17 +158,10 @@ const ScheduleManagement: React.FC = () => {
     <div className="w-full p-4 lg:p-6 mx-auto max-w-screen-3xl">
       <div className="mb-8">
         <Header
-          date={date}
-          nextWeek={() =>
-            lg || !md
-              ? setDate((prev) => prev.add(1, "week"))
-              : setDate((prev) => prev.add(4, "days"))
-          }
-          prevWeek={() =>
-            lg || !md
-              ? setDate((prev) => prev.subtract(1, "week"))
-              : setDate((prev) => prev.subtract(4, "days"))
-          }
+          start={start}
+          end={end}
+          next={next}
+          prev={prev}
           manageSchedule={() =>
             setManageScheduleProps((prev) => ({
               ...prev,
@@ -193,16 +177,8 @@ const ScheduleManagement: React.FC = () => {
         initialSlots={manageScheduleProps.initialSlots}
         date={manageScheduleProps.date}
         open={manageScheduleProps.open}
-        nextWeek={() =>
-          lg || !md
-            ? setDate((prev) => prev.add(1, "week"))
-            : setDate((prev) => prev.add(4, "days"))
-        }
-        prevWeek={() =>
-          lg || !md
-            ? setDate((prev) => prev.subtract(1, "week"))
-            : setDate((prev) => prev.subtract(5, "days"))
-        }
+        next={next}
+        prev={prev}
         save={(actions) => mutateSlots.mutate(actions)}
         retry={() => slotsQuery.refetch()}
         close={() =>
@@ -238,8 +214,7 @@ const ScheduleManagement: React.FC = () => {
 
       {md ? (
         <Calendar
-          key="calendar"
-          date={date}
+          date={start}
           slots={calendarSlots}
           slotActions={{ onEdit, onDelete }}
           loading={slotsQuery.isFetching}
@@ -249,8 +224,8 @@ const ScheduleManagement: React.FC = () => {
       ) : null}
 
       {!md ? (
-        <MobileDaySlots
-          day={date}
+        <SlotsList
+          day={start}
           slots={calendarSlots}
           slotActions={{ onEdit, onDelete }}
           loading={slotsQuery.isFetching}

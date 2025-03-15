@@ -43,8 +43,8 @@ const render = (props: Props) => {
     <ManageSchedule
       {...props}
       date={date.toISOString()}
-      nextWeek={() => setDate(date.add(7, "days"))}
-      prevWeek={() => setDate(date.subtract(7, "days"))}
+      next={() => setDate(date.add(7, "days"))}
+      prev={() => setDate(date.subtract(7, "days"))}
     />
   );
 };
@@ -195,8 +195,8 @@ export const Simulated: Story = {
         initialSlots={initialSlots}
         loading={loading}
         date={date.toISOString()}
-        nextWeek={() => setDate(date.add(7, "days"))}
-        prevWeek={() => setDate(date.subtract(7, "days"))}
+        next={() => setDate(date.add(7, "days"))}
+        prev={() => setDate(date.subtract(7, "days"))}
       />
     );
   },

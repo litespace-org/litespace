@@ -1,7 +1,7 @@
 import { IAvailabilitySlot, IFilter, Paginated } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
-import { first, isEmpty } from "lodash";
+import { first, isEmpty, isUndefined } from "lodash";
 import {
   knex,
   column,
@@ -194,7 +194,7 @@ export class AvailabilitySlots {
           .orWhere(start, "<", dayjs.utc(before).toDate());
       });
 
-    if (deleted) builder.where(this.column("deleted"), deleted);
+    if (!isUndefined(deleted)) builder.where(this.column("deleted"), deleted);
 
     return builder;
   }

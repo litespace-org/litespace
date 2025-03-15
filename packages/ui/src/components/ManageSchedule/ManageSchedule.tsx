@@ -25,8 +25,8 @@ export type Props = {
   error?: boolean;
   retry: Void;
   date: string;
-  nextWeek: Void;
-  prevWeek: Void;
+  next: Void;
+  prev: Void;
   /**
    * `true` in case user is about to manage a single-day slots.
    * the data at the `date` prop will be taken as the desired date.
@@ -76,8 +76,8 @@ export const ManageSchedule: React.FC<Props> = ({
   initialSlots,
   saving,
   singleDay,
-  nextWeek,
-  prevWeek,
+  next,
+  prev,
   retry,
   save,
   close,
@@ -102,11 +102,6 @@ export const ManageSchedule: React.FC<Props> = ({
   }, [date, singleDay, slots, weekStart]);
 
   const today = useMemo(() => dayjs(), []);
-
-  const isCurrentWeek = useMemo(
-    () => today.isBetween(weekStart, weekStart.add(1, "week")),
-    [weekStart, today]
-  );
 
   useEffect(() => {
     setSlots((prev) => {
@@ -225,22 +220,20 @@ export const ManageSchedule: React.FC<Props> = ({
           {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
         </Typography>
       }
-      className="overflow-y-auto !rounded-t-2xl lg:!rounded-[32px] sm:!p-4 lg:!p-6 w-full md:w-auto lg:w-[565px]"
+      className="overflow-y-auto w-full md:w-[565px]"
       position={md ? "center" : "bottom"}
     >
       {!singleDay ? (
         <div className="pt-4 lg:pt-6 pb-4">
           <div className="flex items-center justify-center gap-4 mb-4 lg:mb-6">
-            {!isCurrentWeek ? (
-              <button
-                type="button"
-                onClick={prevWeek}
-                disabled={loading}
-                className="disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
-              </button>
-            ) : null}
+            <button
+              type="button"
+              onClick={prev}
+              disabled={loading}
+              className="disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
+            </button>
 
             <Typography
               tag="span"
@@ -253,7 +246,7 @@ export const ManageSchedule: React.FC<Props> = ({
 
             <button
               type="button"
-              onClick={nextWeek}
+              onClick={next}
               disabled={loading}
               className="disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -310,7 +303,7 @@ export const ManageSchedule: React.FC<Props> = ({
 
           {!loading && !error ? (
             <Animate key="days">
-              <div className="flex flex-col gap-4 lg:gap-8 overflow-y-auto scrollbar-thin max-w-[450px] lg:max-w-none mx-auto md:m-0">
+              <div className="flex flex-col gap-4 overflow-y-auto scrollbar-thin w-full">
                 {days.map(({ day, slots }) => {
                   const iso = day.toISOString();
                   const isDisabled = saving || day.isBefore(today, "day");
