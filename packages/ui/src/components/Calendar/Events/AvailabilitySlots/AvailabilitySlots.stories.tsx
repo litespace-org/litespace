@@ -23,7 +23,6 @@ export const OneMember: StoryObj<Component> = {
     id: 1,
     start: dayjs().toISOString(),
     end: dayjs().add(1, "hours").toISOString(),
-    mt: 0,
     members: [
       {
         id: 1,
@@ -40,7 +39,6 @@ export const ManyMembers: StoryObj<Component> = {
     id: 2,
     start: dayjs().toISOString(),
     end: dayjs().add(3, "hours").toISOString(),
-    mt: 0,
     members: [
       {
         id: 2,
@@ -62,7 +60,6 @@ export const TooManyMembers: StoryObj<Component> = {
     id: 2,
     start: dayjs().toISOString(),
     end: dayjs().add(6, "hours").toISOString(),
-    mt: 0,
     members: [
       {
         id: 2,

@@ -1,4 +1,4 @@
-import { range } from "lodash";
+import { isEmpty, range } from "lodash";
 import React, { useMemo } from "react";
 import { DAYS_IN_WEEK, HOUR_HEIGHT } from "@/components/Calendar/constants";
 import { Dayjs } from "dayjs";
@@ -24,19 +24,20 @@ export const WeekTable: React.FC<{
   lessonActions?: LessonActions;
   slots?: AvailabilitySlotProps[];
   slotActions?: SlotActions;
-}> = ({ day, lessons, lessonActions, slots, slotActions }) => {
-  const { md, lg } = useMediaQuery();
+}> = ({ day, lessons = [], lessonActions, slots = [], slotActions }) => {
+  const { md, xxl } = useMediaQuery();
 
   const week = useMemo(() => {
     const weekStart = day;
-    return range(lg || !md ? DAYS_IN_WEEK : TABLET_COLUMNS_NUM).map((day) => {
+    const columns = xxl || !md ? DAYS_IN_WEEK : TABLET_COLUMNS_NUM;
+    return range(columns).map((day) => {
       const dayStart = weekStart.add(day, "day").startOf("day");
       const hours = range(HOURS_IN_DAY).map((hour) =>
         dayStart.add(hour, "hour")
       );
       return { day: dayStart, hours };
     });
-  }, [day, md, lg]);
+  }, [day, xxl, md]);
 
   return (
     <>
@@ -75,7 +76,7 @@ export const WeekTable: React.FC<{
                     )}
                     style={{ height: HOUR_HEIGHT }}
                   >
-                    {lessons ? (
+                    {!isEmpty(lessons) ? (
                       <LessonSlot
                         lessons={lessons.filter((lesson) =>
                           hour.isSame(lesson.start)
@@ -86,21 +87,13 @@ export const WeekTable: React.FC<{
                   </div>
                 );
               })}
-            </div>
 
-            {slots
-              ? slots
-                  .filter((slot) =>
-                    dayjs(slot.start).startOf("day").isSame(day)
-                  )
-                  .map((slot) => {
-                    return (
-                      <div key={slot.id} className="absolute w-full h-full p-1">
-                        <AvailabilitySlot {...slot} {...slotActions} />
-                      </div>
-                    );
-                  })
-              : null}
+              {slots
+                .filter((slot) => dayjs(slot.start).startOf("day").isSame(day))
+                .map((slot) => (
+                  <AvailabilitySlot key={slot.id} {...slot} {...slotActions} />
+                ))}
+            </div>
           </div>
         );
       })}

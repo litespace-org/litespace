@@ -35,7 +35,7 @@ export const Calendar: React.FC<Props> = ({
   error,
   retry,
 }) => {
-  const { lg } = useMediaQuery();
+  const { xxl } = useMediaQuery();
   const intl = useFormatMessage();
 
   if (loading)
@@ -60,12 +60,7 @@ export const Calendar: React.FC<Props> = ({
     );
 
   return (
-    <div
-      className={cn(
-        "w-full h-full overflow-x-auto",
-        "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
-      )}
-    >
+    <div>
       <div
         className={cn(
           "w-full flex bg-natural-50 border border-natural-300",
@@ -76,7 +71,7 @@ export const Calendar: React.FC<Props> = ({
         <div
           className={cn(
             "grid w-full rounded-tl-2xl",
-            lg ? "grid-cols-7" : "grid-cols-4"
+            xxl ? "grid-cols-7" : "grid-cols-4"
           )}
         >
           <WeekTable

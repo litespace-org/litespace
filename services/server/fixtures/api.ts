@@ -63,7 +63,7 @@ export class Api {
       callbackUrl: payload?.callbackUrl || faker.internet.url(),
       email: payload?.email || faker.internet.email(),
       password: payload?.password || faker.internet.password(),
-      role: payload?.role || sample(Object.values(IUser.Role))!,
+      role: payload?.role || (sample(Object.values(IUser.Role)) as IUser.Role),
     });
   }
 

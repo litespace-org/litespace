@@ -85,6 +85,7 @@ async function find(req: Request, res: Response, next: NextFunction) {
     page,
     size,
     full,
+    deleted: false,
   });
 
   // NOTE: return only-slots only if the user is a tutor

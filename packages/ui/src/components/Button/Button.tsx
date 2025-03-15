@@ -116,10 +116,10 @@ export const Button: React.FC<{
         // Border & Focus
         // TODO: add `primary` variant borders.
         {
-          "border focus-visible:outline-[2px] focus-visible:outline-secondary-600":
+          border: is.primary || is.secondary,
+          "focus-visible:outline-[2px] focus-visible:outline-secondary-600":
             is.primary || is.secondary || is.tertiary,
-          "border-transparent hover:border-natural-100 active:border-natural-200":
-            is.tertiary,
+          "hover:border-natural-100 active:border-natural-200": is.tertiary,
           //==================== TEMP ====================
           "border-brand-700 ": is.main && is.primary,
           "border-destructive-700 ": is.error && is.primary,

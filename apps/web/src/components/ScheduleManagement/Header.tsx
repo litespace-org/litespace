@@ -12,16 +12,18 @@ import ArrowLeft from "@litespace/assets/ArrowLeft";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 interface Props {
-  date: Dayjs;
-  nextWeek: Void;
-  prevWeek: Void;
+  start: Dayjs;
+  end: Dayjs;
+  next: Void;
+  prev: Void;
   manageSchedule: Void;
 }
 
 const Header: React.FC<Props> = ({
-  date,
-  nextWeek,
-  prevWeek,
+  start,
+  end,
+  next,
+  prev,
   manageSchedule,
 }) => {
   const { md, lg } = useMediaQuery();
@@ -34,35 +36,31 @@ const Header: React.FC<Props> = ({
           tag="h2"
           className="text-natural-950 mb-3 md:mb-2 text-body lg:text-subtitle-2 font-bold"
         >
-          {date.format("MMMM YYYY")}
+          {start.format("MMMM YYYY")}
         </Typography>
         <Typography
           tag="p"
           className="text-natural-700 text-caption lg:text-body font-semibold"
         >
-          {date.format("DD MMMM")}
+          {start.format("DD MMMM")}
           {" - "}
-          {lg || !md
-            ? date.endOf("week").format("DD MMMM")
-            : date.add(3, "days").endOf("day").format("DD MMMM")}
+          {end.subtract(1, "day").format("DD MMMM")}
         </Typography>
       </div>
 
       <div className="flex flex-row gap-4 items-center justify-between md:justify-center">
-        <button onClick={prevWeek} type="button">
+        <button onClick={prev} type="button">
           <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
         </button>
         <Typography
           tag="span"
           className="text-natural-950 text-caption lg:text-body font-bold"
         >
-          {date.format("DD MMMM")}
+          {start.format("DD MMMM")}
           {" - "}
-          {lg || !md
-            ? date.endOf("week").format("DD MMMM")
-            : date.add(3, "days").endOf("day").format("DD MMMM")}
+          {end.subtract(1, "day").format("DD MMMM")}
         </Typography>
-        <button onClick={nextWeek} type="button">
+        <button onClick={next} type="button">
           <ArrowLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
         </button>
       </div>

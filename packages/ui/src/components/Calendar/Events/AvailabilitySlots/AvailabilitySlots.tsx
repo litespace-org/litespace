@@ -6,18 +6,13 @@ import {
   SlotActions,
 } from "@/components/Calendar/types";
 
-import {
-  MemberAvatar,
-  EventSpan,
-  Card,
-} from "@/components/Calendar/Events/shared";
+import { MemberAvatar, EventSpan } from "@/components/Calendar/Events/shared";
 
 import dayjs from "@/lib/dayjs";
 import { Typography } from "@/components/Typography";
 import {
   AVATAR_WIDTH,
   AVATARS_OVERLAPPING,
-  CARD_PADDING,
   HOUR_HEIGHT,
 } from "@/components/Calendar/constants";
 
@@ -30,87 +25,79 @@ import { Void } from "@litespace/types";
 
 const VISIBLE_AVATAR_COUNT = 3;
 
-type Props = AvailabilitySlotProps &
-  Partial<SlotActions> & {
-    /**
-     * margin top: used for presentation in luna
-     */
-    mt?: number;
-  };
+type Props = AvailabilitySlotProps & Partial<SlotActions>;
 
 export const AvailabilitySlot: React.FC<Props> = ({
   id,
   start,
   end,
   members,
-  mt,
   onEdit,
   onDelete,
 }) => {
-  const marginTop = useMemo(() => {
+  const top = useMemo(() => {
     const startDay = dayjs(start);
-    return startDay.diff(startDay.startOf("day"), "hours") * HOUR_HEIGHT;
+    return startDay.diff(startDay.startOf("day"), "hours") * HOUR_HEIGHT + 4; // 4px padding form the top.
   }, [start]);
 
   const height = useMemo(() => {
-    return dayjs(end).diff(start, "hours") * HOUR_HEIGHT - 2 * CARD_PADDING;
+    return dayjs(end).diff(start, "hours") * HOUR_HEIGHT - 8; // 4px padding from the bottom.
   }, [start, end]);
 
   return (
-    <Card
-      height={height}
-      minHeight={HOUR_HEIGHT - 2 * CARD_PADDING}
-      marginTop={mt !== undefined ? mt : marginTop}
+    <div
+      className="absolute w-full px-1"
+      style={{ top: top + "px", height: height + "px" }}
     >
-      <div className="absolute top-1 left-1">
-        <OptionsMenu
-          onEdit={() => onEdit && onEdit({ id, start, end })}
-          onDelete={() => onDelete && onDelete(id)}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-start">
-          <EventSpan start={start} end={end} />
-        </div>
+      <div className="border px-[10px] py-2 rounded-lg bg-[rgba(29,124,78,0.04)] border-brand-700 h-full">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-start justify-between gap-2">
+            <EventSpan start={start} end={end} />
+            <OptionsMenu
+              onEdit={() => onEdit && onEdit({ id, start, end })}
+              onDelete={() => onDelete && onDelete(id)}
+            />
+          </div>
 
-        <div className="flex relative h-9">
-          {members.slice(0, VISIBLE_AVATAR_COUNT + 1).map((member, idx) => (
-            <motion.div
-              key={idx}
-              initial={{
-                x: idx >= 1 ? -idx * (AVATAR_WIDTH - AVATARS_OVERLAPPING) : 0,
-              }}
-              style={{
-                position: "absolute",
-                zIndex: idx === 0 ? 1 : 1,
-              }}
-              whileHover={{ zIndex: 2 }}
-            >
-              <div>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="rounded-full border border-natural-50"
-                >
-                  {idx !== VISIBLE_AVATAR_COUNT ? (
-                    <MemberAvatar
-                      src={member.image}
-                      alt={member.name}
-                      seed={member.id.toString()}
-                    />
-                  ) : members.length > VISIBLE_AVATAR_COUNT ? (
-                    <div className="flex items-center justify-center bg-natural-500 text-natural-50 shrink-0 w-9 h-9 rounded-full overflow-hidden">
-                      <Typography tag="span" className="text-caption">
-                        {members.length - VISIBLE_AVATAR_COUNT}+
-                      </Typography>
-                    </div>
-                  ) : null}
-                </motion.div>
-              </div>
-            </motion.div>
-          ))}
+          <div className="flex relative h-9">
+            {members.slice(0, VISIBLE_AVATAR_COUNT + 1).map((member, idx) => (
+              <motion.div
+                key={idx}
+                initial={{
+                  x: idx >= 1 ? -idx * (AVATAR_WIDTH - AVATARS_OVERLAPPING) : 0,
+                }}
+                style={{
+                  position: "absolute",
+                  zIndex: idx === 0 ? 1 : 1,
+                }}
+                whileHover={{ zIndex: 2 }}
+              >
+                <div>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="rounded-full border border-natural-50"
+                  >
+                    {idx !== VISIBLE_AVATAR_COUNT ? (
+                      <MemberAvatar
+                        src={member.image}
+                        alt={member.name}
+                        seed={member.id.toString()}
+                      />
+                    ) : members.length > VISIBLE_AVATAR_COUNT ? (
+                      <div className="flex items-center justify-center bg-natural-500 text-natural-50 shrink-0 w-9 h-9 rounded-full overflow-hidden">
+                        <Typography tag="span" className="text-caption">
+                          {members.length - VISIBLE_AVATAR_COUNT}+
+                        </Typography>
+                      </div>
+                    ) : null}
+                  </motion.div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

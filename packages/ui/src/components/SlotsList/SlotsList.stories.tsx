@@ -1,16 +1,16 @@
 import { StoryObj, Meta } from "@storybook/react";
-import { MobileDaySlots } from "@/components/ManageSchedule/MobileDaySlots";
+import { SlotsList } from "@/components/SlotsList/SlotsList";
 import dayjs from "dayjs";
 import React from "react";
 import { faker } from "@faker-js/faker/locale/ar";
 import { range } from "lodash";
 
-type Component = typeof MobileDaySlots;
+type Component = typeof SlotsList;
 type Story = StoryObj<Component>;
 
 const meta: Meta<Component> = {
-  title: "ManageSchedule/MobileDaySlot",
-  component: MobileDaySlots,
+  title: "SlotsList",
+  component: SlotsList,
   decorators: [
     (Story) => (
       <div className="w-96">
@@ -34,7 +34,7 @@ export const SlotsWithMultipleLessons: Story = {
     slotActions: { onDelete: () => {}, onEdit: () => {} },
     slots: [
       {
-        members: range(6).map(() => makeMember()),
+        members: range(20).map(() => makeMember()),
         id: 1,
         start: dayjs().add(30, "minutes").toISOString(),
         end: dayjs().add(1, "hour").toISOString(),
@@ -54,6 +54,7 @@ export const SlotsWithMultipleLessons: Story = {
     ],
   },
 };
+
 export const SlotsWihtoutLessons: Story = {
   args: {
     day: dayjs().startOf("week"),

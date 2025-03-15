@@ -30,7 +30,7 @@ const TutorSettings: React.FC = () => {
           />
         </div>
 
-        {loading ? (
+        {loading || tutorInfo.isPending ? (
           <div className="mt-[15vh]">
             <Loader
               size="large"
@@ -39,13 +39,14 @@ const TutorSettings: React.FC = () => {
           </div>
         ) : null}
 
-        {error && !loading ? (
+        {(error || tutorInfo.isError) && !loading && !tutorInfo.isPending ? (
           <div className="mt-[15vh]">
             <LoadingError
               size="large"
               retry={() => {
                 refetch.user();
                 refetch.meta();
+                tutorInfo.refetch();
               }}
               error={intl("tutor-settings.profile.loading-error")}
             />
