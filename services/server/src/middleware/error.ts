@@ -20,7 +20,7 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ) {
-  if (!isProduction) console.error(error);
+  console.error(error);
 
   let statusCode = 400;
   let message = "Unexpected error, please retry";
