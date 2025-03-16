@@ -399,7 +399,7 @@ async function findTutorInfo(
   if (!tutor) return next(notfound.tutor());
 
   const onboarded = isOnboard(tutor);
-  const owner = isTutor(user) && user.id === tutorId;
+  const owner = (isTutor(user) || isTutorManager(user)) && user.id === tutorId;
   const allowed = onboarded || owner;
   if (!allowed) return next(notfound.tutor());
 
