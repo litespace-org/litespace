@@ -261,11 +261,11 @@ function update(_: ApiContext) {
             : {
                 city,
                 name,
-                email,
                 gender,
                 birthYear,
                 phone,
                 image,
+                email: email?.toLowerCase(),
                 // Reset user verification status incase his email updated.
                 verifiedEmail: email ? false : undefined,
                 password: password ? hashPassword(password.new) : undefined,

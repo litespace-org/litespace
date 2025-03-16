@@ -14,7 +14,7 @@ export class Users {
     const now = new Date();
     const rows = await this.builder(tx).insert(
       {
-        email: user.email,
+        email: user.email?.toLowerCase(),
         password: user.password,
         name: user.name,
         address: user.address,
@@ -42,7 +42,7 @@ export class Users {
     const now = dayjs.utc().toDate();
     const rows = await this.builder(tx)
       .update({
-        email: payload.email,
+        email: payload.email?.toLowerCase(),
         image: payload.image,
         gender: payload.gender,
         name: payload.name,
@@ -81,7 +81,7 @@ export class Users {
   }
 
   async findByEmail(email: string): Promise<IUser.Self | null> {
-    return await this.findOneBy("email", email);
+    return await this.findOneBy("email", email.toLowerCase());
   }
 
   async findManyBy<T extends keyof IUser.Row>(
@@ -151,7 +151,7 @@ export class Users {
   }: IUser.Credentials): Promise<IUser.Self | null> {
     const rows = await knex<IUser.Row>(this.table)
       .select("*")
-      .where("email", email)
+      .where("email", email.toLowerCase())
       .andWhere("password", password);
 
     const row = first(rows);

@@ -50,7 +50,7 @@ async function main() {
 
   const user = await users.create({
     name: response.name,
-    email: response.email,
+    email: response.email.toLowerCase(),
     role: response.role,
     password: hashPassword(response.password),
   });
