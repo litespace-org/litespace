@@ -30,7 +30,7 @@ import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { safe } from "@litespace/utils/error";
-import { isAdmin, isStudent, isUser } from "@litespace/auth";
+import { isAdmin, isStudent, isTutorManager, isUser } from "@litespace/auth";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import dayjs from "@/lib/dayjs";
 import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
@@ -92,10 +92,12 @@ function create(context: ApiContext) {
       });
       if (userLessons.total !== 0) return next(reachedBookingLimit());
 
-      const price = calculateLessonPrice(
-        platformConfig.tutorHourlyRate,
-        payload.duration
-      );
+      const price = isTutorManager(tutor)
+        ? 0
+        : calculateLessonPrice(
+            platformConfig.tutorHourlyRate,
+            payload.duration
+          );
 
       // Check if the new lessons intercepts any of current subslots
       const slotLessons = await lessons.find({
