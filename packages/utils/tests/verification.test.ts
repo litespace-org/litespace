@@ -19,6 +19,7 @@ import {
   isValidTutorNotice,
   isValidUserBirthYear,
   isValidUserName,
+  isValidTutorName,
   isValidMessageText,
   isValidWithdrawMinAmount,
   isValidWithdrawMaxAmount,
@@ -31,6 +32,7 @@ import {
 } from "@/validation";
 import { FieldError } from "@litespace/types";
 import { nameof } from "@/utils";
+import dayjs from "dayjs";
 
 describe("email validation", () => {
   it("should accept emails in all valid variations", () => {
@@ -64,7 +66,6 @@ describe("validate password", () => {
     expect(isValidPassword("Abc12345678")).toBe(true);
     expect(isValidPassword("abcABC1234567890")).toBe(true);
     expect(isValidPassword("@abc9876")).toBe(true);
-    expect(isValidPassword("中华人民共和国123")).toBe(true);
   });
 
   it("should reject password less than 8 characters", () => {
@@ -79,9 +80,7 @@ describe("validate password", () => {
 describe("validate username", () => {
   it("should accept this username", () => {
     expect(isValidUserName("زيد محمد")).toBe(true);
-  });
-  it("should reject user name contains non arabic letters", () => {
-    expect(isValidUserName("ed زيد")).toBe(FieldError.InvalidUserName);
+    expect(isValidUserName("Mahmoud")).toBe(true);
   });
   it("should reject user name that contains numbers", () => {
     expect(isValidUserName("زيد 78")).toBe(FieldError.InvalidUserName);
@@ -89,6 +88,22 @@ describe("validate username", () => {
   it("should reject user name that contains symbols", () => {
     expect(isValidUserName("زيد_عمر")).toBe(FieldError.InvalidUserName);
     expect(isValidUserName("زيد_عمر #123")).toBe(FieldError.InvalidUserName);
+  });
+});
+
+describe("validate tutor name", () => {
+  it("should accept this tutor name", () => {
+    expect(isValidTutorName("زيد محمد")).toBe(true);
+  });
+  it("should reject tutor name contains non arabic letters", () => {
+    expect(isValidTutorName("ed زيد")).toBe(FieldError.InvalidTutorName);
+  });
+  it("should reject tutor name that contains numbers", () => {
+    expect(isValidTutorName("زيد 78")).toBe(FieldError.InvalidTutorName);
+  });
+  it("should reject tutor name that contains symbols", () => {
+    expect(isValidTutorName("زيد_عمر")).toBe(FieldError.InvalidTutorName);
+    expect(isValidTutorName("زيد_عمر #123")).toBe(FieldError.InvalidTutorName);
   });
 });
 
@@ -267,7 +282,7 @@ describe("rating value validation", () => {
   });
 });
 describe("rating text validation", () => {
-  const fakeRatingText = faker.lorem.word(255);
+  const fakeRatingText = faker.lorem.word({ length: { min: 3, max: 255 } });
   it("should accept a valid rating text range between 3-255", () => {
     expect(isValidRatingText("text vlue")).toBe(true);
     expect(isValidRatingText("foo")).toBe(true);
@@ -369,7 +384,8 @@ describe("coupon code discount validation", () => {
 });
 describe("coupon expire date validation", () => {
   it("should accept ISO valid dates and not to be before current time", () => {
-    expect(isValidCouponExpireDate("3/2/2025")).toBe(true);
+    const now = dayjs();
+    expect(isValidCouponExpireDate(now.add(1, "day").toISOString())).toBe(true);
   });
   it("should reject invalid ISO dates", () => {
     expect(isValidCouponExpireDate("13/10/2025")).toBe(

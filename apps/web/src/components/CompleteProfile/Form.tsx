@@ -11,6 +11,7 @@ import { useUpdateUser } from "@litespace/headless/user";
 import {
   useValidatePassword,
   useValidatePhone,
+  useValidateTutorName,
   useValidateUserName,
 } from "@litespace/ui/hooks/validation";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -53,6 +54,7 @@ const CompleteProfile: React.FC = () => {
 
   const validatePassword = useValidatePassword();
   const validateUserName = useValidateUserName();
+  const validateTutorName = useValidateTutorName();
   const validatePhone = useValidatePhone();
 
   const goRoot = useCallback(() => navigate(Web.Root), [navigate]);
@@ -116,7 +118,12 @@ const CompleteProfile: React.FC = () => {
             inputSize={"large"}
             autoComplete="off"
             label={intl("labels.name")}
-            rules={{ validate: validateUserName }}
+            rules={{
+              validate:
+                user?.role === IUser.Role.Student
+                  ? validateUserName
+                  : validateTutorName,
+            }}
             placeholder={intl("labels.name.placeholder")}
             state={errors.name ? "error" : undefined}
             helper={errors.name?.message}

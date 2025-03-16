@@ -10,7 +10,7 @@ import { useUpdateUserTopics } from "@litespace/headless/user";
 import { useToast } from "@litespace/ui/Toast";
 import {
   useValidateBio,
-  useValidateUserName,
+  useValidateTutorName,
 } from "@litespace/ui/hooks/validation";
 import { UseFormReturn } from "react-hook-form";
 import { ITutorSettingsForm } from "@/components/TutorSettings/types";
@@ -113,7 +113,7 @@ const PublicSettings: React.FC<{
   const invalidateQuery = useInvalidateQuery();
   const topics = useTopics({});
   const userTopics = useUserTopics();
-  const validateUserName = useValidateUserName(form.watch("name") !== null);
+  const validateTutorName = useValidateTutorName(form.watch("name") !== null);
   const validateBio = useValidateBio(form.watch("bio") !== null);
   const errors = form.formState.errors;
 
@@ -190,7 +190,7 @@ const PublicSettings: React.FC<{
           id="name"
           value={form.watch("name")}
           control={form.control}
-          rules={{ validate: validateUserName }}
+          rules={{ validate: validateTutorName }}
           autoComplete="off"
           label={intl("tutor-settings.personal-info.name")}
           name="name"

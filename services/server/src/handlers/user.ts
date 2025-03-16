@@ -55,7 +55,7 @@ import {
 } from "@litespace/auth";
 import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
-import { isValidPassword } from "@litespace/utils/validation";
+import { isValidPassword, isValidTutorName } from "@litespace/utils/validation";
 import {
   isRegularUser,
   isSuperAdmin,
@@ -229,6 +229,8 @@ function update(_: ApiContext) {
       // return forbidden if the studio is trying to drop media for an unassociated user
       if (isStudio(currentUser) && targetTutor?.studioId !== currentUser.id)
         return next(forbidden());
+
+      if (targetTutor && !isValidTutorName(name)) return next(bad());
 
       if (password) {
         const expectedPasswordHash = await users.findUserPasswordHash(

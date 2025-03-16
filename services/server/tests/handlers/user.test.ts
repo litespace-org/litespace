@@ -83,6 +83,7 @@ describe("/api/v1/user/", () => {
         expect(u1.user.name).to.be.eq("updated-1");
         expect(u2.user.name).to.be.eq("updated-2");
       });
+      // TODO: write test for updating tutor name with invalid value
     });
 
     describe("GET /api/v1/user/tutor/list/onboarded", () => {
