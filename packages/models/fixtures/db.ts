@@ -30,6 +30,7 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/utils/time";
 import { randomUUID } from "crypto";
+import { confirmationCodes } from "@/confirmationCodes";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
@@ -48,6 +49,7 @@ export async function flush() {
     await availabilitySlots.builder(tx).del();
     await users.builder(tx).del();
     await contactRequests.builder(tx).del();
+    await confirmationCodes.builder(tx).del();
   });
 }
 
