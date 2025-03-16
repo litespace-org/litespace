@@ -13,6 +13,7 @@ import {
   contactRequests,
   sessionEvents,
   transactions,
+  invoices,
 } from "@litespace/models";
 
 async function execute(command: string): Promise<string> {
@@ -42,6 +43,7 @@ export async function flush() {
      * ! Order matters becuase of the relations
      */
     await transactions.builder(tx).del();
+    await invoices.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();

@@ -118,6 +118,8 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [FieldError.InvalidInstapayIPA]: "error.field.invalid-instapay-ipa",
   [FieldError.EmptyBankName]: "error.field.empty-bank-name",
   [FieldError.InvalidBankName]: "error.field.invalid-bank-name",
+  [FieldError.InvalidBankAccountNumber]: "error.field.invalid-bank-number",
+  [FieldError.InvalidWithdrawMethod]: "error.field.invalid-withdraw-method",
   [FieldError.ShortTopicName]: "error.field.short-topic-name",
   [FieldError.LongTopicName]: "error.field.long-topic-name",
   [FieldError.InvalidType]: "error.field.invalid-type",

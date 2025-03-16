@@ -1,38 +1,34 @@
 import type { Type as WithdrawMethod } from "@/withdrawMethod";
-import { Paginated } from "@/utils";
+import { ExtractObjectKeys, Paginated } from "@/utils";
 import { IFilter } from "@/index";
 
-export enum Bank {
-  Cib = "cib",
-  Alex = "alex",
-}
+export const ReceiptFileKey = "receipt";
 
-export const banks = [Bank.Cib, Bank.Alex] as const;
+export const BANKS = [
+  "CIB",
+  "ALEX",
+  "NBE",
+  "MISR",
+  "QNB",
+  "MASHREQ",
+  "AAIB",
+] as const;
+export type Bank = (typeof BANKS)[number];
 
 export enum Status {
-  Pending = "pending",
-  UpdatedByReceiver = "updated-by-receiver",
-  CanceledByReceiver = "canceled-by-receiver",
-  CancellationApprovedByAdmin = "cancellation-approved-by-admin",
-  Fulfilled = "fulfilled",
-  Rejected = "rejected",
+  PendingApproval = 0,
+  PendingCancellation = 1,
+  Canceled = 2,
+  Approved = 3,
+  Rejected = 4,
 }
-
-export type UpdateRequest = {
-  method: WithdrawMethod;
-  receiver: string;
-  bank: Bank | null;
-  amount: number;
-};
 
 export type Self = {
   id: number;
   userId: number;
   method: WithdrawMethod;
-  receiver: string;
-  bank: Bank | null;
+  receiver: string; // {bank}:{account} / phone number / instapay username
   amount: number;
-  update: UpdateRequest | null;
   status: Status;
   note: string | null;
   receipt: string | null;
@@ -46,9 +42,7 @@ export type Row = {
   user_id: number;
   method: WithdrawMethod;
   receiver: string;
-  bank: Bank | null;
   amount: number;
-  update: string | null;
   status: Status;
   note: string | null;
   receipt: string | null;
@@ -61,45 +55,20 @@ export type CreatePayload = {
   userId: number;
   method: WithdrawMethod;
   receiver: string;
-  bank: Bank | null;
   amount: number;
+  note?: string | null;
 };
-
 export type CreateApiPayload = Omit<CreatePayload, "userId">;
+export type CreateApiPayloadResponse = Self;
 
 export type UpdatePayload = {
-  updateRequest?: UpdateRequest | null;
-  method?: WithdrawMethod;
-  receiver?: string;
-  bank?: Bank | null;
-  amount?: number;
   status?: Status;
-  note?: string | null;
-  receipt?: string | null;
-  addressedBy?: number | null;
-};
-
-export type UpdateApiPayload = {
-  updateRequest?: UpdateRequest;
-  status?: Status;
-  note?: string | null;
-};
-
-export type UpdateByReceiverApiPayload = {
-  updateRequest?: UpdateRequest;
-  cancel?: boolean;
-};
-
-export type UpdateByAdminApiPayload = {
-  status?:
-    | Status.Pending
-    | Status.CancellationApprovedByAdmin
-    | Status.Rejected
-    | Status.Fulfilled;
+  receipt?: string;
+  addressedBy?: number;
   note?: string;
 };
-
-export type ReceiptFileKey = "receipt";
+export type UpdateApiPayload = { status?: Status; note?: string };
+export type UpdateApiParams = { invoiceId: number };
 
 export type FindInvoicesApiResponse = Paginated<Self>;
 
@@ -117,16 +86,13 @@ export type StatsApiResponse = {
   spendable: number;
 };
 
-export type CancelApiPayload = {
-  note?: string;
-};
-
-export type FindInvoicesParams = IFilter.Pagination & { userId?: number };
-
 export type FindInvoicesQuery = IFilter.Pagination & {
   users?: number[];
   methods?: WithdrawMethod[];
-  banks?: Bank[];
   statuses?: Status[];
   receipt?: boolean;
+  orderBy?: ExtractObjectKeys<Row, "amount" | "created_at" | "updated_at">;
+  orderDirection?: IFilter.OrderDirection;
 };
+
+export type FindStatsParams = { tutorId: number };

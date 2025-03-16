@@ -8,19 +8,21 @@ export const withdrawMethodsIntlMap: Record<IWithdrawMethod.Type, LocalId> = {
 };
 
 export const invoiceBankIntlMap: Record<IInvoice.Bank, LocalId> = {
-  [IInvoice.Bank.Alex]: "banks.labels.alex",
-  [IInvoice.Bank.Cib]: "banks.labels.cib",
+  ALEX: "banks.labels.alex",
+  CIB: "banks.labels.cib",
+  NBE: "banks.labels.nbe",
+  QNB: "banks.labels.qnb",
+  AAIB: "banks.labels.aaib",
+  MISR: "banks.labels.misr",
+  MASHREQ: "banks.labels.mashreq",
 };
 
 export const invoiceStatusIntlMap: Record<IInvoice.Status, LocalId> = {
-  [IInvoice.Status.Pending]: "invoices.admin.status.pending",
-  [IInvoice.Status.UpdatedByReceiver]:
-    "invoices.admin.status.updated-by-receiver",
-  [IInvoice.Status.CanceledByReceiver]:
+  [IInvoice.Status.PendingApproval]: "invoices.admin.status.pending",
+  [IInvoice.Status.PendingCancellation]:
     "invoices.admin.status.canceled-by-receiver",
-  [IInvoice.Status.CancellationApprovedByAdmin]:
-    "invoices.admin.status.canceled-by-admin",
-  [IInvoice.Status.Fulfilled]: "invoices.admin.status.fulfilled",
+  [IInvoice.Status.Canceled]: "invoices.admin.status.canceled-by-admin",
+  [IInvoice.Status.Approved]: "invoices.admin.status.fulfilled",
   [IInvoice.Status.Rejected]: "invoices.admin.status.rejected",
 };
 
