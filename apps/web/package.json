@@ -22,6 +22,7 @@
     "@litespace/types": "workspace:^",
     "@litespace/ui": "workspace:^",
     "@litespace/utils": "workspace:^",
+    "@microsoft/clarity": "^1.0.0",
     "@radix-ui/react-tabs": "^1.1.1",
     "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.2.5",

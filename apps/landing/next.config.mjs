@@ -8,6 +8,7 @@ const nextConfig = {
     SERVER: process.env.SERVER,
     CLIENT: process.env.CLIENT,
     GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID,
+    CLARITY_PROJECT_ID: process.env.CLARITY_PROJECT_ID,
   },
 };
 
