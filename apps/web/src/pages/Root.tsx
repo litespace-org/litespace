@@ -9,6 +9,7 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
+import clarity from "@/lib/clarity";
 
 const Root: React.FC = () => {
   const mq = useMediaQuery();
@@ -53,6 +54,11 @@ const Root: React.FC = () => {
     );
     return !match;
   }, [location.pathname]);
+
+  useEffect(() => {
+    const customeId = user?.id.toString() || "un-authorized";
+    clarity.identify(customeId);
+  }, [user?.id]);
 
   return (
     <div className="flex relative w-full">

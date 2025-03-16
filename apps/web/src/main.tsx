@@ -21,6 +21,8 @@ import { LocalStorage } from "@litespace/headless/storage";
 import { env } from "@/lib/env";
 import App from "@/App";
 
+import "@/lib/ga";
+import "@/lib/clarity";
 import "@litespace/ui/tailwind.css";
 
 const queryClient = new QueryClient();

@@ -17,6 +17,7 @@ const schema = zod.object({
   }),
   sentryDsn: zod.string().url(),
   gaMeasurementId: zod.string().startsWith("G-").length(12),
+  clarityProjectId: zod.string().length(10),
 });
 
 export const env = schema.parse({
@@ -24,5 +25,6 @@ export const env = schema.parse({
   server: import.meta.env.VITE_SERVER,
   client: import.meta.env.VITE_CLIENT,
   sentryDsn: import.meta.env.VITE_SENTRY_DSN,
-  gaMeasurementId: import.meta.env.GA_MEASUREMENT_ID,
+  gaMeasurementId: import.meta.env.VITE_GA_MEASUREMENT_ID,
+  clarityProjectId: import.meta.env.VITE_CLARITY_PROJECT_ID,
 });

@@ -1,13 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import cn from "classnames";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
 import Footer from "@/components/Layout/Footer";
+import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
+import { usePathname } from "next/navigation";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showSidebar, setShowSidebar] = useState(false);
+  const path = usePathname();
+
+  useEffect(() => {
+    clarity.identify(getCustomeId(), sessionId, path);
+  }, [path]);
 
   return (
     <body

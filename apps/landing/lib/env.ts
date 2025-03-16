@@ -15,10 +15,12 @@ const schema = zod.object({
       "Missing or invalid server. Expecting `CLIENT` environment variable. It can be `local` or `staging` or `production`",
   }),
   gaMeasurementId: zod.string().startsWith("G-").length(12),
+  clarityProjectId: zod.string().length(10),
 });
 
 export const env = schema.parse({
   server: process.env.SERVER,
   client: process.env.CLIENT,
   gaMeasurementId: process.env.GA_MEASUREMENT_ID,
+  clarityProjectId: process.env.CLARITY_PROJECT_ID,
 });
