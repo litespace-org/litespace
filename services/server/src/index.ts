@@ -14,6 +14,7 @@ import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware, adminOnly } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
 import { cache } from "@/lib/cache";
+import { msg } from "@/lib/telegram";
 import "colors";
 
 // global error handling
@@ -21,7 +22,7 @@ import "colors";
 process.on("uncaughtException", (error) => {
   console.log("Uncaught exception");
   console.error(error);
-  // TODO: notify errors
+  msg(`Uncaught expection: ${error.message}`);
 });
 
 // Stablish connection with the redis cache.
