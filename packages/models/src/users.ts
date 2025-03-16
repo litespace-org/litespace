@@ -110,21 +110,26 @@ export class Users {
     orderBy,
     orderDirection,
     city,
-  }: IUser.FindUsersApiQuery & {
+  }: IUser.FindUsersQuery & {
     tx?: Knex.Transaction;
   }): Promise<Paginated<IUser.Self>> {
-    const base = this.builder(tx)
-      .select()
-      .orderBy(this.column(orderBy || "created_at"), orderDirection || "desc");
+    const base = this.builder(tx);
 
     if (role) base.andWhere(this.column("role"), role);
     if (verified) base.andWhere(this.column("verified_email"), verified);
     if (gender) base.andWhere(this.column("gender"), gender);
-    //if (online) base.andWhere(this.column("online"), online); TODO: to be removed
     if (city) base.andWhere(this.column("city"), city);
 
-    const total = await countRows(base.clone().groupBy(this.column("id")));
-    const rows = await withPagination(base.clone(), { page, size });
+    const total = await countRows(base.clone(), {
+      column: this.column("id"),
+      distinct: true,
+    });
+
+    const query = base
+      .clone()
+      .select()
+      .orderBy(this.column(orderBy || "created_at"), orderDirection || "desc");
+    const rows = await withPagination(query, { page, size });
     const users = rows.map((row) => this.from(row));
 
     return { list: users, total };

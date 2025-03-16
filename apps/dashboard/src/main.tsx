@@ -11,6 +11,7 @@ import { ToastProvider } from "@litespace/ui/Toast";
 import { UserProvider } from "@litespace/headless/context/user";
 import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
 import { LocalStorage } from "@litespace/headless/storage";
+import { Direction } from "@litespace/ui/Direction";
 import { env } from "@/lib/env";
 import App from "@/App.tsx";
 
@@ -25,23 +26,25 @@ createRoot(document.getElementById("root")!).render(
       locale="ar-EG"
       defaultLocale="ar-EG"
     >
-      <AppConfigProvider>
-        <ToastProvider>
-          <QueryClientProvider client={queryClient}>
-            <ServerProvider server={env.server} storage={new LocalStorage()}>
-              <AtlasProvider>
-                <SocketProvider>
-                  <UserProvider>
-                    <MediaQueryProvider>
-                      <App />
-                    </MediaQueryProvider>
-                  </UserProvider>
-                </SocketProvider>
-              </AtlasProvider>
-            </ServerProvider>
-          </QueryClientProvider>
-        </ToastProvider>
-      </AppConfigProvider>
+      <Direction>
+        <AppConfigProvider>
+          <ToastProvider>
+            <QueryClientProvider client={queryClient}>
+              <ServerProvider server={env.server} storage={new LocalStorage()}>
+                <AtlasProvider>
+                  <SocketProvider>
+                    <UserProvider>
+                      <MediaQueryProvider>
+                        <App />
+                      </MediaQueryProvider>
+                    </UserProvider>
+                  </SocketProvider>
+                </AtlasProvider>
+              </ServerProvider>
+            </QueryClientProvider>
+          </ToastProvider>
+        </AppConfigProvider>
+      </Direction>
     </IntlProvider>
   </StrictMode>
 );

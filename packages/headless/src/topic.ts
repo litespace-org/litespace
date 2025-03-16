@@ -1,4 +1,4 @@
-import { ITopic, Void } from "@litespace/types";
+import { IFilter, ITopic, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas";
@@ -32,12 +32,17 @@ export function useCreateTopic({
   });
 }
 
-export function useTopics(query: ITopic.FindTopicsApiQuery) {
+export function useTopics(
+  query: Omit<ITopic.FindTopicsApiQuery, "page" | "size">
+) {
   const atlas = useAtlas();
 
-  const findTopics = useCallback(async () => {
-    return await atlas.topic.findTopics(query);
-  }, [atlas.topic, query]);
+  const findTopics = useCallback(
+    async (pagination: IFilter.Pagination) => {
+      return await atlas.topic.findTopics({ ...pagination, ...query });
+    },
+    [atlas.topic, query]
+  );
 
   return usePaginate(findTopics, [QueryKey.FindTopic, query]);
 }

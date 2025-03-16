@@ -6,29 +6,31 @@ import Error from "@/components/Common/Error";
 import { Loading } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Table } from "@/components/Common/Table";
-import { UsePaginateResult } from "@/types/query";
-import { ActionsMenu } from "@litespace/ui/ActionsMenu";
+import { Menu } from "@litespace/ui/Menu";
 import DeleteTopic from "@/components/Topics/DeleteTopic";
 import TopicDialog from "@/components/Topics/TopicDialog";
+import { UseQueryResult } from "@tanstack/react-query";
+import Edit from "@litespace/assets/Edit";
+import Trash from "@litespace/assets/Trash";
 
 type Topics = ITopic.FindTopicsApiResponse["list"];
 type Topic = Element<Topics>;
 
 const List: React.FC<{
-  topics: UsePaginateResult<Element<Topics>>;
+  query: UseQueryResult<ITopic.FindTopicsApiResponse, Error>;
   goto: (page: number) => void;
   next: Void;
   prev: Void;
   totalPages: number;
   page: number;
-}> = ({ topics, ...props }) => {
+}> = ({ query, ...props }) => {
   const intl = useFormatMessage();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [action, setAction] = useState<"edit" | "delete" | null>(null);
 
   const refetch = useCallback(() => {
-    topics.query.refetch();
-  }, [topics.query]);
+    query.refetch();
+  }, [query]);
 
   const columnHelper = createColumnHelper<Element<Topics>>();
 
@@ -62,10 +64,10 @@ const List: React.FC<{
         id: "actions",
         cell: ({ row }) => {
           return (
-            <ActionsMenu
+            <Menu
               actions={[
                 {
-                  id: 1,
+                  icon: <Edit />,
                   label: intl("dashboard.topics.edit"),
                   onClick() {
                     setAction("edit");
@@ -73,7 +75,7 @@ const List: React.FC<{
                   },
                 },
                 {
-                  id: 2,
+                  icon: <Trash />,
                   label: intl("dashboard.topics.delete"),
                   onClick() {
                     setAction("delete");
@@ -89,27 +91,27 @@ const List: React.FC<{
     [columnHelper, intl]
   );
 
-  if (topics.query.isLoading) return <Loading className="h-1/4" />;
+  if (query.isLoading) return <Loading className="h-1/4" />;
 
-  if (topics.query.error)
+  if (query.error)
     return (
       <Error
-        error={topics.query.error}
+        error={query.error}
         title={intl("dashboard.error.alert.title")}
-        refetch={topics.query.refetch}
+        refetch={query.refetch}
       />
     );
 
-  if (!topics.query.data) return null;
+  if (!query.data) return null;
 
   return (
     <div>
       <Table
         columns={columns}
-        data={topics.query.data.list}
+        data={query.data.list}
+        loading={query.isLoading}
+        fetching={query.isFetching}
         {...props}
-        loading={topics.query.isLoading}
-        fetching={topics.query.isFetching}
       />
 
       {action === "edit" && topic ? (

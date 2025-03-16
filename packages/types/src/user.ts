@@ -183,7 +183,7 @@ export type ResetPasswordApiPayload = {
   password: string;
 };
 
-export type FindUsersApiQuery = IFilter.Pagination & {
+export type FindUsersQuery = IFilter.Pagination & {
   role?: Role;
   verified?: boolean;
   gender?: Gender;
@@ -191,6 +191,8 @@ export type FindUsersApiQuery = IFilter.Pagination & {
   orderBy?: Extract<keyof Row, "created_at" | "updated_at">;
   orderDirection?: IFilter.OrderDirection;
 };
+
+export type FindUsersApiQuery = FindUsersQuery;
 
 export type FindStudentStatsApiResponse = {
   lessonCount: {
