@@ -140,7 +140,7 @@ export const InvoiceUpdates: React.FC<{ invoice: IInvoice.Self }> = ({
       if (instapay) ids.push("invoices.username");
       if (wallet) ids.push("invoices.phone");
     }
-    if (change.bank && invoice.update.bank) ids.push("invoices.bank");
+    if (change.bank && invoice.update.bank) ids.push("invoices.method.bank");
     if (change.amount) ids.push("invoices.amount");
     return ids;
   }, [change, invoice.update]);

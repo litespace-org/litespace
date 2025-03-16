@@ -32,7 +32,7 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
     if (bank) ids.push("invoices.account");
     if (instapay) ids.push("invoices.username");
     if (wallet) ids.push("invoices.phone");
-    if (bank) ids.push("invoices.bank");
+    if (bank) ids.push("invoices.method.bank");
     ids.push(
       "invoices.amount",
       "invoices.date.created",

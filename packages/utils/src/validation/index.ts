@@ -1,6 +1,7 @@
 export {
   isValidUserName,
   isValidEmail,
+  isValidInstapayEmail,
   isValidPhone,
   isValidPassword,
   isValidUserBirthYear,

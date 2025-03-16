@@ -10,6 +10,9 @@ import { IInvoice, IWithdrawMethod } from "@litespace/types";
 import { useToast } from "@litespace/ui/Toast";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
+import { Button } from "@litespace/ui/Button";
+import TransactionMinus from "@litespace/assets/TransactionMinus";
+import { CreateInvoiceDialog } from "@/components/Invoices";
 
 function asInvoices({ list }: { list: IInvoice.Self[] }): Array<{
   id: number;
@@ -40,6 +43,7 @@ export const Table: React.FC = () => {
   const intl = useFormatMessage();
   const toast = useToast();
   const [open, setOpen] = useState(false); // For delete dialog
+  const [createOpen, setCreateOpen] = useState(false);
 
   const [id, setId] = useState<number>(0); // The invoice id that will be deleted
   const invoicesQuery = useFindInvoices({ userOnly: true });
@@ -68,12 +72,28 @@ export const Table: React.FC = () => {
   if (!invoicesQuery.query.data) return null;
   return (
     <div>
-      <Typography
-        tag="h6"
-        className="text-body md:text-subtitle-2 text-natural-950 font-bold mb-4 lg:mb-6"
-      >
-        {intl("invoices.table.title")}
-      </Typography>
+      <div className="flex justify-between items-center mb-4 lg:mb-6">
+        <Typography
+          tag="h6"
+          className="text-body md:text-subtitle-2 text-natural-950 font-bold"
+        >
+          {intl("invoices.table.title")}
+        </Typography>
+        <Button
+          size="large"
+          endIcon={
+            <TransactionMinus className="w-4 h-4 [&>*]:stroke-natural-50" />
+          }
+          onClick={() => setCreateOpen(true)}
+        >
+          {intl("invoices.withdrawal-request.create")}
+        </Button>
+        <CreateInvoiceDialog
+          open={createOpen}
+          close={() => setCreateOpen(false)}
+          refresh={() => invoicesQuery.query.refetch()}
+        />
+      </div>
       <InvoicesTable
         invoices={asInvoices({ list: invoicesQuery.query.data.list })}
         loading={invoicesQuery.query.isLoading}

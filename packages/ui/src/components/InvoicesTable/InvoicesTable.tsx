@@ -76,7 +76,7 @@ export const InvoicesTable: React.FC<{
   const columns = useMemo(() => {
     const date = intl("invoices.table.date");
     const amount = intl("invoices.table.duration");
-    const withdrawalMethod = intl("invoices.table.tutor");
+    const withdrawalMethod = intl("invoices.table.withdrawal-method");
     const requestState = intl("invoices.table.request-state");
 
     return [date, amount, withdrawalMethod, requestState];

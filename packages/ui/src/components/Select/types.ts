@@ -10,6 +10,7 @@ export type SelectProps<T extends string | number> = {
   showDropdownIcon?: boolean;
   disabled?: boolean;
   helper?: string;
+  state?: "error" | "success";
   onChange?: (value: T) => void;
 };
 

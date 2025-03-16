@@ -1,5 +1,6 @@
 import {
   EMAIL_REGEX,
+  INSTAPAY_REGEX,
   MAX_PASSWORD_LENGTH,
   MAX_USER_AGE,
   MAX_USER_NAME_LENGTH,
@@ -28,6 +29,14 @@ export function isValidUserName(
 
 export function isValidEmail(email: unknown): FieldError.InvalidEmail | true {
   if (typeof email !== "string" || !EMAIL_REGEX.test(email))
+    return FieldError.InvalidEmail;
+  return true;
+}
+
+export function isValidInstapayEmail(
+  email: unknown
+): FieldError.InvalidEmail | true {
+  if (typeof email !== "string" || !INSTAPAY_REGEX.test(email))
     return FieldError.InvalidEmail;
   return true;
 }
