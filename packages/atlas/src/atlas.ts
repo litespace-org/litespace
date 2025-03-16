@@ -12,7 +12,6 @@ import { Rating } from "@/rating";
 import { Chat } from "@/chat";
 import { Interview } from "@/interview";
 import { Lesson } from "@/lesson";
-import { WithdrawMethod } from "@/withdrawMethod";
 import { Invoice } from "@/invoice";
 import { Topic } from "@/topic";
 import { AuthToken, createClient } from "@/client";
@@ -35,7 +34,6 @@ export class Atlas {
   public readonly chat: Chat;
   public readonly interview: Interview;
   public readonly lesson: Lesson;
-  public readonly withdrawMethod: WithdrawMethod;
   public readonly invoice: Invoice;
   public readonly cache: Cache;
   public readonly topic: Topic;
@@ -57,7 +55,6 @@ export class Atlas {
     this.chat = new Chat(client);
     this.interview = new Interview(client);
     this.lesson = new Lesson(client);
-    this.withdrawMethod = new WithdrawMethod(client);
     this.invoice = new Invoice(client);
     this.cache = new Cache(client);
     this.topic = new Topic(client);
