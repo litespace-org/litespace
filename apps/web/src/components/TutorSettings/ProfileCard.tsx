@@ -70,6 +70,7 @@ export const ProfileCard: React.FC<{
           src={orUndefined(image)}
           alt={orUndefined(name)}
           seed={id.toString()}
+          object="cover"
         />
       </div>
 
