@@ -1,51 +1,57 @@
 import React from "react";
-import { IUser, Void } from "@litespace/types";
+import { ISession, IUser, Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { useMemo } from "react";
 import { Button } from "@/components/Button";
 import cn from "classnames";
 import dayjs from "dayjs";
+import { LocalId } from "@/locales";
 
 export const Ready: React.FC<{
   otherMember: {
     id: number;
     role: IUser.Role;
-    gender: IUser.Gender;
     incall: boolean;
   };
+  type?: ISession.Type;
   error?: boolean;
   start: string;
   duration: number;
   join: Void;
   loading?: boolean;
   disabled?: boolean;
-}> = ({ otherMember, join, error, start, duration, loading, disabled }) => {
+}> = ({
+  otherMember,
+  join,
+  error,
+  start,
+  duration,
+  loading,
+  disabled,
+  type = "lesson",
+}) => {
   const intl = useFormatMessage();
+  const sessionType: LocalId =
+    type === "lesson" ? "session.lesson" : "session.interview";
 
-  const explaination = useMemo(() => {
-    if (
-      otherMember.role === IUser.Role.Tutor &&
-      otherMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.explaination.full.male-tutor");
-    if (
-      otherMember.role === IUser.Role.Tutor &&
-      otherMember.gender !== IUser.Gender.Male
-    )
-      return intl("session.ready.explaination.full.female-tutor");
+  const otherMemberRole: LocalId = useMemo(() => {
+    if (otherMember.role === IUser.Role.TutorManager)
+      return "session.tutor-manager";
 
-    if (
-      otherMember.role === IUser.Role.Student &&
-      otherMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.explaination.full.male-student");
-    if (
-      otherMember.role === IUser.Role.Student &&
-      otherMember.gender !== IUser.Gender.Male
-    )
-      return intl("session.ready.explaination.full.female-student");
-  }, [otherMember.role, otherMember.gender, intl]);
+    if (otherMember.role === IUser.Role.Tutor) return "session.tutor";
+
+    return "session.student";
+  }, [otherMember]);
+
+  const explaination = useMemo(
+    () =>
+      intl("session.ready.explaination.full", {
+        role: intl(otherMemberRole),
+        type: intl(sessionType),
+      }),
+    [otherMemberRole, sessionType, intl]
+  );
 
   const sessionStartMessage = useMemo(() => {
     const now = dayjs();
@@ -55,23 +61,26 @@ export const Ready: React.FC<{
     if (now.isBefore(start))
       return intl("session.ready.session-will-start-in", {
         time: sessionStart.fromNow(true),
+        type: intl(sessionType),
       });
 
     if (now.isAfter(end)) {
       return intl("session.ready.session-ended-since", {
         time: end.fromNow(true),
+        type: intl(sessionType),
       });
     }
 
     return intl("session.ready.session-started-since", {
       time: end.fromNow(true),
+      type: intl(sessionType),
     });
-  }, [start, duration, intl]);
+  }, [start, duration, sessionType, intl]);
 
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center md:justify-start lg:justify-center lg:h-full lg:w-full text-center",
+        "flex flex-col items-center justify-center md:justify-start lg:justify-center h-full w-full text-center",
         error ? "gap-2 md:gap-6" : "gap-4 md:gap-6"
       )}
     >
@@ -98,16 +107,26 @@ export const Ready: React.FC<{
       <div className="flex flex-col items-center gap-4 lg:gap-2">
         {error ? (
           <Typography tag="p" className="text-destructive-700 text-caption">
-            {intl("session.ready.error")}
+            {intl("session.ready.error", {
+              type: intl(sessionType),
+            })}
           </Typography>
         ) : null}
         <Button
           size="large"
           onClick={join}
-          disabled={disabled || loading}
+          disabled={
+            disabled ||
+            loading ||
+            dayjs(start).add(duration, "minutes").isBefore(dayjs())
+          }
           loading={loading}
         >
-          {intl("session.ready.join")}
+          {intl(
+            type === "lesson"
+              ? "session.lesson-ready.join"
+              : "session.interview-ready.join"
+          )}
         </Button>
       </div>
     </div>

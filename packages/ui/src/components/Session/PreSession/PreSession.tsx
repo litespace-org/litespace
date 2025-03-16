@@ -1,12 +1,13 @@
 import React from "react";
 import { Ready } from "@/components/Session/Ready";
-import { IUser, Void } from "@litespace/types";
+import { ISession, IUser, Void } from "@litespace/types";
 import Actions from "@/components/Session/Actions";
 import cn from "classnames";
 import Stream from "@/components/Session/Stream";
 
 export type Props = {
   stream: MediaStream | null;
+  type: ISession.Type;
   members: {
     current: {
       id: number;
@@ -16,7 +17,6 @@ export type Props = {
     };
     other: {
       id: number;
-      gender: IUser.Gender;
       role: IUser.Role;
       incall: boolean;
     };
@@ -51,6 +51,7 @@ export const PreSession: React.FC<Props> = ({
   audio,
   speaking,
   joining,
+  type,
   join,
 }) => {
   return (
@@ -76,6 +77,7 @@ export const PreSession: React.FC<Props> = ({
       </div>
       <div className="grow w-[306px] flex justify-center items-center lg:h-full">
         <Ready
+          type={type}
           error={audio.error}
           otherMember={members.other}
           start={session.start}
