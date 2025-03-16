@@ -18,6 +18,7 @@ const expected = [
 
 function isValidWorkspaces(workspaces: string[]): boolean {
   for (const workspace of workspaces) {
+    if (workspace === "all") continue;
     if (!expected.includes(workspace)) return false;
   }
   return true;

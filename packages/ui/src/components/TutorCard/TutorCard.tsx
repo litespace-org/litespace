@@ -61,6 +61,7 @@ export const TutorCard: React.FC<CardProps> = ({
             src={orUndefined(imageUrl)}
             alt={orUndefined(name)}
             seed={id.toString()}
+            object="cover"
           />
         </div>
         <div>
@@ -174,7 +175,7 @@ export const TutorCard: React.FC<CardProps> = ({
                   key={idx}
                   content={<Typography tag="span">{topic}</Typography>}
                 >
-                  <div className="w-16">
+                  <div className="w-24">
                     <Typography
                       tag="span"
                       className="block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl text-center truncate font-normal text-tiny"

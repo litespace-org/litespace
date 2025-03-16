@@ -58,6 +58,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
           src={orUndefined(imageUrl)}
           alt={orUndefined(name)}
           seed={id.toString()}
+          object="cover"
         />
       </div>
       <div className="flex flex-col">
