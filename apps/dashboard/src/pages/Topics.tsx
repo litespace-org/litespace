@@ -96,7 +96,7 @@ const Topics = () => {
         <PageTitle
           title={intl("dashboard.topics.title")}
           fetching={query.query.isFetching && !query.query.isLoading}
-          count={query.totalPages}
+          count={query.query.data?.total}
         />
         <Button size={"small"} onClick={addNewTopic.show}>
           {intl("dashboard.topics.add")}
@@ -110,20 +110,22 @@ const Topics = () => {
           value={name}
         />
 
-        <Select
-          onChange={handleOrderChange}
-          options={orderOptions}
-          value={orderBy}
-        />
-        <Select
-          onChange={handleOrderDirectionChange}
-          options={orderDirectionOptions}
-          value={orderDirection}
-        />
+        <div className="flex-shrink-0 flex flex-row items-center justify-center gap-4">
+          <Select
+            onChange={handleOrderChange}
+            options={orderOptions}
+            value={orderBy}
+          />
+          <Select
+            onChange={handleOrderDirectionChange}
+            options={orderDirectionOptions}
+            value={orderDirection}
+          />
+        </div>
       </div>
 
       <div className="mt-4">
-        <List {...query} topics={query} />
+        <List {...query} />
       </div>
 
       <TopicDialog

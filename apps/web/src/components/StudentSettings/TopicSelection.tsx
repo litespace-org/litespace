@@ -100,7 +100,7 @@ const TopicSelection: React.FC = () => {
               className="flex text-brand-700 text-caption font-semibold"
             >
               {intl("labels.update")}
-              <Edit className="w-6 h-6 mr-2" />
+              <Edit className="w-6 h-6 mr-2 [&>*]:stroke-brand-700" />
             </Typography>
           </button>
         ) : null}

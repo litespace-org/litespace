@@ -1,10 +1,10 @@
 import { useDeleteTopic } from "@litespace/headless/topic";
-import { Alert, AlertType } from "@litespace/ui/Alert";
-import { Dialog } from "@litespace/ui/Dialog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { ITopic } from "@litespace/types";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import Trash from "@litespace/assets/Trash";
 
 const DeleteTopic: React.FC<{
   topic: ITopic.Self;
@@ -30,26 +30,28 @@ const DeleteTopic: React.FC<{
 
   const deleteTopic = useDeleteTopic({ onSuccess, onError });
 
-  const action = useMemo(() => {
-    if (!topic) return;
-    return {
-      label: intl("labels.confirm"),
-      onClick: () => {
-        deleteTopic.mutate({ id: topic.id });
-      },
-      loading: deleteTopic.isPending,
-      disabled: deleteTopic.isPending,
-    };
-  }, [topic, intl, deleteTopic]);
-
   return (
-    <Dialog open close={close} title={intl("dashboard.topics.delete")}>
-      <Alert
-        type={AlertType.Error}
-        title={intl("dashboard.topics.delete.alert")}
-        action={action}
-      />
-    </Dialog>
+    <ConfirmationDialog
+      open
+      icon={<Trash />}
+      title={intl("dashboard.topics.delete")}
+      description={intl("dashboard.topics.delete.alert")}
+      type="error"
+      actions={{
+        primary: {
+          label: intl("labels.confirm"),
+          onClick: () => {
+            deleteTopic.mutate({ id: topic.id });
+          },
+          loading: deleteTopic.isPending,
+          disabled: deleteTopic.isPending,
+        },
+        secondary: {
+          label: intl("labels.cancel"),
+          onClick: close,
+        },
+      }}
+    />
   );
 };
 

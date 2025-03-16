@@ -92,29 +92,29 @@ describe("Users", () => {
   });
 
   describe(nameof(users.find), () => {
-    it("should find users by content", async () => {
-      const interviewer = await fixtures.user({
+    it("should find users by role", async () => {
+      const manager = await fixtures.user({
         role: IUser.Role.TutorManager,
       });
-      expect(await users.findById(interviewer.id)).to.exist;
+      expect(await users.findById(manager.id)).to.exist;
 
-      const interviewer2 = await fixtures.user({
+      const manager2 = await fixtures.user({
         role: IUser.Role.TutorManager,
       });
-      expect(await users.findById(interviewer2.id)).to.exist;
+      expect(await users.findById(manager2.id)).to.exist;
 
-      const interviewer3 = await fixtures.user({
+      const manager3 = await fixtures.user({
         role: IUser.Role.TutorManager,
       });
-      expect(await users.findById(interviewer3.id)).to.exist;
+      expect(await users.findById(manager3.id)).to.exist;
 
       const result = await users.find({ role: IUser.Role.TutorManager });
 
-      expect(result).to.exist;
+      expect(result.total).to.be.eq(3);
       expect(result.list.length).to.be.eq(3);
-      expect(result.list[2].id).to.be.eq(interviewer.id);
-      expect(result.list[1].id).to.be.eq(interviewer2.id);
-      expect(result.list[0].id).to.be.eq(interviewer3.id);
+      expect(result.list[2].id).to.be.eq(manager.id);
+      expect(result.list[1].id).to.be.eq(manager2.id);
+      expect(result.list[0].id).to.be.eq(manager3.id);
     });
   });
 
