@@ -52,7 +52,7 @@ type SearchFilter = {
    */
   before?: string;
   /**
-   * @description when provided with the `before` or `after` flag, it will not
+   * When provided with the `before` or `after` flag, it will not
    * include lessons that are partially out the query time boundaries.
    * @default false
    */
