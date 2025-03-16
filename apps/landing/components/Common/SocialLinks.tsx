@@ -1,5 +1,5 @@
 import React from "react";
-import Link from "next/link";
+import Link from "@/components/Common/Link";
 import Facebook from "@litespace/assets/Facebook";
 import Insta from "@litespace/assets/Instagram";
 import Linkedin from "@litespace/assets/Linkedin";
@@ -32,6 +32,10 @@ export const SocialLinks: React.FC = () => (
         href={href}
         className="flex items-center justify-center"
         target="_blank"
+        track={{
+          event: "view_social_media",
+          params: { url: href },
+        }}
       >
         {icon}
       </Link>

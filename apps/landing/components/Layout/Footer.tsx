@@ -8,7 +8,7 @@ import Instagram from "@litespace/assets/Instagram";
 import Facebook from "@litespace/assets/Facebook";
 import Linkedin from "@litespace/assets/Linkedin";
 import { Landing } from "@litespace/utils/routes";
-import Link from "next/link";
+import Link from "@/components/Common/Link";
 import { useFormatMessage } from "@/hooks/intl";
 import {
   LITESPACE_FACEBOOK,
@@ -28,6 +28,14 @@ function SocialMediaIcon({
       href={href}
       target="_blank"
       className="flex items-center justify-center p-2"
+      track={{
+        event: "view_social_media",
+        params: {
+          src: "footer",
+          action: "link",
+          url: href,
+        },
+      }}
     >
       <Icon className="fill-neutral-50 w-6 h-6" />
     </Link>

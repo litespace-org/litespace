@@ -3,6 +3,7 @@ import { atlas } from "@/lib/atlas";
 import { formatMessage } from "@/lib/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React from "react";
+import InViewTrack from "@/components/Common/InViewTrack";
 
 export const Tutors: React.FC = async () => {
   const intl = await formatMessage();
@@ -17,6 +18,7 @@ export const Tutors: React.FC = async () => {
 
   return (
     <div className="bg-secondary-50 w-screen">
+      <InViewTrack event="view_item_list" label="tutors" action="scroll" />
       <div className="py-14 md:py-20 lg:py-[120px] max-w-screen-3xl mx-auto px-4 md:px-8">
         <div className="mx-auto text-center flex flex-col gap-4 mb-8 md:mb-16 lg:mb-[68px] max-w-[874px]">
           <Typography

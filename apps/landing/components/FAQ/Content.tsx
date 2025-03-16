@@ -1,12 +1,13 @@
 import React from "react";
 import cn from "classnames";
-import { Accordion } from "@litespace/ui/Accordion";
+import Accordion from "@/components/Common/Accordion";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@/hooks/intl";
-import Link from "next/link";
+import Link from "@/components/Common/Link";
 import { router } from "@/lib/routes";
 import { Landing, Web } from "@litespace/utils/routes";
 import { LITESPACE_TUTORS_TELEGRAM } from "@/constants/links";
+import InViewTrack from "@/components/Common/InViewTrack";
 
 type Question = {
   title: string;
@@ -61,6 +62,10 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
       content: intl.rich("faq/body/for-tutor/q/1/answer", {
         here: (chunks) => (
           <Link
+            track={{
+              event: "register",
+              params: { action: "link", src: "faq" },
+            }}
             className="text-brand-700"
             href={router.web({
               route: Web.Register,
@@ -113,6 +118,10 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
             className="text-brand-700"
             href={LITESPACE_TUTORS_TELEGRAM}
             target="_blank"
+            track={{
+              event: "join_group",
+              params: { action: "link", src: "faq" },
+            }}
           >
             {chunks}
           </Link>
@@ -162,7 +171,14 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
       title: intl("faq/body/for-student/q/2"),
       content: intl.rich("faq/body/for-student/q/2/answer", {
         here: (chunks) => (
-          <Link className="text-brand-700" href={Landing.Pricing}>
+          <Link
+            track={{
+              event: "view_pricing_list",
+              params: { action: "link", src: "faq" },
+            }}
+            className="text-brand-700"
+            href={Landing.Pricing}
+          >
             {chunks}
           </Link>
         ),
@@ -194,7 +210,14 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
       title: intl("faq/body/for-student/q/7"),
       content: intl.rich("faq/body/for-student/q/7/answer", {
         here: (chunks) => (
-          <Link className="text-brand-700" href={Landing.Pricing}>
+          <Link
+            track={{
+              event: "view_pricing_list",
+              params: { action: "link", src: "faq" },
+            }}
+            className="text-brand-700"
+            href={Landing.Pricing}
+          >
             {chunks}
           </Link>
         ),
@@ -259,6 +282,7 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
 
   return (
     <div className="bg-secondary-50">
+      <InViewTrack event="view_faq_list" src="faq-section" action="scroll" />
       <div
         className={cn(
           "flex flex-col py-14 sm:py-20 md:py-20 px-4 md:px-8 lg:px-[108px] gap-8 sm:gap-14 lg:gap-20",
@@ -284,7 +308,7 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
 
         <Accordion
           items={questions.map(({ title, content }, i) => ({
-            id: i,
+            id: i.toString(),
             title,
             content,
           }))}
@@ -300,6 +324,10 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
                 {
                   link: (chunks) => (
                     <Link
+                      track={{
+                        event: "view_faq_list",
+                        params: { action: "link", src: "faq", role },
+                      }}
                       href={router.landing({
                         route: Landing.FaqRole,
                         role: role === "student" ? "tutor" : "student",

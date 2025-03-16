@@ -1,10 +1,7 @@
-"use client";
-
 import TutorCard from "@/components/Tutors/TutorCard";
 import { router } from "@/lib/routes";
 import { FindOnboardedTutorsApiResponse } from "@litespace/types/dist/esm/tutor";
 import { Web } from "@litespace/utils/routes";
-import { motion } from "framer-motion";
 import React from "react";
 
 const Content: React.FC<{
@@ -21,9 +18,7 @@ const Content: React.FC<{
         });
 
         return (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+          <div
             key={tutor.id}
             className="max-w-[574px] lg:max-w-[600px] justify-self-center lg:first:justify-self-end lg:last:justify-self-start"
           >
@@ -38,7 +33,7 @@ const Content: React.FC<{
               imageUrl={tutor.image}
               topics={tutor.topics}
             />
-          </motion.div>
+          </div>
         );
       })}
     </div>

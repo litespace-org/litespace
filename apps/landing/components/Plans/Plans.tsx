@@ -1,7 +1,7 @@
 import { useFormatMessage } from "@/hooks/intl";
 import { LocalId } from "@/locales/request";
 import { Typography } from "@litespace/ui/Typography";
-import Link from "next/link";
+import Link from "@/components/Common/Link";
 import cn from "classnames";
 import CurvedDashedLine from "@litespace/assets/CurvedDashedLine";
 import { Animate } from "@/components/Common/Animate";
@@ -11,6 +11,7 @@ import { ActiveLine } from "@/components/Plans/Line";
 import AbstractLine from "@litespace/assets/AbstractLine";
 import { PlansDataProps, Tab } from "@/types/plans";
 import React from "react";
+import InViewTrack from "@/components/Common/InViewTrack";
 
 const PLANS_TITLE_ID_MAP: { [key: number]: LocalId } = {
   1: "plans/titles/beginning",
@@ -50,6 +51,7 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
 
   return (
     <section className="flex flex-col gap-4 max-w-screen-3xl mx-auto px-4 py-14 md:py-20 lg:py-[120px]">
+      <InViewTrack event="view_pricing_list" action="scroll" />
       <div className="flex flex-col gap-4 justify-center items-center text-center mb-16">
         <Typography
           tag="h3"
@@ -103,7 +105,18 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
                 </div>
               </>
             ) : null}
-            <Link scroll={false} href={`?tab=${tab.value}`}>
+            <Link
+              scroll={false}
+              href={`?tab=${tab.value}`}
+              track={{
+                event: "view_pricing_tab",
+                params: {
+                  action: "link",
+                  tab: intl(tab.label),
+                  src: "plans-section",
+                },
+              }}
+            >
               <Typography
                 tag="p"
                 className={cn(
