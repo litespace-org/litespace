@@ -12,7 +12,6 @@ import { Rating } from "@/api/rating";
 import { Chat } from "@/api/chat";
 import { Interview } from "@/api/interview";
 import { Lesson } from "@/api/lesson";
-import { WithdrawMethod } from "@/withdrawMethod";
 import { Invoice } from "@/api/invoice";
 import { Topic } from "@/api/topic";
 import { AuthToken, createClient } from "@/lib/client";
@@ -36,7 +35,6 @@ export class Api {
   public readonly chat: Chat;
   public readonly interview: Interview;
   public readonly lesson: Lesson;
-  public readonly withdrawMethod: WithdrawMethod;
   public readonly invoice: Invoice;
   public readonly cache: Cache;
   public readonly topic: Topic;
@@ -59,7 +57,6 @@ export class Api {
     this.chat = new Chat(client);
     this.interview = new Interview(client);
     this.lesson = new Lesson(client);
-    this.withdrawMethod = new WithdrawMethod(client);
     this.invoice = new Invoice(client);
     this.cache = new Cache(client);
     this.topic = new Topic(client);

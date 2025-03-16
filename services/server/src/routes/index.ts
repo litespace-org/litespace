@@ -8,7 +8,6 @@ import coupon from "@/routes/coupon";
 import invite from "@/routes/invite";
 import lesson from "@/routes/lesson";
 import invoice from "@/routes/invoice";
-import withdrawMethod from "@/routes/withdrawMethod";
 import auth from "@/routes/auth";
 import topic from "@/routes/topic";
 import cache from "@/routes/cache";
@@ -21,7 +20,6 @@ export default {
   user,
   lesson,
   invoice,
-  withdrawMethod,
   contactRequest,
   plan,
   chat,

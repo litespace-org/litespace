@@ -6,9 +6,8 @@ import {
   StringLiteral,
   IInterview,
   ILesson,
-  IWithdrawMethod,
   IInvoice,
-  banks,
+  BANKS,
   IFilter,
   ISession,
 } from "@litespace/types";
@@ -95,11 +94,11 @@ export const interviewStatus = zod.coerce.number(
   zod.nativeEnum(IInterview.Status)
 );
 
-export const withdrawMethod = zod.nativeEnum(IWithdrawMethod.Type);
+export const withdrawMethod = zod.nativeEnum(IInvoice.WithdrawMethod);
 
 export const invoiceStatus = zod.nativeEnum(IInvoice.Status);
 
-export const bank = zod.enum(banks);
+export const banks = zod.enum(BANKS);
 
 export const identityObject = zod.object({ id });
 

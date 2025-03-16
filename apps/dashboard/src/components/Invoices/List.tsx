@@ -1,4 +1,4 @@
-import { IInvoice, IWithdrawMethod, Paginated, Void } from "@litespace/types";
+import { IInvoice, Paginated, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Table } from "@/components/Common/Table";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -47,17 +47,13 @@ const List: React.FC<{
       columnHelper.accessor("method", {
         header: intl("dashboard.invoices.method"),
         cell: (info) => {
-          const status = info.getValue() as IWithdrawMethod.Type;
+          const status = info.getValue() as IInvoice.WithdrawMethod;
           const value = withdrawMethodsIntlMap[status];
           return intl(value);
         },
       }),
       columnHelper.accessor("receiver", {
         header: intl("dashboard.invoices.receiver"),
-        cell: (info) => info.getValue(),
-      }),
-      columnHelper.accessor("bank", {
-        header: intl("dashboard.invoices.bank"),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor("amount", {
@@ -104,11 +100,9 @@ const List: React.FC<{
         id: "actions",
         cell: (info) => {
           const status = info.row.original.status;
-          const fulfilled = status === IInvoice.Status.Fulfilled;
+          const fulfilled = status === IInvoice.Status.Approved;
           const canceledByReceiver =
-            status === IInvoice.Status.CanceledByReceiver;
-          const updatedByReceiver =
-            status === IInvoice.Status.UpdatedByReceiver;
+            status === IInvoice.Status.PendingCancellation;
           const rejected = status === IInvoice.Status.Rejected;
 
           const edit = (action: Action): void => {
@@ -138,12 +132,6 @@ const List: React.FC<{
                 },
                 {
                   id: 4,
-                  label: intl("invoices.process.actions.approveUpdateRequest"),
-                  disabled: !updatedByReceiver,
-                  onClick: () => edit(Action.ApproveUpdateRequest),
-                },
-                {
-                  id: 5,
                   label: intl("invoices.process.actions.markAsRejected"),
                   danger: true,
                   disabled: rejected,

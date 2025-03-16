@@ -1,16 +1,16 @@
 import { LocalMap, messages } from "@/locales";
-import { IWithdrawMethod } from "@litespace/types";
+import { IInvoice } from "@litespace/types";
 
-export function destructureWithdrawMethod(method: IWithdrawMethod.Type) {
+export function destructureWithdrawMethod(method: IInvoice.WithdrawMethod) {
   return {
-    bank: method === IWithdrawMethod.Type.Bank,
-    instapay: method === IWithdrawMethod.Type.Instapay,
-    wallet: method === IWithdrawMethod.Type.Wallet,
+    bank: method === IInvoice.WithdrawMethod.Bank,
+    instapay: method === IInvoice.WithdrawMethod.Instapay,
+    wallet: method === IInvoice.WithdrawMethod.Wallet,
   };
 }
 
 export function getWithdrawMethodIntlId(
-  method: IWithdrawMethod.Type
+  method: IInvoice.WithdrawMethod
 ): keyof LocalMap {
   const { bank, instapay } = destructureWithdrawMethod(method);
   return instapay

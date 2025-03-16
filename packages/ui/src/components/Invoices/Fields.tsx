@@ -1,9 +1,6 @@
-import { IInvoice, IWithdrawMethod } from "@litespace/types";
+import { IInvoice } from "@litespace/types";
 import React, { useMemo } from "react";
-import {
-  destructureWithdrawMethod,
-  getWithdrawMethodIntlId,
-} from "@/components/utils/withdraw";
+import { getWithdrawMethodIntlId } from "@/components/utils/withdraw";
 import { useFormatMessage } from "@/hooks/intl";
 import { useWithdrawMethod } from "@/hooks/withdraw";
 import dayjs from "@/lib/dayjs";
@@ -11,9 +8,9 @@ import { getBankIntlId } from "@/components/utils";
 import { RawHtml } from "@/components/RawHtml";
 import { Alert, AlertType } from "@/components/Alert";
 import { Price } from "@/components/Price";
-import { LocalId } from "@/locales";
-import { Labels, Values, Value, Columns } from "@/components/Invoices/Records";
+import { Columns } from "@/components/Invoices/Records";
 import { Button } from "@/components/Button";
+import { Typography } from "@litespace/ui/Typography";
 
 export const InvoiceId: React.FC<{ id: number }> = ({ id }) => {
   return `#${id}`;
@@ -23,7 +20,7 @@ export const Owner: React.FC<{ name: string | null }> = ({ name }) => {
   return name || "-";
 };
 
-export const Method: React.FC<{ method: IWithdrawMethod.Type }> = ({
+export const Method: React.FC<{ method: IInvoice.WithdrawMethod }> = ({
   method,
 }) => {
   const id = useMemo(() => getWithdrawMethodIntlId(method), [method]);
@@ -33,7 +30,7 @@ export const Method: React.FC<{ method: IWithdrawMethod.Type }> = ({
 
 export const Receiver: React.FC<{
   receiver: string;
-  method: IWithdrawMethod.Type;
+  method: IInvoice.WithdrawMethod;
 }> = ({ receiver, method }) => {
   const { instapay } = useWithdrawMethod(method);
   if (instapay) return <span dir="ltr">@{receiver}</span>;
@@ -108,85 +105,10 @@ export const Amount: React.FC<{ amount: number }> = ({ amount }) => {
   );
 };
 
-export const InvoiceUpdates: React.FC<{ invoice: IInvoice.Self }> = ({
-  invoice,
-}) => {
-  const change = useMemo(() => {
-    if (!invoice.update) return null;
-    return {
-      method: invoice.update.method !== invoice.method,
-      amount: invoice.update.amount !== invoice.amount,
-      receiver: invoice.update.receiver !== invoice.receiver,
-      bank: invoice.update.bank !== invoice.bank,
-    };
-  }, [
-    invoice.amount,
-    invoice.bank,
-    invoice.method,
-    invoice.receiver,
-    invoice.update,
-  ]);
-
-  const ids = useMemo(() => {
-    const ids: LocalId[] = [];
-    if (!change || !invoice.update) return ids;
-
-    if (change.method) ids.push("invoices.method");
-    if (change.receiver) {
-      const { bank, instapay, wallet } = destructureWithdrawMethod(
-        invoice.update.method
-      );
-      if (bank) ids.push("invoices.account");
-      if (instapay) ids.push("invoices.username");
-      if (wallet) ids.push("invoices.phone");
-    }
-    if (change.bank && invoice.update.bank) ids.push("invoices.bank");
-    if (change.amount) ids.push("invoices.amount");
-    return ids;
-  }, [change, invoice.update]);
-
-  const values = useMemo((): Value[] => {
-    const values: Value[] = [];
-    if (!change || !invoice.update) return values;
-
-    if (change.method)
-      values.push({
-        id: 1,
-        value: <Method method={invoice.update.method} />,
-      });
-
-    if (change.receiver)
-      values.push({
-        id: 2,
-        value: (
-          <Receiver
-            method={invoice.update.method}
-            receiver={invoice.update.receiver}
-          />
-        ),
-      });
-
-    if (change.bank && invoice.update.bank)
-      values.push({
-        id: 3,
-        value: <Bank bank={invoice.update.bank as IInvoice.Bank} />,
-      });
-
-    if (change.amount)
-      values.push({
-        id: 4,
-        value: <Amount amount={invoice.update.amount} />,
-      });
-
-    return values;
-  }, [change, invoice.update]);
-
-  if (!invoice.update) return null;
-
+export const InvoiceUpdates: React.FC<{ invoice: IInvoice.Self }> = () => {
   return (
     <Columns>
-      <Labels ids={ids} />
-      <Values values={values} />
+      <Typography tag="span">TODO: to be implemented</Typography>
     </Columns>
   );
 };
