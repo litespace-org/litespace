@@ -1,6 +1,5 @@
 import React from "react";
 import cn from "classnames";
-
 import ArrowDown from "@litespace/assets/ArrowDown";
 import {
   Root,
@@ -9,23 +8,24 @@ import {
   Trigger,
   Content,
 } from "@radix-ui/react-accordion";
-
 import { AccordionItem } from "@/components/Accordion/types";
 import { Typography } from "@/components/Typography";
 
 export const Accordion: React.FC<{
   items: AccordionItem[];
-}> = ({ items }) => {
+  onValueChange?: (value: string) => void;
+}> = ({ items, onValueChange }) => {
   return (
     <Root
       collapsible
       type="single"
       className={cn("flex flex-col w-full rounded-2xl overflow-hidden gap-2")}
+      onValueChange={onValueChange}
     >
       {items.map((item) => (
         <Item
           key={item.id}
-          value={item.id.toString()}
+          value={item.id}
           className={cn(
             "bg-white text-natural-950",
             "data-[state=open]:text-brand-500 transition-all duration-150"

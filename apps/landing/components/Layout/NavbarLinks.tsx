@@ -9,6 +9,7 @@ import cn from "classnames";
 import { Void } from "@litespace/types";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import { track } from "@/lib/ga";
 
 export function NavbarLinks({
   scrolled,
@@ -26,7 +27,17 @@ export function NavbarLinks({
         className={cn("hidden lg:flex flex-col lg:flex-row gap-8 items-center")}
       >
         {PAGES.map((page) => (
-          <Link href={page.route} key={page.route}>
+          <Link
+            href={page.route}
+            key={page.route}
+            onClick={() => {
+              track("navigation", {
+                action: "link",
+                route: page.route,
+                src: "navbar",
+              });
+            }}
+          >
             <Typography
               tag="span"
               className={cn(
@@ -47,6 +58,9 @@ export function NavbarLinks({
             full: true,
           })}
           className="max-w-[134px] lg:max-w-[144px] flex-1"
+          onClick={() => {
+            track("register", { action: "link", src: "navbar" });
+          }}
         >
           <Button size="large" className="w-full">
             <Typography
@@ -60,6 +74,9 @@ export function NavbarLinks({
         <Link
           href={router.web({ route: Web.Login, full: true })}
           className="max-w-[134px] lg:max-w-[144px] flex-1"
+          onClick={() => {
+            track("register", { action: "link", src: "navbar" });
+          }}
         >
           <Button size="large" variant="secondary" className="w-full">
             <Typography
@@ -73,7 +90,13 @@ export function NavbarLinks({
       </div>
       <button
         type="button"
-        onClick={toggleSidebar}
+        onClick={() => {
+          toggleSidebar();
+          track("toggle_nav_menu", {
+            action: "button",
+            src: "navbar",
+          });
+        }}
         className="lg:hidden w-6 h-6 bg-natural-100 bg-opacity-50 rounded-[4px] p-[2px]"
       >
         <Menu />

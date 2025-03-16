@@ -1,7 +1,10 @@
+"use client";
+
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
 import { JazzIcon } from "@/components/Avatar/JazzIcon";
 import { orUndefined } from "@litespace/utils";
+
 type Status = "loading" | "loaded" | "error";
 
 export const Avatar: React.FC<{

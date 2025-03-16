@@ -4,7 +4,7 @@ import cn from "classnames";
 import React, { useMemo } from "react";
 import { formatNumber } from "@litespace/ui/utils";
 import { Button } from "@litespace/ui/Button";
-import Link from "next/link";
+import Link from "@/components/Common/Link";
 import { PlanCardProps } from "@/types/plans";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
@@ -121,6 +121,18 @@ export const PlanCard: React.FC<PlanCardProps> = ({
           role: "student",
           full: true,
         })}
+        track={{
+          event: "view_pricing_item",
+          params: {
+            label,
+            title,
+            description,
+            price,
+            discount,
+            action: "link",
+            src: "plans-section",
+          },
+        }}
       >
         <Button
           type="main"

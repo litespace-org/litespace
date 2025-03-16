@@ -7,10 +7,11 @@ import AstroStudent2 from "@litespace/assets/AstroStudent2";
 import AstroStudent3 from "@litespace/assets/AstroStudent3";
 import AstroStudent4 from "@litespace/assets/AstroStudent4";
 import LongLeftArrow from "@litespace/assets/LongLeftArrow";
-import Link from "next/link";
+import Link from "@/components/Common/Link";
 import { Button } from "@litespace/ui/Button";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import InViewTrack from "@/components/Common/InViewTrack";
 
 const features: Array<{
   title: LocalId;
@@ -73,6 +74,12 @@ export const Features: React.FC = () => {
             className="lg:h-[463px] flex flex-col-reverse md:flex-row md:even:flex-row-reverse items-center gap-4 md:justify-center lg:gap-20 lg:items-center"
             key={feature.title}
           >
+            <InViewTrack
+              event="view_promotion"
+              action="scroll"
+              src="features-section"
+              title={intl(feature.title)}
+            />
             <div className="flex flex-col text-center md:text-start gap-4 md:gap-6 max-w-[380px] md:max-w-[377px] lg:max-w-[598px]">
               <Typography
                 tag="h2"
@@ -94,6 +101,14 @@ export const Features: React.FC = () => {
                     role: "student",
                     full: true,
                   })}
+                  track={{
+                    event: "register",
+                    params: {
+                      action: "link",
+                      src: "features-section",
+                      label: intl(feature.title),
+                    },
+                  }}
                 >
                   <Button
                     endIcon={<LongLeftArrow className="icon" />}

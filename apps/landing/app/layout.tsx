@@ -5,6 +5,7 @@ import { getLocale } from "next-intl/server";
 import { getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 
+import "@/lib/ga";
 import "@litespace/ui/tailwind.css";
 
 export const metadata: Metadata = {

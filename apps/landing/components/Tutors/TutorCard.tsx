@@ -1,5 +1,3 @@
-"use client";
-
 import SStar from "@litespace/assets/SStar";
 import { orUndefined } from "@litespace/utils/utils";
 import cn from "classnames";
@@ -11,7 +9,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { formatNumber } from "@litespace/ui/utils";
 import { Tooltip } from "@litespace/ui/Tooltip";
 import { Button } from "@litespace/ui/Button";
-import Link from "next/link";
+import Link from "@/components/Common/Link";
 
 const FRESH_TUTOR_MAX_TOPIC_COUNT = 7;
 const TUTOR_MAX_TOPIC_COUNT = 3;
@@ -90,7 +88,18 @@ export const TutorCard: React.FC<{
           {about}
         </Typography>
 
-        <Link href={profileUrl} className="cursor-pointer">
+        <Link
+          href={profileUrl}
+          className="cursor-pointer w-fit"
+          track={{
+            event: "view_item",
+            params: {
+              action: "link",
+              src: "tutor-card",
+              label: about || "",
+            },
+          }}
+        >
           <Typography
             tag="span"
             className="ellipsis line-clamp-2 text-natural-950 underline text-caption font-semibold md:font-bold"
@@ -205,7 +214,18 @@ export const TutorCard: React.FC<{
         ) : null}
 
         <div className="flex flex-row gap-3 mt-2 md:mt-4">
-          <Link href={profileUrl} className="w-full block">
+          <Link
+            href={profileUrl}
+            className="w-full block"
+            track={{
+              event: "book_lesson",
+              params: {
+                src: "turor-card",
+                tutorId: id,
+                label: name || "",
+              },
+            }}
+          >
             <Button
               className="w-full"
               type="main"
@@ -221,7 +241,18 @@ export const TutorCard: React.FC<{
             </Button>
           </Link>
 
-          <Link href={profileUrl} className="w-full block">
+          <Link
+            href={profileUrl}
+            className="w-full block"
+            track={{
+              event: "view_item",
+              params: {
+                src: "turor-card",
+                tutorId: id,
+                label: name || "",
+              },
+            }}
+          >
             <Button
               type="main"
               variant="secondary"

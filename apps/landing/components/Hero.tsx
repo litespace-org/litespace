@@ -1,5 +1,3 @@
-"use client";
-
 import Ellipse from "@/components/Ellipse";
 import { useFormatMessage } from "@/hooks/intl";
 import { router } from "@/lib/routes";
@@ -7,7 +5,7 @@ import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
-import Link from "next/link";
+import Link from "@/components/Common/Link";
 import React from "react";
 
 const Hero: React.FC = () => {
@@ -36,6 +34,13 @@ const Hero: React.FC = () => {
         </div>
         <Link
           href={router.web({ route: Web.Root, full: true })}
+          track={{
+            event: "register",
+            params: {
+              src: "hero",
+              action: "link",
+            },
+          }}
           className="mb-14"
         >
           <Button size="large" className="h-auto w-auto py-4 px-8">

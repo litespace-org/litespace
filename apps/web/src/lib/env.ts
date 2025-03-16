@@ -16,6 +16,7 @@ const schema = zod.object({
       "Missing or invalid server. Expecting `VITE_CLIENT` environment variable. It can be `local` or `staging` or `production`",
   }),
   sentryDsn: zod.string().url(),
+  gaMeasurementId: zod.string().startsWith("G-").length(12),
 });
 
 export const env = schema.parse({
@@ -23,4 +24,5 @@ export const env = schema.parse({
   server: import.meta.env.VITE_SERVER,
   client: import.meta.env.VITE_CLIENT,
   sentryDsn: import.meta.env.VITE_SENTRY_DSN,
+  gaMeasurementId: import.meta.env.GA_MEASUREMENT_ID,
 });

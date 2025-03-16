@@ -22,7 +22,7 @@ export const SingleItem: StoryObj<Component> = {
   args: {
     items: [
       {
-        id: 1,
+        id: "1",
         title: faker.lorem.words(3),
         content: faker.lorem.words(25),
       },
@@ -34,7 +34,7 @@ export const WithLongTitle: StoryObj<Component> = {
   args: {
     items: [
       {
-        id: 1,
+        id: "1",
         title: faker.lorem.words(10),
         content: faker.lorem.words(30),
       },
@@ -46,7 +46,7 @@ export const WithLongContent: StoryObj<Component> = {
   args: {
     items: [
       {
-        id: 1,
+        id: "1",
         title: faker.lorem.words(5),
         content: faker.lorem.words(100),
       },
@@ -58,12 +58,12 @@ export const MultipleItems: StoryObj<Component> = {
   args: {
     items: [
       {
-        id: 1,
+        id: "1",
         title: faker.lorem.words(5),
         content: faker.lorem.words(25),
       },
       {
-        id: 2,
+        id: "2",
         title: faker.lorem.words(5),
         content: faker.lorem.words(50),
       },
@@ -75,32 +75,32 @@ export const ManyItems: StoryObj<Component> = {
   args: {
     items: [
       {
-        id: 1,
+        id: "1",
         title: faker.lorem.words(5),
         content: faker.lorem.words(25),
       },
       {
-        id: 2,
+        id: "2",
         title: faker.lorem.words(5),
         content: faker.lorem.words(50),
       },
       {
-        id: 3,
+        id: "3",
         title: faker.lorem.words(10),
         content: faker.lorem.words(75),
       },
       {
-        id: 4,
+        id: "4",
         title: faker.lorem.words(8),
         content: faker.lorem.words(35),
       },
       {
-        id: 5,
+        id: "5",
         title: faker.lorem.words(7),
         content: faker.lorem.words(50),
       },
       {
-        id: 6,
+        id: "6",
         title: faker.lorem.words(3),
         content: faker.lorem.words(15),
       },

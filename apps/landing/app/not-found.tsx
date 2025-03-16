@@ -3,7 +3,7 @@ import NotFound404 from "@litespace/assets/NotFound404";
 import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import { Landing } from "@litespace/utils/routes";
-import Link from "next/link";
+import Link from "@/components/Common/Link";
 
 export const NotFound = () => {
   const intl = useFormatMessage();
@@ -25,7 +25,17 @@ export const NotFound = () => {
         </Typography>
       </div>
       <Button size="large">
-        <Link href={Landing.Home}>
+        <Link
+          href={Landing.Home}
+          track={{
+            event: "navigation",
+            params: {
+              src: "not-found-page",
+              action: "link",
+              label: "Go home",
+            },
+          }}
+        >
           <Typography
             tag="span"
             className="text-body font-medium text-natural-50"
