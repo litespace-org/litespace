@@ -22,6 +22,7 @@ export const Primary: Story = {
   args: {
     previousInterviews: [],
     loading: false,
+    tutorManager: faker.person.fullName(),
     error: false,
     activeStep: 3,
   },
@@ -32,24 +33,25 @@ export const PreviousInterviews: Story = {
     previousInterviews: [
       {
         date: dayjs().toISOString(),
-        tutorName: faker.person.fullName(),
+        tutorManager: faker.person.fullName(),
         result: faker.lorem.words(5),
       },
       {
         date: dayjs().toISOString(),
-        tutorName: faker.person.fullName(),
+        tutorManager: faker.person.fullName(),
         canceled: true,
-        canceledBy: "canceled-by-tutor-manage",
+        canceledBy: "canceled-by-tutor-manager",
       },
       {
         date: dayjs().toISOString(),
-        tutorName: faker.person.fullName(),
+        tutorManager: faker.person.fullName(),
         canceled: true,
         canceledBy: "canceled-by-you",
       },
     ],
     loading: false,
     error: false,
+    tutorManager: faker.person.fullName(),
     activeStep: 3,
   },
 };
@@ -58,6 +60,7 @@ export const Loading: Story = {
   args: {
     previousInterviews: [],
     loading: true,
+    tutorManager: faker.person.fullName(),
     error: false,
     activeStep: 3,
   },
@@ -66,6 +69,7 @@ export const Loading: Story = {
 export const Error: Story = {
   args: {
     previousInterviews: [],
+    tutorManager: faker.person.fullName(),
     loading: false,
     error: true,
     activeStep: 3,
@@ -75,6 +79,7 @@ export const Error: Story = {
 export const MoveToNextSteps: Story = {
   args: {
     loading: false,
+    tutorManager: faker.person.fullName(),
     error: false,
   },
   render: (props) => {

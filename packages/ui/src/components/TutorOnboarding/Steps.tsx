@@ -19,8 +19,8 @@ type StepData = {
 };
 
 type Interview = {
-  tutorName: string;
-  canceledBy?: "canceled-by-you" | "canceled-by-tutor-manage";
+  tutorManager: string;
+  canceledBy?: "canceled-by-you" | "canceled-by-tutor-manager";
   canceled?: boolean;
   result?: string;
   date: string;
@@ -53,8 +53,9 @@ export const Steps: React.FC<{
   loading: boolean;
   error: boolean;
   activeStep: number;
+  tutorManager: string;
   previousInterviews: Interview[];
-}> = ({ loading, error, activeStep, previousInterviews }) => {
+}> = ({ loading, error, tutorManager, activeStep, previousInterviews }) => {
   const intl = useFormatMessage();
   return (
     <div className="p-6 border bg-natural-50 border-natural-200 h-full">
@@ -76,7 +77,7 @@ export const Steps: React.FC<{
         <div className="flex flex-col gap-6">
           {stepsData.map((step) => (
             <Step
-              tutorName={"Mostafa"}
+              tutorManager={tutorManager}
               key={step.id}
               state={
                 step.id < activeStep
@@ -103,11 +104,11 @@ export const Steps: React.FC<{
 
 const Step: React.FC<
   StepData & {
-    tutorName: string;
+    tutorManager: string;
     id: number;
     state: "active" | "fullfilled" | "pending";
   }
-> = ({ id, title, description, state, tutorName }) => {
+> = ({ id, title, description, state, tutorManager }) => {
   const intl = useFormatMessage();
   return (
     <div className="flex gap-2 relative">
@@ -149,7 +150,7 @@ const Step: React.FC<
           {intl(title)}
         </Typography>
         <Typography tag="p" className="text-tiny text-natural-700">
-          {intl(description, { tutor: tutorName })}
+          {intl(description, { tutor: tutorManager })}
         </Typography>
       </div>
     </div>
@@ -203,7 +204,7 @@ const Interview: React.FC<{
     if (interview.result) return interview.result;
     if (
       interview.canceled &&
-      interview.canceledBy === "canceled-by-tutor-manage"
+      interview.canceledBy === "canceled-by-tutor-manager"
     )
       return intl(
         "tutor.onboarding.previous-interviews.cancelled-by-tutor-manage"
@@ -213,13 +214,13 @@ const Interview: React.FC<{
 
   return (
     <div className="flex gap-[14px] bg-natural-50 border border-natural-100 shadow shadow-previous-interview p-4 rounded-[10px]">
-      <div className="w-12 h-12 overflow-hidden rounded-full">
+      <div className="w-12 h-12 shrink-0 overflow-hidden rounded-full">
         <Avatar />
       </div>
       <div className="flex flex-col gap-1">
         <Typography tag="h5" className="text-body font-bold text-natural-950">
           {intl("tutor.onboarding.previous-interviews.person", {
-            tutor: interview.tutorName,
+            tutor: interview.tutorManager,
           })}
         </Typography>
         <Typography tag="p" className="text-natural-600 text-tiny">
