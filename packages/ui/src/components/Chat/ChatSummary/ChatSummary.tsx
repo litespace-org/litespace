@@ -6,7 +6,6 @@ import { useFormatMessage } from "@/hooks";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import dayjs from "@/lib/dayjs";
 import EmptyChatSummary from "@litespace/assets/EmptyChatsSummary";
-import { orUndefined } from "@litespace/utils/utils";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 import React from "react";
@@ -19,22 +18,16 @@ export type ChatSummaryProps = {
      * Chat room url.
      */
     url: string;
-    /**
-     * Other member name
-     */
-    name?: string | undefined;
-    /**
-     * Full image url
-     */
-    image?: string | undefined;
+    otherMember: {
+      id: number;
+      name: string | null;
+      image: string | null;
+      online: boolean;
+    };
     /**
      * Text of the latest message sent in the room.
      */
-    message: string | undefined;
-    /**
-     * isUserOnline as a placeholder if no message is available
-     */
-    isOnline?: boolean;
+    message?: string | null;
     /**
      * ISO UTC datetime that the latest message was sent at.
      */
@@ -108,9 +101,10 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                     >
                       <div className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-lg overflow-hidden">
                         <Avatar
-                          src={orUndefined(room.image)}
-                          seed={room.id.toString()}
-                          alt={orUndefined(room.name)}
+                          src={room.otherMember.image}
+                          seed={room.otherMember.id.toString()}
+                          alt={room.otherMember.name}
+                          object="cover"
                         />
                       </div>
                       <div className="flex flex-col grow justify-between">
@@ -119,7 +113,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                             tag="span"
                             className="text-natural-950 text-caption font-semibold"
                           >
-                            {room.name}
+                            {room.otherMember.name}
                           </Typography>
                           <Typography
                             tag="span"
@@ -136,12 +130,16 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                           className={cn(
                             "text-caption font-normal",
                             "line-clamp-1",
-                            room.read ? "text-brand-700" : "text-natural-600"
+                            room.message && room.read
+                              ? "text-brand-700"
+                              : "text-natural-600"
                           )}
                         >
                           {room.message ||
                             intl(
-                              room.isOnline ? "chat.active" : "chat.inactive"
+                              room.otherMember.online
+                                ? "chat.active"
+                                : "chat.inactive"
                             )}
                         </Typography>
                       </div>

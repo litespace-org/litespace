@@ -36,6 +36,7 @@ import dayjs from "@/lib/dayjs";
 import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
 import { isEmpty, isEqual } from "lodash";
 import { genSessionId } from "@litespace/utils";
+import { withImageUrls } from "@/lib/user";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -265,7 +266,9 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
   });
 
   const userLesonsIds = userLessons.map((lesson) => lesson.id);
-  const lessonMembers = await lessons.findLessonMembers(userLesonsIds);
+  const lessonMembers = await withImageUrls(
+    await lessons.findLessonMembers(userLesonsIds)
+  );
 
   const result: ILesson.FindUserLessonsApiResponse = {
     list: userLessons.map((lesson) => {

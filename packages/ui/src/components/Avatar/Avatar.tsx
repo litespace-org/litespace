@@ -15,7 +15,7 @@ export const Avatar: React.FC<{
    * property sets how the image should be resized to fit its container.
    */
   object?: "fill" | "contain" | "cover" | "none" | "scale-down";
-}> = ({ src, alt, seed, object = "contain" }) => {
+}> = ({ src, alt, seed, object = "cover" }) => {
   const [status, setStatus] = useState<Status>("loading");
 
   const onLoad = useCallback(() => {

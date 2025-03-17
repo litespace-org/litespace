@@ -9,7 +9,7 @@ import cn from "classnames";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Avatar } from "@/components/Avatar";
-import { dayjs, orUndefined } from "@litespace/utils";
+import { dayjs } from "@litespace/utils";
 import { Tooltip } from "@/components/Tooltip";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
@@ -107,9 +107,10 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                 >
                   <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
                     <Avatar
-                      alt={orUndefined(lesson.name)}
-                      src={orUndefined(lesson.imageUrl)}
-                      seed={lesson.userId?.toString()}
+                      alt={lesson.name}
+                      src={lesson.imageUrl}
+                      seed={lesson.userId}
+                      object="cover"
                     />
                   </div>
                   <div className="flex flex-col justify-between self-stretch">

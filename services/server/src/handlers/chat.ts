@@ -22,6 +22,7 @@ import {
 import { IMessage, IRoom } from "@litespace/types";
 import { asFindUserRoomsApiRecord } from "@/lib/chat";
 import { cache } from "@/lib/cache";
+import { withImageUrls } from "@/lib/user";
 
 const createRoomPayload = zod.object({
   userId: id,
@@ -125,7 +126,9 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
       });
 
       // members of this specific room
-      const roomMembers = members.filter((member) => member.roomId === roomId);
+      const roomMembers = await withImageUrls(
+        members.filter((member) => member.roomId === roomId)
+      );
       const currentMember = roomMembers.find((member) => member.id === userId);
       const otherMember = roomMembers.find((member) => member.id !== userId);
 
@@ -199,12 +202,26 @@ async function findRoomMembers(
   if (!allowed) return next(forbidden());
 
   const { roomId } = withNamedId("roomId").parse(req.params);
+
   const members = await rooms.findRoomMembers({
     roomIds: [roomId],
     excludeUsers: [user.id],
   });
   if (isEmpty(members)) return next(notfound.room());
-  res.status(200).json(members);
+
+  const statusMap = await cache.onlineStatus.isOnlineBatch(
+    members.map((member) => member.id)
+  );
+
+  const withStatus = members.map((member) => ({
+    ...member,
+    online: !!statusMap.get(member.id),
+  }));
+
+  const response: IRoom.FindRoomMembersApiResponse =
+    await withImageUrls(withStatus);
+
+  res.status(200).json(response);
 }
 
 async function updateRoom(req: Request, res: Response, next: NextFunction) {

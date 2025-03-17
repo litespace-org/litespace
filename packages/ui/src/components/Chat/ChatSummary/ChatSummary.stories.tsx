@@ -22,9 +22,13 @@ export default meta;
 
 const makeRoom = () => ({
   id: Math.floor(Math.random() * 100),
+  otherMember: {
+    id: Math.floor(Math.random() * 100),
+    name: faker.person.fullName(),
+    image: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    online: false,
+  },
   url: "/",
-  name: faker.person.fullName(),
-  image: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
   message: faker.lorem.words(1),
   sentAt: faker.date.past().toISOString(),
   read: faker.datatype.boolean(),

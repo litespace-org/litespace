@@ -6,7 +6,6 @@ import { formatMinutes } from "@/components/utils";
 import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
 import EmptyLessons from "@litespace/assets/EmptyLessons";
-import { orUndefined } from "@litespace/utils/utils";
 import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -127,9 +126,10 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                 <div className="flex flex-row gap-2 items-center">
                   <div className="w-10 h-10 rounded-lg overflow-hidden">
                     <Avatar
-                      src={orUndefined(lesson.otherMember.imageUrl)}
-                      alt={orUndefined(lesson.otherMember.name)}
-                      seed={lesson.otherMember.id.toString()}
+                      src={lesson.otherMember.imageUrl}
+                      alt={lesson.otherMember.name}
+                      seed={lesson.otherMember.id}
+                      object="cover"
                     />
                   </div>
                   <Typography tag="span" className="text-natural-950">

@@ -79,7 +79,12 @@ export const UserAvatar: React.FC<{
             variant === "small",
         })}
       >
-        <Avatar src={user.imageUrl} alt={user.name} seed={user.id.toString()} />
+        <Avatar
+          src={user.imageUrl}
+          alt={user.name}
+          seed={user.id}
+          object="cover"
+        />
       </div>
     </div>
   );
