@@ -56,6 +56,7 @@
     "./Settings": "./dist/components/Settings/index.js",
     "./SidebarNav": "./dist/components/SidebarNav/index.js",
     "./Slider": "./dist/components/Slider/index.js",
+    "./Steps": "./dist/components/TutorOnboarding/index.js",
     "./Stepper": "./dist/components/Stepper/index.js",
     "./StudentOverview": "./dist/components/StudentOverview/index.js",
     "./Switch": "./dist/components/Switch/index.js",
