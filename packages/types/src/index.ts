@@ -1,4 +1,5 @@
 export * as IContactRequest from "@/contactRequest";
+export * as IConfirmationCode from "@/confirmationCode";
 export * as ISessionEvent from "@/sessionEvent";
 export * as IUser from "@/user";
 export * as ITutor from "@/tutor";
