@@ -47,10 +47,13 @@ export const Session: React.FC<Props> = ({
   const mq = useMediaQuery();
 
   return (
-    <div className="flex relative flex-col h-full gap-4 lg:gap-6 pb-[78px]">
+    <div
+      id="session"
+      className="flex relative flex-col gap-4 lg:gap-6 pb-[54px] h-[calc(100vh-190px)] overflow-hidden" // why -190px ?!
+    >
       <div
         className={cn(
-          "w-full grow",
+          "w-full flex-1 h-[calc(100%-40px-54px)]",
           chat.enabled ? "relative lg:flex lg:flex-row lg:gap-6" : "flex"
         )}
       >

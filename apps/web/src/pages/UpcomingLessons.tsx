@@ -9,7 +9,7 @@ import {
 import { getRateLessonQuery } from "@/lib/query";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { RatingDialog } from "@litespace/ui/RatingDialog";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@litespace/ui/Toast";
 import { first } from "lodash";
@@ -23,6 +23,7 @@ type RateLessonParams = {
   tutorId: number | null;
   lessonId: number | null;
   tutorName: string | null;
+  duration: number;
   start: string | null;
   canRate: boolean;
 };
@@ -33,6 +34,7 @@ const defaultRateLessonParams: RateLessonParams = {
   start: null,
   tutorName: null,
   canRate: false,
+  duration: 0,
 };
 
 const UpcomingLessons: React.FC = () => {
@@ -59,11 +61,6 @@ const UpcomingLessons: React.FC = () => {
     ratified: true,
     canceled: true,
   });
-
-  // used to show rate dialog only if the lesson is already started
-  const isRatingLessonStarted = useMemo(() => {
-    return dayjs.utc(rateLessonParams.start).isBefore(dayjs.utc());
-  }, [rateLessonParams.start]);
 
   const rateTutor = useCreateRatingTutor({
     onSuccess: () => setRateLessonParams(defaultRateLessonParams),
@@ -105,6 +102,7 @@ const UpcomingLessons: React.FC = () => {
       lessonId: query.lessonId,
       start: query.start,
       tutorName: query.tutorName,
+      duration: query.duration,
     }));
     // Reste url search params
     setParams({});
@@ -128,10 +126,23 @@ const UpcomingLessons: React.FC = () => {
     // his rating shall be in the begining of the response from
     // the server.
     const rating = first(ratingQuery.data.list);
-    const canRate =
-      (!rating || rating.userId !== user.id) && isRatingLessonStarted;
+    const now = dayjs.utc();
+    const start = dayjs.utc(rateLessonParams.start);
+    const end = start
+      .add(rateLessonParams.duration, "minutes")
+      .add(10, "minutes");
+    const stated = start.isBefore(now);
+    const eneded = end.isAfter(now);
+
+    const canRate = (!rating || rating.userId !== user.id) && stated && !eneded;
     setRateLessonParams((prev) => ({ ...prev, canRate }));
-  }, [ratingQuery.data, ratingQuery.isPending, user, isRatingLessonStarted]);
+  }, [
+    ratingQuery.data,
+    ratingQuery.isPending,
+    user,
+    rateLessonParams.start,
+    rateLessonParams.duration,
+  ]);
 
   return (
     <div className="p-6 max-w-screen-3xl mx-auto w-full h-full">

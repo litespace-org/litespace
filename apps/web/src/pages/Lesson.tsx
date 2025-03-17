@@ -35,6 +35,7 @@ import cn from "classnames";
 import CalendarFilled from "@litespace/assets/CalendarFilled";
 import dayjs from "@/lib/dayjs";
 import TimerIndicator from "@/components/Session/TimerIndicator";
+import { capture } from "@/lib/sentry";
 
 /**
  * @todos
@@ -242,6 +243,18 @@ const Lesson: React.FC = () => {
     session,
   ]);
 
+  const onBeforeUnload = useCallback(() => {
+    session.leave(); // this shall close/stop related user media (video, share screen, etc)
+    sessionManager.leave(); // this shall close the connection (websocket), and invoke db mutations.
+  }, [session, sessionManager]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload);
+    };
+  }, [onBeforeUnload]);
+
   return (
     <div
       className={cn(
@@ -300,7 +313,7 @@ const Lesson: React.FC = () => {
             .capture(enableVideoStream)
             .then((result: MediaStream | Error) => {
               const error = result instanceof Error;
-              if (error) return;
+              if (error) return capture(error);
 
               const call =
                 requestPermission &&
@@ -449,6 +462,7 @@ const Lesson: React.FC = () => {
               start: lesson.data.lesson.start,
               tutorId: lessonMembers.other.userId,
               tutorName: lessonMembers.other.name,
+              duration: lesson.data.lesson.duration,
             });
             navigate(
               router.web({

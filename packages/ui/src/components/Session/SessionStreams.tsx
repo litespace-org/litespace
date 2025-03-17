@@ -4,6 +4,7 @@ import { StreamInfo } from "@/components/Session/types";
 import { organizeStreams } from "@/lib/stream";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { isEmpty } from "lodash";
+import cn from "classnames";
 
 export const SessionStreams: React.FC<{
   currentUserId: number;
@@ -27,7 +28,7 @@ export const SessionStreams: React.FC<{
       data-info={chat ? "with-chat" : "without-chat"}
     >
       {organizedStreams.focused ? (
-        <div className="w-full h-full lg:min-h-[553px] relative rounded-2xl overflow-hidden">
+        <div className={cn("w-full relative rounded-2xl overflow-hidden grow")}>
           <Stream
             muted={
               currentUserId === organizedStreams.focused.user.id &&
