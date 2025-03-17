@@ -30,6 +30,7 @@ export enum MutationKey {
 
   DeleteSlot = "delete-slot",
   UpdateUser = "update-user",
+  UpdateFullTutor = "update-full-tutor",
   UpdateUserPersonalInfo = "update-user-personal-info",
   UpdateTutorTopics = "update-tutor-topics",
 

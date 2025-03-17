@@ -92,6 +92,39 @@ export function useUpdateUserTopics({
   });
 }
 
+export function useUpdateFullTutor({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess<void>;
+  onError: OnError;
+}) {
+  const atlas = useAtlas();
+
+  const update = useCallback(
+    async ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: ITopic.ReplaceUserTopicsApiPayload & IUser.UpdateApiPayload;
+    }) => {
+      await Promise.all([
+        atlas.topic.replaceUserTopics(payload),
+        atlas.user.update(id, payload),
+      ]);
+    },
+    [atlas]
+  );
+
+  return useMutation({
+    mutationFn: update,
+    mutationKey: [MutationKey.UpdateFullTutor],
+    onSuccess,
+    onError,
+  });
+}
+
 export function useCurrentUser(enabled: boolean = true) {
   const atlas = useApi();
 

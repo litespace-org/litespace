@@ -33,6 +33,7 @@
     "./AllMessages": "./dist/AllMessages.tsx",
     "./ArrowDown": "./dist/ArrowDown.tsx",
     "./ArrowLeft": "./dist/ArrowLeft.tsx",
+    "./ArrowLeftLong": "./dist/ArrowLeftLong.tsx",
     "./ArrowRightLong": "./dist/ArrowRightLong.tsx",
     "./ArrowRight": "./dist/ArrowRight.tsx",
     "./ArrowUp": "./dist/ArrowUp.tsx",
