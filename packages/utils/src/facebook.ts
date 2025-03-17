@@ -3,7 +3,7 @@
  * @param fbclid you get that from url search params
  * @returns fbc which is a unique id for each user
  */
-export function formatFbc(fbclid: string | null) {
+export function formatFbc(fbclid?: string | null) {
   if (!fbclid) return undefined;
 
   const host = window.location.hostname;

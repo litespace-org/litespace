@@ -6,7 +6,7 @@ export class Analytics extends Base {
     payload: IAnalytics.ConversionEventPayload
   ): Promise<void> {
     return this.post({
-      route: "/api/v1/analytics/track-facebook-conversion",
+      route: "/api/v1/analytics/fb/track",
       payload,
     });
   }

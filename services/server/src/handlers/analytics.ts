@@ -1,12 +1,15 @@
 import safeRequest from "express-async-handler";
 import { IAnalytics } from "@litespace/types";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import zod from "zod";
 import dayjs from "@/lib/dayjs";
 import axios from "axios";
+import { conversionApiConfig } from "@/constants";
 
-// FOR DOCS and How to use the pixel: https://developers.facebook.com/docs/marketing-api/conversions-api/using-the-api/
-// FOR PARAMETERS we use: https://developers.facebook.com/docs/marketing-api/conversions-api/parameters
+// Pixel Docs:
+// https://developers.facebook.com/docs/marketing-api/conversions-api/using-the-api/
+// Parameters:
+// https://developers.facebook.com/docs/marketing-api/conversions-api/parameters
 
 const trackConversionEventPayload = zod.object({
   eventName: zod.nativeEnum(IAnalytics.EventType),
@@ -16,24 +19,7 @@ const trackConversionEventPayload = zod.object({
   customData: zod.object({}).optional(),
 });
 
-// We use either production or development pixel based on the environment
-const apiUrl =
-  process.env.NODE_ENV !== "production"
-    ? process.env.DEVELOPMENT_CONVERSION_API_URL
-    : process.env.PRODUCTION_CONVERSION_API_URL;
-
-const accessToken =
-  process.env.NODE_ENV !== "production"
-    ? process.env.DEVELOPMENT_CONVERSION_API_ACCESS_TOKEN
-    : process.env.PRODUCTION_CONVERSION_API_URL;
-
-async function trackFacebookEvents(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  if (!apiUrl || !accessToken) return next(res.status(200));
-
+async function trackFacebookEvents(req: Request, res: Response) {
   const body = trackConversionEventPayload.parse(req.body);
   const ip = req.ip || req.socket.remoteAddress || "Unknown IP";
 
@@ -46,25 +32,20 @@ async function trackFacebookEvents(
     },
     event_time: dayjs.utc().unix(),
     event_source_url: body.eventSourceUrl,
-    custom_data: { ...body.customData },
+    custom_data: body.customData,
     action_source: "website",
   };
 
-  try {
-    await axios.post(
-      apiUrl,
-      { data: [event] },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-  } catch (error) {
-    console.log(error);
-    res.status(200);
-  }
+  await axios.post(
+    conversionApiConfig.apiUrl,
+    { data: [event] },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${conversionApiConfig.token}`,
+      },
+    }
+  );
 
   res.status(200);
 }

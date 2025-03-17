@@ -108,6 +108,10 @@
     "./routes": {
       "import": "./dist/esm/routes/index.js",
       "require": "./dist/cjs/routes/index.js"
+    },
+    "./facebook": {
+      "import": "./dist/esm/facebook.js",
+      "require": "./dist/cjs/facebook.js"
     }
   },
   "react-native": {

@@ -6,15 +6,29 @@ import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
 import Footer from "@/components/Layout/Footer";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { sendFacebookEvent } from "@/lib/facebook";
+import { IAnalytics } from "@litespace/types";
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Layout: React.FC<{
+  children: React.ReactNode;
+  fbclid?: string;
+}> = ({ children, fbclid }) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const path = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     clarity.identify(getCustomeId(), sessionId, path);
   }, [path]);
+
+  useEffect(() => {
+    sendFacebookEvent({
+      page: path,
+      eventName: IAnalytics.EventType.PageView,
+      fbclid: searchParams.get("fbclid"),
+    });
+  }, [path, fbclid, searchParams]);
 
   return (
     <body

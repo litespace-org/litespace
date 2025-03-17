@@ -3,6 +3,6 @@ import analytics from "@/handlers/analytics";
 
 const router = Router();
 
-router.post("/track-facebook-conversion", analytics.trackFacebookEvents);
+router.post("/fb/track", analytics.trackFacebookEvents);
 
 export default router;
