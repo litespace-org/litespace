@@ -4,9 +4,8 @@ import {
   ChatSummary as Summary,
   type ChatSummaryProps,
 } from "@litespace/ui/Chat";
-import { orUndefined } from "@litespace/utils/utils";
 import { IRoom } from "@litespace/types";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 
@@ -17,12 +16,19 @@ function asRooms(
 
   return list.map((room) => ({
     id: room.roomId,
+    otherMemberId: room.otherMember.id,
+    otherMember: {
+      id: room.otherMember.id,
+      image: room.otherMember.image,
+      name: room.otherMember.name,
+      online: room.otherMember.online,
+    },
     url: router.web({
       route: Web.Chat,
       query: { room: room.roomId.toString() },
     }),
-    name: orUndefined(room.otherMember?.name),
-    image: orUndefined(room.otherMember?.image),
+    name: room.otherMember.name,
+    image: room.otherMember.image,
     message: room.latestMessage?.text,
     isOnline: room.otherMember.online,
     sentAt: room.latestMessage?.updatedAt || room.otherMember.lastSeen,
@@ -30,7 +36,7 @@ function asRooms(
   }));
 }
 
-export const ChatSummary = () => {
+export const ChatSummary: React.FC = () => {
   const { user } = useUserContext();
   const rooms = useFindUserRooms(user?.id, { size: 4 });
   const organizedRooms = useMemo(() => asRooms(rooms.list), [rooms.list]);

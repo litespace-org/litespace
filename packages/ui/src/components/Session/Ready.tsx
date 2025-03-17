@@ -24,15 +24,14 @@ export const Ready: React.FC<{
   const intl = useFormatMessage();
 
   const explaination = useMemo(() => {
-    if (
-      otherMember.role === IUser.Role.Tutor &&
-      otherMember.gender === IUser.Gender.Male
-    )
+    const isOtherMemberTutor =
+      otherMember.role === IUser.Role.TutorManager ||
+      otherMember.role === IUser.Role.Tutor;
+
+    if (isOtherMemberTutor && otherMember.gender === IUser.Gender.Male)
       return intl("session.ready.explaination.full.male-tutor");
-    if (
-      otherMember.role === IUser.Role.Tutor &&
-      otherMember.gender !== IUser.Gender.Male
-    )
+
+    if (isOtherMemberTutor && otherMember.gender !== IUser.Gender.Male)
       return intl("session.ready.explaination.full.female-tutor");
 
     if (
@@ -64,7 +63,7 @@ export const Ready: React.FC<{
     }
 
     return intl("session.ready.session-started-since", {
-      time: end.fromNow(true),
+      time: sessionStart.fromNow(true),
     });
   }, [start, duration, intl]);
 

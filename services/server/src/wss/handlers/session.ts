@@ -1,7 +1,7 @@
 import { cache } from "@/lib/cache";
 import { canAccessSession } from "@/lib/session";
 import { isGhost, isUser } from "@litespace/auth";
-import { asSessionId, isSessionId, logger, safe } from "@litespace/utils";
+import { isSessionId, logger, safe } from "@litespace/utils";
 import { ISessionEvent, Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { asSessionRoomId } from "@/wss/utils";
@@ -74,12 +74,6 @@ export class Session extends WssHandler {
       const user = this.user;
       if (!isUser(user)) return;
 
-      if (!isSessionId(sessionId))
-        return this.call(callback, {
-          code: Wss.AcknowledgeCode.InvalidSessionId,
-          message: `${sessionId} is not a valid session id`,
-        });
-
       const ok = await canAccessSession({
         sessionId,
         userId: user.id,
@@ -100,7 +94,7 @@ export class Session extends WssHandler {
       // add user to the session by adding its id in the cache
       await cache.session.addMember({
         userId: user.id,
-        sessionId: asSessionId(sessionId),
+        sessionId,
       });
 
       // notify members that a new member has joined the session
@@ -142,11 +136,9 @@ export class Session extends WssHandler {
       });
 
       // notify members that a member has left the session
-      this.broadcast(
-        Wss.ServerEvent.MemberLeftSession,
-        asSessionRoomId(sessionId),
-        { userId: user.id }
-      );
+      this.broadcast(Wss.ServerEvent.MemberLeftSession, sessionId, {
+        userId: user.id,
+      });
     });
     if (result instanceof Error) stdout.error(result.message);
   }

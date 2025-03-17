@@ -110,20 +110,22 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
       return await safe(
         async () =>
           await navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: !!video,
-            // video: video
-            //   ? {
-            //       /**
-            //        * We must sure that the aspect ratio for the video stream is
-            //        * 16:9 for two reasons.
-            //        * 1. The ratio 16:9 is the standard when working with videos.
-            //        * 2. The UI is built around this aspect ratio.
-            //        */
-            //       width: 1280,
-            //       height: 720,
-            //     }
-            //   : undefined,
+            audio: {
+              noiseSuppression: true,
+              echoCancellation: true, // Optional: Enable echo cancellation
+            },
+            video: video
+              ? {
+                  /**
+                   * We must sure that the aspect ratio for the video stream is
+                   * 16:9 for two reasons.
+                   * 1. The ratio 16:9 is the standard when working with videos.
+                   * 2. The UI is built around this aspect ratio.
+                   */
+                  width: 1280,
+                  height: 720,
+                }
+              : undefined,
           })
       );
     },
@@ -166,9 +168,27 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
         return capturedStream;
       }
 
-      if (!error) setError(error ? capturedStream : null);
+      setError(error ? capturedStream : null);
       setStream(error ? null : capturedStream);
       return capturedStream;
+
+      // noice cancellation
+      // const ctx = new AudioContext();
+      // const gainNode = ctx.createGain();
+      // const audioDest = ctx.createMediaStreamDestination();
+      // const source = ctx.createMediaStreamSource(capturedStream);
+      // // gainNode is set to 0.5
+      // gainNode.connect(audioDest);
+      // gainNode.gain.value = 0.5; // users can control the gain
+      // source.connect(gainNode);
+
+      // const output = new MediaStream([
+      //   ...capturedStream.getVideoTracks(),
+      //   ...audioDest.stream.getVideoTracks(),
+      // ]);
+
+      // setStream(output);
+      // return output;
     },
     [getUserMedia, stop]
   );
@@ -328,7 +348,7 @@ function usePeer(userId?: number) {
       >
     ) => {
       // todo: handle errors
-      console.log(error);
+      console.log(error.type, error.name);
     },
     []
   );
@@ -441,11 +461,10 @@ export function useShareScreen(onStop?: Void) {
       async () =>
         await navigator.mediaDevices.getDisplayMedia({
           audio: true,
-          video: true,
-          // video: {
-          //   width: 1280,
-          //   height: 720,
-          // },
+          video: {
+            width: 1280,
+            height: 720,
+          },
         })
     );
     setLoading(false);
@@ -557,6 +576,7 @@ export function useSessionV3({
    * Handler the main call stream event.
    */
   const onMainCallStream = useCallback((stream: MediaStream) => {
+    console.debug("Got a main call stream.");
     setOtherMemberStream(stream);
   }, []);
 
@@ -564,6 +584,7 @@ export function useSessionV3({
    * Handler for the main call close event.
    */
   const onMainCallClose = useCallback(() => {
+    console.debug("Close main call.");
     setOtherMemberStream(null);
     setMainCall(null);
   }, []);
@@ -572,6 +593,7 @@ export function useSessionV3({
    * Handler for the screen call stream event.
    */
   const onScreenCallStream = useCallback((stream: MediaStream) => {
+    console.log("Got a screen call stream");
     setOtherMemberScreenStream(stream);
   }, []);
 
@@ -581,6 +603,7 @@ export function useSessionV3({
    * @note this handler is executed on both sender and receiver sides.
    */
   const onScreenCallClose = useCallback(() => {
+    console.log("Close a screen call stream");
     setOtherMemberScreenStream(null);
     setScreenCall(null);
     /**
@@ -607,16 +630,36 @@ export function useSessionV3({
 
       const metadata = callMetadata.parse(call.metadata);
 
+      console.debug({
+        title: "Received a call",
+        src: "onCall",
+        metadata,
+      });
+
       /**
        * In case the other user is sharing his screen with the current user,
        * there is no need to respond with the current user stream.
        */
       call.answer(!metadata.screen ? userMedia.stream : undefined);
-      if (metadata.screen) return setScreenCall(call);
+      if (metadata.screen) {
+        call.on("stream", onScreenCallStream);
+        call.on("close", onScreenCallClose);
+        return setScreenCall(call);
+      }
+
       setMainCall(call);
+      call.on("stream", onMainCallStream);
+      call.on("close", onMainCallClose);
       notifyUserMediaState();
     },
-    [notifyUserMediaState, userMedia.stream]
+    [
+      notifyUserMediaState,
+      onMainCallClose,
+      onMainCallStream,
+      onScreenCallClose,
+      onScreenCallStream,
+      userMedia.stream,
+    ]
   );
 
   /**
@@ -696,6 +739,20 @@ export function useSessionV3({
    * session again.
    */
   useEffect(() => {
+    const shouldCall = screen.stream && userIds.other && isOtherMemberReady;
+
+    console.debug({
+      title: "Share screen stream",
+      src: "useSectionV3.useEffect",
+      shouldCall,
+      screen: !!screen.stream,
+      otherUserId: userIds.other,
+      isOtherMemberReady,
+      message: shouldCall
+        ? "Will share the the screen stream with the other member."
+        : "Will not share the screen stream with the other member.",
+    });
+
     if (screen.stream && userIds.other && isOtherMemberReady)
       return call({
         userId: userIds.other,
@@ -705,42 +762,35 @@ export function useSessionV3({
   }, [call, isOtherMemberReady, screen.stream, userIds.other]);
 
   useEffect(() => {
-    if (!isCaller || !userIds.other || !userMedia.stream) return;
+    const shouldCall =
+      isCaller && !!userIds.other && !!userMedia.stream && !!isOtherMemberReady;
+
+    console.debug({
+      title: "Call the other member",
+      src: "useSessionV3.useEffect",
+      shouldCall,
+      isCaller,
+      other: userIds.other,
+      userMediaStream: !!userMedia.stream,
+      isOtherMemberReady,
+    });
+
+    if (!isCaller || !userIds.other || !userMedia.stream || !isOtherMemberReady)
+      return;
+
     call({
       userId: userIds.other,
       stream: userMedia.stream,
     });
     notifyUserMediaState();
-  }, [call, isCaller, notifyUserMediaState, userIds.other, userMedia.stream]);
-
-  /**
-   * Handle main call events.
-   */
-  useEffect(() => {
-    if (!mainCall) return;
-    mainCall.on("stream", onMainCallStream);
-    mainCall.on("close", onMainCallClose);
-    return () => {
-      mainCall.off("stream", onMainCallStream);
-      mainCall.off("close", onMainCallClose);
-    };
-  }, [mainCall, onMainCallClose, onMainCallStream]);
-
-  /**
-   * Handle screen call events.
-   *
-   * @note with the current version, we only support one screen call. This mean
-   * that only one user can share his screen.
-   */
-  useEffect(() => {
-    if (!screenCall) return;
-    screenCall.on("stream", onScreenCallStream);
-    screenCall.on("close", onScreenCallClose);
-    return () => {
-      screenCall.off("stream", onScreenCallStream);
-      screenCall.off("close", onScreenCallClose);
-    };
-  }, [onScreenCallClose, onScreenCallStream, screenCall]);
+  }, [
+    call,
+    isCaller,
+    isOtherMemberReady,
+    notifyUserMediaState,
+    userIds.other,
+    userMedia.stream,
+  ]);
 
   return useMemo(
     () => ({
@@ -985,15 +1035,21 @@ export function useSessionMembers(
 
   const onJoinSession = useCallback(
     ({ userId }: { userId: number }) => {
+      console.debug(`${userId} joined the session`);
       if (currentUserId === userId) setJoining(false);
       setMembers((prev) => uniq([...prev, userId]));
     },
     [currentUserId]
   );
 
-  const onLeaveSession = useCallback(({ userId }: { userId: number }) => {
-    setMembers((prev) => [...prev].filter((member) => member !== userId));
-  }, []);
+  const onLeaveSession = useCallback(
+    ({ userId }: { userId: number }) => {
+      console.debug(`${userId} left the session`);
+      if (currentUserId === userId) setJoining(false);
+      setMembers((prev) => [...prev].filter((member) => member !== userId));
+    },
+    [currentUserId]
+  );
 
   useEffect(() => {
     if (!socket) return;
