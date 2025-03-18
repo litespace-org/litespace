@@ -29,6 +29,7 @@ export type Self = {
    */
   start: string;
   feedback: { interviewer: string | null; interviewee: string | null };
+  name: { interviewer: string | null; interviewee: string | null };
   note: string | null;
   level: number | null;
   status: Status;
@@ -51,6 +52,8 @@ export type Row = {
   interviewee_id: number;
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
+  interviewer_name: string | null;
+  interviewee_name: string | null;
   slot_id: number;
   session_id: ISession.Id;
   note: string | null;
@@ -117,4 +120,5 @@ export type FindInterviewsApiQuery = IFilter.Pagination & {
   levels?: number[];
   signed?: boolean;
   signers?: number[];
+  meta?: boolean;
 };

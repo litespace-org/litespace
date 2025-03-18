@@ -39,9 +39,13 @@ export function useFindInterviews(
   return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged, filter]);
 }
 
-export function useFindInfinitInterviews(
-  user?: number
-): UseInfinitePaginationQueryResult<
+export function useFindInfinitInterviews({
+  user,
+  meta,
+}: {
+  user?: number;
+  meta?: boolean;
+}): UseInfinitePaginationQueryResult<
   Element<IInterview.FindInterviewsApiResponse["list"]>
 > {
   const atlas = useApi();
@@ -51,11 +55,12 @@ export function useFindInfinitInterviews(
       if (!user) return { list: [], total: 0 };
       return atlas.interview.findInterviews({
         users: user ? [user] : [],
+        meta,
         page: pageParam,
         size: 10,
       });
     },
-    [atlas.interview, user]
+    [atlas.interview, user, meta]
   );
 
   return useInfinitePaginationQuery(findInterviews, [

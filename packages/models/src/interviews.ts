@@ -20,6 +20,8 @@ export class Interviews {
     interviewee_id: this.column("interviewee_id"),
     interviewer_feedback: this.column("interviewer_feedback"),
     interviewee_feedback: this.column("interviewee_feedback"),
+    interviewer_name: this.column("interviewer_name"),
+    interviewee_name: this.column("interviewee_name"),
     slot_id: this.column("slot_id"),
     session_id: this.column("session_id"),
     note: this.column("note"),
@@ -143,6 +145,7 @@ export class Interviews {
     statuses,
     signers,
     levels,
+    meta,
     signed,
     users,
     slots = [],
@@ -158,6 +161,7 @@ export class Interviews {
       statuses?: IInterview.Status[];
       levels?: IInterview.Self["level"][];
       signed?: boolean;
+      meta?: boolean;
       signers?: number[];
       /**
        * Start date time (ISO datetime format)
@@ -231,11 +235,33 @@ export class Interviews {
 
     const total = await countRows(baseBuilder.clone());
 
+    if (meta)
+      baseBuilder
+        .leftJoin(
+          "users as interviewer",
+          "interviews.interviewer_id",
+          "interviewer.id"
+        )
+        .leftJoin(
+          "users as interviewee",
+          "interviews.interviewee_id",
+          "interviewee.id"
+        )
+        .select([
+          "interviews.*",
+          "interviewer.id as interviewer_id",
+          "interviewer.name as interviewer_name",
+          "interviewee.id as interviewee_id",
+          "interviewee.name as interviewee_name",
+        ]);
+
     const queryBuilder = baseBuilder
       .clone()
-      .select<IInterview.Row[]>(this.columns)
       .orderBy(this.column("start"), "desc");
+
     const rows = await withSkippablePagination(queryBuilder, pagination);
+    console.log(rows);
+
     return { list: rows.map((row) => this.from(row)), total };
   }
 
@@ -251,6 +277,10 @@ export class Interviews {
       feedback: {
         interviewer: row.interviewer_feedback,
         interviewee: row.interviewee_feedback,
+      },
+      name: {
+        interviewer: row.interviewer_name,
+        interviewee: row.interviewee_name,
       },
       start: row.start.toISOString(),
       note: row.note,

@@ -69,6 +69,7 @@ const findInterviewsQuery = zod.object({
   statuses: zod.optional(zod.array(interviewStatus)),
   levels: zod.optional(zod.array(zod.coerce.number().int().positive())),
   signed: zod.optional(jsonBoolean),
+  meta: zod.optional(jsonBoolean),
   signers: zod.optional(ids),
   page: zod.optional(pageNumber),
   size: zod.optional(pageSize),
@@ -153,6 +154,7 @@ async function findInterviews(req: Request, res: Response, next: NextFunction) {
 
   const { list: userInterviews, total } = await interviews.find({
     users: query.users,
+    meta: query.meta,
     statuses: query.statuses,
     levels: query.levels,
     signed: query.signed,
