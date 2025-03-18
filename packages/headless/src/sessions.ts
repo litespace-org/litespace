@@ -510,7 +510,6 @@ export function useShareScreen(onStop?: Void) {
 
 export type SessionV3Payload = {
   sessionId?: ISession.Id;
-  isOtherMemberReady: boolean;
   /**
    * It should be true incase the current user should call the other user.
    */
@@ -529,7 +528,6 @@ const callMetadata = zod.object({
 export function useSessionV3({
   userIds,
   sessionId,
-  isOtherMemberReady,
   isCaller,
 }: SessionV3Payload) {
   const { peer, ready } = usePeer(userIds.current);
@@ -537,6 +535,7 @@ export function useSessionV3({
     useState<MediaStream | null>(null);
   const [otherMemberScreenStream, setOtherMemberScreenStream] =
     useState<MediaStream | null>(null);
+  const [startedMainCall, setStartedMainCall] = useState<boolean>(false);
   const [mainCall, setMainCall] = useState<MediaConnection | null>(null);
   const [screenCall, setScreenCall] = useState<MediaConnection | null>(null);
   const {
@@ -546,6 +545,27 @@ export function useSessionV3({
     otherMemberVideo,
   } = useSessionEvents(userIds.other, sessionId);
   const otherMemberSpeaking = useSpeakingV3(otherMemberStream);
+
+  const sessionManager = useSessionMembers(
+    useMemo(
+      () => ({
+        sessionId,
+        currentUserId: userIds.current,
+        onLeave: () => {
+          mainCall?.close();
+          screenCall?.close();
+          setMainCall(null);
+          setScreenCall(null);
+        },
+      }),
+      [mainCall, screenCall, sessionId, userIds]
+    )
+  );
+
+  const isOtherMemberJoined = useMemo(
+    () => !!userIds.other && sessionManager.members.includes(userIds.other),
+    [sessionManager.members, userIds.other]
+  );
 
   /**
    * Handler to be called whenever the current user screen stream is closed.
@@ -567,11 +587,6 @@ export function useSessionV3({
   const userMedia = useUserMedia(onUserMediaStreamStop);
   const screen = useShareScreen(onScreenStreamStop);
 
-  const notifyUserMediaState = useCallback(() => {
-    notifyCameraToggle(userMedia.video);
-    notifyMicToggle(userMedia.audio);
-  }, [notifyCameraToggle, notifyMicToggle, userMedia.audio, userMedia.video]);
-
   /**
    * Handler the main call stream event.
    */
@@ -588,6 +603,13 @@ export function useSessionV3({
     setOtherMemberStream(null);
     setMainCall(null);
   }, []);
+
+  const onMainCallError = useCallback(
+    (error: PeerError<"negotiation-failed" | "connection-closed">) => {
+      console.debug("Main call error", error.type);
+    },
+    []
+  );
 
   /**
    * Handler for the screen call stream event.
@@ -615,11 +637,19 @@ export function useSessionV3({
      * This mean that `screen.stop()` will be called on the previous screen call
      * owner.
      */
-    if (!screenCall) return;
-    const owner =
-      callMetadata.parse(screenCall.metadata).owner === userIds.current;
-    if (owner) screen.stop();
-  }, [screen, screenCall, userIds]);
+    //! DISABLE FOR NOW
+    // if (!screenCall) return;
+    // const owner =
+    //   callMetadata.parse(screenCall.metadata).owner === userIds.current;
+    // if (owner) screen.stop();
+  }, []);
+
+  const onScreenCallError = useCallback(
+    (error: PeerError<"negotiation-failed" | "connection-closed">) => {
+      console.debug("Screen call error", error.type);
+    },
+    []
+  );
 
   const onCall = useCallback(
     (call: MediaConnection) => {
@@ -641,24 +671,34 @@ export function useSessionV3({
        * there is no need to respond with the current user stream.
        */
       call.answer(!metadata.screen ? userMedia.stream : undefined);
+
       if (metadata.screen) {
         call.on("stream", onScreenCallStream);
         call.on("close", onScreenCallClose);
+        call.on("error", onScreenCallError);
         return setScreenCall(call);
       }
 
       setMainCall(call);
+      setStartedMainCall(true);
+      notifyCameraToggle(userMedia.video);
+      notifyMicToggle(userMedia.audio);
       call.on("stream", onMainCallStream);
       call.on("close", onMainCallClose);
-      notifyUserMediaState();
+      call.on("error", onMainCallError);
     },
     [
-      notifyUserMediaState,
+      notifyCameraToggle,
+      notifyMicToggle,
       onMainCallClose,
+      onMainCallError,
       onMainCallStream,
       onScreenCallClose,
+      onScreenCallError,
       onScreenCallStream,
+      userMedia.audio,
       userMedia.stream,
+      userMedia.video,
     ]
   );
 
@@ -694,10 +734,29 @@ export function useSessionV3({
         metadata: { screen, owner: userIds.current },
       });
 
-      if (screen) setScreenCall(call);
-      else setMainCall(call);
+      if (screen) {
+        call.on("stream", onScreenCallStream);
+        call.on("close", onScreenCallClose);
+        call.on("error", onScreenCallError);
+        return setScreenCall(call);
+      }
+
+      call.on("stream", onMainCallStream);
+      call.on("close", onMainCallClose);
+      call.on("error", onMainCallError);
+      setStartedMainCall(true);
+      return setMainCall(call);
     },
-    [peer, userIds]
+    [
+      onMainCallClose,
+      onMainCallError,
+      onMainCallStream,
+      onScreenCallClose,
+      onScreenCallError,
+      onScreenCallStream,
+      peer,
+      userIds,
+    ]
   );
 
   const closeScreenCall = useCallback(() => {
@@ -713,11 +772,12 @@ export function useSessionV3({
    * 3. Reset other states.
    */
   const leave = useCallback(() => {
+    sessionManager.leave();
     if (mainCall) mainCall.close();
     if (screenCall) screenCall.close();
     if (screen.stream) screen.stop();
     if (userMedia.stream) userMedia.stop();
-  }, [mainCall, screen, screenCall, userMedia]);
+  }, [mainCall, screen, screenCall, sessionManager, userMedia]);
 
   // listen for calls
   useEffect(() => {
@@ -739,31 +799,36 @@ export function useSessionV3({
    * session again.
    */
   useEffect(() => {
-    const shouldCall = screen.stream && userIds.other && isOtherMemberReady;
+    const shouldCall =
+      screen.stream && userIds.other && isOtherMemberJoined && !screenCall;
 
     console.debug({
       title: "Share screen stream",
       src: "useSectionV3.useEffect",
       shouldCall,
-      screen: !!screen.stream,
+      stream: screen.stream,
       otherUserId: userIds.other,
-      isOtherMemberReady,
+      isOtherMemberJoined,
       message: shouldCall
         ? "Will share the the screen stream with the other member."
         : "Will not share the screen stream with the other member.",
     });
 
-    if (screen.stream && userIds.other && isOtherMemberReady)
+    if (screen.stream && userIds.other && isOtherMemberJoined && !screenCall)
       return call({
         userId: userIds.other,
         stream: screen.stream,
         screen: true,
       });
-  }, [call, isOtherMemberReady, screen.stream, userIds.other]);
+  }, [call, isOtherMemberJoined, screen.stream, screenCall, userIds.other]);
 
   useEffect(() => {
     const shouldCall =
-      isCaller && !!userIds.other && !!userMedia.stream && !!isOtherMemberReady;
+      isCaller &&
+      !!userIds.other &&
+      !!userMedia.stream &&
+      !!isOtherMemberJoined &&
+      !startedMainCall;
 
     console.debug({
       title: "Call the other member",
@@ -771,29 +836,45 @@ export function useSessionV3({
       shouldCall,
       isCaller,
       other: userIds.other,
-      userMediaStream: !!userMedia.stream,
-      isOtherMemberReady,
+      stream: userMedia.stream,
+      isOtherMemberJoined,
+      startedMainCall,
     });
 
-    if (!isCaller || !userIds.other || !userMedia.stream || !isOtherMemberReady)
+    if (
+      !isCaller ||
+      !userIds.other ||
+      !userMedia.stream ||
+      !isOtherMemberJoined ||
+      !!startedMainCall
+    )
       return;
 
     call({
       userId: userIds.other,
       stream: userMedia.stream,
     });
-    notifyUserMediaState();
   }, [
     call,
     isCaller,
-    isOtherMemberReady,
-    notifyUserMediaState,
+    isOtherMemberJoined,
+    startedMainCall,
     userIds.other,
     userMedia.stream,
   ]);
 
+  useEffect(() => {
+    notifyCameraToggle(userMedia.video);
+  }, [notifyCameraToggle, userMedia.video]);
+
+  useEffect(() => {
+    notifyMicToggle(userMedia.audio);
+  }, [notifyMicToggle, userMedia.audio]);
+
   return useMemo(
     () => ({
+      sessionManager,
+      isOtherMemberJoined,
       isPeerReady: ready,
       screen,
       members: {
@@ -816,24 +897,15 @@ export function useSessionV3({
       call,
       leave,
       closeScreenCall,
-      toggleCamera: () => {
-        userMedia.toggleCamera();
-        notifyCameraToggle(!userMedia.video);
-      },
-      toggleMic: () => {
-        userMedia.toggleMic();
-        notifyMicToggle(!userMedia.audio);
-      },
-      notifyUserMediaState,
+      toggleCamera: userMedia.toggleCamera,
+      toggleMic: userMedia.toggleMic,
       capture: userMedia.capture,
     }),
     [
       call,
       closeScreenCall,
+      isOtherMemberJoined,
       leave,
-      notifyCameraToggle,
-      notifyMicToggle,
-      notifyUserMediaState,
       otherMemberAudio,
       otherMemberScreenStream,
       otherMemberSpeaking,
@@ -841,7 +913,15 @@ export function useSessionV3({
       otherMemberVideo,
       ready,
       screen,
-      userMedia,
+      sessionManager,
+      userMedia.audio,
+      userMedia.capture,
+      userMedia.loading,
+      userMedia.speaking,
+      userMedia.stream,
+      userMedia.toggleCamera,
+      userMedia.toggleMic,
+      userMedia.video,
     ]
   );
 }
@@ -986,10 +1066,15 @@ export function useDevices() {
 /**
  * Reflect and manage session members in real-time.
  */
-export function useSessionMembers(
-  sessionId?: ISession.Id,
-  currentUserId?: number
-) {
+export function useSessionMembers({
+  sessionId,
+  currentUserId,
+  onLeave,
+}: {
+  sessionId?: ISession.Id;
+  currentUserId?: number;
+  onLeave: Void;
+}) {
   const socket = useSocket();
   const atlas = useAtlas();
 
@@ -1029,6 +1114,7 @@ export function useSessionMembers(
 
   const leave = useCallback(() => {
     if (!socket || !sessionId) return;
+
     socket.emit(Wss.ClientEvent.LeaveSession, { sessionId });
     setJoining(false);
   }, [sessionId, socket]);
@@ -1047,8 +1133,9 @@ export function useSessionMembers(
       console.debug(`${userId} left the session`);
       if (currentUserId === userId) setJoining(false);
       setMembers((prev) => [...prev].filter((member) => member !== userId));
+      onLeave();
     },
-    [currentUserId]
+    [currentUserId, onLeave]
   );
 
   useEffect(() => {

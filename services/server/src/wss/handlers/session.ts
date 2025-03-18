@@ -129,16 +129,20 @@ export class Session extends WssHandler {
         },
       });
 
-      // remove user from the session by removing its id from the cache
+      // Remove user from the session by removing its id from the cache
       await cache.session.removeMember({
         userId: user.id,
         sessionId,
       });
 
       // notify members that a member has left the session
-      this.broadcast(Wss.ServerEvent.MemberLeftSession, sessionId, {
-        userId: user.id,
-      });
+      this.broadcast(
+        Wss.ServerEvent.MemberLeftSession,
+        asSessionRoomId(sessionId),
+        {
+          userId: user.id,
+        }
+      );
     });
     if (result instanceof Error) stdout.error(result.message);
   }

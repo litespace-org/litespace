@@ -50,7 +50,7 @@ export const SessionStreams: React.FC<{
               item && (
                 <div
                   key={idx}
-                  className="border border-natural-200 lg:h-[123px] lg:w-[219px] w-full md:w-1/2  relative rounded-lg overflow-hidden"
+                  className="border border-natural-200 lg:h-[123px] lg:w-[219px] w-full relative rounded-lg overflow-hidden"
                 >
                   <Stream
                     size="small"

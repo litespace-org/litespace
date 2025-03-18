@@ -16,7 +16,6 @@ import {
   SessionV3Payload,
   useSessionV3,
   useDevices,
-  useSessionMembers,
 } from "@litespace/headless/sessions";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import { asRateLessonQuery } from "@/lib/query";
@@ -124,29 +123,17 @@ const Lesson: React.FC = () => {
   const [caller, setCaller] = useState<boolean>(false);
   const [requestPermission, setRequestPermission] = useState<boolean>(false);
   const [showShareScreenDialog, setShowScreenDialog] = useState<boolean>(false);
-  const sessionManager = useSessionMembers(
-    lesson.data?.lesson.sessionId,
-    user?.id
-  );
   const sessionPayload = useMemo((): SessionV3Payload => {
     const other = lessonMembers?.other.userId;
-    const isOtherMemberReady =
-      !!other && sessionManager.members.includes(other);
     return {
       sessionId: lesson.data?.lesson.sessionId,
       isCaller: caller,
-      isOtherMemberReady,
       userIds: {
         current: lessonMembers?.current.userId,
         other,
       },
     };
-  }, [
-    caller,
-    lesson.data?.lesson.sessionId,
-    lessonMembers,
-    sessionManager.members,
-  ]);
+  }, [caller, lesson.data?.lesson.sessionId, lessonMembers]);
   const session = useSessionV3(sessionPayload);
   const devices = useDevices();
 
@@ -244,9 +231,8 @@ const Lesson: React.FC = () => {
   ]);
 
   const onBeforeUnload = useCallback(() => {
-    session.leave(); // this shall close/stop related user media (video, share screen, etc)
-    sessionManager.leave(); // this shall close the connection (websocket), and invoke db mutations.
-  }, [session, sessionManager]);
+    session.leave();
+  }, [session]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", onBeforeUnload);
@@ -316,11 +302,7 @@ const Lesson: React.FC = () => {
               if (error) return capture(error);
 
               const call =
-                requestPermission &&
-                !error &&
-                lessonMembers?.other.userId &&
-                sessionManager.members.includes(lessonMembers?.other.userId);
-
+                requestPermission && !error && session.isOtherMemberJoined;
               if (call) setCaller(true);
               setRequestPermission(false);
               devices.recheck();
@@ -375,7 +357,7 @@ const Lesson: React.FC = () => {
         </div>
       ) : null}
 
-      {!sessionManager.joined &&
+      {!session.sessionManager.joined &&
       lessonMembers &&
       !lesson.isLoading &&
       lesson.data ? (
@@ -397,9 +379,7 @@ const Lesson: React.FC = () => {
               //! TODO: gender is not in the response.
               //! TODO: gender should be optional
               gender: IUser.Gender.Male,
-              incall: sessionManager.members.includes(
-                lessonMembers.other.userId
-              ),
+              incall: session.isOtherMemberJoined,
               role: lessonMembers.other.role,
             },
           }}
@@ -413,21 +393,18 @@ const Lesson: React.FC = () => {
           }}
           speaking={session.members.current.speaking}
           join={() => {
-            sessionManager.join();
-            if (
-              sessionManager.members.includes(lessonMembers.other.userId) &&
-              session.members.current.stream
-            )
+            session.sessionManager.join();
+            if (session.isOtherMemberJoined && session.members.current.stream)
               return setCaller(true);
           }}
-          joining={sessionManager.joining}
+          joining={session.sessionManager.joining}
         />
       ) : null}
 
       {lessonMembers &&
       lesson.data &&
       !lesson.isLoading &&
-      sessionManager.joined ? (
+      session.sessionManager.joined ? (
         <Session
           streams={streams}
           currentUserId={lessonMembers.current.userId}
@@ -454,8 +431,7 @@ const Lesson: React.FC = () => {
           }}
           leave={() => {
             if (!lesson.data) return;
-            session.leave(); // this shall close/stop related user media (video, share screen, etc)
-            sessionManager.leave(); // this shall close the connection (websocket), and invoke db mutations.
+            session.leave();
             const student = lessonMembers.current.role === IUser.Role.Student;
             const query = asRateLessonQuery({
               lessonId: lessonMembers.current.lessonId,

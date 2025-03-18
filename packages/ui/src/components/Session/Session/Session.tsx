@@ -49,11 +49,11 @@ export const Session: React.FC<Props> = ({
   return (
     <div
       id="session"
-      className="flex relative flex-col gap-4 lg:gap-6 pb-[54px] h-[calc(100vh-190px)] overflow-hidden" // why -190px ?!
+      className="flex relative flex-col gap-4 lg:gap-6 h-[max(calc(100vh-190px),800px)] overflow-hidden" // why -190px ?!
     >
       <div
         className={cn(
-          "w-full flex-1 h-[calc(100%-40px-54px)]",
+          "w-full flex-1 h-[calc(100%-40px-24px)]",
           chat.enabled ? "relative lg:flex lg:flex-row lg:gap-6" : "flex"
         )}
       >
