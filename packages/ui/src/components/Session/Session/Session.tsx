@@ -15,7 +15,7 @@ type Props = {
     error?: boolean;
     toggle: Void;
   };
-  cast: {
+  cast?: {
     enabled: boolean;
     error?: boolean;
     toggle: Void;

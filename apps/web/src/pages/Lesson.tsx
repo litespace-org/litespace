@@ -35,6 +35,7 @@ import CalendarFilled from "@litespace/assets/CalendarFilled";
 import dayjs from "@/lib/dayjs";
 import TimerIndicator from "@/components/Session/TimerIndicator";
 import { capture } from "@/lib/sentry";
+import { isMobileBrowser } from "@/lib/browser";
 
 /**
  * @todos
@@ -241,6 +242,19 @@ const Lesson: React.FC = () => {
     };
   }, [onBeforeUnload]);
 
+  const cast = useMemo(() => {
+    if (isMobileBrowser()) return;
+    return {
+      enabled: !!session.screen.stream,
+      toggle: async () => {
+        if (session.screen.stream) return session.screen.stop();
+        if (session.members.other.screen) return setShowScreenDialog(true);
+        return await session.screen.share();
+      },
+      error: !!session.screen.error,
+    };
+  }, [session.members.other.screen, session.screen]);
+
   return (
     <div
       className={cn(
@@ -415,16 +429,7 @@ const Lesson: React.FC = () => {
             toggle: session.toggleMic,
             error: !devices.info.microphone.connected,
           }}
-          cast={{
-            enabled: !!session.screen.stream,
-            toggle: async () => {
-              if (session.screen.stream) return session.screen.stop();
-              if (session.members.other.screen)
-                return setShowScreenDialog(true);
-              return await session.screen.share();
-            },
-            error: !!session.screen.error,
-          }}
+          cast={cast}
           timer={{
             duration: lesson.data.lesson.duration,
             startAt: lesson.data.lesson.start,
