@@ -51,6 +51,11 @@ export const UpcomingLessons = () => {
       lessonsUrl={Web.UpcomingLessons}
       tutorsUrl={Web.Tutors}
       lessons={lessons}
+      isTutor={
+        user?.role === IUser.Role.Tutor ||
+        user?.role === IUser.Role.TutorManager
+      }
+      scheduleUrl={Web.ScheduleManagement}
     />
   );
 };

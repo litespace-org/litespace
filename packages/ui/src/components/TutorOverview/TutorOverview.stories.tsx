@@ -8,11 +8,11 @@ const meta: Meta<typeof TutorOverview> = {
   title: "TutorOverview",
   component: TutorOverview,
   parameters: {
-    layout: null,
+    layout: "centered",
   },
   decorators: [
     (Story) => (
-      <div className="w-[1200px] mx-auto">
+      <div className="w-[90vw] mx-auto">
         <Story />
       </div>
     ),
