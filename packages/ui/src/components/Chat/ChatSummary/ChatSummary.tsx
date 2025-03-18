@@ -10,6 +10,7 @@ import { Void } from "@litespace/types";
 import cn from "classnames";
 import React from "react";
 import { Link } from "react-router-dom";
+import { isEmpty } from "lodash";
 
 export type ChatSummaryProps = {
   rooms: Array<{
@@ -58,7 +59,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
   return (
     <div
       className={cn(
-        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50"
+        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50 flex flex-col"
       )}
     >
       <Typography
@@ -71,7 +72,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
       {error && retry && !loading ? (
         <div className="w-full h-96 flex justify-center items-center">
           <LoadingError
-            size={mq.sm ? "medium" : "small"}
+            size={mq.md ? "medium" : "small"}
             error={intl("student-dashboard.chat-summary.error")}
             retry={retry}
           />
@@ -81,7 +82,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
       {loading ? (
         <div className="w-full h-96 flex justify-center items-center">
           <Loader
-            size={mq.sm ? "medium" : "small"}
+            size={mq.md ? "medium" : "small"}
             text={intl("student-dashboard.chat-summary.loading")}
           />
         </div>
@@ -91,15 +92,15 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
         <>
           <div>
             {rooms.length ? (
-              <div className="mt-4 mb-[19px] flex flex-col gap-4">
+              <div className="my-4 flex flex-col gap-4">
                 {rooms.map((room) => {
                   return (
                     <Link
                       to={room.url}
                       key={room.id}
-                      className="group w-full flex gap-2 "
+                      className="group w-full flex gap-2 p-1"
                     >
-                      <div className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-lg overflow-hidden">
+                      <div className="min-w-[43px] min-h-[43px] w-[43px] h-[43px] rounded-lg overflow-hidden">
                         <Avatar
                           src={room.otherMember.image}
                           seed={room.otherMember.id.toString()}
@@ -151,16 +152,18 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
               <EmptyChats />
             )}
           </div>
-          <Link to={chatsUrl} className="intline-block w-full">
-            <Button className="w-full" size="large">
-              <Typography
-                tag="span"
-                className="text-natural-50 text-caption font-semibold"
-              >
-                {intl("student-dashboard.button.find-chats")}
-              </Typography>
-            </Button>
-          </Link>
+          {!isEmpty(rooms) ? (
+            <Link to={chatsUrl} className="intline-block w-full mt-auto">
+              <Button className="w-full" size="large">
+                <Typography
+                  tag="span"
+                  className="text-natural-50 text-caption font-semibold"
+                >
+                  {intl("student-dashboard.button.find-chats")}
+                </Typography>
+              </Button>
+            </Link>
+          ) : null}
         </>
       ) : null}
     </div>
@@ -171,7 +174,7 @@ const EmptyChats = () => {
   const intl = useFormatMessage();
   return (
     <div className="flex flex-col items-center gap-6 mb-12 mt-8 lg:mt-6">
-      <EmptyChatSummary />
+      <EmptyChatSummary className="w-[204px] h-[140px] lg:w-[228px] lg:h-[156px]" />
       <Typography
         tag="span"
         className="text-natural-950 text-caption sm:text-subtitle-1 font-bold sm:font-semibold"

@@ -16,9 +16,9 @@ export const OverviewCard: React.FC<{
   return (
     <div
       className={cn(
-        "p-4 bg-natural-50 rounded-2xl shadow-ls-x-small",
-        "border border-transparent hover:border-natural-100 max-w-[215px]",
-        "basis-full flex flex-col justify-between gap-2 relative overflow-hidden",
+        "p-3 md:p-4 bg-natural-50 rounded-lg md:rounded-2xl shadow-ls-x-small",
+        "border border-transparent hover:border-natural-100",
+        "basis-full flex flex-col justify-between gap-[10px] md:gap-2 relative overflow-hidden",
         className
       )}
     >
@@ -38,14 +38,16 @@ export const OverviewCard: React.FC<{
       />
       <div className="flex items-center gap-2 z-10">
         <div
-          className={cn("w-6 h-6 rounded-md flex justify-center items-center")}
+          className={cn(
+            "w-5 h-5 md:w-6 md:h-6 rounded-md flex justify-center items-center"
+          )}
           style={{ backgroundColor: `var(--${color}-500)` }}
         >
           {icon}
         </div>
         <Typography
           tag="h2"
-          className="text-natural-600 text-caption font-normal"
+          className="text-natural-600 text-caption md:text-tiny lg:text-caption font-normal md:font-bold lg:font-normal"
         >
           {intl(title)}
         </Typography>
@@ -54,7 +56,7 @@ export const OverviewCard: React.FC<{
         tag="p"
         className={cn(
           "text-natural-950 inline-block self-start border-b pb-1",
-          "text-h3 font-semibold"
+          "text-body md:text-subtitle-1 xl:text-h3 font-bold md:font-semibold"
         )}
         style={{ borderBottomColor: `var(--${color}-500)` }}
       >

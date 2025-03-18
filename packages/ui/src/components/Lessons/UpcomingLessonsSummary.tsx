@@ -45,6 +45,8 @@ type Props = {
    */
   lessonsUrl: string;
   tutorsUrl: string;
+  isTutor: boolean;
+  scheduleUrl: string;
   loading?: boolean;
   error?: boolean;
   retry?: Void;
@@ -57,6 +59,8 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
   lessons,
   lessonsUrl,
   tutorsUrl,
+  isTutor,
+  scheduleUrl,
   loading,
   error,
   retry,
@@ -79,7 +83,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
       {error && retry && !loading ? (
         <div className="w-full h-96 flex justify-center items-center">
           <LoadingError
-            size={mq.sm ? "medium" : "small"}
+            size={mq.md ? "medium" : "small"}
             error={intl("student-dashboard.upcoming-lessons-summary.error")}
             retry={retry}
           />
@@ -89,7 +93,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
       {loading ? (
         <div className="w-full h-96 flex justify-center items-center">
           <Loader
-            size={mq.sm ? "medium" : "small"}
+            size={mq.md ? "medium" : "small"}
             text={intl("student-dashboard.upcoming-lessons-summary.loading")}
           />
         </div>
@@ -103,7 +107,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                 <Link
                   key={i}
                   to={lesson.url}
-                  className="flex gap-2 items-center"
+                  className="flex gap-2 items-center p-1"
                 >
                   <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
                     <Avatar
@@ -165,7 +169,11 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
               </Link>
             </div>
           ) : (
-            <EmptyUpcomingLessonsComponent tutorsUrl={tutorsUrl} />
+            <EmptyUpcomingLessonsComponent
+              tutorsUrl={tutorsUrl}
+              isTutor={isTutor}
+              scheduleUrl={scheduleUrl}
+            />
           )}
         </div>
       ) : null}
@@ -175,26 +183,35 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
 
 const EmptyUpcomingLessonsComponent: React.FC<{
   tutorsUrl: string;
-}> = ({ tutorsUrl }) => {
+  isTutor: boolean;
+  scheduleUrl: string;
+}> = ({ tutorsUrl, isTutor, scheduleUrl }) => {
   const intl = useFormatMessage();
   return (
-    <div className={cn("flex flex-col gap-12 mt-8 lg:mt-6")}>
+    <div className={cn("flex flex-col gap-12 mt-8 lg:mt-4")}>
       <div className={cn("flex flex-col items-center gap-6")}>
-        <EmptyUpcomingLessons />
+        <EmptyUpcomingLessons className="w-[204px] h-[137px] lg:w-[228px] lg:h-[153px]" />
         <Typography
           tag="span"
-          className="text-natural-950 font-bold sm:font-semibold text-caption sm:text-subtitle-1"
+          className="text-natural-950 font-bold sm:font-semibold text-caption sm:text-subtitle-1 text-center"
         >
-          {intl("student-dashboard.start-journey")}
+          {isTutor
+            ? intl("tutor-dashboard.upcoming-lessons.empty")
+            : intl("student-dashboard.start-journey")}
         </Typography>
       </div>
-      <Link to={tutorsUrl} className="intline-block w-full">
+      <Link
+        to={isTutor ? scheduleUrl : tutorsUrl}
+        className="intline-block w-full"
+      >
         <Button className="w-full" size="large">
           <Typography
             tag="span"
             className="text-natural-50 font-semibold text-caption"
           >
-            {intl("student-dashboard.button.find-tutors")}
+            {isTutor
+              ? intl("tutor-dashboard.upcoming-lessons.create-your-schedule")
+              : intl("student-dashboard.button.find-tutors")}
           </Typography>
         </Button>
       </Link>

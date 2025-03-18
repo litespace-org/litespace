@@ -47,43 +47,49 @@ export const InvoicesOverview: React.FC<{
     );
 
   return (
-    <div className="w-full grid gap-6 flex-wrap grid-cols-[repeat(auto-fill,minmax(310px,auto))] [&>*]:max-w-none">
+    <div className="w-full grid grid-cols-4 gap-4 lg:gap-6 flex-wrap">
       <Card
-        icon={<ChartSquare className="[&>*]:stroke-natural-50 w-4 h-4" />}
+        icon={
+          <ChartSquare className="[&>*]:stroke-natural-50 w-3 h-3 md:w-4 md:h-4" />
+        }
         title="tutor-invoices.overview.total-revenue"
         value={intl("global.currency.egp", {
           value: formatNumber(totalRevenue),
         })}
         color="brand"
-        className="[&>:nth-child(3)>:nth-child(2)]:text-body [&>:nth-child(3)>:nth-child(2)]:font-bold !gap-4"
+        className="col-span-2 lg:col-span-1"
       />
 
       <Card
-        icon={<Money className="[&>*]:stroke-natural-50 w-4 h-4" />}
+        icon={<Money className="[&>*]:stroke-natural-50 h-3 md:w-4 md:h-4" />}
         title="tutor-invoices.overview.available-revenue"
         value={intl("global.currency.egp", {
           value: formatNumber(availableRevenue),
         })}
         color="secondary"
-        className="[&>:nth-child(3)>:nth-child(2)]:text-body [&>:nth-child(3)>:nth-child(2)]:font-bold !gap-4"
+        className="col-span-2 lg:col-span-1"
       />
 
       <Card
-        icon={<TransactionMinus className="[&>*]:stroke-natural-50 w-4 h-4" />}
+        icon={
+          <TransactionMinus className="[&>*]:stroke-natural-50 h-3 md:w-4 md:h-4" />
+        }
         title="tutor-invoices.overview.pending-invoices-count"
         value={formatNumber(pendingInvoicesCount)}
         color="warning"
-        className="[&>:nth-child(3)>:nth-child(2)]:text-body [&>:nth-child(3)>:nth-child(2)]:font-bold !gap-4"
+        className="col-span-2 lg:col-span-1"
       />
 
       <Card
-        icon={<EmptyWalletTime className="[&>*]:stroke-natural-50 w-4 h-4" />}
+        icon={
+          <EmptyWalletTime className="[&>*]:stroke-natural-50 h-3 md:w-4 md:h-4" />
+        }
         value={intl("global.currency.egp", {
           value: formatNumber(futureRevenue),
         })}
         title="tutor-invoices.overview.future-revenue"
         color="destructive"
-        className="[&>:nth-child(3)>:nth-child(2)]:text-body [&>:nth-child(3)>:nth-child(2)]:font-bold !gap-4"
+        className="col-span-2 lg:col-span-1"
       />
     </div>
   );

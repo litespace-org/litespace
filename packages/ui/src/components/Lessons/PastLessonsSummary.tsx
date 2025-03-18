@@ -18,6 +18,7 @@ import { Avatar } from "@/components/Avatar";
 import { orUndefined } from "@litespace/utils";
 import { Tooltip } from "@/components/Tooltip";
 import { BasePastLessonProps } from "@/components/Lessons/types";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 export type Props = BasePastLessonProps & {
   /**
@@ -49,6 +50,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
   loadingMore,
 }) => {
   const intl = useFormatMessage();
+  const { md } = useMediaQuery();
 
   return (
     <div
@@ -69,7 +71,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
       {loading && !error ? (
         <div className="mb-[135px] mt-[112px]">
           <Loader
-            size="medium"
+            size={md ? "medium" : "small"}
             text={
               isTutor
                 ? intl("tutor-dashboard.past-lessons.loading")
@@ -82,7 +84,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
       {error && retry && !loading ? (
         <div className="mt-[72px] mb-[76px]">
           <LoadingError
-            size="medium"
+            size={md ? "medium" : "small"}
             error={
               isTutor
                 ? intl("tutor-dashboard.past-lessons.error")
@@ -106,9 +108,6 @@ export const PastLessonsSummary: React.FC<Props> = ({
               name={lesson.otherMember.name}
               imageUrl={lesson.otherMember.imageUrl}
               start={lesson.start}
-              end={dayjs(lesson.start)
-                .add(lesson.duration, "minutes")
-                .toISOString()}
               isTutor={!!isTutor}
               buttonDisabled={!!sendingMessage}
               buttonLoading={sendingMessage === lesson.id}
@@ -153,10 +152,6 @@ type RowProps = {
    */
   start: string;
   /**
-   * Lesson end datetime in ISO UTC format.
-   */
-  end: string;
-  /**
    * tutor or student name
    */
   name?: string | null;
@@ -189,7 +184,6 @@ type RowProps = {
 
 export const Row: React.FC<RowProps> = ({
   start,
-  end,
   name,
   userId,
   imageUrl,
@@ -217,7 +211,7 @@ export const Row: React.FC<RowProps> = ({
       <div className="flex flex-col justify-between self-stretch">
         <Typography
           tag="span"
-          className="text-natural-950 text-caption font-semibold"
+          className="text-natural-950 text-tiny md:text-body font-semibold"
         >
           {dayjs(start).format("dddd - D MMMM YYYY")}
         </Typography>
@@ -242,32 +236,22 @@ export const Row: React.FC<RowProps> = ({
             tag="span"
             className="block text-natural-600 ms-[18px] text-tiny font-normal"
           >
-            {dayjs(start).format("h:mm")}
-            {" - "}
-            {dayjs(end).format("h:mm a")}
+            {dayjs(start).format("h:mm a")}
           </Typography>
         </div>
       </div>
       <div className="mr-auto">
         <Button
-          size="medium"
-          className="flex items-center justify-center bg-brand-700 rounded-lg"
+          size="large"
+          className="flex items-center justify-center bg-brand-700 rounded-lg !px-2"
           onClick={onClick}
           disabled={buttonDisabled}
           loading={buttonLoading}
         >
           {isTutor ? (
-            <SendSVG
-              className="[&>*]:stroke-natural-50"
-              width={16}
-              height={16}
-            />
+            <SendSVG className="[&>*]:stroke-natural-50 w-6 h-6" />
           ) : (
-            <AddCalendarSVG
-              className="[&>*]:stroke-natural-50"
-              width={16}
-              height={16}
-            />
+            <AddCalendarSVG className="[&>*]:stroke-natural-50 w-4 h-4" />
           )}
         </Button>
       </div>

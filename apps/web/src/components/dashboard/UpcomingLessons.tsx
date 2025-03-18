@@ -44,13 +44,20 @@ export const UpcomingLessons = () => {
   );
 
   return (
-    <Summary
-      loading={lessonsQuery.query.isPending}
-      error={lessonsQuery.query.isError}
-      retry={lessonsQuery.query.refetch}
-      lessonsUrl={Web.UpcomingLessons}
-      tutorsUrl={Web.Tutors}
-      lessons={lessons}
-    />
+    <div className="md:col-span-1 [&>*]:h-full">
+      <Summary
+        loading={lessonsQuery.query.isPending}
+        error={lessonsQuery.query.isError}
+        retry={lessonsQuery.query.refetch}
+        lessonsUrl={Web.UpcomingLessons}
+        tutorsUrl={Web.Tutors}
+        lessons={lessons}
+        isTutor={
+          user?.role === IUser.Role.Tutor ||
+          user?.role === IUser.Role.TutorManager
+        }
+        scheduleUrl={Web.ScheduleManagement}
+      />
+    </div>
   );
 };
