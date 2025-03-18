@@ -67,33 +67,45 @@ export const TutorOverview: React.FC<Props> = ({
     );
 
   return (
-    <div className="flex gap-6 flex-wrap w-full">
+    <div className="grid grid-cols-4 [&>*]:col-span-2 md:[&>*]:col-span-1 lg:[&>*]:col-span-2 xl:[&>*]:col-span-1 gap-4 lg:gap-6 w-full">
       <Card
-        icon={<Video16X16 className="[&>*]:stroke-natural-50" width={16} />}
+        icon={
+          <Video16X16 className="w-3 h-3 md:w-4 md:h-4 [&>*]:stroke-natural-50" />
+        }
         title="tutor-dashboard.overview.total-lessons"
         value={formatNumber(totalLessonCount)}
         color="brand"
+        className="lg:[&>.value]:!text-h3"
       />
 
       <Card
-        icon={<Check16X16 className="[&]*:stroke-natural-50" width={16} />}
+        icon={
+          <Check16X16 className="w-3 h-3 md:w-4 md:h-4 [&]*:stroke-natural-50" />
+        }
         title="tutor-dashboard.overview.completed-lessons"
         value={formatNumber(completedLessonCount)}
         color="secondary"
+        className="lg:[&>.value]:!text-h3"
       />
 
       <Card
-        icon={<Clock16X16 className="[&]*:stroke-natural-50" width={16} />}
+        icon={
+          <Clock16X16 className="w-3 h-3 md:w-4 md:h-4 [&]*:stroke-natural-50" />
+        }
         title="tutor-dashboard.overview.tutoring-time"
         value={tutoringTime}
         color="warning"
+        className="lg:[&>.value]:!text-h3"
       />
 
       <Card
-        icon={<People className="[&>*]:stroke-natural-50" width={16} />}
+        icon={
+          <People className="w-3 h-3 md:w-4 md:h-4 [&>*]:stroke-natural-50" />
+        }
         value={formatNumber(studentCount)}
         title="tutor-dashboard.overview.students"
         color="destructive"
+        className="lg:[&>.value]:!text-h3"
       />
     </div>
   );

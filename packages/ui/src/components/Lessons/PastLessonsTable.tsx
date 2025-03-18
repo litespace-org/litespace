@@ -67,10 +67,29 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
 
   return (
     <div>
-      <div className="grid grid-cols-4 pb-2 border-b border-natural-500 mb-6">
-        {columns.map((column) => (
-          <div key={column} className="text-start col-span-1">
-            <Typography tag="span" className="text-natural-600 text-caption">
+      <div
+        className={
+          cn(
+            "grid grid-cols-12 pb-2 border-b border-natural-500",
+            isEmpty(lessons)
+          )
+            ? "mb-8"
+            : "mb-4 lg:mb-6"
+        }
+      >
+        {columns.map((column, idx) => (
+          <div
+            key={column}
+            className={cn("text-start", {
+              "col-span-4": idx === 0,
+              "col-span-2": idx === 1,
+              "col-span-3": idx === 2 || idx === 3,
+            })}
+          >
+            <Typography
+              tag="span"
+              className="text-natural-600 text-caption font-normal"
+            >
               {column}
             </Typography>
           </div>
@@ -105,25 +124,31 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
             ) : null}
           </div>
           <div>
-            <EmptyLessons className="w-[282px] h-[182px]" />
+            <EmptyLessons className="w-[204px] h-[130px] lg:w-[282px] lg:h-[182px]" />
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-12 items-center gap-y-4">
           {lessons.map((lesson) => (
             <React.Fragment key={lesson.id}>
-              <div className="text-start">
-                <Typography tag="span" className="text-natural-950 text-body">
+              <div className="text-start col-span-4">
+                <Typography
+                  tag="span"
+                  className="text-natural-950 text-body font-normal"
+                >
                   {dayjs(lesson.start).format("dddd - DD MMMM YYYY")}
                 </Typography>
               </div>
-              <div className="text-start">
-                <Typography tag="span" className="text-natural-950 text-body">
+              <div className="text-start col-span-2">
+                <Typography
+                  tag="span"
+                  className="text-natural-950 text-body font-normal"
+                >
                   {formatMinutes(lesson.duration)}
                 </Typography>
               </div>
               <div className="mb-4">
-                <div className="flex flex-row gap-2 items-center">
+                <div className="flex flex-row gap-2 items-center col-span-3">
                   <div className="w-10 h-10 rounded-lg overflow-hidden">
                     <Avatar
                       src={lesson.otherMember.imageUrl}
@@ -136,8 +161,14 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                     {lesson.otherMember.name}
                   </Typography>
                 </div>
+                <Typography
+                  tag="span"
+                  className="text-natural-950 text-body font-semibold"
+                >
+                  {lesson.otherMember.name}
+                </Typography>
               </div>
-              <div>
+              <div className="justify-self-end col-span-3">
                 <Button
                   onClick={() => {
                     if (onRebook && !isTutor)
@@ -150,13 +181,18 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                       ]);
                   }}
                   variant={"secondary"}
-                  size={"small"}
+                  size="large"
                   disabled={!!sendingMessage}
                   loading={sendingMessage === lesson.id}
                 >
-                  {isTutor
-                    ? intl("tutor-dashboard.table.send-message")
-                    : intl("student-dashboard.table.rebook")}
+                  <Typography
+                    tag="span"
+                    className="text-body text-brand-700 font-medium"
+                  >
+                    {isTutor
+                      ? intl("tutor-dashboard.table.send-message")
+                      : intl("student-dashboard.table.rebook")}
+                  </Typography>
                 </Button>
               </div>
             </React.Fragment>
