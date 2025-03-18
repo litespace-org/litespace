@@ -30,7 +30,12 @@ describe("Interviews", () => {
         interviewer: interviewer.id,
         interviewee: tutor.id,
       });
-      const tutorInterviews = await interviews.find({ users: [tutor.id] });
+      const tutorInterviews = await interviews.find({
+        users: [tutor.id],
+        meta: true,
+      });
+      console.log(tutorInterviews);
+
       expect(tutorInterviews.list).to.be.deep.eq([interview]);
       expect(tutorInterviews.list).to.be.of.length(1);
       expect(tutorInterviews.total).to.be.eq(1);

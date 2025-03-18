@@ -19,7 +19,7 @@ type StepData = {
 };
 
 type Interview = {
-  tutorManager: string;
+  tutorManager: string | null;
   canceledBy?: "canceled-by-you" | "canceled-by-tutor-manager";
   canceled?: boolean;
   result?: string;

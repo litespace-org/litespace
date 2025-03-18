@@ -14,7 +14,10 @@ const BookInterview = () => {
     refetch.meta();
   }, [refetch]);
 
-  const pastInterviews = useFindInfinitInterviews(user?.id);
+  const pastInterviews = useFindInfinitInterviews({
+    user: user?.id,
+    meta: true,
+  });
 
   useEffect(() => {}, []);
 
@@ -39,7 +42,7 @@ const BookInterview = () => {
         tutorManager="Mostafa Kamar"
         previousInterviews={
           pastInterviews.list?.map((interview) => ({
-            tutorManager: "Mostafa Kamar",
+            tutorManager: interview.name.interviewer,
             date: interview.start,
             canceled: !!interview.canceledBy,
             canceledBy:
