@@ -4,6 +4,7 @@ export enum ApiError {
   Unauthenticated = "unauthenticated",
   Forbidden = "forbidden",
   BadRequest = "bad-request",
+  Illegal = "illegal",
   RoomExists = "room-exists",
   UserExists = "user-exists",
   RatingExists = "rating-exists",

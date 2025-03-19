@@ -2,6 +2,7 @@ import { IAvailabilitySlot } from "@litespace/types";
 import { dayjs } from "@/dayjs";
 import {
   canBook,
+  getFirstAvailableSlot,
   getSubSlots,
   getSubSlotsBatch,
   isIntersecting,
@@ -280,5 +281,51 @@ describe("AvailabilitySlot", () => {
         },
       })
     ).to.be.false;
+  });
+
+  it.only("should get the first available subslot of some slots with already booked subslots", () => {
+    const now = dayjs.utc();
+    const slots: IAvailabilitySlot.Slot[] = [
+      {
+        id: 1,
+        start: now.toISOString(),
+        end: now.add(2, "hours").toISOString(),
+      },
+      {
+        id: 2,
+        start: now.add(3, "hours").toISOString(),
+        end: now.add(4, "hours").toISOString(),
+      },
+      {
+        id: 3,
+        start: now.add(4, "hours").toISOString(),
+        end: now.add(5, "hours").toISOString(),
+      },
+    ];
+
+    const subslots: IAvailabilitySlot.SubSlot[] = [
+      {
+        parent: 1,
+        start: now.toISOString(),
+        end: now.add(1, "hour").toISOString(),
+      },
+      {
+        parent: 1,
+        start: now.add(1, "hour").toISOString(),
+        end: now.add(2, "hour").toISOString(),
+      },
+      {
+        parent: 2,
+        start: now.add(3.5, "hour").toISOString(),
+        end: now.add(4, "hour").toISOString(),
+      },
+    ];
+
+    const freeSubslot = getFirstAvailableSlot({ slots, subslots });
+    expect(freeSubslot).to.deep.eq({
+      parent: 2,
+      start: now.add(3, "hour").toISOString(),
+      end: now.add(3.5, "hour").toISOString(),
+    });
   });
 });

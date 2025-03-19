@@ -8,7 +8,7 @@ export default function router(context: ApiContext) {
   const router = Router();
 
   router.route("/").post(user.create);
-  router.get("/interviewer/select", user.selectInterviewer);
+  router.get("/interviewer/select", user.selectTutorManager);
   router.get("/current", user.findCurrentUser);
   router.get("/list", user.findUsers);
   router.put(

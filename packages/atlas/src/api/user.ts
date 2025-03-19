@@ -92,7 +92,7 @@ export class User extends Base {
     });
   }
 
-  async selectInterviewer(): Promise<IUser.Self> {
+  async selectTutorManager(): Promise<IUser.Self> {
     return await this.client
       .get<IUser.Self>(`/api/v1/user/interviewer/select`)
       .then((response) => response.data);
