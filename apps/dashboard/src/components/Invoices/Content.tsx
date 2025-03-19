@@ -7,7 +7,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { withdrawMethodsIntlMap } from "@/components/utils/invoice";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
-import { IFilter, IInvoice, IWithdrawMethod } from "@litespace/types";
+import { BANKS, IFilter, IInvoice } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";
 import {
   useFindInvoices,
@@ -20,18 +20,17 @@ import {
 } from "@/components/utils/invoice";
 
 const DEFAULT_METHODS_FILTER = [
-  IWithdrawMethod.Type.Bank,
-  IWithdrawMethod.Type.Instapay,
-  IWithdrawMethod.Type.Wallet,
+  IInvoice.WithdrawMethod.Bank,
+  IInvoice.WithdrawMethod.Instapay,
+  IInvoice.WithdrawMethod.Wallet,
 ];
 
 const DEFAULT_STATUSES_FILTER = [
-  IInvoice.Status.Pending,
-  IInvoice.Status.CanceledByReceiver,
-  IInvoice.Status.CancellationApprovedByAdmin,
-  IInvoice.Status.Fulfilled,
+  IInvoice.Status.PendingCancellation,
+  IInvoice.Status.PendingApproval,
+  IInvoice.Status.Canceled,
+  IInvoice.Status.Approved,
   IInvoice.Status.Rejected,
-  IInvoice.Status.UpdatedByReceiver,
 ];
 
 const Content: React.FC<{ user?: number }> = ({ user }) => {
@@ -53,19 +52,18 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
       users: user ? [user] : undefined,
       userOnly: !!user,
       methods,
-      banks,
       statuses,
       receipt,
       orderBy,
       orderDirection,
     }),
-    [user, methods, banks, statuses, receipt, orderBy, orderDirection]
+    [user, methods, statuses, receipt, orderBy, orderDirection]
   );
 
   const { query, ...pagination } = useFindInvoices(filter);
 
   const makeMethodOption = useCallback(
-    (method: IWithdrawMethod.Type) => ({
+    (method: IInvoice.WithdrawMethod) => ({
       id: method,
       label: intl(withdrawMethodsIntlMap[method]),
       checked:
@@ -183,9 +181,9 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
               setMethods(DEFAULT_METHODS_FILTER);
             },
           },
-          makeMethodOption(IWithdrawMethod.Type.Bank),
-          makeMethodOption(IWithdrawMethod.Type.Instapay),
-          makeMethodOption(IWithdrawMethod.Type.Wallet),
+          makeMethodOption(IInvoice.WithdrawMethod.Bank),
+          makeMethodOption(IInvoice.WithdrawMethod.Instapay),
+          makeMethodOption(IInvoice.WithdrawMethod.Wallet),
         ],
       },
       {
@@ -201,8 +199,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
               setBanks(undefined);
             },
           },
-          makeBankOption(IInvoice.Bank.Alex),
-          makeBankOption(IInvoice.Bank.Cib),
+          ...BANKS.map((bank) => makeBankOption(bank)),
         ],
       },
       {
@@ -226,12 +223,11 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
               setStatuses(DEFAULT_STATUSES_FILTER);
             },
           },
-          makeStatusOption(IInvoice.Status.Pending),
-          makeStatusOption(IInvoice.Status.CanceledByReceiver),
-          makeStatusOption(IInvoice.Status.CancellationApprovedByAdmin),
-          makeStatusOption(IInvoice.Status.UpdatedByReceiver),
+          makeStatusOption(IInvoice.Status.PendingApproval),
+          makeStatusOption(IInvoice.Status.PendingCancellation),
+          makeStatusOption(IInvoice.Status.Canceled),
           makeStatusOption(IInvoice.Status.Rejected),
-          makeStatusOption(IInvoice.Status.Fulfilled),
+          makeStatusOption(IInvoice.Status.Approved),
         ],
       },
       {
@@ -275,7 +271,6 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
           makeOrderByOption("amount"),
           makeOrderByOption("created_at"),
           makeOrderByOption("updated_at"),
-          makeOrderByOption("bank"),
         ],
       },
       {

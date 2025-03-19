@@ -42,3 +42,12 @@ export function getOptionalFieldUpdatedValue<T>(
   if (future === current) return undefined;
   return undefined;
 }
+
+/**
+ * Simple function that come in handy in unit tests
+ */
+export function wait(seconds: number) {
+  return new Promise((resolve) =>
+    setTimeout(() => resolve(seconds), seconds * 1000)
+  );
+}

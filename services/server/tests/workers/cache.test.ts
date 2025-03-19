@@ -51,7 +51,7 @@ describe("updating the cache with background workers", () => {
       });
 
       sendBackgroundMessage({
-        type: "update-tutor-in-cache",
+        type: "update-tutor-cache",
         payload: { tutorId: newTutor.id },
       });
 

@@ -93,19 +93,6 @@ export function useFindInvoiceStats(
   });
 }
 
-export function useFindWithdrawalMethods() {
-  const atlas = useAtlas();
-
-  const findWithdrawalMethods = useCallback(() => {
-    return atlas.withdrawMethod.find();
-  }, [atlas.withdrawMethod]);
-
-  return useQuery({
-    queryFn: findWithdrawalMethods,
-    queryKey: [QueryKey.FindWithdrawalMethods],
-  });
-}
-
 export function useCreateInvoice({
   onSuccess,
   onError,
@@ -125,59 +112,6 @@ export function useCreateInvoice({
   return useMutation({
     mutationFn: createUserInvoice,
     mutationKey: [MutationKey.CreateInvoice],
-    onSuccess,
-    onError,
-  });
-}
-
-export function useEditUserInvoice({
-  onSuccess,
-  onError,
-}: {
-  onSuccess: OnSuccess;
-  onError: OnError;
-}) {
-  const atlas = useAtlas();
-  const updateUserInvoice = useCallback(
-    async ({
-      id,
-      payload,
-    }: {
-      id: number;
-      payload: IInvoice.UpdateByReceiverApiPayload;
-    }) => {
-      return await atlas.invoice.updateByReceiver(id, payload);
-    },
-    [atlas.invoice]
-  );
-  return useMutation({
-    mutationFn: updateUserInvoice,
-    mutationKey: [MutationKey.EditInvoice],
-    onSuccess,
-    onError,
-  });
-}
-
-export function useCancelInvoiceById({
-  id,
-  onSuccess,
-  onError,
-}: {
-  id: number;
-  onSuccess: OnSuccess;
-  onError: OnError;
-}) {
-  const atlas = useAtlas();
-
-  const cancel = useCallback(async () => {
-    return await atlas.invoice.updateByReceiver(id, {
-      cancel: true,
-    });
-  }, [atlas.invoice, id]);
-
-  return useMutation({
-    mutationFn: cancel,
-    mutationKey: [MutationKey.CancelInvoice],
     onSuccess,
     onError,
   });
