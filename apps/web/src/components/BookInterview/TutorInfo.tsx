@@ -26,12 +26,12 @@ type FormProps = {
 
 const TutorInfo: React.FC<{
   goNext: Void;
-  id?: number;
   tutorInfo: {
+    id?: number;
     bio: string | null;
     about: string | null;
   };
-}> = ({ tutorInfo, id, goNext }) => {
+}> = ({ tutorInfo, goNext }) => {
   const intl = useFormatMessage();
   const validateBio = useValidateBio();
   const invalidateQuery = useInvalidateQuery();
@@ -55,6 +55,10 @@ const TutorInfo: React.FC<{
     return userTopics.data.map((topic) => topic.id);
   }, [userTopics.data]);
 
+  useEffect(() => {
+    setSelectedTopicsIds(userTopicsIds);
+  }, [userTopicsIds]);
+
   const form = useForm<FormProps>({
     defaultValues: {
       bio: tutorInfo.bio,
@@ -75,10 +79,6 @@ const TutorInfo: React.FC<{
     },
     [selectedTopicsIds]
   );
-
-  useEffect(() => {
-    setSelectedTopicsIds(userTopicsIds);
-  }, [userTopicsIds]);
 
   const onSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
@@ -109,7 +109,7 @@ const TutorInfo: React.FC<{
 
   const submit = useCallback(
     (data: FormProps) => {
-      if (!id) return;
+      if (!tutorInfo.id) return;
       const addTopics: number[] = selectedTopicsIds.filter(
         (topic) => !userTopicsIds.includes(topic)
       );
@@ -119,7 +119,7 @@ const TutorInfo: React.FC<{
       );
 
       return updateTutor.mutate({
-        id: id,
+        id: tutorInfo.id,
         payload: {
           bio: data.bio?.trim(),
           about: data.about?.trim(),
@@ -128,7 +128,7 @@ const TutorInfo: React.FC<{
         },
       });
     },
-    [id, updateTutor, userTopicsIds, selectedTopicsIds]
+    [updateTutor, userTopicsIds, selectedTopicsIds, tutorInfo.id]
   );
 
   return (
@@ -189,7 +189,7 @@ const TutorInfo: React.FC<{
           endIcon={<ArrowLeftLong />}
           className="w-[133px] mt-10"
         >
-          {intl("tutor.onboarding.tutor-info.form.next")}
+          {intl("labels.next")}
         </Button>
       </Form>
     </div>

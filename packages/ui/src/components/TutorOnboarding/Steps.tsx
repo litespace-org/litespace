@@ -1,30 +1,24 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Typography } from "@/components/Typography";
 import SocialTelegram from "@litespace/assets/SocialTelegram";
 import { Button } from "@/components/Button";
 import { useFormatMessage } from "@/hooks";
 import Check2 from "@litespace/assets/Check2";
-import { LocalId } from "@/locales";
 import cn from "classnames";
 import { motion } from "framer-motion";
-import { Avatar } from "@/components/Avatar";
-import dayjs from "@/lib/dayjs";
-import { Loader, LoadingError } from "@/components/Loading";
 import { isEmpty } from "lodash";
+import { Void } from "@litespace/types";
+import { Link } from "react-router-dom";
+import { Interview, StepData } from "@/components/TutorOnboarding/types";
+import { PreviousInterviews } from "@/components/TutorOnboarding/PastIntrerviews";
 
-type StepData = {
-  id: number;
-  title: LocalId;
-  description: LocalId;
-};
+function isActiveState(stepId: number, activeStep: number) {
+  if (stepId < activeStep) return "fullfilled";
 
-type Interview = {
-  tutorManager: string | null;
-  canceledBy?: "canceled-by-you" | "canceled-by-tutor-manager";
-  canceled?: boolean;
-  result?: string;
-  date: string;
-};
+  if (stepId === activeStep) return "active";
+
+  return "pending";
+}
 
 const stepsData: StepData[] = [
   {
@@ -54,9 +48,18 @@ export const Steps: React.FC<{
   error: boolean;
   activeStep: number;
   tutorManager: string;
-  previousInterviews: Interview[];
-}> = ({ loading, error, tutorManager, activeStep, previousInterviews }) => {
+  previousInterviews?: Interview[];
+  more: Void;
+}> = ({
+  loading,
+  error,
+  tutorManager,
+  activeStep,
+  previousInterviews,
+  more,
+}) => {
   const intl = useFormatMessage();
+
   return (
     <div className="p-6 border bg-natural-50 border-natural-200 h-full">
       <div className="max-w-[368px] flex flex-col gap-10">
@@ -70,22 +73,18 @@ export const Steps: React.FC<{
               {intl("tutor.onboarding.join-telegram")}
             </Typography>
           </div>
-          <Button variant="secondary" size="medium">
-            {intl("tutor.onboarding.join")}
-          </Button>
+          <Link target="_blank" to={"https://t.me/litespace_tutors"}>
+            <Button variant="secondary" size="medium">
+              {intl("tutor.onboarding.join")}
+            </Button>
+          </Link>
         </div>
         <div className="flex flex-col gap-6">
           {stepsData.map((step) => (
             <Step
               tutorManager={tutorManager}
               key={step.id}
-              state={
-                step.id < activeStep
-                  ? "fullfilled"
-                  : step.id === activeStep
-                    ? "active"
-                    : "pending"
-              }
+              state={isActiveState(step.id, activeStep)}
               {...step}
             />
           ))}
@@ -96,6 +95,7 @@ export const Steps: React.FC<{
           loading={loading}
           error={error}
           interviews={previousInterviews}
+          more={more}
         />
       )}
     </div>
@@ -110,6 +110,7 @@ const Step: React.FC<
   }
 > = ({ id, title, description, state, tutorManager }) => {
   const intl = useFormatMessage();
+
   return (
     <div className="flex gap-2 relative">
       <div
@@ -151,83 +152,6 @@ const Step: React.FC<
         </Typography>
         <Typography tag="p" className="text-tiny text-natural-700">
           {intl(description, { tutor: tutorManager })}
-        </Typography>
-      </div>
-    </div>
-  );
-};
-
-const PreviousInterviews: React.FC<{
-  interviews: Array<Interview>;
-  loading: boolean;
-  error: boolean;
-}> = ({ interviews, loading, error }) => {
-  const intl = useFormatMessage();
-
-  return (
-    <div className="mt-5">
-      <Typography
-        tag="h3"
-        className="text-subtitle-2 font-bold text-black mb-6"
-      >
-        {intl("tutor.onboarding.previous-interviews.title")}
-      </Typography>
-      {loading ? (
-        <Loader
-          size="medium"
-          text={intl("tutor.onboarding.previous-interviews.loading")}
-        />
-      ) : null}
-      {error ? (
-        <LoadingError
-          size="medium"
-          error={intl("tutor.onboarding.previous-interviews.error")}
-          retry={() => {}}
-        />
-      ) : null}
-      {!loading && !error ? (
-        <div className="flex flex-col gap-1">
-          {interviews.map((interview, idx) => (
-            <Interview interview={interview} key={idx} />
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-};
-
-const Interview: React.FC<{
-  interview: Interview;
-}> = ({ interview }) => {
-  const intl = useFormatMessage();
-  const text = useMemo(() => {
-    if (interview.result) return interview.result;
-    if (
-      interview.canceled &&
-      interview.canceledBy === "canceled-by-tutor-manager"
-    )
-      return intl(
-        "tutor.onboarding.previous-interviews.cancelled-by-tutor-manage"
-      );
-    return intl("tutor.onboarding.previous-interviews.cancelled-by-you");
-  }, [intl, interview]);
-
-  return (
-    <div className="flex gap-[14px] bg-natural-50 border border-natural-100 shadow shadow-previous-interview p-4 rounded-[10px]">
-      <div className="w-12 h-12 shrink-0 overflow-hidden rounded-full">
-        <Avatar />
-      </div>
-      <div className="flex flex-col gap-1">
-        <Typography tag="h5" className="text-body font-bold text-natural-950">
-          {intl("tutor.onboarding.previous-interviews.person", {
-            tutor: interview.tutorManager,
-          })}
-        </Typography>
-        <Typography tag="p" className="text-natural-600 text-tiny">
-          {text}
-        </Typography>
-        <Typography tag="p" className="text-natural-600 text-tiny">
-          {dayjs(interview.date).format("dddd, MMMM D, YYYY h:mm A")}
         </Typography>
       </div>
     </div>

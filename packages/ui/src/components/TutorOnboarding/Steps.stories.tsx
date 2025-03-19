@@ -33,20 +33,32 @@ export const PreviousInterviews: Story = {
     previousInterviews: [
       {
         date: dayjs().toISOString(),
-        tutorManager: faker.person.fullName(),
-        result: faker.lorem.words(5),
+        tutorManager: {
+          name: faker.person.fullName(),
+          image: faker.image.urlPicsumPhotos(),
+          id: 2,
+        },
+        feedback: faker.lorem.words(5),
       },
       {
         date: dayjs().toISOString(),
-        tutorManager: faker.person.fullName(),
-        canceled: true,
+        tutorManager: {
+          name: faker.person.fullName(),
+          image: faker.image.urlPicsumPhotos(),
+          id: 2,
+        },
         canceledBy: "canceled-by-tutor-manager",
+        feedback: null,
       },
       {
         date: dayjs().toISOString(),
-        tutorManager: faker.person.fullName(),
-        canceled: true,
+        tutorManager: {
+          name: faker.person.fullName(),
+          image: faker.image.urlPicsumPhotos(),
+          id: 2,
+        },
         canceledBy: "canceled-by-you",
+        feedback: null,
       },
     ],
     loading: false,
