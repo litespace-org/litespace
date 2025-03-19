@@ -27,6 +27,8 @@ export const largeFileSize = () => error(ApiError.LargeFileSize, 400);
 export const conflictingInterview = () =>
   error(ApiError.ConflictingInterview, 409);
 
+export const illegal = () => error(ApiError.Illegal, 409);
+
 export const conflictingLessons = () => error(ApiError.ConflictingLessons, 409);
 
 export const conflictingSchedule = () =>

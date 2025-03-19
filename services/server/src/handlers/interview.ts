@@ -1,6 +1,7 @@
 import {
   bad,
   busyTutorManager,
+  conflictingInterview,
   empty,
   forbidden,
   notfound,
@@ -26,7 +27,7 @@ import {
   pageSize,
   sessionId,
 } from "@/validation/utils";
-import { IInterview, IUser } from "@litespace/types";
+import { IInterview, IUser, IAvailabilitySlot } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod, { ZodSchema } from "zod";
@@ -36,15 +37,15 @@ import {
   isTutor,
   isRegularTutor,
 } from "@litespace/utils/user";
-import { concat, first, groupBy } from "lodash";
+import { concat, first, groupBy, sample } from "lodash";
 import {
   AFRICA_CAIRO_TIMEZONE,
   asSubSlots,
   canBook,
   destructureInterviewStatus,
   genSessionId,
+  getFirstAvailableSlot,
   INTERVIEW_DURATION,
-  map,
 } from "@litespace/utils";
 import { sendNotificationMessage } from "@/lib/kafka";
 import dayjs from "dayjs";
@@ -86,18 +87,27 @@ const updatePayload: ZodSchema<IInterview.UpdateApiPayload> = zod.object({
   id,
   interviewerFeedback: zod.string().optional(),
   intervieweeFeedback: zod.string().optional(),
+
   status: zod.nativeEnum(IInterview.Status).optional(),
 });
 
 async function create(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isRegularTutor(user);
+
   if (!allowed) return next(forbidden());
 
   const { start, slotId } = createPayload.parse(req.body);
 
   const slot = await availabilitySlots.findById(slotId);
   if (!slot) return next(notfound.slot());
+  if (
+    [
+      IAvailabilitySlot.Purpose.Interview,
+      IAvailabilitySlot.Purpose.General,
+    ].includes(slot.purpose) === false
+  )
+    return next(bad());
 
   const intervieweeId = user.id;
   const interviewer = await tutors.findById(slot.userId);
@@ -106,9 +116,8 @@ async function create(req: Request, res: Response, next: NextFunction) {
   if (!isTutorManager(interviewer) || !interviewer.activated)
     return next(bad());
 
-  const interview = await interviews.findOne({ interviewees: [intervieweeId] });
-  const interviewable = canBeInterviewed(interview);
-  if (!interviewable) return next(bad());
+  const interviewable = await canBeInterviewed(intervieweeId);
+  if (!interviewable) return next(conflictingInterview());
 
   const slotLessons = await lessons.find({
     slots: [slotId],
@@ -336,40 +345,70 @@ async function selectInterviewer(
   const allowed = isRegularTutor(user);
   if (!allowed) return next(forbidden());
 
-  const interview = await interviews.findOne({ interviewees: [user.id] });
-  const interviewable = canBeInterviewed(interview);
+  const interviewable = canBeInterviewed(user.id);
   if (!interviewable) return next(bad());
 
+  const now = dayjs().toISOString();
+
+  // 1. retrieve all active tutor managers
   const { list: tutorManagers } = await tutors.find({
     role: [IUser.Role.TutorManager],
     activated: true,
     full: true,
   });
 
-  // @note: leave this query like this for now until the logic is ready.
-  // Interviewer Selection Alogrithm:
-  // 1. find all "active" tutor managers
-  // 2. fetch all slots with the purpose "interview" or "general"
-  // 3. find all lessons or interviews associated with these slots.
-  // 4. unpack all slots using its lessons and interviews
-  // 5. find the first available slot
-  // 6. select its owner as the interviewer
-  // 7. select a random tutor manager as a fallback in case the selection logic
-  //    failed.
-  await availabilitySlots.find({
-    after: dayjs.utc().toISOString(),
-    users: map(tutorManagers, "id"),
+  // 2. retrieve all slots with the purpose "interview" or "general"
+  const { list: slotsList } = await availabilitySlots.find({
+    users: tutorManagers.map((tutor) => tutor.id),
+    after: now,
+    full: true,
     deleted: false,
+    purposes: [
+      IAvailabilitySlot.Purpose.Interview,
+      IAvailabilitySlot.Purpose.General,
+    ],
+  });
+
+  // 3. retrieve all lessons or interviews associated with these slots.
+  const { list: interviewsList } = await interviews.find({
+    slots: slotsList.map((slot) => slot.id),
+    createdAt: { gt: now },
+    statuses: [IInterview.Status.Pending],
     full: true,
   });
 
-  const tutorManager = first(tutorManagers);
-  if (!tutorManager) return next(unexpected());
+  const { list: lessonsList } = await lessons.find({
+    slots: slotsList.map((slot) => slot.id),
+    after: now,
+    canceled: false,
+    full: true,
+  });
+
+  // 4. unpack all slots using its lessons and interviews
+  const firstFreeSlot = getFirstAvailableSlot({
+    slots: slotsList,
+    subslots: [...asSubSlots(interviewsList), ...asSubSlots(lessonsList)],
+  });
+
+  // 5. find the first available slot
+  const selectedSlot = slotsList.find(
+    (slot) => slot.id === firstFreeSlot?.parent
+  );
+
+  // 6. select its owner as the interviewer
+  const interviewer = tutorManagers.find(
+    (tutor) => tutor.id === selectedSlot?.userId
+  );
+
+  // 7. select a random tutor manager as a fallback in case the selection logic failed
+  const selected = interviewer || sample(tutorManagers);
+
+  if (!selected) return next(unexpected());
 
   const response: IInterview.SelectInterviewerApiResponse = await withImageUrl({
-    id: tutorManager.id,
-    name: tutorManager.name,
-    image: tutorManager.image,
+    id: selected.id,
+    name: selected.name,
+    image: selected.image,
   });
 
   res.status(200).json(response);

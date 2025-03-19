@@ -46,7 +46,7 @@ import {
   datetime,
 } from "@/validation/utils";
 import { jwtSecret, paginationDefaults } from "@/constants";
-import { drop, entries, groupBy, sample } from "lodash";
+import { drop, entries, groupBy } from "lodash";
 import zod, { ZodSchema } from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
@@ -389,25 +389,6 @@ async function findCurrentUser(
   const response: IUser.FindCurrentUserApiResponse = await withImageUrl(user);
 
   res.status(200).json(response);
-}
-
-async function selectInterviewer(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  // only tutors can select interviewers
-  const user = req.user;
-  const allowed = isTutor(user);
-  if (!allowed) return next(forbidden());
-
-  const tutorManagers = await users.findManyBy("role", IUser.Role.TutorManager);
-  // todo: select best interviewer based on his sechudle
-  const interviewer = sample(tutorManagers);
-
-  if (!interviewer) return next(notfound.user());
-
-  res.status(200).json(interviewer);
 }
 
 async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
@@ -1151,7 +1132,6 @@ export default {
   findTutorStats: safeRequest(findTutorStats),
   findPersonalizedTutorStats: safeRequest(findPersonalizedTutorStats),
   findCurrentUser: safeRequest(findCurrentUser),
-  selectInterviewer: safeRequest(selectInterviewer),
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
   findStudios: safeRequest(findStudios),

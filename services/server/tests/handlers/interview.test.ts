@@ -1,7 +1,7 @@
 import { mockApi } from "@fixtures/mockApi";
 import db from "@fixtures/db";
 import handlers from "@/handlers/interview";
-import { IInterview, IUser } from "@litespace/types";
+import { IAvailabilitySlot, IInterview, IUser } from "@litespace/types";
 import { expect } from "chai";
 import {
   bad,
@@ -12,7 +12,11 @@ import {
 } from "@/lib/error";
 import dayjs from "dayjs";
 import { interviews } from "@litespace/models";
-import { genSessionId } from "@litespace/utils";
+import {
+  genSessionId,
+  INTERVIEW_DURATION,
+  INTERVIEW_MIN_RETRY_PERIOD_IN_DAYS,
+} from "@litespace/utils";
 
 const findInterviews = mockApi<
   object,
@@ -20,6 +24,10 @@ const findInterviews = mockApi<
   IInterview.FindApiQuery,
   IInterview.FindApiResponse
 >(handlers.find);
+
+const selectInterviewer = mockApi<object, object, object, IUser.Self>(
+  handlers.selectInterviewer
+);
 
 const createInterview = mockApi<IInterview.CreateApiPayload, void, void, void>(
   handlers.create
@@ -32,7 +40,7 @@ const updateInterview = mockApi<
   IInterview.UpdateApiResponse
 >(handlers.update);
 
-describe.skip("/api/v1/interview/", () => {
+describe("/api/v1/interview/", () => {
   beforeEach(async () => {
     await db.flush();
   });
@@ -87,9 +95,9 @@ describe.skip("/api/v1/interview/", () => {
       const tutorManager = await db.tutorManager();
 
       const tutorsList = await Promise.all([
-        await db.tutor(),
-        await db.tutor(),
-        await db.tutor(),
+        await db.tutorUser(),
+        await db.tutorUser(),
+        await db.tutorUser(),
       ]);
 
       const interviewList = await Promise.all(
@@ -101,6 +109,25 @@ describe.skip("/api/v1/interview/", () => {
         )
       );
 
+      const manipulatedList = interviewList.map((interview) => {
+        const tutor = tutorsList.find((t) => t.id === interview.intervieweeId);
+        return {
+          ...interview,
+          interviewer: {
+            id: tutorManager.id,
+            name: tutorManager.name,
+            image: tutorManager.image,
+            role: tutorManager.role,
+          },
+          interviewee: {
+            id: tutor?.id,
+            name: tutor?.name,
+            image: tutor?.image,
+            role: tutor?.role,
+          },
+        };
+      });
+
       const res = await findInterviews({
         user: admin,
         query: {
@@ -109,10 +136,7 @@ describe.skip("/api/v1/interview/", () => {
       });
 
       expect(res.status).to.eq(200);
-      const body = res.body;
-      for (const interview of interviewList) {
-        expect(body?.list).to.deep.contain(interview);
-      }
+      expect(res.body?.list).to.deep.members(manipulatedList);
     });
   });
 
@@ -121,7 +145,10 @@ describe.skip("/api/v1/interview/", () => {
       const admin = await db.user({ role: IUser.Role.SuperAdmin });
 
       const tutorManager = await db.tutorManager();
-      const slot = await db.slot({ userId: tutorManager.id });
+      const slot = await db.slot({
+        userId: tutorManager.id,
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
 
       const res = await createInterview({
         user: admin,
@@ -134,18 +161,37 @@ describe.skip("/api/v1/interview/", () => {
       expect(res).to.deep.eq(forbidden());
     });
 
-    it("should respond with notfound in case the interviewerId does not exist", async () => {
+    it("should respond with notfound in case the slotId does not exist", async () => {
       const tutor = await db.user({ role: IUser.Role.Tutor });
 
       const res = await createInterview({
         user: tutor,
         body: {
-          slotId: 1,
+          slotId: 4321,
           start: dayjs().toISOString(),
         },
       });
 
-      expect(res).to.deep.eq(notfound.user());
+      expect(res).to.deep.eq(notfound.slot());
+    });
+
+    it("should respond with bad in case the slot is not for interviews", async () => {
+      const tutor = await db.user({ role: IUser.Role.Tutor });
+      const interviewer = await db.tutor();
+      const slot = await db.slot({
+        userId: interviewer.id,
+        purpose: IAvailabilitySlot.Purpose.Lesson,
+      });
+
+      const res = await createInterview({
+        user: tutor,
+        body: {
+          slotId: slot.id,
+          start: dayjs().toISOString(),
+        },
+      });
+
+      expect(res).to.deep.eq(bad());
     });
 
     it("should respond with bad in case the interviewerId is a tutor id", async () => {
@@ -167,8 +213,11 @@ describe.skip("/api/v1/interview/", () => {
     it("should successfully create the interview", async () => {
       const tutor = await db.user({ role: IUser.Role.Tutor });
 
-      const tutorManager = await db.tutorManager();
-      const slot = await db.slot({ userId: tutorManager.id });
+      const tutorManager = await db.tutorManager({}, { activated: true });
+      const slot = await db.slot({
+        userId: tutorManager.id,
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
 
       const res = await createInterview({
         user: tutor,
@@ -178,17 +227,21 @@ describe.skip("/api/v1/interview/", () => {
         },
       });
 
+      expect(res).to.not.be.instanceof(Error);
       expect(res.status).to.eq(200);
     });
 
-    it("should respond with conflict in case the interviewee has been interviewed for less than 6 months", async () => {
-      const tutorManager = await db.tutorManager();
+    it("should respond with conflict in case the interviewee has been interviewed for less INTERVIEW_MIN_RETRY_PERIOD_IN_DAYS", async () => {
+      const tutorManager = await db.tutorManager({}, { activated: true });
       const tutor = await db.user({ role: IUser.Role.Tutor });
-      const slot = await db.slot({ userId: tutorManager.id });
+      const slot = await db.slot({
+        userId: tutorManager.id,
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
 
       await interviews.create({
         start: dayjs(slot.start)
-          .subtract(6, "months")
+          .subtract(INTERVIEW_MIN_RETRY_PERIOD_IN_DAYS, "days")
           .add(1, "day")
           .toISOString(),
         session: genSessionId("interview"),
@@ -208,9 +261,12 @@ describe.skip("/api/v1/interview/", () => {
     });
 
     it("should respond with conflict in case the interviewee has already passed an interview before", async () => {
-      const tutorManager = await db.tutorManager();
+      const tutorManager = await db.tutorManager({}, { activated: true });
       const tutor = await db.user({ role: IUser.Role.Tutor });
-      const slot = await db.slot({ userId: tutorManager.id });
+      const slot = await db.slot({
+        userId: tutorManager.id,
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
 
       const interview = await interviews.create({
         start: slot.start,
@@ -236,9 +292,12 @@ describe.skip("/api/v1/interview/", () => {
     });
 
     it("should respond with conflict in case the interviewee has an pending interview", async () => {
-      const tutorManager = await db.tutorManager();
+      const tutorManager = await db.tutorManager({}, { activated: true });
       const tutor = await db.user({ role: IUser.Role.Tutor });
-      const slot = await db.slot({ userId: tutorManager.id });
+      const slot = await db.slot({
+        userId: tutorManager.id,
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
       await createInterview({
         user: tutor,
         body: {
@@ -259,8 +318,11 @@ describe.skip("/api/v1/interview/", () => {
     });
 
     it("should respond with `busy tutor manager` error in case the interview cannot be booked", async () => {
-      const tutorManager = await db.tutorManager();
-      const slot = await db.slot({ userId: tutorManager.id });
+      const tutorManager = await db.tutorManager({}, { activated: true });
+      const slot = await db.slot({
+        userId: tutorManager.id,
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
 
       const tutor1 = await db.user({ role: IUser.Role.Tutor });
       const tutor2 = await db.user({ role: IUser.Role.Tutor });
@@ -285,7 +347,8 @@ describe.skip("/api/v1/interview/", () => {
     });
   });
 
-  describe("PUT /api/v1/interview/:interviewId", () => {
+  // @galal @TODO: write unit tests for the updateInterview function.
+  describe.skip("PUT /api/v1/interview/:interviewId", () => {
     it("should respond with forbidden in case the requester is not authorized", async () => {
       const requesters = {
         student: await db.student(),
@@ -329,7 +392,7 @@ describe.skip("/api/v1/interview/", () => {
       expect(res).to.deep.eq(notfound.interview());
     });
 
-    it("should allow tutors to update only the feedback", async () => {
+    it("should allow tutors to update only the feedback and the status to be only `CanceledByInterviewee`", async () => {
       const tutorManager = await db.tutorManager();
       const tutor = await db.user({ role: IUser.Role.Tutor });
       const interview = await db.interview({
@@ -338,21 +401,99 @@ describe.skip("/api/v1/interview/", () => {
       });
 
       const res1 = await updateInterview({
-        body: { id: interview.id, intervieweeFeedback: "empty" },
         user: tutor,
+        body: {
+          id: interview.id,
+          intervieweeFeedback: "empty",
+          status: IInterview.Status.CanceledByInterviewee,
+        },
       });
 
       const res2 = await updateInterview({
+        user: tutor,
         body: {
           id: interview.id,
           intervieweeFeedback: "empty",
           status: IInterview.Status.Passed,
         },
-        user: tutor,
       });
 
+      expect(res1).to.not.be.instanceof(Error);
       expect(res1.status).to.eq(200);
+
       expect(res2).to.deep.eq(forbidden());
+    });
+  });
+
+  describe("GET /api/v1/user/interviewer/select", () => {
+    it("should respond with forbidden if the requester is not a regular tutor", async () => {
+      const admin = await db.user({ role: IUser.Role.SuperAdmin });
+      const student = await db.student();
+      const tutorManager = await db.user({ role: IUser.Role.TutorManager });
+
+      const responses = await Promise.all([
+        selectInterviewer({ user: admin }),
+        selectInterviewer({ user: student }),
+        selectInterviewer({ user: tutorManager }),
+      ]);
+
+      for (const res of responses) {
+        expect(res).to.deep.eq(forbidden());
+      }
+    });
+
+    it("should successfully get the TutorManager with the nearest slot (date) to do the interview", async () => {
+      const now = dayjs();
+
+      const tutorManager1 = await db.tutorManager({}, { activated: true });
+      const tutorManager2 = await db.tutorManager({}, { activated: true });
+      const tutorManager3 = await db.tutorManager({}, { activated: true });
+
+      const slot1 = await db.slot({
+        userId: tutorManager1.id,
+        start: now.subtract(2, "hours").toISOString(),
+        end: now.subtract(1, "hour").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
+
+      await db.slot({
+        userId: tutorManager1.id,
+        start: now.subtract(30, "minutes").toISOString(),
+        end: now.toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
+
+      const slot2 = await db.slot({
+        userId: tutorManager2.id,
+        start: now.subtract(30, "minutes").toISOString(),
+        end: now.add(60, "minutes").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
+
+      await db.slot({
+        userId: tutorManager3.id,
+        start: now.add(2, "hours").toISOString(),
+        end: now.add(4, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
+
+      await Promise.all([
+        db.interview({
+          interviewerId: tutorManager1.id,
+          slot: slot1.id,
+        }),
+        db.interview({
+          interviewerId: tutorManager2.id,
+          slot: slot2.id,
+          // NOTE: depends on the convention that INTERVIEW_DURATION = 30 minute
+          start: now.add(INTERVIEW_DURATION, "minute").toISOString(),
+        }),
+      ]);
+
+      const tutor = await db.user({ role: IUser.Role.Tutor });
+      const res = await selectInterviewer({ user: tutor });
+      expect(res).to.not.be.instanceof(Error);
+      expect(res.body?.id).to.deep.eq(tutorManager2.id);
     });
   });
 });
