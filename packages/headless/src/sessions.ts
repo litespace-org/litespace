@@ -319,6 +319,18 @@ function usePeer(userId?: number) {
        *  3 Prints all logs.
        */
       debug: 1,
+      config: {
+        iceServers: [
+          {
+            urls: "stun:turn.litespace.org",
+          },
+          {
+            urls: "turn:turn.litespace.org",
+            username: "litespace",
+            credential: "litespace",
+          },
+        ],
+      },
     });
   }, [server, userId]);
 
