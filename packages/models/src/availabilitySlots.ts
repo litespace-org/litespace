@@ -34,6 +34,7 @@ type SearchFilter = {
    */
   before?: string;
   deleted?: boolean;
+  purposes?: IAvailabilitySlot.Purpose[];
 };
 
 export class AvailabilitySlots {
@@ -51,6 +52,8 @@ export class AvailabilitySlots {
       .insert(
         payloads.map((payload) => ({
           user_id: payload.userId,
+          // TODO: make purpose unoptional and remove the || expression
+          purpose: payload.purpose || IAvailabilitySlot.Purpose.Lesson,
           start: dayjs.utc(payload.start).toDate(),
           end: dayjs.utc(payload.end).toDate(),
           created_at: now,
@@ -74,6 +77,7 @@ export class AvailabilitySlots {
   ) {
     await this.builder(tx)
       .update({
+        purpose: payload.purpose,
         start: payload.start ? dayjs.utc(payload.start).toDate() : undefined,
         end: payload.end ? dayjs.utc(payload.end).toDate() : undefined,
         updated_at: dayjs.utc().toDate(),
@@ -106,6 +110,7 @@ export class AvailabilitySlots {
     size,
     full,
     deleted,
+    purposes,
     execludeSlots,
   }: WithOptionalTx<SearchFilter & IFilter.SkippablePagination>): Promise<
     Paginated<IAvailabilitySlot.Self>
@@ -116,6 +121,7 @@ export class AvailabilitySlots {
       after,
       before,
       deleted,
+      purposes,
       execludeSlots,
     });
     const total = await countRows(baseBuilder.clone());
@@ -168,7 +174,15 @@ export class AvailabilitySlots {
 
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
-    { slots, users, after, before, deleted, execludeSlots }: SearchFilter
+    {
+      slots,
+      users,
+      after,
+      before,
+      deleted,
+      execludeSlots,
+      purposes,
+    }: SearchFilter
   ): Knex.QueryBuilder<R, T> {
     if (slots && !isEmpty(slots)) builder.whereIn(this.column("id"), slots);
 
@@ -177,6 +191,9 @@ export class AvailabilitySlots {
 
     if (users && !isEmpty(users))
       builder.whereIn(this.column("user_id"), users);
+
+    if (purposes && !isEmpty(purposes))
+      builder.whereIn(this.column("purpose"), purposes);
 
     const start = this.column("start");
     const end = this.column("end");
@@ -203,6 +220,7 @@ export class AvailabilitySlots {
     return {
       id: row.id,
       userId: row.user_id,
+      purpose: row.purpose,
       deleted: row.deleted,
       start: row.start.toISOString(),
       end: row.end.toISOString(),

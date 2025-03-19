@@ -1,9 +1,16 @@
 import { Paginated } from "@/utils";
 import { SkippablePagination } from "@/filter";
 
+export enum Purpose {
+  General = 1,
+  Lesson = 2,
+  Interview = 3,
+}
+
 export type Self = {
   id: number;
   userId: number;
+  purpose: Purpose;
   start: string;
   end: string;
   deleted: boolean;
@@ -14,6 +21,7 @@ export type Self = {
 export type Row = {
   id: number;
   user_id: number;
+  purpose: number;
   start: Date;
   end: Date;
   deleted: boolean;
@@ -23,11 +31,14 @@ export type Row = {
 
 export type CreatePayload = {
   userId: number;
+  // TODO: use purpose in all over the codebase and alter this to unoptional
+  purpose?: Purpose;
   start: string;
   end: string;
 };
 
 export type UpdatePayload = {
+  purpose?: Purpose;
   start?: string;
   end?: string;
   deleted?: boolean;
@@ -55,6 +66,7 @@ export type GeneralSlot = Slot | SubSlot;
 // API Payloads / Queries
 export type FindAvailabilitySlotsApiQuery = SkippablePagination & {
   userId: number;
+  purpose?: Purpose;
   after?: string;
   before?: string;
 };

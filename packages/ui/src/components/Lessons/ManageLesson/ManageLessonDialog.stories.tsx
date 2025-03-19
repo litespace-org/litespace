@@ -1,9 +1,10 @@
 import { StoryObj, Meta } from "@storybook/react";
 import { ManageLessonDialog } from "@/components/Lessons/ManageLesson";
 import React, { useEffect, useState } from "react";
-import { identity, range } from "lodash";
+import { identity, range, sample } from "lodash";
 import { faker } from "@faker-js/faker/locale/ar";
 import dayjs from "@/lib/dayjs";
+import { IAvailabilitySlot } from "@litespace/types";
 
 type Component = typeof ManageLessonDialog;
 type Story = StoryObj<Component>;
@@ -37,6 +38,10 @@ function makeSlots(count: number) {
       start: start.toISOString(),
       end: start.add(2, "hours").toISOString(),
       userId: 5,
+      purpose: sample([
+        IAvailabilitySlot.Purpose.Lesson,
+        IAvailabilitySlot.Purpose.Interview,
+      ])!,
       createdAt: faker.date.past().toISOString(),
       deleted: false,
       updatedAt: faker.date.past().toISOString(),
@@ -75,6 +80,7 @@ export const WithBookedSlots: Story = {
         id: 1,
         start: dayjs.utc().startOf("day").toISOString(),
         end: dayjs.utc().startOf("day").add(4, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Lesson,
         createdAt: faker.date.past().toISOString(),
         updatedAt: faker.date.past().toISOString(),
         deleted: false,
@@ -117,6 +123,10 @@ export const FilterPastSlots: Story = {
         updatedAt: faker.date.past().toISOString(),
         deleted: false,
         userId: 4,
+        purpose: sample([
+          IAvailabilitySlot.Purpose.Lesson,
+          IAvailabilitySlot.Purpose.Interview,
+        ]),
       },
     ],
     bookedSlots: [],

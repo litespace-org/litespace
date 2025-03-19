@@ -1,6 +1,6 @@
 import { IAvailabilitySlot, IInterview, ILesson } from "@litespace/types";
 import { dayjs } from "@/dayjs";
-import { flatten, orderBy } from "lodash";
+import { flatten, isEmpty, orderBy } from "lodash";
 import { INTERVIEW_DURATION } from "@/constants";
 
 /**
@@ -37,6 +37,23 @@ export function getSubSlots(
     end = start.add(duration, "minutes");
   }
   return subslots;
+}
+
+export function getFirstAvailableSlot({
+  slots,
+  subslots,
+}: {
+  slots: IAvailabilitySlot.Self[] | IAvailabilitySlot.Slot[];
+  subslots: IAvailabilitySlot.SubSlot[];
+}): IAvailabilitySlot.SubSlot | null {
+  const freeSlots = subtractSlotsBatch({ slots, subslots });
+  if (isEmpty(freeSlots)) return null;
+
+  let first = freeSlots[0];
+  for (const slot of freeSlots) {
+    if (dayjs(slot.start).isBefore(first.start)) first = slot;
+  }
+  return first;
 }
 
 /**

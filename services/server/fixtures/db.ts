@@ -71,6 +71,18 @@ export async function flush() {
   });
 }
 
+export async function user(payload?: Partial<IUser.CreatePayload>) {
+  return await users.create({
+    email: payload?.email || faker.internet.email(),
+    gender: payload?.gender || gender(),
+    name: payload?.name || faker.internet.username(),
+    password: hashPassword(payload?.password || "Password@8"),
+    birthYear: payload?.birthYear || faker.number.int({ min: 2000, max: 2024 }),
+    role: or.role(payload?.role),
+    verifiedEmail: payload?.verifiedEmail || false,
+  });
+}
+
 const or = {
   async tutorId(id?: number): Promise<number> {
     if (!id) return await tutor().then((tutor) => tutor.id);
@@ -151,18 +163,6 @@ export function time() {
   return Time.from(sample(times)!).utc().format();
 }
 
-export async function user(payload?: Partial<IUser.CreatePayload>) {
-  return await users.create({
-    email: payload?.email || faker.internet.email(),
-    gender: payload?.gender || gender(),
-    name: payload?.name || faker.internet.username(),
-    password: hashPassword(payload?.password || "Password@8"),
-    birthYear: payload?.birthYear || faker.number.int({ min: 2000, max: 2024 }),
-    role: or.role(payload?.role),
-    verifiedEmail: payload?.verifiedEmail || false,
-  });
-}
-
 export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
   const start = dayjs.utc(payload?.start || faker.date.future());
   const end = payload?.end
@@ -174,6 +174,7 @@ export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
       userId: payload?.userId || 1,
       start: start.toISOString(),
       end: end.toISOString(),
+      purpose: payload?.purpose,
     },
   ]);
   const res = first(newSlots);
@@ -579,7 +580,7 @@ async function subscription(
   });
 }
 
-export async function report(payload?: Partial<IReport.CreatePayload>) {
+export async function report(payload?: Partial<IReport.CreateModelPayload>) {
   const report = await reports.create({
     userId: await or.studentId(payload?.userId),
     title: payload?.title || faker.lorem.words(5),
