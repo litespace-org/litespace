@@ -64,16 +64,16 @@ export function useFindInfinitInterviews(
   ]);
 }
 
-export function useSelectInterviewer(): UseQueryResult<IUser.Self, Error> {
+export function useSelectTutorManager(): UseQueryResult<IUser.Self, Error> {
   const atlas = useAtlas();
 
-  const selectInterviewer = useCallback(async () => {
-    return atlas.user.selectInterviewer();
+  const selectTutorManager = useCallback(async () => {
+    return atlas.user.selectTutorManager();
   }, [atlas.user]);
 
   return useQuery({
-    queryFn: selectInterviewer,
-    queryKey: [QueryKey.FindInterviewer],
+    queryFn: selectTutorManager,
+    queryKey: [QueryKey.FindTutorManager],
   });
 }
 

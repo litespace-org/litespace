@@ -1,4 +1,4 @@
-import { ITutor, IUser } from "@litespace/types";
+import { IAvailabilitySlot, ITutor, IUser } from "@litespace/types";
 import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
@@ -23,6 +23,8 @@ const findStudios = mockApi(handlers.findStudios);
 const findStudioTutor = mockApi(handlers.findStudioTutor);
 
 const findStudioTutors = mockApi(handlers.findStudioTutors);
+
+const selectTutorManager = mockApi(handlers.selectTutorManager);
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
@@ -755,6 +757,77 @@ describe("/api/v1/user/", () => {
       expect(sample.name).to.not.be.undefined;
       expect(sample.address).to.not.be.undefined;
       expect(sample.image).to.not.be.undefined;
+    });
+  });
+
+  describe("GET /api/v1/user/interviewer/select", () => {
+    it("should respond with forbidden if the requester is not a tutor", async () => {
+      const admin = await db.user({ role: IUser.Role.SuperAdmin });
+      const student = await db.student();
+      const tutorManager = await db.user({ role: IUser.Role.TutorManager });
+
+      const responses = await Promise.all([
+        selectTutorManager({ user: admin }),
+        selectTutorManager({ user: student }),
+        selectTutorManager({ user: tutorManager }),
+      ]);
+
+      for (const res of responses) {
+        expect(res).to.deep.eq(forbidden());
+      }
+    });
+
+    it("should successfully get the TutorManager with the nearest slot (date) to do the interview", async () => {
+      const now = dayjs();
+
+      const tutorManager1 = await db.tutorManager();
+      const tutorManager2 = await db.tutorManager();
+      const tutorManager3 = await db.tutorManager();
+
+      const slot1 = await db.slot({
+        userId: tutorManager1.id,
+        start: now.subtract(2, "hours").toISOString(),
+        end: now.subtract(1, "hour").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
+
+      await db.slot({
+        userId: tutorManager1.id,
+        start: now.subtract(30, "minutes").toISOString(),
+        end: now.toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
+
+      const slot2 = await db.slot({
+        userId: tutorManager2.id,
+        start: now.subtract(30, "minutes").toISOString(),
+        end: now.add(60, "minutes").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
+
+      await db.slot({
+        userId: tutorManager3.id,
+        start: now.add(2, "hours").toISOString(),
+        end: now.add(4, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
+
+      await Promise.all([
+        db.interview({
+          interviewer: tutorManager1.id,
+          slot: slot1.id,
+        }),
+        db.interview({
+          interviewer: tutorManager2.id,
+          slot: slot2.id,
+          // NOTE: depends on the convention that INTERVIEW_DURATION = 30 minute
+          start: now.add(30, "minute").toISOString(),
+        }),
+      ]);
+
+      const tutor = await db.user({ role: IUser.Role.Tutor });
+      const res = await selectTutorManager({ user: tutor });
+      expect(res.body).to.deep.eq(tutorManager2);
     });
   });
 });

@@ -16,6 +16,8 @@ export const refused = () => error(ApiError.Forbidden, 403);
 
 export const bad = () => error(ApiError.BadRequest, 400);
 
+export const illegal = () => error(ApiError.Illegal, 409);
+
 export const conflictingLessons = () => error(ApiError.ConflictingLessons, 409);
 
 export const conflictingSchedule = () =>
