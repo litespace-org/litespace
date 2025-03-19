@@ -20,6 +20,7 @@ export {
   useRequired,
   useValidatePassword,
   useValidateEmail,
+  useValidateInstapayEmail,
   useValidatePlanAlias,
   useValidatePlanWeeklyMinutes,
   useValidatePrice,

@@ -4,7 +4,9 @@ import { InvoicesOverview as Overview } from "@litespace/ui/InvoicesOverview";
 import { useFindInvoiceStats } from "@litespace/headless/invoices";
 import React from "react";
 
-const InvoicesOverview: React.FC<{ tutorId?: number }> = ({ tutorId }) => {
+export const InvoicesOverview: React.FC<{ tutorId?: number }> = ({
+  tutorId,
+}) => {
   const intl = useFormatMessage();
   const statsQuery = useFindInvoiceStats(tutorId);
 

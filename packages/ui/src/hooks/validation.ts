@@ -8,6 +8,7 @@ import { useFormatMessage } from "@/hooks/intl";
 import { FieldError } from "@litespace/types";
 import {
   isValidEmail,
+  isValidInstapayEmail,
   isValidPassword,
   isValidPhone,
   isValidTutorBio,
@@ -95,6 +96,21 @@ export function useValidateEmail(required: boolean = false) {
       return true;
     },
     [required, intl]
+  );
+}
+
+export function useValidateInstapayEmail(required: boolean = false) {
+  const intl = useFormatMessage();
+
+  return useCallback(
+    (value: unknown) => {
+      const valid = isValidInstapayEmail(value);
+      if (!required && !value) return true;
+      if (required && !value) return intl("error.required");
+      if (valid === FieldError.InvalidEmail) return intl("error.email.invlaid");
+      return true;
+    },
+    [intl, required]
   );
 }
 
@@ -437,5 +453,22 @@ export function useValidateDiscount() {
       },
     }),
     [intl]
+  );
+}
+
+export function useValidateInvoiceAmount() {
+  const intl = useFormatMessage();
+  const required = useRequired();
+
+  return useMemo(
+    () => ({
+      required,
+      validate: <T>(value: T) => {
+        if (typeof value !== "number" || value < 0)
+          return intl("error.form.invalid");
+        return true;
+      },
+    }),
+    [intl, required]
   );
 }

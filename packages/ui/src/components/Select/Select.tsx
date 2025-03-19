@@ -27,6 +27,7 @@ export const Select = <T extends string | number>({
   disabled = false,
   size = "large",
   helper,
+  state,
   onChange,
 }: SelectProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -76,7 +77,14 @@ export const Select = <T extends string | number>({
             "flex flex-row justify-between items-center",
             "w-full rounded-lg p-2",
             "bg-natural-50 transition-colors duration-200",
-            "border border-natural-300",
+            "border",
+            {
+              "border-natural-300": !state,
+              // error
+              "border-destructive-600": state === "error",
+              // Success
+              "border-brand-600": state === "success",
+            },
             "transition-colors duration-200",
             "disabled:cursor-not-allowed disabled:opacity-50",
             "focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:ring-inset",
@@ -113,7 +121,13 @@ export const Select = <T extends string | number>({
         {helper ? (
           <Typography
             tag="span"
-            className="mt-1 text-natural-600 text-tiny font-semibold"
+            className={cn("mt-1 text-tiny font-semibold", {
+              "text-natural-600": !state,
+              // Error
+              "text-destructive-600": state === "error",
+              // Success
+              "text-brand-600": state === "success",
+            })}
           >
             {helper}
           </Typography>

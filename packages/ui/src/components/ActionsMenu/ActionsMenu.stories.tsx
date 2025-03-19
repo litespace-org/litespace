@@ -52,7 +52,7 @@ export const SubActions: StoryObj<Component> = {
       ...actions,
       {
         id: 4,
-        label: ar["invoices.bank"],
+        label: ar["invoices.method.bank"],
         subActions: [
           {
             id: 5,
@@ -76,7 +76,7 @@ export const RadioGroup: StoryObj<Component> = {
       ...actions,
       {
         id: 4,
-        label: ar["invoices.bank"],
+        label: ar["invoices.method.bank"],
         radioGroup: [
           {
             id: 5,

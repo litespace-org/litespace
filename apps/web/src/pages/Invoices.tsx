@@ -1,6 +1,6 @@
-import InvoicesOverview from "@/components/Invoices/InvoicesOverview";
+import { InvoicesOverview } from "@/components/Invoices";
 import { useUserContext } from "@litespace/headless/context/user";
-import { Table as InvoicesTable } from "@/components/Invoices/Table";
+import { Table as InvoicesTable } from "@/components/Invoices";
 import React from "react";
 
 const Invoices: React.FC = () => {

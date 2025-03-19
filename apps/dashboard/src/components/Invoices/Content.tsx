@@ -190,7 +190,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
       },
       {
         id: 2,
-        label: intl("invoices.bank"),
+        label: intl("invoices.method.bank"),
         subActions: [
           {
             id: 0,
