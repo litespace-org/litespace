@@ -41,26 +41,23 @@ export function useFindInterviews(
 
 export function useFindInfinitInterviews({
   user,
-  meta,
 }: {
   user?: number;
-  meta?: boolean;
 }): UseInfinitePaginationQueryResult<
-  Element<IInterview.FindInterviewsApiResponse["list"]>
+  Element<IInterview.FindFullInterviewsApiResponse["list"]>
 > {
-  const atlas = useApi();
+  const api = useApi();
 
   const findInterviews = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
       if (!user) return { list: [], total: 0 };
-      return atlas.interview.findInterviews({
+      return api.interview.findFullInterviews({
         users: user ? [user] : [],
-        meta,
         page: pageParam,
         size: 10,
       });
     },
-    [atlas.interview, user, meta]
+    [api.interview, user]
   );
 
   return useInfinitePaginationQuery(findInterviews, [
@@ -68,6 +65,7 @@ export function useFindInfinitInterviews({
     user,
   ]);
 }
+console.log("");
 
 export function useSelectInterviewer(): UseQueryResult<IUser.Self, Error> {
   const atlas = useApi();

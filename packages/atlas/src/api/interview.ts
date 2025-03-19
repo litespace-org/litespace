@@ -30,6 +30,15 @@ export class Interview extends Base {
     });
   }
 
+  public async findFullInterviews(
+    query: IInterview.FindInterviewsApiQuery
+  ): Promise<IInterview.FindFullInterviewsApiResponse> {
+    return this.get({
+      route: "/api/v1/interview/full-list/",
+      params: query,
+    });
+  }
+
   public async findInterviewById(id: number): Promise<IInterview.Self> {
     return this.get({ route: `/api/v1/interview/${id}` });
   }

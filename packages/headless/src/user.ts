@@ -99,7 +99,7 @@ export function useUpdateFullTutor({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const update = useCallback(
     async ({

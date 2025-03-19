@@ -10,6 +10,37 @@ import { first, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
 
+type Filters = {
+  users?: number[];
+  statuses?: IInterview.Status[];
+  levels?: IInterview.Self["level"][];
+  signed?: boolean;
+  signers?: number[];
+  /**
+   * Start date time (ISO datetime format)
+   *
+   * All lessons after (or the same as) this date will be included.
+   */
+  after?: string;
+  /**
+   * End date time (ISO datetime format)
+   *
+   * All lessons before (or the same as) this date will be included.
+   */
+  before?: string;
+  /**
+   * When provided with the `before` or `after` flag, it will not
+   * include lessons that are partially out the query time boundaries.
+   * @default false
+   */
+  strict?: boolean;
+  /**
+   * slots ids to be included in the query result
+   */
+  slots?: number[];
+  canceled?: boolean;
+} & IFilter.SkippablePagination;
+
 export class Interviews {
   readonly table = "interviews" as const;
 
@@ -20,8 +51,6 @@ export class Interviews {
     interviewee_id: this.column("interviewee_id"),
     interviewer_feedback: this.column("interviewer_feedback"),
     interviewee_feedback: this.column("interviewee_feedback"),
-    interviewer_name: this.column("interviewer_name"),
-    interviewee_name: this.column("interviewee_name"),
     slot_id: this.column("slot_id"),
     session_id: this.column("session_id"),
     note: this.column("note"),
@@ -141,11 +170,70 @@ export class Interviews {
     return await this.findManyBy("slot_id", id);
   }
 
+  applySearchFilter<R extends object, T>(
+    builder: Knex.QueryBuilder<R, T>,
+    {
+      statuses,
+      signers,
+      levels,
+      signed,
+      users,
+      slots,
+      canceled,
+      after,
+      before,
+      strict,
+    }: Filters
+  ): Knex.QueryBuilder<R, T> {
+    if (users && !isEmpty(users))
+      builder.where((builder) => {
+        builder
+          .whereIn(this.column("interviewer_id"), users)
+          .orWhereIn(this.column("interviewee_id"), users);
+      });
+
+    if (statuses && !isEmpty(statuses))
+      builder.whereIn(this.column("status"), statuses);
+
+    if (levels && !isEmpty(levels))
+      builder.whereIn(this.column("level"), levels);
+
+    if (signed === true) builder.where(this.column("signer"), "IS NOT", null);
+    else if (signed === false) builder.where(this.column("signer"), "IS", null);
+
+    if (signers && !isEmpty(signers))
+      builder.whereIn(this.column("signer"), signers);
+
+    if (slots && !isEmpty(slots))
+      builder.whereIn(this.column("slot_id"), slots);
+
+    if (canceled === true)
+      builder.where(this.column("canceled_at"), "IS NOT", null);
+    else if (canceled === false)
+      builder.where(this.column("canceled_at"), "IS", null);
+
+    const start = this.column("start");
+    const end = knex.raw("?? + INTERVAL '30 Minutes'", [start]);
+
+    if (after)
+      builder.where((builder) => {
+        builder.where(start, ">=", dayjs.utc(after).toDate());
+        if (!strict) builder.orWhere(end, ">", dayjs.utc(after).toDate());
+      });
+
+    if (before)
+      builder.where((builder) => {
+        builder.where(end, "<=", dayjs.utc(before).toDate());
+        if (!strict) builder.orWhere(start, "<", dayjs.utc(before).toDate());
+      });
+
+    return builder;
+  }
+
   async find({
     statuses,
     signers,
     levels,
-    meta,
     signed,
     users,
     slots = [],
@@ -155,114 +243,88 @@ export class Interviews {
     strict = false,
     tx,
     ...pagination
-  }: WithOptionalTx<
-    {
-      users?: number[];
-      statuses?: IInterview.Status[];
-      levels?: IInterview.Self["level"][];
-      signed?: boolean;
-      meta?: boolean;
-      signers?: number[];
-      /**
-       * Start date time (ISO datetime format)
-       *
-       * All lessons after (or the same as) this date will be included.
-       */
-      after?: string;
-      /**
-       * End date time (ISO datetime format)
-       *
-       * All lessons before (or the same as) this date will be included.
-       */
-      before?: string;
-      /**
-       * When provided with the `before` or `after` flag, it will not
-       * include lessons that are partially out the query time boundaries.
-       * @default false
-       */
-      strict?: boolean;
-      /**
-       * slots ids to be included in the query result
-       */
-      slots?: number[];
-      canceled?: boolean;
-    } & IFilter.SkippablePagination
-  >): Promise<Paginated<IInterview.Self>> {
-    const baseBuilder = this.builder(tx);
-
-    if (users && !isEmpty(users))
-      baseBuilder.where((builder) => {
-        builder
-          .whereIn(this.column("interviewer_id"), users)
-          .orWhereIn(this.column("interviewee_id"), users);
-      });
-
-    if (statuses && !isEmpty(statuses))
-      baseBuilder.whereIn(this.column("status"), statuses);
-
-    if (levels && !isEmpty(levels))
-      baseBuilder.whereIn(this.column("level"), levels);
-
-    if (signed === true)
-      baseBuilder.where(this.column("signer"), "IS NOT", null);
-    else if (signed === false)
-      baseBuilder.where(this.column("signer"), "IS", null);
-
-    if (signers && !isEmpty(signers))
-      baseBuilder.whereIn(this.column("signer"), signers);
-
-    if (!isEmpty(slots)) baseBuilder.whereIn(this.column("slot_id"), slots);
-
-    if (canceled === true)
-      baseBuilder.where(this.column("canceled_at"), "IS NOT", null);
-    else if (canceled === false)
-      baseBuilder.where(this.column("canceled_at"), "IS", null);
-
-    const start = this.column("start");
-    const end = knex.raw("?? + INTERVAL '30 Minutes'", [start]);
-
-    if (after)
-      baseBuilder.where((builder) => {
-        builder.where(start, ">=", dayjs.utc(after).toDate());
-        if (!strict) builder.orWhere(end, ">", dayjs.utc(after).toDate());
-      });
-
-    if (before)
-      baseBuilder.where((builder) => {
-        builder.where(end, "<=", dayjs.utc(before).toDate());
-        if (!strict) builder.orWhere(start, "<", dayjs.utc(before).toDate());
-      });
+  }: WithOptionalTx<Filters>): Promise<Paginated<IInterview.Self>> {
+    const baseBuilder = this.applySearchFilter(this.builder(tx), {
+      statuses,
+      signers,
+      levels,
+      signed,
+      users,
+      slots,
+      canceled,
+      after,
+      before,
+      strict,
+    });
 
     const total = await countRows(baseBuilder.clone());
-
-    if (meta)
-      baseBuilder
-        .leftJoin(
-          "users as interviewer",
-          "interviews.interviewer_id",
-          "interviewer.id"
-        )
-        .leftJoin(
-          "users as interviewee",
-          "interviews.interviewee_id",
-          "interviewee.id"
-        )
-        .select([
-          "interviews.*",
-          "interviewer.id as interviewer_id",
-          "interviewer.name as interviewer_name",
-          "interviewee.id as interviewee_id",
-          "interviewee.name as interviewee_name",
-        ]);
 
     const queryBuilder = baseBuilder
       .clone()
       .orderBy(this.column("start"), "desc");
 
     const rows = await withSkippablePagination(queryBuilder, pagination);
-    console.log(rows);
 
     return { list: rows.map((row) => this.from(row)), total };
+  }
+
+  async findFullInterview({
+    statuses,
+    signers,
+    levels,
+    signed,
+    users,
+    slots = [],
+    canceled,
+    after,
+    before,
+    strict = false,
+    tx,
+    ...pagination
+  }: WithOptionalTx<Filters & IFilter.SkippablePagination>): Promise<
+    Paginated<IInterview.FullInterview>
+  > {
+    const baseBuilder = this.applySearchFilter(this.fullBuilder(tx), {
+      statuses,
+      signers,
+      levels,
+      signed,
+      users,
+      slots,
+      canceled,
+      after,
+      before,
+      strict,
+    });
+
+    const total = await countRows(baseBuilder.clone());
+
+    baseBuilder
+      .leftJoin(
+        "users as interviewer",
+        "interviews.interviewer_id",
+        "interviewer.id"
+      )
+      .leftJoin(
+        "users as interviewee",
+        "interviews.interviewee_id",
+        "interviewee.id"
+      )
+      .select([
+        "interviews.*",
+        "interviewer.id as interviewer_id",
+        "interviewer.name as interviewer_name",
+        "interviewee.id as interviewee_id",
+        "interviewee.name as interviewee_name",
+      ]);
+
+    const queryBuilder = baseBuilder
+      .clone()
+      .orderBy(this.column("start"), "desc");
+
+    const rows = await withSkippablePagination(queryBuilder, pagination);
+
+    return { list: rows.map((row) => this.asFullInterview(row)), total };
   }
 
   from(row: IInterview.Row): IInterview.Self {
@@ -278,9 +340,42 @@ export class Interviews {
         interviewer: row.interviewer_feedback,
         interviewee: row.interviewee_feedback,
       },
-      name: {
-        interviewer: row.interviewer_name,
-        interviewee: row.interviewee_name,
+      start: row.start.toISOString(),
+      note: row.note,
+      level: row.level,
+      status: row.status,
+      signer: row.signer,
+      canceledBy: row.canceled_by,
+      canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
+      createdAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
+    };
+  }
+
+  asFullInterview(row: IInterview.PopulatedRow): IInterview.FullInterview {
+    return {
+      ids: {
+        self: row.id,
+        slot: row.slot_id,
+        session: row.session_id,
+        interviewee: row.interviewee_id,
+        interviewer: row.interviewer_id,
+      },
+      feedback: {
+        interviewer: row.interviewer_feedback,
+        interviewee: row.interviewee_feedback,
+      },
+      interviewer: {
+        id: row.interviewer_id,
+        name: row.interviewer_name,
+        image: row.interviewer_image,
+        feedback: row.interviewer_feedback,
+      },
+      interviewee: {
+        id: row.interviewee_id,
+        name: row.interviewee_name,
+        image: row.interviewee_image,
+        feedback: row.interviewee_feedback,
       },
       start: row.start.toISOString(),
       note: row.note,
@@ -298,6 +393,12 @@ export class Interviews {
     return tx
       ? tx<IInterview.Row>(this.table).clone()
       : knex<IInterview.Row>(this.table).clone();
+  }
+
+  fullBuilder(tx?: Knex.Transaction) {
+    return tx
+      ? tx<IInterview.PopulatedRow>(this.table).clone()
+      : knex<IInterview.PopulatedRow>(this.table).clone();
   }
 
   column(value: keyof IInterview.Row): string {

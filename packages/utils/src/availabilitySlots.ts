@@ -212,9 +212,9 @@ export function asSlots<T extends ILesson.Self | IInterview.Self>(
   return items.map((item) => asSlot(item));
 }
 
-export function asSubSlot<T extends ILesson.Self | IInterview.Self>(
-  item: T
-): IAvailabilitySlot.SubSlot {
+export function asSubSlot<
+  T extends ILesson.Self | (IInterview.Self | IInterview.FullInterview),
+>(item: T): IAvailabilitySlot.SubSlot {
   return {
     parent: "ids" in item ? item.ids.slot : item.slotId,
     start: item.start,
@@ -224,8 +224,8 @@ export function asSubSlot<T extends ILesson.Self | IInterview.Self>(
   };
 }
 
-export function asSubSlots<T extends ILesson.Self | IInterview.Self>(
-  items: T[]
-): IAvailabilitySlot.SubSlot[] {
+export function asSubSlots<
+  T extends ILesson.Self | (IInterview.Self | IInterview.FullInterview),
+>(items: T[]): IAvailabilitySlot.SubSlot[] {
   return items.map((item) => asSubSlot(item));
 }
