@@ -91,7 +91,9 @@ export const url = zod.string().url().trim();
 
 export const subscriptionPeriod = zod.nativeEnum(ISubscription.Period);
 
-export const interviewStatus = zod.nativeEnum(IInterview.Status);
+export const interviewStatus = zod.coerce.number(
+  zod.nativeEnum(IInterview.Status)
+);
 
 export const withdrawMethod = zod.nativeEnum(IWithdrawMethod.Type);
 
