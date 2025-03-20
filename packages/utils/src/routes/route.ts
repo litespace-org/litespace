@@ -24,6 +24,7 @@ export enum Web {
   ForgetPassword = "/forget-password",
   Lesson = "/lesson/:id",
   Session = "/session",
+  BookInterview = "/book-interview",
 }
 
 export enum Landing {
