@@ -73,6 +73,7 @@ app.use(
   adminOnly,
   express.static(serverConfig.assets.directory.receipts)
 );
+app.use("/api/v1/analytics", routes.analytics);
 app.use("/api/v1/auth", routes.auth);
 app.use("/api/v1/contact-request", routes.contactRequest);
 app.use("/api/v1/user", routes.user(context));

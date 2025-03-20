@@ -150,3 +150,8 @@ export const telegramConfig = {
     .number({ message: "Missing telegram chat id" })
     .parse(Number(process.env.TELEGRAM_CHAT)),
 };
+
+export const conversionApiConfig = {
+  apiUrl: zod.string().url().trim().parse(process.env.CONVERSION_API_URL),
+  token: zod.string().trim().parse(process.env.CONVERSION_API_ACCESS_TOKEN),
+};
