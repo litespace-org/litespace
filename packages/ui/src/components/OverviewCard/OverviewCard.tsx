@@ -16,8 +16,8 @@ export const OverviewCard: React.FC<{
   return (
     <div
       className={cn(
-        "p-4 bg-natural-50 rounded-2xl shadow-ls-x-small",
-        "border border-transparent hover:border-natural-100 max-w-[215px]",
+        "p-3 sm:p-4 bg-natural-50 rounded-2xl shadow-ls-x-small",
+        "border border-transparent hover:border-natural-100 w-full md:max-w-[215px]",
         "basis-full flex flex-col justify-between gap-2 relative overflow-hidden",
         className
       )}
@@ -38,13 +38,15 @@ export const OverviewCard: React.FC<{
       />
       <div className="flex items-center gap-2 z-10">
         <div
-          className={cn("w-6 h-6 rounded-md flex justify-center items-center")}
+          className={cn(
+            "w-5 sm:w-6 h-5 sm:h-6 rounded-md flex justify-center items-center p-1"
+          )}
           style={{ backgroundColor: `var(--${color}-500)` }}
         >
           {icon}
         </div>
         <Typography
-          tag="h2"
+          tag="h1"
           className="text-natural-600 text-caption font-normal"
         >
           {intl(title)}
@@ -53,8 +55,8 @@ export const OverviewCard: React.FC<{
       <Typography
         tag="p"
         className={cn(
-          "text-natural-950 inline-block self-start border-b pb-1",
-          "text-h3 font-semibold"
+          "text-natural-950 inline-block self-start border-b",
+          "text-base sm:text-[2.5rem] font-bold sm:font-semibold"
         )}
         style={{ borderBottomColor: `var(--${color}-500)` }}
       >

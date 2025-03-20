@@ -48,7 +48,10 @@ const Login: React.FC = () => {
     return router.generic({ route, query: omit(query, "redirect") });
   }, [searchParams]);
 
-  const google = useGoogle({ redirect });
+  const google = useGoogle({
+    redirect,
+    role: IUser.Role.Student,
+  });
 
   const { control, handleSubmit, watch, formState } = useForm<IForm>({
     defaultValues: {
