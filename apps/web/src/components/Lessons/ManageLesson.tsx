@@ -67,6 +67,16 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     size: 1,
   });
 
+  const hasBookedLessons = useMemo(() => {
+    if (lessons.query.data) {
+      return (
+        lessons.query.data.list.filter((lesson) => !lesson.lesson.canceledBy)
+          .length > 0
+      );
+    }
+    return false;
+  }, [lessons]);
+
   const tutorAvailabilitySlots = useFindAvailabilitySlots(
     availabilitySlotsQuery
   );
@@ -217,9 +227,7 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
       slots={tutorAvailabilitySlots.data?.slots.list || []}
       onSubmit={onSubmit}
       isVerified={user?.verifiedEmail}
-      hasBookedLessons={
-        lessons.query.data ? lessons.query.data.list.length > 0 : false
-      }
+      hasBookedLessons={hasBookedLessons}
       open
       retry={tutorAvailabilitySlots.refetch}
       error={
