@@ -15,8 +15,9 @@ import {
   reachedBookingLimit,
   forbidden,
   notfound,
+  illegal,
 } from "@/lib/error";
-import { ILesson, IUser, Wss } from "@litespace/types";
+import { IAvailabilitySlot, ILesson, IUser, Wss } from "@litespace/types";
 import {
   lessons,
   users,
@@ -180,6 +181,8 @@ function update(context: ApiContext) {
 
       const slot = await availabilitySlots.findById(payload.slotId);
       if (!slot) return next(notfound.slot());
+      if (slot.purpose !== IAvailabilitySlot.Purpose.Lesson)
+        return next(illegal());
 
       const slotLessons = await lessons.find({
         slots: [slot.id],

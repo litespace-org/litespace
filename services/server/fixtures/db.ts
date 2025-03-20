@@ -91,6 +91,7 @@ export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
       userId: payload?.userId || 1,
       start: start.toISOString(),
       end: end.toISOString(),
+      purpose: payload?.purpose,
     },
   ]);
   const res = first(newSlots);

@@ -4,6 +4,7 @@ import { ApiError, ApiErrorCode, FieldError } from "@litespace/types";
 export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.Forbidden]: "error.api.forbidden",
   [ApiError.BadRequest]: "error.api.bad-request",
+  [ApiError.Illegal]: "error.api.illegal",
   [ApiError.RoomExists]: "error.api.room-exists",
   [ApiError.UserExists]: "error.api.user-exists",
   [ApiError.RatingExists]: "error.api.rating-exists",

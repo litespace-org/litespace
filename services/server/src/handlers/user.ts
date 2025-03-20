@@ -1,5 +1,12 @@
-import { tutors, users, knex, lessons } from "@litespace/models";
-import { ILesson, ITutor, IUser } from "@litespace/types";
+import {
+  tutors,
+  users,
+  knex,
+  lessons,
+  availabilitySlots,
+  interviews,
+} from "@litespace/models";
+import { IAvailabilitySlot, ILesson, ITutor, IUser } from "@litespace/types";
 import {
   apierror,
   bad,
@@ -34,7 +41,7 @@ import {
   id,
 } from "@/validation/utils";
 import { jwtSecret, paginationDefaults } from "@/constants";
-import { drop, entries, groupBy, sample } from "lodash";
+import { drop, entries, groupBy } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
@@ -66,6 +73,7 @@ import { getRequestFile, upload } from "@/lib/assets";
 import bytes from "bytes";
 import s3 from "@/lib/s3";
 import { isOnboard } from "@litespace/utils/tutor";
+import { asSubSlots, getFirstAvailableSlot } from "@litespace/utils";
 
 const createUserPayload = zod.object({
   role,
@@ -351,7 +359,7 @@ async function findCurrentUser(
   res.status(200).json(response);
 }
 
-async function selectInterviewer(
+async function selectTutorManager(
   req: Request,
   res: Response,
   next: NextFunction
@@ -361,9 +369,37 @@ async function selectInterviewer(
   const allowed = isTutor(user);
   if (!allowed) return next(forbidden());
 
-  const tutorManagers = await users.findManyBy("role", IUser.Role.TutorManager);
-  // todo: select best interviewer based on his sechudle
-  const interviewer = sample(tutorManagers);
+  const now = dayjs().toISOString();
+
+  const { list: tutorManagers } = await users.find({
+    role: IUser.Role.TutorManager,
+    full: true,
+  });
+
+  const { list: slotsList } = await availabilitySlots.find({
+    users: tutorManagers.map((tutor) => tutor.id),
+    after: now,
+    full: true,
+    purposes: [IAvailabilitySlot.Purpose.Interview],
+  });
+
+  const { list: interviewsList } = await interviews.find({
+    slots: slotsList.map((slot) => slot.id),
+    after: now,
+    full: true,
+  });
+
+  const firstFreeSlot = getFirstAvailableSlot({
+    slots: slotsList,
+    subslots: asSubSlots(interviewsList),
+  });
+
+  const selectedSlot = slotsList.find(
+    (slot) => slot.id === firstFreeSlot?.parent
+  );
+  const interviewer = tutorManagers.find(
+    (tutor) => tutor.id === selectedSlot?.userId
+  );
 
   if (!interviewer) return next(notfound.user());
 
@@ -1048,7 +1084,7 @@ export default {
   findTutorStats: safeRequest(findTutorStats),
   findPersonalizedTutorStats: safeRequest(findPersonalizedTutorStats),
   findCurrentUser: safeRequest(findCurrentUser),
-  selectInterviewer: safeRequest(selectInterviewer),
+  selectTutorManager: safeRequest(selectTutorManager),
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
   findStudios: safeRequest(findStudios),
