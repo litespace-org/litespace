@@ -8,6 +8,7 @@ import {
   MIN_USER_NAME_LENGTH,
   PASSWORD_REGEX,
   PHONE_NUMBER_REGEX,
+  TUTOR_NAME_REGEX,
   USER_NAME_REGEX,
 } from "@/constants";
 import { FieldError } from "@litespace/types";
@@ -23,6 +24,20 @@ export function isValidUserName(
     return FieldError.InvalidUserName;
   if (name.length < MIN_USER_NAME_LENGTH) return FieldError.ShortUserName;
   if (name.length > MAX_USER_NAME_LENGTH) return FieldError.LongUserName;
+  return true;
+}
+
+export function isValidTutorName(
+  name: unknown
+):
+  | FieldError.InvalidTutorName
+  | FieldError.ShortTutorName
+  | FieldError.LongTutorName
+  | true {
+  if (typeof name !== "string" || !TUTOR_NAME_REGEX.test(name))
+    return FieldError.InvalidTutorName;
+  if (name.length < MIN_USER_NAME_LENGTH) return FieldError.ShortTutorName;
+  if (name.length > MAX_USER_NAME_LENGTH) return FieldError.LongTutorName;
   return true;
 }
 

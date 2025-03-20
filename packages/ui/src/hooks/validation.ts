@@ -11,6 +11,7 @@ import {
   isValidPassword,
   isValidPhone,
   isValidTutorBio,
+  isValidTutorName,
   isValidUserName,
 } from "@litespace/utils/validation";
 
@@ -76,6 +77,35 @@ export function useValidateUserName(required: boolean = false) {
       if (!value && !required) return true;
       if (!value && required) return intl("error.required");
       const valid = isValidUserName(value);
+      if (valid !== true) return intl(errorMap[valid]);
+      return true;
+    },
+    [required, errorMap, intl]
+  );
+}
+
+export function useValidateTutorName(required: boolean = false) {
+  const intl = useFormatMessage();
+
+  const errorMap: Record<
+    | FieldError.InvalidTutorName
+    | FieldError.LongTutorName
+    | FieldError.ShortTutorName,
+    LocalId
+  > = useMemo(
+    () => ({
+      [FieldError.InvalidTutorName]: "error.name.invalid",
+      [FieldError.LongTutorName]: "error.name.length.long",
+      [FieldError.ShortTutorName]: "error.name.length.short",
+    }),
+    []
+  );
+
+  return useCallback(
+    (value: unknown) => {
+      if (!value && !required) return true;
+      if (!value && required) return intl("error.required");
+      const valid = isValidTutorName(value);
       if (valid !== true) return intl(errorMap[valid]);
       return true;
     },

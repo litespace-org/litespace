@@ -1,5 +1,6 @@
 export {
   isValidUserName,
+  isValidTutorName,
   isValidEmail,
   isValidPhone,
   isValidPassword,
