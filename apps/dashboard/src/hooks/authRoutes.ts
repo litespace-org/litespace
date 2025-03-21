@@ -71,6 +71,9 @@ const routeConfigMap: Record<Dashboard, RouteConfig> = {
   [Dashboard.PhotoSessions]: {
     whitelist: [regularAdmin, studio],
   },
+  [Dashboard.Tutor]: {
+    whitelist: [regularAdmin],
+  },
 };
 
 export function useAuthRoutes() {
