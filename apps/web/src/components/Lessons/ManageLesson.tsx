@@ -62,19 +62,13 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
   const lessons = useFindLessons({
     canceled: false,
     users: user ? [user?.id] : [],
+    after: dayjs().toISOString(),
     userOnly: true,
-    future: true,
     size: 1,
   });
 
   const hasBookedLessons = useMemo(() => {
-    if (lessons.query.data) {
-      return (
-        lessons.query.data.list.filter((lesson) => !lesson.lesson.canceledBy)
-          .length > 0
-      );
-    }
-    return false;
+    return !!lessons.query.data && !!lessons.query.data.list.length;
   }, [lessons]);
 
   const tutorAvailabilitySlots = useFindAvailabilitySlots(
