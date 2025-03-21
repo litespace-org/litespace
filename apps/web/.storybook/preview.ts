@@ -1,7 +1,7 @@
 import type { Preview } from "@storybook/react";
 // eslint-disable-next-line no-restricted-imports
 import Decorator from "./decorator.tsx";
-import "@/index.css";
+import "@litespace/ui/tailwind.css";
 
 const preview: Preview = {
   parameters: {

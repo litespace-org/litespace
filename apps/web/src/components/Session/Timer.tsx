@@ -1,59 +1,49 @@
 import React, { useEffect, useState, useCallback } from "react";
-import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import TimerIndicator from "@litespace/assets/TimerIndicator";
+import dayjs from "@/lib/dayjs";
+import { formatMinutes } from "@litespace/ui/utils";
 
 const Timer: React.FC<{ start: string; duration: number }> = ({
   start,
   duration,
 }) => {
   const intl = useFormatMessage();
-  const [displayText, setDisplayText] = useState<React.ReactNode>(null);
 
-  const updateTimer = useCallback(() => {
+  const getTimerText = useCallback(() => {
     const now = dayjs();
     const startTime = dayjs(start);
     const endTime = startTime.add(duration, "m");
 
     if (now.isBefore(startTime)) {
-      return intl.rich("session.will-start-in", {
-        timer: (
-          <span className="font-bold text-brand-700 text-caption">
-            {startTime.fromNow(true)}
-          </span>
-        ),
+      const diff = startTime.diff(now, "minutes") || 1;
+      return intl("session.will-start-in", {
+        duration: diff <= 60 ? formatMinutes(diff) : startTime.fromNow(true),
       });
     }
 
     if (now.isAfter(endTime)) {
-      return intl.rich("session.ended-since", {
-        timer: (
-          <span className="font-bold text-brand-700 text-caption">
-            {endTime.fromNow(true)}
-          </span>
-        ),
+      const diff = endTime.diff(now, "minutes") || 1;
+      return intl("session.ended-since", {
+        duration: diff >= 60 ? formatMinutes(diff) : endTime.fromNow(true),
       });
     }
 
-    const remainingMinutes = endTime.diff(now, "minutes");
-
-    return intl.rich("session.time-remaining", {
-      timer: (
-        <span className="font-bold text-brand-700 text-caption">
-          {remainingMinutes}
-        </span>
-      ),
+    const diff = endTime.diff(now, "minutes") || 1;
+    return intl("session.time-remaining", {
+      duration: formatMinutes(diff),
     });
   }, [start, duration, intl]);
 
+  const [displayText, setDisplayText] = useState<string>(getTimerText());
+
   useEffect(() => {
-    setDisplayText(updateTimer());
     const interval = setInterval(() => {
-      setDisplayText(updateTimer());
+      setDisplayText(getTimerText());
     }, 1_000);
     return () => clearInterval(interval);
-  }, [updateTimer]);
+  }, [getTimerText]);
 
   return (
     <div className="flex gap-1 md:gap-2 items-center">
