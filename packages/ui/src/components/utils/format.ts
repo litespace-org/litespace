@@ -34,3 +34,11 @@ export function formatMinutes(value: number, options: Options = {}): string {
     ...options,
   });
 }
+
+export function formatDuration(ms: number, options: Options = {}): string {
+  return humanize(ms, {
+    language: "ar",
+    digitReplacements: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    ...options,
+  });
+}

@@ -33,7 +33,7 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
 import CalendarFilled from "@litespace/assets/CalendarFilled";
 import dayjs from "@/lib/dayjs";
-import TimerIndicator from "@/components/Session/TimerIndicator";
+import Timer from "@/components/Session/Timer";
 import { capture } from "@/lib/sentry";
 import { isMobileBrowser } from "@/lib/browser";
 
@@ -297,7 +297,7 @@ const Lesson: React.FC = () => {
                   {dayjs(lesson.data.lesson.start).format("DD MMMM YYYY")}
                 </Typography>
               </div>
-              <TimerIndicator
+              <Timer
                 start={lesson.data.lesson.start}
                 duration={lesson.data.lesson.duration}
               />
