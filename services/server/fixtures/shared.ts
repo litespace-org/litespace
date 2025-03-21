@@ -28,7 +28,7 @@ const ci = !!process.env.CI;
 const command = ci ? "migrate:test:ci" : "migrate:test:local";
 
 export async function down() {
-  await execute(`pnpm --filter @litespace/models ${command} down`);
+  await execute(`pnpm --filter @litespace/models ${command} down 0`);
 }
 
 export async function up() {

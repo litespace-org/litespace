@@ -20,8 +20,8 @@ import { sendBackgroundMessage } from "@/workers";
 import axios from "axios";
 
 const credentials = zod.object({
-  email: zod.string().email(),
-  password: zod.string(),
+  email,
+  password,
 });
 
 const authGooglePayload = zod.object({
@@ -60,6 +60,7 @@ async function loginWithPassword(
 ) {
   //! note: here you can catch if the user owns multiple accounts.
   const { email, password } = credentials.parse(req.body);
+
   const hashed = hashPassword(password);
   const user = await users.findByCredentials({ email, password: hashed });
   if (!user) return next(notfound.user());
@@ -87,7 +88,7 @@ async function getGoogleEmail({
 
     const payload = googleUserInfo.parse(ticket.getPayload());
     return {
-      email: payload.email,
+      email: payload.email.toLowerCase(),
       verified: !!payload.email_verified,
     };
   }
@@ -102,7 +103,7 @@ async function getGoogleEmail({
   );
 
   const { email, email_verified: verified } = googleUserInfo.parse(data);
-  return { email, verified: !!verified };
+  return { email: email.toLowerCase(), verified: !!verified };
 }
 
 // https://stackoverflow.com/questions/16501895/how-do-i-get-user-profile-using-google-access-token
@@ -166,6 +167,7 @@ async function loginWithAuthToken(
 async function forgetPassword(req: Request, res: Response) {
   const { email, callbackUrl }: IUser.ForgetPasswordApiPayload =
     forgotPasswordPayload.parse(req.body);
+
   const user = await users.findByEmail(email);
 
   if (user) {

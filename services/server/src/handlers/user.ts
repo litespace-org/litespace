@@ -69,9 +69,9 @@ import { isOnboard } from "@litespace/utils/tutor";
 
 const createUserPayload = zod.object({
   role,
-  email,
   password,
   callbackUrl: url,
+  email,
 });
 
 const updateUserPayload = zod.object({
@@ -261,11 +261,11 @@ function update(_: ApiContext) {
             : {
                 city,
                 name,
-                email,
                 gender,
                 birthYear,
                 phone,
                 image,
+                email,
                 // Reset user verification status incase his email updated.
                 verifiedEmail: email ? false : undefined,
                 password: password ? hashPassword(password.new) : undefined,

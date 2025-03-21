@@ -53,7 +53,6 @@ const PersonalSettings: React.FC<{
             control={form.control}
             autoComplete="off"
             name="email"
-            disabled
             dir="rtl"
             state={errors.email ? "error" : undefined}
             helper={errors.email?.message}

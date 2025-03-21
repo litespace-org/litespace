@@ -14,8 +14,8 @@ const ci = !!process.env.CI;
 
 export async function down() {
   const command = ci
-    ? "pnpm migrate:test:ci down"
-    : "pnpm migrate:test:local down";
+    ? "pnpm migrate:test:ci down 0"
+    : "pnpm migrate:test:local down 0";
   await execute(command);
 }
 
