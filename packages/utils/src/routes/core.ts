@@ -112,6 +112,11 @@ type DashboardPayload =
       query?: BaseQuery;
     }
   | {
+      route: Dashboard.Tutor;
+      id: number;
+      query?: BaseQuery;
+    }
+  | {
       route: Exclude<Dashboard, Dashboard.User>;
       query?: BaseQuery;
     };

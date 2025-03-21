@@ -53,10 +53,12 @@ export const AvailabilitySlot: React.FC<Props> = ({
         <div className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-2">
             <EventSpan start={start} end={end} />
-            <OptionsMenu
-              onEdit={() => onEdit && onEdit({ id, start, end })}
-              onDelete={() => onDelete && onDelete(id)}
-            />
+            {onEdit || onDelete ? (
+              <OptionsMenu
+                onEdit={() => onEdit && onEdit({ id, start, end })}
+                onDelete={() => onDelete && onDelete(id)}
+              />
+            ) : null}
           </div>
 
           <div className="flex relative h-9">
@@ -109,7 +111,7 @@ export const OptionsMenu: React.FC<{
 }> = ({ onEdit, onDelete, open, setOpen }) => {
   const intl = useFormatMessage();
 
-  const actions: MenuAction[] = useMemo(() => {
+  const actions = useMemo((): MenuAction[] => {
     return [
       {
         icon: <CalendarEdit />,

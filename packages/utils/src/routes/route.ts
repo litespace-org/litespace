@@ -54,4 +54,5 @@ export enum Dashboard {
   UserSetting = "/user-settings",
   PhotoSession = "/photo-session/:tutorId",
   PhotoSessions = "/photo-sessions",
+  Tutor = "/tutor/:id",
 }
