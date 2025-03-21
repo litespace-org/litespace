@@ -11,7 +11,7 @@ export class Invites {
     const now = new Date();
     const rows = await knex<IInvite.Row>("invites").insert(
       {
-        email: payload.email.toLowerCase(),
+        email: payload.email,
         plan_id: payload.planId,
         expires_at: new Date(payload.expiresAt),
         created_at: now,
@@ -35,7 +35,7 @@ export class Invites {
     const rows = await knex<IInvite.Row>("invites")
       .update(
         {
-          email: payload.email?.toLowerCase(),
+          email: payload.email,
           plan_id: payload.planId,
           expires_at: payload.expiresAt
             ? new Date(payload.expiresAt)
@@ -69,7 +69,7 @@ export class Invites {
   ): Promise<IInvite.Self | null> {
     const row = await this.builder(tx)
       .select()
-      .where(this.column("email"), email.toLowerCase())
+      .where(this.column("email"), email)
       .first();
     return row ? this.from(row) : null;
   }

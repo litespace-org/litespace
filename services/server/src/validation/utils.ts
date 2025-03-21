@@ -28,7 +28,7 @@ export const password = zod
   .string({ message: "Invalid password" })
   .regex(PASSWORD_REGEX, "Password doesn't meet the requirements");
 
-export const email = zod.string().trim().email("Invalid email");
+export const email = zod.string().trim().toLowerCase().email("Invalid email");
 
 export const gender = zod.enum([IUser.Gender.Male, IUser.Gender.Female]);
 

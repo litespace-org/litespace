@@ -31,7 +31,7 @@ export async function sendAuthTokenEmail({
     url.searchParams.set("token", token);
 
     await emailer.send({
-      to: email.toLowerCase(),
+      to: email,
       template:
         type === IToken.Type.VerifyEmail
           ? EmailTemplate.VerifyEmail

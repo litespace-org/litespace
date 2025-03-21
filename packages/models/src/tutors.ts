@@ -135,9 +135,7 @@ export class Tutors {
   }
 
   async findByEmail(email: string): Promise<ITutor.FullTutor | null> {
-    const tutors = await this.fullTutorQuery()
-      .where("email", email.toLowerCase())
-      .limit(1);
+    const tutors = await this.fullTutorQuery().where("email", email).limit(1);
     const tutor = first(tutors);
     if (!tutor) return null;
     return this.asFullTutor(tutor);
