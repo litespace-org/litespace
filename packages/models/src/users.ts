@@ -1,4 +1,4 @@
-import { column, countRows, knex, withPagination } from "@/query";
+import { column, countRows, knex, withSkippablePagination } from "@/query";
 import { first, isEmpty } from "lodash";
 import { IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
@@ -105,11 +105,10 @@ export class Users {
     role,
     verified,
     gender,
-    page,
-    size,
     orderBy,
     orderDirection,
     city,
+    ...pagination
   }: IUser.FindUsersQuery & {
     tx?: Knex.Transaction;
   }): Promise<Paginated<IUser.Self>> {
@@ -129,7 +128,7 @@ export class Users {
       .clone()
       .select()
       .orderBy(this.column(orderBy || "created_at"), orderDirection || "desc");
-    const rows = await withPagination(query, { page, size });
+    const rows = await withSkippablePagination(query, pagination);
     const users = rows.map((row) => this.from(row));
 
     return { list: users, total };

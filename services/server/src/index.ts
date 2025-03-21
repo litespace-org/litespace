@@ -19,10 +19,14 @@ import "colors";
 
 // global error handling
 // this is needed to prevent the server process from exit.
-process.on("uncaughtException", (error) => {
+process.on("uncaughtException", async (error) => {
   console.log("Uncaught exception");
   console.error(error);
-  msg(`Uncaught expection: ${error.message}`);
+  try {
+    await msg(`uncaught exception: ${error.message}`);
+  } catch (error) {
+    console.log(`Faield to notify the exception`, error);
+  }
 });
 
 // Stablish connection with the redis cache.

@@ -183,7 +183,7 @@ export type ResetPasswordApiPayload = {
   password: string;
 };
 
-export type FindUsersQuery = IFilter.Pagination & {
+export type FindUsersQuery = IFilter.SkippablePagination & {
   role?: Role;
   verified?: boolean;
   gender?: Gender;

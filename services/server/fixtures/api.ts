@@ -35,7 +35,7 @@ export class Api {
 
   static async forUser(role: IUser.Role) {
     const email = faker.internet.email();
-    const password = faker.internet.password();
+    const password = "Password@8";
     await db.user({ role, email, password });
     return await Api.fromCredentials(email, password);
   }
@@ -62,7 +62,7 @@ export class Api {
     return this.atlas.user.create({
       callbackUrl: payload?.callbackUrl || faker.internet.url(),
       email: payload?.email || faker.internet.email(),
-      password: payload?.password || faker.internet.password(),
+      password: payload?.password || "Password@8",
       role: payload?.role || (sample(Object.values(IUser.Role)) as IUser.Role),
     });
   }
