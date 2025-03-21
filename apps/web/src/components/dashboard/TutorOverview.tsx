@@ -9,7 +9,7 @@ export const TutorOverview: React.FC = () => {
   const statsQuery = useFindPersonalizedTutorStats();
 
   return (
-    <div className="flex flex-col gap-6 justify-items-start w-full">
+    <div className="grid gap-4 sm:gap-6 justify-items-start w-full">
       <Typography
         tag="h1"
         className="text-natural-950 text-subtitle-2 font-bold"

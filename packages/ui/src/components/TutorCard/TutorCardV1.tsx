@@ -34,7 +34,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
   );
 
   const remainingTopicsCount = useMemo(() => {
-    const displayedCount = !isFreshTutor
+    const displayedCount = isFreshTutor
       ? FRESH_TUTOR_MAX_TOPIC_COUNT
       : TUTOR_MAX_TOPIC_COUNT;
     const totalTopics = topics.length;
@@ -178,7 +178,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
                   </Tooltip>
                 );
             })}
-            {remainingTopicsCount ? (
+            {remainingTopicsCount > 0 ? (
               <Typography
                 tag="span"
                 className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"

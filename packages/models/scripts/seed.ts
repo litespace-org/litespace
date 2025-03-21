@@ -273,17 +273,31 @@ async function main(): Promise<void> {
 
   // seeding topics data
   stdout.info(`Inserting at most 50 random topics in the database.`);
-  await Promise.all(
+  const seededTopics = await Promise.all(
     range(100).map(async () => {
       try {
         const ar = faker.lorem.words(2);
         const en = fakerEn.lorem.words(2);
-        await topics.create({ name: { ar, en } });
+        return await topics.create({ name: { ar, en } });
       } catch (_) {
         // ignore errors (duplicate topics)
       }
     })
   );
+
+  // assigning topics for tutors
+  [...addedTutors, ...addedTutorManagers].forEach(async (tutor) => {
+    const topicIds: number[] = [];
+    for (let i = 0; i < 5; i++) {
+      const id = sample(seededTopics)!.id;
+      if (topicIds.includes(id)) continue;
+      topicIds.push(id);
+    }
+    await topics.registerUserTopics({
+      user: tutor.id,
+      topics: topicIds,
+    });
+  });
 
   // seeding slots
   const seededSlots: { [tutorId: number]: IAvailabilitySlot.Self[] } = {};

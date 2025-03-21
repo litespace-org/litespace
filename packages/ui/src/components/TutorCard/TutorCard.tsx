@@ -36,7 +36,7 @@ export const TutorCard: React.FC<CardProps> = ({
   );
 
   const remainingTopicsCount = useMemo(() => {
-    const displayedCount = !isFreshTutor
+    const displayedCount = isFreshTutor
       ? FRESH_TUTOR_MAX_TOPIC_COUNT
       : TUTOR_MAX_TOPIC_COUNT;
     const totalTopics = topics.length;
@@ -57,12 +57,14 @@ export const TutorCard: React.FC<CardProps> = ({
     >
       <div className="flex flex-row gap-2 mb-2">
         <div className="rounded-lg overflow-hidden shrink-0 w-[58px] h-[58px]">
-          <Avatar
-            src={orUndefined(imageUrl)}
-            alt={orUndefined(name)}
-            seed={id.toString()}
-            object="cover"
-          />
+          <Link to={profileUrl} className="cursor-pointer">
+            <Avatar
+              src={orUndefined(imageUrl)}
+              alt={orUndefined(name)}
+              seed={id.toString()}
+              object="cover"
+            />
+          </Link>
         </div>
         <div>
           <Typography
@@ -186,13 +188,15 @@ export const TutorCard: React.FC<CardProps> = ({
                 </Tooltip>
               );
           })}
-          <Typography
-            tag="span"
-            className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
-          >
-            {remainingTopicsCount}
-            {"+"}
-          </Typography>
+          {remainingTopicsCount > 0 ? (
+            <Typography
+              tag="span"
+              className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
+            >
+              {remainingTopicsCount}
+              {"+"}
+            </Typography>
+          ) : null}
         </div>
       ) : null}
 
