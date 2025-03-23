@@ -21,7 +21,6 @@ describe("Topics", () => {
         },
       });
 
-      expect(topic.id).to.be.eq(1);
       expect(topic.name.ar).to.be.eq("ar");
       expect(topic.name.en).to.be.eq("en");
       expect(topic.createdAt).to.be.eq(

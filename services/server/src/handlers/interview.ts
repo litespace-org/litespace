@@ -1,6 +1,7 @@
 import {
   bad,
   busyTutorManager,
+  conflictingInterview,
   forbidden,
   interviewAlreadySigned,
   notfound,
@@ -93,7 +94,7 @@ async function createInterview(
 
   const list = await interviews.findByInterviewee(intervieweeId);
   const interviewable = canBeInterviewed(list);
-  if (!interviewable) return next(bad());
+  if (!interviewable) return next(conflictingInterview());
 
   const slot = await availabilitySlots.findById(slotId);
   if (!slot) return next(notfound.slot());
@@ -137,9 +138,7 @@ async function createInterview(
     return interview;
   });
 
-  const response: IInterview.CreateInterviewApiResponse = interview;
-
-  res.status(200).json(response);
+  res.status(200).json(interview);
 }
 
 async function findInterviews(req: Request, res: Response, next: NextFunction) {
@@ -216,14 +215,19 @@ async function updateInterview(
 
   // Tutor can only update the feedback of the interview
   const isPermissionedInterviewee =
-    isRegularTutor(user) && !payload.feedback?.interviewee;
+    isRegularTutor(user) &&
+    isEqual(Object.keys(payload), ["feedback"]) &&
+    payload.feedback?.interviewee &&
+    !payload.feedback?.interviewer;
 
   const isPermissionedInterviewer =
     isTutorManager(user) &&
-    (!payload.feedback?.interviewer ||
-      !payload.note ||
-      !payload.level ||
-      !payload.status);
+    !Object.keys(payload)
+      .map((key: string) =>
+        ["feedback", "note", "level", "status"].includes(key)
+      )
+      .includes(false) &&
+    !payload.feedback?.interviewee;
 
   const isPermissionedAdmin = isSuperAdmin(user) && payload.sign === true;
 

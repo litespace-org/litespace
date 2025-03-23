@@ -1,4 +1,4 @@
-import { empty, forbidden, notfound, refused } from "@/lib/error";
+import { empty, forbidden, notfound } from "@/lib/error";
 import { mockApi } from "@fixtures/mockApi";
 import db, { faker } from "@fixtures/db";
 import { topics } from "@litespace/models";
@@ -32,7 +32,7 @@ describe("/api/v1/topic/", () => {
   });
 
   describe("POST /api/v1/topic/user", () => {
-    it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
+    it("should respond with 403 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const res = await safe(() =>
         addUserTopics({ body: { topicIds: [1] }, user: IUser.Role.SuperAdmin })
       );
@@ -59,7 +59,7 @@ describe("/api/v1/topic/", () => {
           user: IUser.Role.Student,
         })
       );
-      expect(res).to.deep.eq(refused());
+      expect(res).to.deep.eq(forbidden());
     });
 
     it("should respond with 404 if atleast one topic is not found.", async () => {
@@ -109,7 +109,7 @@ describe("/api/v1/topic/", () => {
   });
 
   describe("DELETE /api/v1/topic/user", () => {
-    it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
+    it("should respond with 403 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const res = await safe(() =>
         deleteUserTopics({
           body: { topicIds: [1] },
@@ -177,7 +177,7 @@ describe("/api/v1/topic/", () => {
   });
 
   describe("GET /api/v1/topic/user", () => {
-    it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
+    it("should respond with 403 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const res = await safe(() =>
         findUserTopics({ user: IUser.Role.SuperAdmin })
       );
@@ -308,7 +308,7 @@ describe("/api/v1/topic/", () => {
           user: student,
         })
       );
-      expect(res).to.deep.eq(refused());
+      expect(res).to.deep.eq(forbidden());
     });
 
     it("should respond with 200 when any of the lists is empty.", async () => {
