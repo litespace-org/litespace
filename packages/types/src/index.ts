@@ -25,6 +25,10 @@ export * as IAsset from "@/asset";
 export * as ITopic from "@/topic";
 export * as Server from "@/server";
 export * as Env from "@/env";
+
+export * as IWhatsapp from "@/messenger/whatsapp";
+export * as ITelegram from "@/messenger/telegram";
+
 export * from "@/api";
 export * from "@/utils";
 export * from "@/validation";

@@ -1,4 +1,4 @@
-import ar from "@/locales/ar-eg.json" with { type: "json" };
+import ar from "@/locales/ar-eg.json";
 
 export type LocalMap = Record<keyof typeof ar, keyof typeof ar>;
 

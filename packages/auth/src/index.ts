@@ -29,4 +29,8 @@ export {
   Authorizer,
 } from "@/authorization";
 export { encodeAuthJwt, decodeAuthJwt } from "@/jwt";
-export { authMiddleware, adminOnly } from "@/middleware";
+export {
+  authMiddleware,
+  messengerAuthMiddleware,
+  adminOnly,
+} from "@/middleware";

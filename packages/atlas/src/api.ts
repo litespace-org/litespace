@@ -20,7 +20,7 @@ import { Cache } from "@/cache";
 import { Session } from "@/session";
 import { ContactRequest } from "@/contactRequest";
 
-export class Atlas {
+export class Api {
   public readonly user: User;
   public readonly auth: Auth;
   public readonly availabilitySlot: AvailabilitySlot;
