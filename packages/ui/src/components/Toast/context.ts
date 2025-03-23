@@ -1,16 +1,17 @@
 import { createContext, useCallback, useContext } from "react";
-import { ToastType } from "@/components/Toast/types";
+import { ToastId, ToastType } from "@/components/Toast/types";
 
 export type AddToastData = {
+  id?: ToastId;
   title: React.ReactNode;
   description?: React.ReactNode;
 };
 
-export type ToastData = AddToastData & { id: number; type: ToastType };
+export type ToastData = AddToastData & { id: ToastId; type: ToastType };
 
 type Context = {
-  add: (data: AddToastData, type: ToastType) => number;
-  remove: (id: number) => void;
+  add: (data: AddToastData, type: ToastType) => ToastId;
+  remove: (id: ToastId) => void;
 };
 
 export const ToastContext = createContext<Context | null>(null);
