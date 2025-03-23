@@ -36,6 +36,7 @@ import dayjs from "@/lib/dayjs";
 import Timer from "@/components/Session/Timer";
 import { capture } from "@/lib/sentry";
 import { isMobileBrowser } from "@/lib/browser";
+import { useToast } from "@litespace/ui/Toast";
 
 /**
  * @todos
@@ -49,6 +50,7 @@ const Lesson: React.FC = () => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
   const { user } = useUserContext();
+  const toast = useToast();
   const navigate = useNavigate();
 
   // ============================ Lesson ================================
@@ -133,8 +135,15 @@ const Lesson: React.FC = () => {
         current: lessonMembers?.current.userId,
         other,
       },
+      onUserMediaStreamError() {
+        toast.error({
+          id: "user-media-stream-error",
+          title: intl("session.permissions.error.title"),
+          description: intl("session.permissions.error.desc"),
+        });
+      },
     };
-  }, [caller, lesson.data?.lesson.sessionId, lessonMembers]);
+  }, [caller, intl, lesson.data?.lesson.sessionId, lessonMembers, toast]);
   const session = useSessionV3(sessionPayload);
   const devices = useDevices();
 
@@ -221,10 +230,12 @@ const Lesson: React.FC = () => {
     if (
       devices.info.microphone.permissioned &&
       !session.members.current.stream &&
+      !session.members.current.error &&
       !devices.loading
     )
-      session.capture(devices.info.camera.permissioned);
+      session.capture(devices.info.camera.permissioned, true);
   }, [
+    devices.error,
     devices.info.camera.permissioned,
     devices.info.microphone.permissioned,
     devices.loading,
@@ -254,6 +265,8 @@ const Lesson: React.FC = () => {
       error: !!session.screen.error,
     };
   }, [session.members.other.screen, session.screen]);
+
+  console.log(session.members.current.error);
 
   return (
     <div
@@ -328,7 +341,11 @@ const Lesson: React.FC = () => {
             ? permission
             : undefined
         }
-        open={!devices.info.microphone.permissioned || requestPermission}
+        open={
+          !devices.info.microphone.permissioned ||
+          !!requestPermission ||
+          !!session.members.current.error
+        }
         devices={{
           mic: devices.info.microphone.connected,
           camera: devices.info.camera.connected,

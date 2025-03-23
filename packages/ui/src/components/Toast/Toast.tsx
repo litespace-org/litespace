@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Root, Title, Description } from "@radix-ui/react-toast";
 import cn from "classnames";
-import { ToastType } from "@/components/Toast/types";
+import { ToastId, ToastType } from "@/components/Toast/types";
 import Check from "@litespace/assets/CheckCircleFill";
 import Warning from "@litespace/assets/WarningFill";
 import XErrored from "@litespace/assets/XErroredFill";
@@ -27,8 +27,8 @@ export const Toast: React.FC<{
   type: ToastType;
   description?: React.ReactNode;
   onOpenChange?: (value: boolean) => void;
-  toastKey?: number;
-}> = ({ open, onOpenChange, title, description, toastKey, type }) => {
+  toastId?: ToastId;
+}> = ({ open, onOpenChange, title, description, toastId, type }) => {
   const Icon = useMemo(() => IconMap[type], [type]);
 
   return (
@@ -36,7 +36,7 @@ export const Toast: React.FC<{
       dir="rtl"
       duration={TOAST_DURATION}
       open={open}
-      key={toastKey}
+      key={toastId}
       onOpenChange={onOpenChange}
       className={cn(
         "py-3 px-4 font-cairo rounded-lg shadow-toast",

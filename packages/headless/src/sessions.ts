@@ -55,7 +55,11 @@ type UseUserMediaReturn = {
     /**
      * Flag to enable or disable video in the user media stream.
      */
-    video?: boolean
+    video?: boolean,
+    /**
+     * @default false
+     */
+    silent?: boolean
   ) => Promise<MediaStream | Error>;
   /**
    * Stop all tracks in the media stream.
@@ -95,7 +99,10 @@ type UseUserMediaReturn = {
   speaking: boolean;
 };
 
-export function useUserMedia(onStop?: Void): UseUserMediaReturn {
+export function useUserMedia(
+  onStop?: Void,
+  onError?: (error: Error) => void
+): UseUserMediaReturn {
   const [loading, setLoading] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -148,10 +155,9 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
   }, [onTrackEnd, stream]);
 
   const capture = useCallback(
-    async (video?: boolean) => {
+    async (video?: boolean, silent: boolean = false) => {
       setLoading(true);
       const capturedStream = await getUserMedia(video);
-      setLoading(false);
       const error = capturedStream instanceof Error;
       const denied = error ? isPermissionDenied(capturedStream) : false;
 
@@ -165,11 +171,14 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
         setError(null);
         setUserDenied(true);
         setStream(null);
+        setLoading(false);
         return capturedStream;
       }
 
+      if (error && onError && !silent) onError(capturedStream);
       setError(error ? capturedStream : null);
       setStream(error ? null : capturedStream);
+      setLoading(false);
       return capturedStream;
 
       // noice cancellation
@@ -190,7 +199,7 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
       // setStream(output);
       // return output;
     },
-    [getUserMedia, stop]
+    [getUserMedia, onError, stop]
   );
 
   const toggleMic = useCallback(() => {
@@ -530,6 +539,7 @@ export type SessionV3Payload = {
     current?: number;
     other?: number;
   };
+  onUserMediaStreamError?: (error: Error) => void;
 };
 
 const callMetadata = zod.object({
@@ -541,6 +551,7 @@ export function useSessionV3({
   userIds,
   sessionId,
   isCaller,
+  onUserMediaStreamError,
 }: SessionV3Payload) {
   const { peer, ready } = usePeer(userIds.current);
   const [otherMemberStream, setOtherMemberStream] =
@@ -596,7 +607,7 @@ export function useSessionV3({
     mainCall.close();
   }, [mainCall]);
 
-  const userMedia = useUserMedia(onUserMediaStreamStop);
+  const userMedia = useUserMedia(onUserMediaStreamStop, onUserMediaStreamError);
   const screen = useShareScreen(onScreenStreamStop);
 
   /**
@@ -897,6 +908,7 @@ export function useSessionV3({
           speaking: userMedia.speaking,
           loadingStream: userMedia.loading,
           screen: screen.stream,
+          error: userMedia.error,
         },
         other: {
           audio: otherMemberAudio,
@@ -928,6 +940,7 @@ export function useSessionV3({
       sessionManager,
       userMedia.audio,
       userMedia.capture,
+      userMedia.error,
       userMedia.loading,
       userMedia.speaking,
       userMedia.stream,

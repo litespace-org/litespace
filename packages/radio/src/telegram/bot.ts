@@ -1,5 +1,14 @@
 import axios, { AxiosInstance } from "axios";
 
+type ParseMode = "markdown" | "markdown-v2" | "html" | "text";
+
+const parseModeMap: Record<ParseMode, string | undefined> = {
+  text: undefined,
+  markdown: "Markdown",
+  "markdown-v2": "MarkdownV2",
+  html: "HTML",
+};
+
 export class TelegramBot {
   private client: AxiosInstance;
 
@@ -9,9 +18,17 @@ export class TelegramBot {
     });
   }
 
-  async sendMessage({ text, chat }: { text: string; chat: number }) {
+  async sendMessage({
+    text,
+    chat,
+    parseMode = "markdown",
+  }: {
+    text: string;
+    chat: number;
+    parseMode?: "markdown" | "markdown-v2" | "html" | "text";
+  }) {
     return await this.client.post("/sendMessage", null, {
-      params: { chat_id: chat, text, parse_mode: "markdown" },
+      params: { chat_id: chat, text, parse_mode: parseModeMap[parseMode] },
     });
   }
 }
