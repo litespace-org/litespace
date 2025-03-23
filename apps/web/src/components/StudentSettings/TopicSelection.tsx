@@ -174,26 +174,28 @@ const TopicSelection: React.FC = () => {
         ) : null}
       </div>
 
-      <TopicSelectionDialog
-        title={intl("student-settings.topics.selection-dialog.title")}
-        description={intl(
-          "student-settings.topics.selection-dialog.description"
-        )}
-        topics={topicOptions}
-        initialTopics={userTopicIds}
-        opened={showDialog}
-        retry={() => {
-          if (allTopicsQuery.query.isError) allTopicsQuery.query.refetch();
-          if (userTopicsQuery.isError) userTopicsQuery.refetch();
-        }}
-        confirming={updateTopics.isPending}
-        loading={userTopicsQuery.isPending || allTopicsQuery.query.isPending}
-        error={userTopicsQuery.isError || allTopicsQuery.query.isError}
-        close={() => {
-          setShowDialog(false);
-        }}
-        confirm={confirm}
-      />
+      {showDialog ? (
+        <TopicSelectionDialog
+          title={intl("student-settings.topics.selection-dialog.title")}
+          description={intl(
+            "student-settings.topics.selection-dialog.description"
+          )}
+          topics={topicOptions}
+          initialTopics={userTopicIds}
+          opened={showDialog}
+          retry={() => {
+            if (allTopicsQuery.query.isError) allTopicsQuery.query.refetch();
+            if (userTopicsQuery.isError) userTopicsQuery.refetch();
+          }}
+          confirming={updateTopics.isPending}
+          loading={userTopicsQuery.isPending || allTopicsQuery.query.isPending}
+          error={userTopicsQuery.isError || allTopicsQuery.query.isError}
+          close={() => {
+            setShowDialog(false);
+          }}
+          confirm={confirm}
+        />
+      ) : null}
     </div>
   );
 };

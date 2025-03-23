@@ -243,22 +243,26 @@ const PublicSettings: React.FC<{
         </div>
       ) : null}
 
-      <TopicSelectionDialog
-        title={intl("tutor-settings.topics.selection-dialog.title")}
-        description={intl("tutor-settings.topics.selection-dialog.description")}
-        confirm={saveTopics}
-        topics={allTopics}
-        initialTopics={userTopicsIds}
-        close={() => setShowTopoicsDialog(false)}
-        opened={showTopicsDialog}
-        retry={() => {
-          userTopics.refetch();
-          topics.query.refetch();
-        }}
-        loading={userTopics.isPending || topics.query.isPending}
-        error={topics.query.isError || userTopics.isError}
-        confirming={updateTopics.isPending}
-      />
+      {showTopicsDialog ? (
+        <TopicSelectionDialog
+          title={intl("tutor-settings.topics.selection-dialog.title")}
+          description={intl(
+            "tutor-settings.topics.selection-dialog.description"
+          )}
+          confirm={saveTopics}
+          topics={allTopics}
+          initialTopics={userTopicsIds}
+          close={() => setShowTopoicsDialog(false)}
+          opened={showTopicsDialog}
+          retry={() => {
+            userTopics.refetch();
+            topics.query.refetch();
+          }}
+          loading={userTopics.isPending || topics.query.isPending}
+          error={topics.query.isError || userTopics.isError}
+          confirming={updateTopics.isPending}
+        />
+      ) : null}
     </div>
   );
 };
