@@ -1,7 +1,7 @@
-import { Atlas } from "@litespace/atlas";
+import { Api } from "@litespace/atlas";
 import { createContext, useContext } from "react";
 
-export const AtlasContext = createContext<Atlas | null>(null);
+export const AtlasContext = createContext<Api | null>(null);
 
 export function useAtlas() {
   const atlas = useContext(AtlasContext);

@@ -1,4 +1,6 @@
 import { TelegramClient, WhatsApp } from "@litespace/radio";
+import { messengerAuthMiddleware } from "@litespace/auth";
+
 import { env } from "@/config";
 import express, { json } from "express";
 import router from "@/routes";
@@ -16,11 +18,17 @@ async function main() {
   // Acquire telegram credentials
   await telegram.start();
 
-  const whatsapp = await new WhatsApp();
+  const whatsapp = new WhatsApp();
   await whatsapp.withStore("file");
   whatsapp.connect();
 
   app.use(json());
+  app.use(
+    messengerAuthMiddleware({
+      username: env.credentials.username,
+      password: env.credentials.password,
+    })
+  );
   app.use("/api/v1/", router({ whatsapp, telegram }));
   app.listen(env.port, () => console.log(`Server running on port ${env.port}`));
 }

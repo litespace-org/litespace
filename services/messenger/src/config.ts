@@ -12,6 +12,10 @@ const schema = zod.object({
       hash: zod.string().trim().length(32),
     }),
   }),
+  credentials: zod.object({
+    username: zod.string(),
+    password: zod.string(),
+  }),
 });
 
 export const env = schema.parse({
@@ -25,5 +29,9 @@ export const env = schema.parse({
       id: process.env.TELEGRAM_CLIENT_API_ID,
       hash: process.env.TELEGRAM_CLIENT_API_HASH,
     },
+  },
+  credentials: {
+    username: process.env.USERNAME,
+    password: process.env.PASSWORD,
   },
 });
