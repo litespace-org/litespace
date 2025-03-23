@@ -130,11 +130,11 @@ const UpcomingLessons: React.FC = () => {
     const start = dayjs.utc(rateLessonParams.start);
     const end = start
       .add(rateLessonParams.duration, "minutes")
-      .add(10, "minutes");
-    const stated = start.isBefore(now);
+      .add(30, "minutes");
+    const started = start.isBefore(now);
     const eneded = end.isAfter(now);
-
-    const canRate = (!rating || rating.userId !== user.id) && stated && !eneded;
+    const rated = rating && rating.userId === user.id;
+    const canRate = !rated && started && !eneded;
     setRateLessonParams((prev) => ({ ...prev, canRate }));
   }, [
     ratingQuery.data,
@@ -171,6 +171,7 @@ const UpcomingLessons: React.FC = () => {
             tutor: rateLessonParams.tutorName,
           })}
           description={intl("rating-dialog.rate-tutor.description")}
+          maxAllowedCharacters={500}
         />
       ) : null}
     </div>

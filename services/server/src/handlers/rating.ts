@@ -32,8 +32,8 @@ const findTutorRatingsQuery = zod.object({
 });
 
 async function createRating(req: Request, res: Response, next: NextFunction) {
-  const user = req.user;
-  const allowed = isStudent(user) || isTutor(user);
+  const rater = req.user;
+  const allowed = isStudent(rater) || isTutor(rater);
   if (!allowed) return next(forbidden());
 
   const { rateeId, value, feedback } = createRatingPayload.parse(req.body);
@@ -41,18 +41,18 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
   if (!ratee) return next(notfound.rating());
 
   const eligible =
-    (isStudent(user) && isTutor(ratee)) || (isTutor(user) && isStudio(ratee));
+    (isStudent(rater) && isTutor(ratee)) || (isTutor(rater) && isStudio(ratee));
   if (!eligible) return next(forbidden());
 
   const rating = await ratings.findByEntities({
-    rater: user.id,
+    rater: rater.id,
     ratee: rateeId,
   });
 
   if (rating) return next(exists.rate());
 
   const data = await ratings.create({
-    raterId: user.id,
+    raterId: rater.id,
     rateeId,
     value,
     feedback: feedback || null,
