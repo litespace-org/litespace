@@ -243,8 +243,9 @@ export const ManageLessonDialog: React.FC<{
   const allSlots = useMemo(() => {
     const availableSlots = selectDaySlots(date).map((slot) => ({
       ...slot,
-      bookable: true,
+      bookable: dayjs(slot.start).isAfter(dayjs()),
     }));
+
     return orderSlots(
       concat(
         availableSlots,

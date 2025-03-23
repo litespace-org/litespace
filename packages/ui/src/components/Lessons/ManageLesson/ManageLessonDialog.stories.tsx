@@ -99,6 +99,33 @@ export const WithBookedSlots: Story = {
   },
 };
 
+export const FilterPastSlots: Story = {
+  args: {
+    open: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    isVerified: true,
+    hasBookedLessons: false,
+    slots: [
+      {
+        id: 1,
+        start: dayjs.utc().subtract(1, "hour").startOf("hour").toISOString(),
+        end: dayjs.utc().add(4, "hours").add(4, "hours").toISOString(),
+        createdAt: faker.date.past().toISOString(),
+        updatedAt: faker.date.past().toISOString(),
+        deleted: false,
+        userId: 4,
+      },
+    ],
+    bookedSlots: [],
+    onSubmit() {
+      alert("Lesson booked!!");
+    },
+  },
+};
+
 export const LoadingSlots: Story = {
   args: {
     open: true,
