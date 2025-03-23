@@ -132,7 +132,7 @@ const UpcomingLessons: React.FC = () => {
       .add(rateLessonParams.duration, "minutes")
       .add(30, "minutes");
     const started = start.isBefore(now);
-    const eneded = end.isAfter(now);
+    const eneded = now.isAfter(end);
     const rated = rating && rating.userId === user.id;
     const canRate = !rated && started && !eneded;
     setRateLessonParams((prev) => ({ ...prev, canRate }));

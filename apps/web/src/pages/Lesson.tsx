@@ -266,8 +266,6 @@ const Lesson: React.FC = () => {
     };
   }, [session.members.other.screen, session.screen]);
 
-  console.log(session.members.current.error);
-
   return (
     <div
       className={cn(

@@ -9,6 +9,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 function isPopupClosedError(error: unknown) {
   return (
@@ -42,7 +43,11 @@ export function useGoogle({
       );
 
       if (info instanceof Error)
-        return toast.error({ title: intl("login.error") });
+        return toast.error({
+          title: intl("login.error"),
+          description: intl(getErrorMessageId(info)),
+        });
+
       user.set(info);
 
       if (redirect) return navigate(redirect);
