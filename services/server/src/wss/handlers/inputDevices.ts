@@ -1,5 +1,5 @@
 import { logger, safe } from "@litespace/utils";
-import { isGhost } from "@litespace/auth";
+import { isGhost } from "@litespace/utils/user";
 import { Wss } from "@litespace/types";
 import { boolean, sessionId } from "@/validation/utils";
 import { WssHandler } from "@/wss/handlers/base";

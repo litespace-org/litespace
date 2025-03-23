@@ -10,7 +10,7 @@ import {
 import { IPlan } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { isSuperAdmin } from "@litespace/auth";
+import { isSuperAdmin } from "@litespace/utils/user";
 import zod from "zod";
 
 const number = zod.number().int().positive().gt(0);

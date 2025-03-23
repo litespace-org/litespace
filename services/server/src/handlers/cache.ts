@@ -1,6 +1,6 @@
 import { cache } from "@/lib/cache";
 import { forbidden } from "@/lib/error";
-import { isAdmin } from "@litespace/auth";
+import { isAdmin } from "@litespace/utils/user";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 

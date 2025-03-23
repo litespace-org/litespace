@@ -30,7 +30,12 @@ import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { safe } from "@litespace/utils/error";
-import { isAdmin, isStudent, isTutorManager, isUser } from "@litespace/auth";
+import {
+  isAdmin,
+  isStudent,
+  isTutorManager,
+  isUser,
+} from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import dayjs from "@/lib/dayjs";
 import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";

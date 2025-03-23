@@ -12,7 +12,13 @@ import {
   withNamedId,
 } from "@/validation/utils";
 import { IRating } from "@litespace/types";
-import { isAdmin, isStudio, isStudent, isTutor, isUser } from "@litespace/auth";
+import {
+  isAdmin,
+  isStudio,
+  isStudent,
+  isTutor,
+  isUser,
+} from "@litespace/utils/user";
 import zod from "zod";
 
 const createRatingPayload = zod.object({
@@ -42,6 +48,7 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
 
   const eligible =
     (isStudent(rater) && isTutor(ratee)) || (isTutor(rater) && isStudio(ratee));
+
   if (!eligible) return next(forbidden());
 
   const rating = await ratings.findByEntities({

@@ -14,7 +14,12 @@ import {
   string,
   withNamedId,
 } from "@/validation/utils";
-import { isAdmin, isStudent, isTutor, isTutorManager } from "@litespace/auth";
+import {
+  isAdmin,
+  isStudent,
+  isTutor,
+  isTutorManager,
+} from "@litespace/utils/user";
 import { NextFunction, Request, Response } from "express";
 import { knex, topics } from "@litespace/models";
 import { ITopic } from "@litespace/types";
@@ -137,7 +142,7 @@ async function findTopics(req: Request, res: Response, _: NextFunction) {
 
 async function findUserTopics(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
+  const allowed = isStudent(user) || isTutor(user);
   if (!allowed) return next(forbidden());
 
   const userTopics = await topics.findUserTopics({ users: [user.id] });

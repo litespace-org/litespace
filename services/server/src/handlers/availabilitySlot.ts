@@ -6,7 +6,7 @@ import {
   pageNumber,
   pageSize,
 } from "@/validation/utils";
-import { isTutor, isTutorManager, isUser } from "@litespace/auth";
+import { isTutor, isUser } from "@litespace/utils/user";
 import { IAvailabilitySlot } from "@litespace/types";
 import { availabilitySlots, knex } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
@@ -90,15 +90,14 @@ async function find(req: Request, res: Response, next: NextFunction) {
 
   // NOTE: return only-slots only if the user is a tutor
   const slotIds = paginatedSlots.list.map((slot) => slot.id);
-  const bookedSlots =
-    isTutor(user) || isTutorManager(user)
-      ? []
-      : await getSubslots({
-          slotIds,
-          userId,
-          after,
-          before,
-        });
+  const bookedSlots = isTutor(user)
+    ? []
+    : await getSubslots({
+        slotIds,
+        userId,
+        after,
+        before,
+      });
 
   const result: IAvailabilitySlot.FindAvailabilitySlotsApiResponse = {
     slots: paginatedSlots,
@@ -115,7 +114,7 @@ async function find(req: Request, res: Response, next: NextFunction) {
  */
 async function set(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = isTutor(user) || isTutorManager(user);
+  const allowed = isTutor(user);
   if (!allowed) return next(forbidden());
 
   const payload = setPayload.parse(req.body);

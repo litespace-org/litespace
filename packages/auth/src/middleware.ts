@@ -4,7 +4,7 @@ import { decodeAuthJwt } from "@/jwt";
 import { users } from "@litespace/models";
 import { safe } from "@litespace/utils/error";
 import { asGhost } from "@litespace/utils/ghost";
-import { isAdmin } from "@/authorization";
+import { isAdmin } from "@litespace/utils/user";
 
 export function authMiddleware({
   jwtSecret,

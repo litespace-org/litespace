@@ -1,6 +1,6 @@
 import { forbidden, notfound } from "@/lib/error";
 import { withdrawMethod } from "@/validation/utils";
-import { isAdmin } from "@litespace/auth";
+import { isAdmin } from "@litespace/utils/user";
 import { withdrawMethods } from "@litespace/models";
 import { IWithdrawMethod } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";

@@ -1,4 +1,4 @@
-import { isGhost, isStudent } from "@litespace/auth";
+import { isGhost, isStudent } from "@litespace/utils/user";
 import { logger, safe } from "@litespace/utils";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";

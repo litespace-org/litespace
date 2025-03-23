@@ -27,15 +27,6 @@ export {
   tutor,
   is,
   Authorizer,
-  isAdmin,
-  isRegAdmin,
-  isSuperAdmin,
-  isTutorManager,
-  isStudio,
-  isTutor,
-  isStudent,
-  isUser,
-  isGhost,
 } from "@/authorization";
 export { encodeAuthJwt, decodeAuthJwt } from "@/jwt";
 export { authMiddleware, adminOnly } from "@/middleware";

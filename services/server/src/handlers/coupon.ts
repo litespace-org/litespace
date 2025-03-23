@@ -11,7 +11,7 @@ import { ICoupon } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
-import { isAdmin } from "@litespace/auth";
+import { isAdmin } from "@litespace/utils/user";
 
 const createCouponPayload = zod.object({
   code: string,

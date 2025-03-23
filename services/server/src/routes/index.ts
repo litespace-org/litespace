@@ -6,7 +6,6 @@ import chat from "@/routes/chat";
 import plan from "@/routes/plan";
 import coupon from "@/routes/coupon";
 import invite from "@/routes/invite";
-import asset from "@/routes/asset";
 import lesson from "@/routes/lesson";
 import invoice from "@/routes/invoice";
 import withdrawMethod from "@/routes/withdrawMethod";
@@ -28,7 +27,6 @@ export default {
   coupon,
   invite,
   interview,
-  asset,
   auth,
   topic,
   cache,

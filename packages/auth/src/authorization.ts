@@ -1,6 +1,5 @@
 import { IUser } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
-import { GHOST_USERNAME_PREFIX } from "@litespace/utils/ghost";
 
 export function authenticated(req: Request, res: Response, next: NextFunction) {
   if (req.user) return next();
@@ -90,53 +89,6 @@ export class Authorizer {
       checkAuth
     );
   }
-}
-
-export function isUser(user: unknown): user is IUser.Self {
-  return !!user && typeof user === "object" && "id" in user;
-}
-
-export function isSuperAdmin(user: unknown): user is IUser.Self {
-  return isUser(user) && user.role === IUser.Role.SuperAdmin;
-}
-
-export function isRegAdmin(user: unknown): user is IUser.Self {
-  return isUser(user) && user.role === IUser.Role.RegularAdmin;
-}
-
-export function isAdmin(user: unknown): user is IUser.Self {
-  return isRegAdmin(user) || isSuperAdmin(user);
-}
-
-/**
- * Returns true if the user is a student, tutor, or tutor-manager
- */
-export function isRegularUser(user: unknown): user is IUser.Self {
-  return isTutorManager(user) || isTutor(user) || isStudent(user);
-}
-
-export function isTutor(user: unknown): user is IUser.Self {
-  return isUser(user) && user.role === IUser.Role.Tutor;
-}
-
-export function isTutorManager(user: unknown): user is IUser.Self {
-  return isUser(user) && user.role === IUser.Role.TutorManager;
-}
-
-export function isStudent(user: unknown): user is IUser.Self {
-  return isUser(user) && user.role === IUser.Role.Student;
-}
-
-export function isStudio(user: unknown): user is IUser.Self {
-  return isUser(user) && user.role === IUser.Role.Studio;
-}
-
-export function isGhost(user: unknown): user is IUser.Ghost {
-  return (
-    typeof user === "string" &&
-    user.startsWith(GHOST_USERNAME_PREFIX) &&
-    !Number.isNaN(Number(user.replace(GHOST_USERNAME_PREFIX, "")))
-  );
 }
 
 export function authorizer() {

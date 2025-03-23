@@ -19,7 +19,7 @@ import {
   withdrawMethod,
   withNamedId,
 } from "@/validation/utils";
-import { isAdmin, isTutor } from "@litespace/auth";
+import { isAdmin, isRegularTutor } from "@litespace/utils/user";
 import { invoices, lessons } from "@litespace/models";
 import { IInvoice, Wss } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
@@ -74,7 +74,8 @@ const findPayload = zod.object({
 async function stats(req: Request, res: Response, next: NextFunction) {
   const { tutorId } = withNamedId("tutorId").parse(req.params);
   const user = req.user;
-  const allowed = (isTutor(user) && user.id === tutorId) || isAdmin(user);
+  const allowed =
+    (isRegularTutor(user) && user.id === tutorId) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
   const users: number[] = [tutorId];
@@ -157,7 +158,7 @@ async function stats(req: Request, res: Response, next: NextFunction) {
 
 async function create(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = isTutor(user);
+  const allowed = isRegularTutor(user);
   if (!allowed) return next(forbidden());
 
   const payload: IInvoice.CreateApiPayload = createPayload.parse(req.body);
@@ -180,7 +181,7 @@ function updateByReceiver(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
       const user = req.user;
-      const allowed = isTutor(user);
+      const allowed = isRegularTutor(user);
       if (!allowed) return next(forbidden());
 
       const { invoiceId } = withNamedId("invoiceId").parse(req.params);
@@ -299,13 +300,13 @@ async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const query: IInvoice.FindInvoicesQuery = findPayload.parse(req.query);
   const allowed =
-    (isTutor(user) && query.users?.includes(user.id)) || isAdmin(user);
+    (isRegularTutor(user) && query.users?.includes(user.id)) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
   const { list, total } = await invoices.find(query);
 
   // attachement is a private field.
-  const masked = isTutor(user)
+  const masked = isRegularTutor(user)
     ? list.map((invoice): IInvoice.Self => ({ ...invoice, receipt: null }))
     : list;
 
@@ -319,7 +320,7 @@ async function find(req: Request, res: Response, next: NextFunction) {
 
 export async function cancel(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = isTutor(user);
+  const allowed = isRegularTutor(user);
   if (!allowed) return next(forbidden());
 
   const { id: invoiceId } = withNamedId("id").parse(req.params);
