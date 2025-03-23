@@ -47,21 +47,19 @@ import {
 import { ApiContext } from "@/types/api";
 import { asIsoDate } from "@litespace/utils/dayjs";
 import {
-  encodeAuthJwt,
   isAdmin,
   isStudio,
   isStudent,
   isUser,
-} from "@litespace/auth";
-import { cache } from "@/lib/cache";
-import { sendBackgroundMessage } from "@/workers";
-import { isValidPassword } from "@litespace/utils/validation";
-import {
   isRegularUser,
   isSuperAdmin,
   isTutor,
   isTutorManager,
-} from "@litespace/auth/dist/authorization";
+} from "@litespace/utils/user";
+import { encodeAuthJwt } from "@litespace/auth";
+import { cache } from "@/lib/cache";
+import { sendBackgroundMessage } from "@/workers";
+import { isValidPassword } from "@litespace/utils/validation";
 import { getRequestFile, upload } from "@/lib/assets";
 import bytes from "bytes";
 import s3 from "@/lib/s3";

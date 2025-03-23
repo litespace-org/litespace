@@ -1,6 +1,6 @@
 import { cache } from "@/lib/cache";
 import { canAccessSession } from "@/lib/session";
-import { isGhost, isUser } from "@litespace/auth";
+import { isGhost, isUser } from "@litespace/utils/user";
 import { isSessionId, logger, safe } from "@litespace/utils";
 import { ISessionEvent, Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";

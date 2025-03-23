@@ -35,7 +35,8 @@ import {
   isTutorManager,
   isSuperAdmin,
   isTutor,
-} from "@litespace/auth";
+  isRegularTutor,
+} from "@litespace/utils/user";
 import { concat, isEqual } from "lodash";
 import {
   asSubSlots,
@@ -79,7 +80,7 @@ async function createInterview(
   next: NextFunction
 ) {
   const user = req.user;
-  const allowed = isTutor(user);
+  const allowed = isRegularTutor(user);
   if (!allowed) return next(forbidden());
 
   const intervieweeId = user.id;
@@ -146,8 +147,7 @@ async function findInterviews(req: Request, res: Response, next: NextFunction) {
   const query: IInterview.FindInterviewsApiQuery = findInterviewsQuery.parse(
     req.query
   );
-  const owner =
-    (isTutor(user) || isTutorManager(user)) && isEqual(query.users, [user.id]);
+  const owner = isTutor(user) && isEqual(query.users, [user.id]);
   const allowed = owner || isAdmin(user);
   if (!allowed) return next(forbidden());
 
@@ -183,7 +183,7 @@ async function findInterviewById(
   if (!interview) return next(notfound.interview());
 
   if (
-    (isTutor(user) && user.id !== interview.ids.interviewee) ||
+    (isRegularTutor(user) && user.id !== interview.ids.interviewee) ||
     (isTutorManager(user) && user.id !== interview.ids.interviewer)
   )
     return next(forbidden());
@@ -197,7 +197,8 @@ async function updateInterview(
   next: NextFunction
 ) {
   const user = req.user;
-  const allowed = isSuperAdmin(user) || isTutorManager(user) || isTutor(user);
+  const allowed =
+    isSuperAdmin(user) || isTutorManager(user) || isRegularTutor(user);
   if (!allowed) return next(forbidden());
 
   const { interviewId } = withNamedId("interviewId").parse(req.params);
@@ -208,14 +209,14 @@ async function updateInterview(
   if (!interview) return next(notfound.interview());
 
   if (
-    (isTutor(user) && user.id !== interview.ids.interviewee) ||
+    (isRegularTutor(user) && user.id !== interview.ids.interviewee) ||
     (isTutorManager(user) && user.id !== interview.ids.interviewer)
   )
     return next(forbidden());
 
   // Tutor can only update the feedback of the interview
   const isPermissionedInterviewee =
-    isTutor(user) && !payload.feedback?.interviewee;
+    isRegularTutor(user) && !payload.feedback?.interviewee;
 
   const isPermissionedInterviewer =
     isTutorManager(user) &&

@@ -11,7 +11,7 @@ import logger from "morgan";
 import { onlyForHandshake } from "@/middleware/util";
 import { ApiContext } from "@/types/api";
 import { authorizeSocket } from "@litespace/auth";
-import { authMiddleware, adminOnly } from "@litespace/auth";
+import { authMiddleware } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
 import { cache } from "@/lib/cache";
 import { msg } from "@/lib/telegram";
@@ -68,15 +68,6 @@ app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authMiddleware({ jwtSecret, ghostPassword: ghostConfig.password }));
-app.use(
-  "/assets/uploads",
-  express.static(serverConfig.assets.directory.uploads)
-);
-app.use(
-  "/assets/receipts",
-  adminOnly,
-  express.static(serverConfig.assets.directory.receipts)
-);
 app.use("/api/v1/auth", routes.auth);
 app.use("/api/v1/contact-request", routes.contactRequest);
 app.use("/api/v1/user", routes.user(context));
@@ -91,7 +82,6 @@ app.use("/api/v1/invite", routes.invite);
 app.use("/api/v1/invoice", routes.invoice(context));
 app.use("/api/v1/topic", routes.topic);
 app.use("/api/v1/withdraw-method/", routes.withdrawMethod);
-app.use("/api/v1/asset", routes.asset);
 app.use("/api/v1/cache", routes.cache);
 app.use("/api/v1/session", routes.session);
 app.use(errorHandler);

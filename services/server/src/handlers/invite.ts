@@ -10,7 +10,7 @@ import {
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
-import { isAdmin, isStudent } from "@litespace/auth";
+import { isAdmin, isStudent } from "@litespace/utils/user";
 
 const createInvitePayload = zod.object({
   email,
