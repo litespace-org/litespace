@@ -124,7 +124,7 @@ export const Stream: React.FC<{
             >
               <div
                 className={cn(
-                  "flex items-center justify-center bg-[#0000004D] backdrop-blur-[7.5px]",
+                  "flex items-center justify-center rounded-full overflow-hidden bg-[#0000004D] backdrop-blur-[7.5px]",
                   {
                     "w-8 h-8 md:w-10 md:h-10": size === "large",
                     "w-6 h-6 md:w-8 md:h-8": size === "small",

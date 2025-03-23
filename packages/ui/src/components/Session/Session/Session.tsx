@@ -49,11 +49,13 @@ export const Session: React.FC<Props> = ({
   return (
     <div
       id="session"
-      className="flex relative flex-col gap-4 lg:gap-6 h-[max(calc(100vh-190px),800px)] overflow-hidden" // why -190px ?!
+      // 728px is the chat height on mobile and 158px is the height of the navbar with the spacing, we need to define a
+      // height for the streams to take their own heights and be responsive
+      className="flex relative flex-col gap-4 min-h-full md:h-[max(calc(100vh-158px),1024px)] lg:h-[max(calc(100vh-158px),866px)]" // why -158px ?!
     >
       <div
         className={cn(
-          "w-full flex-1 h-[calc(100%-40px-24px)]",
+          "w-full grow lg:grow-0 max-h-[571px] md:max-h-max",
           chat.enabled ? "relative lg:flex lg:flex-row lg:gap-6" : "flex"
         )}
       >

@@ -14,7 +14,7 @@ const meta: Meta<Component> = {
   parameters: { layout: "centered" },
   decorators: [
     (Story) => (
-      <div className="w-[360px] p-4 h-[calc(100vh-72px-48px-21px)] md:w-[736px] lg:w-[1000px]">
+      <div className="w-[360px] p-4 md:h-[calc(100vh-72px-48px-21px)] md:w-[736px] lg:w-[1000px]">
         <Story />
       </div>
     ),
