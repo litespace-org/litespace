@@ -1,4 +1,4 @@
-import { empty, forbidden, notfound, refused } from "@/lib/error";
+import { empty, forbidden, notfound } from "@/lib/error";
 import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { topics } from "@litespace/models";
@@ -12,7 +12,7 @@ describe("/api/v1/topic/", () => {
   });
 
   describe("POST /api/v1/topic/user", () => {
-    it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
+    it("should respond with 403 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const adminApi = await Api.forSuperAdmin();
       const res = await safe(async () =>
         adminApi.atlas.topic.addUserTopics({
@@ -50,7 +50,7 @@ describe("/api/v1/topic/", () => {
           topicIds: mockTopicIds.slice(MAX_TOPICS_COUNT),
         })
       );
-      expect(res2).to.deep.eq(refused());
+      expect(res2).to.deep.eq(forbidden());
     });
 
     it("should respond with 404 if atleast one topic is not found.", async () => {
@@ -100,7 +100,7 @@ describe("/api/v1/topic/", () => {
   });
 
   describe("DELETE /api/v1/topic/user", () => {
-    it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
+    it("should respond with 403 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const adminApi = await Api.forSuperAdmin();
       const res = await safe(async () =>
         adminApi.atlas.topic.deleteUserTopics({ topicIds: [1] })
@@ -169,7 +169,7 @@ describe("/api/v1/topic/", () => {
   });
 
   describe("GET /api/v1/topic/user", () => {
-    it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
+    it("should respond with 403 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const adminApi = await Api.forSuperAdmin();
       const res = await safe(async () => adminApi.atlas.topic.findUserTopics());
       expect(res).to.deep.eq(forbidden());
@@ -298,7 +298,7 @@ describe("/api/v1/topic/", () => {
           addTopics: mockTopicIds.slice(30, 31),
         })
       );
-      expect(res).to.deep.eq(refused());
+      expect(res).to.deep.eq(forbidden());
     });
 
     it("should respond with 200 when any of the lists is empty.", async () => {

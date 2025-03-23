@@ -1,11 +1,4 @@
-import {
-  apierror,
-  bad,
-  empty,
-  forbidden,
-  notfound,
-  refused,
-} from "@/lib/error";
+import { apierror, bad, empty, forbidden, notfound } from "@/lib/error";
 import {
   id,
   orderDirection,
@@ -164,7 +157,7 @@ async function addUserTopics(req: Request, res: Response, next: NextFunction) {
 
   // ensure that user topics will not exceed the max num after insertion
   if (userTopics.length + filteredIds.length > MAX_TOPICS_COUNT)
-    return next(refused());
+    return next(forbidden());
 
   if (filteredIds.length === 0) {
     res.sendStatus(200);
@@ -212,7 +205,7 @@ async function replaceUserTopics(
   const exceededMaxAllowedTopics =
     inDBTopicIds.length + addTopics.length - removeTopics.length >
     MAX_TOPICS_COUNT;
-  if (exceededMaxAllowedTopics) return next(refused());
+  if (exceededMaxAllowedTopics) return next(forbidden());
 
   await knex.transaction(async (tx: Knex.Transaction) => {
     if (!isEmpty(removeTopics))
