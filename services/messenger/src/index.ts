@@ -4,6 +4,7 @@ import { messengerAuthMiddleware } from "@litespace/auth";
 import { env } from "@/config";
 import express, { json } from "express";
 import router from "@/routes";
+import { errorHandler } from "@/middleware/error";
 
 const app = express();
 
@@ -30,6 +31,8 @@ async function main() {
     })
   );
   app.use("/api/v1/", router({ whatsapp, telegram }));
+  app.use(errorHandler);
+
   app.listen(env.port, () => console.log(`Server running on port ${env.port}`));
 }
 
