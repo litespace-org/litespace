@@ -37,7 +37,7 @@ services:
       - postgres
     restart: unless-stopped
   redis:
-    image: redis/redis-stack-server:7.2.0-v6
+    image: redis/redis-stack-server:latest
     ports:
       - 6379:6379
     healthcheck:

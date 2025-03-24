@@ -13,7 +13,7 @@ export class Cache {
   private readonly client: RedisClient;
 
   constructor(url: string) {
-    const client = createClient({ url });
+    const client = createClient({ url, readonly: false });
     this.client = client;
     this.tutors = new Tutors(client);
     this.peer = new Peer(client);
