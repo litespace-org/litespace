@@ -1,5 +1,9 @@
 import zod from "zod";
 
+export const envBoolean = zod
+  .custom<"true" | "false">((value) => value === "true" || value === "false")
+  .transform((value) => value === "true");
+
 const schema = zod.object({
   port: zod.coerce.number().positive().int(),
   telegram: zod.object({
@@ -11,6 +15,10 @@ const schema = zod.object({
       id: zod.coerce.number().int().positive(),
       hash: zod.string().trim().length(32),
     }),
+    enabled: envBoolean.default("true"),
+  }),
+  whatsapp: zod.object({
+    enabled: envBoolean.default("true"),
   }),
   credentials: zod.object({
     username: zod.string(),
@@ -34,6 +42,10 @@ export const config = schema.parse({
       id: process.env.TELEGRAM_CLIENT_API_ID,
       hash: process.env.TELEGRAM_CLIENT_API_HASH,
     },
+    enabled: process.env.ENABLE_TELEGRAM,
+  },
+  whatsapp: {
+    enabled: process.env.ENABLE_WHATSAPP,
   },
   credentials: {
     username: process.env.USERNAME,
