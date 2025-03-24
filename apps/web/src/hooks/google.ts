@@ -1,4 +1,4 @@
-import { useAtlas } from "@litespace/headless/atlas";
+import { useApi } from "@litespace/headless/api";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
@@ -29,7 +29,7 @@ export function useGoogle({
   redirect?: string | null;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
-  const atlas = useAtlas();
+  const atlas = useApi();
   const user = useUserContext();
   const navigate = useNavigate();
   const toast = useToast();

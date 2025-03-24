@@ -1,5 +1,5 @@
 import { ITopic, IUser } from "@litespace/types";
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import { useCallback, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
@@ -8,7 +8,7 @@ import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
 export function useLoginUser(
   payload?: BaseMutationPayload<IUser.LoginApiResponse>
 ) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const login = useCallback(
     async (credentials: IUser.Credentials) => {
       return await atlas.auth.password(credentials);
@@ -30,7 +30,7 @@ export function useRegisterUser({
   onSuccess: ({ user, token }: IUser.RegisterApiResponse) => Promise<void>;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const createUser = useCallback(
     async (payload: IUser.CreateApiPayload) => {
@@ -53,7 +53,7 @@ export function useUpdateUser({
   onSuccess?: OnSuccess<IUser.Self>;
   onError?: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const update = useCallback(
     async ({ id, payload }: { id: number; payload: IUser.UpdateApiPayload }) =>
@@ -76,7 +76,7 @@ export function useUpdateUserTopics({
   onSuccess?: OnSuccess<void>;
   onError?: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const update = useCallback(
     async (payload: ITopic.ReplaceUserTopicsApiPayload) =>
@@ -93,7 +93,7 @@ export function useUpdateUserTopics({
 }
 
 export function useCurrentUser(enabled: boolean = true) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findCurrentUser = useCallback(() => {
     return atlas.user.findCurrentUser();
@@ -113,7 +113,7 @@ export function useUploadUserImage({
   onSuccess?: OnSuccess<void>;
   onError?: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const [progress, setProgress] = useState<number>(0);
 
   const upload = useCallback(
@@ -154,7 +154,7 @@ export function useUploadTutorAssets({
   onSuccess?: OnSuccess<void>;
   onError?: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const [progress, setProgress] = useState<number>(0);
   const abortController = useRef(new AbortController());
 

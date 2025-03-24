@@ -1,5 +1,5 @@
 import { OnError, OnSuccess } from "@/types/query";
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { MutationKey } from "@/constants";
@@ -12,7 +12,7 @@ export function useCreateContactRequest({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const createContactRequest = useCallback(
     async (payload: IContactRequest.CreateContactRequestApiPayload) => {

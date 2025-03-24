@@ -1,4 +1,4 @@
-import { useAtlas } from "@/atlas/index";
+import { useApi } from "@/api/index";
 import { IInterview, Void, IUser, IFilter, Element } from "@litespace/types";
 import { useCallback } from "react";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
@@ -22,7 +22,7 @@ export type UseFindInterviewsPayload = Omit<
 export function useFindInterviews(
   filter?: UseFindInterviewsPayload
 ): UsePaginateResult<Element<IInterview.FindInterviewsApiResponse["list"]>> {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findInterviews = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
@@ -44,7 +44,7 @@ export function useFindInfinitInterviews(
 ): UseInfinitePaginationQueryResult<
   Element<IInterview.FindInterviewsApiResponse["list"]>
 > {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findInterviews = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
@@ -65,7 +65,7 @@ export function useFindInfinitInterviews(
 }
 
 export function useSelectInterviewer(): UseQueryResult<IUser.Self, Error> {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const selectInterviewer = useCallback(async () => {
     return atlas.user.selectInterviewer();
@@ -84,7 +84,7 @@ export function useCreateInterview({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const createInterview = useCallback(
     async (payload: IInterview.CreateApiPayload) => {
@@ -108,7 +108,7 @@ export function useUpdateInterview({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const updateInterview = useCallback(
     async ({

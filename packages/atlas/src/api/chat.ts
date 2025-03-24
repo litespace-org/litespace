@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IFilter, IMessage, IRoom } from "@litespace/types";
 
 export class Chat extends Base {

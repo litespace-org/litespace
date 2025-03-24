@@ -1,18 +1,30 @@
 import { TelegramClient, WhatsApp } from "@litespace/radio";
-import { messengerAuthMiddleware } from "@litespace/auth";
-
-import { env } from "@/config";
+import { auth } from "@/middleware/auth";
+import { config } from "@/config";
 import express, { json } from "express";
 import router from "@/routes";
 import { errorHandler } from "@/middleware/error";
+import { msg } from "@/lib/bot";
+
+// Global error handling. This is needed to prevent the server process from
+// exit.
+process.on("uncaughtException", async (error) => {
+  console.log("Uncaught exception");
+  console.error(error);
+  try {
+    await msg(`uncaught exception: ${error.message}`);
+  } catch (error) {
+    console.log(`Faield to notify the exception`, error);
+  }
+});
 
 const app = express();
 
 async function main() {
   const telegram = new TelegramClient({
     api: {
-      id: env.telegram.client.id,
-      hash: env.telegram.client.hash,
+      id: config.telegram.client.id,
+      hash: config.telegram.client.hash,
     },
   });
 
@@ -25,18 +37,17 @@ async function main() {
 
   app.use(json());
   app.use(
-    messengerAuthMiddleware({
-      username: env.credentials.username,
-      password: env.credentials.password,
+    auth({
+      username: config.credentials.username,
+      password: config.credentials.password,
     })
   );
   app.use("/api/v1/", router({ whatsapp, telegram }));
   app.use(errorHandler);
 
-  app.listen(env.port, () => console.log(`Server running on port ${env.port}`));
+  app.listen(config.port, () =>
+    console.log(`Server running on port ${config.port}`)
+  );
 }
 
-main().catch((error) => {
-  console.log(error);
-  process.exit(1);
-});
+main();

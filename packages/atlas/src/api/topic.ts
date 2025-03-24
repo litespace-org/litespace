@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { ITopic } from "@litespace/types";
 
 export class Topic extends Base {

@@ -1,5 +1,5 @@
 import { IAvailabilitySlot } from "@litespace/types";
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import { useCallback } from "react";
 import { MutationKey, QueryKey } from "@/constants";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -9,7 +9,7 @@ import { ResponseError } from "@litespace/utils";
 export function useFindAvailabilitySlots(
   query: IAvailabilitySlot.FindAvailabilitySlotsApiQuery
 ) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findSlots = useCallback(
     () => atlas.availabilitySlot.find(query),
@@ -29,7 +29,7 @@ export function useSetAvailabilitySlots({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const deleteSlot = useCallback(
     (actions: IAvailabilitySlot.Action[]) => {

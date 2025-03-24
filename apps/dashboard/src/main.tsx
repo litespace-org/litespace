@@ -4,7 +4,7 @@ import { locales } from "@litespace/ui/locales";
 import { IntlProvider } from "react-intl";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ServerProvider } from "@litespace/headless/server";
-import { AtlasProvider } from "@litespace/headless/atlas";
+import { ApiProvider } from "@litespace/headless/api";
 import { SocketProvider } from "@litespace/headless/socket";
 import { AppConfigProvider } from "@litespace/headless/config";
 import { ToastProvider } from "@litespace/ui/Toast";
@@ -31,7 +31,7 @@ createRoot(document.getElementById("root")!).render(
           <ToastProvider>
             <QueryClientProvider client={queryClient}>
               <ServerProvider server={env.server} storage={new LocalStorage()}>
-                <AtlasProvider>
+                <ApiProvider>
                   <SocketProvider>
                     <UserProvider>
                       <MediaQueryProvider>
@@ -39,7 +39,7 @@ createRoot(document.getElementById("root")!).render(
                       </MediaQueryProvider>
                     </UserProvider>
                   </SocketProvider>
-                </AtlasProvider>
+                </ApiProvider>
               </ServerProvider>
             </QueryClientProvider>
           </ToastProvider>

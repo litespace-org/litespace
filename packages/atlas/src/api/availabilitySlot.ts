@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IAvailabilitySlot } from "@litespace/types";
 
 export class AvailabilitySlot extends Base {

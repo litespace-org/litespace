@@ -2,7 +2,7 @@ import { IFilter, IRating, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { MutationKey, QueryKey } from "@/constants";
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import { OnError } from "@/types/query";
 
 export type OnSuccess = Void;
@@ -11,7 +11,7 @@ export function useFindTutorRatings(
   id: number | null,
   pagination: IFilter.Pagination
 ) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const findRateeRatings = useCallback(async () => {
     if (!id) return { list: [], total: 0 };
     return atlas.rating.findTutorRatings(id, pagination);
@@ -32,7 +32,7 @@ export function useCreateRatingTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const rate = useCallback(
     async (payload: IRating.CreateApiPayload) => {
       return atlas.rating.create(payload);
@@ -55,7 +55,7 @@ export function useEditRatingTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const editRate = useCallback(
     async ({
       id,
@@ -84,7 +84,7 @@ export function useDeleteRatingTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const deleteRate = useCallback(
     async (id: number) => {
       return atlas.rating.delete(id);

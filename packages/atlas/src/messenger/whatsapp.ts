@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IWhatsapp } from "@litespace/types";
 
 export class Whatsapp extends Base {

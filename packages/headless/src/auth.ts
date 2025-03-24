@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAtlas } from "@/atlas/index";
+import { useApi } from "@/api/index";
 import { IUser } from "@litespace/types";
 import { useMutation } from "@tanstack/react-query";
 import { MutationKey } from "@/constants";
@@ -16,7 +16,7 @@ export function useForgetPassword({
   onSuccess?: OnSuccess<void>;
   onError?: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const forgetPassword = useCallback(
     async (credentials: IUser.ForgetPasswordApiPayload) => {
       return await atlas.auth.forgetPassword(credentials);
@@ -39,7 +39,7 @@ export function useResetPassword({
   onSuccess: OnResetPasswordSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const resetPassword = useCallback(
     async (credentials: IUser.ResetPasswordApiPayload) => {
@@ -63,7 +63,7 @@ export function useVerifyEmail({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const verifyEmail = useCallback(
     (token: string) => {
       return atlas.auth.verifyEmail(token);
@@ -86,7 +86,7 @@ export function useSendVerifyEmail({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const verifyEmail = useCallback(
     (callbackUrl: string) => {
       return atlas.auth.sendVerifyEmail(callbackUrl);
