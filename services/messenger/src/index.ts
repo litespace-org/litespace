@@ -29,11 +29,12 @@ async function main() {
   });
 
   // Acquire telegram credentials
-  await telegram.start();
+  if (config.telegram.enabled) await telegram.start();
 
   const whatsapp = new WhatsApp();
   await whatsapp.withStore("file");
-  whatsapp.connect();
+  // Acquire whatsapp credentials
+  if (config.whatsapp.enabled) whatsapp.connect();
 
   app.use(json());
   app.use(
