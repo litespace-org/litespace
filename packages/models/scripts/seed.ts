@@ -36,16 +36,7 @@ const birthYear = () =>
   faker.date.birthdate({ max: 70, min: 1, mode: "age" }).getFullYear();
 
 const phone = () =>
-  [
-    sample(["011", "012", "010", "015"]),
-    faker.number
-      .int({
-        min: 10_000_000,
-        max: 99_999_999,
-      })
-      .toString()
-      .padEnd(8, "0"),
-  ].join("");
+  sample(["01032142699", "01150970374", "01018303125", "01143759540"])!;
 
 const city = () =>
   sample(
