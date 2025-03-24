@@ -9,7 +9,7 @@ import { concat, isEmpty, uniq } from "lodash";
 import { useServer } from "@/server";
 import { peers } from "@litespace/atlas";
 import { Peer } from "peerjs";
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/constants";
 
@@ -1101,7 +1101,7 @@ export function useSessionMembers({
   onLeave: Void;
 }) {
   const socket = useSocket();
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const [members, setMembers] = useState<number[]>([]);
   const [listening, setListening] = useState<boolean>(false);

@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { ICoupon } from "@litespace/types";
 
 export class Coupon extends Base {

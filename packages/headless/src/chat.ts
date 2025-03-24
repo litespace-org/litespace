@@ -1,4 +1,4 @@
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import {
   IRoom,
   Wss,
@@ -717,7 +717,7 @@ function reducer(state: State, action: Action) {
 }
 
 export function useMessages(room: number | null) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const [state, dispatch] = useReducer(reducer, initial);
 
   /**
@@ -936,7 +936,7 @@ export function useFindUncontactedTutors(enabled?: boolean): {
   list: ITutor.FullUncontactedTutorInfo[] | null;
   more: () => void;
 } {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findUncontactedTutors = useCallback(
     ({ pageParam }: { pageParam: number }) => {
@@ -959,7 +959,7 @@ export function useCreateRoom({
   onSuccess: (response: IRoom.CreateRoomApiResponse) => void;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const createRoom = useCallback(
     async ({ id, message }: { id: number; message?: string }) => {
       return await atlas.chat.createRoom(id, message);
@@ -978,7 +978,7 @@ export function useCreateRoom({
 export function useFindRoomMembers(
   roomId: number | null
 ): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const findRoomMembers = useCallback(async () => {
     if (!roomId) return [];
     return await atlas.chat.findRoomMembers(roomId);
@@ -995,7 +995,7 @@ export function useFindUserRooms(
   userId?: number,
   payload?: IRoom.FindUserRoomsApiQuery
 ): UseInfinitePaginationQueryResult<IRoom.FindUserRoomsApiRecord> {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const findUserRooms = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
       if (!userId) return { list: [], total: 0 };
@@ -1020,7 +1020,7 @@ export function useUpdateRoom({
   onSuccess?: OnSuccess;
   onError?: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const pinRoom = useCallback(
     async ({
       roomId,
@@ -1043,7 +1043,7 @@ export function useUpdateRoom({
 }
 
 export function useFindRoomByMembers(userIds: number[] | null) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const findRoomByMembers = useCallback(async () => {
     if (!userIds) return null;
     return atlas.chat.findRoomByMembers(userIds);

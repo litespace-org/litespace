@@ -1,26 +1,26 @@
-import { User } from "@/user";
-import { Auth } from "@/auth";
-import { AvailabilitySlot } from "@/availabilitySlot";
+import { User } from "@/api/user";
+import { Auth } from "@/api/auth";
+import { AvailabilitySlot } from "@/api/availabilitySlot";
 import { Env } from "@litespace/types";
-import { Plan } from "@/plan";
-import { Coupon } from "@/coupon";
-import { Invite } from "@/invite";
-import { Report } from "@/report";
-import { ReportReply } from "@/reportReply";
-import { Asset } from "@/asset";
-import { Rating } from "@/rating";
-import { Chat } from "@/chat";
-import { Interview } from "@/interview";
-import { Lesson } from "@/lesson";
+import { Plan } from "@/api/plan";
+import { Coupon } from "@/api/coupon";
+import { Invite } from "@/api/invite";
+import { Report } from "@/api/report";
+import { ReportReply } from "@/api/reportReply";
+import { Asset } from "@/api/asset";
+import { Rating } from "@/api/rating";
+import { Chat } from "@/api/chat";
+import { Interview } from "@/api/interview";
+import { Lesson } from "@/api/lesson";
 import { WithdrawMethod } from "@/withdrawMethod";
-import { Invoice } from "@/invoice";
-import { Topic } from "@/topic";
-import { AuthToken, createClient } from "@/client";
-import { Cache } from "@/cache";
-import { Session } from "@/session";
-import { ContactRequest } from "@/contactRequest";
+import { Invoice } from "@/api/invoice";
+import { Topic } from "@/api/topic";
+import { AuthToken, createClient } from "@/lib/client";
+import { Cache } from "@/api/cache";
+import { Session } from "@/api/session";
+import { ContactRequest } from "@/api/contactRequest";
 
-export class Atlas {
+export class Api {
   public readonly user: User;
   public readonly auth: Auth;
   public readonly availabilitySlot: AvailabilitySlot;
@@ -42,7 +42,7 @@ export class Atlas {
   public readonly session: Session;
 
   constructor(server: Env.Server, token: AuthToken | null) {
-    const client = createClient(server, token);
+    const client = createClient("api", server, token);
     this.user = new User(client);
     this.auth = new Auth(client);
     this.availabilitySlot = new AvailabilitySlot(client);

@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IFilter, ITutor, IUser } from "@litespace/types";
 import { AxiosProgressEvent } from "axios";
 

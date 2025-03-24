@@ -31,6 +31,7 @@
     "ts-patch": "^3.2.1",
     "typescript": "^5.4.5",
     "typescript-transform-paths": "^3.5.2",
-    "npm-watch": "^0.13.0"
+    "npm-watch": "^0.13.0",
+    "telegram": "^2.26.22"
   }
 }

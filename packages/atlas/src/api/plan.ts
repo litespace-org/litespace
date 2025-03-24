@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IFilter, IPlan } from "@litespace/types";
 
 export class Plan extends Base {

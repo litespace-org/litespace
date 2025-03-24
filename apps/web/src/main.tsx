@@ -10,7 +10,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "@/constants/auth";
 import { ServerProvider } from "@litespace/headless/server";
-import { AtlasProvider } from "@litespace/headless/atlas";
+import { ApiProvider } from "@litespace/headless/api";
 import { SocketProvider } from "@litespace/headless/socket";
 import { UserProvider } from "@litespace/headless/context/user";
 import { ToastProvider } from "@litespace/ui/Toast";
@@ -38,7 +38,7 @@ createRoot(document.getElementById("root")!).render(
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <QueryClientProvider client={queryClient}>
             <ServerProvider server={env.server} storage={new LocalStorage()}>
-              <AtlasProvider>
+              <ApiProvider>
                 <SocketProvider>
                   <UserProvider>
                     <MediaQueryProvider>
@@ -59,7 +59,7 @@ createRoot(document.getElementById("root")!).render(
                     </MediaQueryProvider>
                   </UserProvider>
                 </SocketProvider>
-              </AtlasProvider>
+              </ApiProvider>
             </ServerProvider>
           </QueryClientProvider>
         </GoogleOAuthProvider>

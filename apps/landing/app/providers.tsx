@@ -3,7 +3,7 @@
 import { env } from "@/lib/env";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ServerProvider } from "@litespace/headless/server";
-import { AtlasProvider } from "@litespace/headless/atlas";
+import { ApiProvider } from "@litespace/headless/api";
 import { ToastProvider } from "@litespace/ui/Toast";
 
 const queryClient = new QueryClient();
@@ -16,9 +16,9 @@ export function Providers({
   return (
     <QueryClientProvider client={queryClient}>
       <ServerProvider server={env.server}>
-        <AtlasProvider>
+        <ApiProvider>
           <ToastProvider postion="bottom-left">{children}</ToastProvider>
-        </AtlasProvider>
+        </ApiProvider>
       </ServerProvider>
     </QueryClientProvider>
   );

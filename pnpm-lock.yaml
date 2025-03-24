@@ -1161,6 +1161,9 @@ importers:
       npm-watch:
         specifier: ^0.13.0
         version: 0.13.0
+      telegram:
+        specifier: ^2.26.22
+        version: 2.26.22
       ts-patch:
         specifier: ^3.2.1
         version: 3.3.0
@@ -1476,6 +1479,9 @@ importers:
 
   services/messenger:
     dependencies:
+      '@litespace/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@litespace/radio':
         specifier: workspace:^
         version: link:../../packages/radio

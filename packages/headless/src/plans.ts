@@ -1,10 +1,10 @@
-import { useAtlas } from "@/atlas/context";
+import { useApi } from "@/api/context";
 import { IPlan, Void } from "@litespace/types";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback } from "react";
 
 export function usePlans(): UseQueryResult<IPlan.MappedAttributes[], Error> {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const findPlans = useCallback(() => atlas.plan.find(), [atlas.plan]);
   return useQuery({
     queryFn: findPlans,
@@ -19,7 +19,7 @@ export function useCreatePlan({
   onSuccess?(): void;
   onError?(error: Error): void;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const createPlan = useCallback(
     (payload: IPlan.CreateApiPayload) => atlas.plan.create(payload),
     [atlas.plan]
@@ -39,7 +39,7 @@ export function useUpdatePlan({
   onSuccess?: Void;
   onError?(error: Error): void;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const updatePlan = useCallback(
     ({ id, payload }: { id: number; payload: IPlan.UpdateApiPayload }) =>
       atlas.plan.update(id, payload),
@@ -61,7 +61,7 @@ export function useDeletePlan({
   onSuccess?: Void;
   onError?: (error: Error) => void;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const deletePlan = useCallback(
     (id: number) => atlas.plan.delete(id),
     [atlas.plan]

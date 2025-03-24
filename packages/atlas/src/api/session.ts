@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { ISession } from "@litespace/types";
 
 export class Session extends Base {

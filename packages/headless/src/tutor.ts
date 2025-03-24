@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import {
   UseMutationResult,
   UseQueryResult,
@@ -18,7 +18,7 @@ type OnSuccess = Void;
 type OnError = (error: Error) => void;
 
 export function useTutors() {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findTutors = useCallback(
     ({ pageParam }: { pageParam: number }) => {
@@ -31,7 +31,7 @@ export function useTutors() {
 }
 
 export function useFindStudioTutor(tutorId: number | null) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findStudioTutor = useCallback(async () => {
     if (!tutorId) return null;
@@ -49,7 +49,7 @@ export function useFindStudioTutor(tutorId: number | null) {
 export function useFindTutorStats(
   id: number | null
 ): UseQueryResult<ITutor.FindTutorStatsApiResponse | null, Error> {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findTutorStats = useCallback(() => {
     if (!id) return null;
@@ -65,7 +65,7 @@ export function useFindTutorStats(
 }
 
 export function useFindStudioTutors(studioId?: number, search?: string) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findStudioTutors = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
@@ -85,7 +85,7 @@ export function useFindStudioTutors(studioId?: number, search?: string) {
 }
 
 export function useFindPersonalizedTutorStats() {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const findStats = useCallback(async () => {
     return await atlas.user.findPersonalizedTutorStats();
   }, [atlas.user]);
@@ -99,7 +99,7 @@ export function useFindPersonalizedTutorStats() {
 export function useFindTutorActivityScore(
   id: number | null
 ): UseQueryResult<ITutor.ActivityScoreMap | null, Error> {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findTutorAcivityScores = useCallback(() => {
     if (!id) return null;
@@ -117,7 +117,7 @@ export function useFindTutorActivityScore(
 export function useShareFeedback(
   interviewId: number
 ): UseMutationResult<IInterview.Self, Error, string, unknown> {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const share = useCallback(
     async (feedback: string) => {
       return await atlas.interview.update(interviewId, {
@@ -146,7 +146,7 @@ export function useIntroduceTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const introduceTutor = useCallback(
     async (fields: IForm) => {
@@ -170,7 +170,7 @@ export function useIntroduceTutor({
 export function useFindTutorMeta(
   id?: number
 ): UseQueryResult<ITutor.FindTutorMetaApiResponse> {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findTutorMeta = useCallback(async () => {
     if (!id) return null;
@@ -185,7 +185,7 @@ export function useFindTutorMeta(
 }
 
 export function useFindTutorInfo(id: number | null) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findTutorInfo = useCallback(async () => {
     if (!id) return null;

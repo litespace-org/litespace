@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IUser } from "@litespace/types";
 
 export class Auth extends Base {

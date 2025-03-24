@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IContactRequest } from "@litespace/types";
 
 export class ContactRequest extends Base {

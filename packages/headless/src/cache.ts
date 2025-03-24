@@ -1,4 +1,4 @@
-import { useAtlas } from "@/atlas/index";
+import { useApi } from "@/api/index";
 import { Void } from "@litespace/types";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
@@ -11,7 +11,7 @@ export function useFlushCache({
   onSuccess?: Void;
   onError?(error: Error): void;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const flushCache = useCallback(async () => {
     return await atlas.cache.flush();

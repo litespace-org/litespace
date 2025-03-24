@@ -1,6 +1,6 @@
 import { Element, IFilter, ILesson } from "@litespace/types";
 import { useCallback } from "react";
-import { useAtlas } from "@/atlas/index";
+import { useApi } from "@/api/index";
 import { MutationKey, QueryKey } from "@/constants";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UsePaginateResult, usePaginate } from "@/pagination";
@@ -14,7 +14,7 @@ export function useFindLessons({
   lesson: ILesson.Self;
   members: ILesson.PopuldatedMember[];
 }> {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findLessons = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
@@ -38,7 +38,7 @@ export function useInfiniteLessons({
   userOnly,
   ...query
 }: ILesson.FindLessonsApiQuery & { userOnly?: boolean }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findLessons: InfiniteQueryHandler<
     Element<ILesson.FindUserLessonsApiResponse["list"]>
@@ -66,7 +66,7 @@ export function useCancelLesson({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const cancel = useCallback(
     (id: number) => {
@@ -90,7 +90,7 @@ export function useCreateLesson({
   onSuccess: OnSuccess<ILesson.Self>;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const bookLesson = useCallback(
     async ({
@@ -129,7 +129,7 @@ export function useUpdateLesson({
   onSuccess: OnSuccess<ILesson.UpdateLessonApiResponse>;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const updateLesson = useCallback(
     async (lesson: ILesson.UpdateApiPayload) => {
@@ -147,7 +147,7 @@ export function useUpdateLesson({
 }
 
 export function useFindLesson(id?: number) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findLessonById = useCallback(async () => {
     if (!id) return null;

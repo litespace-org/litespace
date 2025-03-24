@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { ILesson } from "@litespace/types";
 
 export class Lesson extends Base {

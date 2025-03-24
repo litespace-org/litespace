@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAtlas } from "@/atlas/index";
+import { useApi } from "@/api/index";
 import { IUser } from "@litespace/types";
 import { useMutation } from "@tanstack/react-query";
 
@@ -13,7 +13,7 @@ export function useLogin({
   onSuccess: OnLoginSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const login = useCallback(
     async (credentials: IUser.Credentials) => {
       return atlas.auth.password(credentials);

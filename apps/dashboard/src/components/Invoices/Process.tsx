@@ -10,7 +10,7 @@ import { Action } from "@/components/Invoices/type";
 import { useMutation } from "@tanstack/react-query";
 import { Typography } from "@litespace/ui/Typography";
 import { X } from "react-feather";
-import { useAtlas } from "@litespace/headless/atlas";
+import { useApi } from "@litespace/headless/api";
 
 type IForm = {
   note: string;
@@ -27,7 +27,7 @@ const Process: React.FC<{
 }> = ({ open, close, onUpdate, id, action, note }) => {
   const intl = useFormatMessage();
   const toast = useToast();
-  const atlas = useAtlas();
+  const atlas = useApi();
   const ref = useRef<HTMLInputElement>(null);
   const [receipt, setReceipt] = useState<File | undefined>(undefined);
   const form = useForm<IForm>({

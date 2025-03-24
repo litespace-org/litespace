@@ -1,4 +1,4 @@
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import { usePaginate, UsePaginateResult } from "@/pagination";
 import { IFilter, IUser, Void } from "@litespace/types";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import { QueryKey } from "@/constants";
 export function useUsers(
   filter?: Omit<IUser.FindUsersApiQuery, "page" | "size">
 ): UsePaginateResult<IUser.Self> {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findUsers = useCallback(
     ({ page, size }: IFilter.Pagination) =>
@@ -22,7 +22,7 @@ export function useUsers(
 export function useFindUserById(
   id: string | number
 ): UseQueryResult<IUser.Self> {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findUserById = useCallback(
     async () => await atlas.user.findById(id),
@@ -42,7 +42,7 @@ export function useCreateUser({
   onSuccess: Void;
   onError: (error: Error) => void;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const createUser = useCallback(
     (payload: IUser.CreateApiPayload) => atlas.user.create(payload),
     [atlas.user]

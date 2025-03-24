@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IWithdrawMethod } from "@litespace/types";
 
 export class WithdrawMethod extends Base {

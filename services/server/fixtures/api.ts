@@ -1,4 +1,4 @@
-import { Atlas, TokenType } from "@litespace/atlas";
+import { Api as AtlasApi, TokenType } from "@litespace/atlas";
 import { IUser } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { sample } from "lodash";
@@ -13,8 +13,8 @@ function asBearerToken(token?: string) {
   };
 }
 
-export function atlas(token?: string): Atlas {
-  return new Atlas("local", asBearerToken(token));
+export function atlas(token?: string): AtlasApi {
+  return new AtlasApi("local", asBearerToken(token));
 }
 
 export function unexpectedApiSuccess() {
@@ -22,7 +22,7 @@ export function unexpectedApiSuccess() {
 }
 
 export class Api {
-  public readonly atlas: Atlas;
+  public readonly atlas: AtlasApi;
 
   constructor(token?: string) {
     this.atlas = atlas(token);

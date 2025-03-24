@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IInvite } from "@litespace/types";
 
 export class Invite extends Base {

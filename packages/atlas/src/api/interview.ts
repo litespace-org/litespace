@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 import { IInterview } from "@litespace/types";
 
 export class Interview extends Base {

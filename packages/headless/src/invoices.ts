@@ -1,4 +1,4 @@
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import { MutationKey, QueryKey } from "@/constants";
 import { UsePaginateResult, usePaginate } from "@/pagination";
 import { useInfinitePaginationQuery } from "@/query";
@@ -23,7 +23,7 @@ export type UseFindInvoicesPayload = { userOnly?: boolean } & Omit<
 export function useFindInvoices(
   filter: UseFindInvoicesPayload
 ): UsePaginateResult<IInvoice.Self> {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const findInvoices = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
       if (filter.userOnly && !filter.users) return { list: [], total: 0 };
@@ -49,7 +49,7 @@ export function useFindInvoicesByUser(
     "page" | "size"
   >
 ): useFindInvoicesByUserProps {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const findInvoices = useCallback(
     async ({
       pageParam,
@@ -79,7 +79,7 @@ type useFindInvoiceStatsProps = UseQueryResult<
 export function useFindInvoiceStats(
   tutorId?: number
 ): useFindInvoiceStatsProps {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findStats = useCallback(async () => {
     if (!tutorId) return null;
@@ -94,7 +94,7 @@ export function useFindInvoiceStats(
 }
 
 export function useFindWithdrawalMethods() {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findWithdrawalMethods = useCallback(() => {
     return atlas.withdrawMethod.find();
@@ -113,7 +113,7 @@ export function useCreateInvoice({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const createUserInvoice = useCallback(
     async (payload: IInvoice.CreateApiPayload) => {
@@ -137,7 +137,7 @@ export function useEditUserInvoice({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
   const updateUserInvoice = useCallback(
     async ({
       id,
@@ -167,7 +167,7 @@ export function useCancelInvoiceById({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const cancel = useCallback(async () => {
     return await atlas.invoice.updateByReceiver(id, {

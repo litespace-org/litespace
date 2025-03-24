@@ -11,7 +11,7 @@
     "./availabilitySlots": "./dist/availabilitySlots.js",
     "./plans": "./dist/plans.js",
     "./server": "./dist/server/index.js",
-    "./atlas": "./dist/atlas/index.js",
+    "./api": "./dist/api/index.js",
     "./socket": "./dist/socket/index.js",
     "./config": "./dist/config/index.js",
     "./mediaQuery": "./dist/mediaQuery/index.js",

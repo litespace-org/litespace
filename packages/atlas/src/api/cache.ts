@@ -1,4 +1,4 @@
-import { Base } from "@/base";
+import { Base } from "@/lib/base";
 
 export class Cache extends Base {
   public async flush(): Promise<void> {

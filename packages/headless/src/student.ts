@@ -1,4 +1,4 @@
-import { useAtlas } from "@/atlas";
+import { useApi } from "@/api";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { QueryKey } from "@/constants";
@@ -7,7 +7,7 @@ import { IUser } from "@litespace/types";
 export function useFindStudentStats(
   id?: number
 ): UseQueryResult<IUser.FindStudentStatsApiResponse | null, Error> {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findStats = useCallback(async () => {
     if (!id) return null;
@@ -22,7 +22,7 @@ export function useFindStudentStats(
 }
 
 export function useFindPersonalizedStudentStats() {
-  const atlas = useAtlas();
+  const atlas = useApi();
 
   const findStats = useCallback(async () => {
     return await atlas.user.findPersonalizedStudentStats();

@@ -1,4 +1,11 @@
-import { env } from "@/config";
+import { config } from "@/config";
 import { TelegramBot } from "@litespace/radio";
 
-export const telegramBot = new TelegramBot(env.telegram.bot.token);
+export const telegramBot = new TelegramBot(config.telegram.bot.token);
+
+export const msg = async (text: string) =>
+  await telegramBot.sendMessage({
+    chat: config.telegram.bot.chat,
+    text: `[messenger/${config}]: ${text}`,
+    parseMode: "text",
+  });

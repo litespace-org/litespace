@@ -21,11 +21,18 @@ export const sockets: Record<"main", Record<Env.Server, string>> = {
   },
 } as const;
 
-export const servers: Record<"main", Record<Env.Server, string>> = {
-  main: {
+export type Server = "api" | "messenger";
+
+export const servers: Record<Server, Record<Env.Server, string>> = {
+  api: {
     local: "http://localhost:4000",
     staging: "https://api.staging.litespace.org",
     production: "https://api.litespace.org",
+  },
+  messenger: {
+    local: "http://localhost:4002",
+    staging: "https://messenger.staging.litespace.org",
+    production: "https://messenger.litespace.org",
   },
 };
 
@@ -57,11 +64,12 @@ export const peers: Record<
 } as const;
 
 export function createClient(
-  server: Env.Server,
+  server: Server,
+  env: Env.Server,
   token: AuthToken | null
 ): AxiosInstance {
   const client = axios.create({
-    baseURL: servers.main[server],
+    baseURL: servers[server][env],
     withCredentials: true,
     headers: { "Content-Type": "application/json" },
   });

@@ -5,18 +5,14 @@ import {
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Slot } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { BackendProvider } from "@litespace/headless/backend";
-import { AtlasProvider } from "@litespace/headless/atlas";
-import { PeerProvider } from "@litespace/headless/peer";
+import { ServerProvider } from "@litespace/headless/server";
+import { ApiProvider } from "@litespace/headless/api";
 import { SocketProvider } from "@litespace/headless/socket";
-import { Backend } from "@litespace/types";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import "react-native-reanimated";
-import { TokenType } from "@litespace/atlas";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -25,7 +21,6 @@ const client = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [token, setToken] = useState<string | null>(null);
   const [loaded] = useFonts({
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -35,28 +30,18 @@ export default function RootLayout() {
     if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
-  useEffect(() => {
-    AsyncStorage.getItem("token").then((token) => setToken(token));
-  }, []);
-
   if (!loaded) return null;
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={client}>
-        <BackendProvider
-          backend={Backend.Staging}
-          getAuthTokenValue={() => token}
-          tokenType={TokenType.Bearer}
-        >
-          <AtlasProvider>
+        <ServerProvider server="local">
+          <ApiProvider>
             <SocketProvider>
-              <PeerProvider>
-                <Slot />
-              </PeerProvider>
+              <Slot />
             </SocketProvider>
-          </AtlasProvider>
-        </BackendProvider>
+          </ApiProvider>
+        </ServerProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

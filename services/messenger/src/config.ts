@@ -12,9 +12,18 @@ const schema = zod.object({
       hash: zod.string().trim().length(32),
     }),
   }),
+  credentials: zod.object({
+    username: zod.string(),
+    password: zod.string(),
+  }),
+  environment: zod.union([
+    zod.literal("local"),
+    zod.literal("staging"),
+    zod.literal("production"),
+  ]),
 });
 
-export const env = schema.parse({
+export const config = schema.parse({
   port: process.env.PORT,
   telegram: {
     bot: {
@@ -26,4 +35,9 @@ export const env = schema.parse({
       hash: process.env.TELEGRAM_CLIENT_API_HASH,
     },
   },
+  credentials: {
+    username: process.env.USERNAME,
+    password: process.env.PASSWORD,
+  },
+  environment: process.env.ENVIRONMENT,
 });
