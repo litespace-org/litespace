@@ -35,6 +35,8 @@ const fullTutorFields: FullTutorFieldsMap = {
   creditScore: users.column("credit_score"),
   city: users.column("city"),
   phone: users.column("phone"),
+  enabledTelegram: users.column("enabled_telegram"),
+  enabledWhatsapp: users.column("enabled_whatsapp"),
   createdAt: users.column("created_at"),
   updatedAt: users.column("updated_at"),
   metaUpdatedAt: tutorColumn("updated_at"),

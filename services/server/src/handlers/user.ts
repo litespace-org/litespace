@@ -215,6 +215,8 @@ function update(_: ApiContext) {
         notice,
         phone,
         city,
+        enabledTelegram,
+        enabledWhatsapp,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
       // return forbidden if the currentUser is neither admin nor studio and tring to update other user data
@@ -267,6 +269,8 @@ function update(_: ApiContext) {
                 // Reset user verification status incase his email updated.
                 verifiedEmail: email ? false : undefined,
                 password: password ? hashPassword(password.new) : undefined,
+                enabledTelegram,
+                enabledWhatsapp,
               };
           const user = await users.update(id, updatePayload, tx);
 
