@@ -27,6 +27,69 @@ const toggleMic = () => alert("toggle mic");
 
 export const WithMedia: StoryObj<Component> = {
   args: {
+    type: "lesson",
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
+    },
+    session: {
+      start: dayjs().add(5, "minutes").toString(),
+      duration: 10,
+    },
+    video: { enabled: true, error: false, toggle: toggleCamera },
+    audio: { enabled: true, error: false, toggle: toggleMic },
+    join,
+  },
+  render(props: PreSessionProps) {
+    const stream = useUserMedia();
+    return <PreSession {...props} stream={stream} />;
+  },
+};
+
+export const InterviewPreSessin: StoryObj<Component> = {
+  args: {
+    type: "interview",
+    members: {
+      other: {
+        id: 5,
+        gender: IUser.Gender.Male,
+        role: IUser.Role.Tutor,
+        incall: true,
+      },
+      current: {
+        id: 5,
+        imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+        name: faker.person.fullName(),
+        role: IUser.Role.Student,
+      },
+    },
+    session: {
+      start: dayjs().add(5, "minutes").toString(),
+      duration: 10,
+    },
+    video: { enabled: true, error: false, toggle: toggleCamera },
+    audio: { enabled: true, error: false, toggle: toggleMic },
+    join,
+  },
+  render(props: PreSessionProps) {
+    const stream = useUserMedia();
+    return <PreSession {...props} stream={stream} />;
+  },
+};
+
+export const LessonPreSession: StoryObj<Component> = {
+  args: {
+    type: "lesson",
     members: {
       other: {
         id: 5,

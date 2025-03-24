@@ -200,8 +200,8 @@ export class Lessons {
   async findLessonMembers(
     lessonIds: number[],
     tx?: Knex.Transaction
-  ): Promise<ILesson.PopuldatedMember[]> {
-    const select: Record<keyof ILesson.PopuldatedMemberRow, string> = {
+  ): Promise<ILesson.PopulatedMember[]> {
+    const select: Record<keyof ILesson.PopulatedMemberRow, string> = {
       user_id: users.column("id"),
       lesson_id: this.columns.members("lesson_id"),
       name: users.column("name"),
@@ -211,9 +211,9 @@ export class Lessons {
       verified_phone: users.column("verified_phone"),
     };
 
-    const rows: ILesson.PopuldatedMemberRow[] = await users
+    const rows: ILesson.PopulatedMemberRow[] = await users
       .builder(tx)
-      .select<ILesson.PopuldatedMemberRow[]>(select)
+      .select<ILesson.PopulatedMemberRow[]>(select)
       .join(
         this.table.members,
         this.columns.members("user_id"),
@@ -551,9 +551,7 @@ export class Lessons {
     return { userId: row.user_id, lessonId: row.lesson_id };
   }
 
-  asPopulatedMember(
-    row: ILesson.PopuldatedMemberRow
-  ): ILesson.PopuldatedMember {
+  asPopulatedMember(row: ILesson.PopulatedMemberRow): ILesson.PopulatedMember {
     return {
       lessonId: row.lesson_id,
       userId: row.user_id,

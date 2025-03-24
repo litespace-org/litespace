@@ -1,6 +1,6 @@
 import React from "react";
 import { Ready } from "@/components/Session/Ready";
-import { IUser, Void } from "@litespace/types";
+import { ISession, IUser, Void } from "@litespace/types";
 import Actions from "@/components/Session/Actions";
 import cn from "classnames";
 import Stream from "@/components/Session/Stream";
@@ -40,6 +40,7 @@ export type Props = {
   };
   speaking: boolean;
   joining: boolean;
+  type: ISession.Type;
   join: Void;
 };
 
@@ -48,6 +49,7 @@ export const PreSession: React.FC<Props> = ({
   members,
   video,
   session,
+  type,
   audio,
   speaking,
   joining,
@@ -76,6 +78,7 @@ export const PreSession: React.FC<Props> = ({
       </div>
       <div className="grow w-[306px] flex justify-center items-center lg:h-full">
         <Ready
+          type={type}
           error={audio.error}
           otherMember={members.other}
           start={session.start}

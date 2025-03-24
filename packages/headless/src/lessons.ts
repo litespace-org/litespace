@@ -12,7 +12,7 @@ export function useFindLessons({
   ...query
 }: ILesson.FindLessonsApiQuery & { userOnly?: boolean }): UsePaginateResult<{
   lesson: ILesson.Self;
-  members: ILesson.PopuldatedMember[];
+  members: ILesson.PopulatedMember[];
 }> {
   const atlas = useApi();
 

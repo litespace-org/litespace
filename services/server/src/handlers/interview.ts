@@ -5,7 +5,7 @@ import {
   interviewAlreadySigned,
   notfound,
 } from "@/lib/error";
-import { canBeInterviewed } from "@/lib/interview";
+import { asPopulatedMember, canBeInterviewed } from "@/lib/interview";
 import {
   interviews,
   users,
@@ -188,7 +188,17 @@ async function findInterviewById(
   )
     return next(forbidden());
 
-  res.status(200).json(interview);
+  const member1 = await users.findById(interview.ids.interviewee);
+  const member2 = await users.findById(interview.ids.interviewer);
+
+  if (!member1 || !member2) return next(bad());
+
+  const response: IInterview.FindInterviewByIdApiResponse = {
+    interview,
+    members: [asPopulatedMember(member1), asPopulatedMember(member2)],
+  };
+
+  res.status(200).json(response);
 }
 
 async function updateInterview(

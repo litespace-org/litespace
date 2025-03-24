@@ -30,7 +30,9 @@ export class Interview extends Base {
     });
   }
 
-  public async findInterviewById(id: number): Promise<IInterview.Self> {
+  public async findInterviewById(
+    id: number
+  ): Promise<IInterview.FindInterviewByIdApiResponse> {
     return this.get({ route: `/api/v1/interview/${id}` });
   }
 }

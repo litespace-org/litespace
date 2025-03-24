@@ -4,12 +4,17 @@ import { Typography } from "@litespace/ui/Typography";
 import TimerIndicator from "@litespace/assets/TimerIndicator";
 import dayjs from "@/lib/dayjs";
 import { formatMinutes } from "@litespace/ui/utils";
+import { ISession } from "@litespace/types";
 
-const Timer: React.FC<{ start: string; duration: number }> = ({
-  start,
-  duration,
-}) => {
+const Timer: React.FC<{
+  start: string;
+  duration: number;
+  type?: ISession.Type;
+}> = ({ start, duration, type = "lesson" }) => {
   const intl = useFormatMessage();
+  const sessionType = intl(
+    type === "lesson" ? "session.type.lesson" : "session.type.interview"
+  );
 
   const getTimerText = useCallback(() => {
     const now = dayjs();
@@ -20,6 +25,7 @@ const Timer: React.FC<{ start: string; duration: number }> = ({
       const diff = startTime.diff(now, "minutes") || 1;
       return intl("session.will-start-in", {
         duration: diff <= 60 ? formatMinutes(diff) : startTime.fromNow(true),
+        type: sessionType,
       });
     }
 
@@ -27,14 +33,16 @@ const Timer: React.FC<{ start: string; duration: number }> = ({
       const diff = endTime.diff(now, "minutes") || 1;
       return intl("session.ended-since", {
         duration: diff >= 60 ? formatMinutes(diff) : endTime.fromNow(true),
+        type: sessionType,
       });
     }
 
     const diff = endTime.diff(now, "minutes") || 1;
     return intl("session.time-remaining", {
       duration: formatMinutes(diff),
+      type: sessionType,
     });
-  }, [start, duration, intl]);
+  }, [start, duration, intl, sessionType]);
 
   const [displayText, setDisplayText] = useState<string>(getTimerText());
 
