@@ -4,9 +4,10 @@ import EmptyLessonsImage from "@litespace/assets/EmptyLessons";
 import { useFormatMessage } from "@/hooks";
 import { Link } from "react-router-dom";
 
-export const EmptyLessons: React.FC<{ tutorsPage: string }> = ({
-  tutorsPage,
-}) => {
+export const EmptyLessons: React.FC<{
+  tutorsPage: string;
+  isStudent: boolean;
+}> = ({ tutorsPage, isStudent }) => {
   const intl = useFormatMessage();
 
   return (
@@ -23,14 +24,21 @@ export const EmptyLessons: React.FC<{ tutorsPage: string }> = ({
           tag="span"
           className="text-natural-800 text-base font-semibold"
         >
-          {intl("lessons.empty.find-tutors")}
+          {isStudent
+            ? intl("lessons.empty.find-tutors")
+            : intl("lessons.empty.waiting-lessons")}
         </Typography>
       </div>
-      <Link className="px-8 py-4 rounded-lg bg-brand-700" to={tutorsPage}>
-        <Typography tag="span" className="text-natural-50 text-base font-bold">
-          {intl("lessons.button.find-tutors")}
-        </Typography>
-      </Link>
+      {isStudent ? (
+        <Link className="px-8 py-4 rounded-lg bg-brand-700" to={tutorsPage}>
+          <Typography
+            tag="span"
+            className="text-natural-50 text-base font-bold"
+          >
+            {intl("lessons.button.find-tutors")}
+          </Typography>
+        </Link>
+      ) : null}
     </div>
   );
 };

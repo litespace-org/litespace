@@ -192,6 +192,9 @@ const LessonsSchedule: React.FC = () => {
                 onEdit,
                 onRebook,
               }}
+              loading={lessons.query.isPending}
+              error={lessons.query.isError}
+              retry={lessons.query.refetch}
             />
           </motion.div>
         ) : null}

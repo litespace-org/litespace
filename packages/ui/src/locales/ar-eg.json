@@ -523,6 +523,7 @@
   "lessons.menu.cancel": "الغاء الحصة",
   "lessons.empty": "ليس لديك أي دروس في الوقت الحالي",
   "lessons.empty.find-tutors": "قم بتصفح المعلمين و اختار المعلم الذي يتناسب مع احتياجاتك و ابدأ رحلتك التعليمية",
+  "lessons.empty.waiting-lessons": "انتظر حتي يبدأ الطلاب بحجز دروس معك",
   "upcoming-lessons.title": "الدروس الجارية",
   "upcoming-lessons.loading-error": "عذرًا، حدث خطأ أثناء تحميل جدول الحصص، برجاء المحاولة مرة أخرى",
   "upcoming-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس الجارية!",
