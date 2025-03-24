@@ -63,6 +63,8 @@ export type Self = {
   creditScore: number;
   city: City | null;
   phone: string | null;
+  enabledWhatsapp: boolean;
+  enabledTelegram: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -82,6 +84,8 @@ export type Row = {
   credit_score: number;
   city: City | null;
   phone: string | null;
+  enabled_whatsapp: boolean;
+  enabled_telegram: boolean;
   created_at: Date;
   updated_at: Date;
 };
@@ -101,6 +105,8 @@ export type CreatePayload = {
   address?: string;
   birthYear?: number;
   gender?: Gender;
+  enabledWhatsapp?: boolean;
+  enabledTelegram?: boolean;
 };
 
 export type UpdatePayload = {
@@ -116,6 +122,8 @@ export type UpdatePayload = {
   creditScore?: number;
   phone?: string | null;
   city?: City | null;
+  enabledWhatsapp?: boolean;
+  enabledTelegram?: boolean;
 };
 
 export type UpdateApiPayload = {
@@ -138,6 +146,8 @@ export type UpdateApiPayload = {
   about?: string | null;
   phone?: string | null;
   city?: City | null;
+  enabledWhatsapp?: boolean;
+  enabledTelegram?: boolean;
 };
 
 export enum AssetFileName {
