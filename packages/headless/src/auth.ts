@@ -16,12 +16,12 @@ export function useForgetPassword({
   onSuccess?: OnSuccess<void>;
   onError?: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const forgetPassword = useCallback(
     async (credentials: IUser.ForgetPasswordApiPayload) => {
-      return await atlas.auth.forgetPassword(credentials);
+      return await api.auth.forgetPassword(credentials);
     },
-    [atlas.auth]
+    [api.auth]
   );
 
   return useMutation({
@@ -39,13 +39,13 @@ export function useResetPassword({
   onSuccess: OnResetPasswordSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const resetPassword = useCallback(
     async (credentials: IUser.ResetPasswordApiPayload) => {
-      return await atlas.auth.resetPassword(credentials);
+      return await api.auth.resetPassword(credentials);
     },
-    [atlas.auth]
+    [api.auth]
   );
 
   return useMutation({
@@ -63,12 +63,12 @@ export function useVerifyEmail({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const verifyEmail = useCallback(
     (token: string) => {
-      return atlas.auth.verifyEmail(token);
+      return api.auth.verifyEmail(token);
     },
-    [atlas.auth]
+    [api.auth]
   );
 
   return useMutation({
@@ -86,12 +86,12 @@ export function useSendVerifyEmail({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const verifyEmail = useCallback(
     (callbackUrl: string) => {
-      return atlas.auth.sendVerifyEmail(callbackUrl);
+      return api.auth.sendVerifyEmail(callbackUrl);
     },
-    [atlas.auth]
+    [api.auth]
   );
 
   return useMutation({

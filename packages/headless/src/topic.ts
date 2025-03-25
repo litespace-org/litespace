@@ -15,13 +15,13 @@ export function useCreateTopic({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const createTopic = useCallback(
     async (payload: ITopic.CreateApiPayload) => {
-      return atlas.topic.create(payload);
+      return api.topic.create(payload);
     },
-    [atlas.topic]
+    [api.topic]
   );
 
   return useMutation({
@@ -35,24 +35,24 @@ export function useCreateTopic({
 export function useTopics(
   query: Omit<ITopic.FindTopicsApiQuery, "page" | "size">
 ) {
-  const atlas = useApi();
+  const api = useApi();
 
   const findTopics = useCallback(
     async (pagination: IFilter.Pagination) => {
-      return await atlas.topic.findTopics({ ...pagination, ...query });
+      return await api.topic.findTopics({ ...pagination, ...query });
     },
-    [atlas.topic, query]
+    [api.topic, query]
   );
 
   return usePaginate(findTopics, [QueryKey.FindTopic, query]);
 }
 
 export function useUserTopics() {
-  const atlas = useApi();
+  const api = useApi();
 
   const findTopics = useCallback(async () => {
-    return await atlas.topic.findUserTopics();
-  }, [atlas.topic]);
+    return await api.topic.findUserTopics();
+  }, [api.topic]);
 
   return useQuery({
     queryFn: findTopics,
@@ -67,7 +67,7 @@ export function useUpdateTopic({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const updateTopic = useCallback(
     async ({
@@ -77,9 +77,9 @@ export function useUpdateTopic({
       id: number;
       payload: ITopic.UpdateApiPayload;
     }) => {
-      return atlas.topic.updateTopic(id, payload);
+      return api.topic.updateTopic(id, payload);
     },
-    [atlas.topic]
+    [api.topic]
   );
 
   return useMutation({
@@ -97,13 +97,13 @@ export function useDeleteTopic({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const deleteTopic = useCallback(
     async ({ id }: { id: number }) => {
-      return atlas.topic.deleteTopic(id);
+      return api.topic.deleteTopic(id);
     },
-    [atlas.topic]
+    [api.topic]
   );
 
   return useMutation({

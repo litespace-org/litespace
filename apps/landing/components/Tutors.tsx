@@ -1,5 +1,5 @@
 import Content from "@/components/Tutors/Content";
-import { atlas } from "@/lib/atlas";
+import { api } from "@/lib/api";
 import { formatMessage } from "@/lib/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React from "react";
@@ -7,7 +7,7 @@ import InViewTrack from "@/components/Common/InViewTrack";
 
 export const Tutors: React.FC = async () => {
   const intl = await formatMessage();
-  const tutors = await atlas.user
+  const tutors = await api.user
     .findOnboardedTutors({
       page: 1,
       size: 2,

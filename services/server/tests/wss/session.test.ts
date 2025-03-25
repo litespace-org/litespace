@@ -41,7 +41,7 @@ describe("sessions test suite", () => {
       end: now.add(2, "day").startOf("day").toISOString(),
     });
 
-    const lesson = await studentApi.atlas.lesson.create({
+    const lesson = await studentApi.api.lesson.create({
       start: now.add(1, "hour").toISOString(),
       duration: 30,
       slotId: slot.id,
@@ -77,7 +77,7 @@ describe("sessions test suite", () => {
       end: now.add(2, "day").startOf("day").toISOString(),
     });
 
-    const lesson = await studentApi.atlas.lesson.create({
+    const lesson = await studentApi.api.lesson.create({
       start: now.add(1, "hour").toISOString(),
       duration: 30,
       slotId: slot.id,
@@ -116,7 +116,7 @@ describe("sessions test suite", () => {
       end: now.add(2, "day").startOf("day").toISOString(),
     });
 
-    const lesson = await studentApi.atlas.lesson.create({
+    const lesson = await studentApi.api.lesson.create({
       start: now.add(1, "hour").toISOString(),
       duration: 30,
       slotId: slot.id,
@@ -149,7 +149,7 @@ describe("sessions test suite", () => {
       end: now.add(2, "day").startOf("day").toISOString(),
     });
 
-    const lesson = await studentApi.atlas.lesson.create({
+    const lesson = await studentApi.api.lesson.create({
       start: slot.start,
       duration: 30,
       slotId: slot.id,

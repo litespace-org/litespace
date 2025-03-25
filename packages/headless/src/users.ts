@@ -8,12 +8,12 @@ import { QueryKey } from "@/constants";
 export function useUsers(
   filter?: Omit<IUser.FindUsersApiQuery, "page" | "size">
 ): UsePaginateResult<IUser.Self> {
-  const atlas = useApi();
+  const api = useApi();
 
   const findUsers = useCallback(
     ({ page, size }: IFilter.Pagination) =>
-      atlas.user.find({ page, size, ...filter }),
-    [atlas.user, filter]
+      api.user.find({ page, size, ...filter }),
+    [api.user, filter]
   );
 
   return usePaginate(findUsers, ["find-users", filter]);
@@ -22,11 +22,11 @@ export function useUsers(
 export function useFindUserById(
   id: string | number
 ): UseQueryResult<IUser.Self> {
-  const atlas = useApi();
+  const api = useApi();
 
   const findUserById = useCallback(
-    async () => await atlas.user.findById(id),
-    [atlas.user, id]
+    async () => await api.user.findById(id),
+    [api.user, id]
   );
 
   return useQuery({
@@ -42,10 +42,10 @@ export function useCreateUser({
   onSuccess: Void;
   onError: (error: Error) => void;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const createUser = useCallback(
-    (payload: IUser.CreateApiPayload) => atlas.user.create(payload),
-    [atlas.user]
+    (payload: IUser.CreateApiPayload) => api.user.create(payload),
+    [api.user]
   );
 
   return useMutation({

@@ -12,13 +12,13 @@ export function useCreateContactRequest({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const createContactRequest = useCallback(
     async (payload: IContactRequest.CreateContactRequestApiPayload) => {
-      return await atlas.contactRequest.create(payload);
+      return await api.contactRequest.create(payload);
     },
-    [atlas.contactRequest]
+    [api.contactRequest]
   );
 
   return useMutation({

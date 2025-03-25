@@ -4,8 +4,8 @@ import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback } from "react";
 
 export function usePlans(): UseQueryResult<IPlan.MappedAttributes[], Error> {
-  const atlas = useApi();
-  const findPlans = useCallback(() => atlas.plan.find(), [atlas.plan]);
+  const api = useApi();
+  const findPlans = useCallback(() => api.plan.find(), [api.plan]);
   return useQuery({
     queryFn: findPlans,
     queryKey: ["find-all-plans"],
@@ -19,10 +19,10 @@ export function useCreatePlan({
   onSuccess?(): void;
   onError?(error: Error): void;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const createPlan = useCallback(
-    (payload: IPlan.CreateApiPayload) => atlas.plan.create(payload),
-    [atlas.plan]
+    (payload: IPlan.CreateApiPayload) => api.plan.create(payload),
+    [api.plan]
   );
   return useMutation({
     mutationFn: createPlan,
@@ -39,11 +39,11 @@ export function useUpdatePlan({
   onSuccess?: Void;
   onError?(error: Error): void;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const updatePlan = useCallback(
     ({ id, payload }: { id: number; payload: IPlan.UpdateApiPayload }) =>
-      atlas.plan.update(id, payload),
-    [atlas.plan]
+      api.plan.update(id, payload),
+    [api.plan]
   );
 
   return useMutation({
@@ -61,10 +61,10 @@ export function useDeletePlan({
   onSuccess?: Void;
   onError?: (error: Error) => void;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const deletePlan = useCallback(
-    (id: number) => atlas.plan.delete(id),
-    [atlas.plan]
+    (id: number) => api.plan.delete(id),
+    [api.plan]
   );
 
   return useMutation({

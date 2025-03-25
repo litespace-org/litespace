@@ -13,12 +13,12 @@ export function useLogin({
   onSuccess: OnLoginSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const login = useCallback(
     async (credentials: IUser.Credentials) => {
-      return atlas.auth.password(credentials);
+      return api.auth.password(credentials);
     },
-    [atlas.auth]
+    [api.auth]
   );
 
   return useMutation({
