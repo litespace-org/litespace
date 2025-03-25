@@ -12,6 +12,7 @@ import { Avatar } from "@/components/Avatar";
 import { dayjs } from "@litespace/utils";
 import { Tooltip } from "@/components/Tooltip";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { isEmpty } from "lodash";
 
 type Props = {
   lessons: Array<{
@@ -70,7 +71,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50"
+        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50 h-full flex flex-col"
       )}
     >
       <Typography
@@ -99,83 +100,81 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
         </div>
       ) : null}
 
-      {lessons && !error && !loading ? (
-        <div>
-          {lessons.length ? (
-            <div className="flex flex-col gap-4 mt-4">
-              {lessons.map((lesson, i) => (
-                <Link
-                  key={i}
-                  to={lesson.url}
-                  className="flex gap-2 items-center p-1"
+      {!isEmpty(lessons) && !error && !loading ? (
+        <div className="flex flex-col gap-4 mt-4 flex-1">
+          {lessons.map((lesson, i) => (
+            <Link
+              key={i}
+              to={lesson.url}
+              className="flex gap-2 items-center p-1"
+            >
+              <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
+                <Avatar
+                  alt={lesson.name}
+                  src={lesson.imageUrl}
+                  seed={lesson.userId}
+                  object="cover"
+                />
+              </div>
+              <div className="flex flex-col justify-between self-stretch">
+                <Typography
+                  tag="span"
+                  className="text-natural-950 text-caption font-semibold"
                 >
-                  <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
-                    <Avatar
-                      alt={lesson.name}
-                      src={lesson.imageUrl}
-                      seed={lesson.userId}
-                      object="cover"
-                    />
-                  </div>
-                  <div className="flex flex-col justify-between self-stretch">
-                    <Typography
-                      tag="span"
-                      className="text-natural-950 text-caption font-semibold"
-                    >
-                      {dayjs(lesson.start).format("dddd - D MMMM YYYY")}
-                    </Typography>
-                    <div className="flex justify-between">
-                      <Tooltip
-                        content={
-                          <Typography tag="span" className="text-natuarl-950">
-                            {lesson.name}
-                          </Typography>
-                        }
-                      >
-                        <div>
-                          <Typography
-                            tag="span"
-                            className="block text-natural-600 me-1 truncate max-w-16 font-normal text-tiny"
-                          >
-                            {lesson.name}
-                          </Typography>
-                        </div>
-                      </Tooltip>
+                  {dayjs(lesson.start).format("dddd - D MMMM YYYY")}
+                </Typography>
+                <div className="flex justify-between">
+                  <Tooltip
+                    content={
+                      <Typography tag="span" className="text-natuarl-950">
+                        {lesson.name}
+                      </Typography>
+                    }
+                  >
+                    <div>
                       <Typography
                         tag="span"
-                        className="block text-natural-600 ms-[18px] text-tiny font-normal"
+                        className="block text-natural-600 me-1 truncate max-w-16 font-normal text-tiny"
                       >
-                        {dayjs(lesson.start).format("h:mm")}
-                        {" - "}
-                        {dayjs(lesson.end).format("h:mm a")}
+                        {lesson.name}
                       </Typography>
                     </div>
-                  </div>
-                  <div className="mr-auto">
-                    <ArrowLeft className="w-6 h-6 [&>*]:stroke-natural-950" />
-                  </div>
-                </Link>
-              ))}
-
-              <Link to={lessonsUrl} className="inline-block w-full">
-                <Button size="large" className="w-full">
+                  </Tooltip>
                   <Typography
                     tag="span"
-                    className="text-natural-50 font-semibold text-caption"
+                    className="block text-natural-600 ms-[18px] text-tiny font-normal"
                   >
-                    {intl("student-dashboard.button.show-all-lessons")}
+                    {dayjs(lesson.start).format("h:mm")}
+                    {" - "}
+                    {dayjs(lesson.end).format("h:mm a")}
                   </Typography>
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <EmptyUpcomingLessonsComponent
-              tutorsUrl={tutorsUrl}
-              isTutor={isTutor}
-              scheduleUrl={scheduleUrl}
-            />
-          )}
+                </div>
+              </div>
+              <div className="mr-auto">
+                <ArrowLeft className="w-6 h-6 [&>*]:stroke-natural-950" />
+              </div>
+            </Link>
+          ))}
+
+          <Link to={lessonsUrl} className="inline-block w-full mt-auto">
+            <Button size="large" className="w-full">
+              <Typography
+                tag="span"
+                className="text-natural-50 font-semibold text-caption"
+              >
+                {intl("student-dashboard.button.show-all-lessons")}
+              </Typography>
+            </Button>
+          </Link>
         </div>
+      ) : null}
+
+      {isEmpty(lessons) && !error && !loading ? (
+        <EmptyUpcomingLessonsComponent
+          tutorsUrl={tutorsUrl}
+          isTutor={isTutor}
+          scheduleUrl={scheduleUrl}
+        />
       ) : null}
     </div>
   );

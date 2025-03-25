@@ -59,7 +59,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
   return (
     <div
       className={cn(
-        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50 flex flex-col"
+        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50 flex flex-col h-full"
       )}
     >
       <Typography

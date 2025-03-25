@@ -6,6 +6,7 @@ import { ILesson, IUser } from "@litespace/types";
 import { useMemo } from "react";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import { isTutor } from "@litespace/utils";
 
 function asUpcomingLessons(
   list: ILesson.FindUserLessonsApiResponse["list"] | null,
@@ -44,7 +45,7 @@ export const UpcomingLessons = () => {
   );
 
   return (
-    <div className="md:col-span-1 [&>*]:h-full">
+    <div className="md:col-span-1">
       <Summary
         loading={lessonsQuery.query.isPending}
         error={lessonsQuery.query.isError}
@@ -52,10 +53,7 @@ export const UpcomingLessons = () => {
         lessonsUrl={Web.UpcomingLessons}
         tutorsUrl={Web.Tutors}
         lessons={lessons}
-        isTutor={
-          user?.role === IUser.Role.Tutor ||
-          user?.role === IUser.Role.TutorManager
-        }
+        isTutor={isTutor(user)}
         scheduleUrl={Web.ScheduleManagement}
       />
     </div>

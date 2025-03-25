@@ -42,7 +42,7 @@ export const ChatSummary: React.FC = () => {
   const organizedRooms = useMemo(() => asRooms(rooms.list), [rooms.list]);
 
   return (
-    <div className="md:col-span-1 [&>*]:h-full">
+    <div className="md:col-span-1">
       <Summary
         loading={rooms.query.isPending}
         error={rooms.query.isError}
