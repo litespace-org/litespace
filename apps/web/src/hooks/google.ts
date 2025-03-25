@@ -29,7 +29,7 @@ export function useGoogle({
   redirect?: string | null;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
-  const atlas = useApi();
+  const api = useApi();
   const user = useUserContext();
   const navigate = useNavigate();
   const toast = useToast();
@@ -39,7 +39,7 @@ export function useGoogle({
     async (token: string, type: "bearer" | "id-token") => {
       setLoading(false);
       const info = await safe(async () =>
-        atlas.auth.google({ token, type, role })
+        api.auth.google({ token, type, role })
       );
 
       if (info instanceof Error)
@@ -54,7 +54,7 @@ export function useGoogle({
       if (role) return navigate(Web.CompleteProfile);
       return navigate(Web.Root);
     },
-    [atlas.auth, intl, navigate, redirect, role, toast, user]
+    [api.auth, intl, navigate, redirect, role, toast, user]
   );
 
   const onError = useCallback(

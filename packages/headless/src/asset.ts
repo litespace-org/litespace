@@ -11,12 +11,12 @@ export function useAssetBlob({
   name?: string;
   type: IAsset.AssetType;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const findAsset = useCallback(async () => {
     if (!name) return null;
-    return await atlas.asset.getAssetBlob(name, type);
-  }, [atlas.asset, name, type]);
+    return await api.asset.getAssetBlob(name, type);
+  }, [api.asset, name, type]);
 
   return useQuery({
     queryKey: [QueryKey.FindAsset, name, type],

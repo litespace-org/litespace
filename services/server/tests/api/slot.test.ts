@@ -58,7 +58,7 @@ describe("/api/v1/availability-slot/", () => {
       const now = dayjs.utc();
       const mock = await genMockData(tutor.id, now);
 
-      const { slots, subslots } = await studentApi.atlas.availabilitySlot.find({
+      const { slots, subslots } = await studentApi.api.availabilitySlot.find({
         userId: tutor.id,
         after: now.toISOString(),
         before: now.add(2, "days").toISOString(),
@@ -76,7 +76,7 @@ describe("/api/v1/availability-slot/", () => {
       const tutor = await db.tutor();
       const now = dayjs.utc();
       const res = await safe(async () =>
-        studentApi.atlas.availabilitySlot.find({
+        studentApi.api.availabilitySlot.find({
           userId: tutor.id,
           after: now.add(2, "days").toISOString(),
           before: now.toISOString(),
@@ -92,7 +92,7 @@ describe("/api/v1/availability-slot/", () => {
       const studentApi = await Api.forStudent();
       const now = dayjs.utc();
       const res = await safe(async () =>
-        studentApi.atlas.availabilitySlot.set({
+        studentApi.api.availabilitySlot.set({
           actions: [
             {
               type: "create",
@@ -110,7 +110,7 @@ describe("/api/v1/availability-slot/", () => {
       const tutor = await tutorApi.findCurrentUser();
 
       const now = dayjs.utc();
-      await tutorApi.atlas.availabilitySlot.set({
+      await tutorApi.api.availabilitySlot.set({
         actions: [
           {
             type: "create",
@@ -143,7 +143,7 @@ describe("/api/v1/availability-slot/", () => {
       await genMockData(tutor.user.id, now);
 
       const res = await safe(async () =>
-        tutorApi.atlas.availabilitySlot.set({
+        tutorApi.api.availabilitySlot.set({
           actions: [
             {
               type: "create",
@@ -162,7 +162,7 @@ describe("/api/v1/availability-slot/", () => {
       const now = dayjs.utc();
 
       const res = await safe(async () =>
-        tutorApi.atlas.availabilitySlot.set({
+        tutorApi.api.availabilitySlot.set({
           actions: [
             {
               type: "create",
@@ -181,7 +181,7 @@ describe("/api/v1/availability-slot/", () => {
       const now = dayjs.utc();
 
       const res = await safe(async () =>
-        tutorApi.atlas.availabilitySlot.set({
+        tutorApi.api.availabilitySlot.set({
           actions: [
             {
               type: "create",
@@ -207,7 +207,7 @@ describe("/api/v1/availability-slot/", () => {
         end: now.add(3, "days").toISOString(),
       };
 
-      await tutorApi.atlas.availabilitySlot.set({
+      await tutorApi.api.availabilitySlot.set({
         actions: [
           {
             type: "update",
@@ -233,7 +233,7 @@ describe("/api/v1/availability-slot/", () => {
         end: now.add(3, "days").toISOString(),
       };
 
-      await tutorApi.atlas.availabilitySlot.set({
+      await tutorApi.api.availabilitySlot.set({
         actions: [
           {
             type: "update",
@@ -252,7 +252,7 @@ describe("/api/v1/availability-slot/", () => {
       const now = dayjs.utc();
       const mock = await genMockData(tutor.user.id, now);
 
-      await tutorApi.atlas.availabilitySlot.set({
+      await tutorApi.api.availabilitySlot.set({
         actions: [
           {
             type: "delete",
@@ -272,7 +272,7 @@ describe("/api/v1/availability-slot/", () => {
       const mock = await genMockData(tutor.user.id, now);
 
       const res = await safe(async () =>
-        tutorApi.atlas.availabilitySlot.set({
+        tutorApi.api.availabilitySlot.set({
           actions: [
             {
               type: "delete",
@@ -302,7 +302,7 @@ describe("/api/v1/availability-slot/", () => {
       const mock = await genMockData(tutor.id, now);
 
       const res = await safe(async () =>
-        tutorApi.atlas.availabilitySlot.set({
+        tutorApi.api.availabilitySlot.set({
           actions: [
             {
               type: "delete",

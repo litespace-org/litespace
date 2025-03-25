@@ -23,13 +23,13 @@ export type UseFindInvoicesPayload = { userOnly?: boolean } & Omit<
 export function useFindInvoices(
   filter: UseFindInvoicesPayload
 ): UsePaginateResult<IInvoice.Self> {
-  const atlas = useApi();
+  const api = useApi();
   const findInvoices = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
       if (filter.userOnly && !filter.users) return { list: [], total: 0 };
-      return await atlas.invoice.find({ page, size, ...filter });
+      return await api.invoice.find({ page, size, ...filter });
     },
-    [atlas.invoice, filter]
+    [api.invoice, filter]
   );
   return usePaginate(findInvoices, [QueryKey.FindInvoices, filter]);
 }
@@ -49,7 +49,7 @@ export function useFindInvoicesByUser(
     "page" | "size"
   >
 ): useFindInvoicesByUserProps {
-  const atlas = useApi();
+  const api = useApi();
   const findInvoices = useCallback(
     async ({
       pageParam,
@@ -57,13 +57,13 @@ export function useFindInvoicesByUser(
       pageParam: number;
     }): Promise<Paginated<IInvoice.Self>> => {
       if (filter.userOnly && !filter.users) return { list: [], total: 0 };
-      return await atlas.invoice.find({
+      return await api.invoice.find({
         users: filter.users,
         page: pageParam,
         ...filter,
       });
     },
-    [atlas.invoice, filter]
+    [api.invoice, filter]
   );
   return useInfinitePaginationQuery(findInvoices, [
     QueryKey.FindInvoicesByUser,
@@ -79,12 +79,12 @@ type useFindInvoiceStatsProps = UseQueryResult<
 export function useFindInvoiceStats(
   tutorId?: number
 ): useFindInvoiceStatsProps {
-  const atlas = useApi();
+  const api = useApi();
 
   const findStats = useCallback(async () => {
     if (!tutorId) return null;
-    return await atlas.invoice.stats(tutorId);
-  }, [atlas.invoice, tutorId]);
+    return await api.invoice.stats(tutorId);
+  }, [api.invoice, tutorId]);
 
   return useQuery({
     queryFn: findStats,
@@ -94,11 +94,11 @@ export function useFindInvoiceStats(
 }
 
 export function useFindWithdrawalMethods() {
-  const atlas = useApi();
+  const api = useApi();
 
   const findWithdrawalMethods = useCallback(() => {
-    return atlas.withdrawMethod.find();
-  }, [atlas.withdrawMethod]);
+    return api.withdrawMethod.find();
+  }, [api.withdrawMethod]);
 
   return useQuery({
     queryFn: findWithdrawalMethods,
@@ -113,13 +113,13 @@ export function useCreateInvoice({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const createUserInvoice = useCallback(
     async (payload: IInvoice.CreateApiPayload) => {
-      return await atlas.invoice.create(payload);
+      return await api.invoice.create(payload);
     },
-    [atlas.invoice]
+    [api.invoice]
   );
 
   return useMutation({
@@ -137,7 +137,7 @@ export function useEditUserInvoice({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const updateUserInvoice = useCallback(
     async ({
       id,
@@ -146,9 +146,9 @@ export function useEditUserInvoice({
       id: number;
       payload: IInvoice.UpdateByReceiverApiPayload;
     }) => {
-      return await atlas.invoice.updateByReceiver(id, payload);
+      return await api.invoice.updateByReceiver(id, payload);
     },
-    [atlas.invoice]
+    [api.invoice]
   );
   return useMutation({
     mutationFn: updateUserInvoice,
@@ -167,13 +167,13 @@ export function useCancelInvoiceById({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const cancel = useCallback(async () => {
-    return await atlas.invoice.updateByReceiver(id, {
+    return await api.invoice.updateByReceiver(id, {
       cancel: true,
     });
-  }, [atlas.invoice, id]);
+  }, [api.invoice, id]);
 
   return useMutation({
     mutationFn: cancel,

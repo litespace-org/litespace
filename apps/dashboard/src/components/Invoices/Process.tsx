@@ -27,7 +27,7 @@ const Process: React.FC<{
 }> = ({ open, close, onUpdate, id, action, note }) => {
   const intl = useFormatMessage();
   const toast = useToast();
-  const atlas = useApi();
+  const api = useApi();
   const ref = useRef<HTMLInputElement>(null);
   const [receipt, setReceipt] = useState<File | undefined>(undefined);
   const form = useForm<IForm>({
@@ -58,7 +58,7 @@ const Process: React.FC<{
     mutationFn: async (
       payload: IInvoice.UpdateByAdminApiPayload & { receipt?: File }
     ) => {
-      return await atlas.invoice.updateByAdmin(id, payload);
+      return await api.invoice.updateByAdmin(id, payload);
     },
     onSuccess,
     onError,
@@ -67,7 +67,7 @@ const Process: React.FC<{
   const deleteNote = useMutation({
     mutationFn: async () => {
       // todo: update the invocie api with a "deleteNote" option
-      return await atlas.invoice.updateByAdmin(id, { note: "" });
+      return await api.invoice.updateByAdmin(id, { note: "" });
     },
     onSuccess,
     onError,

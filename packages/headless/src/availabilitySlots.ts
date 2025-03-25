@@ -9,11 +9,11 @@ import { ResponseError } from "@litespace/utils";
 export function useFindAvailabilitySlots(
   query: IAvailabilitySlot.FindAvailabilitySlotsApiQuery
 ) {
-  const atlas = useApi();
+  const api = useApi();
 
   const findSlots = useCallback(
-    () => atlas.availabilitySlot.find(query),
-    [atlas.availabilitySlot, query]
+    () => api.availabilitySlot.find(query),
+    [api.availabilitySlot, query]
   );
 
   return useQuery({
@@ -29,13 +29,13 @@ export function useSetAvailabilitySlots({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const deleteSlot = useCallback(
     (actions: IAvailabilitySlot.Action[]) => {
-      return atlas.availabilitySlot.set({ actions });
+      return api.availabilitySlot.set({ actions });
     },
-    [atlas.availabilitySlot]
+    [api.availabilitySlot]
   );
 
   return useMutation<void, ResponseError, IAvailabilitySlot.Action[]>({

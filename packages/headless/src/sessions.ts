@@ -1101,7 +1101,7 @@ export function useSessionMembers({
   onLeave: Void;
 }) {
   const socket = useSocket();
-  const atlas = useApi();
+  const api = useApi();
 
   const [members, setMembers] = useState<number[]>([]);
   const [listening, setListening] = useState<boolean>(false);
@@ -1114,8 +1114,8 @@ export function useSessionMembers({
 
   const findSessionMembers = useCallback(async () => {
     if (!sessionId) return [];
-    return await atlas.session.findMembers(sessionId);
-  }, [atlas.session, sessionId]);
+    return await api.session.findMembers(sessionId);
+  }, [api.session, sessionId]);
 
   const sessionMembersQuery = useQuery({
     queryFn: findSessionMembers,

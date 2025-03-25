@@ -14,7 +14,7 @@ describe("/api/v1/chat", () => {
   describe("PUT /api/v1/chat/room/:roomId", () => {
     it("should return error incase user is not authenticated", async () => {
       const publicApi = new Api();
-      await publicApi.atlas.chat
+      await publicApi.api.chat
         .updateRoom(1, { muted: true, pinned: true })
         .then(unexpectedApiSuccess)
         .catch((error) => expect(error.message).to.be.eq(ApiError.Forbidden));
@@ -24,15 +24,15 @@ describe("/api/v1/chat", () => {
       const tutorApi = await Api.forTutor();
       const studentApi = await Api.forStudent();
 
-      const tutor = await tutorApi.atlas.user.findCurrentUser();
-      const student = await studentApi.atlas.user.findCurrentUser();
-      await studentApi.atlas.chat.createRoom(tutor.user.id);
-      const { room } = await studentApi.atlas.chat.findRoomByMembers([
+      const tutor = await tutorApi.api.user.findCurrentUser();
+      const student = await studentApi.api.user.findCurrentUser();
+      await studentApi.api.chat.createRoom(tutor.user.id);
+      const { room } = await studentApi.api.chat.findRoomByMembers([
         tutor.user.id,
         student.user.id,
       ]);
 
-      await studentApi.atlas.chat
+      await studentApi.api.chat
         .updateRoom(room, {})
         .then(unexpectedApiSuccess)
         .catch((error) =>
@@ -44,17 +44,17 @@ describe("/api/v1/chat", () => {
       const tutorApi = await Api.forTutor();
       const studentApi = await Api.forStudent();
 
-      const tutor = await tutorApi.atlas.user.findCurrentUser();
-      const student = await studentApi.atlas.user.findCurrentUser();
+      const tutor = await tutorApi.api.user.findCurrentUser();
+      const student = await studentApi.api.user.findCurrentUser();
 
-      await studentApi.atlas.chat.createRoom(tutor.user.id);
-      const { room } = await studentApi.atlas.chat.findRoomByMembers([
+      await studentApi.api.chat.createRoom(tutor.user.id);
+      const { room } = await studentApi.api.chat.findRoomByMembers([
         tutor.user.id,
         student.user.id,
       ]);
 
       const unathorizedStudentApi = await Api.forStudent();
-      await unathorizedStudentApi.atlas.chat
+      await unathorizedStudentApi.api.chat
         .updateRoom(room, {})
         .then(unexpectedApiSuccess)
         .catch((error) => expect(error.message).to.be.eq(ApiError.Forbidden));
@@ -64,11 +64,11 @@ describe("/api/v1/chat", () => {
       const tutorApi = await Api.forTutor();
       const studentApi = await Api.forStudent();
 
-      const tutor = await tutorApi.atlas.user.findCurrentUser();
-      const student = await studentApi.atlas.user.findCurrentUser();
+      const tutor = await tutorApi.api.user.findCurrentUser();
+      const student = await studentApi.api.user.findCurrentUser();
 
-      await studentApi.atlas.chat.createRoom(tutor.user.id);
-      const { room } = await studentApi.atlas.chat.findRoomByMembers([
+      await studentApi.api.chat.createRoom(tutor.user.id);
+      const { room } = await studentApi.api.chat.findRoomByMembers([
         tutor.user.id,
         student.user.id,
       ]);
@@ -81,7 +81,7 @@ describe("/api/v1/chat", () => {
       expect(secondMember.muted).to.be.false;
       expect(secondMember.pinned).to.be.false;
 
-      const updated = await studentApi.atlas.chat.updateRoom(room, {
+      const updated = await studentApi.api.chat.updateRoom(room, {
         pinned: true,
         muted: true,
       });
@@ -97,10 +97,10 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
     const tutorApi = await Api.forTutor();
     const student1Api = await Api.forStudent();
     const student2Api = await Api.forStudent();
-    const tutor = await tutorApi.atlas.user.findCurrentUser();
-    await student1Api.atlas.chat.createRoom(tutor.user.id);
+    const tutor = await tutorApi.api.user.findCurrentUser();
+    await student1Api.api.chat.createRoom(tutor.user.id);
 
-    await student2Api.atlas.chat
+    await student2Api.api.chat
       .findRooms(tutor.user.id)
       .then(unexpectedApiSuccess)
       .catch((error) => expect(error.message).to.be.eq(ApiError.Forbidden));
@@ -114,9 +114,7 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
       range(3).map(async () => {
         const studnetApi = await Api.forStudent();
         const student = await studnetApi.findCurrentUser();
-        const { roomId } = await studnetApi.atlas.chat.createRoom(
-          tutor.user.id
-        );
+        const { roomId } = await studnetApi.api.chat.createRoom(tutor.user.id);
         const message = await messages.create({
           roomId,
           text: student.user.email,
@@ -127,7 +125,7 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
       })
     );
 
-    const rooms = await tutorApi.atlas.chat.findRooms(tutor.user.id);
+    const rooms = await tutorApi.api.chat.findRooms(tutor.user.id);
     expect(rooms.list.length).to.be.eq(3);
 
     expect(rooms.list.map((room) => room.latestMessage?.id)).to.contain.members(
@@ -147,9 +145,7 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
       range(3).map(async () => {
         const studnetApi = await Api.forStudent();
         const student = await studnetApi.findCurrentUser();
-        const { roomId } = await studnetApi.atlas.chat.createRoom(
-          tutor.user.id
-        );
+        const { roomId } = await studnetApi.api.chat.createRoom(tutor.user.id);
         const message = await messages.create({
           roomId,
           text: student.user.email,
@@ -165,7 +161,7 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
     const tutorSocket = new ClientSocket(tutor.token);
     await tutorSocket.wait(Wss.ServerEvent.UserStatusChanged);
 
-    const rooms = await tutorApi.atlas.chat.findRooms(tutor.user.id);
+    const rooms = await tutorApi.api.chat.findRooms(tutor.user.id);
 
     expect(
       rooms.list.map((room) => room.otherMember.online)
@@ -174,7 +170,7 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
 
   it("should get rooms that match specific keyword", async () => {
     const tutorApi = await Api.forTutor();
-    const tutor = await tutorApi.atlas.user.findCurrentUser();
+    const tutor = await tutorApi.api.user.findCurrentUser();
 
     for (const name of ["student-1", "student-2", "student-3"]) {
       const studnetApi = await Api.forStudent();
@@ -198,7 +194,7 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
     ];
 
     for (const test of tests) {
-      const rooms = await tutorApi.atlas.chat.findRooms(tutor.user.id, {
+      const rooms = await tutorApi.api.chat.findRooms(tutor.user.id, {
         keyword: test.keyword,
       });
       expect(rooms.list.length).to.be.eq(test.total);

@@ -7,12 +7,12 @@ import { IUser } from "@litespace/types";
 export function useFindStudentStats(
   id?: number
 ): UseQueryResult<IUser.FindStudentStatsApiResponse | null, Error> {
-  const atlas = useApi();
+  const api = useApi();
 
   const findStats = useCallback(async () => {
     if (!id) return null;
-    return await atlas.user.findStudentStats(id);
-  }, [atlas.user, id]);
+    return await api.user.findStudentStats(id);
+  }, [api.user, id]);
 
   return useQuery({
     queryFn: findStats,
@@ -22,11 +22,11 @@ export function useFindStudentStats(
 }
 
 export function useFindPersonalizedStudentStats() {
-  const atlas = useApi();
+  const api = useApi();
 
   const findStats = useCallback(async () => {
-    return await atlas.user.findPersonalizedStudentStats();
-  }, [atlas.user]);
+    return await api.user.findPersonalizedStudentStats();
+  }, [api.user]);
 
   return useQuery({
     queryFn: findStats,

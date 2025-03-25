@@ -11,11 +11,11 @@ export function useFlushCache({
   onSuccess?: Void;
   onError?(error: Error): void;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const flushCache = useCallback(async () => {
-    return await atlas.cache.flush();
-  }, [atlas.cache]);
+    return await api.cache.flush();
+  }, [api.cache]);
 
   return useMutation({
     mutationFn: flushCache,

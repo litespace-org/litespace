@@ -15,7 +15,7 @@ describe("/api/v1/topic/", () => {
     it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const adminApi = await Api.forSuperAdmin();
       const res = await safe(async () =>
-        adminApi.atlas.topic.addUserTopics({
+        adminApi.api.topic.addUserTopics({
           topicIds: [1],
         })
       );
@@ -39,14 +39,14 @@ describe("/api/v1/topic/", () => {
       );
 
       const res1 = await safe(async () =>
-        studentApi.atlas.topic.addUserTopics({
+        studentApi.api.topic.addUserTopics({
           topicIds: mockTopicIds.slice(0, MAX_TOPICS_COUNT),
         })
       );
       expect(res1).to.eq("OK");
 
       const res2 = await safe(async () =>
-        studentApi.atlas.topic.addUserTopics({
+        studentApi.api.topic.addUserTopics({
           topicIds: mockTopicIds.slice(MAX_TOPICS_COUNT),
         })
       );
@@ -56,7 +56,7 @@ describe("/api/v1/topic/", () => {
     it("should respond with 404 if atleast one topic is not found.", async () => {
       const studentApi = await Api.forStudent();
       const res = await safe(async () =>
-        studentApi.atlas.topic.addUserTopics({
+        studentApi.api.topic.addUserTopics({
           topicIds: [123],
         })
       );
@@ -82,13 +82,13 @@ describe("/api/v1/topic/", () => {
       );
 
       const res1 = await safe(async () =>
-        studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds })
+        studentApi.api.topic.addUserTopics({ topicIds: mockTopicIds })
       );
       expect(res1).to.eq("OK");
 
       // it should ignore duplicated topics
       const res2 = await safe(async () =>
-        studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds })
+        studentApi.api.topic.addUserTopics({ topicIds: mockTopicIds })
       );
       expect(res2).to.eq("OK");
 
@@ -103,7 +103,7 @@ describe("/api/v1/topic/", () => {
     it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const adminApi = await Api.forSuperAdmin();
       const res = await safe(async () =>
-        adminApi.atlas.topic.deleteUserTopics({ topicIds: [1] })
+        adminApi.api.topic.deleteUserTopics({ topicIds: [1] })
       );
       expect(res).to.deep.eq(forbidden());
     });
@@ -126,7 +126,7 @@ describe("/api/v1/topic/", () => {
       );
 
       const res = await safe(async () =>
-        studentApi.atlas.topic.deleteUserTopics({ topicIds: mockTopicIds })
+        studentApi.api.topic.deleteUserTopics({ topicIds: mockTopicIds })
       );
       expect(res).to.deep.eq("OK");
     });
@@ -150,12 +150,12 @@ describe("/api/v1/topic/", () => {
       );
 
       const res1 = await safe(async () =>
-        studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds })
+        studentApi.api.topic.addUserTopics({ topicIds: mockTopicIds })
       );
       expect(res1).to.eq("OK");
 
       const res = await safe(async () =>
-        studentApi.atlas.topic.deleteUserTopics({
+        studentApi.api.topic.deleteUserTopics({
           topicIds: mockTopicIds.slice(0, 2),
         })
       );
@@ -171,7 +171,7 @@ describe("/api/v1/topic/", () => {
   describe("GET /api/v1/topic/user", () => {
     it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const adminApi = await Api.forSuperAdmin();
-      const res = await safe(async () => adminApi.atlas.topic.findUserTopics());
+      const res = await safe(async () => adminApi.api.topic.findUserTopics());
       expect(res).to.deep.eq(forbidden());
     });
 
@@ -192,12 +192,12 @@ describe("/api/v1/topic/", () => {
       const mockTopicIds = mockTopics.map((t) => t.id);
 
       const res = await safe(async () =>
-        studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds })
+        studentApi.api.topic.addUserTopics({ topicIds: mockTopicIds })
       );
       expect(res).to.eq("OK");
 
       const myTopics = await safe(async () =>
-        studentApi.atlas.topic.findUserTopics()
+        studentApi.api.topic.findUserTopics()
       );
       expect(myTopics).to.be.an("array");
       expect(myTopics).to.have.length(3);
@@ -229,7 +229,7 @@ describe("/api/v1/topic/", () => {
       });
 
       const res = await safe(async () =>
-        studentApi.atlas.topic.replaceUserTopics({
+        studentApi.api.topic.replaceUserTopics({
           removeTopics: mockTopicIds.slice(0, 2),
           addTopics: mockTopicIds.slice(2, 4),
         })
@@ -261,7 +261,7 @@ describe("/api/v1/topic/", () => {
       });
 
       const res = await safe(async () =>
-        studentApi.atlas.topic.replaceUserTopics({
+        studentApi.api.topic.replaceUserTopics({
           removeTopics: mockTopicIds.slice(0, 2),
           addTopics: mockTopicIds.slice(3, 4),
         })
@@ -293,7 +293,7 @@ describe("/api/v1/topic/", () => {
       });
 
       const res = await safe(async () =>
-        studentApi.atlas.topic.replaceUserTopics({
+        studentApi.api.topic.replaceUserTopics({
           removeTopics: [],
           addTopics: mockTopicIds.slice(30, 31),
         })
@@ -325,7 +325,7 @@ describe("/api/v1/topic/", () => {
       });
 
       const res1 = await safe(async () =>
-        studentApi.atlas.topic.replaceUserTopics({
+        studentApi.api.topic.replaceUserTopics({
           removeTopics: [],
           addTopics: mockTopicIds.slice(2, 4),
         })
@@ -333,7 +333,7 @@ describe("/api/v1/topic/", () => {
       expect(res1).to.eq("OK");
 
       const res2 = await safe(async () =>
-        studentApi.atlas.topic.replaceUserTopics({
+        studentApi.api.topic.replaceUserTopics({
           removeTopics: mockTopicIds.slice(0, 2),
           addTopics: [],
         })
@@ -365,7 +365,7 @@ describe("/api/v1/topic/", () => {
       });
 
       const res = await safe(async () =>
-        studentApi.atlas.topic.replaceUserTopics({
+        studentApi.api.topic.replaceUserTopics({
           removeTopics: [],
           addTopics: [],
         })
@@ -397,7 +397,7 @@ describe("/api/v1/topic/", () => {
       });
 
       const res = await safe(async () =>
-        studentApi.atlas.topic.replaceUserTopics({
+        studentApi.api.topic.replaceUserTopics({
           removeTopics: [...mockTopicIds.slice(0, 2), 123],
           addTopics: [...mockTopicIds.slice(2, 4), 321],
         })
@@ -429,7 +429,7 @@ describe("/api/v1/topic/", () => {
       });
 
       const res = await safe(async () =>
-        studentApi.atlas.topic.replaceUserTopics({
+        studentApi.api.topic.replaceUserTopics({
           removeTopics: [...mockTopicIds.slice(0, 2)],
           addTopics: [...mockTopicIds.slice(2, 3), 123],
         })

@@ -13,7 +13,7 @@ function asBearerToken(token?: string) {
   };
 }
 
-export function atlas(token?: string): AtlasApi {
+export function api(token?: string): AtlasApi {
   return new AtlasApi("local", asBearerToken(token));
 }
 
@@ -22,14 +22,14 @@ export function unexpectedApiSuccess() {
 }
 
 export class Api {
-  public readonly atlas: AtlasApi;
+  public readonly api: AtlasApi;
 
   constructor(token?: string) {
-    this.atlas = atlas(token);
+    this.api = api(token);
   }
 
   static async fromCredentials(email: string, password: string) {
-    const result = await atlas().auth.password({ email, password });
+    const result = await api().auth.password({ email, password });
     return new Api(result.token);
   }
 
@@ -59,7 +59,7 @@ export class Api {
   }
 
   async createUser(payload?: Partial<IUser.CreateApiPayload>) {
-    return this.atlas.user.create({
+    return this.api.user.create({
       callbackUrl: payload?.callbackUrl || faker.internet.url(),
       email: payload?.email || faker.internet.email(),
       password: payload?.password || "Password@8",
@@ -68,10 +68,10 @@ export class Api {
   }
 
   async findCurrentUser() {
-    return this.atlas.user.findCurrentUser();
+    return this.api.user.findCurrentUser();
   }
 }
 
 export default {
-  atlas,
+  api,
 };
