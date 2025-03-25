@@ -48,6 +48,7 @@ export const ChatMessage: React.FC<{
    */
   message: { id: number; text: string };
   messageState?: IMessage.MessageState;
+  inSession?: boolean;
   firstMessage?: boolean;
   /**
    * resend message function
@@ -68,6 +69,7 @@ export const ChatMessage: React.FC<{
   pending,
   error,
   messageState,
+  inSession = false,
   firstMessage,
   retry,
   editMessage,
@@ -187,7 +189,8 @@ export const ChatMessage: React.FC<{
             lineBreak: "anywhere",
           }}
           className={cn(
-            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] text-caption font-normal",
+            "flex items-end gap-2 max-w-[242px] text-caption font-normal",
+            inSession ? "lg:max-w-[195px]" : "lg:max-w-[324px]",
             {
               "text-natural-950": !error,
               "text-natural-50": error && !pending,

@@ -291,7 +291,7 @@ const Messages: React.FC<{
   return (
     <div
       id="messages-container"
-      className={cn("flex-1 flex flex-col bg-natural-50 h-full")}
+      className={cn("flex flex-col bg-natural-50 h-full")}
     >
       {room === null ? <NoSelection /> : null}
 
@@ -315,14 +315,12 @@ const Messages: React.FC<{
             "flex flex-col h-full gap-2",
             !inSession
               ? "max-h-[calc(100%-72px)] md:max-h-[calc(100%-88px)] lg:max-h-[calc(100%-106px)]"
-              : ""
+              : "max-h-[calc(100%-70px)] md:max-h-[calc(100%-100px)] lg:max-h-[calc(100%-100px)]"
           )}
         >
           <div
             id="messages-content"
-            className={cn(
-              "overflow-x-hidden px-4 h-full flex items-center justify-center"
-            )}
+            className={cn("overflow-x-hidden px-4 h-full flex justify-center")}
           >
             {loading ? (
               <div className="w-full flex justify-center items-center">
@@ -331,7 +329,7 @@ const Messages: React.FC<{
             ) : (
               <ul
                 className={cn(
-                  "flex flex-col gap-4 h-full relative w-full",
+                  "flex flex-col gap-4 relative w-full",
                   "overflow-auto grow scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50"
                 )}
                 onScroll={onScroll}
@@ -416,7 +414,7 @@ const Messages: React.FC<{
               </ul>
             )}
           </div>
-          <div id="messages-footer" className="flex flex-col gap-2 mt-auto">
+          <div id="messages-footer" className="flex flex-col shrink-0 gap-2">
             {isTyping && otherMember ? (
               <div className="px-6 mt-6 lg:mt-9">
                 <UserTyping

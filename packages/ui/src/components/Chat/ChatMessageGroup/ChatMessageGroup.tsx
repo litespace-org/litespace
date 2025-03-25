@@ -68,7 +68,7 @@ export const ChatMessageGroup: React.FC<{
       <div
         className={cn(
           "hidden lg:block overflow-hidden rounded-full flex-shrink-0",
-          inSession ? "w-8 h-8" : "w-14 h-14"
+          inSession ? "md:w-14 md:h-14 lg:w-8 lg:h-8" : "w-14 h-14"
         )}
       >
         <Avatar
@@ -79,14 +79,14 @@ export const ChatMessageGroup: React.FC<{
       </div>
       <div>
         <div
-          className={cn("hidden lg:flex gap-6 items-center", {
+          className={cn("hidden lg:flex gap-6 lg:gap-4 items-center", {
             "flex-row-reverse": !owner,
             "flex-row": owner,
           })}
         >
           <Typography
             tag="h6"
-            className="font-semibold text-body text-natural-950 dark:text-natural-50"
+            className="font-semibold text-body lg:text-caption text-natural-950 dark:text-natural-50"
           >
             {owner ? intl("chat.message.title.you") : name}
           </Typography>
@@ -146,6 +146,7 @@ export const ChatMessageGroup: React.FC<{
                   }
                 >
                   <ChatMessage
+                    inSession={inSession}
                     messageState={message.messageState}
                     firstMessage={index === 0}
                     message={message}

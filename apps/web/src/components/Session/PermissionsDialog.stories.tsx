@@ -14,7 +14,7 @@ const meta: Meta<Component> = {
   component: PermissionsDialog,
 };
 
-const render = (props: Props) => {
+const DialogComponent: React.FC<Props> = (props: Props) => {
   const [open, setOpen] = useState<boolean>(true);
   return (
     <div>
@@ -29,6 +29,10 @@ const render = (props: Props) => {
       />
     </div>
   );
+};
+
+const render = (props: Props) => {
+  return <DialogComponent {...props} />;
 };
 
 export const Primary: Story = {

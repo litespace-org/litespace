@@ -6,7 +6,7 @@ import { StreamInfo } from "@/components/Session/types";
 import cn from "classnames";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
-type Props = {
+export type Props = {
   streams: StreamInfo[];
   currentUserId: number;
   chat: { enabled: boolean; toggle: Void };
@@ -73,7 +73,7 @@ export const Session: React.FC<Props> = ({
         <div
           key="chat"
           className={cn(
-            "h-full shadow shadow-message-panel rounded-2xl overflow-hidden w-[344px] flex-shrink-0",
+            "h-full shadow shadow-message-panel rounded-2xl overflow-hidden lg:h-[550px] w-[344px] flex-shrink-0",
             chat.enabled && mq.lg ? "visible" : "hidden"
           )}
         >

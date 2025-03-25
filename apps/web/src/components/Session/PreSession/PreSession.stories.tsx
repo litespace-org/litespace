@@ -3,7 +3,7 @@ import { PreSession, PreSessionProps } from "@/components/Session";
 import { faker } from "@faker-js/faker/locale/ar";
 import { IUser } from "@litespace/types";
 import React, { useState } from "react";
-import { useUserMedia } from "@/internal/hooks/stream";
+import { useUserMedia } from "@/storybookInternals/hooks/stream";
 import dayjs from "@/lib/dayjs";
 
 type Component = typeof PreSession;
@@ -50,9 +50,15 @@ export const WithMedia: StoryObj<Component> = {
     join,
   },
   render(props: PreSessionProps) {
-    const stream = useUserMedia();
-    return <PreSession {...props} stream={stream} />;
+    return <WithMediaComponent {...props} />;
   },
+};
+
+const WithMediaComponent: React.FC<PreSessionProps> = (
+  props: PreSessionProps
+) => {
+  const stream = useUserMedia();
+  return <PreSession {...props} stream={stream} />;
 };
 
 export const Controllable: StoryObj<Component> = {
@@ -87,19 +93,25 @@ export const Controllable: StoryObj<Component> = {
     },
     join,
   },
-  render(props: PreSessionProps) {
-    const stream = useUserMedia();
-    const [camera, setCamera] = useState<boolean>(false);
-    const [mic, setMic] = useState<boolean>(false);
-    return (
-      <PreSession
-        {...props}
-        stream={stream}
-        video={{ enabled: camera, toggle: () => setCamera(!camera) }}
-        audio={{ enabled: mic, toggle: () => setMic(!mic) }}
-      />
-    );
+  render: (props: PreSessionProps) => {
+    return <ControllableComponent {...props} />;
   },
+};
+
+const ControllableComponent: React.FC<PreSessionProps> = (
+  props: PreSessionProps
+) => {
+  const stream = useUserMedia();
+  const [camera, setCamera] = useState<boolean>(false);
+  const [mic, setMic] = useState<boolean>(false);
+  return (
+    <PreSession
+      {...props}
+      stream={stream}
+      video={{ enabled: camera, toggle: () => setCamera(!camera) }}
+      audio={{ enabled: mic, toggle: () => setMic(!mic) }}
+    />
+  );
 };
 
 export const OnlyMic: StoryObj<Component> = {
@@ -173,8 +185,7 @@ export const OnlyCamera: StoryObj<Component> = {
     join,
   },
   render(props: PreSessionProps) {
-    const stream = useUserMedia();
-    return <PreSession {...props} stream={stream} />;
+    return <WithMediaComponent {...props} />;
   },
 };
 
