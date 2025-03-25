@@ -313,7 +313,9 @@ const Messages: React.FC<{
         <div
           className={cn(
             "flex flex-col h-full gap-2",
-            "max-h-[calc(100%-72px)] md:max-h-[calc(100%-88px)] lg:max-h-[calc(100%-106px)]"
+            !inSession
+              ? "max-h-[calc(100%-72px)] md:max-h-[calc(100%-88px)] lg:max-h-[calc(100%-106px)]"
+              : ""
           )}
         >
           <div
