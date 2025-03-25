@@ -9,3 +9,19 @@ export const msg = async (text: string) =>
     text: `[api/${environment}]: ${text}`,
     parseMode: "text",
   });
+
+export const doc = async ({
+  content,
+  caption,
+  name,
+}: {
+  content: string;
+  caption?: string;
+  name?: string;
+}) =>
+  await telegram.sendDocument({
+    chat: telegramConfig.chat,
+    caption: `[api/${environment}]: ${caption}`,
+    document: Buffer.from(content, "utf-8"),
+    name,
+  });
