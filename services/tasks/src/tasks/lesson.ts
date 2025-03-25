@@ -59,7 +59,7 @@ export class Lesson extends BaseTask {
     }
   }
 
-  async notify(lesson: ILesson.Self, members: ILesson.PopuldatedMember[]) {
+  async notify(lesson: ILesson.Self, members: ILesson.PopulatedMember[]) {
     for (const member of members) {
       if (!member.phone || !member.verifiedPhone) continue;
 

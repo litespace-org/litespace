@@ -19,6 +19,20 @@ export type UseFindInterviewsPayload = Omit<
   userOnly?: boolean;
 };
 
+export function useFindInterviewById(id?: number) {
+  const atlas = useApi();
+
+  const findInterview = useCallback(async () => {
+    if (!id) return;
+    return atlas.interview.findInterviewById(id);
+  }, [atlas, id]);
+
+  return useQuery({
+    queryFn: findInterview,
+    queryKey: [QueryKey.FindInterviewById],
+  });
+}
+
 export function useFindInterviews(
   filter?: UseFindInterviewsPayload
 ): UsePaginateResult<Element<IInterview.FindInterviewsApiResponse["list"]>> {
