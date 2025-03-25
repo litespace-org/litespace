@@ -16,8 +16,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       extraHeaders: { Authorization: `${token.type} ${token.value}` },
     } as const;
 
+    console.debug("SocketProvider: socket updated!");
     return io(sockets.main[server], options);
-  }, [server, token]);
+  }, []);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

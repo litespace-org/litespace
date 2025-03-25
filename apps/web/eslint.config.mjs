@@ -24,6 +24,7 @@ export default [
       "**/src-tauri",
       "babel.config.cjs",
       "jest.config.cjs",
+      "src/pages/Lesson.tsx",
     ],
   },
   ...fixupConfigRules(

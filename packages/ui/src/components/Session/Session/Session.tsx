@@ -9,7 +9,7 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 type Props = {
   streams: StreamInfo[];
   currentUserId: number;
-  chat: { enabled: boolean; toggle: Void };
+  chat: { enabled: boolean; toggle: Void; indicator?: boolean };
   video: {
     enabled: boolean;
     error?: boolean;

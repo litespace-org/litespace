@@ -39,6 +39,7 @@ export default [
       "**/next.config.mjs",
       "**/.next",
       "prettier.config.js",
+      "packages/headless/src/socket",
     ],
   },
   ...fixupConfigRules(

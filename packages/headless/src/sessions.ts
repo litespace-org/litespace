@@ -1,7 +1,6 @@
 import { ISession, Void, Wss } from "@litespace/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { safe } from "@litespace/utils/error";
-import { useSocket } from "@/socket";
 import { MediaConnection, PeerError } from "peerjs";
 import zod from "zod";
 import hark from "hark";
@@ -12,6 +11,7 @@ import { Peer } from "peerjs";
 import { useApi } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/constants";
+import { Context } from "@/socket/context";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -312,6 +312,7 @@ function usePeer(userId?: number) {
 
   const peer = useMemo(() => {
     if (!userId) return null;
+    console.debug("peer updated!");
     const peerServer = peers[server];
     return new Peer(asPeerId(userId), {
       host: peerServer.host,
@@ -379,12 +380,18 @@ function usePeer(userId?: number) {
     peer.on("open", onOpen);
     peer.on("close", onClose);
     peer.on("error", onError);
-    return () => {
-      peer.off("open", onOpen);
-      peer.off("close", onClose);
-      peer.off("error", onError);
-    };
   }, [onClose, onError, onOpen, peer]);
+
+  // on unmount
+  useEffect(
+    () => () => {
+      if (!peer) return;
+      peer.off("open");
+      peer.off("close");
+      peer.off("error");
+    },
+    [peer]
+  );
 
   return useMemo(() => ({ peer, ready }), [peer, ready]);
 }
@@ -415,12 +422,12 @@ export function useSpeakingV3(stream: MediaStream | null) {
 }
 
 export function useSessionEvents(
+  socket: Context,
   otherMemberId?: number,
   sessionId?: ISession.Id
 ) {
   const [otherMemberVideo, setOtherMemberVideo] = useState<boolean>(false);
   const [otherMemberAudio, setOtherMemberAudio] = useState<boolean>(false);
-  const socket = useSocket();
 
   const notifyCameraToggle = useCallback(
     (camera: boolean) => {
@@ -452,22 +459,33 @@ export function useSessionEvents(
     [otherMemberId]
   );
 
+  const flush = useCallback(() => {
+    setOtherMemberAudio(false);
+    setOtherMemberVideo(false);
+  }, [setOtherMemberVideo, setOtherMemberAudio]);
+
   useEffect(() => {
     if (!socket) return;
     socket.on(Wss.ServerEvent.CameraToggled, onCameraToggle);
     socket.on(Wss.ServerEvent.MicToggled, onMicToggle);
-
-    return () => {
-      socket.off(Wss.ServerEvent.CameraToggled, onCameraToggle);
-      socket.off(Wss.ServerEvent.MicToggled, onMicToggle);
-    };
   }, [onCameraToggle, onMicToggle, socket]);
+
+  // on unmount
+  useEffect(
+    () => () => {
+      if (!socket) return;
+      socket.off(Wss.ServerEvent.CameraToggled);
+      socket.off(Wss.ServerEvent.MicToggled);
+    },
+    [socket]
+  );
 
   return {
     notifyCameraToggle,
     notifyMicToggle,
     otherMemberAudio,
     otherMemberVideo,
+    flush,
   };
 }
 
@@ -530,11 +548,8 @@ export function useShareScreen(onStop?: Void) {
 }
 
 export type SessionV3Payload = {
+  socket: Context | null;
   sessionId?: ISession.Id;
-  /**
-   * It should be true incase the current user should call the other user.
-   */
-  isCaller: boolean;
   userIds: {
     current?: number;
     other?: number;
@@ -548,40 +563,56 @@ const callMetadata = zod.object({
 });
 
 export function useSessionV3({
+  socket,
   userIds,
   sessionId,
-  isCaller,
   onUserMediaStreamError,
 }: SessionV3Payload) {
+  if (!socket) {
+    console.warn("useSessionV3: failed; socket is null!");
+  }
   const { peer, ready } = usePeer(userIds.current);
+
   const [otherMemberStream, setOtherMemberStream] =
     useState<MediaStream | null>(null);
   const [otherMemberScreenStream, setOtherMemberScreenStream] =
     useState<MediaStream | null>(null);
-  const [startedMainCall, setStartedMainCall] = useState<boolean>(false);
+  const [isMainCallOn, setIsMainCallOn] = useState<boolean>(false);
   const [mainCall, setMainCall] = useState<MediaConnection | null>(null);
   const [screenCall, setScreenCall] = useState<MediaConnection | null>(null);
+
   const {
     notifyCameraToggle,
     notifyMicToggle,
     otherMemberAudio,
     otherMemberVideo,
-  } = useSessionEvents(userIds.other, sessionId);
+    flush,
+  } = useSessionEvents(socket!, userIds.other, sessionId);
+
   const otherMemberSpeaking = useSpeakingV3(otherMemberStream);
+
+  const flushStates = useCallback(() => {
+    setOtherMemberStream(null);
+    setOtherMemberScreenStream(null);
+    setIsMainCallOn(false);
+    setMainCall(null);
+    setScreenCall(null);
+    flush();
+  }, [flush]);
 
   const sessionManager = useSessionMembers(
     useMemo(
       () => ({
+        socket: socket!,
         sessionId,
         currentUserId: userIds.current,
         onLeave: () => {
           mainCall?.close();
           screenCall?.close();
-          setMainCall(null);
-          setScreenCall(null);
+          flushStates();
         },
       }),
-      [mainCall, screenCall, sessionId, userIds]
+      [socket, mainCall, screenCall, sessionId, userIds, flushStates]
     )
   );
 
@@ -616,6 +647,7 @@ export function useSessionV3({
   const onMainCallStream = useCallback((stream: MediaStream) => {
     console.debug("Got a main call stream.");
     setOtherMemberStream(stream);
+    setIsMainCallOn(true);
   }, []);
 
   /**
@@ -625,6 +657,7 @@ export function useSessionV3({
     console.debug("Close main call.");
     setOtherMemberStream(null);
     setMainCall(null);
+    setIsMainCallOn(false);
   }, []);
 
   const onMainCallError = useCallback(
@@ -703,7 +736,7 @@ export function useSessionV3({
       }
 
       setMainCall(call);
-      setStartedMainCall(true);
+      setIsMainCallOn(true);
       notifyCameraToggle(userMedia.video);
       notifyMicToggle(userMedia.audio);
       call.on("stream", onMainCallStream);
@@ -767,7 +800,6 @@ export function useSessionV3({
       call.on("stream", onMainCallStream);
       call.on("close", onMainCallClose);
       call.on("error", onMainCallError);
-      setStartedMainCall(true);
       return setMainCall(call);
     },
     [
@@ -800,16 +832,28 @@ export function useSessionV3({
     if (screenCall) screenCall.close();
     if (screen.stream) screen.stop();
     if (userMedia.stream) userMedia.stop();
-  }, [mainCall, screen, screenCall, sessionManager, userMedia]);
+    if (peer) {
+      console.debug("peer disconnecting...");
+      peer.disconnect();
+      peer.destroy();
+      console.debug("peer destroyed.");
+    }
+  }, [mainCall, screen, screenCall, sessionManager, userMedia, peer]);
 
   // listen for calls
   useEffect(() => {
     if (!peer) return;
     peer.on("call", onCall);
-    return () => {
-      peer.off("call", onCall);
-    };
   }, [onCall, peer]);
+
+  // on unmount
+  useEffect(
+    () => () => {
+      if (!peer) return;
+      peer.off("call", (call: MediaConnection) => call.close());
+    },
+    [peer]
+  );
 
   /**
    * Why sharing the screen stream in a `useEffect`?
@@ -822,77 +866,77 @@ export function useSessionV3({
    * session again.
    */
   useEffect(() => {
-    const shouldCall =
-      screen.stream && userIds.other && isOtherMemberJoined && !screenCall;
+    if (screen.stream) {
+      const shouldCall =
+        isMainCallOn &&
+        sessionManager.joined &&
+        isOtherMemberJoined &&
+        !screenCall &&
+        !!screen.stream;
 
-    console.debug({
-      title: "Share screen stream",
-      src: "useSectionV3.useEffect",
-      shouldCall,
-      stream: screen.stream,
-      otherUserId: userIds.other,
-      isOtherMemberJoined,
-      message: shouldCall
-        ? "Will share the the screen stream with the other member."
-        : "Will not share the screen stream with the other member.",
-    });
+      console.debug({
+        title: "Share screen stream",
+        src: "useSectionV3.useEffect",
+        shouldCall,
+        stream: screen.stream,
+        otherUserId: userIds.other,
+        isOtherMemberJoined,
+        message: shouldCall
+          ? "Will share the the screen stream with the other member."
+          : "Will not share the screen stream with the other member.",
+      });
 
-    if (screen.stream && userIds.other && isOtherMemberJoined && !screenCall)
-      return call({
-        userId: userIds.other,
+      if (!shouldCall) return;
+      call({
+        userId: userIds.other!,
         stream: screen.stream,
         screen: true,
       });
-  }, [call, isOtherMemberJoined, screen.stream, screenCall, userIds.other]);
+    } else {
+      const shouldCall =
+        !isMainCallOn &&
+        sessionManager.joined &&
+        isOtherMemberJoined &&
+        !!userMedia.stream;
 
-  useEffect(() => {
-    const shouldCall =
-      isCaller &&
-      !!userIds.other &&
-      !!userMedia.stream &&
-      !!isOtherMemberJoined &&
-      !startedMainCall;
+      console.debug({
+        title: "Call the other member",
+        src: "useSessionV3.useEffect",
+        shouldCall: shouldCall,
+        other: userIds.other,
+        stream: userMedia.stream,
+        isOtherMemberJoined,
+        isMainCallOn,
+      });
 
-    console.debug({
-      title: "Call the other member",
-      src: "useSessionV3.useEffect",
-      shouldCall,
-      isCaller,
-      other: userIds.other,
-      stream: userMedia.stream,
-      isOtherMemberJoined,
-      startedMainCall,
-    });
-
-    if (
-      !isCaller ||
-      !userIds.other ||
-      !userMedia.stream ||
-      !isOtherMemberJoined ||
-      !!startedMainCall
-    )
-      return;
-
-    call({
-      userId: userIds.other,
-      stream: userMedia.stream,
-    });
+      if (!shouldCall) return;
+      call({
+        userId: userIds.other!,
+        stream: userMedia.stream!,
+      });
+    }
   }, [
     call,
-    isCaller,
+    sessionManager.joined,
     isOtherMemberJoined,
-    startedMainCall,
-    userIds.other,
+    isMainCallOn,
     userMedia.stream,
+    screen.stream,
+    screenCall,
+    userIds.other,
   ]);
 
   useEffect(() => {
-    notifyCameraToggle(userMedia.video);
-  }, [notifyCameraToggle, userMedia.video]);
+    if (isOtherMemberJoined) {
+      notifyCameraToggle(userMedia.video);
+    }
+  }, [notifyCameraToggle, userMedia.video, isOtherMemberJoined]);
 
   useEffect(() => {
-    notifyMicToggle(userMedia.audio);
-  }, [notifyMicToggle, userMedia.audio]);
+    if (isOtherMemberJoined) {
+      notifyMicToggle(userMedia.audio);
+    }
+  }, [notifyMicToggle, userMedia.audio, isOtherMemberJoined]);
 
   return useMemo(
     () => ({
@@ -1092,15 +1136,16 @@ export function useDevices() {
  * Reflect and manage session members in real-time.
  */
 export function useSessionMembers({
+  socket,
   sessionId,
   currentUserId,
   onLeave,
 }: {
+  socket: Context;
   sessionId?: ISession.Id;
   currentUserId?: number;
   onLeave: Void;
 }) {
-  const socket = useSocket();
   const api = useApi();
 
   const [members, setMembers] = useState<number[]>([]);
@@ -1121,7 +1166,14 @@ export function useSessionMembers({
     queryFn: findSessionMembers,
     queryKey: [QueryKey.FindSessionMembers, sessionId],
     enabled: !!sessionId,
+    refetchOnWindowFocus: false,
+    refetchInterval: false,
   });
+
+  useEffect(() => {
+    if (sessionMembersQuery.data)
+      setMembers((prev) => uniq([...prev, ...sessionMembersQuery.data]));
+  }, [sessionMembersQuery.data]);
 
   const listen = useCallback(() => {
     if (!socket || !sessionId) return;
@@ -1139,10 +1191,9 @@ export function useSessionMembers({
 
   const leave = useCallback(() => {
     if (!socket || !sessionId) return;
-
     socket.emit(Wss.ClientEvent.LeaveSession, { sessionId });
-    setJoining(false);
-  }, [sessionId, socket]);
+    onLeave();
+  }, [sessionId, socket, onLeave]);
 
   const onJoinSession = useCallback(
     ({ userId }: { userId: number }) => {
@@ -1158,29 +1209,29 @@ export function useSessionMembers({
       console.debug(`${userId} left the session`);
       if (currentUserId === userId) setJoining(false);
       setMembers((prev) => [...prev].filter((member) => member !== userId));
-      onLeave();
     },
-    [currentUserId, onLeave]
+    [currentUserId]
   );
 
   useEffect(() => {
     if (!socket) return;
     socket.on(Wss.ServerEvent.MemberJoinedSession, onJoinSession);
     socket.on(Wss.ServerEvent.MemberLeftSession, onLeaveSession);
-    return () => {
-      socket.off(Wss.ServerEvent.MemberJoinedSession, onJoinSession);
-      socket.off(Wss.ServerEvent.MemberLeftSession, onLeaveSession);
-    };
   }, [onJoinSession, onLeaveSession, socket]);
 
-  useEffect(() => {
-    if (!listening) return listen();
-  }, [listen, listening]);
+  // on unmount
+  useEffect(
+    () => () => {
+      if (!socket) return;
+      socket.off(Wss.ServerEvent.MemberJoinedSession);
+      socket.off(Wss.ServerEvent.MemberLeftSession);
+    },
+    [socket]
+  );
 
   useEffect(() => {
-    if (sessionMembersQuery.data && !sessionMembersQuery.isLoading)
-      return setMembers((prev) => uniq([...prev, ...sessionMembersQuery.data]));
-  }, [sessionMembersQuery.data, sessionMembersQuery.isLoading]);
+    if (!listening) listen();
+  }, [listen, listening]);
 
   return { join, leave, members, listening, joining, joined };
 }

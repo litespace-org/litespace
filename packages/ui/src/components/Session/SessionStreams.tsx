@@ -31,8 +31,9 @@ export const SessionStreams: React.FC<{
         <div className={cn("w-full relative rounded-2xl overflow-hidden grow")}>
           <Stream
             muted={
-              currentUserId === organizedStreams.focused.user.id &&
-              !organizedStreams.focused.cast
+              (currentUserId === organizedStreams.focused.user.id &&
+                !organizedStreams.focused.cast) ||
+              !organizedStreams.focused.audio
             }
             stream={organizedStreams.focused}
             mirror={

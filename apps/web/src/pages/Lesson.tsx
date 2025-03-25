@@ -37,6 +37,7 @@ import Timer from "@/components/Session/Timer";
 import { capture } from "@/lib/sentry";
 import { isMobileBrowser } from "@/lib/browser";
 import { useToast } from "@litespace/ui/Toast";
+import { useSocket } from "@litespace/headless/socket";
 
 /**
  * @todos
@@ -80,9 +81,12 @@ const Lesson: React.FC = () => {
   // ============================ Chat ==================================
 
   const [chatEnabled, setChatEnabled] = useState<boolean>(false);
+  const [newMessageIndicator, setNewMessageIndicator] =
+    useState<boolean>(false);
 
   const toggleChat = useCallback(() => {
     setChatEnabled((prev) => !prev);
+    setNewMessageIndicator(false);
   }, []);
 
   const chatRoomQuery = useFindRoomByMembers(
@@ -122,18 +126,30 @@ const Lesson: React.FC = () => {
   }, [chatOtherMember, onlineUsersMap, room]);
 
   // ============================ Session/Streams ================================
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (socket?.connected === false) {
+      console.debug("re-connecting web socket...");
+      socket.connect();
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    console.debug("web socket connection: ", socket?.connected);
+  }, [socket?.connected]);
+
   const [permission, setPermission] = useState<"mic-and-camera" | "mic-only">();
-  const [caller, setCaller] = useState<boolean>(false);
   const [requestPermission, setRequestPermission] = useState<boolean>(false);
   const [showShareScreenDialog, setShowScreenDialog] = useState<boolean>(false);
+
   const sessionPayload = useMemo((): SessionV3Payload => {
-    const other = lessonMembers?.other.userId;
     return {
+      socket,
       sessionId: lesson.data?.lesson.sessionId,
-      isCaller: caller,
       userIds: {
         current: lessonMembers?.current.userId,
-        other,
+        other: lessonMembers?.other.userId,
       },
       onUserMediaStreamError() {
         toast.error({
@@ -143,8 +159,9 @@ const Lesson: React.FC = () => {
         });
       },
     };
-  }, [caller, intl, lesson.data?.lesson.sessionId, lessonMembers, toast]);
-  const session = useSessionV3(sessionPayload);
+  }, [intl, lesson.data?.lesson.sessionId, lessonMembers, toast.error]);
+
+  const session = useSessionV3(sessionPayload)!;
   const devices = useDevices();
 
   const onCameraToggle = useCallback(() => {
@@ -152,64 +169,76 @@ const Lesson: React.FC = () => {
     return session.toggleCamera();
   }, [devices.info.camera.permissioned, session]);
 
-  const streams = useMemo((): StreamInfo[] => {
-    if (!lessonMembers) return [];
+  const [currentMemberStreamInfo, setCurrentMemberStreamInfo] =
+    useState<StreamInfo | null>(null);
+  const [otherMemberStreamInfo, setOtherMemberStreamInfo] =
+    useState<StreamInfo | null>(null);
 
-    const current = {
-      id: lessonMembers.current.userId,
-      imageUrl: lessonMembers.current.image || null,
-      name: lessonMembers.current.name,
-    };
-
-    const other = {
-      id: lessonMembers.other.userId,
-      imageUrl: lessonMembers.other.image || null,
-      name: lessonMembers.other.name,
-    };
-
-    const streams: StreamInfo[] = [
-      {
-        speaking: session.members.current.speaking,
-        audio: session.members.current.audio,
-        video: session.members.current.video,
-        stream: session.members.current.stream,
-        cast: false,
-        user: current,
+  useEffect(() => {
+    if (!lessonMembers || !session.members) return;
+    setCurrentMemberStreamInfo(() => ({
+      user: {
+        id: lessonMembers.current.userId,
+        imageUrl: lessonMembers.current.image || null,
+        name: lessonMembers.current.name,
       },
-    ];
+      speaking: session.members.current.speaking,
+      audio: session.members.current.audio,
+      video: session.members.current.video,
+      cast: !!session.members.current.screen,
+      stream: session.members.current.screen
+        ? session.members.current.screen
+        : session.members.current.stream,
+    }));
+  }, [
+    lessonMembers?.current.userId,
+    lessonMembers?.current.image,
+    lessonMembers?.current.name,
+    session.members.current.speaking,
+    session.members.current.audio,
+    session.members.current.video,
+    session.members.current.screen,
+    session.members.current.stream,
+  ]);
 
-    if (session.members.other.stream)
-      streams.push({
-        speaking: session.members.other.speaking,
-        audio: session.members.other.audio,
-        video: session.members.other.video,
-        cast: false,
-        stream: session.members.other.stream,
-        user: other,
-      });
+  useEffect(() => {
+    if (!lessonMembers || !session.members) return;
+    setOtherMemberStreamInfo(() => ({
+      user: {
+        id: lessonMembers.other.userId,
+        imageUrl: lessonMembers.other.image || null,
+        name: lessonMembers.other.name,
+      },
+      speaking: session.members.other.speaking,
+      audio: session.members.other.audio,
+      video: session.members.other.video,
+      cast: !!session.members.other.screen,
+      stream: session.members.other.screen
+        ? session.members.other.screen
+        : session.members.other.stream,
+    }));
+  }, [
+    lessonMembers?.other.userId,
+    lessonMembers?.other.image,
+    lessonMembers?.other.name,
+    session.members.other.speaking,
+    session.members.other.audio,
+    session.members.other.video,
+    session.members.other.screen,
+    session.members.other.stream,
+  ]);
 
-    if (session.members.current.screen)
-      streams.push({
-        speaking: false,
-        audio: true,
-        video: true,
-        cast: true,
-        stream: session.members.current.screen,
-        user: current,
-      });
+  const streams = useMemo((): StreamInfo[] => {
+    const streams: StreamInfo[] = [];
 
-    if (session.members.other.screen)
-      streams.push({
-        speaking: false,
-        audio: true,
-        video: true,
-        cast: true,
-        stream: session.members.other.screen,
-        user: other,
-      });
+    if (currentMemberStreamInfo && !!currentMemberStreamInfo?.stream)
+      streams.push(currentMemberStreamInfo);
+
+    if (otherMemberStreamInfo && !!otherMemberStreamInfo?.stream)
+      streams.push(otherMemberStreamInfo);
 
     return streams;
-  }, [lessonMembers, session.members]);
+  }, [currentMemberStreamInfo, otherMemberStreamInfo]);
 
   const videoConfig = useMemo(
     () => ({
@@ -219,10 +248,10 @@ const Lesson: React.FC = () => {
         !devices.info.camera.connected || !devices.info.camera.permissioned,
     }),
     [
+      session.members,
       devices.info.camera.connected,
       devices.info.camera.permissioned,
       onCameraToggle,
-      session.members,
     ]
   );
 
@@ -243,8 +272,9 @@ const Lesson: React.FC = () => {
   ]);
 
   const onBeforeUnload = useCallback(() => {
+    console.debug("session has been left, because of browser window unload!");
     session.leave();
-  }, [session]);
+  }, [session.leave]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", onBeforeUnload);
@@ -325,10 +355,6 @@ const Lesson: React.FC = () => {
             .then((result: MediaStream | Error) => {
               const error = result instanceof Error;
               if (error) return capture(error);
-
-              const call =
-                requestPermission && !error && session.isOtherMemberJoined;
-              if (call) setCaller(true);
               setRequestPermission(false);
               devices.recheck();
             });
@@ -341,7 +367,7 @@ const Lesson: React.FC = () => {
         }
         open={
           !devices.info.microphone.permissioned ||
-          !!requestPermission ||
+          requestPermission ||
           !!session.members.current.error
         }
         devices={{
@@ -423,8 +449,6 @@ const Lesson: React.FC = () => {
           speaking={session.members.current.speaking}
           join={() => {
             session.sessionManager.join();
-            if (session.isOtherMemberJoined && session.members.current.stream)
-              return setCaller(true);
           }}
           joining={session.sessionManager.joining}
         />
@@ -437,7 +461,11 @@ const Lesson: React.FC = () => {
         <Session
           streams={streams}
           currentUserId={lessonMembers.current.userId}
-          chat={{ enabled: chatEnabled, toggle: toggleChat }}
+          chat={{
+            enabled: chatEnabled,
+            toggle: toggleChat,
+            indicator: newMessageIndicator,
+          }}
           video={videoConfig}
           audio={{
             enabled: session.members.current.audio,
@@ -477,6 +505,7 @@ const Lesson: React.FC = () => {
               otherMember={chatOtherMember}
               select={() => {}}
               setTemporaryTutor={() => {}}
+              newMessageHandler={() => setNewMessageIndicator(true)}
             />
           }
         />

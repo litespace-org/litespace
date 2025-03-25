@@ -5,7 +5,7 @@ import {
   useFindLessons,
   useUpdateLesson,
 } from "@litespace/headless/lessons";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useRef } from "react";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { QueryKey } from "@litespace/headless/constants";
@@ -59,10 +59,12 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     [tutorId]
   );
 
+  const now = useRef(dayjs().toISOString());
+
   const lessons = useFindLessons({
     canceled: false,
     users: user ? [user?.id] : [],
-    after: dayjs().toISOString(),
+    after: now.current,
     userOnly: true,
     size: 1,
   });

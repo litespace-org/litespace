@@ -76,7 +76,7 @@ export const Toggle: React.FC<{
 };
 
 export const Actions: React.FC<{
-  chat?: { toggle: Void; enabled: boolean };
+  chat?: { toggle: Void; enabled: boolean; indicator?: boolean };
   screen?: { toggle: Void; enabled: boolean; error?: boolean };
   video?: { toggle: Void; enabled: boolean; error?: boolean };
   audio?: { toggle: Void; enabled: boolean; error?: boolean };
@@ -91,7 +91,15 @@ export const Actions: React.FC<{
       })}
     >
       {chat ? (
-        <Toggle toggle={chat.toggle} enabled={chat.enabled} icon="chat" />
+        <div className="relative flex">
+          <Toggle toggle={chat.toggle} enabled={chat.enabled} icon="chat" />
+          {!chat.enabled && chat.indicator ? (
+            <>
+              <span className="absolute h-2 w-2 top-[-2px] left-[-2px] animate-ping rounded-full bg-destructive-700 opacity-75"></span>
+              <span className="absolute h-2 w-2 top-[-2px] left-[-2px] rounded-full bg-destructive-700"></span>
+            </>
+          ) : null}
+        </div>
       ) : null}
 
       {audio ? (
