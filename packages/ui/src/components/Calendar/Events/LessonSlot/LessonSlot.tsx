@@ -277,7 +277,7 @@ const EventGroupItem: React.FC<
       </div>
 
       <div className="flex flex-row items-center gap-2 px-1 py-1">
-        <Clock className="[&>*]:stroke-brand-700" />
+        <Clock className="[&>*]:stroke-brand-700 w-4 h-4" />
         <EventSpan start={start} end={end} />
       </div>
     </div>
