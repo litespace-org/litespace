@@ -5,7 +5,7 @@ import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import More from "@litespace/assets/More";
 import Quote from "@litespace/assets/Quote";
-import EditMessage16X16 from "@litespace/assets/EditMessage16X16";
+import EditMessage from "@litespace/assets/EditMessage";
 import Trash from "@litespace/assets/Trash";
 import { RatingStars } from "@/components/RatingStars/RatingStars";
 import { orUndefined } from "@litespace/utils/utils";
@@ -41,7 +41,9 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
             actions={[
               {
                 label: intl("tutor.rating.edit"),
-                icon: <EditMessage16X16 />,
+                icon: (
+                  <EditMessage className="w-4 h-4 [&>*]:stroke-natural-600" />
+                ),
                 onClick: onEdit,
               },
               {

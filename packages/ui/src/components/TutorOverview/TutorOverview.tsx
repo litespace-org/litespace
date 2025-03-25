@@ -1,10 +1,10 @@
 import { Loader, LoadingError } from "@/components/Loading";
 import { formatNumber } from "@/components/utils";
 import { useFormatMessage } from "@/hooks";
-import Check16X16 from "@litespace/assets/Check16X16";
-import Clock16X16 from "@litespace/assets/Clock16X16";
+import Check from "@litespace/assets/Check16X16";
+import Clock from "@litespace/assets/Clock";
 import People from "@litespace/assets/People";
-import Video16X16 from "@litespace/assets/Video16X16";
+import Video from "@litespace/assets/Video";
 import { Void } from "@litespace/types";
 import React, { useMemo } from "react";
 import { OverviewCard as Card } from "@/components/OverviewCard";
@@ -75,7 +75,7 @@ export const TutorOverview: React.FC<Props> = ({
     <div className="grid grid-cols-4 gap-4 lg:gap-6 w-full">
       <Card
         icon={
-          <Video16X16 className="w-3 h-3 md:w-4 md:h-4 [&>*]:stroke-natural-50" />
+          <Video className="w-3 h-3 md:w-4 md:h-4 [&>*]:stroke-natural-50" />
         }
         title="tutor-dashboard.overview.total-lessons"
         value={formatNumber(totalLessonCount)}
@@ -85,7 +85,7 @@ export const TutorOverview: React.FC<Props> = ({
 
       <Card
         icon={
-          <Check16X16 className="w-3 h-3 md:w-4 md:h-[17px] [&>*]:stroke-natural-50" />
+          <Check className="w-3 h-3 md:w-4 md:h-[17px] [&>*]:stroke-natural-50" />
         }
         title="tutor-dashboard.overview.completed-lessons"
         value={formatNumber(completedLessonCount)}
@@ -95,7 +95,7 @@ export const TutorOverview: React.FC<Props> = ({
 
       <Card
         icon={
-          <Clock16X16 className="w-3 h-3 md:w-4 md:h-4 [&>*]:stroke-natural-50" />
+          <Clock className="w-3 h-3 md:w-4 md:h-4 [&>*]:stroke-natural-50" />
         }
         title="tutor-dashboard.overview.tutoring-time"
         value={tutoringTime}

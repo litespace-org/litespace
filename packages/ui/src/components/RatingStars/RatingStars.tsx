@@ -1,7 +1,7 @@
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks/intl";
 import { LocalId } from "@/locales";
-import SStar from "@litespace/assets/SStar";
+import Star from "@litespace/assets/Star";
 import cn from "classnames";
 import { range } from "lodash";
 import React from "react";
@@ -67,7 +67,7 @@ export const RatingStars: React.FC<StarProps> = ({
               setRating(idx + 1);
             }}
           >
-            <SStar
+            <Star
               className={cn(
                 variant === "sm" && "w-5 h-5 md:w-4 md:h-4 lg:w-5 lg:h-5",
                 !readonly && "hover:cursor-pointer",

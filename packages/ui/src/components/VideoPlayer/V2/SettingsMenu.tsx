@@ -125,7 +125,7 @@ export const SettingsMenu: React.FC<{
                       {speed === playbackSpeed ? (
                         <div className="w-4 h-4 flex items-center justify-center">
                           {" "}
-                          <Check3 />
+                          <Check3 className="w-2 h-2 [&>*]:fill-natural-50" />
                         </div>
                       ) : null}
                       {speed === 1

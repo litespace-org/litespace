@@ -1,4 +1,4 @@
-import SStar from "@litespace/assets/SStar";
+import Star from "@litespace/assets/Star";
 import { orUndefined } from "@litespace/utils/utils";
 import cn from "classnames";
 import { isEmpty } from "lodash";
@@ -159,7 +159,7 @@ export const TutorCard: React.FC<{
                   >
                     {rating}
                   </Typography>
-                  <SStar
+                  <Star
                     width={15}
                     height={15}
                     className="[&>*]:fill-warning-500"
