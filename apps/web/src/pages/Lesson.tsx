@@ -7,7 +7,7 @@ import {
   PermissionsDialog,
   StreamInfo,
   ShareScreenDialog,
-} from "@litespace/ui/Session";
+} from "@/components/Session";
 import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -269,7 +269,7 @@ const Lesson: React.FC = () => {
   return (
     <div
       className={cn(
-        "max-w-screen-3xl mx-auto w-full grow overflow-hidden",
+        "max-w-screen-3xl mx-auto w-full h-full grow overflow-hidden",
         chatEnabled && !mq.lg ? "" : "p-6"
       )}
     >
