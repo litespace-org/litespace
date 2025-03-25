@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { createStreamInfo, getVideoMediaStream } from "@/internal/utils/stream";
+import {
+  createStreamInfo,
+  getVideoMediaStream,
+} from "@/storybookInternals/utils/stream";
 import { faker } from "@faker-js/faker/locale/en";
 
 export function useCreateStream(
