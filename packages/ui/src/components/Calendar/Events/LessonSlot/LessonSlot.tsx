@@ -16,11 +16,11 @@ import { Menu, MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import More from "@litespace/assets/More";
-import Video from "@litespace/assets/Video16X16";
+import Video from "@litespace/assets/Video";
 import { useFormatMessage } from "@/hooks";
 import { Avatar } from "@/components/Avatar";
 import { orUndefined } from "@litespace/utils/utils";
-import Clock from "@litespace/assets/Clock16X16";
+import Clock from "@litespace/assets/Clock";
 
 type Props = Partial<LessonActions> & {
   lessons: Array<LessonProps>;
@@ -204,7 +204,7 @@ const OptionsMenu: React.FC<
       ];
     return [
       {
-        icon: <Video width={16} height={16} />,
+        icon: <Video className="w-4 h-4 [&>*]:stroke-natural-600" />,
         label: intl("schedule.lesson.join"),
         onClick: () => {
           if (!onJoin) console.warn("onJoin is undefined.");

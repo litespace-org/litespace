@@ -7,6 +7,7 @@ import React from "react";
 type Component = typeof EditMessage;
 
 const meta: Meta<Component> = {
+  title: "EditMessage",
   component: EditMessage,
   parameters: { layout: "centered" },
   decorators: [
