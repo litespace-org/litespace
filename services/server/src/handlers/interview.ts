@@ -169,6 +169,38 @@ async function findInterviews(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(result);
 }
 
+async function findFullInterviews(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const query: IInterview.FindInterviewsApiQuery = findInterviewsQuery.parse(
+    req.query
+  );
+  const owner =
+    (isTutor(user) || isTutorManager(user)) && isEqual(query.users, [user.id]);
+  const allowed = owner || isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const { list: userInterviews, total } = await interviews.findFullInterview({
+    users: query.users,
+    statuses: query.statuses,
+    levels: query.levels,
+    signed: query.signed,
+    signers: query.signers,
+    page: query.page,
+    size: query.size,
+  });
+
+  const result: IInterview.FindFullInterviewsApiResponse = {
+    list: userInterviews,
+    total,
+  };
+
+  res.status(200).json(result);
+}
+
 async function findInterviewById(
   req: Request,
   res: Response,
@@ -249,6 +281,7 @@ async function updateInterview(
 export default {
   createInterview: safeRequest(createInterview),
   findInterviews: safeRequest(findInterviews),
+  findFullInterviews: safeRequest(findFullInterviews),
   updateInterview: safeRequest(updateInterview),
   findInterviewById: safeRequest(findInterviewById),
 };

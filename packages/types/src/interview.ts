@@ -44,6 +44,27 @@ export type Self = {
   updatedAt: string;
 };
 
+export type FullInterview = Self & {
+  /**
+   * tutor manager details
+   */
+  interviewer: {
+    id: number;
+    name: string | null;
+    image: string | null;
+    feedback: string | null;
+  };
+  /**
+   * tutor details
+   */
+  interviewee: {
+    id: number;
+    name: string | null;
+    image: string | null;
+    feedback: string | null;
+  };
+};
+
 export type Row = {
   id: number;
   start: Date;
@@ -61,6 +82,13 @@ export type Row = {
   canceled_at: Date | null;
   created_at: Date;
   updated_at: Date;
+};
+
+export type PopulatedRow = Row & {
+  interviewer_name: string | null;
+  interviewee_name: string | null;
+  interviewer_image: string | null;
+  interviewee_image: string | null;
 };
 
 export type CreatePayload = {
@@ -87,6 +115,11 @@ export type CreateInterviewApiResponse = Self;
 
 export type FindInterviewsApiResponse = {
   list: Self[];
+  total: number;
+};
+
+export type FindFullInterviewsApiResponse = {
+  list: FullInterview[];
   total: number;
 };
 

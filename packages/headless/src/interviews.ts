@@ -39,17 +39,19 @@ export function useFindInterviews(
   return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged, filter]);
 }
 
-export function useFindInfinitInterviews(
-  user?: number
-): UseInfinitePaginationQueryResult<
-  Element<IInterview.FindInterviewsApiResponse["list"]>
+export function useFindInfinitInterviews({
+  user,
+}: {
+  user?: number;
+}): UseInfinitePaginationQueryResult<
+  Element<IInterview.FindFullInterviewsApiResponse["list"]>
 > {
   const api = useApi();
 
   const findInterviews = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
       if (!user) return { list: [], total: 0 };
-      return api.interview.findInterviews({
+      return api.interview.findFullInterviews({
         users: user ? [user] : [],
         page: pageParam,
         size: 10,

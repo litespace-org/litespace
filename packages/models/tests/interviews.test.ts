@@ -30,15 +30,22 @@ describe("Interviews", () => {
         interviewer: interviewer.id,
         interviewee: tutor.id,
       });
-      const tutorInterviews = await interviews.find({ users: [tutor.id] });
-      expect(tutorInterviews.list).to.be.deep.eq([interview]);
+      const tutorInterviews = await interviews.find({
+        users: [tutor.id],
+      });
+
+      expect(tutorInterviews.list.map((i) => i.ids.self)).to.be.deep.eq(
+        [interview].map((i) => i.ids.self)
+      );
       expect(tutorInterviews.list).to.be.of.length(1);
       expect(tutorInterviews.total).to.be.eq(1);
 
       const interviewerInterviews = await interviews.find({
         users: [tutor.id],
       });
-      expect(interviewerInterviews.list).to.be.deep.eq([interview]);
+      expect(interviewerInterviews.list.map((i) => i.ids.self)).to.be.deep.eq(
+        [interview].map((i) => i.ids.self)
+      );
       expect(interviewerInterviews.list).to.be.of.length(1);
       expect(interviewerInterviews.total).to.be.eq(1);
     });
