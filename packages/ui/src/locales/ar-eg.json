@@ -184,6 +184,8 @@
   "tutor-dashboard.past-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس السابقة!",
   "tutor-dashboard.past-lessons.error": " عذرًا، حدث خطأ أثناء تحميل الدروس السابقة، برجاء المحاولة مرة أخرى",
   "tutor-dashboard.past-lessons.empty": "لا توجد حصص سابقة",
+  "tutor-dashboard.upcoming-lessons.empty": "لا يوجد لديك اي حصص قادمة",
+  "tutor-dashboard.upcoming-lessons.create-your-schedule": "قم بانشاء جدولك",
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
   "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
   "page.error.button.label": "الرجوع للخلف",
@@ -486,7 +488,7 @@
   "tutor-invoices.overview.title": "الأرباح",
   "tutor-invoices.overview.total-revenue": "إجمالي الأرباح",
   "tutor-invoices.overview.available-revenue": "المتاح للسحب",
-  "tutor-invoices.overview.pending-invoices-count": "طلبات تحت المعالجة",
+  "tutor-invoices.overview.pending-invoices-count": "تحت المعالجة",
   "tutor-invoices.overview.future-revenue": "الأرباح القادمة",
   "tutor-invoices.overview.loading": "برجاء الانتظار... جاري تحميل الإحصائيات العامة للأرباح!",
   "tutor-invoices.overview.error": "عذرًا، حدث خطأ أثناء تحميل إحصائيات الأرباح. برجاء المحاولة مرة أخرى",

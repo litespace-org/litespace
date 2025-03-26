@@ -14,18 +14,18 @@ export function useFindLessons({
   lesson: ILesson.Self;
   members: ILesson.PopuldatedMember[];
 }> {
-  const atlas = useApi();
+  const api = useApi();
 
   const findLessons = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
       if (userOnly && !query.users?.length) return { list: [], total: 0 };
-      return await atlas.lesson.findLessons({
+      return await api.lesson.findLessons({
         page,
         size,
         ...query,
       });
     },
-    [atlas.lesson, query, userOnly]
+    [api.lesson, query, userOnly]
   );
 
   return usePaginate(findLessons, [QueryKey.FindLessons, query]);
@@ -38,19 +38,19 @@ export function useInfiniteLessons({
   userOnly,
   ...query
 }: ILesson.FindLessonsApiQuery & { userOnly?: boolean }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const findLessons: InfiniteQueryHandler<
     Element<ILesson.FindUserLessonsApiResponse["list"]>
   > = useCallback(
     async ({ pageParam }) => {
       if (userOnly && !query.users?.length) return { list: [], total: 0 };
-      return await atlas.lesson.findLessons({
+      return await api.lesson.findLessons({
         page: pageParam,
         ...query,
       });
     },
-    [atlas.lesson, query, userOnly]
+    [api.lesson, query, userOnly]
   );
 
   return useInfinitePaginationQuery(findLessons, [
@@ -66,13 +66,13 @@ export function useCancelLesson({
   onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const cancel = useCallback(
     (id: number) => {
-      return atlas.lesson.cancel(id);
+      return api.lesson.cancel(id);
     },
-    [atlas.lesson]
+    [api.lesson]
   );
 
   return useMutation({
@@ -90,7 +90,7 @@ export function useCreateLesson({
   onSuccess: OnSuccess<ILesson.Self>;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const bookLesson = useCallback(
     async ({
@@ -104,14 +104,14 @@ export function useCreateLesson({
       start: string;
       duration: ILesson.Duration;
     }) => {
-      return await atlas.lesson.create({
+      return await api.lesson.create({
         tutorId,
         duration,
         slotId,
         start,
       });
     },
-    [atlas.lesson]
+    [api.lesson]
   );
 
   return useMutation({
@@ -129,13 +129,13 @@ export function useUpdateLesson({
   onSuccess: OnSuccess<ILesson.UpdateLessonApiResponse>;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const updateLesson = useCallback(
     async (lesson: ILesson.UpdateApiPayload) => {
-      return await atlas.lesson.update(lesson);
+      return await api.lesson.update(lesson);
     },
-    [atlas.lesson]
+    [api.lesson]
   );
 
   return useMutation({
@@ -147,12 +147,12 @@ export function useUpdateLesson({
 }
 
 export function useFindLesson(id?: number) {
-  const atlas = useApi();
+  const api = useApi();
 
   const findLessonById = useCallback(async () => {
     if (!id) return null;
-    return atlas.lesson.findLesson(id);
-  }, [atlas.lesson, id]);
+    return api.lesson.findLesson(id);
+  }, [api.lesson, id]);
 
   return useQuery({
     queryFn: findLessonById,

@@ -18,25 +18,25 @@ type OnSuccess = Void;
 type OnError = (error: Error) => void;
 
 export function useTutors() {
-  const atlas = useApi();
+  const api = useApi();
 
   const findTutors = useCallback(
     ({ pageParam }: { pageParam: number }) => {
-      return atlas.user.findOnboardedTutors({ page: pageParam });
+      return api.user.findOnboardedTutors({ page: pageParam });
     },
-    [atlas.user]
+    [api.user]
   );
 
   return useInfinitePaginationQuery(findTutors, [QueryKey.FindTutors]);
 }
 
 export function useFindStudioTutor(tutorId: number | null) {
-  const atlas = useApi();
+  const api = useApi();
 
   const findStudioTutor = useCallback(async () => {
     if (!tutorId) return null;
-    return await atlas.user.findStudioTutor({ tutorId });
-  }, [atlas.user, tutorId]);
+    return await api.user.findStudioTutor({ tutorId });
+  }, [api.user, tutorId]);
 
   return useQuery({
     queryFn: findStudioTutor,
@@ -49,12 +49,12 @@ export function useFindStudioTutor(tutorId: number | null) {
 export function useFindTutorStats(
   id: number | null
 ): UseQueryResult<ITutor.FindTutorStatsApiResponse | null, Error> {
-  const atlas = useApi();
+  const api = useApi();
 
   const findTutorStats = useCallback(() => {
     if (!id) return null;
-    return atlas.user.findTutorStats(id);
-  }, [atlas.user, id]);
+    return api.user.findTutorStats(id);
+  }, [api.user, id]);
 
   return useQuery({
     queryFn: findTutorStats,
@@ -65,17 +65,17 @@ export function useFindTutorStats(
 }
 
 export function useFindStudioTutors(studioId?: number, search?: string) {
-  const atlas = useApi();
+  const api = useApi();
 
   const findStudioTutors = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
-      return await atlas.user.findStudioTutors({
+      return await api.user.findStudioTutors({
         studioId,
         search,
         pagination: { page: pageParam },
       });
     },
-    [atlas.user, search, studioId]
+    [api.user, search, studioId]
   );
 
   return useInfinitePaginationQuery(findStudioTutors, [
@@ -85,10 +85,10 @@ export function useFindStudioTutors(studioId?: number, search?: string) {
 }
 
 export function useFindPersonalizedTutorStats() {
-  const atlas = useApi();
+  const api = useApi();
   const findStats = useCallback(async () => {
-    return await atlas.user.findPersonalizedTutorStats();
-  }, [atlas.user]);
+    return await api.user.findPersonalizedTutorStats();
+  }, [api.user]);
 
   return useQuery({
     queryKey: [QueryKey.FindPersonalizedTutorStats],
@@ -99,12 +99,12 @@ export function useFindPersonalizedTutorStats() {
 export function useFindTutorActivityScore(
   id: number | null
 ): UseQueryResult<ITutor.ActivityScoreMap | null, Error> {
-  const atlas = useApi();
+  const api = useApi();
 
   const findTutorAcivityScores = useCallback(() => {
     if (!id) return null;
-    return atlas.user.findTutorActivityScores(id);
-  }, [atlas.user, id]);
+    return api.user.findTutorActivityScores(id);
+  }, [api.user, id]);
 
   return useQuery({
     queryFn: findTutorAcivityScores,
@@ -117,14 +117,14 @@ export function useFindTutorActivityScore(
 export function useShareFeedback(
   interviewId: number
 ): UseMutationResult<IInterview.Self, Error, string, unknown> {
-  const atlas = useApi();
+  const api = useApi();
   const share = useCallback(
     async (feedback: string) => {
-      return await atlas.interview.update(interviewId, {
+      return await api.interview.update(interviewId, {
         feedback: { interviewee: feedback },
       });
     },
-    [atlas.interview, interviewId]
+    [api.interview, interviewId]
   );
   return useMutation({
     mutationFn: share,
@@ -146,17 +146,17 @@ export function useIntroduceTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const introduceTutor = useCallback(
     async (fields: IForm) => {
       if (!profile) return;
-      return await atlas.user.update(profile.id, {
+      return await api.user.update(profile.id, {
         bio: fields.bio,
         about: fields.about,
       });
     },
-    [atlas.user, profile]
+    [api.user, profile]
   );
 
   return useMutation({
@@ -170,12 +170,12 @@ export function useIntroduceTutor({
 export function useFindTutorMeta(
   id?: number
 ): UseQueryResult<ITutor.FindTutorMetaApiResponse> {
-  const atlas = useApi();
+  const api = useApi();
 
   const findTutorMeta = useCallback(async () => {
     if (!id) return null;
-    return await atlas.user.findTutorMeta(id);
-  }, [atlas.user, id]);
+    return await api.user.findTutorMeta(id);
+  }, [api.user, id]);
 
   return useQuery({
     queryFn: findTutorMeta,
@@ -185,12 +185,12 @@ export function useFindTutorMeta(
 }
 
 export function useFindTutorInfo(id: number | null) {
-  const atlas = useApi();
+  const api = useApi();
 
   const findTutorInfo = useCallback(async () => {
     if (!id) return null;
-    return await atlas.user.findTutorInfo(id);
-  }, [atlas.user, id]);
+    return await api.user.findTutorInfo(id);
+  }, [api.user, id]);
 
   return useQuery({
     queryFn: findTutorInfo,

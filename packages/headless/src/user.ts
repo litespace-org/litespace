@@ -8,12 +8,12 @@ import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
 export function useLoginUser(
   payload?: BaseMutationPayload<IUser.LoginApiResponse>
 ) {
-  const atlas = useApi();
+  const api = useApi();
   const login = useCallback(
     async (credentials: IUser.Credentials) => {
-      return await atlas.auth.password(credentials);
+      return await api.auth.password(credentials);
     },
-    [atlas.auth]
+    [api.auth]
   );
 
   return useMutation({
@@ -30,13 +30,13 @@ export function useRegisterUser({
   onSuccess: ({ user, token }: IUser.RegisterApiResponse) => Promise<void>;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const createUser = useCallback(
     async (payload: IUser.CreateApiPayload) => {
-      return atlas.user.create(payload);
+      return api.user.create(payload);
     },
-    [atlas.user]
+    [api.user]
   );
 
   return useMutation({
@@ -53,12 +53,12 @@ export function useUpdateUser({
   onSuccess?: OnSuccess<IUser.Self>;
   onError?: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const update = useCallback(
     async ({ id, payload }: { id: number; payload: IUser.UpdateApiPayload }) =>
-      atlas.user.update(id, payload),
-    [atlas.user]
+      api.user.update(id, payload),
+    [api.user]
   );
 
   return useMutation({
@@ -76,12 +76,12 @@ export function useUpdateUserTopics({
   onSuccess?: OnSuccess<void>;
   onError?: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const update = useCallback(
     async (payload: ITopic.ReplaceUserTopicsApiPayload) =>
-      await atlas.topic.replaceUserTopics(payload),
-    [atlas.topic]
+      await api.topic.replaceUserTopics(payload),
+    [api.topic]
   );
 
   return useMutation({
@@ -126,11 +126,11 @@ export function useUpdateFullTutor({
 }
 
 export function useCurrentUser(enabled: boolean = true) {
-  const atlas = useApi();
+  const api = useApi();
 
   const findCurrentUser = useCallback(() => {
-    return atlas.user.findCurrentUser();
-  }, [atlas.user]);
+    return api.user.findCurrentUser();
+  }, [api.user]);
 
   return useQuery({
     queryKey: [QueryKey.FindCurrentUser],
@@ -146,12 +146,12 @@ export function useUploadUserImage({
   onSuccess?: OnSuccess<void>;
   onError?: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const [progress, setProgress] = useState<number>(0);
 
   const upload = useCallback(
     (payload: { forUser?: number; image: File }) =>
-      atlas.user.uploadUserImage({
+      api.user.uploadUserImage({
         ...payload,
         onUploadProgress(event) {
           const total = event.total;
@@ -160,7 +160,7 @@ export function useUploadUserImage({
           setProgress(progress);
         },
       }),
-    [atlas.user]
+    [api.user]
   );
 
   const muation = useMutation({
@@ -187,13 +187,13 @@ export function useUploadTutorAssets({
   onSuccess?: OnSuccess<void>;
   onError?: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const [progress, setProgress] = useState<number>(0);
   const abortController = useRef(new AbortController());
 
   const upload = useCallback(
     (payload: UploadTutorAssetsPayload) =>
-      atlas.user.uploadTutorAssets({
+      api.user.uploadTutorAssets({
         ...payload,
         onUploadProgress(event) {
           const total = event.total;
@@ -203,7 +203,7 @@ export function useUploadTutorAssets({
         },
         abortSignal: abortController.current.signal,
       }),
-    [atlas.user]
+    [api.user]
   );
 
   const mutation = useMutation({

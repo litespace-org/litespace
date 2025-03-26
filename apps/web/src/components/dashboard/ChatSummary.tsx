@@ -42,12 +42,14 @@ export const ChatSummary: React.FC = () => {
   const organizedRooms = useMemo(() => asRooms(rooms.list), [rooms.list]);
 
   return (
-    <Summary
-      loading={rooms.query.isPending}
-      error={rooms.query.isError}
-      retry={rooms.query.refetch}
-      chatsUrl={Web.Chat}
-      rooms={organizedRooms}
-    />
+    <div className="md:col-span-1">
+      <Summary
+        loading={rooms.query.isPending}
+        error={rooms.query.isError}
+        retry={rooms.query.refetch}
+        chatsUrl={Web.Chat}
+        rooms={organizedRooms}
+      />
+    </div>
   );
 };

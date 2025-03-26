@@ -9,10 +9,10 @@ export const TutorOverview: React.FC = () => {
   const statsQuery = useFindPersonalizedTutorStats();
 
   return (
-    <div className="flex flex-col gap-6 justify-items-start w-full">
+    <div className="md:col-span-2 flex flex-col gap-4 lg:gap-6 justify-items-start w-full">
       <Typography
         tag="h1"
-        className="text-natural-950 text-subtitle-2 font-bold"
+        className="text-natural-950 text-body md:text-subtitle-2 font-bold"
       >
         {intl("tutor-dashboard.overview.title")}
       </Typography>

@@ -22,18 +22,18 @@ export type UseFindInterviewsPayload = Omit<
 export function useFindInterviews(
   filter?: UseFindInterviewsPayload
 ): UsePaginateResult<Element<IInterview.FindInterviewsApiResponse["list"]>> {
-  const atlas = useApi();
+  const api = useApi();
 
   const findInterviews = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
       if (filter?.userOnly && !filter?.users) return { list: [], total: 0 };
-      return atlas.interview.findInterviews({
+      return api.interview.findInterviews({
         page,
         size,
         ...filter,
       });
     },
-    [atlas.interview, filter]
+    [api.interview, filter]
   );
 
   return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged, filter]);
@@ -67,11 +67,11 @@ export function useFindInfinitInterviews({
 }
 
 export function useSelectInterviewer(): UseQueryResult<IUser.Self, Error> {
-  const atlas = useApi();
+  const api = useApi();
 
   const selectInterviewer = useCallback(async () => {
-    return atlas.user.selectInterviewer();
-  }, [atlas.user]);
+    return api.user.selectInterviewer();
+  }, [api.user]);
 
   return useQuery({
     queryFn: selectInterviewer,
@@ -86,13 +86,13 @@ export function useCreateInterview({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const createInterview = useCallback(
     async (payload: IInterview.CreateApiPayload) => {
-      return atlas.interview.create(payload);
+      return api.interview.create(payload);
     },
-    [atlas.interview]
+    [api.interview]
   );
 
   return useMutation({
@@ -110,7 +110,7 @@ export function useUpdateInterview({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
 
   const updateInterview = useCallback(
     async ({
@@ -120,9 +120,9 @@ export function useUpdateInterview({
       id: number;
       payload: IInterview.UpdateApiPayload;
     }) => {
-      return atlas.interview.update(id, payload);
+      return api.interview.update(id, payload);
     },
-    [atlas.interview]
+    [api.interview]
   );
 
   return useMutation({

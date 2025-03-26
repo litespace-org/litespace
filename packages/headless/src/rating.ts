@@ -11,11 +11,11 @@ export function useFindTutorRatings(
   id: number | null,
   pagination: IFilter.Pagination
 ) {
-  const atlas = useApi();
+  const api = useApi();
   const findRateeRatings = useCallback(async () => {
     if (!id) return { list: [], total: 0 };
-    return atlas.rating.findTutorRatings(id, pagination);
-  }, [atlas.rating, id, pagination]);
+    return api.rating.findTutorRatings(id, pagination);
+  }, [api.rating, id, pagination]);
 
   return useQuery({
     queryKey: [QueryKey.FindTutorRating, id],
@@ -32,12 +32,12 @@ export function useCreateRatingTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const rate = useCallback(
     async (payload: IRating.CreateApiPayload) => {
-      return atlas.rating.create(payload);
+      return api.rating.create(payload);
     },
-    [atlas.rating]
+    [api.rating]
   );
 
   return useMutation({
@@ -55,7 +55,7 @@ export function useEditRatingTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const editRate = useCallback(
     async ({
       id,
@@ -64,9 +64,9 @@ export function useEditRatingTutor({
       id: number;
       payload: IRating.UpdateApiPayload;
     }) => {
-      return atlas.rating.update(id, payload);
+      return api.rating.update(id, payload);
     },
-    [atlas.rating]
+    [api.rating]
   );
 
   return useMutation({
@@ -84,12 +84,12 @@ export function useDeleteRatingTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const deleteRate = useCallback(
     async (id: number) => {
-      return atlas.rating.delete(id);
+      return api.rating.delete(id);
     },
-    [atlas.rating]
+    [api.rating]
   );
 
   return useMutation({

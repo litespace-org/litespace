@@ -39,7 +39,7 @@ describe.skip("/api/v1/user/", () => {
       it("should be able to find a user by id", async () => {
         const adminApi = await Api.forSuperAdmin();
         const dbUser = await db.user();
-        const user = await adminApi.atlas.user.findById(dbUser.id);
+        const user = await adminApi.api.user.findById(dbUser.id);
         expect(user.id).to.be.eq(dbUser.id);
         expect(user.email).to.be.eq(dbUser.email);
         expect(user.role).to.be.eq(dbUser.role);
@@ -47,9 +47,7 @@ describe.skip("/api/v1/user/", () => {
 
       it("should response with 404 incase user is not found", async () => {
         const adminApi = await Api.forSuperAdmin();
-        const result = await safe(async () =>
-          adminApi.atlas.user.findById(100)
-        );
+        const result = await safe(async () => adminApi.api.user.findById(100));
         expect(result).to.be.deep.eq(new Error("User not found"));
       });
     });
@@ -57,15 +55,15 @@ describe.skip("/api/v1/user/", () => {
     describe("PUT /api/v1/user/:id", () => {
       it("should update a user", async () => {
         const userApi = await Api.forStudent();
-        const u0 = await userApi.atlas.user.findCurrentUser();
-        await userApi.atlas.user.update(u0.user.id, {
+        const u0 = await userApi.api.user.findCurrentUser();
+        await userApi.api.user.update(u0.user.id, {
           name: "updated-1",
         });
-        const u1 = await userApi.atlas.user.findCurrentUser();
-        await userApi.atlas.user.update(u0.user.id, {
+        const u1 = await userApi.api.user.findCurrentUser();
+        await userApi.api.user.update(u0.user.id, {
           name: "updated-2",
         });
-        const u2 = await userApi.atlas.user.findCurrentUser();
+        const u2 = await userApi.api.user.findCurrentUser();
         expect(u1.user.name).to.be.eq("updated-1");
         expect(u2.user.name).to.be.eq("updated-2");
       });
@@ -144,7 +142,7 @@ describe.skip("/api/v1/user/", () => {
         await tutors.update(newTutor.id, mockData);
 
         const studentApi = await Api.forStudent();
-        const res = await studentApi.atlas.user.findOnboardedTutors();
+        const res = await studentApi.api.user.findOnboardedTutors();
 
         expect(res.total).to.eq(1);
       });
@@ -173,7 +171,7 @@ describe.skip("/api/v1/user/", () => {
         expect(await cache.tutors.exists()).to.eql(false);
 
         const studentApi = await Api.forStudent();
-        await studentApi.atlas.user.findOnboardedTutors();
+        await studentApi.api.user.findOnboardedTutors();
 
         const ctutors = await cache.tutors.getAll();
         expect(await cache.tutors.exists()).to.eql(true);
@@ -233,7 +231,7 @@ describe.skip("/api/v1/user/", () => {
         }
 
         const studentApi = await Api.forStudent();
-        const res = await studentApi.atlas.user.findOnboardedTutors({
+        const res = await studentApi.api.user.findOnboardedTutors({
           search: "mos",
         });
 
@@ -246,7 +244,7 @@ describe.skip("/api/v1/user/", () => {
         const tutorApi = await Api.forTutor();
         const newTutor = await db.tutor();
         // any dump update
-        await tutorApi.atlas.user.update(newTutor.id, { bio: "my new bio" });
+        await tutorApi.api.user.update(newTutor.id, { bio: "my new bio" });
         expect(await cache.tutors.exists()).to.eql(false);
       });
     });
@@ -266,7 +264,7 @@ describe.skip("/api/v1/user/", () => {
       await db.room([student.id, mockTutors[0].id]);
       await db.room([student.id, mockTutors[1].id]);
 
-      const res = await studentApi.atlas.user.findUncontactedTutors();
+      const res = await studentApi.api.user.findUncontactedTutors();
 
       expect(res.total).to.eq(3);
       expect(res.list).to.have.length(3);
@@ -275,7 +273,7 @@ describe.skip("/api/v1/user/", () => {
     it("should respond with forbidden in case the requester is not a student.", async () => {
       const tutorApi = await Api.forTutor();
       const res = await safe(async () =>
-        tutorApi.atlas.user.findUncontactedTutors()
+        tutorApi.api.user.findUncontactedTutors()
       );
       expect(res).to.deep.eq(forbidden());
     });
@@ -318,7 +316,7 @@ describe.skip("/api/v1/user/", () => {
       await tutors.update(newTutor.id, mockData);
 
       const studentApi = await Api.forStudent();
-      const res = await studentApi.atlas.user.findTutorInfo(newTutor.id);
+      const res = await studentApi.api.user.findTutorInfo(newTutor.id);
 
       expect(res.id).to.eq(newTutor.id);
     });
@@ -349,7 +347,7 @@ describe.skip("/api/v1/user/", () => {
 
       const studentApi = await Api.forStudent();
       // this shall save tutor in cache if not found
-      const res = await studentApi.atlas.user.findTutorInfo(newTutor.id);
+      const res = await studentApi.api.user.findTutorInfo(newTutor.id);
 
       // ensure data is saved and can be retrieved from the cache
       expect(await cache.tutors.exists()).to.eq(true);
@@ -361,7 +359,7 @@ describe.skip("/api/v1/user/", () => {
 
       const studentApi = await Api.forStudent();
       const res = await safe(async () =>
-        studentApi.atlas.user.findTutorInfo(newTutor.id)
+        studentApi.api.user.findTutorInfo(newTutor.id)
       );
 
       expect(res).to.be.deep.eq(notfound.tutor());
@@ -432,7 +430,7 @@ describe.skip("/api/v1/user/", () => {
         canceled: true, // should not be counted
       });
 
-      const res = await tutorApi.atlas.user.findPersonalizedTutorStats();
+      const res = await tutorApi.api.user.findPersonalizedTutorStats();
 
       expect(res.studentCount).to.eq(2);
       expect(res.completedLessonCount).to.eq(1);
@@ -443,7 +441,7 @@ describe.skip("/api/v1/user/", () => {
     it("should respond with forbidden if the user is not a tutor.", async () => {
       const studentApi = await Api.forStudent();
       const res = await safe(async () =>
-        studentApi.atlas.user.findPersonalizedTutorStats()
+        studentApi.api.user.findPersonalizedTutorStats()
       );
       expect(res).to.deep.eq(forbidden());
     });
@@ -495,7 +493,7 @@ describe.skip("/api/v1/user/", () => {
         canceled: true,
       });
 
-      const res = await studentApi.atlas.user.findPersonalizedStudentStats();
+      const res = await studentApi.api.user.findPersonalizedStudentStats();
 
       expect(res.tutorCount).to.eq(2);
       expect(res.totalLearningTime).to.eq(lesson1.lesson.duration);
@@ -506,7 +504,7 @@ describe.skip("/api/v1/user/", () => {
     it("should respond with forbidden if the user is not a student.", async () => {
       const tutorApi = await Api.forTutor();
       const res = await safe(async () =>
-        tutorApi.atlas.user.findPersonalizedStudentStats()
+        tutorApi.api.user.findPersonalizedStudentStats()
       );
       expect(res).to.deep.eq(forbidden());
     });

@@ -17,7 +17,13 @@ import App from "@/App.tsx";
 
 import "@litespace/ui/tailwind.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+    },
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

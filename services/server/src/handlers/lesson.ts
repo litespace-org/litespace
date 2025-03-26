@@ -346,7 +346,9 @@ function cancel(context: ApiContext) {
       //! todo: cache updates should be done at the worker thread
       const error = await safe(async () => {
         const tutor = members.find(
-          (member) => member.role === IUser.Role.Tutor
+          (member) =>
+            member.role === IUser.Role.Tutor ||
+            member.role === IUser.Role.TutorManager
         );
 
         if (!tutor)

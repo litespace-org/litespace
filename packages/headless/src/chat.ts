@@ -717,7 +717,7 @@ function reducer(state: State, action: Action) {
 }
 
 export function useMessages(room: number | null) {
-  const atlas = useApi();
+  const api = useApi();
   const [state, dispatch] = useReducer(reducer, initial);
 
   /**
@@ -735,9 +735,9 @@ export function useMessages(room: number | null) {
 
   const findRoomMessages = useCallback(
     async (id: number, pagination?: IFilter.Pagination) => {
-      return await atlas.chat.findRoomMessages(id, pagination);
+      return await api.chat.findRoomMessages(id, pagination);
     },
-    [atlas.chat]
+    [api.chat]
   );
 
   const fetcher = useCallback(
@@ -936,13 +936,13 @@ export function useFindUncontactedTutors(enabled?: boolean): {
   list: ITutor.FullUncontactedTutorInfo[] | null;
   more: () => void;
 } {
-  const atlas = useApi();
+  const api = useApi();
 
   const findUncontactedTutors = useCallback(
     ({ pageParam }: { pageParam: number }) => {
-      return atlas.user.findUncontactedTutors({ page: pageParam });
+      return api.user.findUncontactedTutors({ page: pageParam });
     },
-    [atlas.user]
+    [api.user]
   );
 
   return useInfinitePaginationQuery(
@@ -959,12 +959,12 @@ export function useCreateRoom({
   onSuccess: (response: IRoom.CreateRoomApiResponse) => void;
   onError: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const createRoom = useCallback(
     async ({ id, message }: { id: number; message?: string }) => {
-      return await atlas.chat.createRoom(id, message);
+      return await api.chat.createRoom(id, message);
     },
-    [atlas.chat]
+    [api.chat]
   );
 
   return useMutation({
@@ -978,11 +978,11 @@ export function useCreateRoom({
 export function useFindRoomMembers(
   roomId: number | null
 ): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
-  const atlas = useApi();
+  const api = useApi();
   const findRoomMembers = useCallback(async () => {
     if (!roomId) return [];
-    return await atlas.chat.findRoomMembers(roomId);
-  }, [atlas.chat, roomId]);
+    return await api.chat.findRoomMembers(roomId);
+  }, [api.chat, roomId]);
 
   return useQuery({
     queryFn: findRoomMembers,
@@ -995,16 +995,16 @@ export function useFindUserRooms(
   userId?: number,
   payload?: IRoom.FindUserRoomsApiQuery
 ): UseInfinitePaginationQueryResult<IRoom.FindUserRoomsApiRecord> {
-  const atlas = useApi();
+  const api = useApi();
   const findUserRooms = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
       if (!userId) return { list: [], total: 0 };
-      return await atlas.chat.findRooms(userId, {
+      return await api.chat.findRooms(userId, {
         page: pageParam,
         ...payload,
       });
     },
-    [atlas.chat, userId, payload]
+    [api.chat, userId, payload]
   );
 
   return useInfinitePaginationQuery(findUserRooms, [
@@ -1020,7 +1020,7 @@ export function useUpdateRoom({
   onSuccess?: OnSuccess;
   onError?: OnError;
 }) {
-  const atlas = useApi();
+  const api = useApi();
   const pinRoom = useCallback(
     async ({
       roomId,
@@ -1029,9 +1029,9 @@ export function useUpdateRoom({
       roomId: number;
       payload: IRoom.UpdateRoomApiPayload;
     }) => {
-      await atlas.chat.updateRoom(roomId, payload);
+      await api.chat.updateRoom(roomId, payload);
     },
-    [atlas.chat]
+    [api.chat]
   );
 
   return useMutation({
@@ -1043,11 +1043,11 @@ export function useUpdateRoom({
 }
 
 export function useFindRoomByMembers(userIds: number[] | null) {
-  const atlas = useApi();
+  const api = useApi();
   const findRoomByMembers = useCallback(async () => {
     if (!userIds) return null;
-    return atlas.chat.findRoomByMembers(userIds);
-  }, [atlas.chat, userIds]);
+    return api.chat.findRoomByMembers(userIds);
+  }, [api.chat, userIds]);
 
   return useQuery({
     queryFn: findRoomByMembers,

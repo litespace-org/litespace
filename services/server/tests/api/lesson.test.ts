@@ -73,7 +73,7 @@ describe("/api/v1/lesson/", () => {
       ];
 
       for (const test of tests) {
-        const found = await tutorApi.atlas.lesson.findLessons({
+        const found = await tutorApi.api.lesson.findLessons({
           users: [tutor.user.id],
           after: test.after,
           before: test.before,
@@ -98,7 +98,7 @@ describe("/api/v1/lesson/", () => {
       });
 
       const res = await safe(async () => {
-        return await studentApi.atlas.lesson.create({
+        return await studentApi.api.lesson.create({
           slotId: slot.id,
           tutorId: tutor.user.id,
           start: date.add(3, "hour").toISOString(),
@@ -124,7 +124,7 @@ describe("/api/v1/lesson/", () => {
 
       // future lesson
       await safe(async () => {
-        return await studentApi.atlas.lesson.create({
+        return await studentApi.api.lesson.create({
           slotId: slot.id,
           tutorId: tutor.user.id,
           start: date.add(18, "hour").toISOString(),
@@ -133,7 +133,7 @@ describe("/api/v1/lesson/", () => {
       });
 
       const res = await safe(async () => {
-        return await studentApi.atlas.lesson.create({
+        return await studentApi.api.lesson.create({
           slotId: slot.id,
           tutorId: tutor.user.id,
           start: date.add(3, "hour").toISOString(),
@@ -177,7 +177,7 @@ describe("/api/v1/lesson/", () => {
       expect(created).to.not.be.instanceOf(Error);
 
       const res = await safe(async () => {
-        return await studentApi.atlas.lesson.create({
+        return await studentApi.api.lesson.create({
           slotId: slot.id,
           tutorId: tutor.user.id,
           start: date.add(3, "hour").toISOString(),
@@ -203,7 +203,7 @@ describe("/api/v1/lesson/", () => {
 
       // future lesson
       await safe(async () => {
-        return await studentApi.atlas.lesson.create({
+        return await studentApi.api.lesson.create({
           slotId: slot.id,
           tutorId: tutor1.id,
           start: date.add(18, "hour").toISOString(),
@@ -212,7 +212,7 @@ describe("/api/v1/lesson/", () => {
       });
 
       const res = await safe(async () => {
-        return await studentApi.atlas.lesson.create({
+        return await studentApi.api.lesson.create({
           slotId: slot.id,
           tutorId: tutor2.id,
           start: date.add(3, "hour").toISOString(),
@@ -227,7 +227,7 @@ describe("/api/v1/lesson/", () => {
   describe("DELETE /api/v1/lesson/:lessonId", () => {
     it("should respond with not found status in case the lesson does not exist.", async () => {
       const studentApi = await Api.forStudent();
-      const res = await safe(async () => studentApi.atlas.lesson.cancel(123));
+      const res = await safe(async () => studentApi.api.lesson.cancel(123));
       expect(res).to.deep.eq(notfound.lesson());
     });
 
@@ -250,7 +250,7 @@ describe("/api/v1/lesson/", () => {
 
       const studentApi = await Api.forStudent();
       const res = await safe(async () =>
-        studentApi.atlas.lesson.cancel(lesson.lesson.id)
+        studentApi.api.lesson.cancel(lesson.lesson.id)
       );
 
       expect(res).to.deep.eq(forbidden());
@@ -275,7 +275,7 @@ describe("/api/v1/lesson/", () => {
       });
 
       const res = await safe(async () =>
-        studentApi.atlas.lesson.cancel(lesson.lesson.id)
+        studentApi.api.lesson.cancel(lesson.lesson.id)
       );
 
       expect(res).to.be.not.instanceOf(Error);

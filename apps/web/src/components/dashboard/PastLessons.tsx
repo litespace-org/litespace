@@ -78,7 +78,7 @@ export const PastLessons: React.FC = () => {
   const { lessonId: sendingMessageLessonId, onSendMessage } =
     useNavigateToRoom();
 
-  if (!mq.lg)
+  if (!mq.md)
     return (
       <PastLessonsSummary
         tutorsRoute={Web.Tutors}
@@ -104,7 +104,8 @@ export const PastLessons: React.FC = () => {
   return (
     <div
       className={cn(
-        !mq.lg && [
+        "md:col-span-2",
+        !mq.md && [
           "border border-transparent hover:border-natural-100 h-min-96",
           "rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50",
         ]
@@ -112,7 +113,7 @@ export const PastLessons: React.FC = () => {
     >
       <Typography
         tag="h1"
-        className="text-natural-950 font-bold text-body sm:text-subtitle-2"
+        className="text-natural-950 font-bold text-body sm:text-subtitle-2 mb-4 lg:mb-6"
       >
         {user?.role === IUser.Role.Student
           ? intl("student-dashboard.past-lessons.title")
