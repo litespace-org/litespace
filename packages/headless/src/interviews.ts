@@ -65,7 +65,6 @@ export function useFindInfinitInterviews({
     user,
   ]);
 }
-console.log("");
 
 export function useSelectInterviewer(): UseQueryResult<IUser.Self, Error> {
   const atlas = useApi();
