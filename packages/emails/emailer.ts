@@ -31,7 +31,7 @@ export class Emailer {
 
   async send({ to, ...email }: { to: string } & SendEmail) {
     await this.transporter.sendMail({
-      from: this.email,
+      from: `"LiteSpace" <${this.email}>`,
       to,
       subject: EMAIL_SUBJECT[email.template],
       html: render(this.template(email)),
