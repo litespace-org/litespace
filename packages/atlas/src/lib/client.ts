@@ -11,7 +11,9 @@ export enum TokenType {
   Basic = "Basic",
 }
 
-export type AuthToken = { type: TokenType; value: string };
+export type AuthToken =
+  | { type: TokenType.Bearer; value: string }
+  | { type: TokenType.Basic; username: string; password: string };
 
 export const sockets: Record<"main", Record<Env.Server, string>> = {
   main: {
@@ -21,7 +23,7 @@ export const sockets: Record<"main", Record<Env.Server, string>> = {
   },
 } as const;
 
-export type Server = "api" | "messenger";
+export type Server = "api" | "messenger" | "echo";
 
 export const servers: Record<Server, Record<Env.Server, string>> = {
   api: {
@@ -33,6 +35,11 @@ export const servers: Record<Server, Record<Env.Server, string>> = {
     local: "http://localhost:4002",
     staging: "https://messenger.staging.litespace.org",
     production: "https://messenger.litespace.org",
+  },
+  echo: {
+    local: "http://localhost:4004",
+    staging: "https://echo.staging.litespace.org",
+    production: "https://echo.litespace.org",
   },
 };
 
@@ -63,6 +70,14 @@ export const peers: Record<
   },
 } as const;
 
+function encodeToken(token: AuthToken): string {
+  if (token.type === TokenType.Bearer) return token.value;
+  return Buffer.from(
+    [token.username, token.password].join(":"),
+    "utf-8"
+  ).toString("base64");
+}
+
 export function createClient(
   server: Server,
   env: Env.Server,
@@ -75,7 +90,7 @@ export function createClient(
   });
 
   client.interceptors.request.use((config) => {
-    if (token) config.headers.Authorization = `${token.type} ${token.value}`;
+    if (token) config.headers.Authorization = encodeToken(token);
     return config;
   });
 

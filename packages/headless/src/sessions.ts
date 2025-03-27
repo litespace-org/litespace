@@ -5,13 +5,14 @@ import { useSocket } from "@/socket";
 import { MediaConnection, PeerError } from "peerjs";
 import zod from "zod";
 import hark from "hark";
-import { concat, isEmpty, uniq } from "lodash";
+import { concat, first, isEmpty, uniq } from "lodash";
 import { useServer } from "@/server";
-import { peers } from "@litespace/atlas";
+import { peers as peerServers } from "@litespace/atlas";
 import { Peer } from "peerjs";
 import { useApi } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/constants";
+import { useEcho } from "@/echo";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -306,13 +307,13 @@ function asPeerId(userId: number) {
   return userId.toString();
 }
 
-function usePeer(userId?: number) {
+function usePeerJs(userId?: number) {
   const { server } = useServer();
   const [ready, setReady] = useState<boolean>(false);
 
   const peer = useMemo(() => {
     if (!userId) return null;
-    const peerServer = peers[server];
+    const peerServer = peerServers[server];
     return new Peer(asPeerId(userId), {
       host: peerServer.host,
       path: peerServer.path,
@@ -553,7 +554,7 @@ export function useSessionV3({
   isCaller,
   onUserMediaStreamError,
 }: SessionV3Payload) {
-  const { peer, ready } = usePeer(userIds.current);
+  const { peer, ready } = usePeerJs(userIds.current);
   const [otherMemberStream, setOtherMemberStream] =
     useState<MediaStream | null>(null);
   const [otherMemberScreenStream, setOtherMemberScreenStream] =
@@ -1183,4 +1184,143 @@ export function useSessionMembers({
   }, [sessionMembersQuery.data, sessionMembersQuery.isLoading]);
 
   return { join, leave, members, listening, joining, joined };
+}
+
+// ================================== Session V4 ==============================================
+
+const iceServers: RTCIceServer[] = [
+  {
+    urls: "stun:stun.litespace.org",
+    username: "litespace",
+    credential: "litespace",
+  },
+  {
+    urls: "turn:turn.litespace.org",
+    username: "litespace",
+    credential: "litespace",
+  },
+];
+
+const offerOptions: RTCOfferOptions = {
+  // ref: https://medium.com/@fippo/ice-restarts-5d759caceda6
+  iceRestart: true,
+  offerToReceiveAudio: true,
+  offerToReceiveVideo: true,
+};
+
+function createPeer(): RTCPeerConnection {
+  return new RTCPeerConnection({ iceServers });
+}
+
+function useProducer() {
+  const echo = useEcho();
+  const producer = useMemo(() => createPeer(), []);
+
+  const onNegotiationNeeded = useCallback(async () => {
+    const offer = await producer.createOffer(offerOptions);
+
+    if (!offer.sdp)
+      throw new Error(
+        "Invalid offer: missing session description protocol (sdp)"
+      );
+
+    await producer.setLocalDescription(offer).catch(console.log);
+
+    const desc = await echo.produce({
+      type: "offer",
+      sdp: offer.sdp,
+      userId: 1,
+    });
+
+    producer
+      .setRemoteDescription(new RTCSessionDescription(desc))
+      .catch(console.log);
+  }, [echo, producer]);
+
+  useEffect(() => {
+    producer.addEventListener("negotiationneeded", onNegotiationNeeded);
+    return () => {
+      producer.removeEventListener("negotiationneeded", onNegotiationNeeded);
+    };
+  }, [onNegotiationNeeded, producer]);
+
+  return producer;
+}
+
+function useConsumer() {
+  const echo = useEcho();
+  const [stream, setStream] = useState<MediaStream | null>(null);
+
+  const consumer = useMemo(() => {
+    const peer = createPeer();
+    peer.addTransceiver("video", { direction: "recvonly" });
+    return peer;
+  }, []);
+
+  // ==================== Negotition ====================
+
+  const onNegotiationNeeded = useCallback(async () => {
+    const offer = await consumer.createOffer(offerOptions);
+
+    if (!offer.sdp)
+      throw new Error(
+        "Invalid offer: missing session description protocol (sdp)"
+      );
+
+    await consumer.setLocalDescription(offer).catch(console.log);
+
+    const desc = await echo.consume({
+      type: "offer",
+      sdp: offer.sdp,
+      userId: 1,
+    });
+
+    consumer
+      .setRemoteDescription(new RTCSessionDescription(desc))
+      .catch(console.log);
+  }, [consumer, echo]);
+
+  useEffect(() => {
+    consumer.addEventListener("negotiationneeded", onNegotiationNeeded);
+    return () => {
+      consumer.removeEventListener("negotiationneeded", onNegotiationNeeded);
+    };
+  }, [onNegotiationNeeded, consumer]);
+
+  // ==================== Handle incoming streams ====================
+
+  const onTrack = useCallback((event: RTCTrackEvent) => {
+    const stream = first(event.streams);
+    if (!stream) return;
+    setStream(stream);
+  }, []);
+
+  useEffect(() => {
+    consumer.addEventListener("track", onTrack);
+    return () => {
+      consumer.removeEventListener("track", onTrack);
+    };
+  }, [consumer, onTrack]);
+
+  return { consumer, stream };
+}
+
+export function useSessionV4() {
+  const userMedia = useUserMedia();
+  const producer = useProducer();
+  const consumer = useConsumer();
+
+  const attachStream = useCallback(
+    (stream: MediaStream) => {
+      const tracks = stream.getTracks();
+      tracks.map((track) => producer.addTrack(track, stream));
+    },
+    [producer]
+  );
+
+  return {
+    attachStream,
+    userMedia,
+    consumer,
+  };
 }
