@@ -71,11 +71,15 @@ export const peers: Record<
 } as const;
 
 function encodeToken(token: AuthToken): string {
-  if (token.type === TokenType.Bearer) return token.value;
-  return Buffer.from(
-    [token.username, token.password].join(":"),
-    "utf-8"
-  ).toString("base64");
+  const value =
+    token.type === TokenType.Bearer
+      ? token.value
+      : Buffer.from(
+          [token.username, token.password].join(":"),
+          "utf-8"
+        ).toString("base64");
+
+  return `${token.type} ${value}`;
 }
 
 export function createClient(
