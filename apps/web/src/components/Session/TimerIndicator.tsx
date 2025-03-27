@@ -1,6 +1,6 @@
 import Timer from "@litespace/assets/TimerIndicator";
 import React, { useCallback, useEffect, useState, useMemo } from "react";
-import { Typography } from "@/components/Typography";
+import { Typography } from "@litespace/ui/Typography";
 import dayjs from "dayjs";
 
 /**

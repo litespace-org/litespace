@@ -8,6 +8,7 @@ import dayjs from "@/lib/dayjs";
 import cn from "classnames";
 import { IUser, Void } from "@litespace/types";
 import ArrowRightLong from "@litespace/assets/ArrowRightLong";
+import ArrowRight from "@litespace/assets/ArrowRight";
 
 export const ChatHeader: React.FC<{
   name: string | null;
@@ -26,30 +27,37 @@ export const ChatHeader: React.FC<{
   const intl = useFormatMessage();
 
   return (
-    <div className="flex justify-between px-6 py-4 shadow-chat-header">
-      <div className="flex grow gap-2 lg:gap-4 items-center">
+    <div
+      className={cn(
+        "flex justify-between shadow-chat-header",
+        inSession ? "py-6 px-4 md:p-4" : "px-6 py-4"
+      )}
+    >
+      <div className="flex grow gap-2 md:gap-6 lg:gap-4 items-center">
         <button
           type="button"
           onClick={back}
           className="w-6 h-6 lg:hidden cursor-pointer"
         >
-          <ArrowRightLong />
+          <ArrowRightLong className="md:hidden" />
+          <ArrowRight className="hidden md:block [&_*]:stroke-brand-700 w-8 h-8" />
         </button>
         <div
           className={cn(
-            "flex gap-2 items-center",
-            inSession ? "hidden lg:flex lg:gap-2" : "lg:gap-4"
+            inSession
+              ? "hidden md:flex md:gap-4 lg:gap-2 items-center"
+              : "flex gap-2 items-center lg:gap-4"
           )}
         >
           <div
             className={cn(
-              "overflow-hidden rounded-full",
-              "p-[2px] lg:p-[5px] flex items-center justify-center",
-              "border-[3px] lg:border-4",
+              "overflow-hidden shrink-0 self-center rounded-full",
+              "p-[2px] md:p-[5px] flex items-center justify-center",
+              "border-[3px] md:border-4",
               online ? "border-brand-700" : "border-natural-500"
             )}
           >
-            <div className="rounded-full overflow-hidden w-8 h-8 lg:w-14 lg:h-14 shrink-0">
+            <div className="rounded-full overflow-hidden w-8 h-8 md:w-14 md:h-14 shrink-0">
               <Avatar
                 alt={orUndefined(name)}
                 src={orUndefined(image)}
@@ -62,7 +70,9 @@ export const ChatHeader: React.FC<{
               tag="h4"
               className={cn(
                 "text-natural-950 font-bold text-body",
-                inSession ? "lg:text-body" : "lg:text-subtitle-2"
+                inSession
+                  ? "md:text-subtitle-2 lg:text-body"
+                  : "lg:text-subtitle-2"
               )}
             >
               {name}
@@ -71,7 +81,7 @@ export const ChatHeader: React.FC<{
               tag="p"
               className={cn(
                 "text-tiny",
-                inSession ? "lg:text-tiny" : "lg:text-caption",
+                inSession ? "md:text-caption lg:text-tiny" : "lg:text-caption",
                 {
                   "text-primary-700": online,
                   "text-natural-700": !online,
@@ -88,7 +98,7 @@ export const ChatHeader: React.FC<{
           tag="h4"
           className={cn(
             inSession
-              ? "text-natural-950 lg:hidden text-body font-bold"
+              ? "text-natural-950 md:hidden text-body font-bold"
               : "hidden"
           )}
         >

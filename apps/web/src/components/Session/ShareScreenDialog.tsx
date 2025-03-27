@@ -1,7 +1,7 @@
 import React from "react";
-import { ConfirmationDialog } from "@/components/ConfirmationDialog";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import CastScreen from "@litespace/assets/CastScreen";
-import { useFormatMessage } from "@/hooks";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Void } from "@litespace/types";
 
 export const ShareScreenDialog: React.FC<{

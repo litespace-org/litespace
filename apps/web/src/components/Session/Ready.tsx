@@ -1,9 +1,9 @@
 import React from "react";
 import { IUser, Void } from "@litespace/types";
-import { useFormatMessage } from "@/hooks";
-import { Typography } from "@/components/Typography";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Typography } from "@litespace/ui/Typography";
 import { useMemo } from "react";
-import { Button } from "@/components/Button";
+import { Button } from "@litespace/ui/Button";
 import cn from "classnames";
 import dayjs from "dayjs";
 
