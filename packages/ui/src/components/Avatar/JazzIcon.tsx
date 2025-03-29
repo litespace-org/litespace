@@ -26,12 +26,11 @@ function hash(input: string): number {
   }, 0);
 }
 
-export const JazzIcon: React.FC<{ seed: string } & SVGProps<SVGSVGElement>> = ({
-  seed,
-  ...props
-}) => {
+export const JazzIcon: React.FC<
+  { seed: string | number } & SVGProps<SVGSVGElement>
+> = ({ seed, ...props }) => {
   const shapes = useMemo(() => {
-    const generator = new MersenneTwister(hash(seed));
+    const generator = new MersenneTwister(hash(seed.toString()));
     const position = generator.random();
     const hueShift = 30 * position - DEFAULT_WOBBLE / 2;
     const colors = DEFAULT_BASE_COLORS.map((hex) =>

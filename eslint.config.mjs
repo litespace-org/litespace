@@ -111,7 +111,7 @@ export default [
     },
   },
   {
-    files: ["apps/landing/**"],
+    files: ["apps/landing/**", "services/studio/**"],
     rules: {
       "react-refresh/only-export-components": "off",
     },
