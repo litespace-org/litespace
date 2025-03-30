@@ -23,3 +23,8 @@ config.json
 # radio
 __whatsapp__
 __telegram__
+
+# studio
+services/studio/build
+services/studio/out
+services/studio/session.json

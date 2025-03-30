@@ -7,7 +7,6 @@ export type Context = {
   token: AuthToken | null;
   setAuthToken(token: AuthToken, remember?: boolean): void;
   setBearerToken(token: string, remember?: boolean): void;
-  setBasicToken(token: string, remember?: boolean): void;
   removeToken: Void;
 };
 

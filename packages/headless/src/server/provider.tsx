@@ -29,13 +29,6 @@ export const ServerProvider: React.FC<{
     [setAuthToken]
   );
 
-  const setBasicToken = useCallback(
-    (value: string, remember: boolean = true) => {
-      setAuthToken({ type: TokenType.Basic, value }, remember);
-    },
-    [setAuthToken]
-  );
-
   const removeToken = useCallback(() => {
     setToken(null);
     storage?.remove(CacheKey.AuthToken);
@@ -45,12 +38,11 @@ export const ServerProvider: React.FC<{
     (): Context => ({
       setAuthToken,
       setBearerToken,
-      setBasicToken,
       removeToken,
       server,
       token,
     }),
-    [removeToken, server, setAuthToken, setBasicToken, setBearerToken, token]
+    [removeToken, server, setAuthToken, setBearerToken, token]
   );
 
   return (

@@ -3,6 +3,7 @@ import { SocketContext } from "@/socket/context";
 import { useServer } from "@/server";
 import { io } from "socket.io-client";
 import { sockets } from "@litespace/atlas";
+import { encodeToken } from "@litespace/atlas";
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -13,7 +14,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!token) return null;
 
     const options = {
-      extraHeaders: { Authorization: `${token.type} ${token.value}` },
+      extraHeaders: { Authorization: encodeToken(token) },
     } as const;
 
     return io(sockets.main[server], options);
