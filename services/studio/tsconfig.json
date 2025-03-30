@@ -21,6 +21,6 @@
       { "transform": "typescript-transform-paths", "afterDeclarations": true }
     ]
   },
-  "include": ["composition", "main", "lib"],
+  "include": ["composition", "main", "lib", "types"],
   "exclude": ["remotion.config.ts"]
 }

@@ -13,7 +13,8 @@ module.exports = {
     ],
     "^.+\\.(js|jsx)$": "babel-jest",
   },
+  testPathIgnorePatterns: ["dist"],
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@/(.*)$": "<rootDir>/$1",
   },
 };

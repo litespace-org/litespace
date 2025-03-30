@@ -1,15 +1,17 @@
 import { Composition } from "remotion";
-import { Stream, schema } from "composition/Stream";
-import { faker } from "lib/faker";
+import Stream, { schema as streamSchema } from "composition/Stream";
+import Session, { schema as sessionSchema } from "composition/Session";
+import { faker } from "@/lib/faker";
 import { FPS, SECONDS_IN_MINUTE } from "lib/constants";
-import dayjs from "lib/dayjs";
+import dayjs from "@/lib/dayjs";
+import { sessionCompositionProps } from "@/lib/session";
 
 import "@litespace/ui/tailwind.css";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      {["stream", "user-stream", "screen-stream"].map((id) => (
+      {["stream", "test-user-stream", "test-screen-stream"].map((id) => (
         <Composition
           key={id}
           id={id}
@@ -18,7 +20,7 @@ export const RemotionRoot: React.FC = () => {
           width={1920}
           height={1080}
           component={Stream}
-          schema={schema}
+          schema={streamSchema}
           defaultProps={{
             id: faker.number.int(),
             name: faker.person.fullName(),
@@ -28,7 +30,7 @@ export const RemotionRoot: React.FC = () => {
             }),
             start: dayjs().startOf("hour").toISOString(),
             duration: 30,
-            screen: id === "screen-stream",
+            screen: id === "test-screen-stream",
           }}
           calculateMetadata={({ props }) => {
             return {
@@ -37,6 +39,17 @@ export const RemotionRoot: React.FC = () => {
           }}
         />
       ))}
+
+      <Composition
+        id="session"
+        durationInFrames={FPS * 60 * 30}
+        fps={FPS}
+        schema={sessionSchema}
+        width={1920}
+        height={1080}
+        defaultProps={sessionCompositionProps}
+        component={Session}
+      />
     </>
   );
 };

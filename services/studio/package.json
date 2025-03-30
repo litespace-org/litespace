@@ -5,7 +5,7 @@
     "dev": "remotion studio --port 4005",
     "bundle": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "render": "node dist/scripts/render.js",
+    "render": "node dist/main/render.js",
     "build": "tsc -p tsconfig.build.json",
     "prepare": "ts-patch install -s",
     "test": "jest"

@@ -70,7 +70,7 @@ export const peers: Record<
   },
 } as const;
 
-function encodeToken(token: AuthToken): string {
+export function encodeToken(token: AuthToken): string {
   const value =
     token.type === TokenType.Bearer
       ? token.value

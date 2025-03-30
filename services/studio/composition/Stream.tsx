@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, Img } from "remotion";
+import { AbsoluteFill, Img, useCurrentFrame, useVideoConfig } from "remotion";
 import zod from "zod";
 import { JazzIcon } from "@litespace/ui/Avatar";
 import { Typography } from "@litespace/ui/Typography";
@@ -17,6 +17,8 @@ export const schema = zod.object({
 export type Props = zod.infer<typeof schema>;
 
 const Screen: React.FC<Props> = ({ image, start, duration, name }) => {
+  const frame = useCurrentFrame();
+  const config = useVideoConfig();
   return (
     <div className="w-full h-full flex items-center justify-center relative">
       {image ? (
@@ -25,13 +27,18 @@ const Screen: React.FC<Props> = ({ image, start, duration, name }) => {
         `Screen`
       )}
 
-      <div className="absolute right-12 bottom-12 bg-natural-900 p-5 rounded-2xl">
+      <div className="absolute right-12 bottom-12 bg-natural-900 p-5 rounded-2xl outline">
         <Typography tag="h2" className="text-h2 text-natural-50">
           {name}
         </Typography>
         <Typography tag="p" className="text-subtitle-1 text-natural-50">
-          {dayjs(start).format("HH:mm a")} -{" "}
-          {dayjs(start).add(duration, "minutes").format("HH:mm a")}
+          {dayjs(start).format("hh:mm a")} -{" "}
+          {dayjs(start).add(duration, "minutes").format("hh:mm a")}
+        </Typography>
+        <Typography tag="p" className="text-subtitle-1 text-natural-50">
+          {dayjs(start)
+            .add(frame / config.fps, "seconds")
+            .format("hh:mm:ss a")}
         </Typography>
       </div>
     </div>
@@ -39,6 +46,8 @@ const Screen: React.FC<Props> = ({ image, start, duration, name }) => {
 };
 
 const User: React.FC<Props> = ({ image, id, name, start, duration }) => {
+  const frame = useCurrentFrame();
+  const config = useVideoConfig();
   return (
     <>
       <div className="w-96 h-96 rounded-full overflow-hidden">
@@ -50,15 +59,20 @@ const User: React.FC<Props> = ({ image, id, name, start, duration }) => {
           {name}
         </Typography>
         <Typography tag="p" className="text-subtitle-1">
-          {dayjs(start).format("HH:mm a")} -{" "}
-          {dayjs(start).add(duration, "minutes").format("HH:mm a")}
+          {dayjs(start).format("hh:mm a")} -{" "}
+          {dayjs(start).add(duration, "minutes").format("hh:mm a")}
+        </Typography>
+        <Typography tag="p" className="text-subtitle-1">
+          {dayjs(start)
+            .add(frame / config.fps, "seconds")
+            .format("hh:mm:ss a")}
         </Typography>
       </div>
     </>
   );
 };
 
-export const Stream: React.FC<Props> = (props) => {
+const Stream: React.FC<Props> = (props) => {
   return (
     <AbsoluteFill
       dir="rtl"
@@ -68,3 +82,5 @@ export const Stream: React.FC<Props> = (props) => {
     </AbsoluteFill>
   );
 };
+
+export default Stream;
