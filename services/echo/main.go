@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/litespace-org/litespace/services/echo/constants"
-	"github.com/litespace-org/litespace/services/echo/handlers"
+	"echo/constants"
+	"echo/handlers"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
 	app := fiber.New()
+	// TODO: enable for development and staging only
 	app.Static("/demo", "./public/demo.html")
 
 	app.Get("/ice", func(c *fiber.Ctx) error {
@@ -19,5 +20,5 @@ func main() {
 	app.Post("/consume", handlers.Consume)
 	app.Post("/produce", handlers.Produce)
 
-	app.Listen(":5001")
+	app.Listen(":4004")
 }

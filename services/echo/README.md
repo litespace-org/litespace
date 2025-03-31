@@ -1,4 +1,6 @@
-Litespace media server implementaion with [Fiber](https://docs.gofiber.io/) and [Pion/webrtc](https://github.com/pion/webrtc).
+# Echo
+
+Litespace media server implementaion with [Fiber](https://docs.gofiber.io/) and [Pion/WebRTC](https://github.com/pion/webrtc).
 
 # Getting Started
 
@@ -8,19 +10,19 @@ First of all make sure to install [Go](https://go.dev/dl/) and thereafter [Air](
 
 Now execute the following command, in the root directory of this go app, to download the dependencies:
 
-```BASH
+```bash
 go mod tidy
 ```
 
 You can run the server by either using `go` or `air` cli, however air is recommended for better dev experience (don't use it if you don't care about hot-reload):
 
-```BASH
+```bash
 go run .
 ```
 
-```BASH
+```bash
 air
 ```
 
-If everything goes well, the server should be listening on port `5001`.
-You may try out the demo with this link: [http://localhost:5001/demo](http://localhost:5001/demo).
+If everything goes well, the server should be listening on port `4004`.
+You may try out the demo with this link: [http://localhost:4004/demo](http://localhost:4004/demo).

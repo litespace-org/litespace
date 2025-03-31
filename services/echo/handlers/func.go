@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"github.com/litespace-org/litespace/services/echo/constants"
-	"github.com/litespace-org/litespace/services/echo/state"
-	"github.com/litespace-org/litespace/services/echo/utils"
+	"echo/constants"
+	"echo/state"
+	"echo/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pion/webrtc/v4"
