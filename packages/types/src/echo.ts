@@ -1,21 +1,19 @@
-export type ProducePayload = {
+type SessionDescription = {
   type: RTCSdpType;
   sdp: string;
-  userId: number;
 };
 
-export type ProduceApiResponse = {
-  type: RTCSdpType;
-  sdp: string;
+export type ProducePayload = {
+  sessionDescription: SessionDescription;
+  peerId: number;
 };
+
+export type ProduceApiResponse = SessionDescription;
 
 export type ConsumePayload = {
-  type: RTCSdpType;
-  sdp: string;
-  userId: number;
+  sessionDescription: SessionDescription;
+  peerId: number;
+  producerPeerId: number;
 };
 
-export type ConsumeApiResponse = {
-  type: RTCSdpType;
-  sdp: string;
-};
+export type ConsumeApiResponse = SessionDescription;

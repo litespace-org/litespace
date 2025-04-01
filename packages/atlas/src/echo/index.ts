@@ -13,7 +13,7 @@ export class Echo {
     payload: IEcho.ProducePayload
   ): Promise<IEcho.ProduceApiResponse> {
     return this.client
-      .post<IEcho.ProduceApiResponse>("/api/v1/produce", payload)
+      .post<IEcho.ProduceApiResponse>("/produce", payload)
       .then((res) => res.data);
   }
 
@@ -21,7 +21,7 @@ export class Echo {
     payload: IEcho.ConsumePayload
   ): Promise<IEcho.ConsumeApiResponse> {
     return this.client
-      .post<IEcho.ConsumeApiResponse>("/api/v1/consume", payload)
+      .post<IEcho.ConsumeApiResponse>("/consume", payload)
       .then((res) => res.data);
   }
 }

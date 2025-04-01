@@ -1,12 +1,16 @@
 package handlers
 
+import (
+	"github.com/pion/webrtc/v4"
+)
+
 type ApiConsumePayload struct {
-	PeerId         int
-	Sdp            string
-	ProducerPeerId int
+	PeerId             int
+	SessionDescription webrtc.SessionDescription
+	ProducerPeerId     int
 }
 
 type ApiProducePayload struct {
-	PeerId int
-	Sdp    string
+	PeerId             int
+	SessionDescription webrtc.SessionDescription
 }

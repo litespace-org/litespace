@@ -18,6 +18,7 @@ import { Direction } from "@litespace/ui/Direction";
 import { AppConfigProvider } from "@litespace/headless/config";
 import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
 import { LocalStorage } from "@litespace/headless/storage";
+import { EchoProvider } from "@litespace/headless/echo";
 import { env } from "@/lib/env";
 import App from "@/App";
 
@@ -47,22 +48,24 @@ createRoot(document.getElementById("root")!).render(
               <ApiProvider>
                 <SocketProvider>
                   <UserProvider>
-                    <MediaQueryProvider>
-                      <ToastProvider>
-                        <ReduxProvider store={store}>
-                          <PersistGate
-                            loading={
-                              <div className="flex items-center justify-center w-screen h-screen">
-                                <Spinner />
-                              </div>
-                            }
-                            persistor={persistor}
-                          >
-                            <App />
-                          </PersistGate>
-                        </ReduxProvider>
-                      </ToastProvider>
-                    </MediaQueryProvider>
+                    <EchoProvider>
+                      <MediaQueryProvider>
+                        <ToastProvider>
+                          <ReduxProvider store={store}>
+                            <PersistGate
+                              loading={
+                                <div className="flex items-center justify-center w-screen h-screen">
+                                  <Spinner />
+                                </div>
+                              }
+                              persistor={persistor}
+                            >
+                              <App />
+                            </PersistGate>
+                          </ReduxProvider>
+                        </ToastProvider>
+                      </MediaQueryProvider>
+                    </EchoProvider>
                   </UserProvider>
                 </SocketProvider>
               </ApiProvider>

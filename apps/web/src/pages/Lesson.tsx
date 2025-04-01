@@ -6,17 +6,12 @@ import {
   Session,
   PermissionsDialog,
   StreamInfo,
-  ShareScreenDialog,
 } from "@litespace/ui/Session";
 import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useUserContext } from "@litespace/headless/context/user";
-import {
-  SessionV3Payload,
-  useSessionV3,
-  useDevices,
-} from "@litespace/headless/sessions";
+import { useDevices, useSessionV4 } from "@litespace/headless/sessions";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import { asRateLessonQuery } from "@/lib/query";
 import Messages from "@/components/Chat/Messages";
@@ -35,8 +30,7 @@ import CalendarFilled from "@litespace/assets/CalendarFilled";
 import dayjs from "@/lib/dayjs";
 import Timer from "@/components/Session/Timer";
 import { capture } from "@/lib/sentry";
-import { isMobileBrowser } from "@/lib/browser";
-import { useToast } from "@litespace/ui/Toast";
+import { isTutor } from "@litespace/utils";
 
 /**
  * @todos
@@ -50,7 +44,6 @@ const Lesson: React.FC = () => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
   const { user } = useUserContext();
-  const toast = useToast();
   const navigate = useNavigate();
 
   // ============================ Lesson ================================
@@ -123,34 +116,19 @@ const Lesson: React.FC = () => {
 
   // ============================ Session/Streams ================================
   const [permission, setPermission] = useState<"mic-and-camera" | "mic-only">();
-  const [caller, setCaller] = useState<boolean>(false);
   const [requestPermission, setRequestPermission] = useState<boolean>(false);
-  const [showShareScreenDialog, setShowScreenDialog] = useState<boolean>(false);
-  const sessionPayload = useMemo((): SessionV3Payload => {
-    const other = lessonMembers?.other.userId;
-    return {
-      sessionId: lesson.data?.lesson.sessionId,
-      isCaller: caller,
-      userIds: {
-        current: lessonMembers?.current.userId,
-        other,
-      },
-      onUserMediaStreamError() {
-        toast.error({
-          id: "user-media-stream-error",
-          title: intl("session.permissions.error.title"),
-          description: intl("session.permissions.error.desc"),
-        });
-      },
-    };
-  }, [caller, intl, lesson.data?.lesson.sessionId, lessonMembers, toast]);
-  const session = useSessionV3(sessionPayload);
+
+  const sessionv4 = useSessionV4({
+    selfId: user?.id,
+    sessionId: lesson.data?.lesson.sessionId,
+  });
+
   const devices = useDevices();
 
   const onCameraToggle = useCallback(() => {
     if (!devices.info.camera.permissioned) return setRequestPermission(true);
-    return session.toggleCamera();
-  }, [devices.info.camera.permissioned, session]);
+    return sessionv4.userMedia.toggleCamera();
+  }, [devices.info.camera.permissioned, sessionv4.userMedia]);
 
   const streams = useMemo((): StreamInfo[] => {
     if (!lessonMembers) return [];
@@ -169,51 +147,41 @@ const Lesson: React.FC = () => {
 
     const streams: StreamInfo[] = [
       {
-        speaking: session.members.current.speaking,
-        audio: session.members.current.audio,
-        video: session.members.current.video,
-        stream: session.members.current.stream,
+        speaking: sessionv4.userMedia.speaking,
+        audio: sessionv4.userMedia.audio,
+        video: sessionv4.userMedia.video,
+        stream: sessionv4.userMedia.stream,
         cast: false,
         user: current,
       },
     ];
 
-    if (session.members.other.stream)
+    if (sessionv4.consumer.stream)
       streams.push({
-        speaking: session.members.other.speaking,
-        audio: session.members.other.audio,
-        video: session.members.other.video,
+        speaking: sessionv4.member.speaking,
+        audio: sessionv4.member.audio,
+        video: sessionv4.member.video,
         cast: false,
-        stream: session.members.other.stream,
-        user: other,
-      });
-
-    if (session.members.current.screen)
-      streams.push({
-        speaking: false,
-        audio: true,
-        video: true,
-        cast: true,
-        stream: session.members.current.screen,
-        user: current,
-      });
-
-    if (session.members.other.screen)
-      streams.push({
-        speaking: false,
-        audio: true,
-        video: true,
-        cast: true,
-        stream: session.members.other.screen,
+        stream: sessionv4.consumer.stream,
         user: other,
       });
 
     return streams;
-  }, [lessonMembers, session.members]);
+  }, [
+    lessonMembers,
+    sessionv4.consumer.stream,
+    sessionv4.member.audio,
+    sessionv4.member.speaking,
+    sessionv4.member.video,
+    sessionv4.userMedia.audio,
+    sessionv4.userMedia.speaking,
+    sessionv4.userMedia.stream,
+    sessionv4.userMedia.video,
+  ]);
 
   const videoConfig = useMemo(
     () => ({
-      enabled: session.members.current.video,
+      enabled: sessionv4.userMedia.video,
       toggle: onCameraToggle,
       error:
         !devices.info.camera.connected || !devices.info.camera.permissioned,
@@ -222,29 +190,30 @@ const Lesson: React.FC = () => {
       devices.info.camera.connected,
       devices.info.camera.permissioned,
       onCameraToggle,
-      session.members,
+      sessionv4.userMedia.video,
     ]
   );
 
   useEffect(() => {
     if (
       devices.info.microphone.permissioned &&
-      !session.members.current.stream &&
-      !session.members.current.error &&
+      !sessionv4.userMedia.stream &&
+      !sessionv4.userMedia.error &&
       !devices.loading
     )
-      session.capture(devices.info.camera.permissioned, true);
+      sessionv4.userMedia.capture(devices.info.camera.permissioned, true);
   }, [
     devices.error,
     devices.info.camera.permissioned,
     devices.info.microphone.permissioned,
     devices.loading,
-    session,
+    sessionv4.producer,
+    sessionv4.userMedia,
   ]);
 
   const onBeforeUnload = useCallback(() => {
-    session.leave();
-  }, [session]);
+    sessionv4.leave();
+  }, [sessionv4]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", onBeforeUnload);
@@ -252,19 +221,6 @@ const Lesson: React.FC = () => {
       window.removeEventListener("beforeunload", onBeforeUnload);
     };
   }, [onBeforeUnload]);
-
-  const cast = useMemo(() => {
-    if (isMobileBrowser()) return;
-    return {
-      enabled: !!session.screen.stream,
-      toggle: async () => {
-        if (session.screen.stream) return session.screen.stop();
-        if (session.members.other.screen) return setShowScreenDialog(true);
-        return await session.screen.share();
-      },
-      error: !!session.screen.error,
-    };
-  }, [session.members.other.screen, session.screen]);
 
   return (
     <div
@@ -276,7 +232,10 @@ const Lesson: React.FC = () => {
       {chatEnabled && !mq.lg ? null : (
         <div className="mb-4 lg:mb-6 flex gap-2 flex-wrap items-center justify-between">
           <div className="flex flex-row items-center justify-start gap-2">
-            <Link className="lg:hidden w-6 h-6" to={Web.StudentDashboard}>
+            <Link
+              className="lg:hidden w-6 h-6"
+              to={isTutor(user) ? Web.StudentDashboard : Web.TutorDashboard}
+            >
               <ArrowRightLong />
             </Link>
             <div className="flex items-center gap-1">
@@ -320,29 +279,26 @@ const Lesson: React.FC = () => {
       <PermissionsDialog
         onSubmit={(permission) => {
           const enableVideoStream = permission === "mic-and-camera";
-          session
+          sessionv4.userMedia
             .capture(enableVideoStream)
-            .then((result: MediaStream | Error) => {
-              const error = result instanceof Error;
-              if (error) return capture(error);
-
-              const call =
-                requestPermission && !error && session.isOtherMemberJoined;
-              if (call) setCaller(true);
+            .then((stream: MediaStream | Error) => {
+              const error = stream instanceof Error;
+              if (error) return capture(stream);
+              sessionv4.producer.produce(stream);
               setRequestPermission(false);
               devices.recheck();
             });
           setPermission(permission);
         }}
         loading={
-          session.members.current.loadingStream || devices.loading
+          sessionv4.userMedia.loading || devices.loading
             ? permission
             : undefined
         }
         open={
           !devices.info.microphone.permissioned ||
           !!requestPermission ||
-          !!session.members.current.error
+          !!sessionv4.userMedia.error
         }
         devices={{
           mic: devices.info.microphone.connected,
@@ -356,18 +312,6 @@ const Lesson: React.FC = () => {
               }
             : undefined
         }
-      />
-
-      <ShareScreenDialog
-        open={showShareScreenDialog}
-        confirm={async () => {
-          const result = await session.screen.share();
-          if (result instanceof Error) return;
-          session.closeScreenCall();
-          setShowScreenDialog(false);
-        }}
-        close={() => setShowScreenDialog(false)}
-        loading={session.screen.loading}
       />
 
       {lesson.isLoading ? (
@@ -386,12 +330,12 @@ const Lesson: React.FC = () => {
         </div>
       ) : null}
 
-      {!session.sessionManager.joined &&
+      {!sessionv4.manager.joined &&
       lessonMembers &&
       !lesson.isLoading &&
       lesson.data ? (
         <PreSession
-          stream={session.members.current.stream}
+          stream={sessionv4.userMedia.stream}
           session={{
             start: lesson.data.lesson.start,
             duration: lesson.data.lesson.duration,
@@ -408,50 +352,45 @@ const Lesson: React.FC = () => {
               //! TODO: gender is not in the response.
               //! TODO: gender should be optional
               gender: IUser.Gender.Male,
-              incall: session.isOtherMemberJoined,
+              incall: sessionv4.manager.hasJoined(lessonMembers.other.userId),
               role: lessonMembers.other.role,
             },
           }}
           video={videoConfig}
           audio={{
-            enabled: session.members.current.audio,
-            toggle: session.toggleMic,
+            enabled: sessionv4.userMedia.audio,
+            toggle: sessionv4.userMedia.toggleMic,
             error:
               !devices.info.microphone.connected ||
               !devices.info.microphone.permissioned,
           }}
-          speaking={session.members.current.speaking}
-          join={() => {
-            session.sessionManager.join();
-            if (session.isOtherMemberJoined && session.members.current.stream)
-              return setCaller(true);
-          }}
-          joining={session.sessionManager.joining}
+          speaking={sessionv4.userMedia.speaking}
+          join={sessionv4.join}
+          joining={sessionv4.manager.joining}
         />
       ) : null}
 
       {lessonMembers &&
       lesson.data &&
       !lesson.isLoading &&
-      session.sessionManager.joined ? (
+      sessionv4.manager.joined ? (
         <Session
           streams={streams}
           currentUserId={lessonMembers.current.userId}
           chat={{ enabled: chatEnabled, toggle: toggleChat }}
           video={videoConfig}
           audio={{
-            enabled: session.members.current.audio,
-            toggle: session.toggleMic,
+            enabled: sessionv4.userMedia.audio,
+            toggle: sessionv4.userMedia.toggleMic,
             error: !devices.info.microphone.connected,
           }}
-          cast={cast}
           timer={{
             duration: lesson.data.lesson.duration,
             startAt: lesson.data.lesson.start,
           }}
           leave={() => {
             if (!lesson.data) return;
-            session.leave();
+            sessionv4.leave();
             const student = lessonMembers.current.role === IUser.Role.Student;
             const query = asRateLessonQuery({
               lessonId: lessonMembers.current.lessonId,

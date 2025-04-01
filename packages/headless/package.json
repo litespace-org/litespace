@@ -12,6 +12,7 @@
     "./plans": "./dist/plans.js",
     "./server": "./dist/server/index.js",
     "./api": "./dist/api/index.js",
+    "./echo": "./dist/echo/index.js",
     "./socket": "./dist/socket/index.js",
     "./config": "./dist/config/index.js",
     "./mediaQuery": "./dist/mediaQuery/index.js",

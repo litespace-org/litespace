@@ -415,12 +415,15 @@ export function useSpeakingV3(stream: MediaStream | null) {
   return speadking;
 }
 
-export function useSessionEvents(
-  otherMemberId?: number,
-  sessionId?: ISession.Id
-) {
-  const [otherMemberVideo, setOtherMemberVideo] = useState<boolean>(false);
-  const [otherMemberAudio, setOtherMemberAudio] = useState<boolean>(false);
+export function useSessionEvents({
+  memberId,
+  sessionId,
+}: {
+  memberId?: number;
+  sessionId?: ISession.Id;
+}) {
+  const [memberVideo, setMemberVideo] = useState<boolean>(false);
+  const [memberAudio, setMemberAudio] = useState<boolean>(false);
   const socket = useSocket();
 
   const notifyCameraToggle = useCallback(
@@ -441,16 +444,16 @@ export function useSessionEvents(
 
   const onCameraToggle = useCallback(
     ({ camera, user }: { camera: boolean; user: number }) => {
-      if (user === otherMemberId) setOtherMemberVideo(camera);
+      if (user === memberId) setMemberVideo(camera);
     },
-    [otherMemberId]
+    [memberId]
   );
 
   const onMicToggle = useCallback(
     ({ mic, user }: { mic: boolean; user: number }) => {
-      if (user === otherMemberId) setOtherMemberAudio(mic);
+      if (user === memberId) setMemberAudio(mic);
     },
-    [otherMemberId]
+    [memberId]
   );
 
   useEffect(() => {
@@ -467,8 +470,8 @@ export function useSessionEvents(
   return {
     notifyCameraToggle,
     notifyMicToggle,
-    otherMemberAudio,
-    otherMemberVideo,
+    otherMemberAudio: memberAudio,
+    otherMemberVideo: memberVideo,
   };
 }
 
@@ -567,10 +570,10 @@ export function useSessionV3({
     notifyMicToggle,
     otherMemberAudio,
     otherMemberVideo,
-  } = useSessionEvents(userIds.other, sessionId);
+  } = useSessionEvents({ memberId: userIds.other, sessionId });
   const otherMemberSpeaking = useSpeakingV3(otherMemberStream);
 
-  const sessionManager = useSessionMembers(
+  const sessionManager = useSessionManager(
     useMemo(
       () => ({
         sessionId,
@@ -580,6 +583,9 @@ export function useSessionV3({
           screenCall?.close();
           setMainCall(null);
           setScreenCall(null);
+        },
+        onJoin(userId) {
+          console.log(userId);
         },
       }),
       [mainCall, screenCall, sessionId, userIds]
@@ -1092,25 +1098,39 @@ export function useDevices() {
 /**
  * Reflect and manage session members in real-time.
  */
-export function useSessionMembers({
+export function useSessionManager({
   sessionId,
-  currentUserId,
+  selfId,
+  onJoin,
   onLeave,
 }: {
   sessionId?: ISession.Id;
-  currentUserId?: number;
-  onLeave: Void;
+  selfId?: number;
+  onLeave(userId: number): void;
+  onJoin(userId: number): void;
 }) {
   const socket = useSocket();
   const api = useApi();
+  const onLeaveRef = useRef(onLeave);
+  const onJoinRef = useRef(onJoin);
+
+  useEffect(() => {
+    onLeaveRef.current = onLeave;
+    onJoinRef.current = onJoin;
+  });
 
   const [members, setMembers] = useState<number[]>([]);
   const [listening, setListening] = useState<boolean>(false);
   const [joining, setJoining] = useState<boolean>(false);
 
   const joined = useMemo(
-    () => !!currentUserId && members.includes(currentUserId),
-    [currentUserId, members]
+    () => !!selfId && members.includes(selfId),
+    [members, selfId]
+  );
+
+  const hasJoined = useCallback(
+    (memberId?: number) => !!memberId && !!members.includes(memberId),
+    [members]
   );
 
   const findSessionMembers = useCallback(async () => {
@@ -1148,20 +1168,21 @@ export function useSessionMembers({
   const onJoinSession = useCallback(
     ({ userId }: { userId: number }) => {
       console.debug(`${userId} joined the session`);
-      if (currentUserId === userId) setJoining(false);
+      if (selfId === userId) setJoining(false);
       setMembers((prev) => uniq([...prev, userId]));
+      onJoinRef.current(userId);
     },
-    [currentUserId]
+    [selfId]
   );
 
   const onLeaveSession = useCallback(
     ({ userId }: { userId: number }) => {
       console.debug(`${userId} left the session`);
-      if (currentUserId === userId) setJoining(false);
+      if (selfId === userId) setJoining(false);
       setMembers((prev) => [...prev].filter((member) => member !== userId));
-      onLeave();
+      onLeaveRef.current(userId);
     },
-    [currentUserId, onLeave]
+    [selfId]
   );
 
   useEffect(() => {
@@ -1183,7 +1204,7 @@ export function useSessionMembers({
       return setMembers((prev) => uniq([...prev, ...sessionMembersQuery.data]));
   }, [sessionMembersQuery.data, sessionMembersQuery.isLoading]);
 
-  return { join, leave, members, listening, joining, joined };
+  return { join, leave, members, listening, joining, joined, hasJoined };
 }
 
 // ================================== Session V4 ==============================================
@@ -1212,44 +1233,46 @@ function createPeer(): RTCPeerConnection {
   return new RTCPeerConnection({ iceServers });
 }
 
-function useProducer() {
+function useProducer(selfId?: number) {
   const echo = useEcho();
-  const producer = useMemo(() => createPeer(), []);
+  const [peer, setPeer] = useState<RTCPeerConnection | null>(null);
 
-  const onNegotiationNeeded = useCallback(async () => {
-    const offer = await producer.createOffer(offerOptions);
+  const produce = useCallback(
+    async (stream: MediaStream) => {
+      if (!selfId) return;
+      const peer = createPeer();
+      const offer = await peer.createOffer(offerOptions);
+      await peer.setLocalDescription(new RTCSessionDescription(offer));
 
-    if (!offer.sdp)
-      throw new Error(
-        "Invalid offer: missing session description protocol (sdp)"
-      );
+      peer.addEventListener("icegatheringstatechange", async () => {
+        if (peer.iceGatheringState === "complete") {
+          const description = peer.localDescription;
+          if (!description)
+            throw new Error("Invalid state: missing local session description");
 
-    await producer.setLocalDescription(offer).catch(console.log);
+          const desc = await echo.produce({
+            sessionDescription: description,
+            peerId: selfId,
+          });
 
-    const desc = await echo.produce({
-      type: "offer",
-      sdp: offer.sdp,
-      userId: 1,
-    });
+          peer.setRemoteDescription(new RTCSessionDescription(desc));
+        }
+      });
 
-    producer
-      .setRemoteDescription(new RTCSessionDescription(desc))
-      .catch(console.log);
-  }, [echo, producer]);
+      const tracks = stream.getTracks();
+      tracks.map((track) => peer.addTrack(track, stream));
+      setPeer(peer);
+    },
+    [echo, selfId]
+  );
 
-  useEffect(() => {
-    producer.addEventListener("negotiationneeded", onNegotiationNeeded);
-    return () => {
-      producer.removeEventListener("negotiationneeded", onNegotiationNeeded);
-    };
-  }, [onNegotiationNeeded, producer]);
-
-  return producer;
+  return { produce, peer };
 }
 
-function useConsumer() {
+function useConsumer(selfId?: number) {
   const echo = useEcho();
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [peer, setPeer] = useState<RTCPeerConnection | null>(null);
 
   const consumer = useMemo(() => {
     const peer = createPeer();
@@ -1257,35 +1280,31 @@ function useConsumer() {
     return peer;
   }, []);
 
-  // ==================== Negotition ====================
+  const consume = useCallback(
+    async (memberId: number) => {
+      if (!selfId) return;
 
-  const onNegotiationNeeded = useCallback(async () => {
-    const offer = await consumer.createOffer(offerOptions);
+      const peer = createPeer();
+      peer.addTransceiver("video", { direction: "recvonly" });
 
-    if (!offer.sdp)
-      throw new Error(
-        "Invalid offer: missing session description protocol (sdp)"
-      );
+      const offer = await peer.createOffer(offerOptions);
+      await peer.setLocalDescription(new RTCSessionDescription(offer));
 
-    await consumer.setLocalDescription(offer).catch(console.log);
+      const description = peer.localDescription;
+      if (!description)
+        throw new Error("Invalid state: missing local session description");
 
-    const desc = await echo.consume({
-      type: "offer",
-      sdp: offer.sdp,
-      userId: 1,
-    });
+      const desc = await echo.consume({
+        sessionDescription: description,
+        peerId: selfId,
+        producerPeerId: memberId,
+      });
 
-    consumer
-      .setRemoteDescription(new RTCSessionDescription(desc))
-      .catch(console.log);
-  }, [consumer, echo]);
-
-  useEffect(() => {
-    consumer.addEventListener("negotiationneeded", onNegotiationNeeded);
-    return () => {
-      consumer.removeEventListener("negotiationneeded", onNegotiationNeeded);
-    };
-  }, [onNegotiationNeeded, consumer]);
+      peer.setRemoteDescription(new RTCSessionDescription(desc));
+      setPeer(peer);
+    },
+    [echo, selfId]
+  );
 
   // ==================== Handle incoming streams ====================
 
@@ -1296,31 +1315,131 @@ function useConsumer() {
   }, []);
 
   useEffect(() => {
-    consumer.addEventListener("track", onTrack);
+    peer?.addEventListener("track", onTrack);
     return () => {
-      consumer.removeEventListener("track", onTrack);
+      peer?.removeEventListener("track", onTrack);
     };
-  }, [consumer, onTrack]);
+  }, [onTrack, peer]);
 
-  return { consumer, stream };
+  return { consumer, stream, consume };
 }
 
-export function useSessionV4() {
-  const userMedia = useUserMedia();
-  const producer = useProducer();
-  const consumer = useConsumer();
+function useNotifyState(sessionId?: ISession.Id) {
+  const socket = useSocket();
 
-  const attachStream = useCallback(
-    (stream: MediaStream) => {
-      const tracks = stream.getTracks();
-      tracks.map((track) => producer.addTrack(track, stream));
+  const notifyCamera = useCallback(
+    (camera: boolean) => {
+      if (!sessionId || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleCamera, { session: sessionId, camera });
     },
-    [producer]
+    [sessionId, socket]
   );
 
+  const notifyMic = useCallback(
+    (mic: boolean) => {
+      if (!sessionId || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleMic, { session: sessionId, mic });
+    },
+    [sessionId, socket]
+  );
+
+  return { notifyMic, notifyCamera };
+}
+
+function useMemberState({
+  memberId,
+  stream,
+}: {
+  memberId?: number;
+  stream: MediaStream | null;
+}) {
+  const socket = useSocket();
+  const [video, setVideo] = useState<boolean>(false);
+  const [audio, setAudio] = useState<boolean>(false);
+  const speaking = useSpeakingV3(stream);
+
+  const onCameraToggled = useCallback(
+    ({ camera, user }: { camera: boolean; user: number }) => {
+      if (user === memberId) setVideo(camera);
+    },
+    [memberId]
+  );
+
+  const onMicToggled = useCallback(
+    ({ mic, user }: { mic: boolean; user: number }) => {
+      if (user === memberId) setAudio(mic);
+    },
+    [memberId]
+  );
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.CameraToggled, onCameraToggled);
+    socket.on(Wss.ServerEvent.MicToggled, onMicToggled);
+
+    return () => {
+      socket.off(Wss.ServerEvent.CameraToggled, onCameraToggled);
+      socket.off(Wss.ServerEvent.MicToggled, onMicToggled);
+    };
+  }, [onCameraToggled, onMicToggled, socket]);
+
+  return { audio, video, speaking };
+}
+
+type SessionV4Payload = {
+  selfId?: number;
+  sessionId?: ISession.Id;
+  memberId?: number;
+};
+
+export function useSessionV4({
+  selfId,
+  sessionId,
+  memberId,
+}: SessionV4Payload) {
+  const userMedia = useUserMedia();
+  const producer = useProducer(selfId);
+  const consumer = useConsumer(selfId);
+  const { notifyCamera, notifyMic } = useNotifyState(sessionId);
+  const member = useMemberState({ memberId, stream: consumer.stream });
+
+  const manager = useSessionManager({
+    selfId,
+    sessionId,
+    onJoin(userId) {
+      if (!selfId || selfId === userId) return;
+      console.log("consume...", userId);
+      consumer.consume(userId);
+    },
+    onLeave(userId) {
+      console.log(`${userId} left the session`);
+    },
+  });
+
+  useEffect(() => {
+    notifyCamera(userMedia.video);
+  }, [notifyCamera, userMedia.video]);
+
+  useEffect(() => {
+    notifyMic(userMedia.audio);
+  }, [notifyMic, userMedia.audio]);
+
+  const leave = useCallback(() => {}, []);
+
+  const join = useCallback(() => {
+    const stream = userMedia.stream;
+    if (!stream) return;
+    producer.produce(stream);
+    manager.join();
+  }, [manager, producer, userMedia.stream]);
+
   return {
-    attachStream,
+    producer,
     userMedia,
     consumer,
+    manager,
+    leave,
+    join,
+    member,
   };
 }

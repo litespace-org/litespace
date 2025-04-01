@@ -10,8 +10,8 @@
     ></video>
 
     <br />
-
-    Recieved Video<br />
+    Recieved Video
+    <br />
     <video
       id="invideo"
       style="border: solid 2px black; border-radius: 20px; margin: 8px"
@@ -46,16 +46,29 @@
       <button onclick="connect()">Connect</button>
     </div>
 
-    Logs<br />
-    <div id="logs"></div>
+    <label> Logs </label>
+    <br />
+    <div id="logs" style="font-family: monospace"></div>
 
     <br />
 
-    Local Session Description<br />
-    <textarea id="localSessionDescription" readonly="true"></textarea> <br />
+    <label>Local Session Description</label>
+    <br />
+    <textarea
+      id="localSessionDescription"
+      readonly="true"
+      style="width: 400px; height: 400px"
+    ></textarea>
+    <br />
 
-    Remote Session Description<br />
-    <textarea id="remoteSessionDescription" readonly="true"></textarea> <br />
+    <label> Remote Session Description </label>
+    <br />
+    <textarea
+      id="remoteSessionDescription"
+      readonly="true"
+      style="width: 400px; height: 400px"
+    ></textarea>
+    <br />
   </body>
   <script>
     var sdp = "";
@@ -81,9 +94,10 @@
       pc.oniceconnectionstatechange = (e) => log(pc.iceConnectionState);
       pc.onicecandidate = (event) => {
         if (event.candidate === null) {
-          console.log(event);
-          sdp = btoa(JSON.stringify(pc.localDescription));
-          document.getElementById("localSessionDescription").value = sdp;
+          console.log("onicecandidate", event);
+          sdp = pc.localDescription;
+          document.getElementById("localSessionDescription").value =
+            JSON.stringify(sdp);
         }
       };
 
@@ -118,12 +132,17 @@
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ peerId: Number(peerId), sdp }),
+        body: JSON.stringify({
+          peerId: Number(peerId),
+          sessionDescription: sdp,
+        }),
       })
         .then((res) => res.json())
         .then((res) => {
-          pc.setRemoteDescription(JSON.parse(atob(res)));
-          document.getElementById("remoteSessionDescription").value = res;
+          console.log("produce", res);
+          pc.setRemoteDescription(res);
+          document.getElementById("remoteSessionDescription").value =
+            JSON.stringify(res);
         })
         .catch(log);
     }
@@ -144,13 +163,15 @@
         body: JSON.stringify({
           peerId: Number(peerId),
           producerPeerId: Number(producerPeerId),
-          sdp,
+          sessionDescription: sdp,
         }),
       })
         .then((res) => res.json())
         .then((res) => {
-          pc.setRemoteDescription(JSON.parse(atob(res)));
-          document.getElementById("remoteSessionDescription").value = res;
+          console.log("consume", res);
+          pc.setRemoteDescription(res);
+          document.getElementById("remoteSessionDescription").value =
+            JSON.stringify(res);
         })
         .catch(log);
     }

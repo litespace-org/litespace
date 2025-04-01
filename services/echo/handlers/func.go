@@ -53,19 +53,17 @@ func Consume(c *fiber.Ctx) error {
 		}
 
 		// decode the remote sdp and set it in the peer connection
-		var remoteSDP webrtc.SessionDescription
-		utils.DecodeSDP(body.Sdp, &remoteSDP)
-		utils.Must(nil, peerConnection.SetRemoteDescription(remoteSDP))
+		utils.Must(nil, peerConnection.SetRemoteDescription(body.SessionDescription))
 
 		// create answer, set it in the peer connection, and encode and
 		// send it in JSON response payload
 		var localSDB = utils.Must(peerConnection.CreateAnswer(nil)).(webrtc.SessionDescription)
 		utils.Must(nil, peerConnection.SetLocalDescription(localSDB))
 
-		return c.JSON(utils.EncodeSDP(&localSDB))
+		return c.JSON(&localSDB)
 	}
 
-	return c.JSON(utils.EncodeSDP(peerConnection.LocalDescription()))
+	return c.JSON(peerConnection.LocalDescription())
 }
 
 // a fiber handler that shall be used by produces in order to establish
@@ -85,15 +83,12 @@ func Produce(c *fiber.Ctx) error {
 
 	peerConnection := utils.Must(utils.GetPeerConn(body.PeerId, constants.Config)).(*webrtc.PeerConnection)
 
-	// decode the remote sdp and set it in the peer connection
-	var remoteSDP webrtc.SessionDescription
-	utils.DecodeSDP(body.Sdp, &remoteSDP)
-	utils.Must(nil, peerConnection.SetRemoteDescription(remoteSDP))
+	utils.Must(nil, peerConnection.SetRemoteDescription(body.SessionDescription))
 
 	// create answer, set it in the peer connection, and encode and
 	// send it in JSON response payload
 	var localSDB = utils.Must(peerConnection.CreateAnswer(nil)).(webrtc.SessionDescription)
 	utils.Must(nil, peerConnection.SetLocalDescription(localSDB))
 
-	return c.JSON(utils.EncodeSDP(&localSDB))
+	return c.JSON(&localSDB)
 }

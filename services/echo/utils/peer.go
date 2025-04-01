@@ -3,8 +3,6 @@
 package utils
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -130,22 +128,4 @@ func GatherICEs(conn *webrtc.PeerConnection) {
 	// we do this because we only can exchange one signaling message
 	// in a production application you should exchange ICE Candidates via OnICECandidate
 	<-gatherComplete
-}
-
-// JSON encode + base64 a SessionDescription.
-func EncodeSDP(obj *webrtc.SessionDescription) string {
-	b, err := json.Marshal(obj)
-	if err != nil {
-		panic(err)
-	}
-	return base64.StdEncoding.EncodeToString(b)
-}
-
-// Decode a base64 and unmarshal JSON into a SessionDescription.
-func DecodeSDP(in string, obj *webrtc.SessionDescription) error {
-	b, err := base64.StdEncoding.DecodeString(in)
-	if err != nil {
-		return err
-	}
-	return json.Unmarshal(b, obj)
 }

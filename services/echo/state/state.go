@@ -3,6 +3,7 @@ package state
 
 import (
 	"errors"
+
 	"github.com/pion/webrtc/v4"
 )
 
@@ -21,7 +22,7 @@ func Get(id int) *PeerContainer {
 // add a new peer connection in the state map.
 func Add(id int, conn *webrtc.PeerConnection) error {
 	if state[PeerId(id)] != nil {
-		return errors.New("peer id already exists!")
+		return errors.New("peer id already exists")
 	}
 
 	container := PeerContainer{
