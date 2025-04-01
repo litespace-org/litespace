@@ -5,13 +5,14 @@ import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { Button } from "@/components/Button";
 import cn from "classnames";
-import { Void } from "@litespace/types";
+import { ISession, Void } from "@litespace/types";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 export type Props = {
   onSubmit: (permission: "mic-and-camera" | "mic-only") => void;
   close?: Void;
   loading?: "mic-and-camera" | "mic-only";
+  type: ISession.Type;
   open: boolean;
   devices: {
     /**
@@ -30,14 +31,21 @@ export type Props = {
 };
 
 export const PermissionsDialog: React.FC<Props> = ({
-  onSubmit,
   loading,
   open,
   devices,
+  type,
   close,
+  onSubmit,
 }) => {
   const mq = useMediaQuery();
   const intl = useFormatMessage();
+  const sessionType = intl(
+    type === "lesson" ? "session.type.lesson" : "session.type.interview"
+  );
+  const toSessionType = intl(
+    type === "lesson" ? "session.type.to-lesson" : "session.type.to-interview"
+  );
 
   const errorMessage = useMemo(() => {
     if (!devices.speakers) return intl("session.permissions.no-speakers");
@@ -66,7 +74,7 @@ export const PermissionsDialog: React.FC<Props> = ({
             tag="span"
             className="text-natural-950 font-bold text-body md:text-subtitle-1"
           >
-            {intl("session.permissions.title")}
+            {intl("session.permissions.title", { type: sessionType })}
           </Typography>
           {errorMessage ? (
             <Typography
@@ -80,7 +88,7 @@ export const PermissionsDialog: React.FC<Props> = ({
             tag="span"
             className="text-natural-700 font-normal md:font-medium text-tiny md:text-caption"
           >
-            {intl("session.permissions.note")}
+            {intl("session.permissions.note", { type: toSessionType })}
           </Typography>
         </div>
 

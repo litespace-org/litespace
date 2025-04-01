@@ -1,5 +1,5 @@
 import React from "react";
-import { IUser, Void } from "@litespace/types";
+import { ISession, IUser, Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { useMemo } from "react";
@@ -20,8 +20,24 @@ export const Ready: React.FC<{
   join: Void;
   loading?: boolean;
   disabled?: boolean;
-}> = ({ otherMember, join, error, start, duration, loading, disabled }) => {
+  type: ISession.Type;
+}> = ({
+  otherMember,
+  join,
+  error,
+  start,
+  duration,
+  loading,
+  disabled,
+  type = "lesson",
+}) => {
   const intl = useFormatMessage();
+  const sessionType = intl(
+    type === "lesson" ? "session.type.lesson" : "session.type.interview"
+  );
+  const toSessionType = intl(
+    type === "lesson" ? "session.type.to-lesson" : "session.type.to-interview"
+  );
 
   const explaination = useMemo(() => {
     const isOtherMemberTutor =
@@ -29,22 +45,30 @@ export const Ready: React.FC<{
       otherMember.role === IUser.Role.Tutor;
 
     if (isOtherMemberTutor && otherMember.gender === IUser.Gender.Male)
-      return intl("session.ready.explaination.full.male-tutor");
+      return intl("session.ready.explaination.full.male-tutor", {
+        type: sessionType,
+      });
 
     if (isOtherMemberTutor && otherMember.gender !== IUser.Gender.Male)
-      return intl("session.ready.explaination.full.female-tutor");
+      return intl("session.ready.explaination.full.female-tutor", {
+        type: sessionType,
+      });
 
     if (
       otherMember.role === IUser.Role.Student &&
       otherMember.gender === IUser.Gender.Male
     )
-      return intl("session.ready.explaination.full.male-student");
+      return intl("session.ready.explaination.full.male-student", {
+        type: sessionType,
+      });
     if (
       otherMember.role === IUser.Role.Student &&
       otherMember.gender !== IUser.Gender.Male
     )
-      return intl("session.ready.explaination.full.female-student");
-  }, [otherMember.role, otherMember.gender, intl]);
+      return intl("session.ready.explaination.full.female-student", {
+        type: sessionType,
+      });
+  }, [otherMember.role, otherMember.gender, intl, sessionType]);
 
   const sessionStartMessage = useMemo(() => {
     const now = dayjs();
@@ -54,18 +78,21 @@ export const Ready: React.FC<{
     if (now.isBefore(start))
       return intl("session.ready.session-will-start-in", {
         time: sessionStart.fromNow(true),
+        type: sessionType,
       });
 
     if (now.isAfter(end)) {
       return intl("session.ready.session-ended-since", {
         time: end.fromNow(true),
+        type: sessionType,
       });
     }
 
     return intl("session.ready.session-started-since", {
       time: sessionStart.fromNow(true),
+      type: sessionType,
     });
-  }, [start, duration, intl]);
+  }, [start, duration, intl, sessionType]);
 
   return (
     <div
@@ -79,7 +106,9 @@ export const Ready: React.FC<{
           tag="h3"
           className="font-bold text-natural-950 text-body lg:text-subtitle-1"
         >
-          {intl("session.ready.title")}
+          {intl("session.ready.title", {
+            type: sessionType,
+          })}
         </Typography>
         {otherMember.incall ? (
           <Typography
@@ -97,7 +126,9 @@ export const Ready: React.FC<{
       <div className="flex flex-col items-center gap-4 lg:gap-2">
         {error ? (
           <Typography tag="p" className="text-destructive-700 text-caption">
-            {intl("session.ready.error")}
+            {intl("session.ready.error", {
+              type: sessionType,
+            })}
           </Typography>
         ) : null}
         <Button
@@ -106,7 +137,9 @@ export const Ready: React.FC<{
           disabled={disabled || loading}
           loading={loading}
         >
-          {intl("session.ready.join")}
+          {intl("session.ready.join", {
+            type: toSessionType,
+          })}
         </Button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { ISession, IFilter } from ".";
+import { ISession, IFilter, IUser } from ".";
 
 export enum Status {
   Pending = 1,
@@ -42,6 +42,15 @@ export type Self = {
   canceledAt: string | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type PopulatedMember = {
+  userId: number;
+  name: IUser.Self["name"];
+  image: IUser.Self["image"];
+  role: IUser.Role;
+  phone: string | null;
+  verifiedPhone: boolean;
 };
 
 export type Row = {
@@ -117,4 +126,9 @@ export type FindInterviewsApiQuery = IFilter.Pagination & {
   levels?: number[];
   signed?: boolean;
   signers?: number[];
+};
+
+export type FindInterviewByIdApiResponse = {
+  interview: Self;
+  members: PopulatedMember[];
 };
