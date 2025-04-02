@@ -31,6 +31,7 @@ import dayjs from "@/lib/dayjs";
 import Timer from "@/components/Session/Timer";
 import { capture } from "@/lib/sentry";
 import { isTutor } from "@litespace/utils";
+import Spinner from "@litespace/assets/Spinner";
 
 /**
  * @todos
@@ -121,6 +122,7 @@ const Lesson: React.FC = () => {
   const sessionv4 = useSessionV4({
     selfId: user?.id,
     sessionId: lesson.data?.lesson.sessionId,
+    memberId: lessonMembers?.other.userId,
   });
 
   const devices = useDevices();
@@ -160,7 +162,7 @@ const Lesson: React.FC = () => {
       streams.push({
         speaking: sessionv4.member.speaking,
         audio: sessionv4.member.audio,
-        video: sessionv4.member.video,
+        video: sessionv4.member.video || true,
         cast: false,
         stream: sessionv4.consumer.stream,
         user: other,
@@ -207,7 +209,6 @@ const Lesson: React.FC = () => {
     devices.info.camera.permissioned,
     devices.info.microphone.permissioned,
     devices.loading,
-    sessionv4.producer,
     sessionv4.userMedia,
   ]);
 
@@ -255,6 +256,17 @@ const Lesson: React.FC = () => {
                 </Typography>
               ) : null}
             </div>
+
+            {sessionv4.consumer.connectionState === "connecting" ||
+            sessionv4.consumer.iceGatheringState === "gathering" ? (
+              <div
+                dir="ltr"
+                className="flex flex-row gap-2 items-center justify-center"
+              >
+                <Typography tag="span">Connecting...</Typography>
+                <Spinner className="w-6 h-6" />
+              </div>
+            ) : null}
           </div>
           {lesson.data ? (
             <div className="flex gap-2 md:gap-4 items-center">
@@ -366,7 +378,11 @@ const Lesson: React.FC = () => {
           }}
           speaking={sessionv4.userMedia.speaking}
           join={sessionv4.join}
-          joining={sessionv4.manager.joining}
+          joining={
+            sessionv4.manager.joining ||
+            sessionv4.producer.iceGatheringState === "gathering" ||
+            sessionv4.producer.connectionState === "connecting"
+          }
         />
       ) : null}
 

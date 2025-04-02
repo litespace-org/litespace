@@ -7,22 +7,46 @@ import (
 	"github.com/pion/webrtc/v4"
 )
 
-var state = make(PeersMap)
+var producers = make(PeersMap)
+var consumers = make(PeersMap)
 
-// returns the number of peers in the state map
+type PeerRole string
+
+const (
+	PeerRoleProducer PeerRole = "producer"
+	PeerRoleConsumer PeerRole = "consumer"
+)
+
+// Returns the number of peers (produers + consumers) in the state.
 func Count() int {
-	return len(state)
+	return len(producers) + len(consumers)
+}
+
+func getPeerMap(role PeerRole) PeersMap {
+	if role == PeerRoleProducer {
+		return producers
+	}
+
+	return consumers
 }
 
 // returns a specific PeerContainer from the state map.
-func Get(id int) *PeerContainer {
-	return state[PeerId(id)]
+func Get(id int, role PeerRole) *PeerContainer {
+	return getPeerMap(role)[PeerId(id)]
 }
 
 // add a new peer connection in the state map.
-func Add(id int, conn *webrtc.PeerConnection) error {
-	if state[PeerId(id)] != nil {
-		return errors.New("peer id already exists")
+func Add(
+	id int,
+	role PeerRole,
+	conn *webrtc.PeerConnection,
+) error {
+	peerMap := getPeerMap(role)
+
+	if peerMap[PeerId(id)] != nil {
+		return errors.New(
+			"peer id already exists",
+		)
 	}
 
 	container := PeerContainer{
@@ -30,14 +54,16 @@ func Add(id int, conn *webrtc.PeerConnection) error {
 		Tracks: []*webrtc.TrackLocalStaticRTP{},
 	}
 
-	state[PeerId(id)] = &container
+	peerMap[PeerId(id)] = &container
 	return nil
 }
 
 // ensures the connection is disconnected, and clears the container
 // and its associated streams from the memory.
-func Remove(id int) error {
-	var container = state[PeerId(id)]
+func Remove(id int, role PeerRole) error {
+	peerMap := getPeerMap(role)
+	container := peerMap[PeerId(id)]
+
 	if container == nil {
 		return nil
 	}
@@ -48,7 +74,7 @@ func Remove(id int) error {
 
 	container.Conn = nil
 	container.Tracks = nil
-	delete(state, PeerId(id))
+	delete(peerMap, PeerId(id))
 
 	return nil
 }

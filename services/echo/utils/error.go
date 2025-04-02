@@ -21,7 +21,9 @@ func Must(res any, err error) any {
 func Recover(c *fiber.Ctx) error {
 	if r := recover(); r != nil {
 		log.Println(r)
-		return c.SendStatus(fiber.StatusInternalServerError)
+		return c.SendStatus(
+			fiber.StatusInternalServerError,
+		)
 	}
 	return nil
 }

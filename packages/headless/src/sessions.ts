@@ -13,6 +13,8 @@ import { useApi } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/constants";
 import { useEcho } from "@/echo";
+import { isAxiosError } from "axios";
+import { sleep } from "@litespace/utils";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -587,6 +589,9 @@ export function useSessionV3({
         onJoin(userId) {
           console.log(userId);
         },
+        onInitialMembers(userIds) {
+          console.log(userIds);
+        },
       }),
       [mainCall, screenCall, sessionId, userIds]
     )
@@ -1103,20 +1108,24 @@ export function useSessionManager({
   selfId,
   onJoin,
   onLeave,
+  onInitialMembers,
 }: {
   sessionId?: ISession.Id;
   selfId?: number;
   onLeave(userId: number): void;
   onJoin(userId: number): void;
+  onInitialMembers(userIds: number[]): void;
 }) {
   const socket = useSocket();
   const api = useApi();
   const onLeaveRef = useRef(onLeave);
   const onJoinRef = useRef(onJoin);
+  const onInitialMembersRef = useRef(onInitialMembers);
 
   useEffect(() => {
     onLeaveRef.current = onLeave;
     onJoinRef.current = onJoin;
+    onInitialMembersRef.current = onInitialMembers;
   });
 
   const [members, setMembers] = useState<number[]>([]);
@@ -1142,6 +1151,7 @@ export function useSessionManager({
     queryFn: findSessionMembers,
     queryKey: [QueryKey.FindSessionMembers, sessionId],
     enabled: !!sessionId,
+    refetchOnWindowFocus: false,
   });
 
   const listen = useCallback(() => {
@@ -1167,7 +1177,6 @@ export function useSessionManager({
 
   const onJoinSession = useCallback(
     ({ userId }: { userId: number }) => {
-      console.debug(`${userId} joined the session`);
       if (selfId === userId) setJoining(false);
       setMembers((prev) => uniq([...prev, userId]));
       onJoinRef.current(userId);
@@ -1177,7 +1186,6 @@ export function useSessionManager({
 
   const onLeaveSession = useCallback(
     ({ userId }: { userId: number }) => {
-      console.debug(`${userId} left the session`);
       if (selfId === userId) setJoining(false);
       setMembers((prev) => [...prev].filter((member) => member !== userId));
       onLeaveRef.current(userId);
@@ -1201,7 +1209,11 @@ export function useSessionManager({
 
   useEffect(() => {
     if (sessionMembersQuery.data && !sessionMembersQuery.isLoading)
-      return setMembers((prev) => uniq([...prev, ...sessionMembersQuery.data]));
+      return setMembers((prev) => {
+        const members = uniq([...prev, ...sessionMembersQuery.data]);
+        onInitialMembersRef.current(members);
+        return members;
+      });
   }, [sessionMembersQuery.data, sessionMembersQuery.isLoading]);
 
   return { join, leave, members, listening, joining, joined, hasJoined };
@@ -1233,74 +1245,166 @@ function createPeer(): RTCPeerConnection {
   return new RTCPeerConnection({ iceServers });
 }
 
-function useProducer(selfId?: number) {
+function useProducer({
+  selfId,
+  onConnectionStateChange,
+}: {
+  selfId?: number;
+  onConnectionStateChange: (state: RTCPeerConnectionState) => void;
+}) {
   const echo = useEcho();
   const [peer, setPeer] = useState<RTCPeerConnection | null>(null);
+  const [connectionState, setConnectionState] =
+    useState<RTCPeerConnectionState>("new");
+  const [iceGatheringState, setIceGatheringState] =
+    useState<RTCIceGatheringState>("new");
+
+  // Refs
+  const onConnectionStateChangeRef = useRef(onConnectionStateChange);
+
+  // Ref handlers
+  useEffect(() => {
+    onConnectionStateChangeRef.current = onConnectionStateChange;
+  });
 
   const produce = useCallback(
     async (stream: MediaStream) => {
-      if (!selfId) return;
+      if (!selfId) return Promise.resolve();
       const peer = createPeer();
+      const videoTransceiver = peer.addTransceiver("video");
+      const audioTransceiver = peer.addTransceiver("audio");
+      // Generate offer and set local description
       const offer = await peer.createOffer(offerOptions);
       await peer.setLocalDescription(new RTCSessionDescription(offer));
-
-      peer.addEventListener("icegatheringstatechange", async () => {
-        if (peer.iceGatheringState === "complete") {
-          const description = peer.localDescription;
-          if (!description)
-            throw new Error("Invalid state: missing local session description");
-
-          const desc = await echo.produce({
-            sessionDescription: description,
-            peerId: selfId,
-          });
-
-          peer.setRemoteDescription(new RTCSessionDescription(desc));
-        }
+      // Add stream traks to the peer connection
+      const tracks = stream.getTracks();
+      tracks.map((track) => {
+        if (track.kind === "audio") audioTransceiver.sender.replaceTrack(track);
+        else videoTransceiver.sender.replaceTrack(track);
+        // peer.addTrack(track, stream)
       });
 
-      const tracks = stream.getTracks();
-      tracks.map((track) => peer.addTrack(track, stream));
+      peer.addEventListener("icecandidate", (event) => {
+        if (event.candidate === null)
+          console.log(`Got a null candidate, Connection can be established.`);
+      });
+
+      peer.addEventListener("icegatheringstatechange", async () => {
+        console.log("ICE gathering state (producer): ", peer.iceGatheringState);
+
+        setIceGatheringState(peer.iceGatheringState);
+
+        if (peer.iceGatheringState !== "complete") return;
+        if (peer.connectionState === "connected") return;
+
+        const description = peer.localDescription;
+        if (!description)
+          throw new Error("Invalid state: missing local session description");
+
+        const desc = await echo.produce({
+          sessionDescription: description,
+          peerId: selfId,
+        });
+
+        peer.setRemoteDescription(new RTCSessionDescription(desc));
+      });
+
+      peer.addEventListener("connectionstatechange", () => {
+        console.log("Connection state (producer): ", peer.iceConnectionState);
+        const state = peer.connectionState;
+        onConnectionStateChangeRef.current(state);
+        setConnectionState(state);
+      });
+
       setPeer(peer);
     },
     [echo, selfId]
   );
 
-  return { produce, peer };
+  const close = useCallback(() => {
+    peer?.close();
+    setConnectionState("new");
+    setIceGatheringState("new");
+    setPeer(null);
+  }, [peer]);
+
+  return { produce, peer, close, connectionState, iceGatheringState };
 }
 
 function useConsumer(selfId?: number) {
   const echo = useEcho();
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [peer, setPeer] = useState<RTCPeerConnection | null>(null);
-
-  const consumer = useMemo(() => {
-    const peer = createPeer();
-    peer.addTransceiver("video", { direction: "recvonly" });
-    return peer;
-  }, []);
+  const [connectionState, setConnectionState] =
+    useState<RTCPeerConnectionState>("new");
+  const [iceGatheringState, setIceGatheringState] =
+    useState<RTCIceGatheringState>("new");
 
   const consume = useCallback(
     async (memberId: number) => {
       if (!selfId) return;
 
       const peer = createPeer();
-      peer.addTransceiver("video", { direction: "recvonly" });
+      peer.addTransceiver("video");
 
       const offer = await peer.createOffer(offerOptions);
       await peer.setLocalDescription(new RTCSessionDescription(offer));
 
-      const description = peer.localDescription;
-      if (!description)
-        throw new Error("Invalid state: missing local session description");
-
-      const desc = await echo.consume({
-        sessionDescription: description,
-        peerId: selfId,
-        producerPeerId: memberId,
+      peer.addEventListener("icecandidate", (event) => {
+        if (event.candidate === null)
+          console.log(
+            `Got a null candidate, We are ready to stablish a peer connection`
+          );
       });
 
-      peer.setRemoteDescription(new RTCSessionDescription(desc));
+      peer.addEventListener("connectionstatechange", () => {
+        const state = peer.connectionState;
+        console.log("Connection state: (consumer)", state);
+        if (state === "closed" || state === "failed") {
+          setStream(null);
+          setPeer(null);
+        }
+      });
+
+      peer.addEventListener("connectionstatechange", () => {
+        const state = peer.connectionState;
+        console.log("Connection state (producer): ", state);
+        setConnectionState(state);
+      });
+
+      peer.addEventListener("icegatheringstatechange", async () => {
+        console.log("ICE gathering state: (consumer)", peer.iceGatheringState);
+        setIceGatheringState(peer.iceGatheringState);
+
+        if (peer.iceGatheringState !== "complete") return;
+        if (peer.connectionState === "connected") return;
+
+        while (true) {
+          try {
+            const description = peer.localDescription;
+            if (!description)
+              throw new Error(
+                "Invalid state: missing local session description"
+              );
+
+            const desc = await echo.consume({
+              sessionDescription: description,
+              peerId: selfId,
+              producerPeerId: memberId,
+            });
+
+            peer.setRemoteDescription(new RTCSessionDescription(desc));
+            break;
+          } catch (error) {
+            if (!isAxiosError(error) || error.status !== 404) throw error;
+            console.log(
+              `Producer ${memberId} is not found, will retry in 1 second.`
+            );
+            await sleep(1_000); // wait for one second before retrying again
+          }
+        }
+      });
+
       setPeer(peer);
     },
     [echo, selfId]
@@ -1311,7 +1415,16 @@ function useConsumer(selfId?: number) {
   const onTrack = useCallback((event: RTCTrackEvent) => {
     const stream = first(event.streams);
     if (!stream) return;
-    setStream(stream);
+    const tracks = stream.getTracks();
+    const count = tracks.length;
+    const kind = tracks.map((track) => track.kind).join("+");
+    console.log(
+      `Received a remote stream with ${count} track(s)\nKind: ${kind}`
+    );
+    setStream((prev) => {
+      if (!prev) return stream;
+      return new MediaStream([...prev.getTracks(), ...stream.getTracks()]);
+    });
   }, []);
 
   useEffect(() => {
@@ -1321,7 +1434,16 @@ function useConsumer(selfId?: number) {
     };
   }, [onTrack, peer]);
 
-  return { consumer, stream, consume };
+  // ==================== Cleanup ====================
+
+  const close = useCallback(() => {
+    peer?.close();
+    stream?.getTracks().forEach((track) => track.stop());
+    setStream(null);
+    setPeer(null);
+  }, [peer, stream]);
+
+  return { stream, consume, close, iceGatheringState, connectionState };
 }
 
 function useNotifyState(sessionId?: ISession.Id) {
@@ -1398,21 +1520,35 @@ export function useSessionV4({
   memberId,
 }: SessionV4Payload) {
   const userMedia = useUserMedia();
-  const producer = useProducer(selfId);
   const consumer = useConsumer(selfId);
   const { notifyCamera, notifyMic } = useNotifyState(sessionId);
   const member = useMemberState({ memberId, stream: consumer.stream });
-
   const manager = useSessionManager({
     selfId,
     sessionId,
     onJoin(userId) {
       if (!selfId || selfId === userId) return;
-      console.log("consume...", userId);
+      console.log(`Consume "${userId}" stream`);
       consumer.consume(userId);
     },
     onLeave(userId) {
-      console.log(`${userId} left the session`);
+      console.log(`${userId} left the session close=${userId === memberId}`);
+      if (userId === memberId) return consumer.close();
+    },
+    onInitialMembers(userIds) {
+      for (const userId of userIds) {
+        if (!selfId || selfId === userId) continue;
+        console.log(`Consume "${userId}" stream (intitial)`);
+        consumer.consume(userId);
+      }
+    },
+  });
+
+  const producer = useProducer({
+    selfId,
+    onConnectionStateChange(state) {
+      // Join the session when the webrtc connection is established
+      if (state === "connected") manager.join();
     },
   });
 
@@ -1424,14 +1560,16 @@ export function useSessionV4({
     notifyMic(userMedia.audio);
   }, [notifyMic, userMedia.audio]);
 
-  const leave = useCallback(() => {}, []);
+  const leave = useCallback(() => {
+    producer.close();
+    consumer.close();
+  }, [consumer, producer]);
 
   const join = useCallback(() => {
     const stream = userMedia.stream;
     if (!stream) return;
     producer.produce(stream);
-    manager.join();
-  }, [manager, producer, userMedia.stream]);
+  }, [producer, userMedia.stream]);
 
   return {
     producer,

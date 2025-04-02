@@ -4,7 +4,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"log"
 
@@ -23,10 +22,10 @@ connections and streams as well.
 Note: it returns the peer connection with the associated id if it's already
 established before, by retrieving it from the state package.
 */
-func GetPeerConn(id int, config webrtc.Configuration) (*webrtc.PeerConnection, error) {
+func GetPeerConn(id int, role state.PeerRole, config webrtc.Configuration) (*webrtc.PeerConnection, error) {
 	// check if the peer connection is already established
-	if state.Get(id) != nil {
-		return state.Get(id).Conn, nil
+	if state.Get(id, role) != nil {
+		return state.Get(id, role).Conn, nil
 	}
 
 	mediaEngine := &webrtc.MediaEngine{}
@@ -64,24 +63,27 @@ func GetPeerConn(id int, config webrtc.Configuration) (*webrtc.PeerConnection, e
 	// ensure that the peer connection only stored when it's connected
 	// and moreover it's removed when the connection is terminated
 	conn.OnConnectionStateChange(func(connState webrtc.PeerConnectionState) {
-		log.Println(fmt.Sprintf("Peer %d: %s", id, connState))
+		log.Printf("Peer %d: %s (%s)", id, connState, state.PeerRoleProducer)
 		if connState == webrtc.PeerConnectionStateConnected {
-			state.Add(id, conn)
+			state.Add(id, role, conn)
 		} else {
-			state.Remove(id)
+			state.Remove(id, role)
 		}
 	})
 
 	// store different tracks received from the remote peer in the global state
 	conn.OnTrack(func(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPReceiver) {
+
+		log.Printf("Track received from peer %d: kind: %s, codec: %s", id, remoteTrack.Kind().String(), remoteTrack.Codec().MimeType)
+
 		// create a local track with the remote track capabilities
-		localTrack, newTrackErr := webrtc.NewTrackLocalStaticRTP(remoteTrack.Codec().RTPCodecCapability, "video", "pion")
+		localTrack, newTrackErr := webrtc.NewTrackLocalStaticRTP(remoteTrack.Codec().RTPCodecCapability, remoteTrack.ID(), remoteTrack.ID())
 		if newTrackErr != nil {
 			panic(newTrackErr)
 		}
 
 		// store the track address in the state map
-		peer := state.Get(id)
+		peer := state.Get(id, role)
 		if peer == nil {
 			log.Println("container not found! should never happen.")
 			return
@@ -112,8 +114,8 @@ close an already established peer connection. an error is returned
 if the connection cannot be closed. and nothing happens if the peer
 connection cannot be found.
 */
-func ClosePeerConn(id int) error {
-	peer := state.Get(id)
+func ClosePeerConn(id int, role state.PeerRole) error {
+	peer := state.Get(id, role)
 	if peer == nil {
 		return nil
 	}
