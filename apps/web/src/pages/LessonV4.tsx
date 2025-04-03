@@ -11,7 +11,7 @@ import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useUserContext } from "@litespace/headless/context/user";
-import { useDevices, useSessionV5 } from "@litespace/headless/sessions";
+import { useDevices, useSessionV4 } from "@litespace/headless/sessions";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import { asRateLessonQuery } from "@/lib/query";
 import Messages from "@/components/Chat/Messages";
@@ -31,7 +31,15 @@ import dayjs from "@/lib/dayjs";
 import Timer from "@/components/Session/Timer";
 import { capture } from "@/lib/sentry";
 import { isTutor } from "@litespace/utils";
+import Spinner from "@litespace/assets/Spinner";
 
+/**
+ * @todos
+ * 1. Only "join" the session in case the user is listening and the peer is ready.
+ * 2. Handle loading & errors.
+ * 3. Improve and align terminology.
+ * 4. Leave the session on permission-state changed.
+ */
 const Lesson: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const intl = useFormatMessage();
@@ -111,7 +119,7 @@ const Lesson: React.FC = () => {
   const [permission, setPermission] = useState<"mic-and-camera" | "mic-only">();
   const [requestPermission, setRequestPermission] = useState<boolean>(false);
 
-  const sessionv5 = useSessionV5({
+  const sessionv4 = useSessionV4({
     selfId: user?.id,
     sessionId: lesson.data?.lesson.sessionId,
     memberId: lessonMembers?.other.userId,
@@ -121,8 +129,8 @@ const Lesson: React.FC = () => {
 
   const onCameraToggle = useCallback(() => {
     if (!devices.info.camera.permissioned) return setRequestPermission(true);
-    return sessionv5.userMedia.toggleCamera();
-  }, [devices.info.camera.permissioned, sessionv5.userMedia]);
+    return sessionv4.userMedia.toggleCamera();
+  }, [devices.info.camera.permissioned, sessionv4.userMedia]);
 
   const streams = useMemo((): StreamInfo[] => {
     if (!lessonMembers) return [];
@@ -141,41 +149,41 @@ const Lesson: React.FC = () => {
 
     const streams: StreamInfo[] = [
       {
-        speaking: sessionv5.userMedia.speaking,
-        audio: sessionv5.userMedia.audio,
-        video: sessionv5.userMedia.video,
-        stream: sessionv5.userMedia.stream,
+        speaking: sessionv4.userMedia.speaking,
+        audio: sessionv4.userMedia.audio,
+        video: sessionv4.userMedia.video,
+        stream: sessionv4.userMedia.stream,
         cast: false,
         user: current,
       },
     ];
 
-    if (sessionv5.peer.stream)
+    if (sessionv4.consumer.stream)
       streams.push({
-        speaking: sessionv5.member.speaking,
-        audio: sessionv5.member.audio,
-        video: sessionv5.member.video || true,
+        speaking: sessionv4.member.speaking,
+        audio: sessionv4.member.audio,
+        video: sessionv4.member.video || true,
         cast: false,
-        stream: sessionv5.peer.stream,
+        stream: sessionv4.consumer.stream,
         user: other,
       });
 
     return streams;
   }, [
     lessonMembers,
-    sessionv5.member.audio,
-    sessionv5.member.speaking,
-    sessionv5.member.video,
-    sessionv5.peer.stream,
-    sessionv5.userMedia.audio,
-    sessionv5.userMedia.speaking,
-    sessionv5.userMedia.stream,
-    sessionv5.userMedia.video,
+    sessionv4.consumer.stream,
+    sessionv4.member.audio,
+    sessionv4.member.speaking,
+    sessionv4.member.video,
+    sessionv4.userMedia.audio,
+    sessionv4.userMedia.speaking,
+    sessionv4.userMedia.stream,
+    sessionv4.userMedia.video,
   ]);
 
   const videoConfig = useMemo(
     () => ({
-      enabled: sessionv5.userMedia.video,
+      enabled: sessionv4.userMedia.video,
       toggle: onCameraToggle,
       error:
         !devices.info.camera.connected || !devices.info.camera.permissioned,
@@ -184,29 +192,29 @@ const Lesson: React.FC = () => {
       devices.info.camera.connected,
       devices.info.camera.permissioned,
       onCameraToggle,
-      sessionv5.userMedia.video,
+      sessionv4.userMedia.video,
     ]
   );
 
   useEffect(() => {
     if (
       devices.info.microphone.permissioned &&
-      !sessionv5.userMedia.stream &&
-      !sessionv5.userMedia.error &&
+      !sessionv4.userMedia.stream &&
+      !sessionv4.userMedia.error &&
       !devices.loading
     )
-      sessionv5.userMedia.capture(devices.info.camera.permissioned, true);
+      sessionv4.userMedia.capture(devices.info.camera.permissioned, true);
   }, [
     devices.error,
     devices.info.camera.permissioned,
     devices.info.microphone.permissioned,
     devices.loading,
-    sessionv5.userMedia,
+    sessionv4.userMedia,
   ]);
 
   const onBeforeUnload = useCallback(() => {
-    sessionv5.leave();
-  }, [sessionv5]);
+    sessionv4.leave();
+  }, [sessionv4]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", onBeforeUnload);
@@ -249,8 +257,8 @@ const Lesson: React.FC = () => {
               ) : null}
             </div>
 
-            {/* {sessionv5.consumer.connectionState === "connecting" ||
-            sessionv5.consumer.iceGatheringState === "gathering" ? (
+            {sessionv4.consumer.connectionState === "connecting" ||
+            sessionv4.consumer.iceGatheringState === "gathering" ? (
               <div
                 dir="ltr"
                 className="flex flex-row gap-2 items-center justify-center"
@@ -258,7 +266,7 @@ const Lesson: React.FC = () => {
                 <Typography tag="span">Connecting...</Typography>
                 <Spinner className="w-6 h-6" />
               </div>
-            ) : null} */}
+            ) : null}
           </div>
           {lesson.data ? (
             <div className="flex gap-2 md:gap-4 items-center">
@@ -283,26 +291,26 @@ const Lesson: React.FC = () => {
       <PermissionsDialog
         onSubmit={(permission) => {
           const enableVideoStream = permission === "mic-and-camera";
-          sessionv5.userMedia
+          sessionv4.userMedia
             .capture(enableVideoStream)
             .then((stream: MediaStream | Error) => {
               const error = stream instanceof Error;
               if (error) return capture(stream);
-              sessionv5.join();
+              sessionv4.producer.produce(stream);
               setRequestPermission(false);
               devices.recheck();
             });
           setPermission(permission);
         }}
         loading={
-          sessionv5.userMedia.loading || devices.loading
+          sessionv4.userMedia.loading || devices.loading
             ? permission
             : undefined
         }
         open={
           !devices.info.microphone.permissioned ||
           !!requestPermission ||
-          !!sessionv5.userMedia.error
+          !!sessionv4.userMedia.error
         }
         devices={{
           mic: devices.info.microphone.connected,
@@ -334,12 +342,12 @@ const Lesson: React.FC = () => {
         </div>
       ) : null}
 
-      {!sessionv5.manager.joined &&
+      {!sessionv4.manager.joined &&
       lessonMembers &&
       !lesson.isLoading &&
       lesson.data ? (
         <PreSession
-          stream={sessionv5.userMedia.stream}
+          stream={sessionv4.userMedia.stream}
           session={{
             start: lesson.data.lesson.start,
             duration: lesson.data.lesson.duration,
@@ -356,24 +364,24 @@ const Lesson: React.FC = () => {
               //! TODO: gender is not in the response.
               //! TODO: gender should be optional
               gender: IUser.Gender.Male,
-              incall: sessionv5.manager.hasJoined(lessonMembers.other.userId),
+              incall: sessionv4.manager.hasJoined(lessonMembers.other.userId),
               role: lessonMembers.other.role,
             },
           }}
           video={videoConfig}
           audio={{
-            enabled: sessionv5.userMedia.audio,
-            toggle: sessionv5.userMedia.toggleMic,
+            enabled: sessionv4.userMedia.audio,
+            toggle: sessionv4.userMedia.toggleMic,
             error:
               !devices.info.microphone.connected ||
               !devices.info.microphone.permissioned,
           }}
-          speaking={sessionv5.userMedia.speaking}
-          join={sessionv5.join}
+          speaking={sessionv4.userMedia.speaking}
+          join={sessionv4.join}
           joining={
-            sessionv5.manager.joining
-            // || sessionv5.producer.iceGatheringState === "gathering" ||
-            // sessionv5.producer.connectionState === "connecting"
+            sessionv4.manager.joining ||
+            sessionv4.producer.iceGatheringState === "gathering" ||
+            sessionv4.producer.connectionState === "connecting"
           }
         />
       ) : null}
@@ -381,15 +389,15 @@ const Lesson: React.FC = () => {
       {lessonMembers &&
       lesson.data &&
       !lesson.isLoading &&
-      sessionv5.manager.joined ? (
+      sessionv4.manager.joined ? (
         <Session
           streams={streams}
           currentUserId={lessonMembers.current.userId}
           chat={{ enabled: chatEnabled, toggle: toggleChat }}
           video={videoConfig}
           audio={{
-            enabled: sessionv5.userMedia.audio,
-            toggle: sessionv5.userMedia.toggleMic,
+            enabled: sessionv4.userMedia.audio,
+            toggle: sessionv4.userMedia.toggleMic,
             error: !devices.info.microphone.connected,
           }}
           timer={{
@@ -398,7 +406,7 @@ const Lesson: React.FC = () => {
           }}
           leave={() => {
             if (!lesson.data) return;
-            sessionv5.leave();
+            sessionv4.leave();
             const student = lessonMembers.current.role === IUser.Role.Student;
             const query = asRateLessonQuery({
               lessonId: lessonMembers.current.lessonId,

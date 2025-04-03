@@ -112,8 +112,6 @@
   "session.permissions.no-speakers": "عذرًا، لم نتمكن من العثور على سماعات متصلة بجهازك.",
   "session.permissions.no-mic": "عذرًا، لم نتمكن من العثور على ميكروفون متصل بجهازك",
   "session.permissions.no-camera": "عذرًا، لم نتمكن من العثور على كاميرا متصلة بجهازك",
-  "session.permissions.error.title": "حدث خطأ أثناء محاولة الوصول إلى الكاميرا أو الميكروفون.",
-  "session.permissions.error.desc": "يرجى التأكد من توصيل الكاميرا أو الميكروفون بجهازك، وعدم استخدام أي تطبيق آخر لهما في الوقت الحالي.",
   "session.share-screen.title": "هل تريد مشاركة الشاشة؟",
   "session.share-screen.description": "سيؤدي مشاركة الشاشة لديك الي ايقاف مشاركة الشاشة الحالية.",
   "platform.rating.question": "شاركنا رأيك لتحسين تجربتك!",

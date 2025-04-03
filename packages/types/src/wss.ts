@@ -1,4 +1,5 @@
 import { IMessage, ISession, ITutor, Server } from "@/index";
+import { SessionDescription } from "@/webrtc";
 
 /**
  * Events emitted by the client
@@ -12,6 +13,10 @@ export enum ClientEvent {
   PreJoinSession = "PreJoinSession",
   JoinSession = "JoinSession",
   LeaveSession = "LeaveSession",
+  SessionOffer = "SessionOffer",
+  SessionAnswer = "SessionAnswer",
+  IceCandidate = "IceCandidate",
+
   /**
    * @deprecated
    */
@@ -38,6 +43,9 @@ export enum ServerEvent {
 
   MemberJoinedSession = "MemberJoinedSessionId",
   MemberLeftSession = "MemberLeftSessionId",
+  SessionOffer = "SessionOffer",
+  SessionAnswer = "SessionAnswer",
+  IceCandidate = "IceCandidate",
 
   UserJoinedSession = "UserJoinedSession",
 
@@ -128,6 +136,18 @@ export type ClientEventsMap = {
   [ClientEvent.PreJoinSession]: EventCallback<{ sessionId: ISession.Id }>;
   [ClientEvent.JoinSession]: EventCallback<{ sessionId: ISession.Id }>;
   [ClientEvent.LeaveSession]: EventCallback<{ sessionId: ISession.Id }>;
+  [ClientEvent.SessionOffer]: EventCallback<{
+    sessionId: ISession.Id;
+    offer: SessionDescription;
+  }>;
+  [ClientEvent.SessionAnswer]: EventCallback<{
+    sessionId: ISession.Id;
+    answer: RTCSessionDescriptionInit;
+  }>;
+  [ClientEvent.IceCandidate]: EventCallback<{
+    sessionId: ISession.Id;
+    candidate: RTCIceCandidateInit;
+  }>;
 };
 
 /**
@@ -176,6 +196,15 @@ export type ServerEventsMap = {
   [ServerEvent.TutorUpdated]: EventCallback<ITutor.FullTutor>;
   [ServerEvent.ServerStats]: EventCallback<Server.Stats>;
   [ServerEvent.UserTyping]: EventCallback<{ roomId: number; userId: number }>;
+  [ServerEvent.SessionOffer]: EventCallback<{
+    offer: SessionDescription;
+  }>;
+  [ServerEvent.SessionAnswer]: EventCallback<{
+    answer: RTCSessionDescriptionInit;
+  }>;
+  [ServerEvent.IceCandidate]: EventCallback<{
+    candidate: RTCIceCandidateInit;
+  }>;
 };
 
 // Generic types to extract the payload of the events

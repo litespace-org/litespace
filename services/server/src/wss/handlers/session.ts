@@ -14,6 +14,41 @@ const stdout = logger("wss");
 
 const generalSessionPayload = zod.object({ sessionId: sessionId });
 
+const sdpType = zod.union([
+  zod.literal("answer"),
+  zod.literal("offer"),
+  zod.literal("pranswer"),
+  zod.literal("rollback"),
+]);
+
+const iceCandidate = zod.object({
+  candidate: zod.string().optional(),
+  sdpMLineIndex: zod.number().optional().or(zod.null()),
+  sdpMid: zod.string().optional().or(zod.null()),
+  usernameFragment: zod.string().optional().or(zod.null()),
+});
+
+const sessionOfferPayload = zod.object({
+  sessionId,
+  offer: zod.object({
+    type: sdpType,
+    sdp: zod.string(),
+  }),
+});
+
+const sessionAnswerPayload = zod.object({
+  sessionId,
+  answer: zod.object({
+    type: sdpType,
+    sdp: zod.string().optional(),
+  }),
+});
+
+const iceCandidatePayload = zod.object({
+  sessionId,
+  candidate: iceCandidate,
+});
+
 export class Session extends WssHandler {
   public init(): Session {
     this.socket.on(
@@ -24,6 +59,18 @@ export class Session extends WssHandler {
     this.socket.on(
       Wss.ClientEvent.LeaveSession,
       this.onLeaveSession.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.SessionOffer,
+      this.onSessionOffer.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.SessionAnswer,
+      this.onSessionAnswer.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.IceCandidate,
+      this.onIceCandidate.bind(this)
     );
     return this;
   }
@@ -143,6 +190,63 @@ export class Session extends WssHandler {
           userId: user.id,
         }
       );
+    });
+    if (result instanceof Error) stdout.error(result.message);
+  }
+
+  async onSessionOffer(data: unknown) {
+    const result = await safe(async () => {
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const { sessionId, offer } = sessionOfferPayload.parse(data);
+      const ok = await canAccessSession({
+        sessionId,
+        userId: user.id,
+      });
+      if (!ok) return;
+
+      this.socket.broadcast
+        .to(asSessionRoomId(sessionId))
+        .emit(Wss.ServerEvent.SessionOffer, { offer });
+    });
+    if (result instanceof Error) stdout.error(result.message);
+  }
+
+  async onSessionAnswer(data: unknown) {
+    const result = await safe(async () => {
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const { sessionId, answer } = sessionAnswerPayload.parse(data);
+      const ok = await canAccessSession({
+        sessionId,
+        userId: user.id,
+      });
+      if (!ok) return;
+
+      this.socket.broadcast
+        .to(asSessionRoomId(sessionId))
+        .emit(Wss.ServerEvent.SessionAnswer, { answer });
+    });
+    if (result instanceof Error) stdout.error(result.message);
+  }
+
+  async onIceCandidate(data: unknown) {
+    const result = await safe(async () => {
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const { sessionId, candidate } = iceCandidatePayload.parse(data);
+      const ok = await canAccessSession({
+        sessionId,
+        userId: user.id,
+      });
+      if (!ok) return;
+
+      this.socket.broadcast
+        .to(asSessionRoomId(sessionId))
+        .emit(Wss.ServerEvent.IceCandidate, { candidate });
     });
     if (result instanceof Error) stdout.error(result.message);
   }
