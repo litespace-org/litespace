@@ -17,8 +17,6 @@
     "test:ci": "env-cmd -f .env.test.ci pnpm run test",
     "pm2:start": "pm2 start ecosystem.config.js",
     "peer": "peerjs --port 4001 --key peer --path /ls",
-    "docker": "docker compose up -d",
-    "docker:linux": "sudo docker compose up -d",
     "check": "tsc --noEmit",
     "wait": "wait-on tcp:4000"
   },
