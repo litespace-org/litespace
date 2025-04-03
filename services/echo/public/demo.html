@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+  <body style="max-width: 480px">
+    My Video<br />
+    <video
+      id="outvideo"
+      style="border: solid 2px black; border-radius: 20px; margin: 8px"
+      autoplay
+      muted
+    ></video>
+
+    <br />
+    Recieved Video
+    <br />
+    <video
+      id="invideo"
+      style="border: solid 2px black; border-radius: 20px; margin: 8px"
+      autoplay
+      muted
+    ></video>
+
+    <br />
+
+    <div
+      style="
+        height: 100%;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      "
+    >
+      <div>
+        <label for="peer-id">Peer Id</label>
+        <input id="peer-id" type="number" />
+      </div>
+
+      <button onclick="produce()">Publish a Broadcast</button>
+
+      <div>
+        <label for="producer-peer-id">Producer Peer Id</label>
+        <input id="producer-peer-id" type="number" />
+      </div>
+      <button onclick="consume()">Join a Broadcast</button><br />
+
+      <button onclick="connect()">Connect</button>
+    </div>
+
+    <label> Logs </label>
+    <br />
+    <div id="logs" style="font-family: monospace"></div>
+
+    <br />
+
+    <label>Local Session Description</label>
+    <br />
+    <textarea
+      id="localSessionDescription"
+      readonly="true"
+      style="width: 400px; height: 400px"
+    ></textarea>
+    <br />
+
+    <label> Remote Session Description </label>
+    <br />
+    <textarea
+      id="remoteSessionDescription"
+      readonly="true"
+      style="width: 400px; height: 400px"
+    ></textarea>
+    <br />
+  </body>
+  <script>
+    var sdp = "";
+    var pc = null;
+
+    const log = (msg) => {
+      document.getElementById("logs").innerHTML += msg + "<br>";
+    };
+
+    function connect() {
+      pc = new RTCPeerConnection({
+        iceServers: [
+          {
+            urls: "stun:turn.litespace.org",
+          },
+          {
+            urls: "turn:turn.litespace.org",
+            username: "litespace",
+            credential: "litespace",
+          },
+        ],
+      });
+      pc.oniceconnectionstatechange = (e) => log(pc.iceConnectionState);
+      pc.onicecandidate = (event) => {
+        if (event.candidate === null) {
+          console.log("onicecandidate", event);
+          sdp = pc.localDescription;
+          document.getElementById("localSessionDescription").value =
+            JSON.stringify(sdp);
+        }
+      };
+
+      pc.addTransceiver("video");
+
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: false })
+        .then((stream) => {
+          stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+          document.getElementById("outvideo").srcObject = stream;
+          pc.createOffer()
+            .then((d) => pc.setLocalDescription(d))
+            .catch(log);
+        })
+        .catch(log);
+
+      pc.ontrack = function (event) {
+        console.log(event.streams);
+        const el = document.getElementById("invideo");
+        el.srcObject = event.streams[0];
+        el.autoplay = true;
+        el.controls = true;
+      };
+    }
+
+    function produce() {
+      const peerId = document.getElementById("peer-id").value;
+      if (peerId === "") return alert("choose a peer id value");
+
+      fetch("/produce", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          peerId: Number(peerId),
+          sessionDescription: sdp,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log("produce", res);
+          pc.setRemoteDescription(res);
+          document.getElementById("remoteSessionDescription").value =
+            JSON.stringify(res);
+        })
+        .catch(log);
+    }
+
+    function consume() {
+      const peerId = document.getElementById("peer-id").value;
+      if (peerId === "") return alert("choose a peer id value");
+
+      const producerPeerId = document.getElementById("producer-peer-id").value;
+      if (producerPeerId === "")
+        return alert("choose a producer peer id value");
+
+      fetch("/consume", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          peerId: Number(peerId),
+          producerPeerId: Number(producerPeerId),
+          sessionDescription: sdp,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log("consume", res);
+          pc.setRemoteDescription(res);
+          document.getElementById("remoteSessionDescription").value =
+            JSON.stringify(res);
+        })
+        .catch(log);
+    }
+  </script>
+</html>
