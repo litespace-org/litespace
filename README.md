@@ -1,6 +1,6 @@
 # LiteSpace
 
-# Project Strucutre
+## Project Strucutre
 
 - `packages/*`
   - `packages/assets` - sharable assets (files and images).
@@ -18,11 +18,11 @@
   - `apps/landing` - LiteSpace landing page.
   - `apps/web` - LiteSpace main web platform.
 
-# Project Setup
+## Project Setup
 
-## Tools
+### Tools
 
-### nvm
+#### nvm
 
 1. Install NVM (node version manager)
 
@@ -53,7 +53,7 @@
    nvm use
    ```
 
-### pnpm
+#### pnpm
 
 Enable `pnpm`
 
@@ -61,7 +61,7 @@ Enable `pnpm`
 corepack enable pnpm
 ```
 
-## Run the server
+### Run the server
 
 1. Run docker compose
 
@@ -95,11 +95,11 @@ corepack enable pnpm
 
 Verify pnpm installation by running `pnpm -v`. You should see no errors.
 
-### Docker
+#### Docker
 
 Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) (recommended but feel free to use any linux distro)
 
-# Port Map
+## Port Map
 
 | Process              | Location           | Port |
 | -------------------- | ------------------ | ---- |
@@ -118,3 +118,17 @@ Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker
 | PostgreSQL           | System             | 5432 |
 | Redis                | System             | 6379 |
 | Kafka                | System             | 9092 |
+
+## WebRTC Browser Compatibility (P2P)
+
+1. ✅ : Compatible
+2. ⛔ : Not compatible
+3. ❔ : Not tested
+
+|               | Chrome | Firefox | Safari | Chrome Mobile | Brave |
+| ------------- | ------ | ------- | ------ | ------------- | ----- |
+| Chrome        | ❔     | ❔      | ❔     | ❔            | ❔    |
+| Firefox       | ❔     | ❔      | ❔     | ❔            | ❔    |
+| Safari        | ❔     | ❔      | ❔     | ❔            | ❔    |
+| Chrome Mobile | ❔     | ❔      | ❔     | ❔            | ❔    |
+| Brave         | ❔     | ❔      | ❔     | ❔            | ❔    |
