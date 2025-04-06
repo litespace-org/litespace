@@ -22,6 +22,7 @@ func Stats(c *fiber.Ctx) error {
 // streams from the producer to the consumer connection and sends the local
 // SDP to the client.
 func Consume(c *fiber.Ctx) error {
+	utils.Recover(c)
 	var body ApiConsumePayload
 
 	if err := c.BodyParser(&body); err != nil {
@@ -118,7 +119,11 @@ func Produce(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusConflict)
 	}
 
-	peerConnection := utils.Must(utils.GetPeerConn(body.PeerId, state.PeerRoleProducer, constants.Config)).(*webrtc.PeerConnection)
+	peerConnection := utils.Must(utils.GetPeerConn(
+		body.PeerId,
+		state.PeerRoleProducer,
+		constants.Config,
+	)).(*webrtc.PeerConnection)
 
 	utils.Must(
 		nil,
