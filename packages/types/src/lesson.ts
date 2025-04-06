@@ -145,7 +145,9 @@ export type FindLessonsApiQuery = IFilter.SkippablePagination & {
 
 export type FindUserLessonsApiResponse = Paginated<{
   lesson: Self;
-  members: PopuldatedMember[];
+  members: (PopuldatedMember & {
+    attended: boolean;
+  })[];
 }>;
 
 export enum Duration {
@@ -168,5 +170,7 @@ export type LessonDays = LessonDay[];
 
 export type FindLessonByIdApiResponse = {
   lesson: Self;
-  members: PopuldatedMember[];
+  members: (PopuldatedMember & {
+    attended: boolean;
+  })[];
 };

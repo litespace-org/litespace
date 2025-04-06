@@ -12,7 +12,9 @@ export function useFindLessons({
   ...query
 }: ILesson.FindLessonsApiQuery & { userOnly?: boolean }): UsePaginateResult<{
   lesson: ILesson.Self;
-  members: ILesson.PopuldatedMember[];
+  members: (ILesson.PopuldatedMember & {
+    attended: boolean;
+  })[];
 }> {
   const api = useApi();
 
