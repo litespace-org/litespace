@@ -67,8 +67,8 @@ app.use(
 app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(authMiddleware({ jwtSecret, ghostPassword: ghostConfig.password }));
 app.use("/api/v1/auth", routes.auth);
+app.use(authMiddleware({ jwtSecret, ghostPassword: ghostConfig.password }));
 app.use("/api/v1/contact-request", routes.contactRequest);
 app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/lesson", routes.lesson(context));

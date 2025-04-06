@@ -84,6 +84,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       error: query.isError,
       refetch: { user: query.refetch, meta: meta.refetch },
       set: setData,
+      errorObj: query.error,
       logout,
     };
   }, [
@@ -93,6 +94,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     query.isFetching,
     query.isError,
     query.refetch,
+    query.error,
     meta.isLoading,
     meta.isFetching,
     meta.refetch,

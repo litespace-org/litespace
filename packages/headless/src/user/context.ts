@@ -6,6 +6,7 @@ export type Context = {
   meta: ITutor.Self | null;
   loading: boolean;
   error: boolean;
+  errorObj: Error | null;
   fetching: boolean;
   refetch: { user: Void; meta: Void };
   set: (payload: {

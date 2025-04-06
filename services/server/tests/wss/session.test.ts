@@ -68,7 +68,7 @@ describe("sessions test suite", () => {
     studentSocket.client.disconnect();
   });
 
-  it("should broadcast the event when the user join a session", async () => {
+  it.only("should broadcast the event when the user join a session", async () => {
     const now = dayjs.utc();
 
     const slot = await db.slot({

@@ -10,14 +10,35 @@ import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
 import clarity from "@/lib/clarity";
+import { AxiosError } from "axios";
 
 const Root: React.FC = () => {
   const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const { user } = useUserContext();
+  const { user, errorObj, logout } = useUserContext();
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  // check if token is expired
+  useEffect(() => {
+    // routes that can be visited without auth
+    const noAuthRoutes: string[] = [
+      Web.Login,
+      Web.Register,
+      Web.ResetPassword,
+      Web.ForgetPassword,
+      Web.VerifyEmail,
+      Web.CompleteProfile,
+    ];
+
+    if (!(errorObj instanceof AxiosError)) return;
+    if (errorObj && errorObj.status === 498) {
+      if (noAuthRoutes.includes(window.location.pathname)) return;
+      navigate(Web.Login);
+      logout();
+    }
+  }, [errorObj, logout, navigate]);
 
   useEffect(() => {
     const root = location.pathname === Web.Root;
