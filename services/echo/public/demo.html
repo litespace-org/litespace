@@ -46,6 +46,13 @@
       <button onclick="connect()">Connect</button>
     </div>
 
+    <div style="margin: 20px 0px">
+      <button onclick="toggleCam()">Toggle Cam</button>
+      <span id="cam-status">true</span>
+      <button onclick="toggleMic()">Toggle Mic</button>
+      <span id="mic-status">true</span>
+    </div>
+
     <label> Logs </label>
     <br />
     <div id="logs" style="font-family: monospace"></div>
@@ -70,6 +77,22 @@
     ></textarea>
     <br />
   </body>
+
+  <script>
+    let cam = true;
+    let mic = true;
+
+    function toggleCam() {
+      cam = !cam;
+      document.getElementById("cam-status").innerText = cam;
+    }
+
+    function toggleMic() {
+      mic = !mic;
+      document.getElementById("mic-status").innerText = mic;
+    }
+  </script>
+
   <script>
     var sdp = "";
     var pc = null;
@@ -103,8 +126,9 @@
 
       pc.addTransceiver("video");
 
+      console.log(cam, mic);
       navigator.mediaDevices
-        .getUserMedia({ video: true, audio: false })
+        .getUserMedia({ video: cam, audio: mic })
         .then((stream) => {
           stream.getTracks().forEach((track) => pc.addTrack(track, stream));
           document.getElementById("outvideo").srcObject = stream;
@@ -117,9 +141,19 @@
       pc.ontrack = function (event) {
         console.log(event.streams);
         const el = document.getElementById("invideo");
-        el.srcObject = event.streams[0];
+
         el.autoplay = true;
         el.controls = true;
+        el.volume = 0.75;
+
+        if (!el.srcObject) {
+          el.srcObject = event.streams[0];
+          return;
+        }
+
+        for (const track of event.streams[0].getTracks()) {
+          el.srcObject.addTrack(track);
+        }
       };
     }
 
@@ -139,7 +173,6 @@
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log("produce", res);
           pc.setRemoteDescription(res);
           document.getElementById("remoteSessionDescription").value =
             JSON.stringify(res);
@@ -168,7 +201,6 @@
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log("consume", res);
           pc.setRemoteDescription(res);
           document.getElementById("remoteSessionDescription").value =
             JSON.stringify(res);
