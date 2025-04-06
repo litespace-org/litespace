@@ -12,6 +12,7 @@ import withdrawMethod from "@/routes/withdrawMethod";
 import auth from "@/routes/auth";
 import topic from "@/routes/topic";
 import cache from "@/routes/cache";
+import asset from "@/routes/asset";
 import session from "@/routes/session";
 import contactRequest from "@/routes/contactRequest";
 
@@ -30,6 +31,7 @@ export default {
   auth,
   topic,
   cache,
+  asset,
   session,
   availabilitySlot,
 };

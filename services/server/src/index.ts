@@ -59,6 +59,8 @@ io.engine.use(
 io.engine.use(onlyForHandshake(authorizeSocket));
 io.on("connection", wssHandler);
 
+app.use("/speed-test-sample", express.static("public/sample.bmp"));
+
 app.use(
   logger(function (tokens, req, res) {
     return [
@@ -91,6 +93,7 @@ app.use("/api/v1/invoice", routes.invoice(context));
 app.use("/api/v1/topic", routes.topic);
 app.use("/api/v1/withdraw-method/", routes.withdrawMethod);
 app.use("/api/v1/cache", routes.cache);
+app.use("/api/v1/asset", routes.asset);
 app.use("/api/v1/session", routes.session);
 app.use(errorHandler);
 
