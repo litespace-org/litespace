@@ -1,6 +1,6 @@
 import { IFilter, IRating, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { MutationKey, QueryKey } from "@/constants";
 import { useApi } from "@/api";
 import { OnError } from "@/types/query";
@@ -17,12 +17,16 @@ export function useFindTutorRatings(
     return api.rating.findTutorRatings(id, pagination);
   }, [api.rating, id, pagination]);
 
-  return useQuery({
-    queryKey: [QueryKey.FindTutorRating, id],
+  const keys = useMemo(() => [QueryKey.FindTutorRating, id], [id]);
+
+  const query = useQuery({
+    queryKey: keys,
     queryFn: findRateeRatings,
     enabled: !!id,
     retry: false,
   });
+
+  return { query, keys };
 }
 
 export function useCreateRatingTutor({

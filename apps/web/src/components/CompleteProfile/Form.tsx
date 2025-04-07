@@ -16,10 +16,9 @@ import {
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Controller, Form } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { getNullableFiledUpdatedValue } from "@litespace/utils";
-import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
+import { useOnError } from "@/hooks/error";
 
 type IForm = {
   name: string;
@@ -62,17 +61,15 @@ const CompleteProfile: React.FC = () => {
     goRoot();
   }, [invalidateQuery, goRoot]);
 
-  const onError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("complete-profile.update.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
 
   const updateUser = useUpdateUser({ onSuccess, onError });
 

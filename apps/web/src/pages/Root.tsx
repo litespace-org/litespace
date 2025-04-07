@@ -10,35 +10,45 @@ import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
 import clarity from "@/lib/clarity";
+import { isForbidden } from "@litespace/utils";
+
+const publicRoutes: Web[] = [
+  Web.Login,
+  Web.VerifyEmail,
+  Web.ForgetPassword,
+  Web.ResetPassword,
+  Web.Register,
+  Web.TutorProfile,
+];
 
 const Root: React.FC = () => {
   const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const { user } = useUserContext();
+  const { user, error, logout } = useUserContext();
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const root = location.pathname === Web.Root;
-    const routes: Web[] = [
-      Web.Login,
-      Web.VerifyEmail,
-      Web.ForgetPassword,
-      Web.ResetPassword,
-      Web.Register,
-      Web.TutorProfile,
-    ];
-
-    const ignore = routes.some((route) =>
+  const publicRoute = useMemo(() => {
+    return publicRoutes.some((route) =>
       router.isMatch.web(route, location.pathname)
     );
-    if (!user && !ignore) return navigate(Web.Login);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isForbidden(error) || publicRoute) return;
+    logout();
+    navigate(Web.Login);
+  }, [error, logout, navigate, publicRoute]);
+
+  useEffect(() => {
+    const root = location.pathname === Web.Root;
+    if (!user && !publicRoute) return navigate(Web.Login);
     if (!user || !root) return;
     const { tutor, student, tutorManager } = destructureRole(user.role);
     if (tutor || tutorManager) return navigate(Web.TutorDashboard);
     if (student) return navigate(Web.StudentDashboard);
-  }, [navigate, location.pathname, user]);
+  }, [navigate, location.pathname, user, publicRoute]);
 
   const showNavigation = useMemo(() => {
     const routes: Web[] = [

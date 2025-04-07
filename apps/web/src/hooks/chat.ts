@@ -60,18 +60,21 @@ export function useRoomManager(isStudent: boolean) {
         query: allRooms.query,
         more: allRooms.more,
         canLoadMore: canLoadMore(allRooms.query),
+        keys: allRooms.keys,
       },
       pinned: {
         query: pinnedRooms.query,
         list: pinnedRooms.list,
         more: pinnedRooms.more,
         canLoadMore: canLoadMore(pinnedRooms.query),
+        keys: pinnedRooms.keys,
       },
       uncontactedTutors: {
         list: uncontactedTutors.list,
         query: uncontactedTutors.query,
         more: uncontactedTutors.more,
         canLoadMore: canLoadMore(uncontactedTutors.query),
+        keys: uncontactedTutors.keys,
       },
     },
     keyword: {
@@ -92,7 +95,7 @@ export function useNavigateToRoom() {
   const [members, setMembers] = useState<number[]>([]);
   const [lessonId, setLessonId] = useState(0);
 
-  const findRoom = useFindRoomByMembers(members);
+  const { query: findRoom } = useFindRoomByMembers(members);
 
   const onSendMessage = useCallback((lessonId: number, members: number[]) => {
     setLessonId(lessonId);

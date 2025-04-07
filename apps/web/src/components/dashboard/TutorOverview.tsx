@@ -3,10 +3,17 @@ import { TutorOverview as Overview } from "@litespace/ui/TutorOverview";
 import { Typography } from "@litespace/ui/Typography";
 import { useFindPersonalizedTutorStats } from "@litespace/headless/tutor";
 import React from "react";
+import { useOnError } from "@/hooks/error";
 
 export const TutorOverview: React.FC = () => {
   const intl = useFormatMessage();
-  const statsQuery = useFindPersonalizedTutorStats();
+  const { query, keys } = useFindPersonalizedTutorStats();
+
+  useOnError({
+    type: "query",
+    error: query.error,
+    keys,
+  });
 
   return (
     <div className="md:col-span-2 flex flex-col gap-4 lg:gap-6 justify-items-start w-full">
@@ -18,13 +25,13 @@ export const TutorOverview: React.FC = () => {
       </Typography>
 
       <Overview
-        studentCount={statsQuery.data?.studentCount || 0}
-        completedLessonCount={statsQuery.data?.completedLessonCount || 0}
-        totalTutoringTime={statsQuery.data?.totalTutoringTime || 0}
-        totalLessonCount={statsQuery.data?.completedLessonCount || 0}
-        loading={statsQuery.isPending}
-        error={statsQuery.isError}
-        retry={statsQuery.refetch}
+        studentCount={query.data?.studentCount || 0}
+        completedLessonCount={query.data?.completedLessonCount || 0}
+        totalTutoringTime={query.data?.totalTutoringTime || 0}
+        totalLessonCount={query.data?.completedLessonCount || 0}
+        loading={query.isPending}
+        error={query.isError}
+        retry={query.refetch}
       />
     </div>
   );

@@ -13,7 +13,6 @@ import {
 } from "@litespace/utils/utils";
 import { Controller, Form } from "@litespace/ui/Form";
 import { Typography } from "@litespace/ui/Typography";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import {
@@ -28,9 +27,9 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { capture } from "@/lib/sentry";
 import { useSendVerifyEmail } from "@litespace/headless/auth";
 import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
+import { useOnError } from "@/hooks/error";
 
 type IForm = {
   name: string;
@@ -101,17 +100,15 @@ export const ProfileForm: React.FC<{
     invalidateQuery([QueryKey.FindCurrentUser]);
   }, [form, invalidateQuery]);
 
-  const onError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("shared-settings.update.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
 
   const cityOptions = useMemo(
     () =>
@@ -368,17 +365,15 @@ const ConfirmEmail: React.FC = () => {
     });
   }, [toast, intl]);
 
-  const onError = useCallback(
-    (error: unknown) => {
-      capture(error);
-
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("student-settings.confirm-email.error"),
-        description: intl(getErrorMessageId(error)),
+        description: intl(messageId),
       });
     },
-    [toast, intl]
-  );
+  });
 
   const mutation = useSendVerifyEmail({ onSuccess, onError });
 

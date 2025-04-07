@@ -9,8 +9,7 @@ import { useCreateRatingTutor } from "@litespace/headless/rating";
 import { useToast } from "@litespace/ui/Toast";
 import { QueryKey } from "@litespace/headless/constants";
 import { useInvalidateQuery } from "@litespace/headless/query";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { capture } from "@/lib/sentry";
+import { useOnError } from "@/hooks/error";
 
 export const RateTutor: React.FC<{
   tutorName: string;
@@ -22,17 +21,15 @@ export const RateTutor: React.FC<{
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
 
-  const onRateError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onRateError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("tutor.rate.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
 
   const onRateSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindTutorRating, tutorId]);

@@ -15,10 +15,9 @@ import {
 } from "@litespace/ui/hooks/validation";
 import { useGoogle } from "@/hooks/google";
 import Google from "@litespace/assets/Google";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { capture } from "@/lib/sentry";
 import { Landing, Web } from "@litespace/utils/routes";
 import { router, VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
+import { useOnError } from "@/hooks/error";
 
 interface IForm {
   email: string;
@@ -69,17 +68,15 @@ const RegisterForm: React.FC = () => {
     [user, navigate]
   );
 
-  const onError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("register.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
 
   const mutation = useRegisterUser({ onSuccess, onError });
 

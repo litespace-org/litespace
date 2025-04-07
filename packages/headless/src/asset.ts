@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useApi } from "@/api";
 import { IAsset } from "@litespace/types";
 import { useQuery } from "@tanstack/react-query";
@@ -18,9 +18,13 @@ export function useAssetBlob({
     return await api.asset.getAssetBlob(name, type);
   }, [api.asset, name, type]);
 
-  return useQuery({
-    queryKey: [QueryKey.FindAsset, name, type],
+  const keys = useMemo(() => [QueryKey.FindAsset, name, type], [name, type]);
+
+  const query = useQuery({
+    queryKey: keys,
     queryFn: findAsset,
     enabled: !!name,
   });
+
+  return { query, keys };
 }

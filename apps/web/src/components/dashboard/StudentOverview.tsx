@@ -2,10 +2,17 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { StudentOverview as Overview } from "@litespace/ui/StudentOverview";
 import { Typography } from "@litespace/ui/Typography";
 import { useFindPersonalizedStudentStats } from "@litespace/headless/student";
+import { useOnError } from "@/hooks/error";
 
 export const StudentOverview: React.FC = () => {
   const intl = useFormatMessage();
-  const statsQuery = useFindPersonalizedStudentStats();
+  const { query, keys } = useFindPersonalizedStudentStats();
+
+  useOnError({
+    type: "query",
+    error: query.error,
+    keys,
+  });
 
   return (
     <div className="grid gap-4 sm:gap-6 justify-items-start w-full">
@@ -17,13 +24,13 @@ export const StudentOverview: React.FC = () => {
       </Typography>
 
       <Overview
-        tutorCount={statsQuery.data?.tutorCount || 0}
-        completedLessonCount={statsQuery.data?.completedLessonCount || 0}
-        totalLearningTime={statsQuery.data?.totalLearningTime || 0}
-        totalLessonCount={statsQuery.data?.completedLessonCount || 0}
-        loading={statsQuery.isPending}
-        error={statsQuery.isError}
-        retry={statsQuery.refetch}
+        tutorCount={query.data?.tutorCount || 0}
+        completedLessonCount={query.data?.completedLessonCount || 0}
+        totalLearningTime={query.data?.totalLearningTime || 0}
+        totalLessonCount={query.data?.completedLessonCount || 0}
+        loading={query.isPending}
+        error={query.isError}
+        retry={query.refetch}
       />
     </div>
   );

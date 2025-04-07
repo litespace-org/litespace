@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useApi } from "@/api";
 import {
   UseMutationResult,
@@ -38,17 +38,22 @@ export function useFindStudioTutor(tutorId: number | null) {
     return await api.user.findStudioTutor({ tutorId });
   }, [api.user, tutorId]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindStudioTutor, tutorId], [tutorId]);
+
+  const query = useQuery({
     queryFn: findStudioTutor,
-    queryKey: [QueryKey.FindStudioTutor, tutorId],
+    queryKey: keys,
     enabled: !!tutorId,
     retry: false,
   });
+
+  return { query, keys };
 }
 
-export function useFindTutorStats(
-  id: number | null
-): UseQueryResult<ITutor.FindTutorStatsApiResponse | null, Error> {
+export function useFindTutorStats(id: number | null): {
+  query: UseQueryResult<ITutor.FindTutorStatsApiResponse | null, Error>;
+  keys: unknown[];
+} {
   const api = useApi();
 
   const findTutorStats = useCallback(() => {
@@ -56,12 +61,15 @@ export function useFindTutorStats(
     return api.user.findTutorStats(id);
   }, [api.user, id]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindTutorStats, id], [id]);
+
+  const query = useQuery({
     queryFn: findTutorStats,
-    queryKey: [QueryKey.FindTutorStats, id],
+    queryKey: keys,
     enabled: !!id,
     retry: false,
   });
+  return { query, keys };
 }
 
 export function useFindStudioTutors(studioId?: number, search?: string) {
@@ -90,15 +98,20 @@ export function useFindPersonalizedTutorStats() {
     return await api.user.findPersonalizedTutorStats();
   }, [api.user]);
 
-  return useQuery({
-    queryKey: [QueryKey.FindPersonalizedTutorStats],
+  const keys = useMemo(() => [QueryKey.FindPersonalizedTutorStats], []);
+
+  const query = useQuery({
+    queryKey: keys,
     queryFn: findStats,
   });
+
+  return { query, keys };
 }
 
-export function useFindTutorActivityScore(
-  id: number | null
-): UseQueryResult<ITutor.ActivityScoreMap | null, Error> {
+export function useFindTutorActivityScore(id: number | null): {
+  query: UseQueryResult<ITutor.ActivityScoreMap | null, Error>;
+  keys: unknown[];
+} {
   const api = useApi();
 
   const findTutorAcivityScores = useCallback(() => {
@@ -106,18 +119,23 @@ export function useFindTutorActivityScore(
     return api.user.findTutorActivityScores(id);
   }, [api.user, id]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindTutorActivity, id], [id]);
+
+  const query = useQuery({
     queryFn: findTutorAcivityScores,
-    queryKey: [QueryKey.FindTutorActivity, id],
+    queryKey: keys,
     enabled: !!id,
     retry: false,
   });
+
+  return { query, keys };
 }
 
 export function useShareFeedback(
   interviewId: number
 ): UseMutationResult<IInterview.Self, Error, string, unknown> {
   const api = useApi();
+
   const share = useCallback(
     async (feedback: string) => {
       return await api.interview.update(interviewId, {
@@ -126,6 +144,7 @@ export function useShareFeedback(
     },
     [api.interview, interviewId]
   );
+
   return useMutation({
     mutationFn: share,
     mutationKey: [MutationKey.ShareFeedback],
@@ -167,9 +186,10 @@ export function useIntroduceTutor({
   });
 }
 
-export function useFindTutorMeta(
-  id?: number
-): UseQueryResult<ITutor.FindTutorMetaApiResponse> {
+export function useFindTutorMeta(id?: number): {
+  query: UseQueryResult<ITutor.Self | null>;
+  keys: unknown[];
+} {
   const api = useApi();
 
   const findTutorMeta = useCallback(async () => {
@@ -177,11 +197,14 @@ export function useFindTutorMeta(
     return await api.user.findTutorMeta(id);
   }, [api.user, id]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindTutorMeta, id], [id]);
+  const query = useQuery({
     queryFn: findTutorMeta,
-    queryKey: [QueryKey.FindTutorMeta, id],
+    queryKey: keys,
     enabled: !!id,
   });
+
+  return { query, keys };
 }
 
 export function useFindTutorInfo(id: number | null) {
@@ -192,9 +215,13 @@ export function useFindTutorInfo(id: number | null) {
     return await api.user.findTutorInfo(id);
   }, [api.user, id]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindTutorInfo, id], [id]);
+
+  const query = useQuery({
     queryFn: findTutorInfo,
-    queryKey: [QueryKey.FindTutorInfo, id],
+    queryKey: keys,
     enabled: !!id,
   });
+
+  return { query, keys };
 }

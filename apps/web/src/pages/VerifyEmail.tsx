@@ -11,13 +11,13 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { QueryKey } from "@litespace/headless/constants";
 import { useInvalidateQuery } from "@litespace/headless/query";
-import { router, VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
+import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { capture } from "@/lib/sentry";
 import { LocalId } from "@litespace/ui/locales";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { isForbidden } from "@litespace/utils";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { useOnError } from "@/hooks/error";
 
 const VerifyEmail: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -60,25 +60,15 @@ const VerifyEmail: React.FC = () => {
     });
   }, [toast, intl]);
 
-  const onResendError = useCallback(
-    (error: unknown) => {
-      capture(error);
-
+  const onResendError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("verify-email.check-resend.error"),
-        description: intl(getErrorMessageId(error)),
+        description: intl(messageId),
       });
-
-      if (token && isForbidden(error)) {
-        const redirect = router.web({
-          route: Web.VerifyEmail,
-          query: { token },
-        });
-        return navigate(router.web({ route: Web.Login, query: { redirect } }));
-      }
     },
-    [toast, intl, token, navigate]
-  );
+  });
 
   const resendMutation = useSendVerifyEmail({
     onSuccess: onResendSuccess,

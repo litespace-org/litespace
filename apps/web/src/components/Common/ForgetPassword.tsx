@@ -7,9 +7,8 @@ import { Void } from "@litespace/types";
 import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useForgetPassword } from "@litespace/headless/auth";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
+import { useOnError } from "@/hooks/error";
 
 type ForgetPasswordProps = {
   open: boolean;
@@ -42,17 +41,15 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
     close();
   }, [close, intl, reset, toast]);
 
-  const onError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("forget-password.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
 
   const mutation = useForgetPassword({
     onSuccess,

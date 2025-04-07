@@ -1,13 +1,5 @@
 import { useApi } from "@/api";
-import {
-  IRoom,
-  Wss,
-  IMessage,
-  Void,
-  IFilter,
-  ITutor,
-  Paginated,
-} from "@litespace/types";
+import { IRoom, Wss, IMessage, Void, IFilter, ITutor } from "@litespace/types";
 
 import {
   useCallback,
@@ -22,13 +14,7 @@ import {
   UseInfinitePaginationQueryResult,
 } from "@/query";
 import { MutationKey, QueryKey } from "@/constants";
-import {
-  InfiniteData,
-  UseInfiniteQueryResult,
-  useMutation,
-  useQuery,
-  UseQueryResult,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
 import { concat, isEmpty, uniqueId } from "lodash";
 import { ResponseError } from "@litespace/utils";
@@ -928,14 +914,9 @@ export function useChatStatus() {
 
 // ========================== Room Functionalities =========================
 
-export function useFindUncontactedTutors(enabled?: boolean): {
-  query: UseInfiniteQueryResult<
-    InfiniteData<Paginated<ITutor.FullUncontactedTutorInfo>, unknown>,
-    Error
-  >;
-  list: ITutor.FullUncontactedTutorInfo[] | null;
-  more: () => void;
-} {
+export function useFindUncontactedTutors(
+  enabled?: boolean
+): UseInfinitePaginationQueryResult<ITutor.FullUncontactedTutorInfo> {
   const api = useApi();
 
   const findUncontactedTutors = useCallback(
@@ -975,20 +956,25 @@ export function useCreateRoom({
   });
 }
 
-export function useFindRoomMembers(
-  roomId: number | null
-): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
+export function useFindRoomMembers(roomId: number | null): {
+  query: UseQueryResult<IRoom.FindRoomMembersApiResponse, Error>;
+  keys: unknown[];
+} {
   const api = useApi();
   const findRoomMembers = useCallback(async () => {
     if (!roomId) return [];
     return await api.chat.findRoomMembers(roomId);
   }, [api.chat, roomId]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindRoomMembers, roomId], [roomId]);
+
+  const query = useQuery({
     queryFn: findRoomMembers,
-    queryKey: [QueryKey.FindRoomMembers, roomId],
+    queryKey: keys,
     enabled: !!roomId,
   });
+
+  return { query, keys };
 }
 
 export function useFindUserRooms(
@@ -1049,9 +1035,13 @@ export function useFindRoomByMembers(userIds: number[] | null) {
     return api.chat.findRoomByMembers(userIds);
   }, [api.chat, userIds]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindRoomByMembers, userIds], [userIds]);
+
+  const query = useQuery({
     queryFn: findRoomByMembers,
-    queryKey: [QueryKey.FindRoomByMembers, userIds],
+    queryKey: keys,
     enabled: !!userIds && !isEmpty(userIds),
   });
+
+  return { query, keys };
 }

@@ -5,9 +5,7 @@ import StudentStats from "@/components/Students/Stats";
 import TutorStats from "@/components/Tutor/Stats";
 import InvoicesContent from "@/components/Invoices/Content";
 import UserDetailsContent from "@/components/UserDetails/Content";
-import { IUser } from "@litespace/types";
 import { useParams } from "react-router-dom";
-import { UseQueryResult } from "@tanstack/react-query";
 import { useFindUserById } from "@litespace/headless/users";
 import { destructureRole } from "@litespace/utils/user";
 import { useFindStudentStats } from "@litespace/headless/student";
@@ -30,16 +28,20 @@ const UserDetails = () => {
     return value;
   }, [params.id]);
 
-  const query: UseQueryResult<IUser.Self> = useFindUserById(id);
+  const { query } = useFindUserById(id);
 
   const role = useMemo(() => {
     if (!query.data) return null;
     return destructureRole(query.data.role);
   }, [query.data]);
 
-  const tutorQuery = useFindTutorMeta(role?.tutor && id ? id : undefined);
-  const teachingTutorStats = useFindTutorStats(role?.tutor && id ? id : null);
-  const financialTutorStats = useFindInvoiceStats(
+  const { query: tutorQuery } = useFindTutorMeta(
+    role?.tutor && id ? id : undefined
+  );
+  const { query: teachingTutorStats } = useFindTutorStats(
+    role?.tutor && id ? id : null
+  );
+  const { query: financialTutorStats } = useFindInvoiceStats(
     role?.tutor && id ? id : undefined
   );
   const studentStats = useFindStudentStats(role?.student ? id : undefined);
@@ -56,7 +58,7 @@ const UserDetails = () => {
 
       <UserDetailsContent
         user={query.data}
-        tutor={tutorQuery.data}
+        tutor={tutorQuery.data || undefined}
         tutorStats={teachingTutorStats.data}
         loading={
           query.isLoading ||

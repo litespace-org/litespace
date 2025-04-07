@@ -15,10 +15,9 @@ import Aside from "@/components/Auth/Aside";
 import { Typography } from "@litespace/ui/Typography";
 import Success from "@litespace/assets/Success";
 import { motion, AnimatePresence } from "framer-motion";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
+import { useOnError } from "@/hooks/error";
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -83,17 +82,15 @@ const ResetPassword = () => {
     [reset, user]
   );
 
-  const onError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("reset-password.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
 
   const resetPassword = useResetPassword({ onSuccess, onError });
 

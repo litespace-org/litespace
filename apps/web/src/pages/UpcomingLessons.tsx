@@ -14,10 +14,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@litespace/ui/Toast";
 import { first } from "lodash";
 import { IUser } from "@litespace/types";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { capture } from "@/lib/sentry";
 import dayjs from "@/lib/dayjs";
 import { Web } from "@litespace/utils/routes";
+import { useOnError } from "@/hooks/error";
 
 type RateLessonParams = {
   tutorId: number | null;
@@ -48,9 +47,18 @@ const UpcomingLessons: React.FC = () => {
     defaultRateLessonParams
   );
 
-  const ratingQuery = useFindTutorRatings(rateLessonParams.tutorId, {
-    page: 1,
-    size: 1,
+  const { query: ratingQuery, keys: ratingQueryKeys } = useFindTutorRatings(
+    rateLessonParams.tutorId,
+    {
+      page: 1,
+      size: 1,
+    }
+  );
+
+  useOnError({
+    type: "query",
+    keys: ratingQueryKeys,
+    error: ratingQuery.error,
   });
 
   const lessons = useInfiniteLessons({
@@ -62,16 +70,25 @@ const UpcomingLessons: React.FC = () => {
     canceled: true,
   });
 
-  const rateTutor = useCreateRatingTutor({
-    onSuccess: () => setRateLessonParams(defaultRateLessonParams),
-    onError: (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  useOnError({
+    type: "query",
+    keys: lessons.keys,
+    error: lessons.query.error,
+  });
+
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("tutor.rate.error"),
-        description: errorMessage,
+        description: intl(messageId),
       });
     },
+  });
+
+  const rateTutor = useCreateRatingTutor({
+    onSuccess: () => setRateLessonParams(defaultRateLessonParams),
+    onError,
   });
 
   const submitRating = useCallback(

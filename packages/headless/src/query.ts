@@ -20,6 +20,8 @@ export type UseInfinitePaginationQueryResult<T> = {
   list: T[] | null;
   query: UseInfiniteQueryResult<InfiniteData<Paginated<T>, unknown>, Error>;
   more: Void;
+  hasMore: boolean;
+  keys: unknown[];
 };
 
 export type InfiniteQueryHandler<T> = ({
@@ -30,9 +32,9 @@ export type InfiniteQueryHandler<T> = ({
 
 export function useInfinitePaginationQuery<T, K>(
   handler: InfiniteQueryHandler<T>,
-  key: K[],
+  keys: K[],
   enabled?: boolean
-) {
+): UseInfinitePaginationQueryResult<T> {
   const getNextPageParam = useCallback(
     (last: Paginated<T>, all: Paginated<T>[], lastPageParam: number) => {
       const page = lastPageParam;
@@ -45,7 +47,7 @@ export function useInfinitePaginationQuery<T, K>(
 
   const query = useInfiniteQuery({
     queryFn: handler,
-    queryKey: key,
+    queryKey: keys,
     initialPageParam: 1,
     getNextPageParam,
     enabled,
@@ -68,5 +70,5 @@ export function useInfinitePaginationQuery<T, K>(
     return list?.length !== total;
   }, [list?.length, total]);
 
-  return { query, list, more, hasMore };
+  return { query, list, more, hasMore, keys };
 }

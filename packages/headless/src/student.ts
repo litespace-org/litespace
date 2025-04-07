@@ -1,6 +1,6 @@
 import { useApi } from "@/api";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { QueryKey } from "@/constants";
 import { IUser } from "@litespace/types";
 
@@ -28,8 +28,12 @@ export function useFindPersonalizedStudentStats() {
     return await api.user.findPersonalizedStudentStats();
   }, [api.user]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindPersonalizedStudentStats], []);
+
+  const query = useQuery({
     queryFn: findStats,
     queryKey: [QueryKey.FindPersonalizedStudentStats],
   });
+
+  return { query, keys };
 }

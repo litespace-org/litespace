@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
-import peer from "@/lib/peer";
 import { ISession, Wss } from "@litespace/types";
 import hark from "hark";
 import { useToast } from "@litespace/ui/Toast";
@@ -9,7 +8,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { isEmpty } from "lodash";
 import { useSocket } from "@litespace/headless/socket";
 
-export function useShareScreen(peerId: string | null) {
+export function useShareScreen() {
   const [loading, setLoading] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -58,22 +57,6 @@ export function useShareScreen(peerId: string | null) {
     stream.getTracks().forEach((track) => track.stop());
     setStream(null);
     terminateConnection();
-  }, [stream, terminateConnection]);
-
-  // share the stream with my peer
-  useEffect(() => {
-    if (!peerId || !stream) return;
-    const call = peer.call(peerId, stream, {
-      metadata: { screen: true },
-    });
-    setMediaConnection(call);
-  }, [peerId, stream]);
-
-  useEffect(() => {
-    if (!stream) return;
-    stream.getVideoTracks().forEach((track) => {
-      track.addEventListener("ended", terminateConnection);
-    });
   }, [stream, terminateConnection]);
 
   return {

@@ -16,11 +16,10 @@ import {
   orNull,
   orUndefined,
 } from "@litespace/utils/utils";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { capture } from "@/lib/sentry";
 import ProfileCard from "@/components/TutorSettings/ProfileCard";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Typography } from "@litespace/ui/Typography";
+import { useOnError } from "@/hooks/error";
 
 const TutorSettings: React.FC<{
   info: ITutor.FindTutorInfoApiResponse & {
@@ -81,16 +80,15 @@ const TutorSettings: React.FC<{
     });
   }, [info.id, invalidateQuery, form]);
 
-  const onError = useCallback(
-    (error: unknown) => {
-      capture(error);
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("tutor-settings.profile.update.error"),
-        description: intl(getErrorMessageId(error)),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
 
   const updateTutor = useUpdateUser({
     onError,

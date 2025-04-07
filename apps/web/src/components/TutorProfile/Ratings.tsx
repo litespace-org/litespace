@@ -22,9 +22,8 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { RateTutor } from "@/components/TutorProfile/RateTutor";
 import cn from "classnames";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { capture } from "@/lib/sentry";
 import { IUser } from "@litespace/types";
+import { useOnError } from "@/hooks/error";
 
 const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   tutorName,
@@ -69,17 +68,15 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
     setDeleteDialog(null);
   }, []);
 
-  const onDeleteError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onDeleteError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("tutor.rating.delete.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
 
   const onDeleteSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindTutorRating, id]);
@@ -100,22 +97,24 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
     closeEdit();
   }, [id, invalidateQuery, closeEdit]);
 
-  const onEditError = useCallback(
-    (error: unknown) => {
-      const errorMessage = getErrorMessageId(error);
+  const onEditError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("tutor.rating.edit.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
   const editMutation = useEditRatingTutor({
     onSuccess: onEditSuccess,
     onError: onEditError,
   });
 
-  const ratingsQuery = useFindTutorRatings(id, { page: 1, size: 30 });
+  const { query: ratingsQuery } = useFindTutorRatings(id, {
+    page: 1,
+    size: 30,
+  });
 
   const { ratings, currentUserRated } = useMemo(
     () => organizeRatings(ratingsQuery.data?.list || [], user?.id),

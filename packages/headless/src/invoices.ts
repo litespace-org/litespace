@@ -10,7 +10,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { OnError } from "@/types/query";
 
 type OnSuccess = Void;
@@ -71,14 +71,12 @@ export function useFindInvoicesByUser(
   ]);
 }
 
-type useFindInvoiceStatsProps = UseQueryResult<
-  IInvoice.StatsApiResponse | null,
-  Error
->;
+type Query = UseQueryResult<IInvoice.StatsApiResponse | null, Error>;
 
-export function useFindInvoiceStats(
-  tutorId?: number
-): useFindInvoiceStatsProps {
+export function useFindInvoiceStats(tutorId?: number): {
+  query: Query;
+  keys: unknown[];
+} {
   const api = useApi();
 
   const findStats = useCallback(async () => {
@@ -86,11 +84,15 @@ export function useFindInvoiceStats(
     return await api.invoice.stats(tutorId);
   }, [api.invoice, tutorId]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindInvoiceStats], []);
+
+  const query = useQuery({
     queryFn: findStats,
-    queryKey: [QueryKey.FindInvoiceStats],
+    queryKey: keys,
     enabled: !!tutorId,
   });
+
+  return { query, keys };
 }
 
 export function useFindWithdrawalMethods() {
@@ -100,10 +102,14 @@ export function useFindWithdrawalMethods() {
     return api.withdrawMethod.find();
   }, [api.withdrawMethod]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindWithdrawalMethods], []);
+
+  const query = useQuery({
     queryFn: findWithdrawalMethods,
-    queryKey: [QueryKey.FindWithdrawalMethods],
+    queryKey: keys,
   });
+
+  return { query, keys };
 }
 
 export function useCreateInvoice({

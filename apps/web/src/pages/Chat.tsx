@@ -12,6 +12,7 @@ import { Loader, LoadingError } from "@litespace/ui/Loading";
 import { ITutor, IUser } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { useOnError } from "@/hooks/error";
 
 const Chat: React.FC = () => {
   const [temporaryTutor, setTemporaryTutor] =
@@ -23,13 +24,21 @@ const Chat: React.FC = () => {
   const intl = useFormatMessage();
   const { select, selected } = useSelectedRoom();
 
-  const roomMembers = useFindRoomMembers(
+  const { query: roomMembers, keys } = useFindRoomMembers(
     typeof selected.room === "number" ? selected.room : null
   );
+
+  useOnError({
+    type: "query",
+    error: roomMembers.error,
+    keys,
+  });
+
   const otherMember = useMemo(
     () => asOtherMember(user?.id, roomMembers.data),
     [user?.id, roomMembers.data]
   );
+
   const { typingMap, onlineUsersMap } = useChatStatus();
 
   const isCurrentRoomTyping = useMemo(() => {

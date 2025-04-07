@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import cn from "classnames";
 import { useNavigateToRoom } from "@/hooks/chat";
 import { Web } from "@litespace/utils/routes";
+import { useOnError } from "@/hooks/error";
 
 function asLessons(
   list: ILesson.FindUserLessonsApiResponse["list"] | null,
@@ -77,6 +78,12 @@ export const PastLessons: React.FC = () => {
 
   const { lessonId: sendingMessageLessonId, onSendMessage } =
     useNavigateToRoom();
+
+  useOnError({
+    type: "query",
+    keys: lessonsQuery.keys,
+    error: lessonsQuery.query.error,
+  });
 
   if (!mq.md)
     return (
