@@ -4,10 +4,12 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { IUser } from "@litespace/types";
 import { useUserContext } from "@litespace/headless/context/user";
-import { Dashboard } from "@litespace/utils/routes";
+import { Dashboard, Landing } from "@litespace/utils/routes";
 
 import Sidebar from "@/components/Layout/Sidebar";
 import { useAuthRoutes } from "@/hooks/authRoutes";
+import { router } from "@/lib/route";
+import { isRegularUser } from "@litespace/utils";
 
 const Root: React.FC = () => {
   const { user } = useUserContext();
@@ -19,13 +21,6 @@ const Root: React.FC = () => {
     if (location.pathname === Dashboard.Login) return;
     if (!user) return navigate(Dashboard.Login);
 
-    const forbidden =
-      user.role === IUser.Role.Tutor ||
-      user.role === IUser.Role.Student ||
-      user.role === IUser.Role.TutorManager;
-
-    if (forbidden) return window.location.replace("https://litespace.org");
-
     if (location.pathname !== Dashboard.Root) return;
 
     if (
@@ -34,6 +29,14 @@ const Root: React.FC = () => {
     )
       navigate(Dashboard.Users);
     if (user.role === IUser.Role.Studio) navigate(Dashboard.Media);
+
+    // Handling users that not allowed to use the dashboard
+    const regularUser = isRegularUser(user);
+
+    if (user && regularUser)
+      window.location.replace(
+        router.landing({ route: Landing.Home, full: true })
+      );
   }, [location.pathname, navigate, user]);
 
   return (

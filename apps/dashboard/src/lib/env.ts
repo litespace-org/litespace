@@ -20,3 +20,7 @@ export const env = schema.parse({
   server: import.meta.env.VITE_SERVER,
   client: import.meta.env.VITE_CLIENT,
 });
+
+export const production = env.client === "production";
+export const staging = env.client === "staging";
+export const local = env.client === "local";

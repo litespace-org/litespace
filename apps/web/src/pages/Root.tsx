@@ -1,16 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { destructureRole } from "@litespace/utils/user";
-import cn from "classnames";
-import Sidebar from "@/components/Layout/Sidebar";
+import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
 import Navbar from "@/components/Layout/Navbar";
+import Sidebar from "@/components/Layout/Sidebar";
+import clarity from "@/lib/clarity";
+import { router } from "@/lib/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { router } from "@/lib/routes";
-import { Web } from "@litespace/utils/routes";
-import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
-import clarity from "@/lib/clarity";
+import { Landing, Web } from "@litespace/utils/routes";
 import { isForbidden } from "@litespace/utils";
+import { destructureRole, isRegularUser } from "@litespace/utils/user";
+import cn from "classnames";
+import React, { useEffect, useMemo, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -69,6 +69,14 @@ const Root: React.FC = () => {
     const customeId = user?.id.toString() || "un-authorized";
     clarity.identify(customeId);
   }, [user?.id]);
+
+  useEffect(() => {
+    const regularUser = isRegularUser(user);
+    if (!regularUser)
+      window.location.replace(
+        router.landing({ route: Landing.Home, full: true })
+      );
+  }, [navigate, user]);
 
   return (
     <div className="flex relative w-full">

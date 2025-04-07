@@ -1,14 +1,17 @@
-import { Form, Controller } from "@litespace/ui/Form";
+import { production } from "@/lib/env";
+import { router } from "@/lib/route";
+import { useUserContext } from "@litespace/headless/context/user";
+import { useLoginUser } from "@litespace/headless/user";
+import { IUser } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
+import { Controller, Form } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { isRegularUser } from "@litespace/utils";
+import { Dashboard, Landing } from "@litespace/utils/routes";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { IUser } from "@litespace/types";
-import { useUserContext } from "@litespace/headless/context/user";
-import { useLoginUser } from "@litespace/headless/user";
-import { Dashboard } from "@litespace/utils/routes";
 
 interface IForm {
   email: string;
@@ -27,8 +30,8 @@ const Login: React.FC = () => {
     formState: { errors },
   } = useForm<IForm>({
     defaultValues: {
-      email: "admin@litespace.org",
-      password: "Password@8",
+      email: production ? "admin@litespace.org" : "",
+      password: production ? "Password@8" : "",
     },
   });
 
@@ -37,6 +40,12 @@ const Login: React.FC = () => {
 
   const mutation = useLoginUser({
     onSuccess(result) {
+      const regularUser = isRegularUser(result.user);
+      if (regularUser)
+        return window.location.replace(
+          router.landing({ route: Landing.Home, full: true })
+        );
+
       user.set(result);
       return navigate(Dashboard.Root);
     },
