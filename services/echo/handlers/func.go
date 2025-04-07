@@ -31,16 +31,13 @@ func Consume(c *fiber.Ctx) error {
 		)
 	}
 
-	peerConnection := utils.Must(utils.GetPeerConn(body.PeerId, state.PeerRoleConsumer, constants.Config)).(*webrtc.PeerConnection)
+	peerConnection := utils.Must(utils.GetPeerConn(body.PeerId, constants.Config)).(*webrtc.PeerConnection)
 
 	// TODO: handle multiple requests (perhaps we can use set data structure for OutTracks)
 	// TODO: handle consume request for a producer in advance
 
 	// add the tracks of the producer to the consumer peer connection
-	producerPeer := state.Get(
-		body.ProducerPeerId,
-		state.PeerRoleProducer,
-	)
+	producerPeer := state.Get(body.ProducerPeerId)
 
 	if producerPeer == nil {
 		return c.SendStatus(404)
@@ -112,16 +109,12 @@ func Produce(c *fiber.Ctx) error {
 		)
 	}
 
-	if state.Get(
-		body.PeerId,
-		state.PeerRoleProducer,
-	) != nil {
+	if state.Get(body.PeerId) != nil {
 		return c.SendStatus(fiber.StatusConflict)
 	}
 
 	peerConnection := utils.Must(utils.GetPeerConn(
 		body.PeerId,
-		state.PeerRoleProducer,
 		constants.Config,
 	)).(*webrtc.PeerConnection)
 
