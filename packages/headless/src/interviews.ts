@@ -1,6 +1,6 @@
 import { useApi } from "@/api/index";
 import { IInterview, Void, IUser, IFilter, Element } from "@litespace/types";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
 import { usePaginate, UsePaginateResult } from "@/pagination";
@@ -64,17 +64,24 @@ export function useFindInfinitInterviews(
   ]);
 }
 
-export function useSelectInterviewer(): UseQueryResult<IUser.Self, Error> {
+export function useSelectInterviewer(): {
+  query: UseQueryResult<IUser.Self, Error>;
+  keys: unknown[];
+} {
   const api = useApi();
 
   const selectInterviewer = useCallback(async () => {
     return api.user.selectInterviewer();
   }, [api.user]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindInterviewer], []);
+
+  const query = useQuery({
     queryFn: selectInterviewer,
-    queryKey: [QueryKey.FindInterviewer],
+    queryKey: keys,
   });
+
+  return { query, keys };
 }
 
 export function useCreateInterview({

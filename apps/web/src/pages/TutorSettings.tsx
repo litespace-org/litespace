@@ -12,7 +12,7 @@ import { Web } from "@litespace/utils/routes";
 const TutorSettings: React.FC = () => {
   const intl = useFormatMessage();
   const { user, fetching, error, loading, refetch } = useUserContext();
-  const tutorInfo = useFindTutorInfo(user?.id || null);
+  const { query: tutorInfo } = useFindTutorInfo(user?.id || null);
 
   useEffect(() => {
     if (!user && !loading && !error) redirect(Web.Login);

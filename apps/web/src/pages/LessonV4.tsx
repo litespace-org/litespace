@@ -32,6 +32,7 @@ import Timer from "@/components/Session/Timer";
 import { capture } from "@/lib/sentry";
 import { isTutor } from "@litespace/utils";
 import Spinner from "@litespace/assets/Spinner";
+import { useOnError } from "@/hooks/error";
 
 /**
  * @todos
@@ -55,7 +56,13 @@ const Lesson: React.FC = () => {
     return lessonId;
   }, [id]);
 
-  const lesson = useFindLesson(lessonId);
+  const { query: lesson, keys } = useFindLesson(lessonId);
+
+  useOnError({
+    type: "query",
+    error: lesson.error,
+    keys,
+  });
 
   const lessonMembers = useMemo(() => {
     if (!lesson.data || !user) return null;
@@ -79,14 +86,14 @@ const Lesson: React.FC = () => {
     setChatEnabled((prev) => !prev);
   }, []);
 
-  const chatRoomQuery = useFindRoomByMembers(
+  const { query: chatRoomQuery } = useFindRoomByMembers(
     lessonMembers
       ? [lessonMembers.current.userId, lessonMembers.other.userId]
       : null
   );
 
   const room = chatRoomQuery.data?.room || null;
-  const roomMembers = useFindRoomMembers(room);
+  const { query: roomMembers } = useFindRoomMembers(room);
   const chatOtherMember = useMemo(
     () => asOtherMember(user?.id, roomMembers.data),
     [user?.id, roomMembers.data]

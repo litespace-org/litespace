@@ -30,7 +30,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [userData, setUserData] = useState<Data>(userCache || defaultData);
   const { token, setBearerToken, removeToken } = useServer();
-  const query = useCurrentUser(!!token);
+  const { query } = useCurrentUser(!!token);
 
   const tutorId = useMemo(() => {
     if (!userData.user?.role) return;
@@ -41,7 +41,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     return userData.user?.id;
   }, [userData.user?.id, userData.user?.role]);
 
-  const meta = useFindTutorMeta(tutorId);
+  const { query: meta } = useFindTutorMeta(tutorId);
 
   const setData: Context["set"] = useCallback(
     ({ user, meta, token, remember = true }) => {
@@ -81,10 +81,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       meta: userData.meta,
       loading: query.isLoading || meta.isLoading,
       fetching: query.isFetching || meta.isFetching,
-      error: query.isError,
+      isError: query.isError,
       refetch: { user: query.refetch, meta: meta.refetch },
       set: setData,
-      errorObj: query.error,
+      error: query.error,
       logout,
     };
   }, [

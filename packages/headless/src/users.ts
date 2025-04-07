@@ -2,7 +2,7 @@ import { useApi } from "@/api";
 import { usePaginate, UsePaginateResult } from "@/pagination";
 import { IFilter, IUser, Void } from "@litespace/types";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { QueryKey } from "@/constants";
 
 export function useUsers(
@@ -19,9 +19,10 @@ export function useUsers(
   return usePaginate(findUsers, ["find-users", filter]);
 }
 
-export function useFindUserById(
-  id: string | number
-): UseQueryResult<IUser.Self> {
+export function useFindUserById(id: string | number): {
+  query: UseQueryResult<IUser.Self>;
+  keys: unknown[];
+} {
   const api = useApi();
 
   const findUserById = useCallback(
@@ -29,10 +30,14 @@ export function useFindUserById(
     [api.user, id]
   );
 
-  return useQuery({
-    queryKey: [QueryKey.FindUserById, id],
+  const keys = useMemo(() => [QueryKey.FindUserById, id], [id]);
+
+  const query = useQuery({
+    queryKey: keys,
     queryFn: findUserById,
   });
+
+  return { query, keys };
 }
 
 export function useCreateUser({

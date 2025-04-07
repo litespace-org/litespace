@@ -13,15 +13,14 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useToast } from "@litespace/ui/Toast";
 import { useUpdateUserTopics } from "@litespace/headless/user";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { capture } from "@/lib/sentry";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { useOnError } from "@/hooks/error";
 
 const TopicSelection: React.FC = () => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
   const allTopicsQuery = useTopics({});
-  const userTopicsQuery = useUserTopics();
+  const { query: userTopicsQuery } = useUserTopics();
   const [showDialog, setShowDialog] = useState(false);
   const toast = useToast();
   const invalidate = useInvalidateQuery();
@@ -44,16 +43,15 @@ const TopicSelection: React.FC = () => {
     setShowDialog(false);
   }, [invalidate]);
 
-  const onError = useCallback(
-    (error: unknown) => {
-      capture(error);
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("student-settings.topics.selection-dialog.update-error"),
-        description: intl(getErrorMessageId(error)),
+        description: intl(messageId),
       });
     },
-    [intl, toast]
-  );
+  });
 
   const updateTopics = useUpdateUserTopics({
     onSuccess: onSuccess,

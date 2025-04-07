@@ -128,7 +128,6 @@ export class Session extends WssHandler {
 
       if (!ok)
         return this.call(callback, { code: Wss.AcknowledgeCode.Unallowed });
-      else this.call(callback, { code: Wss.AcknowledgeCode.Ok });
 
       sendBackgroundMessage({
         type: "create-session-event",

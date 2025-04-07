@@ -21,7 +21,7 @@ const PhotoSession = () => {
     return id;
   }, [params]);
 
-  const tutorQuery = useFindStudioTutor(tutorId);
+  const { query: tutorQuery } = useFindStudioTutor(tutorId);
 
   return (
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6 mb-10">

@@ -38,8 +38,8 @@ import { useToast } from "@litespace/ui/Toast";
 import { SelectRoom, UncontactedTutorRoomId } from "@litespace/ui/hooks/chat";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
+import { useOnError } from "@/hooks/error";
 
 type RetryFnMap = Record<
   "send" | "update" | "delete",
@@ -157,17 +157,16 @@ const Messages: React.FC<{
     [otherMember, select, setTemporaryTutor, invdalidate]
   );
 
-  const onError = useCallback(
-    (error: unknown) => {
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       capture(error);
-      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("chat.create.room.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [toast, intl]
-  );
+  });
 
   const goBack = useCallback(() => {
     if (select)

@@ -14,11 +14,12 @@ export type UsePaginateResult<T> = {
   goto: (pageNumber: number) => void;
   page: number;
   totalPages: number;
+  keys: unknown[];
 };
 
 export function usePaginate<T, K>(
   callback: ({ page, size }: IFilter.Pagination) => Promise<Paginated<T>>,
-  key: K[]
+  keys: K[]
 ): UsePaginateResult<T> {
   const [page, setPage] = useState<number>(1);
   const pageSize = usePageSize();
@@ -30,7 +31,7 @@ export function usePaginate<T, K>(
 
   const query = useQuery({
     queryFn: find,
-    queryKey: [...key, page, pageSize.value],
+    queryKey: [...keys, page, pageSize.value],
     placeholderData: keepPreviousData,
   });
 
@@ -57,5 +58,5 @@ export function usePaginate<T, K>(
     [totalPages]
   );
 
-  return { query, next, prev, goto, page, totalPages };
+  return { query, next, prev, goto, page, totalPages, keys };
 }

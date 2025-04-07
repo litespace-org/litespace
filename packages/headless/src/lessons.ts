@@ -1,5 +1,5 @@
 import { Element, IFilter, ILesson } from "@litespace/types";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useApi } from "@/api/index";
 import { MutationKey, QueryKey } from "@/constants";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -154,8 +154,12 @@ export function useFindLesson(id?: number) {
     return api.lesson.findLesson(id);
   }, [api.lesson, id]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindLesson, id], [id]);
+
+  const query = useQuery({
     queryFn: findLessonById,
-    queryKey: [QueryKey.FindLesson, id],
+    queryKey: keys,
   });
+
+  return { query, keys };
 }

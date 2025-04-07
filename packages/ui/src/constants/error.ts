@@ -2,7 +2,6 @@ import { LocalId } from "@/locales";
 import { ApiError, ApiErrorCode, FieldError } from "@litespace/types";
 
 export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
-  [ApiError.TokenExpired]: "error.api.token-expired",
   [ApiError.Forbidden]: "error.api.forbidden",
   [ApiError.BadRequest]: "error.api.bad-request",
   [ApiError.RoomExists]: "error.api.room-exists",

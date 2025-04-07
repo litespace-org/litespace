@@ -16,6 +16,7 @@ import { RoomsMap } from "@litespace/headless/chat";
 import { isEmpty } from "lodash";
 import { ITutor, IUser } from "@litespace/types";
 import { useUserContext } from "@litespace/headless/context/user";
+import { useOnError } from "@/hooks/error";
 
 const RoomsPanel: React.FC<{
   selectedRoom: number | UncontactedTutorRoomId | null;
@@ -37,6 +38,24 @@ const RoomsPanel: React.FC<{
     [user]
   );
   const { rooms, keyword, update } = useRoomManager(isStudent);
+
+  useOnError({
+    type: "query",
+    keys: rooms.pinned.keys,
+    error: rooms.pinned.query.error,
+  });
+
+  useOnError({
+    type: "query",
+    keys: rooms.all.keys,
+    error: rooms.all.query.error,
+  });
+
+  useOnError({
+    type: "query",
+    keys: rooms.uncontactedTutors.keys,
+    error: rooms.uncontactedTutors.query.error,
+  });
 
   const selectTemporary = useCallback(
     (tutor: ITutor.FullUncontactedTutorInfo) => {

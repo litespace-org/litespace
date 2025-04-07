@@ -18,13 +18,12 @@ import {
 } from "@litespace/ui/hooks/validation";
 import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isDev } from "@/constants/env";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { capture } from "@/lib/sentry";
 import { isValidRoute, Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { omit } from "lodash";
+import { useOnError } from "@/hooks/error";
 
 interface IForm {
   email: string;
@@ -61,19 +60,22 @@ const Login: React.FC = () => {
   const password = watch("password");
   const errors = formState.errors;
 
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
+      toast.error({
+        title: intl("login.error"),
+        description: intl(messageId),
+      });
+    },
+  });
+
   const mutation = useLoginUser({
     onSuccess(result) {
       user.set(result);
       return navigate(redirect || Web.Root);
     },
-    onError(error) {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
-      toast.error({
-        title: intl("login.error"),
-        description: intl(errorMessage),
-      });
-    },
+    onError,
   });
 
   const onSubmit = useMemo(

@@ -10,56 +10,45 @@ import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
 import clarity from "@/lib/clarity";
-import { AxiosError } from "axios";
+import { isForbidden } from "@litespace/utils";
+
+const publicRoutes: Web[] = [
+  Web.Login,
+  Web.VerifyEmail,
+  Web.ForgetPassword,
+  Web.ResetPassword,
+  Web.Register,
+  Web.TutorProfile,
+];
 
 const Root: React.FC = () => {
   const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const { user, errorObj, logout } = useUserContext();
+  const { user, error, logout } = useUserContext();
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // check if token is expired
-  useEffect(() => {
-    // routes that can be visited without auth
-    const noAuthRoutes: string[] = [
-      Web.Login,
-      Web.Register,
-      Web.ResetPassword,
-      Web.ForgetPassword,
-      Web.VerifyEmail,
-      Web.CompleteProfile,
-    ];
+  const publicRoute = useMemo(() => {
+    return publicRoutes.some((route) =>
+      router.isMatch.web(route, location.pathname)
+    );
+  }, [location.pathname]);
 
-    if (!(errorObj instanceof AxiosError)) return;
-    if (errorObj && errorObj.status === 498) {
-      if (noAuthRoutes.includes(window.location.pathname)) return;
-      navigate(Web.Login);
-      logout();
-    }
-  }, [errorObj, logout, navigate]);
+  useEffect(() => {
+    if (!isForbidden(error) || publicRoute) return;
+    logout();
+    navigate(Web.Login);
+  }, [error, logout, navigate, publicRoute]);
 
   useEffect(() => {
     const root = location.pathname === Web.Root;
-    const routes: Web[] = [
-      Web.Login,
-      Web.VerifyEmail,
-      Web.ForgetPassword,
-      Web.ResetPassword,
-      Web.Register,
-      Web.TutorProfile,
-    ];
-
-    const ignore = routes.some((route) =>
-      router.isMatch.web(route, location.pathname)
-    );
-    if (!user && !ignore) return navigate(Web.Login);
+    if (!user && !publicRoute) return navigate(Web.Login);
     if (!user || !root) return;
     const { tutor, student, tutorManager } = destructureRole(user.role);
     if (tutor || tutorManager) return navigate(Web.TutorDashboard);
     if (student) return navigate(Web.StudentDashboard);
-  }, [navigate, location.pathname, user]);
+  }, [navigate, location.pathname, user, publicRoute]);
 
   const showNavigation = useMemo(() => {
     const routes: Web[] = [

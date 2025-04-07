@@ -19,6 +19,7 @@ import { capture } from "@/lib/sentry";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useSendVerifyEmail } from "@litespace/headless/auth";
 import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
+import { useOnError } from "@/hooks/error";
 
 type Base = {
   close: Void;
@@ -71,10 +72,10 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     return !!lessons.query.data && !!lessons.query.data.list.length;
   }, [lessons]);
 
-  const tutorAvailabilitySlots = useFindAvailabilitySlots(
+  const { query: tutorAvailabilitySlots } = useFindAvailabilitySlots(
     availabilitySlotsQuery
   );
-  const tutor = useFindTutorInfo(tutorId);
+  const { query: tutor } = useFindTutorInfo(tutorId);
 
   // Create Lesson
   const onCreateSuccess = useCallback(() => {
@@ -89,17 +90,15 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     close();
   }, [close, tutor.data?.name, toast, intl, invalidate]);
 
-  const onCreateError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onCreateError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("book-lesson.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [toast, intl]
-  );
+  });
 
   const createLessonMutation = useCreateLesson({
     onSuccess: onCreateSuccess,
@@ -119,17 +118,15 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     close();
   }, [close, tutor.data?.name, toast, intl, invalidate]);
 
-  const onUpdateError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onUpdateError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("update-lesson.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
     },
-    [toast, intl]
-  );
+  });
 
   const updateLessonMutation = useUpdateLesson({
     onSuccess: onUpdateSuccess,

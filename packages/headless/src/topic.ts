@@ -1,6 +1,6 @@
 import { IFilter, ITopic, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useApi } from "@/api";
 import { usePaginate } from "@/pagination";
 import { MutationKey, QueryKey } from "@/constants";
@@ -54,10 +54,14 @@ export function useUserTopics() {
     return await api.topic.findUserTopics();
   }, [api.topic]);
 
-  return useQuery({
+  const keys = useMemo(() => [QueryKey.FindUserTopics], []);
+
+  const query = useQuery({
     queryFn: findTopics,
-    queryKey: [QueryKey.FindUserTopics],
+    queryKey: keys,
   });
+
+  return { query, keys };
 }
 
 export function useUpdateTopic({

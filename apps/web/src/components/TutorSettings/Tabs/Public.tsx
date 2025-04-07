@@ -112,7 +112,7 @@ const PublicSettings: React.FC<{
   const [showTopicsDialog, setShowTopoicsDialog] = useState<boolean>(false);
   const invalidateQuery = useInvalidateQuery();
   const topics = useTopics({});
-  const userTopics = useUserTopics();
+  const { query: userTopics } = useUserTopics();
   const validateUserName = useValidateUserName(form.watch("name") !== null);
   const validateBio = useValidateBio(form.watch("bio") !== null);
   const errors = form.formState.errors;

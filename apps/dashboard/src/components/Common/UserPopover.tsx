@@ -11,7 +11,7 @@ import { Dashboard } from "@litespace/utils/routes";
 
 const UserPopover: React.FC<{ id: number }> = ({ id }) => {
   const intl = useFormatMessage();
-  const user = useFindUserById(id);
+  const { query: user } = useFindUserById(id);
 
   return (
     <HoverCard

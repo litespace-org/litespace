@@ -7,8 +7,7 @@ import { useDeleteRatingTutor } from "@litespace/headless/rating";
 import { Void } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { capture } from "@/lib/sentry";
+import { useOnError } from "@/hooks/error";
 
 type DeleteRatingProps = {
   open: boolean;
@@ -33,18 +32,16 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
     close();
   }, [invalidate, tutorId, toast, intl, close]);
 
-  const onError = useCallback(
-    (error: unknown) => {
-      capture(error);
-      const errorMessage = getErrorMessageId(error);
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
       toast.error({
         title: intl("tutor.rate.delete.error"),
-        description: intl(errorMessage),
+        description: intl(messageId),
       });
       close();
     },
-    [toast, intl, close]
-  );
+  });
 
   const deleteRating = useDeleteRatingTutor({ onSuccess, onError });
 
