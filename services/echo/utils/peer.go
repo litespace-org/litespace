@@ -10,6 +10,7 @@ import (
 
 	"echo/state"
 
+	"github.com/gofiber/contrib/websocket"
 	"github.com/pion/interceptor"
 	"github.com/pion/interceptor/pkg/intervalpli"
 	"github.com/pion/webrtc/v4"
@@ -23,10 +24,10 @@ connections and streams as well.
 Note: it returns the peer connection with the associated id if it's already
 established before, by retrieving it from the state package.
 */
-func GetPeerConn(id int, role state.PeerRole, config webrtc.Configuration) (*webrtc.PeerConnection, error) {
+func GetPeerConn(id int, config webrtc.Configuration) (*webrtc.PeerConnection, error) {
 	// check if the peer connection is already established
-	if state.Get(id, role) != nil {
-		return state.Get(id, role).Conn, nil
+	if state.Get(id) != nil {
+		return state.Get(id).Conn, nil
 	}
 
 	mediaEngine := &webrtc.MediaEngine{}
@@ -64,29 +65,31 @@ func GetPeerConn(id int, role state.PeerRole, config webrtc.Configuration) (*web
 	// ensure that the peer connection only stored when it's connected
 	// and moreover it's removed when the connection is terminated
 	conn.OnConnectionStateChange(func(connState webrtc.PeerConnectionState) {
-		log.Printf("Peer %d: %s (%s)", id, connState, state.PeerRoleProducer)
+		log.Printf("Peer %d: %s", id, connState)
 		if connState == webrtc.PeerConnectionStateConnected {
-			state.Add(id, role, conn)
+			state.Add(id, conn)
 		} else {
-			state.Remove(id, role)
+			state.Remove(id)
 		}
 	})
 
 	// store different tracks received from the remote peer in the global state
 	conn.OnTrack(func(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPReceiver) {
 
-		log.Printf("Track received from peer %d: kind: %s, codec: %s", id, remoteTrack.Kind().String(), remoteTrack.Codec().MimeType)
-
 		// create a local track with the remote track capabilities
-		localTrack, newTrackErr := webrtc.NewTrackLocalStaticRTP(remoteTrack.Codec().RTPCodecCapability, remoteTrack.ID(), remoteTrack.ID())
+		localTrack, newTrackErr := webrtc.NewTrackLocalStaticRTP(
+			remoteTrack.Codec().RTPCodecCapability,
+			remoteTrack.ID(),
+			remoteTrack.ID(),
+		)
 		if newTrackErr != nil {
 			panic(newTrackErr)
 		}
 
 		// store the track address in the state map
-		peer := state.Get(id, role)
+		peer := state.Get(id)
 		if peer == nil {
-			log.Println("container not found! should never happen.")
+			log.Println("peer container not found! should never happen.")
 			return
 		}
 		peer.Tracks = append(peer.Tracks, localTrack)
@@ -107,24 +110,6 @@ func GetPeerConn(id int, role state.PeerRole, config webrtc.Configuration) (*web
 		}
 	})
 
-	// TODO: move data channels to the state map
-	var dataChannel *webrtc.DataChannel
-
-	conn.OnDataChannel(func(dc *webrtc.DataChannel) {
-		dc.OnOpen(func() {
-			dataChannel = dc
-			dc.OnMessage(func(msg webrtc.DataChannelMessage) {
-				ice := &webrtc.ICECandidateInit{}
-				if err := json.Unmarshal(msg.Data, ice); err != nil {
-					log.Println("error:", err)
-				}
-				if err := conn.AddICECandidate(*ice); err != nil {
-					log.Println("warning: candidate couldn't be added.")
-				}
-			})
-		})
-	})
-
 	// When Pion gathers a new ICE Candidate send it to the client. This is how
 	// ice trickle is implemented. Everytime we have a new candidate available we send
 	// it as soon as it is ready. We don't wait to emit a Offer/Answer until they are
@@ -133,14 +118,16 @@ func GetPeerConn(id int, role state.PeerRole, config webrtc.Configuration) (*web
 		if candidate == nil {
 			return
 		}
-		for dataChannel == nil {
-		} // block until the data channel is open
+
+		for state.GetWS(id) == nil {
+		} // block until the web socket is not nil
+
 		iceInit, err := json.Marshal(candidate.ToJSON())
 		if err != nil {
 			log.Println("error:", err)
 			return
 		}
-		dataChannel.SendText(string(iceInit))
+		state.GetWS(id).WriteMessage(websocket.TextMessage, iceInit)
 	})
 
 	return conn, err
@@ -151,8 +138,8 @@ close an already established peer connection. an error is returned
 if the connection cannot be closed. and nothing happens if the peer
 connection cannot be found.
 */
-func ClosePeerConn(id int, role state.PeerRole) error {
-	peer := state.Get(id, role)
+func ClosePeerConn(id int) error {
+	peer := state.Get(id)
 	if peer == nil {
 		return nil
 	}

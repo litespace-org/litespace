@@ -30,6 +30,8 @@
         gap: 5px;
       "
     >
+      <button onclick="start()">Start</button>
+
       <div>
         <label for="peer-id">Peer Id</label>
         <input id="peer-id" type="number" />
@@ -42,8 +44,6 @@
         <input id="producer-peer-id" type="number" />
       </div>
       <button onclick="consume()">Join a Broadcast</button><br />
-
-      <button onclick="connect()">Connect</button>
     </div>
 
     <div style="margin: 20px 0px">
@@ -95,15 +95,15 @@
 
   <script>
     var sdp = "";
-    var pc = null;
-    var dc = null;
+    var pc = null; // peer connection
+    var ws = null; // web socket
 
     const candidates = [];
 
     setInterval(() => {
-      if (!dc || dc.readyState !== "open") return;
+      if (!ws || ws.readyState !== 1) return;
       while (candidates.length > 0) {
-        dc.send(JSON.stringify(candidates.pop()));
+        ws.send(JSON.stringify(candidates.pop()));
         console.log("new ice-candidate has been sent.");
       }
     }, 1000);
@@ -112,11 +112,25 @@
       document.getElementById("logs").innerHTML += msg + "<br>";
     };
 
-    function connect() {
+    function start() {
+      if (!window["WebSocket"])
+        return console.error("Your browser does not support WebSockets.");
+
+      const peerId = document.getElementById("peer-id").value;
+      ws = new WebSocket("ws://" + document.location.host + "/ws/" + peerId);
+      ws.onopen = () => console.log("ws connected.");
+      ws.onclose = () => console.log("ws disconnected.");
+      ws.onmessage = (event) => {
+        pc.addIceCandidate(JSON.parse(event.data));
+        console.log("new ice-candidate has been received.");
+      };
+
       pc = new RTCPeerConnection({
         iceServers: [
           {
             urls: "stun:turn.litespace.org",
+            username: "litespace",
+            credential: "litespace",
           },
           {
             urls: "turn:turn.litespace.org",
@@ -125,12 +139,6 @@
           },
         ],
       });
-
-      dc = pc.createDataChannel("ice-candidates");
-      dc.onmessage = (event) => {
-        console.log("new ice-candidate has been received.");
-        pc.addIceCandidate(JSON.parse(event.data));
-      };
 
       pc.oniceconnectionstatechange = (e) => log(pc.iceConnectionState);
       pc.onicecandidate = (event) => {
