@@ -4,7 +4,7 @@ import { CardProps } from "@/components/TutorCard/types";
 import { Typography } from "@/components/Typography";
 import { formatNumber } from "@/components/utils";
 import { useFormatMessage } from "@/hooks";
-import SStar from "@litespace/assets/SStar";
+import Star from "@litespace/assets/Star";
 import { orUndefined } from "@litespace/utils/utils";
 import cn from "classnames";
 import { isEmpty } from "lodash";
@@ -136,7 +136,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
                   >
                     {rating}
                   </Typography>
-                  <SStar
+                  <Star
                     width={15}
                     height={15}
                     className="[&>*]:fill-warning-500"

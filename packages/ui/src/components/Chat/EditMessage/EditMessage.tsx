@@ -20,7 +20,7 @@ export const EditMessage: React.FC<{
       close={close}
       title={
         <div className="flex items-center justify-center gap-2">
-          <EditMessageIcon className="[&>*]:stroke-natural-950" />
+          <EditMessageIcon className="w-6 h-6 [&>*]:stroke-natural-950" />
           <Typography
             tag="span"
             className="font-bold text-natural-950 text-subtitle-2"
