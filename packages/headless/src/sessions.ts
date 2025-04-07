@@ -1584,7 +1584,13 @@ export function useSessionV4({
 
 // ================================== Session V5 ==============================================
 
-function usePeer(sessionId?: ISession.Id) {
+function usePeer({
+  sessionId,
+  onConnectionStateChange,
+}: {
+  sessionId?: ISession.Id;
+  onConnectionStateChange?: (state: RTCPeerConnectionState) => void;
+}) {
   const socket = useSocket();
   const [peer, setPeer] = useState<RTCPeerConnection | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -1592,6 +1598,12 @@ function usePeer(sessionId?: ISession.Id) {
     useState<RTCPeerConnectionState>("new");
   const [iceGatheringState, setIceGatheringState] =
     useState<RTCIceGatheringState>("new");
+
+  const onConnectionStateChangeRef = useRef(onConnectionStateChange);
+
+  useEffect(() => {
+    onConnectionStateChangeRef.current = onConnectionStateChange;
+  });
 
   const init = useCallback(
     async (stream: MediaStream, shareOffer: boolean) => {
@@ -1644,9 +1656,28 @@ function usePeer(sessionId?: ISession.Id) {
     });
   }, [peer, sessionId, socket]);
 
+  // ==================== Errors ====================
+
+  const onIceCandidateError = useCallback(
+    (event: RTCPeerConnectionIceErrorEvent) => {
+      console.log(
+        `Ice Candidate Error: ${event.errorText} (${event.errorCode})`
+      );
+    },
+    []
+  );
+
+  useEffect(() => {
+    peer?.addEventListener("icecandidateerror", onIceCandidateError);
+
+    return () => {
+      peer?.removeEventListener("icecandidateerror", onIceCandidateError);
+    };
+  }, [onIceCandidateError, peer]);
+
   // ==================== State ====================
 
-  const onConnectionStateChange = useCallback(() => {
+  const onConnectionStateChangeInternal = useCallback(() => {
     const state = peer?.connectionState;
     if (!state) return;
     console.log("Peer connection state:", state);
@@ -1668,7 +1699,10 @@ function usePeer(sessionId?: ISession.Id) {
   }, [peer?.iceGatheringState]);
 
   useEffect(() => {
-    peer?.addEventListener("connectionstatechange", onConnectionStateChange);
+    peer?.addEventListener(
+      "connectionstatechange",
+      onConnectionStateChangeInternal
+    );
 
     peer?.addEventListener(
       "icegatheringstatechange",
@@ -1682,7 +1716,7 @@ function usePeer(sessionId?: ISession.Id) {
     return () => {
       peer?.removeEventListener(
         "connectionstatechange",
-        onConnectionStateChange
+        onConnectionStateChangeInternal
       );
 
       peer?.removeEventListener(
@@ -1696,6 +1730,7 @@ function usePeer(sessionId?: ISession.Id) {
     };
   }, [
     onConnectionStateChange,
+    onConnectionStateChangeInternal,
     onIceConnectionStateChange,
     onIceGatheringStateChange,
     peer,
@@ -1838,7 +1873,7 @@ export function useSessionV5({
   sessionId,
 }: SessionV5Payload) {
   const userMedia = useUserMedia();
-  const peer = usePeer(sessionId);
+  const peer = usePeer({ sessionId });
   const { notifyCamera, notifyMic } = useNotifyState(sessionId);
   const member = useMemberState({ memberId, stream: peer.stream });
   const manager = useSessionManager({
@@ -1870,11 +1905,6 @@ export function useSessionV5({
     notifyMic(userMedia.audio);
   }, [notifyMic, userMedia.audio]);
 
-  const leave = useCallback(() => {
-    peer.close();
-    userMedia.stop();
-  }, [peer, userMedia]);
-
   const join = useCallback(() => {
     const stream = userMedia.stream;
     if (!stream || !memberId) return;
@@ -1882,6 +1912,26 @@ export function useSessionV5({
     const shareOffer = manager.members.includes(memberId);
     peer.init(stream, shareOffer);
   }, [manager, memberId, peer, userMedia.stream]);
+
+  // ==================== Leave ====================
+
+  const leave = useCallback(() => {
+    peer.close();
+    userMedia.stop();
+    manager.leave();
+  }, [peer, userMedia, manager]);
+
+  const leaveRef = useRef<Void>(leave);
+
+  useEffect(() => {
+    leaveRef.current = leave;
+  });
+
+  useEffect(() => {
+    return () => {
+      leaveRef.current();
+    };
+  }, []);
 
   return {
     peer,
