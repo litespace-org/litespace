@@ -154,7 +154,7 @@ const Lesson: React.FC = () => {
       streams.push({
         speaking: sessionv5.member.speaking,
         audio: sessionv5.member.audio,
-        video: sessionv5.member.video || true,
+        video: sessionv5.member.video,
         cast: false,
         stream: sessionv5.peer.stream,
         user: other,
