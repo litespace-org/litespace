@@ -32,6 +32,7 @@
     "./Interviews": "./dist/components/Interviews/index.js",
     "./Invoices": "./dist/components/Invoices/index.js",
     "./InvoicesOverview": "./dist/components/InvoicesOverview/index.js",
+    "./InvoicesTable": "./dist/components/InvoicesTable/index.js",
     "./Loading": "./dist/components/Loading/index.js",
     "./Lessons": "./dist/components/Lessons/index.js",
     "./Menu": "./dist/components/Menu/index.js",
