@@ -3,6 +3,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 	"log"
@@ -106,6 +107,42 @@ func GetPeerConn(id int, role state.PeerRole, config webrtc.Configuration) (*web
 		}
 	})
 
+	// TODO: move data channels to the state map
+	var dataChannel *webrtc.DataChannel
+
+	conn.OnDataChannel(func(dc *webrtc.DataChannel) {
+		dc.OnOpen(func() {
+			dataChannel = dc
+			dc.OnMessage(func(msg webrtc.DataChannelMessage) {
+				ice := &webrtc.ICECandidateInit{}
+				if err := json.Unmarshal(msg.Data, ice); err != nil {
+					log.Println("error:", err)
+				}
+				if err := conn.AddICECandidate(*ice); err != nil {
+					log.Println("warning: candidate couldn't be added.")
+				}
+			})
+		})
+	})
+
+	// When Pion gathers a new ICE Candidate send it to the client. This is how
+	// ice trickle is implemented. Everytime we have a new candidate available we send
+	// it as soon as it is ready. We don't wait to emit a Offer/Answer until they are
+	// all available
+	conn.OnICECandidate(func(candidate *webrtc.ICECandidate) {
+		if candidate == nil {
+			return
+		}
+		for dataChannel == nil {
+		} // block until the data channel is open
+		iceInit, err := json.Marshal(candidate.ToJSON())
+		if err != nil {
+			log.Println("error:", err)
+			return
+		}
+		dataChannel.SendText(string(iceInit))
+	})
+
 	return conn, err
 }
 
@@ -120,14 +157,4 @@ func ClosePeerConn(id int, role state.PeerRole) error {
 		return nil
 	}
 	return peer.Conn.Close()
-}
-
-func GatherICEs(conn *webrtc.PeerConnection) {
-	// Create channel that is blocked until ICE Gathering is complete
-	gatherComplete := webrtc.GatheringCompletePromise(conn)
-
-	// Block until ICE Gathering is complete, disabling trickle ICE
-	// we do this because we only can exchange one signaling message
-	// in a production application you should exchange ICE Candidates via OnICECandidate
-	<-gatherComplete
 }

@@ -96,6 +96,17 @@
   <script>
     var sdp = "";
     var pc = null;
+    var dc = null;
+
+    const candidates = [];
+
+    setInterval(() => {
+      if (!dc || dc.readyState !== "open") return;
+      while (candidates.length > 0) {
+        dc.send(JSON.stringify(candidates.pop()));
+        console.log("new ice-candidate has been sent.");
+      }
+    }, 1000);
 
     const log = (msg) => {
       document.getElementById("logs").innerHTML += msg + "<br>";
@@ -114,19 +125,30 @@
           },
         ],
       });
+
+      dc = pc.createDataChannel("ice-candidates");
+      dc.onmessage = (event) => {
+        console.log("new ice-candidate has been received.");
+        pc.addIceCandidate(JSON.parse(event.data));
+      };
+
       pc.oniceconnectionstatechange = (e) => log(pc.iceConnectionState);
       pc.onicecandidate = (event) => {
         if (event.candidate === null) {
-          console.log("onicecandidate", event);
           sdp = pc.localDescription;
           document.getElementById("localSessionDescription").value =
             JSON.stringify(sdp);
+          return;
         }
+        candidates.push({
+          candidate: event.candidate.candidate,
+          sdpMid: event.candidate.sdpMid,
+          sdpMLineIndex: event.candidate.sdpMLineIndex,
+        });
       };
 
       pc.addTransceiver("video");
 
-      console.log(cam, mic);
       navigator.mediaDevices
         .getUserMedia({ video: cam, audio: mic })
         .then((stream) => {
