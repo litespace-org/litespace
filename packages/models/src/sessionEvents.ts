@@ -1,6 +1,6 @@
 import { column, knex, WithOptionalTx } from "@/query";
 import { first, isEmpty } from "lodash";
-import { ISessionEvent } from "@litespace/types";
+import { ISession, ISessionEvent } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 
@@ -12,6 +12,7 @@ export class SessionEvents {
     tx?: Knex.Transaction
   ): Promise<ISessionEvent.Self> {
     const now = dayjs.utc().toDate();
+
     const rows = await this.builder(tx)
       .insert({
         type: event.type,
@@ -66,10 +67,12 @@ export class SessionEvents {
   async find({
     users,
     sessionIds,
+    events,
     tx,
   }: WithOptionalTx<{
     users?: number[];
-    sessionIds?: number[];
+    sessionIds?: ISession.Id[];
+    events?: ISessionEvent.EventType[];
   }>): Promise<ISessionEvent.Self[]> {
     const builder = this.builder(tx).select("*");
 
@@ -79,7 +82,10 @@ export class SessionEvents {
     if (sessionIds && !isEmpty(sessionIds))
       builder.whereIn(this.column("session_id"), sessionIds);
 
-    const rows = await builder.then();
+    if (events && !isEmpty(events))
+      builder.whereIn(this.column("type"), events);
+
+    const rows = await builder.orderBy("created_at", "asc").then();
     return rows.map((row) => this.from(row));
   }
 

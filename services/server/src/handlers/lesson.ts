@@ -16,7 +16,7 @@ import {
   forbidden,
   notfound,
 } from "@/lib/error";
-import { ILesson, IUser, Wss } from "@litespace/types";
+import { ILesson, ISession, ISessionEvent, IUser, Wss } from "@litespace/types";
 import {
   lessons,
   users,
@@ -24,6 +24,7 @@ import {
   rooms,
   availabilitySlots,
   interviews,
+  sessionEvents,
 } from "@litespace/models";
 import { Knex } from "knex";
 import safeRequest from "express-async-handler";
@@ -42,6 +43,7 @@ import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
 import { isEmpty, isEqual } from "lodash";
 import { genSessionId } from "@litespace/utils";
 import { withImageUrls } from "@/lib/user";
+import { evaluateAttendance } from "@/lib/lesson";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -275,6 +277,50 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
     await lessons.findLessonMembers(userLesonsIds)
   );
 
+  // Extract sessionIds and create a mapping of lessons to their respective members
+  const lessonSessions = new Map<
+    ISession.Id,
+    { userIds: number[]; duration: number }
+  >();
+
+  userLessons.forEach((lesson) => {
+    const members = lessonMembers.filter(
+      (member) => member.lessonId === lesson.id
+    );
+    lessonSessions.set(lesson.sessionId, {
+      userIds: members.map((m) => m.userId),
+      duration: lesson.duration,
+    });
+  });
+
+  const sessionIds = Array.from(lessonSessions.keys());
+  const events = await sessionEvents.find({
+    sessionIds,
+    users: lessonMembers.map((member) => member.userId),
+    events: [
+      ISessionEvent.EventType.UserJoined,
+      ISessionEvent.EventType.UserLeft,
+    ],
+  });
+
+  const eventsBySession = new Map<string, ISessionEvent.Self[]>();
+  events.forEach((event) => {
+    if (!eventsBySession.has(event.sessionId)) {
+      eventsBySession.set(event.sessionId, []);
+    }
+    eventsBySession.get(event.sessionId)!.push(event);
+  });
+
+  const attendanceBySession = new Map<string, Record<number, boolean>>();
+
+  lessonSessions.forEach(({ userIds, duration }, sessionId) => {
+    const sessionEvents = eventsBySession.get(sessionId) || [];
+    attendanceBySession.set(
+      sessionId,
+      evaluateAttendance({ events: sessionEvents, userIds, duration })
+    );
+  });
+
   const result: ILesson.FindUserLessonsApiResponse = {
     list: userLessons.map((lesson) => {
       const members = lessonMembers
@@ -284,6 +330,9 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
           // mask private information
           phone: null,
           verifiedPhone: false,
+          attended: !!attendanceBySession.get(lesson.sessionId)?.[
+            member.userId
+          ],
         }));
       return { lesson, members };
     }),
@@ -308,6 +357,23 @@ async function findLessonById(req: Request, res: Response, next: NextFunction) {
   const isMember = !!members.find((member) => member.userId === user.id);
   if (!isMember) return next(forbidden());
 
+  const memberIds = members.map((member) => member.userId);
+
+  const events = await sessionEvents.find({
+    sessionIds: [lesson.sessionId],
+    users: memberIds,
+    events: [
+      ISessionEvent.EventType.UserJoined,
+      ISessionEvent.EventType.UserLeft,
+    ],
+  });
+
+  const attendance = evaluateAttendance({
+    events,
+    userIds: memberIds,
+    duration: lesson.duration,
+  });
+
   const response: ILesson.FindLessonByIdApiResponse = {
     lesson,
     members: members.map((member) => ({
@@ -315,6 +381,7 @@ async function findLessonById(req: Request, res: Response, next: NextFunction) {
       // mask private information
       phone: null,
       verifiedPhone: false,
+      attended: attendance[member.userId],
     })),
   };
 
