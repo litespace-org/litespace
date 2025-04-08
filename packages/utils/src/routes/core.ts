@@ -1,5 +1,5 @@
 import { Dashboard, Landing, Web } from "@/routes/route";
-import { Env, ISession } from "@litespace/types";
+import { Env, ISession, IShortUrl } from "@litespace/types";
 import { clients } from "@/routes/clients";
 
 function isStrictMatch(
@@ -96,7 +96,12 @@ type LandingPayload =
       query?: BaseQuery;
     }
   | {
-      route: Exclude<Landing, Landing.FaqRole>;
+      route: Landing.ShortUrl;
+      name: IShortUrl.Id;
+      query?: BaseQuery;
+    }
+  | {
+      route: Exclude<Landing, Landing.FaqRole | Landing.ShortUrl>;
       query?: BaseQuery;
     };
 

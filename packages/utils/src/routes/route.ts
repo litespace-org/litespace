@@ -35,6 +35,7 @@ export enum Landing {
   Faq = "/faq",
   FaqRole = "/faq/:role",
   Contact = "/contact",
+  ShortUrl = "/url/:name",
 }
 
 export enum Dashboard {

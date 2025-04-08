@@ -28,6 +28,7 @@ export * as Env from "@/env";
 export * as IWhatsapp from "@/whatsapp";
 export * as ITelegram from "@/telegram";
 export * as IEcho from "@/echo";
+export * as IShortUrl from "@/ShortUrl";
 
 export * from "@/api";
 export * from "@/utils";
