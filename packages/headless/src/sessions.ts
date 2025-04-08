@@ -1585,12 +1585,14 @@ export function useSessionV4({
 function usePeer({
   sessionId,
   onConnectionStateChange,
+  selfStream,
 }: {
   sessionId?: ISession.Id;
   onConnectionStateChange?: (state: RTCPeerConnectionState) => void;
+  selfStream: MediaStream | null;
 }) {
   const socket = useSocket();
-  const [peer, setPeer] = useState<RTCPeerConnection | null>(null);
+  const [peer, setPeer] = useState<RTCPeerConnection>(initPeer());
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [connectionState, setConnectionState] =
     useState<RTCPeerConnectionState>("new");
@@ -1602,6 +1604,22 @@ function usePeer({
   useEffect(() => {
     onConnectionStateChangeRef.current = onConnectionStateChange;
   });
+
+  const restartPeer = useCallback(() => {
+    const peer = initPeer();
+
+    if (selfStream) {
+      const tracks = selfStream.getTracks();
+      tracks.forEach((track) => peer.addTrack(track, selfStream));
+      const trackCount = tracks.length;
+      const senderCount = peer.getSenders().length;
+      console.log(
+        `Attaching media stream to the new peer:\nTracks: ${trackCount}\nSenders: ${senderCount}`
+      );
+    }
+
+    setPeer(peer);
+  }, [selfStream]);
 
   const init = useCallback(
     async (stream: MediaStream, shareOffer: boolean) => {
@@ -1622,7 +1640,7 @@ function usePeer({
           "Invalid state: local dession description is missing."
         );
 
-      socket?.emit(Wss.ClientEvent.SessionOffer, {
+      socket.emit(Wss.ClientEvent.SessionOffer, {
         sessionId,
         offer: localDescription,
       });
@@ -1636,7 +1654,7 @@ function usePeer({
   }, []);
 
   const createOffer = useCallback(async () => {
-    if (!sessionId || !socket || !peer) return;
+    if (!sessionId || !socket) return;
 
     const offer = await peer.createOffer(offerOptions);
     await peer.setLocalDescription(new RTCSessionDescription(offer));
@@ -1666,80 +1684,77 @@ function usePeer({
   );
 
   useEffect(() => {
-    peer?.addEventListener("icecandidateerror", onIceCandidateError);
+    peer.addEventListener("icecandidateerror", onIceCandidateError);
 
     return () => {
-      peer?.removeEventListener("icecandidateerror", onIceCandidateError);
+      peer.removeEventListener("icecandidateerror", onIceCandidateError);
     };
   }, [onIceCandidateError, peer]);
 
   // ==================== State ====================
 
   const onConnectionStateChangeInternal = useCallback(() => {
-    const state = peer?.connectionState;
+    const state = peer.connectionState;
     if (!state) return;
     console.log("Peer connection state:", state);
     setConnectionState(state);
     if (state === "closed" || state === "disconnected" || state === "failed")
       setStream(null);
-  }, [peer?.connectionState]);
+  }, [peer.connectionState]);
 
   const onIceConnectionStateChange = useCallback(() => {
-    const state = peer?.iceConnectionState;
+    const state = peer.iceConnectionState;
     console.log("Ice connection state:", state);
     if (state === "failed" || state === "disconnected") {
       // Ref: https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Session_lifetime#ice_restart
       console.log("Restart ice");
-      peer?.setConfiguration({ iceServers });
-      peer?.restartIce();
+      peer.setConfiguration({ iceServers });
+      peer.restartIce();
     }
   }, [peer]);
 
   const onIceGatheringStateChange = useCallback(() => {
-    const state = peer?.iceGatheringState;
+    const state = peer.iceGatheringState;
     if (!state) return;
     console.log("ICE gathering state:", state);
     setIceGatheringState(state);
-  }, [peer?.iceGatheringState]);
+  }, [peer.iceGatheringState]);
 
   const onSignalingStateChange = useCallback(() => {
-    const state = peer?.signalingState;
+    const state = peer.signalingState;
     console.log("Signaling state:", state || "N/A");
-  }, [peer?.signalingState]);
+  }, [peer.signalingState]);
 
   useEffect(() => {
-    peer?.addEventListener(
+    peer.addEventListener(
       "connectionstatechange",
       onConnectionStateChangeInternal
     );
 
-    peer?.addEventListener(
-      "icegatheringstatechange",
-      onIceGatheringStateChange
-    );
-    peer?.addEventListener(
+    peer.addEventListener("icegatheringstatechange", onIceGatheringStateChange);
+    peer.addEventListener(
       "iceconnectionstatechange",
       onIceConnectionStateChange
     );
 
-    peer?.addEventListener("signalingstatechange", onSignalingStateChange);
+    peer.addEventListener("signalingstatechange", onSignalingStateChange);
 
     return () => {
-      peer?.removeEventListener(
+      peer.removeEventListener(
         "connectionstatechange",
         onConnectionStateChangeInternal
       );
 
-      peer?.removeEventListener(
+      peer.removeEventListener(
         "icegatheringstatechange",
         onIceGatheringStateChange
       );
-      peer?.removeEventListener(
+      peer.removeEventListener(
         "iceconnectionstatechange",
         onIceConnectionStateChange
       );
 
-      peer?.removeEventListener("signalingstatechange", onSignalingStateChange);
+      peer.removeEventListener("signalingstatechange", onSignalingStateChange);
     };
   }, [
     onConnectionStateChange,
@@ -1750,13 +1765,53 @@ function usePeer({
     peer,
   ]);
 
+  // ==================== Handle streams ====================
+
+  const attach = useCallback(
+    (stream: MediaStream) => {
+      const tracks = stream.getTracks();
+      const senders = peer.getSenders();
+
+      for (const track of tracks) {
+        const exists = !!senders.find(
+          (sender) => sender.track?.id === track.id
+        );
+        if (!exists) peer.addTrack(track, stream);
+      }
+      const trackCount = tracks.length;
+      const senderCount = senders.length;
+      console.log(
+        `Attaching media stream:\nTracks: ${trackCount}\nSenders: ${senderCount}`
+      );
+    },
+    [peer]
+  );
+
+  const onTrack = useCallback((event: RTCTrackEvent) => {
+    const stream = first(event.streams);
+    if (!stream) return console.log(`No stream`);
+    const tracks = stream.getTracks();
+    const count = tracks.length;
+    const kind = tracks.map((track) => track.kind).join("+");
+    console.log(
+      `Received a remote stream with ${count} track(s)\nKind: ${kind}`
+    );
+    setStream(stream);
+  }, []);
+
+  useEffect(() => {
+    peer.addEventListener("track", onTrack);
+    return () => {
+      peer.removeEventListener("track", onTrack);
+    };
+  }, [onTrack, peer]);
+
   // ==================== Signaling ====================
 
   const onLocalIceCandidate = useCallback(
     (event: RTCPeerConnectionIceEvent) => {
       const candidate = event.candidate;
-      if (candidate === null)
-        console.log(`Got a null candidate, Connection can be established.`);
+      if (candidate === null) console.log(`Got a null candidate, Done.`);
 
       if (!candidate || !socket || !sessionId) return;
 
@@ -1774,7 +1829,7 @@ function usePeer({
   const onSessionOffer = useCallback(
     async ({ offer }: Wss.EventPayload<Wss.ServerEvent.SessionOffer>) => {
       console.log(`Received an offer (${offer.type})`);
-      if (!sessionId || !socket || !peer) return;
+      if (!sessionId || !socket) return;
       await peer.setRemoteDescription(offer);
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
@@ -1782,7 +1837,6 @@ function usePeer({
         sessionId,
         answer,
       });
-      setPeer(peer);
     },
     [peer, sessionId, socket]
   );
@@ -1790,7 +1844,7 @@ function usePeer({
   const onSessionAnswer = useCallback(
     async ({ answer }: Wss.EventPayload<Wss.ServerEvent.SessionAnswer>) => {
       console.log(`Received an answer (${answer.type})`);
-      await peer?.setRemoteDescription(answer);
+      await peer.setRemoteDescription(answer);
     },
     [peer]
   );
@@ -1798,7 +1852,9 @@ function usePeer({
   const onRemoteIceCandidate = useCallback(
     ({ candidate }: Wss.EventPayload<Wss.ServerEvent.IceCandidate>) => {
       console.log(`Received an ice candidate`);
-      peer?.addIceCandidate(candidate);
+      // cache ice candicates and consume it when the remote description is set.
+      if (!peer.remoteDescription) return;
+      peer.addIceCandidate(candidate);
     },
     [peer]
   );
@@ -1817,50 +1873,18 @@ function usePeer({
   }, [onRemoteIceCandidate, onSessionAnswer, onSessionOffer, socket]);
 
   useEffect(() => {
-    peer?.addEventListener("icecandidate", onLocalIceCandidate);
+    peer.addEventListener("icecandidate", onLocalIceCandidate);
 
     return () => {
-      peer?.removeEventListener("icecandidate", onLocalIceCandidate);
+      peer.removeEventListener("icecandidate", onLocalIceCandidate);
     };
   }, [onLocalIceCandidate, peer]);
-
-  // ==================== Handle streams ====================
-
-  const attachStream = useCallback(
-    (stream: MediaStream) => {
-      const tracks = stream.getTracks();
-      tracks.forEach((track) => peer?.addTrack(track, stream));
-    },
-    [peer]
-  );
-
-  const onTrack = useCallback((event: RTCTrackEvent) => {
-    const stream = first(event.streams);
-    if (!stream) return;
-    const tracks = stream.getTracks();
-    const count = tracks.length;
-    const kind = tracks.map((track) => track.kind).join("+");
-    console.log(
-      `Received a remote stream with ${count} track(s)\nKind: ${kind}`
-    );
-    setStream(stream);
-  }, []);
-
-  useEffect(() => {
-    peer?.addEventListener("track", onTrack);
-    return () => {
-      peer?.removeEventListener("track", onTrack);
-    };
-  }, [onTrack, peer]);
 
   // ==================== Cleanup ====================
 
   const close = useCallback(() => {
-    // peer?.close();
     stream?.getTracks().forEach((track) => track.stop());
     setStream(null);
-    // create a new peer incase the other member tried to reconnected with the current user
-    // setPeer(initPeer());
   }, [stream]);
 
   return {
@@ -1868,10 +1892,11 @@ function usePeer({
     connectionState,
     iceGatheringState,
     createOffer,
-    attachStream,
+    attach,
     close,
     createPeer,
     init,
+    restartPeer,
   };
 }
 
@@ -1887,7 +1912,7 @@ export function useSessionV5({
   sessionId,
 }: SessionV5Payload) {
   const userMedia = useUserMedia();
-  const peer = usePeer({ sessionId });
+  const peer = usePeer({ sessionId, selfStream: userMedia.stream });
   const { notifyCamera, notifyMic } = useNotifyState(sessionId);
   const member = useMemberState({ memberId, stream: peer.stream });
   const manager = useSessionManager({
@@ -1903,11 +1928,9 @@ export function useSessionV5({
     onLeave(userId) {
       console.log(`${userId} left the session: close=${userId === memberId}`);
       if (userId !== memberId) return;
+      console.log("Closing and reinitialize peer connection");
       peer.close();
-      if (userMedia.stream) {
-        console.log("Reinitialize peer connection");
-        peer.init(userMedia.stream, false);
-      }
+      peer.restartPeer();
     },
     onInitialMembers(userIds) {
       console.log(`Members:`, userIds);
@@ -1922,12 +1945,14 @@ export function useSessionV5({
     notifyMic(userMedia.audio);
   }, [notifyMic, userMedia.audio]);
 
-  const join = useCallback(() => {
+  const join = useCallback(async () => {
     const stream = userMedia.stream;
     if (!stream || !memberId) return;
     manager.join();
-    const shareOffer = manager.members.includes(memberId);
-    peer.init(stream, shareOffer);
+    const otherMemberJoined = manager.members.includes(memberId);
+    // peer.init(stream, shareOffer);
+    peer.attach(stream);
+    if (otherMemberJoined) await peer.createOffer();
   }, [manager, memberId, peer, userMedia.stream]);
 
   // ==================== Leave ====================
