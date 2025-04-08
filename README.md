@@ -99,6 +99,64 @@ Verify pnpm installation by running `pnpm -v`. You should see no errors.
 
 Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) (recommended but feel free to use any linux distro)
 
+## Litespace Packages
+
+As Litespace is a monorepo and a large-scale project, organizing its logic is essential to maintain scalability and avoid complexity. To achieve this, we use **packages**, which group related logic for specific purposes. All packages are located under `/packages/*`.
+
+### **Packages Overview**
+
+| Package  | Purpose                                                              |
+| -------- | -------------------------------------------------------------------- |
+| assets   | Contains all SVGs used across the project.                           |
+| atlas    | Centralized API SDK using `axios` to send requests to the backend.   |
+| auth     | Authentication management library.                                   |
+| emails   | Logic for sending emails via `nodemailer` and email templates.       |
+| headless | Custom React hooks for shared functionality.                         |
+| kafka    | Inter-service communication logic for backend services using kafka.  |
+| models   | Database models and interaction logic with the database.             |
+| radio    | Implementation of WhatsApp and Telegram clients for notifications.   |
+| types    | Centralized location for TypeScript types.                           |
+| ui       | Reusable UI components with Storybook integration for documentation. |
+| utils    | Shared utility functions and logic.                                  |
+
+### **Creating a New Package**
+
+To create a new package, follow these steps:
+
+1. **Initialize the Package**:
+
+   - Run `pnpm init` in the package folder to generate a `package.json`.
+   - Add the package to the root `package.json` workspace configuration and include it in the `build:pkgs` script [(example)](https://github.com/litespace-org/litespace/blob/61eda6d54df7c7d7274a0f17cfc47e5760f28380/package.json#L68-L74).
+
+2. **Install Dependencies**:
+
+   - Be cautious when installing dependencies like `typescript`, `dayjs`, or `zod`. Copy their versions from existing packages to ensure consistency across the monorepo.
+
+3. **Configure Scripts**:
+
+   - Include the following scripts in the `package.json`:
+     ```json
+     "scripts": {
+       "build": "...",
+       "check": "...",
+       "clean": "...",
+       "watch": "...",
+       "prepare": "...",
+       "test": "..."
+     }
+     ```
+     If a script is unused, it can remain empty (`"script-name": ""`).
+
+4. **Set Up TypeScript**:
+
+   - Create a `tsconfig.json` file. You may need multiple configurations for different environments (e.g., ESM for web, CJS for Node.js) [(example)](https://github.com/litespace-org/litespace/blob/master/packages/utils/tsconfig.esm.json)
+   - Use `typescript-transform-paths` to enable absolute imports [(example ts file)](https://github.com/litespace-org/litespace/blob/d03198be2b5bb281f2be15d8bb463a5dd6169f89/packages/utils/tsconfig.json#L1-L25).
+
+5. **Test Your Setup**:
+   - Verify that your package builds correctly and integrates with the rest of the monorepo.
+
+> **Note**: Always ensure dependency versions match across packages to avoid compatibility issues.
+
 ## Port Map
 
 | Process              | Location           | Port |

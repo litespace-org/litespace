@@ -4,6 +4,7 @@ import { IKafka } from "@litespace/types";
 export class Producer {
   private kafka: Kafka;
   private producer: KafkaJsProducer;
+  private isConnected = false;
 
   constructor() {
     this.kafka = new Kafka({
@@ -14,10 +15,16 @@ export class Producer {
   }
 
   async connect() {
+    if (this.isConnected) return;
     await this.producer.connect();
+    this.isConnected = true;
   }
 
-  async send<T>({ topic, key, value }: IKafka.KafkaProducerMessage<T>) {
+  async send<T extends IKafka.Topics>({
+    topic,
+    key,
+    value,
+  }: IKafka.KafkaProducerMessage<T>) {
     await this.producer.send({
       topic,
       messages: [
@@ -30,6 +37,8 @@ export class Producer {
   }
 
   async disconnect() {
+    if (!this.isConnected) return;
     await this.producer.disconnect();
+    this.isConnected = false;
   }
 }

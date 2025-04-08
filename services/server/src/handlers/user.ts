@@ -64,7 +64,6 @@ import { getRequestFile, upload } from "@/lib/assets";
 import bytes from "bytes";
 import s3 from "@/lib/s3";
 import { isOnboard } from "@litespace/utils/tutor";
-import { Producer } from "@litespace/kafka";
 
 const createUserPayload = zod.object({
   role,
@@ -179,20 +178,6 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
     return user;
   });
-  const producer = new Producer();
-  await producer.connect();
-
-  await producer.send({
-    topic: "whatsapp",
-    value: { to: "01018303125", message: "Hello man from whatsapp" },
-  });
-
-  await producer.send({
-    topic: "telegram",
-    value: { to: "+201018303125", message: "Hello man from telegram" },
-  });
-
-  await producer.disconnect();
 
   sendBackgroundMessage({
     type: "send-user-verification-email",

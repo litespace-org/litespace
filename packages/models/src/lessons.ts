@@ -208,6 +208,8 @@ export class Lessons {
       image: users.column("image"),
       role: users.column("role"),
       phone: users.column("phone"),
+      enabled_whatsapp: users.column("enabled_whatsapp"),
+      enabled_telegram: users.column("enabled_telegram"),
       verified_phone: users.column("verified_phone"),
     };
 
@@ -562,6 +564,8 @@ export class Lessons {
       role: row.role,
       phone: row.phone,
       verifiedPhone: row.verified_phone,
+      enabledTelegram: row.enabled_telegram,
+      enabledWhatsapp: row.enabled_whatsapp,
     };
   }
 

@@ -37,12 +37,12 @@ import {
   isUser,
 } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
-import dayjs from "@/lib/dayjs";
 import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
 import { isEmpty, isEqual } from "lodash";
 import { genSessionId } from "@litespace/utils";
 import { withImageUrls } from "@/lib/user";
-import { Producer } from "@litespace/kafka";
+import dayjs from "@/lib/dayjs";
+import { sendLessonMessage } from "@/lib/messenger";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -149,24 +149,15 @@ function create(context: ApiContext) {
           return lesson;
         }
       );
+      const message = `New lesson booked! ${user.name || "A student"} has booked a lesson with you for ${dayjs(lesson.start).tz("Africa/Cairo").format("dddd DD/MMM/YYYY")} at ${dayjs(lesson.start).tz("Africa/Cairo").format("hh:mm A")}.`;
 
-      const producer = new Producer();
-      await producer.connect();
-
-      await producer.send({
-        topic: "whatsapp",
-        value: { to: "01018303125", message: "a new lesson is generated" },
+      await sendLessonMessage({
+        message,
+        enabledTelegram: tutor.enabledTelegram,
+        enabledWhatsapp: tutor.enabledWhatsapp,
+        phone: tutor.phone,
+        verifiedPhone: tutor.verifiedPhone,
       });
-
-      await producer.send({
-        topic: "telegram",
-        value: {
-          to: "+201018303125",
-          message: "a new lesson is generated from telegram",
-        },
-      });
-
-      await producer.disconnect();
 
       const response: ILesson.CreateLessonApiResponse = lesson;
       res.status(200).json(response);
@@ -236,6 +227,16 @@ function update(context: ApiContext) {
         start: payload.start,
         duration: payload.duration,
         slotId: payload.slotId,
+      });
+
+      const message = `Lesson Update: ${user.name || "The student"} has changed their lesson on ${dayjs(lesson.start).tz("Africa/Cairo").format("dddd DD/MMM/YYYY")} to ${dayjs(payload.start).tz("Africa/Cairo").format("dddd DD/MMM/YYYY")} at ${dayjs(payload.start).tz("Africa/Cairo").format("hh:mm A")}.`;
+
+      await sendLessonMessage({
+        message,
+        enabledTelegram: tutor.enabledTelegram,
+        enabledWhatsapp: tutor.enabledWhatsapp,
+        phone: tutor.phone,
+        verifiedPhone: tutor.verifiedPhone,
       });
 
       res.sendStatus(200);
@@ -360,6 +361,17 @@ function cancel(context: ApiContext) {
       await lessons.cancel({
         canceledBy: user.id,
         ids: [lessonId],
+      });
+
+      const message = `Your lesson on ${dayjs(lesson.start).tz("Africa/Cairo").format("dddd DD/MMM/YYYY")} at ${dayjs(lesson.start).tz("Africa/Cairo").format("hh:mm A")} has been cancelled by ${user.name || "the student"}.`;
+      members.forEach(async (member) => {
+        await sendLessonMessage({
+          message,
+          enabledTelegram: member.enabledTelegram,
+          enabledWhatsapp: member.enabledWhatsapp,
+          phone: member.phone,
+          verifiedPhone: member.verifiedPhone,
+        });
       });
 
       res.status(200).send();
