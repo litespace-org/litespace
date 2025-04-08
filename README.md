@@ -125,10 +125,10 @@ Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker
 2. ⛔ : Not compatible
 3. ❔ : Not tested
 
-|               | Chrome | Firefox | Safari | Chrome Mobile | Brave |
-| ------------- | ------ | ------- | ------ | ------------- | ----- |
-| Chrome        | ✅     | ❔      | ❔     | ❔            | ❔    |
-| Firefox       | ✅     | ❔      | ❔     | ❔            | ❔    |
-| Safari        | ❔     | ❔      | ❔     | ❔            | ❔    |
-| Chrome Mobile | ❔     | ❔      | ❔     | ❔            | ❔    |
-| Brave         | ❔     | ❔      | ❔     | ❔            | ❔    |
+|               | Chrome | Firefox/Zen | Safari | Chrome Mobile | Brave |
+| ------------- | ------ | ----------- | ------ | ------------- | ----- |
+| Chrome        | ✅     | ✅          | ❔     | ❔            | ✅    |
+| Firefox       | ✅     | ✅          | ❔     | ❔            | ✅    |
+| Safari        | ❔     | ❔          | ❔     | ❔            | ❔    |
+| Chrome Mobile | ❔     | ❔          | ❔     | ❔            | ❔    |
+| Brave         | ❔     | ❔          | ❔     | ❔            | ❔    |
