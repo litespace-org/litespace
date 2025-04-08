@@ -293,6 +293,7 @@ const Lesson: React.FC = () => {
           sessionv5.userMedia
             .capture(enableVideoStream)
             .then((stream: MediaStream | Error) => {
+              // TODO: enable camera during lesson
               const error = stream instanceof Error;
               if (error) return capture(stream);
               sessionv5.join();

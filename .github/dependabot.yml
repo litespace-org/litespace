@@ -5,8 +5,8 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pnpm" 
-    directory: "/" 
+  - package-ecosystem: "pnpm"
+    directory: "/"
     schedule:
       interval: "weekly"
     # Raise all npm pull requests with assignees

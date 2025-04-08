@@ -126,14 +126,12 @@ export function useUserMedia(
             },
             video: video
               ? {
-                  /**
-                   * We must sure that the aspect ratio for the video stream is
-                   * 16:9 for two reasons.
-                   * 1. The ratio 16:9 is the standard when working with videos.
-                   * 2. The UI is built around this aspect ratio.
-                   */
-                  width: 1280,
-                  height: 720,
+                  width: {
+                    ideal: 1280,
+                  },
+                  height: {
+                    ideal: 720,
+                  },
                 }
               : undefined,
           })
@@ -1881,6 +1879,8 @@ export function useSessionV5({
     sessionId,
     onJoin(userId) {
       if (!selfId || selfId === userId) return;
+      notifyCamera(userMedia.video);
+      notifyMic(userMedia.audio);
       console.log(`${userId} joined the session`);
     },
     onLeave(userId) {
