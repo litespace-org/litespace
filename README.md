@@ -127,8 +127,8 @@ Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker
 
 |               | Chrome | Firefox/Zen | Safari | Chrome Mobile | Brave |
 | ------------- | ------ | ----------- | ------ | ------------- | ----- |
-| Chrome        | ✅     | ✅          | ❔     | ❔            | ✅    |
-| Firefox       | ✅     | ✅          | ❔     | ❔            | ✅    |
-| Safari        | ❔     | ❔          | ❔     | ❔            | ❔    |
-| Chrome Mobile | ❔     | ❔          | ❔     | ❔            | ❔    |
+| Chrome        | ✅     | ✅          | ✅     | ❔            | ✅    |
+| Firefox       | ✅     | ✅          | ✅     | ❔            | ✅    |
+| Safari        | ❔     | ❔          | ✅     | ❔            | ❔    |
+| Chrome Mobile | ❔     | ❔          | ❔     | ✅            | ❔    |
 | Brave         | ❔     | ❔          | ❔     | ❔            | ❔    |

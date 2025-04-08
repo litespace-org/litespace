@@ -1686,7 +1686,13 @@ function usePeer({
 
   const onIceConnectionStateChange = useCallback(() => {
     const state = peer?.iceConnectionState;
-    if (state === "failed" || state === "disconnected") peer?.restartIce();
+    console.log("Ice connection state:", state);
+    if (state === "failed" || state === "disconnected") {
+      // Ref: https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Session_lifetime#ice_restart
+      console.log("Restart ice");
+      peer?.setConfiguration({ iceServers });
+      peer?.restartIce();
+    }
   }, [peer]);
 
   const onIceGatheringStateChange = useCallback(() => {
@@ -1695,6 +1701,11 @@ function usePeer({
     console.log("ICE gathering state:", state);
     setIceGatheringState(state);
   }, [peer?.iceGatheringState]);
+
+  const onSignalingStateChange = useCallback(() => {
+    const state = peer?.signalingState;
+    console.log("Signaling state:", state || "N/A");
+  }, [peer?.signalingState]);
 
   useEffect(() => {
     peer?.addEventListener(
@@ -1711,6 +1722,8 @@ function usePeer({
       onIceConnectionStateChange
     );
 
+    peer?.addEventListener("signalingstatechange", onSignalingStateChange);
+
     return () => {
       peer?.removeEventListener(
         "connectionstatechange",
@@ -1725,12 +1738,15 @@ function usePeer({
         "iceconnectionstatechange",
         onIceConnectionStateChange
       );
+
+      peer?.removeEventListener("signalingstatechange", onSignalingStateChange);
     };
   }, [
     onConnectionStateChange,
     onConnectionStateChangeInternal,
     onIceConnectionStateChange,
     onIceGatheringStateChange,
+    onSignalingStateChange,
     peer,
   ]);
 
@@ -1879,6 +1895,7 @@ export function useSessionV5({
     sessionId,
     onJoin(userId) {
       if (!selfId || selfId === userId) return;
+      // Share audio and video status when the other member joins.
       notifyCamera(userMedia.video);
       notifyMic(userMedia.audio);
       console.log(`${userId} joined the session`);
