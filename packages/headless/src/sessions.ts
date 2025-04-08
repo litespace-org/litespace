@@ -1582,6 +1582,13 @@ export function useSessionV4({
 
 // ================================== Session V5 ==============================================
 
+function createPeer() {
+  const peer = new RTCPeerConnection({ iceServers });
+  const video = peer.addTransceiver("video");
+  const audio = peer.addTransceiver("audio");
+  return { peer, video, audio };
+}
+
 function usePeer({
   sessionId,
   onConnectionStateChange,
@@ -1592,7 +1599,7 @@ function usePeer({
   selfStream: MediaStream | null;
 }) {
   const socket = useSocket();
-  const [peer, setPeer] = useState<RTCPeerConnection>(initPeer());
+  const [{ peer, video, audio }, setPeer] = useState(createPeer());
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [connectionState, setConnectionState] =
     useState<RTCPeerConnectionState>("new");
@@ -1606,19 +1613,23 @@ function usePeer({
   });
 
   const restartPeer = useCallback(() => {
-    const peer = initPeer();
+    const { peer, audio, video } = createPeer();
 
     if (selfStream) {
       const tracks = selfStream.getTracks();
-      tracks.forEach((track) => peer.addTrack(track, selfStream));
+      tracks.forEach((track) => {
+        if (track.kind === "audio") audio.sender.replaceTrack(track);
+        if (track.kind === "video") video.sender.replaceTrack(track);
+      });
       const trackCount = tracks.length;
       const senderCount = peer.getSenders().length;
+      const kinds = tracks.map((track) => track.kind).join(",");
       console.log(
-        `Attaching media stream to the new peer:\nTracks: ${trackCount}\nSenders: ${senderCount}`
+        `Attaching media stream to the new peer:\nTracks: ${trackCount}\nKind: ${kinds}\nSenders: ${senderCount}`
       );
     }
 
-    setPeer(peer);
+    setPeer({ peer, audio, video });
   }, [selfStream]);
 
   const init = useCallback(
@@ -1627,7 +1638,7 @@ function usePeer({
       const peer = initPeer();
       const tracks = stream.getTracks();
       tracks.forEach((track) => peer.addTrack(track, stream));
-      setPeer(peer);
+      // setPeer(peer);
       if (!shareOffer) return;
 
       const offer = await peer.createOffer(offerOptions);
@@ -1647,11 +1658,6 @@ function usePeer({
     },
     [sessionId, socket]
   );
-
-  const createPeer = useCallback(() => {
-    console.log("Create peer connection...");
-    setPeer(initPeer());
-  }, []);
 
   const createOffer = useCallback(async () => {
     if (!sessionId || !socket) return;
@@ -1773,18 +1779,21 @@ function usePeer({
       const senders = peer.getSenders();
 
       for (const track of tracks) {
-        const exists = !!senders.find(
-          (sender) => sender.track?.id === track.id
-        );
-        if (!exists) peer.addTrack(track, stream);
+        if (track.kind === "audio") audio.sender.replaceTrack(track);
+        if (track.kind === "video") video.sender.replaceTrack(track);
+        // const exists = !!senders.find(
+        //   (sender) => sender.track?.id === track.id
+        // );
+        // if (!exists) peer.addTrack(track, stream);
       }
       const trackCount = tracks.length;
       const senderCount = senders.length;
+      const kinds = tracks.map((track) => track.kind).join(",");
       console.log(
-        `Attaching media stream:\nTracks: ${trackCount}\nSenders: ${senderCount}`
+        `Attaching media stream:\nTracks: ${trackCount}\nKind: ${kinds}\nSenders: ${senderCount}`
       );
     },
-    [peer]
+    [audio.sender, peer, video.sender]
   );
 
   const onTrack = useCallback((event: RTCTrackEvent) => {
