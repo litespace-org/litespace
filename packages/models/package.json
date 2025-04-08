@@ -13,6 +13,7 @@
     "check": "tsc -p tsconfig.json --noEmit --emitDeclarationOnly false",
     "watch": "pnpm build -w",
     "base:migrate": "node-pg-migrate --template-file-name migration-template.ts --tsconfig tsconfig.node.json",
+    "clean": "rm -rf dist/",
     "migrate": "env-cmd -f .env pnpm base:migrate",
     "migrate:test:local": "env-cmd -f .env.test pnpm base:migrate",
     "migrate:test:ci": "env-cmd -f .env.test.ci pnpm base:migrate",

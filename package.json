@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build:pkgs": "pnpm assets build && pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm headless build && pnpm auth build &&  pnpm ui build && pnpm radio build",
+    "build:pkgs": "pnpm assets build && pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm headless build && pnpm auth build &&  pnpm ui build && pnpm radio build && pnpm kafka build",
     "build:server:pkgs": "pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm auth build && pnpm radio build",
     "watch:atlas": "pnpm atlas watch",
     "watch:auth": "pnpm auth watch",
@@ -71,7 +71,8 @@
     "blog": "pnpm --filter @litespace/blog",
     "tasks": "pnpm --filter @litespace/tasks",
     "messenger": "pnpm --filter @litespace/messenger",
-    "studio": "pnpm --filter @litespace/studio"
+    "studio": "pnpm --filter @litespace/studio",
+    "kafka": "pnpm --filter @litespace/kafka"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.2",

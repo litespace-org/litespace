@@ -1,4 +1,5 @@
 import { msg } from "@/lib/bot";
+import { sendWhatsAppMessage } from "@/services/whatsapp";
 import { WhatsApp } from "@litespace/radio";
 import { Request, Response } from "express";
 import safe from "express-async-handler";
@@ -12,15 +13,18 @@ const sendMessagePayload = zod.object({
 
 function sendMessage(whatsapp: WhatsApp) {
   return safe(async (req: Request, res: Response) => {
-    if (whatsapp.connection !== "open") {
-      await msg("WhatsApp is not ready to send messages");
-      res.sendStatus(425);
-      return;
-    }
-
     const { phone, text } = sendMessagePayload.parse(req.body);
-    await whatsapp.sendMessage(whatsapp.asWhatsAppId(phone), { text });
-    res.sendStatus(200);
+
+    try {
+      await sendWhatsAppMessage(whatsapp, phone, text);
+      res.sendStatus(200);
+    } catch (err) {
+      if (err instanceof Error)
+        await msg("WhatsApp handler error: " + err.message);
+      else await msg("WhatsApp handler error: Unknown");
+
+      res.sendStatus(425);
+    }
   });
 }
 

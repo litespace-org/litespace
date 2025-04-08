@@ -12,6 +12,7 @@
     "@litespace/types": "workspace:^",
     "@litespace/utils": "workspace:^",
     "@litespace/auth": "workspace:^",
+    "@litespace/kafka": "workspace:^",
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "zod": "^3.23.8",

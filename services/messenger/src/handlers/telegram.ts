@@ -1,4 +1,5 @@
 import { msg } from "@/lib/bot";
+import { sendTelegramMessage } from "@/services/telegram";
 import { TelegramClient } from "@litespace/radio";
 import { Request, Response } from "express";
 import safe from "express-async-handler";
@@ -18,8 +19,17 @@ function sendMessage(telegramClient: TelegramClient) {
     }
 
     const { entity, message } = sendMessagePayload.parse(req.body);
-    await telegramClient.sendMessage(entity, { message });
-    res.sendStatus(200);
+
+    try {
+      await sendTelegramMessage(telegramClient, entity, message);
+      res.sendStatus(200);
+    } catch (err) {
+      if (err instanceof Error)
+        await msg("Telegram handler error: " + err.message);
+      else await msg("Telegram handler error: Unknown");
+
+      res.sendStatus(425);
+    }
   });
 }
 

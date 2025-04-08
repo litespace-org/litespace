@@ -42,6 +42,7 @@ import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
 import { isEmpty, isEqual } from "lodash";
 import { genSessionId } from "@litespace/utils";
 import { withImageUrls } from "@/lib/user";
+import { Producer } from "@litespace/kafka";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -148,6 +149,24 @@ function create(context: ApiContext) {
           return lesson;
         }
       );
+
+      const producer = new Producer();
+      await producer.connect();
+
+      await producer.send({
+        topic: "whatsapp",
+        value: { to: "01018303125", message: "a new lesson is generated" },
+      });
+
+      await producer.send({
+        topic: "telegram",
+        value: {
+          to: "+201018303125",
+          message: "a new lesson is generated from telegram",
+        },
+      });
+
+      await producer.disconnect();
 
       const response: ILesson.CreateLessonApiResponse = lesson;
       res.status(200).json(response);

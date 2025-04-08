@@ -1013,6 +1013,28 @@ importers:
         specifier: ^3.5.2
         version: 3.5.3(typescript@5.4.5)
 
+  packages/kafka:
+    dependencies:
+      '@litespace/types':
+        specifier: workspace:^
+        version: link:../types
+      kafkajs:
+        specifier: ^2.2.4
+        version: 2.2.4
+    devDependencies:
+      ts-patch:
+        specifier: ^3.2.1
+        version: 3.3.0
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+      typescript-eslint:
+        specifier: ^8.0.1
+        version: 8.22.0(eslint@9.19.0(jiti@1.21.7))(typescript@5.4.5)
+      typescript-transform-paths:
+        specifier: ^3.5.2
+        version: 3.5.3(typescript@5.4.5)
+
   packages/models:
     dependencies:
       '@litespace/types':
@@ -1479,6 +1501,9 @@ importers:
       '@litespace/auth':
         specifier: workspace:^
         version: link:../../packages/auth
+      '@litespace/kafka':
+        specifier: workspace:^
+        version: link:../../packages/kafka
       '@litespace/radio':
         specifier: workspace:^
         version: link:../../packages/radio
@@ -1574,6 +1599,9 @@ importers:
       '@litespace/emails':
         specifier: workspace:^
         version: link:../../packages/emails
+      '@litespace/kafka':
+        specifier: workspace:^
+        version: link:../../packages/kafka
       '@litespace/models':
         specifier: workspace:^
         version: link:../../packages/models
@@ -10902,6 +10930,10 @@ packages:
 
   jws@4.0.0:
     resolution: {integrity: sha512-KDncfTmOZoOMTFG4mBlG0qUIOlc03fmzH+ru6RgYVZhPkyiy/92Owlt/8UEN+a4TXR1FQetfIpJE8ApdvdVxTg==}
+
+  kafkajs@2.2.4:
+    resolution: {integrity: sha512-j/YeapB1vfPT2iOIUn/vxdyKEuhuY2PxMBvf5JWux6iSaukAccrMtXEY/Lb7OvavDhOWME589bpLrEdnVHjfjA==}
+    engines: {node: '>=14.0.0'}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -26555,6 +26587,8 @@ snapshots:
     dependencies:
       jwa: 2.0.0
       safe-buffer: 5.2.1
+
+  kafkajs@2.2.4: {}
 
   keyv@4.5.4:
     dependencies:
