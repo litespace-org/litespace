@@ -9,12 +9,14 @@ const error = (errorCode: ApiErrorCode, statusCode: number) =>
 
 export const apierror = error;
 
-export const forbidden = () => error(ApiError.Forbidden, 401);
+export const unauthenticated = () => error(ApiError.Unauthenticated, 401);
 
-// The server understood the request, but it's refusing to fulfill it
-export const refused = () => error(ApiError.Forbidden, 403);
+export const forbidden = () => error(ApiError.Forbidden, 403);
 
 export const bad = () => error(ApiError.BadRequest, 400);
+
+export const conflictingInterview = () =>
+  error(ApiError.ConflictingInterview, 409);
 
 export const conflictingLessons = () => error(ApiError.ConflictingLessons, 409);
 

@@ -3,10 +3,96 @@ import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/utils/utils";
 import { IInterview } from "@litespace/types";
 import { expect } from "chai";
+import dayjs from "dayjs";
 
 describe("Interviews", () => {
   beforeEach(async () => {
     return await fixtures.flush();
+  });
+
+  describe(nameof(interviews.create), () => {
+    it("should successfully create new record in interviews table", async () => {
+      const now = dayjs();
+
+      const tutor = await fixtures.tutor();
+      const tutorManager = await fixtures.tutorManager();
+      const slot = await fixtures.slot({
+        start: now.add(1, "day").toISOString(),
+      });
+
+      const result = await interviews.create({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+        start: now.add(1, "day").toISOString(),
+        slot: slot.id,
+        session: `interview:${slot.id}`,
+      });
+
+      expect(result.ids.interviewee).to.eq(tutor.id);
+      expect(result.ids.interviewer).to.eq(tutorManager.id);
+      expect(result.ids.slot).to.eq(slot.id);
+      expect(result.ids.session).to.eq(`interview:${slot.id}`);
+      expect(result.start).to.eq(now.add(1, "day").toISOString());
+      expect(result.createdAt).to.not.be.undefined;
+      expect(result.createdAt).to.eq(result.updatedAt);
+    });
+  });
+
+  describe(nameof(interviews.update), () => {
+    it("should successfully update the records", async () => {
+      const now = dayjs();
+
+      const tutor = await fixtures.tutor();
+      const tutorManager = await fixtures.tutorManager();
+      const slot = await fixtures.slot({
+        start: now.add(1, "day").toISOString(),
+      });
+
+      const result = await interviews.create({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+        start: now.add(1, "day").toISOString(),
+        slot: slot.id,
+        session: `interview:${slot.id}`,
+      });
+
+      const updated = await interviews.update(result.ids.self, {
+        note: "just a simple note",
+      });
+
+      expect(updated.ids.interviewee).to.eq(tutor.id);
+      expect(updated.ids.interviewer).to.eq(tutorManager.id);
+      expect(updated.ids.slot).to.eq(slot.id);
+      expect(updated.ids.session).to.eq(`interview:${slot.id}`);
+      expect(updated.start).to.eq(now.add(1, "day").toISOString());
+      expect(updated.createdAt).to.not.be.undefined;
+      expect(updated.createdAt).to.eq(result.updatedAt);
+      expect(updated.note).to.eq("just a simple note");
+    });
+  });
+
+  describe(nameof(interviews.cancel), () => {
+    it("should successfully cancel interviews by updated the associated columns", async () => {
+      const now = dayjs();
+
+      const tutor = await fixtures.tutor();
+      const tutorManager = await fixtures.tutorManager();
+      const slot = await fixtures.slot({
+        start: now.add(1, "day").toISOString(),
+      });
+
+      const result = await interviews.create({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+        start: now.add(1, "day").toISOString(),
+        slot: slot.id,
+        session: `interview:${slot.id}`,
+      });
+      await interviews.cancel({ canceledBy: tutor.id, ids: [result.ids.self] });
+      const interview = await interviews.findById(result.ids.self);
+      expect(interview?.canceledBy).to.eq(tutor.id);
+      expect(interview?.canceledAt).to.not.be.undefined;
+    });
   });
 
   describe(nameof(interviews.find), () => {
@@ -112,6 +198,151 @@ describe("Interviews", () => {
         expect(result.list).to.be.of.length(test.count);
         expect(result.total).to.be.eq(test.count);
       }
+    });
+  });
+
+  describe(nameof(interviews.findById), () => {
+    it("should retrieve interview by id", async () => {
+      const tutor = await fixtures.tutor();
+      const tutorManager = await fixtures.tutorManager();
+
+      await fixtures.interview({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+      });
+      const interview2 = await fixtures.interview({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+      });
+
+      const res = await interviews.findById(interview2.ids.self);
+      expect(res).to.deep.eq(interview2);
+    });
+  });
+
+  describe(nameof(interviews.findBySlotId), () => {
+    it("should retrieve list of interviews by slot id", async () => {
+      const tutor = await fixtures.tutor();
+      const tutorManager = await fixtures.tutorManager();
+      const slot = await fixtures.slot({ userId: tutorManager.id });
+
+      const interview1 = await fixtures.interview({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+        slot: slot.id,
+      });
+      const interview2 = await fixtures.interview({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+        slot: slot.id,
+      });
+
+      await fixtures.interview({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+      });
+
+      const res = await interviews.findBySlotId(slot.id);
+      expect(res).to.deep.contain(interview1);
+      expect(res).to.deep.contain(interview2);
+    });
+  });
+
+  describe(nameof(interviews.findBySessionId), () => {
+    it("should retrieve interviews by session id", async () => {
+      const tutor = await fixtures.tutor();
+      const tutorManager = await fixtures.tutorManager();
+      const slot = await fixtures.slot({ userId: tutorManager.id });
+
+      await fixtures.interview({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+        slot: slot.id,
+      });
+
+      const interview2 = await fixtures.interview({
+        interviewee: tutor.id,
+        interviewer: tutorManager.id,
+        slot: slot.id,
+      });
+
+      const res = await interviews.findBySessionId(interview2.ids.session);
+      expect(res).to.deep.contain(interview2);
+    });
+  });
+
+  describe(nameof(interviews.findByInterviewee), () => {
+    it("should retrieve list of interviews by interviewee id", async () => {
+      const tutor1 = await fixtures.tutor();
+      const tutor2 = await fixtures.tutor();
+
+      const tutorManager1 = await fixtures.tutorManager();
+      const tutorManager2 = await fixtures.tutorManager();
+
+      const slot1 = await fixtures.slot({ userId: tutorManager1.id });
+      const slot2 = await fixtures.slot({ userId: tutorManager2.id });
+
+      const interview1 = await fixtures.interview({
+        interviewee: tutor1.id,
+        interviewer: tutorManager1.id,
+        slot: slot1.id,
+      });
+      const interview2 = await fixtures.interview({
+        interviewee: tutor2.id,
+        interviewer: tutorManager1.id,
+        slot: slot1.id,
+      });
+
+      const interview3 = await fixtures.interview({
+        interviewee: tutor1.id,
+        interviewer: tutorManager2.id,
+        slot: slot2.id,
+      });
+
+      let res = await interviews.findByInterviewee(tutor1.id);
+      expect(res).to.deep.contain(interview1);
+      expect(res).to.deep.contain(interview3);
+
+      res = await interviews.findByInterviewee(tutor2.id);
+      expect(res).to.deep.contain(interview2);
+    });
+  });
+
+  describe(nameof(interviews.findByInterviewer), () => {
+    it("should retrieve list of interviews by interviewer id", async () => {
+      const tutor1 = await fixtures.tutor();
+      const tutor2 = await fixtures.tutor();
+      const tutor3 = await fixtures.tutor();
+
+      const tutorManager1 = await fixtures.tutorManager();
+      const tutorManager2 = await fixtures.tutorManager();
+
+      const slot1 = await fixtures.slot({ userId: tutorManager1.id });
+      const slot2 = await fixtures.slot({ userId: tutorManager2.id });
+
+      const interview1 = await fixtures.interview({
+        interviewee: tutor1.id,
+        interviewer: tutorManager1.id,
+        slot: slot1.id,
+      });
+      const interview2 = await fixtures.interview({
+        interviewee: tutor2.id,
+        interviewer: tutorManager2.id,
+        slot: slot2.id,
+      });
+
+      const interview3 = await fixtures.interview({
+        interviewee: tutor3.id,
+        interviewer: tutorManager1.id,
+        slot: slot1.id,
+      });
+
+      let res = await interviews.findByInterviewer(tutorManager1.id);
+      expect(res).to.deep.contain(interview1);
+      expect(res).to.deep.contain(interview3);
+
+      res = await interviews.findByInterviewer(tutorManager2.id);
+      expect(res).to.deep.contain(interview2);
     });
   });
 });

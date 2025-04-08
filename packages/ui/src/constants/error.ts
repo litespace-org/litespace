@@ -2,6 +2,7 @@ import { LocalId } from "@/locales";
 import { ApiError, ApiErrorCode, FieldError } from "@litespace/types";
 
 export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
+  [ApiError.Unauthenticated]: "error.api.unauthenticated",
   [ApiError.Forbidden]: "error.api.forbidden",
   [ApiError.BadRequest]: "error.api.bad-request",
   [ApiError.RoomExists]: "error.api.room-exists",
@@ -39,6 +40,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.UserAlreadyVerified]: "error.api.user-already-verified",
   [ApiError.WrongPassword]: "error.api.wrong-password",
   [ApiError.ConflictingLessons]: "error.api.conflicting-lessons",
+  [ApiError.ConflictingInterview]: "error.api.conflicting-interview",
   [ApiError.ConflictingSchedule]: "error.api.conflicting-schedule",
   [ApiError.ReachedBookingLimit]: "error.api.reached-booking-limit",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
