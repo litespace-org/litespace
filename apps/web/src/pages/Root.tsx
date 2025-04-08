@@ -6,6 +6,7 @@ import Sidebar from "@/components/Layout/Sidebar";
 import Navbar from "@/components/Layout/Navbar";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { useInternetSpeed } from "@litespace/headless/utils";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
@@ -28,6 +29,16 @@ const Root: React.FC = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { speed, estimate } = useInternetSpeed();
+
+  useEffect(() => {
+    estimate();
+  }, [estimate]);
+
+  useEffect(() => {
+    console.log("internet speed: ", speed, "kb/s");
+  }, [speed]);
 
   const publicRoute = useMemo(() => {
     return publicRoutes.some((route) =>

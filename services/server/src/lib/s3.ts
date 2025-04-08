@@ -36,13 +36,15 @@ async function put({
   );
 }
 
-async function get(key: string): Promise<string> {
+async function get(key: string, expiresIn?: number): Promise<string> {
   const command = new GetObjectCommand({
     Key: key,
     Bucket: spaceConfig.bucketName,
   });
 
-  const url = await getSignedUrl(s3, command, { expiresIn: 60 * 60 });
+  const url = await getSignedUrl(s3, command, {
+    expiresIn: expiresIn || 60 * 60,
+  });
   return url;
 }
 
