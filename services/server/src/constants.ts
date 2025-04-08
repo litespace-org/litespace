@@ -124,9 +124,9 @@ export const ghostConfig = {
 
 export const platformConfig = {
   /**
-   * Tutor hourly rate scaled in EGP price.
+   * Tutor hourly rate scaled in EGP price (scaled).
    */
-  tutorHourlyRate: price.scale(100),
+  tutorHourlyRate: price.scale(150),
   /**
    * Tutor interview duration in minutes
    */
