@@ -135,6 +135,10 @@ const UserForm: React.FC<{
                 label: intl("global.role.tutor-manager"),
                 value: IUser.Role.TutorManager,
               },
+              {
+                label: intl("global.role.tutor"),
+                value: IUser.Role.Tutor,
+              },
             ]}
             control={form.control}
             value={form.watch("role")}

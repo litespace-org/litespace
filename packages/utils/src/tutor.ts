@@ -38,6 +38,7 @@ export function isOnboard({
     !!activatedBy &&
     !!video &&
     !!thumbnail &&
+    // TODO: Collect this info from Other tutors
     !!birthYear &&
     !!studioId
   );
