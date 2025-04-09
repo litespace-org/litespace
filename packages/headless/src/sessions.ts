@@ -1652,10 +1652,14 @@ function usePeer({
   sessionId,
   onConnectionStateChange,
   selfStream,
+  memberId,
+  selfId,
 }: {
   sessionId?: ISession.Id;
   onConnectionStateChange?: (state: RTCPeerConnectionState) => void;
   selfStream: MediaStream | null;
+  memberId?: number;
+  selfId?: number;
 }) {
   const socket = useSocket();
   const [peer, setPeer] = useState(createPeer());
@@ -1704,8 +1708,7 @@ function usePeer({
 
   const createOffer = useCallback(
     async (restart?: boolean) => {
-      console.trace("HEREEEE", restart);
-      // const localPeer = restart ? createPeer() : peer;
+      const localPeer = restart ? createPeer() : peer;
 
       if (!sessionId || !socket) return;
       // Must be done before creating the offer
@@ -1728,7 +1731,7 @@ function usePeer({
         offer: localDescription,
       });
 
-      // if (restart) setPeer(localPeer);
+      if (restart) setPeer(localPeer);
     },
     [peer, sessionId, socket]
   );
@@ -1754,14 +1757,59 @@ function usePeer({
 
   // ==================== State ====================
 
-  const onConnectionStateChangeInternal = useCallback(() => {
+  const onConnectionStateChangeInternal = useCallback(async () => {
     const state = peer.connectionState;
     if (!state) return;
     console.log("Peer connection state:", state);
     setConnectionState(state);
-  }, [peer.connectionState]);
+    // Analyise connection state failure
+    if (!sessionId || !memberId || !selfId || !socket) return;
+    if (state === "failed") {
+      const pong = new Promise<boolean>((resolve) => {
+        socket.on(Wss.ServerEvent.PongSessionMember, ({ userId }) =>
+          resolve(userId === selfId)
+        );
 
-  const onIceConnectionStateChange = useCallback(() => {
+        setTimeout(() => resolve(false), 5_000);
+      });
+
+      const delivered = await new Promise<boolean>((resolve) => {
+        socket.emit(
+          Wss.ClientEvent.PingSessionMember,
+          {
+            sessionId,
+            userId: memberId,
+          },
+          (ack) => {
+            if (!ack) return;
+            resolve(true);
+          }
+        );
+
+        setTimeout(() => resolve(false), 5_000);
+      });
+
+      if (!delivered)
+        return console.log(
+          `Ping event timeout, never received an acknowledgment from the server. Current user might be disconnected from the server. Once the connection is re-established, the negotiation will start again.`
+        );
+
+      const isOtherMemberPresent = await pong;
+
+      if (isOtherMemberPresent) {
+        const shareOffer = selfId > memberId;
+        console.log(
+          `Other member is still in the room (verified). Sahre offer: ${shareOffer}`
+        );
+        if (shareOffer) createOffer(true);
+      } else
+        console.log(
+          "No response from the other member. Properly having a network issue. When back online, he will be the one who start the session (create the offer)."
+        );
+    }
+  }, [createOffer, memberId, peer.connectionState, selfId, sessionId, socket]);
+
+  const onIceConnectionStateChange = useCallback(async () => {
     const state = peer.iceConnectionState;
     console.log("Ice connection state:", state);
     if (state === "failed" || state === "disconnected") {
@@ -1945,18 +1993,38 @@ function usePeer({
     [peer]
   );
 
+  const onPingSessionMember = useCallback(
+    ({ userId }: Wss.EventPayload<Wss.ServerEvent.PingSessionMember>) => {
+      if (userId !== selfId || !sessionId || !memberId) return;
+      console.log("Got a ping, respond with pong");
+      socket?.emit(Wss.ClientEvent.PongSessionMember, {
+        sessionId,
+        userId: memberId,
+      });
+    },
+    [memberId, selfId, sessionId, socket]
+  );
+
   useEffect(() => {
     if (!socket) return;
 
     socket.on(Wss.ServerEvent.SessionOffer, onSessionOffer);
     socket.on(Wss.ServerEvent.SessionAnswer, onSessionAnswer);
     socket.on(Wss.ServerEvent.IceCandidate, onRemoteIceCandidate);
+    socket.on(Wss.ServerEvent.PingSessionMember, onPingSessionMember);
     return () => {
       socket.off(Wss.ServerEvent.SessionOffer, onSessionOffer);
       socket.off(Wss.ServerEvent.SessionAnswer, onSessionAnswer);
       socket.off(Wss.ServerEvent.IceCandidate, onRemoteIceCandidate);
+      socket.off(Wss.ServerEvent.PingSessionMember, onPingSessionMember);
     };
-  }, [onRemoteIceCandidate, onSessionAnswer, onSessionOffer, socket]);
+  }, [
+    onPingSessionMember,
+    onRemoteIceCandidate,
+    onSessionAnswer,
+    onSessionOffer,
+    socket,
+  ]);
 
   useEffect(() => {
     peer.addEventListener("icecandidate", onLocalIceCandidate);
@@ -2012,7 +2080,12 @@ export function useSessionV5({
   sessionId,
 }: SessionV5Payload) {
   const userMedia = useUserMedia();
-  const peer = usePeer({ sessionId, selfStream: userMedia.stream });
+  const peer = usePeer({
+    sessionId,
+    selfStream: userMedia.stream,
+    memberId,
+    selfId,
+  });
   const { notifyCamera, notifyMic } = useNotifyState(sessionId);
   const member = useMemberState({ memberId, stream: peer.stream });
   const manager = useSessionManager({

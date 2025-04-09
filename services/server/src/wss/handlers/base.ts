@@ -23,7 +23,7 @@ export abstract class WssHandler {
     callback: Wss.AcknowledgeCallback | undefined,
     payload: Wss.AcknowledgePayload
   ): void {
-    if (!callback) return console.warn("Socket.io callback is not defined!");
+    if (!callback) return console.warn("[wss] callback is not defined");
     return callback(payload);
   }
 }
