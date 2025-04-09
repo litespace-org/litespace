@@ -12,6 +12,10 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
+      aspectRatio: {
+        desktop: "16 / 9",
+        mobile: "9 / 16",
+      },
       fontSize: {
         h1: "4rem",
         h2: "3rem",

@@ -310,12 +310,14 @@ async function findLessonById(req: Request, res: Response, next: NextFunction) {
 
   const response: ILesson.FindLessonByIdApiResponse = {
     lesson,
-    members: members.map((member) => ({
-      ...member,
-      // mask private information
-      phone: null,
-      verifiedPhone: false,
-    })),
+    members: await withImageUrls(
+      members.map((member) => ({
+        ...member,
+        // mask private information
+        phone: null,
+        verifiedPhone: false,
+      }))
+    ),
   };
 
   res.status(200).json(response);

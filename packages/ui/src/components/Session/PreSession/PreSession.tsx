@@ -4,6 +4,7 @@ import { IUser, Void } from "@litespace/types";
 import Actions from "@/components/Session/Actions";
 import cn from "classnames";
 import Stream from "@/components/Session/Stream";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 export type Props = {
   stream: MediaStream | null;
@@ -53,10 +54,12 @@ export const PreSession: React.FC<Props> = ({
   joining,
   join,
 }) => {
+  const mq = useMediaQuery();
   return (
     <div
+      id="pre-session"
       className={cn(
-        "rounded-2xl lg:w-full lg:h-full",
+        "rounded-2xl lg:w-full h-full max-h-[calc(100vh-160px)] lg:max-h-full",
         "flex flex-col lg:grid lg:grid-cols-[1fr,auto] lg:grid-rows-[auto,1fr] items-center lg:items-start gap-4 lg:gap-6"
       )}
     >
@@ -64,6 +67,7 @@ export const PreSession: React.FC<Props> = ({
         <Stream
           muted
           mirror
+          aspect={mq.lg ? "desktop" : "mobile"}
           stream={{
             stream,
             speaking,

@@ -5,6 +5,7 @@ import { WssHandler } from "@/wss/handlers/base";
 import { rooms } from "@litespace/models";
 import { asSessionRoomId, asChatRoomId } from "@/wss/utils";
 import { cache } from "@/lib/cache";
+import { msg } from "@/lib/telegram";
 
 const stdout = logger("wss");
 
@@ -12,6 +13,7 @@ export class Connection extends WssHandler {
   public init(): Connection {
     this.connect();
     this.socket.on(Wss.ClientEvent.Disconnect, this.disconnect.bind(this));
+    this.socket.on("error", this.onError.bind(this));
     return this;
   }
 
@@ -19,6 +21,7 @@ export class Connection extends WssHandler {
     const error = safe(async () => {
       const user = this.user;
       if (isGhost(user)) return;
+      console.log(`${user.id} is connected`);
 
       await cache.onlineStatus.addUser(user.id);
       this.announceStatus({ userId: user.id, online: true });
@@ -33,6 +36,7 @@ export class Connection extends WssHandler {
     const error = safe(async () => {
       const user = this.user;
       if (isGhost(user)) return;
+      console.log(`${user.id} disconnected.`);
 
       await cache.onlineStatus.removeUser(user.id);
       this.announceStatus({ userId: user.id, online: false });
@@ -86,5 +90,10 @@ export class Connection extends WssHandler {
       .emit(Wss.ServerEvent.MemberLeftSession, {
         userId: user.id,
       });
+  }
+
+  private async onError(error: Error) {
+    console.log(error.message);
+    msg(`Socket error: ${error.message}`);
   }
 }

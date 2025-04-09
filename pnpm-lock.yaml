@@ -976,15 +976,6 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0(react@18.2.0)
     devDependencies:
-      '@eslint/compat':
-        specifier: ^1.2.2
-        version: 1.2.6(eslint@9.19.0(jiti@1.21.7))
-      '@eslint/eslintrc':
-        specifier: ^3.1.0
-        version: 3.2.0
-      '@eslint/js':
-        specifier: ^9.9.0
-        version: 9.19.0
       '@types/hark':
         specifier: ^1
         version: 1.2.5
@@ -994,15 +985,6 @@ importers:
       '@types/react':
         specifier: ^18.3.3
         version: 18.3.18
-      eslint:
-        specifier: ^9.14.0
-        version: 9.19.0(jiti@1.21.7)
-      eslint-plugin-react-hooks:
-        specifier: ^5.0.0
-        version: 5.1.0(eslint@9.19.0(jiti@1.21.7))
-      eslint-plugin-react-refresh:
-        specifier: ^0.4.14
-        version: 0.4.18(eslint@9.19.0(jiti@1.21.7))
       globals:
         specifier: ^15.9.0
         version: 15.14.0
@@ -1018,9 +1000,6 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.0.1
-        version: 8.22.0(eslint@9.19.0(jiti@1.21.7))(typescript@5.4.5)
       typescript-transform-paths:
         specifier: ^3.5.2
         version: 3.5.3(typescript@5.4.5)

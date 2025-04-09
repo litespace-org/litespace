@@ -125,7 +125,7 @@ export const Actions: React.FC<{
         <Button
           type="error"
           size="large"
-          variant="secondary"
+          variant="primary"
           startIcon={<CallIncoming className="icon" />}
           onClick={leave}
         />

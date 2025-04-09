@@ -66,7 +66,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (!query.data || query.isLoading || query.isFetching) return;
-    setBearerToken(query.data.token);
+    // todo: better handling for the session tokens
+    // setBearerToken(query.data.token);
     setData({ user: query.data.user });
   }, [query.data, query.isFetching, query.isLoading, setBearerToken, setData]);
 
