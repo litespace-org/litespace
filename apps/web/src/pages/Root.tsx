@@ -72,7 +72,7 @@ const Root: React.FC = () => {
 
   useEffect(() => {
     const regularUser = isRegularUser(user);
-    if (!regularUser)
+    if (user && !regularUser)
       window.location.replace(
         router.landing({ route: Landing.Home, full: true })
       );
