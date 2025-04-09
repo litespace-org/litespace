@@ -57,12 +57,15 @@ export const AnimateOpacity: React.FC<{
   );
 };
 
+type StreamAspectRatio = "desktop" | "mobile";
+
 const VideoStream: React.FC<{
   stream: MediaStream | null;
   muted: boolean;
   hidden?: boolean;
   mirror?: boolean;
-}> = ({ stream, muted, hidden, mirror }) => {
+  aspect?: StreamAspectRatio;
+}> = ({ stream, muted, hidden, mirror, aspect = "desktop" }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -73,7 +76,10 @@ const VideoStream: React.FC<{
     <video
       ref={videoRef}
       autoPlay
-      className={cn("aspect-video w-full", hidden && "opacity-0")}
+      className={cn("w-full", hidden && "opacity-0", {
+        "aspect-desktop": aspect === "desktop",
+        "aspect-mobile": aspect === "mobile",
+      })}
       style={{ transform: mirror ? "scale(-1,1)" : "none" }}
       muted={muted}
       playsInline
@@ -87,7 +93,8 @@ export const Stream: React.FC<{
   size?: "small" | "large";
   stream: StreamInfo;
   mirror?: boolean;
-}> = ({ stream, muted, size = "large", mirror }) => {
+  aspect?: StreamAspectRatio;
+}> = ({ stream, muted, size = "large", mirror, aspect }) => {
   const mq = useMediaQuery();
 
   return (
@@ -96,7 +103,12 @@ export const Stream: React.FC<{
         "relative rounded-2xl bg-natural-100 w-full h-full flex items-center justify-center"
       )}
     >
-      <VideoStream stream={stream.stream} muted={muted} mirror={mirror} />
+      <VideoStream
+        stream={stream.stream}
+        muted={muted}
+        mirror={mirror}
+        aspect={aspect}
+      />
 
       <AnimatePresence mode="wait">
         {!stream.video && !stream.cast ? (

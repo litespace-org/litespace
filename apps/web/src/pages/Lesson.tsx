@@ -33,6 +33,12 @@ import { capture } from "@/lib/sentry";
 import { isTutor } from "@litespace/utils";
 import { useOnError } from "@/hooks/error";
 
+//! WHY?
+const trimStream = (stream: MediaStream, video: boolean) => {
+  if (!video) return new MediaStream(stream.getAudioTracks());
+  return stream;
+};
+
 const Lesson: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const intl = useFormatMessage();
@@ -163,7 +169,7 @@ const Lesson: React.FC = () => {
         audio: sessionv5.member.audio,
         video: sessionv5.member.video,
         cast: false,
-        stream: sessionv5.peer.stream,
+        stream: trimStream(sessionv5.peer.stream, sessionv5.member.video),
         user: other,
       });
 
@@ -198,6 +204,7 @@ const Lesson: React.FC = () => {
   useEffect(() => {
     if (
       devices.info.microphone.permissioned &&
+      !sessionv5.userMedia.loading &&
       !sessionv5.userMedia.stream &&
       !sessionv5.userMedia.error &&
       !devices.loading
@@ -293,10 +300,10 @@ const Lesson: React.FC = () => {
           sessionv5.userMedia
             .capture(enableVideoStream)
             .then((stream: MediaStream | Error) => {
-              // TODO: enable camera during lesson
               const error = stream instanceof Error;
+              // todo: add toast error
               if (error) return capture(stream);
-              sessionv5.join();
+              sessionv5.peer.replaceStream(stream);
               setRequestPermission(false);
               devices.recheck();
             });

@@ -16,6 +16,7 @@ import { isAllowedOrigin } from "@/lib/cors";
 import { cache } from "@/lib/cache";
 import { msg } from "@/lib/telegram";
 import "colors";
+import { Wss } from "@litespace/types";
 
 // global error handling
 // this is needed to prevent the server process from exit.
@@ -38,7 +39,8 @@ cache.connect().then(() => {
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {
+const io = new Server<Wss.ClientEventsMap, Wss.ServerEventsMap>(server, {
+  pingTimeout: 60_000,
   cors: { credentials: true, origin: isAllowedOrigin },
 });
 const context: ApiContext = { io };

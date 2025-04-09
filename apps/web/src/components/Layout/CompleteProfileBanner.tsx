@@ -39,7 +39,8 @@ const CompleteProfileBanner: React.FC = () => {
   if (
     isOnboarded ||
     !isTutor ||
-    router.isMatch.web(Web.TutorSettings, location.pathname)
+    router.isMatch.web(Web.TutorSettings, location.pathname) ||
+    router.isMatch.web(Web.Lesson, location.pathname)
   )
     return null;
 
