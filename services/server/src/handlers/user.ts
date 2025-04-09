@@ -145,13 +145,9 @@ const findStudioTutorsQuery = zod.object({
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const payload = createUserPayload.parse(req.body);
-  const admin = isAdmin(req.user);
-  const publicRole = [
-    IUser.Role.TutorManager,
-    IUser.Role.Tutor,
-    IUser.Role.Student,
-  ].includes(payload.role);
-  if (!publicRole && !admin) return next(forbidden());
+  const creator = req.user;
+  const admin = isAdmin(creator);
+  if (payload.role !== IUser.Role.Student && !admin) return next(forbidden());
 
   const userObject = await users.findByEmail(payload.email);
   if (userObject) return next(exists.user());
@@ -166,16 +162,18 @@ export async function create(req: Request, res: Response, next: NextFunction) {
       tx
     );
 
-    if (isTutor(user) || isTutorManager(user)) {
-      await tutors.create(user.id, tx);
-      // Check if the tutor is created by an admin, it will be activated directly
-      if (admin) {
-        const adminId = typeof req.user === "object" ? req.user.id : undefined;
-        await tutors.update(user.id, {
+    const tutor = isTutor(user);
+    const admin = isAdmin(creator);
+    if (tutor) await tutors.create(user.id, tx);
+    if (tutor && admin) {
+      await tutors.update(
+        user.id,
+        {
           activated: true,
-          activatedBy: adminId,
-        });
-      }
+          activatedBy: user.id,
+        },
+        tx
+      );
     }
 
     return user;

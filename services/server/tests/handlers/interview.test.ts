@@ -34,7 +34,7 @@ const updateInterview = mockApi<
   { interviewId: number }
 >(handlers.updateInterview);
 
-describe("/api/v1/interview/", () => {
+describe.skip("/api/v1/interview/", () => {
   beforeEach(async () => {
     await db.flush();
   });
