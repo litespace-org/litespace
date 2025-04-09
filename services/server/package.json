@@ -57,8 +57,8 @@
     "wait-on": "^8.0.1"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.732.0",
-    "@aws-sdk/s3-request-presigner": "^3.732.0",
+    "@aws-sdk/client-s3": "^3.782.0",
+    "@aws-sdk/s3-request-presigner": "^3.782.0",
     "@litespace/auth": "workspace:^",
     "@litespace/emails": "workspace:^",
     "@litespace/models": "workspace:^",
