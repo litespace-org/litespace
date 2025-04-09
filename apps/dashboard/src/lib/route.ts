@@ -1,5 +1,5 @@
-import { Dashboard, RoutesManager } from "@litespace/utils/routes";
 import { env } from "@/lib/env";
+import { Dashboard, RoutesManager } from "@litespace/utils/routes";
 
 export const router = new RoutesManager(env.client);
 

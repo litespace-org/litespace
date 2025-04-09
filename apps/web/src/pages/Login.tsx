@@ -1,29 +1,30 @@
-import { Form, Controller } from "@litespace/ui/Form";
-import { Button } from "@litespace/ui/Button";
-import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import React, { useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { IUser } from "@litespace/types";
-import { useLoginUser } from "@litespace/headless/user";
-import { useUserContext } from "@litespace/headless/context/user";
-import Logo from "@litespace/assets/Logo";
-import Google from "@litespace/assets/Google";
-import { Typography } from "@litespace/ui/Typography";
+import Aside from "@/components/Auth/Aside";
+import Header from "@/components/Auth/Header";
+import { isDev } from "@/constants/env";
+import { useOnError } from "@/hooks/error";
 import { useGoogle } from "@/hooks/google";
+import { router } from "@/lib/routes";
+import Google from "@litespace/assets/Google";
+import Logo from "@litespace/assets/Logo";
+import { useUserContext } from "@litespace/headless/context/user";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { useLoginUser } from "@litespace/headless/user";
+import { IUser } from "@litespace/types";
+import { Button } from "@litespace/ui/Button";
+import { Controller, Form } from "@litespace/ui/Form";
+import { useToast } from "@litespace/ui/Toast";
+import { Typography } from "@litespace/ui/Typography";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import {
   useValidateEmail,
   useValidatePassword,
 } from "@litespace/ui/hooks/validation";
-import Aside from "@/components/Auth/Aside";
-import Header from "@/components/Auth/Header";
-import { isDev } from "@/constants/env";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { isValidRoute, Web } from "@litespace/utils/routes";
-import { router } from "@/lib/routes";
+import { isRegularUser } from "@litespace/utils";
+import { isValidRoute, Landing, Web } from "@litespace/utils/routes";
 import { omit } from "lodash";
-import { useOnError } from "@/hooks/error";
+import React, { useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 interface IForm {
   email: string;
@@ -72,6 +73,11 @@ const Login: React.FC = () => {
 
   const mutation = useLoginUser({
     onSuccess(result) {
+      const regularUser = isRegularUser(result.user);
+      if (result.user && !regularUser)
+        return window.location.replace(
+          router.landing({ route: Landing.Home, full: true })
+        );
       user.set(result);
       return navigate(redirect || Web.Root);
     },
