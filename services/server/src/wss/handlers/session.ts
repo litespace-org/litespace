@@ -7,7 +7,7 @@ import { WssHandler } from "@/wss/handlers/base";
 import { asSessionRoomId } from "@/wss/utils";
 
 import zod from "zod";
-import { sessionId } from "@/validation/utils";
+import { id, sessionId } from "@/validation/utils";
 import { sendBackgroundMessage } from "@/workers";
 
 const stdout = logger("wss");
@@ -49,6 +49,16 @@ const iceCandidatePayload = zod.object({
   candidate: iceCandidate,
 });
 
+const pingSessionMemberPayload = zod.object({
+  sessionId,
+  userId: id,
+});
+
+const pongSessionMember = zod.object({
+  sessionId,
+  userId: id,
+});
+
 export class Session extends WssHandler {
   public init(): Session {
     this.socket.on(
@@ -71,6 +81,14 @@ export class Session extends WssHandler {
     this.socket.on(
       Wss.ClientEvent.IceCandidate,
       this.onIceCandidate.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.PingSessionMember,
+      this.onPingSessionMember.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.PongSessionMember,
+      this.onPongSessionMember.bind(this)
     );
     return this;
   }
@@ -247,6 +265,52 @@ export class Session extends WssHandler {
       this.socket.broadcast
         .to(asSessionRoomId(sessionId))
         .emit(Wss.ServerEvent.IceCandidate, { candidate });
+    });
+    if (result instanceof Error) stdout.error(result.message);
+  }
+
+  async onPingSessionMember(data: unknown, callback?: Wss.AcknowledgeCallback) {
+    const result = await safe(async () => {
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const { sessionId, userId } = pingSessionMemberPayload.parse(data);
+      const ok = await canAccessSession({
+        sessionId,
+        userId: user.id,
+      });
+      if (!ok) return;
+
+      this.socket.broadcast
+        .to(asSessionRoomId(sessionId))
+        .emit(Wss.ServerEvent.PingSessionMember, { userId });
+
+      this.call(callback, {
+        code: Wss.AcknowledgeCode.Ok,
+      });
+    });
+    if (result instanceof Error) stdout.error(result.message);
+  }
+
+  async onPongSessionMember(data: unknown, callback?: Wss.AcknowledgeCallback) {
+    const result = await safe(async () => {
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const { sessionId, userId } = pongSessionMember.parse(data);
+      const ok = await canAccessSession({
+        sessionId,
+        userId: user.id,
+      });
+      if (!ok) return;
+
+      this.socket.broadcast
+        .to(asSessionRoomId(sessionId))
+        .emit(Wss.ServerEvent.PongSessionMember, { userId });
+
+      this.call(callback, {
+        code: Wss.AcknowledgeCode.Ok,
+      });
     });
     if (result instanceof Error) stdout.error(result.message);
   }

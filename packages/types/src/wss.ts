@@ -16,6 +16,8 @@ export enum ClientEvent {
   SessionOffer = "SessionOffer",
   SessionAnswer = "SessionAnswer",
   IceCandidate = "IceCandidate",
+  PingSessionMember = "PingSessionMember",
+  PongSessionMember = "PongSessionMember",
 
   /**
    * @deprecated
@@ -38,7 +40,6 @@ export enum ServerEvent {
   RoomMessageDeleted = "RoomMessageDeleted",
   RoomMessageRead = "RoomMessageRead",
   JoinedRooms = "JoinedRooms",
-
   MessageRead = "MessageRead",
 
   MemberJoinedSession = "MemberJoinedSessionId",
@@ -46,7 +47,8 @@ export enum ServerEvent {
   SessionOffer = "SessionOffer",
   SessionAnswer = "SessionAnswer",
   IceCandidate = "IceCandidate",
-
+  PingSessionMember = "PingSessionMember",
+  PongSessionMember = "PongSessionMember",
   UserJoinedSession = "UserJoinedSession",
 
   /**
@@ -148,6 +150,14 @@ export type ClientEventsMap = {
     sessionId: ISession.Id;
     candidate: RTCIceCandidateInit;
   }>;
+  [ClientEvent.PingSessionMember]: EventCallback<{
+    sessionId: ISession.Id;
+    userId: number;
+  }>;
+  [ClientEvent.PongSessionMember]: EventCallback<{
+    sessionId: ISession.Id;
+    userId: number;
+  }>;
 };
 
 /**
@@ -204,6 +214,12 @@ export type ServerEventsMap = {
   }>;
   [ServerEvent.IceCandidate]: EventCallback<{
     candidate: RTCIceCandidateInit;
+  }>;
+  [ServerEvent.PingSessionMember]: EventCallback<{
+    userId: number;
+  }>;
+  [ServerEvent.PongSessionMember]: EventCallback<{
+    userId: number;
   }>;
 };
 
