@@ -130,7 +130,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                           tag="span"
                           className={cn(
                             "text-caption font-normal",
-                            "line-clamp-1",
+                            "line-clamp-1 break-all",
                             room.message && room.read
                               ? "text-brand-700"
                               : "text-natural-600"

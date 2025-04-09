@@ -20,7 +20,7 @@ const meta: Meta<typeof ChatSummary> = {
 
 export default meta;
 
-const makeRoom = () => ({
+const makeRoom = (isLongMsgWord: boolean = false) => ({
   id: Math.floor(Math.random() * 100),
   otherMember: {
     id: Math.floor(Math.random() * 100),
@@ -29,7 +29,9 @@ const makeRoom = () => ({
     online: false,
   },
   url: "/",
-  message: faker.lorem.words(1),
+  message: isLongMsgWord
+    ? faker.internet.email({ firstName: "absdefghigklmnopqrst" })
+    : faker.lorem.words(1),
   sentAt: faker.date.past().toISOString(),
   read: faker.datatype.boolean(),
 });
@@ -37,6 +39,13 @@ const makeRoom = () => ({
 export const Primary: Story = {
   args: {
     rooms: range(4).map(() => makeRoom()),
+    chatsUrl: "/",
+  },
+};
+
+export const LargeWords: Story = {
+  args: {
+    rooms: range(4).map(() => makeRoom(true)),
     chatsUrl: "/",
   },
 };
