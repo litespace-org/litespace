@@ -28,7 +28,11 @@ export const SessionStreams: React.FC<{
       data-info={chat ? "with-chat" : "without-chat"}
     >
       {organizedStreams.focused ? (
-        <div className={cn("w-full relative rounded-2xl overflow-hidden grow")}>
+        <div
+          className={cn(
+            "w-full relative rounded-2xl lg:max-h-[533px] overflow-hidden grow"
+          )}
+        >
           <Stream
             muted={
               currentUserId === organizedStreams.focused.user.id &&

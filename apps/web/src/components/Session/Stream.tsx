@@ -73,7 +73,7 @@ const VideoStream: React.FC<{
     <video
       ref={videoRef}
       autoPlay
-      className={cn("aspect-video w-full", hidden && "opacity-0")}
+      className={cn("aspect-video w-full h-full", hidden && "opacity-0")}
       style={{ transform: mirror ? "scale(-1,1)" : "none" }}
       muted={muted}
       playsInline

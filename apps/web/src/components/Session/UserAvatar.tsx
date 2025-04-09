@@ -1,9 +1,9 @@
 import React from "react";
-import { Avatar } from "@/components/Avatar";
+import { Avatar } from "@litespace/ui/Avatar";
 import { motion } from "framer-motion";
 import cn from "classnames";
 
-export const UserAvatar: React.FC<{
+export type Props = {
   user: {
     id: number;
     imageUrl: string | null;
@@ -16,7 +16,13 @@ export const UserAvatar: React.FC<{
    * large is for unfocused stream
    */
   variant?: "large" | "medium" | "small";
-}> = ({ user, speaking, variant = "large" }) => {
+};
+
+export const UserAvatar: React.FC<Props> = ({
+  user,
+  speaking,
+  variant = "large",
+}) => {
   return (
     <div
       className={cn(

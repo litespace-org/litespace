@@ -6,7 +6,7 @@ import { StreamInfo } from "@/components/Session/types";
 import cn from "classnames";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
-type Props = {
+export type Props = {
   streams: StreamInfo[];
   currentUserId: number;
   chat: { enabled: boolean; toggle: Void };
@@ -49,11 +49,18 @@ export const Session: React.FC<Props> = ({
   return (
     <div
       id="session"
-      className="flex relative flex-col gap-4 lg:gap-6 h-[max(calc(100vh-190px),800px)] overflow-hidden" // why -190px ?!
+      // 157px is the height of the rest of the content outside the session on mobile
+      // 176px is the height of the rest of the content outside the session on tablet and desktop
+      className={cn(
+        "flex relative flex-col gap-4 lg:gap-6 lg:h-[calc(100vh-176px)] lg:min-h-[800px]",
+        chat.enabled
+          ? "h-full"
+          : "h-[calc(100vh-157px)] md:h-[calc(100vh-176px)]"
+      )}
     >
       <div
         className={cn(
-          "w-full flex-1 h-[calc(100%-40px-24px)]",
+          "w-full grow lg:grow-0",
           chat.enabled ? "relative lg:flex lg:flex-row lg:gap-6" : "flex"
         )}
       >
@@ -66,7 +73,7 @@ export const Session: React.FC<Props> = ({
         <div
           key="chat"
           className={cn(
-            "h-full shadow shadow-message-panel rounded-2xl overflow-hidden w-[344px] flex-shrink-0",
+            "h-full shadow shadow-message-panel rounded-2xl overflow-hidden lg:h-[550px] w-[344px] flex-shrink-0",
             chat.enabled && mq.lg ? "visible" : "hidden"
           )}
         >

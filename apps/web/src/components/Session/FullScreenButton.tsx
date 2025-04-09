@@ -2,7 +2,7 @@ import React from "react";
 import FullScreen from "@litespace/assets/FullScreen";
 import Minimize from "@litespace/assets/Minimize";
 import { Void } from "@litespace/types";
-import { Button } from "@/components/Button";
+import { Button } from "@litespace/ui/Button";
 import cn from "classnames";
 
 export const FullScreenButton: React.FC<{

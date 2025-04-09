@@ -1,7 +1,7 @@
 import React from "react";
 import cn from "classnames";
 import ExclamationMark from "@litespace/assets/ExclamationMark";
-import { Typography } from "@/components/Typography";
+import { Typography } from "@litespace/ui/Typography";
 
 export const Alert: React.FC<{ alert: string }> = ({ alert }) => {
   return (

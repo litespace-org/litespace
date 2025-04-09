@@ -1,7 +1,7 @@
 import { Void } from "@litespace/types";
 import React, { useMemo } from "react";
 import CallIncoming from "@litespace/assets/CallIncoming";
-import { Button, ButtonType, ButtonVariant } from "@/components/Button";
+import { Button, ButtonType, ButtonVariant } from "@litespace/ui/Button";
 import Microphone from "@litespace/assets/Microphone";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Video from "@litespace/assets/Video";

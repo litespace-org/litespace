@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
-import { Dialog } from "@/components/Dialog";
+import { Dialog } from "@litespace/ui/Dialog";
 import Devices from "@litespace/assets/Devices";
-import { useFormatMessage } from "@/hooks";
-import { Typography } from "@/components/Typography";
-import { Button } from "@/components/Button";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Typography } from "@litespace/ui/Typography";
+import { Button } from "@litespace/ui/Button";
 import cn from "classnames";
 import { Void } from "@litespace/types";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";

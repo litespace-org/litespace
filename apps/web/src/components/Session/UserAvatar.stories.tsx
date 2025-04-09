@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { UserAvatar } from "@/components/Session/UserAvatar";
+import { UserAvatar, type Props } from "@/components/Session/UserAvatar";
 import { faker } from "@faker-js/faker/locale/ar";
-import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import React, { useEffect, useState } from "react";
 
 type Component = typeof UserAvatar;
@@ -10,7 +9,23 @@ const meta: Meta<Component> = {
   title: "Session/UserAvatar",
   component: UserAvatar,
   parameters: { layout: "centered" },
-  decorators: [DarkStoryWrapper],
+};
+
+const UserSpeakingComponent: React.FC<Props> = (props: Props) => {
+  const [speaking, setSpeaking] = useState<boolean>(true);
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        setSpeaking((prev) => !prev);
+      },
+      faker.number.int({ min: 3, max: 10 }) * 1_000
+    );
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+  return <UserAvatar {...props} speaking={speaking} />;
 };
 
 export const Speaking: StoryObj<Component> = {
@@ -40,20 +55,7 @@ export const Speaking2: StoryObj<Component> = {
     };
     talking?: boolean;
   }) {
-    const [speaking, setSpeaking] = useState<boolean>(true);
-    useEffect(() => {
-      const interval = setInterval(
-        () => {
-          setSpeaking((prev) => !prev);
-        },
-        faker.number.int({ min: 3, max: 10 }) * 1_000
-      );
-
-      return () => {
-        clearInterval(interval);
-      };
-    }, []);
-    return <UserAvatar {...props} speaking={speaking} />;
+    return <UserSpeakingComponent {...props} />;
   },
 };
 
