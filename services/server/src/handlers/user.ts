@@ -168,6 +168,14 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
     if (isTutor(user) || isTutorManager(user)) {
       await tutors.create(user.id, tx);
+      // Check if the tutor is created by an admin, it will be activated directly
+      if (admin) {
+        const adminId = typeof req.user === "object" ? req.user.id : undefined;
+        await tutors.update(user.id, {
+          activated: true,
+          activatedBy: adminId,
+        });
+      }
     }
 
     return user;
