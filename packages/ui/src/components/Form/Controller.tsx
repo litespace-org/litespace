@@ -38,7 +38,7 @@ import {
   WeekdayPicker as BaseWeekdayPicker,
   WeekdayPickerProps,
 } from "@/components/WeekdayPicker";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export function TextEditor<T extends FieldValues>({
   control,

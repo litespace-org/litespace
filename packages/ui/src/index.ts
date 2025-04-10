@@ -24,6 +24,7 @@ export {
 export { Dialog } from "@/components/Dialog";
 export { DeleteSlotDialog } from "@/components/DeleteSlotDialog";
 export { Drawer } from "@/components/Drawer";
+export { EnterCode } from "@/components/EnterCode";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";
 export { VideoPlayer } from "@/components/VideoPlayer";
