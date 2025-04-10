@@ -1,6 +1,5 @@
 import { router } from "@/lib/routes";
 import { capture } from "@/lib/sentry";
-import { useUserContext } from "@litespace/headless/context/user";
 import { useLogger } from "@litespace/headless/logger";
 import { Optional, Void } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
@@ -33,7 +32,6 @@ export function useOnError(payload: OnErrorPayload) {
   const handlerRef = useRef<Optional<Handler | null>>(payload.handler);
   const resetQueryRef = useRef<Optional<Void>>(undefined);
   const location = useLocation();
-  const { logout } = useUserContext();
   const logger = useLogger();
 
   useEffect(() => {
@@ -53,7 +51,6 @@ export function useOnError(payload: OnErrorPayload) {
 
       // Direct the user to the login page.
       if (isForbidden(error)) {
-        logout();
         return navigate(
           router.web({
             route: Web.Login,
@@ -73,7 +70,7 @@ export function useOnError(payload: OnErrorPayload) {
         raw: error,
       });
     },
-    [location.pathname, logger, logout, navigate]
+    [location.pathname, logger, navigate]
   );
 
   useEffect(() => {
