@@ -12,6 +12,7 @@ import { Landing, Web } from "@litespace/utils/routes";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isRegularUser } from "@litespace/utils";
 import { router } from "@/lib/routes";
+import { useLogger } from "@litespace/headless/logger";
 
 function isPopupClosedError(error: unknown) {
   return (
@@ -30,6 +31,7 @@ export function useGoogle({
   role?: IUser.Role.Student | IUser.Role.Tutor | IUser.Role.TutorManager;
   redirect?: string | null;
 }) {
+  const logger = useLogger();
   const [loading, setLoading] = useState<boolean>(false);
   const api = useApi();
   const user = useUserContext();
@@ -68,12 +70,12 @@ export function useGoogle({
   const onError = useCallback(
     (error?: unknown) => {
       capture(error);
-      console.error(error);
+      logger.error(error);
       setLoading(false);
       if (!isPopupClosedError(error))
         toast.error({ title: intl(role ? "register.error" : "login.error") });
     },
-    [intl, role, toast]
+    [intl, logger, role, toast]
   );
 
   useGoogleOneTapLogin({

@@ -1,21 +1,24 @@
 import { useUserContext } from "@litespace/headless/context/user";
 import { ProfileInfo } from "@litespace/ui/Navbar";
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import cn from "classnames";
 import { Typography } from "@litespace/ui/Typography";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import Crown from "@litespace/assets/Crown";
 import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import Menu from "@litespace/assets/Menu";
 import { Web } from "@litespace/utils/routes";
+import { useSaveLogs } from "@/hooks/logger";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   const { md, lg } = useMediaQuery();
-  const intl = useFormatMessage();
   const { user } = useUserContext();
+  const [counter, setCounter] = useState<number>(0);
+  const intl = useFormatMessage();
+  const { save } = useSaveLogs();
 
   return (
     <div className="shadow-app-navbar shadow lg:shadow-app-navbar-mobile w-full z-navbar bg-natural-50">
@@ -55,12 +58,20 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
 
         <div className="ms-auto">
           {user ? (
-            <ProfileInfo
-              imageUrl={user.image}
-              name={user.name}
-              email={user.email}
-              id={user.id}
-            />
+            <button
+              onClick={async () => {
+                if (counter < 2) return setCounter(counter + 1);
+                setCounter(0);
+                await save();
+              }}
+            >
+              <ProfileInfo
+                imageUrl={user.image}
+                name={user.name}
+                email={user.email}
+                id={user.id}
+              />
+            </button>
           ) : null}
 
           {!user ? (
