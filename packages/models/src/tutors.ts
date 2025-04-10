@@ -338,11 +338,39 @@ export class Tutors {
       SELECT * FROM tutors
       JOIN users ON tutors.id = users.id
       WHERE tutors.id IN (
-        SELECT tutors.id FROM room_members rm1
-        JOIN room_members rm2 ON rm1.room_id = rm2.room_id
-        RIGHT JOIN tutors ON tutors.id = rm2.user_id
-        GROUP BY tutors.id
-        HAVING COUNT(rm1.user_id = 2 OR NULL) = 0
+        SELECT s1.tutorId FROM (
+          SELECT 
+            tutors.id AS tutorId,
+            tutors.about AS about,
+            tutors.bio AS bio,
+            tutors.activated AS activated,
+            tutors.video AS video,
+            tutors.thumbnail AS thumbnail,
+            tutors.studio_id AS studio_id,
+            tutors.activated_by AS activated_by
+          FROM room_members rm1
+          JOIN room_members rm2 ON rm1.room_id = rm2.room_id
+          RIGHT JOIN tutors ON tutors.id = rm2.user_id
+          GROUP BY tutors.id
+          HAVING COUNT(rm1.user_id = 2 OR NULL) = 0
+        ) s1 JOIN users ON s1.tutorId = users.id
+        WHERE 
+          users.name IS NOT null AND
+          about IS NOT null AND
+          bio IS NOT null AND
+          users.image IS NOT null AND
+          users.phone IS NOT null AND
+          users.city IS NOT null AND
+          users.verified_email = true AND 
+          (users.role = 5 OR ( 
+            users.verified_phone = true AND
+            video IS NOT null AND
+            thumbnail IS NOT null AND
+            studio_id IS NOT null AND
+            activated = true AND
+            activated_by IS NOT null AND
+            users.birth_year IS NOT null 
+          ))
       );
      */
 
@@ -356,15 +384,46 @@ export class Tutors {
       lastSeen: users.column("updated_at"),
     };
 
-    // NOTE: pagination is applied in the inner select query
-    // in order to optain more sql query performance.
-    const innerSelect = knex
-      .select(this.column("id"))
+    const s1 = knex
+      .select("tutors.id AS tutorId")
+      .select("tutors.about AS about")
+      .select("tutors.bio AS bio")
+      .select("tutors.activated AS activated")
+      .select("tutors.video AS video")
+      .select("tutors.thumbnail AS thumbnail")
+      .select("tutors.studio_id AS studio_id")
+      .select("tutors.activated_by AS activated_by")
       .from("room_members AS rm1")
       .join("room_members AS rm2", "rm1.room_id", "rm2.room_id")
       .rightJoin(this.table, this.column("id"), "rm2.user_id")
       .groupBy(this.column("id"))
-      .havingRaw(`COUNT(rm1.user_id = ${student} OR NULL) = 0`);
+      .havingRaw(`COUNT(rm1.user_id = ${student} OR NULL) = 0`)
+      .as("s1");
+
+    const innerSelect = knex
+      .select("s1.tutorId")
+      .from(s1)
+      .join(users.table, "s1.tutorId", users.column("id"))
+      .whereNotNull(users.column("name"))
+      .whereNotNull("s1.about")
+      .whereNotNull("s1.bio")
+      .whereNotNull(users.column("image"))
+      .whereNotNull(users.column("phone"))
+      .whereNotNull(users.column("city"))
+      .where(users.column("verified_email"), "=", true)
+      .where((q1) => {
+        q1.where(users.column("role"), "=", IUser.Role.TutorManager).orWhere(
+          (q2) => {
+            q2.where(users.column("verified_phone"), "=", true);
+            q2.whereNotNull(users.column("birth_year"));
+            q2.where("s1.activated", "=", true);
+            q2.whereNotNull("s1.video");
+            q2.whereNotNull("s1.thumbnail");
+            q2.whereNotNull("s1.studio_id");
+            q2.whereNotNull("s1.activated_by");
+          }
+        );
+      });
 
     const row = await knex.count("*").from(innerSelect).first();
     const total = row ? zod.coerce.number().parse(row.count) : 0;
@@ -374,6 +433,8 @@ export class Tutors {
       .join(users.table, users.column("id"), this.column("id"))
       .whereIn(
         this.column("id"),
+        // NOTE: pagination is applied in the inner select query
+        // in order to optain more sql query performance.
         withPagination(innerSelect.clone(), pagination)
       );
 

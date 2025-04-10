@@ -188,19 +188,30 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
   });
 }
 
-async function tutor(payload?: ITutor.UpdatePayload) {
+async function tutor(
+  tutorPayload?: Partial<ITutor.UpdatePayload>,
+  userPayload?: Partial<IUser.UpdatePayload>
+) {
   const info = await user({ role: IUser.Role.Tutor });
   const tutor = await tutors.create(info.id);
-  if (payload) await tutors.update(tutor.id, payload);
-  return tutor;
+  await tutors.update(tutor.id, tutorPayload || {});
+  await users.update(tutor.id, userPayload || {});
+  return (await tutors.findById(tutor.id))!;
 }
 
 function student() {
   return user({ role: IUser.Role.Student });
 }
 
-function tutorManager() {
-  return user({ role: IUser.Role.TutorManager });
+async function tutorManager(
+  tutorPayload?: Partial<ITutor.UpdatePayload>,
+  userPayload?: Partial<IUser.UpdatePayload>
+) {
+  const info = await user({ role: IUser.Role.TutorManager });
+  const tutor = await tutors.create(info.id);
+  await tutors.update(tutor.id, tutorPayload || {});
+  await users.update(tutor.id, userPayload || {});
+  return (await tutors.findById(tutor.id))!;
 }
 
 async function students(count: number) {
