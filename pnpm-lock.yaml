@@ -658,8 +658,8 @@ importers:
         specifier: ^7.24.7
         version: 7.26.0(@babel/core@7.26.7)
       '@chromatic-com/storybook':
-        specifier: 3.2.4
-        version: 3.2.4(react@18.2.0)(storybook@8.6.4(bufferutil@4.0.9)(prettier@3.4.2)(utf-8-validate@5.0.10))
+        specifier: 3.2.6
+        version: 3.2.6(react@18.2.0)(storybook@8.6.4(bufferutil@4.0.9)(prettier@3.4.2)(utf-8-validate@5.0.10))
       '@eslint/compat':
         specifier: ^1.2.2
         version: 1.2.6(eslint@9.19.0(jiti@1.21.7))
@@ -1317,8 +1317,8 @@ importers:
         version: 3.1.0(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.10.12(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.4.5)))
     devDependencies:
       '@chromatic-com/storybook':
-        specifier: ^1.5.0
-        version: 1.9.0(react@18.2.0)
+        specifier: ^3.2.6
+        version: 3.2.6(react@18.2.0)(storybook@8.6.4(bufferutil@4.0.9)(prettier@3.4.2)(utf-8-validate@5.0.10))
       '@faker-js/faker':
         specifier: ^9.6.0
         version: 9.6.0
@@ -2902,12 +2902,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@chromatic-com/storybook@1.9.0':
-    resolution: {integrity: sha512-vYQ+TcfktEE3GHnLZXHCzXF/sN9dw+KivH8a5cmPyd9YtQs7fZtHrEgsIjWpYycXiweKMo1Lm1RZsjxk8DH3rA==}
-    engines: {node: '>=16.0.0', yarn: '>=1.22.18'}
-
-  '@chromatic-com/storybook@3.2.4':
-    resolution: {integrity: sha512-5/bOOYxfwZ2BktXeqcCpOVAoR6UCoeART5t9FVy22hoo8F291zOuX4y3SDgm10B1GVU/ZTtJWPT2X9wZFlxYLg==}
+  '@chromatic-com/storybook@3.2.6':
+    resolution: {integrity: sha512-FDmn5Ry2DzQdik+eq2sp/kJMMT36Ewe7ONXUXM2Izd97c7r6R/QyGli8eyh/F0iyqVvbLveNYFyF0dBOJNwLqw==}
     engines: {node: '>=16.0.0', yarn: '>=1.22.18'}
     peerDependencies:
       storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
@@ -8050,8 +8046,8 @@ packages:
     resolution: {integrity: sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==}
     engines: {node: '>=10'}
 
-  chromatic@11.25.2:
-    resolution: {integrity: sha512-/9eQWn6BU1iFsop86t8Au21IksTRxwXAl7if8YHD05L2AbuMjClLWZo5cZojqrJHGKDhTqfrC2X2xE4uSm0iKw==}
+  chromatic@11.28.0:
+    resolution: {integrity: sha512-Xy3907MXY5UP7LoMksmsT02xCUsoLZpcC6sRITjd+KiXBteOxPF7J+QsFqy/VzQCEN6fpt/R2bOIpE+PwPfcZA==}
     hasBin: true
     peerDependencies:
       '@chromatic-com/cypress': ^0.*.* || ^1.0.0
@@ -12888,8 +12884,8 @@ packages:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
 
-  react-confetti@6.2.2:
-    resolution: {integrity: sha512-K+kTyOPgX+ZujMZ+Rmb7pZdHBvg+DzinG/w4Eh52WOB8/pfO38efnnrtEZNJmjTvLxc16RBYO+tPM68Fg8viBA==}
+  react-confetti@6.4.0:
+    resolution: {integrity: sha512-5MdGUcqxrTU26I2EU7ltkWPwxvucQTuqMm8dUz72z2YMqTD6s9vMcDUysk7n9jnC+lXuCPeJJ7Knf98VEYE9Rg==}
     engines: {node: '>=16'}
     peerDependencies:
       react: ^16.3.0 || ^17.0.1 || ^18.0.0 || ^19.0.0
@@ -16618,24 +16614,12 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@chromatic-com/storybook@1.9.0(react@18.2.0)':
+  '@chromatic-com/storybook@3.2.6(react@18.2.0)(storybook@8.6.4(bufferutil@4.0.9)(prettier@3.4.2)(utf-8-validate@5.0.10))':
     dependencies:
-      chromatic: 11.25.2
+      chromatic: 11.28.0
       filesize: 10.1.6
       jsonfile: 6.1.0
-      react-confetti: 6.2.2(react@18.2.0)
-      strip-ansi: 7.1.0
-    transitivePeerDependencies:
-      - '@chromatic-com/cypress'
-      - '@chromatic-com/playwright'
-      - react
-
-  '@chromatic-com/storybook@3.2.4(react@18.2.0)(storybook@8.6.4(bufferutil@4.0.9)(prettier@3.4.2)(utf-8-validate@5.0.10))':
-    dependencies:
-      chromatic: 11.25.2
-      filesize: 10.1.6
-      jsonfile: 6.1.0
-      react-confetti: 6.2.2(react@18.2.0)
+      react-confetti: 6.4.0(react@18.2.0)
       storybook: 8.6.4(bufferutil@4.0.9)(prettier@3.4.2)(utf-8-validate@5.0.10)
       strip-ansi: 7.1.0
     transitivePeerDependencies:
@@ -22874,7 +22858,7 @@ snapshots:
 
   chownr@2.0.0: {}
 
-  chromatic@11.25.2: {}
+  chromatic@11.28.0: {}
 
   chrome-launcher@0.15.2:
     dependencies:
@@ -28693,7 +28677,7 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
-  react-confetti@6.2.2(react@18.2.0):
+  react-confetti@6.4.0(react@18.2.0):
     dependencies:
       react: 18.2.0
       tween-functions: 1.2.0
