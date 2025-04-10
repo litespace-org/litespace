@@ -4,7 +4,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "start": "env-cmd node dist/index.js",
+    "start:whatsapp": "env-cmd node dist/whatsapp.js",
+    "start:telegram": "env-cmd node dist/telegram.js",
+    "produce": "vite-node scripts/produce.ts",
     "prepare": "ts-patch install -s"
   },
   "dependencies": {
@@ -13,6 +15,7 @@
     "@litespace/utils": "workspace:^",
     "@litespace/auth": "workspace:^",
     "@litespace/kafka": "workspace:^",
+    "prompts": "^2.4.2",
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "zod": "^3.23.8",
@@ -21,6 +24,7 @@
   "devDependencies": {
     "ts-patch": "^3.2.1",
     "typescript": "^5.4.5",
-    "typescript-transform-paths": "^3.5.2"
+    "typescript-transform-paths": "^3.5.2",
+    "vite-node": "^2.1.2"
   }
 }

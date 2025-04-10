@@ -1,10 +1,9 @@
-import { Kafka, Producer as KafkaJsProducer } from "kafkajs";
+import { Kafka, Producer as BaseProducer } from "kafkajs";
 import { IKafka } from "@litespace/types";
 
 export class Producer {
   private kafka: Kafka;
-  private producer: KafkaJsProducer;
-  private isConnected = false;
+  private producer: BaseProducer;
 
   constructor() {
     this.kafka = new Kafka({
@@ -15,16 +14,14 @@ export class Producer {
   }
 
   async connect() {
-    if (this.isConnected) return;
     await this.producer.connect();
-    this.isConnected = true;
   }
 
-  async send<T extends IKafka.Topics>({
+  async send<T extends IKafka.TopicType>({
     topic,
     key,
     value,
-  }: IKafka.KafkaProducerMessage<T>) {
+  }: IKafka.SendTopicPayload<T>) {
     await this.producer.send({
       topic,
       messages: [
@@ -37,8 +34,6 @@ export class Producer {
   }
 
   async disconnect() {
-    if (!this.isConnected) return;
     await this.producer.disconnect();
-    this.isConnected = false;
   }
 }

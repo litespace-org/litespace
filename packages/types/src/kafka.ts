@@ -1,23 +1,25 @@
-export type Topics = "whatsapp" | "telegram";
+export type Topics =
+  | {
+      topic: "whatsapp";
+      value: {
+        to: string;
+        message: string;
+      };
+    }
+  | {
+      topic: "telegram";
+      value: {
+        to: string;
+        message: string;
+      };
+    };
 
-export type MessageMap = {
-  whatsapp: {
-    to: string;
-    message: string;
-  };
-  telegram: {
-    to: string;
-    message: string;
-  };
-};
+export type TopicType = Topics["topic"];
 
-export type KafkaEvent<T = unknown> = {
-  topic: Topics;
-  value: T;
-};
+export type TopicOf<T extends TopicType> = Extract<Topics, { topic: T }>;
 
-export type KafkaProducerMessage<T extends Topics> = {
-  topic: Topics;
+export type ValueOf<T extends TopicType> = TopicOf<T>["value"];
+
+export type SendTopicPayload<T extends TopicType> = TopicOf<T> & {
   key?: string;
-  value: MessageMap[T];
 };
