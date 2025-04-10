@@ -14,6 +14,7 @@ export { Calendar, type Event } from "@/components/Calendar";
 export { Card } from "@/components/Card";
 export { OverviewCard } from "@/components/OverviewCard";
 export { InvoicesOverview } from "@/components/InvoicesOverview";
+export { InvoicesTable } from "@/components/InvoicesTable";
 export { Accordion, type AccordionItem } from "@/components/Accordion";
 export { ActionsMenu, type MenuAction } from "@/components/ActionsMenu";
 export {
