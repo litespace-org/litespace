@@ -16,6 +16,7 @@
     "./socket": "./dist/socket/index.js",
     "./config": "./dist/config/index.js",
     "./mediaQuery": "./dist/mediaQuery/index.js",
+    "./logger": "./dist/logger/index.js",
     "./auth": "./dist/auth.js",
     "./login": "./dist/login.js",
     "./users": "./dist/users.js",
@@ -77,8 +78,9 @@
   },
   "dependencies": {
     "@litespace/atlas": "workspace:^",
-    "@litespace/utils": "workspace:^",
     "@litespace/types": "workspace:^",
+    "@litespace/utils": "workspace:^",
+    "file-saver": "^2.0.5",
     "hark": "^1.2.3"
   },
   "peerDependencies": {
@@ -88,6 +90,7 @@
     "react-responsive": "^10.0.0"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
     "@types/hark": "^1",
     "@types/node": "^22.7.5",
     "@types/react": "^18.3.3",

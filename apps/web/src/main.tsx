@@ -19,11 +19,12 @@ import { AppConfigProvider } from "@litespace/headless/config";
 import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
 import { LocalStorage } from "@litespace/headless/storage";
 import { EchoProvider } from "@litespace/headless/echo";
+import { LoggerProvider } from "@litespace/headless/logger";
 import { env } from "@/lib/env";
+import { logger } from "@/lib/logger";
 import App from "@/App";
 
 import "@/lib/ga";
-import "@/lib/clarity";
 import "@litespace/ui/tailwind.css";
 
 const queryClient = new QueryClient({
@@ -41,38 +42,40 @@ createRoot(document.getElementById("root")!).render(
     defaultLocale="ar-EG"
   >
     <Direction>
-      <AppConfigProvider>
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-          <QueryClientProvider client={queryClient}>
-            <ServerProvider server={env.server} storage={new LocalStorage()}>
-              <ApiProvider>
-                <SocketProvider>
-                  <UserProvider>
-                    <EchoProvider>
-                      <MediaQueryProvider>
-                        <ToastProvider>
-                          <ReduxProvider store={store}>
-                            <PersistGate
-                              loading={
-                                <div className="flex items-center justify-center w-screen h-screen">
-                                  <Spinner />
-                                </div>
-                              }
-                              persistor={persistor}
-                            >
-                              <App />
-                            </PersistGate>
-                          </ReduxProvider>
-                        </ToastProvider>
-                      </MediaQueryProvider>
-                    </EchoProvider>
-                  </UserProvider>
-                </SocketProvider>
-              </ApiProvider>
-            </ServerProvider>
-          </QueryClientProvider>
-        </GoogleOAuthProvider>
-      </AppConfigProvider>
+      <LoggerProvider logger={logger}>
+        <AppConfigProvider>
+          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            <QueryClientProvider client={queryClient}>
+              <ServerProvider server={env.server} storage={new LocalStorage()}>
+                <ApiProvider>
+                  <SocketProvider>
+                    <UserProvider>
+                      <EchoProvider>
+                        <MediaQueryProvider>
+                          <ToastProvider>
+                            <ReduxProvider store={store}>
+                              <PersistGate
+                                loading={
+                                  <div className="flex items-center justify-center w-screen h-screen">
+                                    <Spinner />
+                                  </div>
+                                }
+                                persistor={persistor}
+                              >
+                                <App />
+                              </PersistGate>
+                            </ReduxProvider>
+                          </ToastProvider>
+                        </MediaQueryProvider>
+                      </EchoProvider>
+                    </UserProvider>
+                  </SocketProvider>
+                </ApiProvider>
+              </ServerProvider>
+            </QueryClientProvider>
+          </GoogleOAuthProvider>
+        </AppConfigProvider>
+      </LoggerProvider>
     </Direction>
   </IntlProvider>
 );

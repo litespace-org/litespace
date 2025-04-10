@@ -11,6 +11,7 @@ import { destructureRole, isRegularUser } from "@litespace/utils/user";
 import cn from "classnames";
 import React, { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useSaveLogs } from "@/hooks/logger";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -77,6 +78,10 @@ const Root: React.FC = () => {
         router.landing({ route: Landing.Home, full: true })
       );
   }, [navigate, user]);
+
+  useSaveLogs({
+    enableKeyboardShortcut: true,
+  });
 
   return (
     <div className="flex relative w-full">

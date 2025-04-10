@@ -1,6 +1,7 @@
 import { router } from "@/lib/routes";
 import { capture } from "@/lib/sentry";
 import { useUserContext } from "@litespace/headless/context/user";
+import { useLogger } from "@litespace/headless/logger";
 import { Optional, Void } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { LocalId } from "@litespace/ui/locales";
@@ -33,6 +34,7 @@ export function useOnError(payload: OnErrorPayload) {
   const resetQueryRef = useRef<Optional<Void>>(undefined);
   const location = useLocation();
   const { logout } = useUserContext();
+  const logger = useLogger();
 
   useEffect(() => {
     handlerRef.current = payload.handler;
@@ -46,6 +48,7 @@ export function useOnError(payload: OnErrorPayload) {
 
   const onError = useCallback(
     (error: unknown) => {
+      logger.error(error);
       capture(error);
 
       // Direct the user to the login page.
@@ -70,7 +73,7 @@ export function useOnError(payload: OnErrorPayload) {
         raw: error,
       });
     },
-    [location.pathname, logout, navigate]
+    [location.pathname, logger, logout, navigate]
   );
 
   useEffect(() => {
