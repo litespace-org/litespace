@@ -10,6 +10,7 @@ export class ConfirmationCodes {
   readonly columns: Record<keyof IConfirmationCode.Row, string> = {
     id: this.column("id"),
     code: this.column("code"),
+    user_id: this.column("user_id"),
     purpose: this.column("purpose"),
     created_at: this.column("created_at"),
     expires_at: this.column("expires_at"),
@@ -23,6 +24,7 @@ export class ConfirmationCodes {
     const rows = await this.builder(tx)
       .insert({
         code: payload.code,
+        user_id: payload.userId,
         purpose: payload.purpose,
         created_at: now,
         expires_at: dayjs.utc(payload.expiresAt).toDate(),
@@ -41,8 +43,8 @@ export class ConfirmationCodes {
     value: IConfirmationCode.Row[T]
   ): Promise<IConfirmationCode.Self | null> {
     const row = await knex<IConfirmationCode.Row>(this.table)
-      .select("*")
-      .where(key, value)
+      .select(this.columns)
+      .where(this.column(key), value)
       .first();
 
     if (!row) return null;
@@ -60,10 +62,8 @@ export class ConfirmationCodes {
     IConfirmationCode.Self[]
   > {
     const rows = await this.builder(tx)
-      .select("*")
-      .where({
-        ...payload,
-      });
+      .select(this.columns)
+      .where({ ...payload });
 
     return rows.map((row) => this.from(row));
   }
@@ -82,8 +82,8 @@ export class ConfirmationCodes {
   }
 
   builder(tx?: Knex.Transaction) {
-    const builder = (tx || knex)<IConfirmationCode.Row>(this.table);
-    return builder;
+    const builder = tx || knex;
+    return builder<IConfirmationCode.Row>(this.table);
   }
 
   column(value: keyof IConfirmationCode.Row): string {
@@ -94,6 +94,7 @@ export class ConfirmationCodes {
     return {
       id: row.id,
       code: row.code,
+      userId: row.user_id,
       purpose: row.purpose,
       createdAt: row.created_at.toISOString(),
       expiresAt: row.expires_at.toISOString(),

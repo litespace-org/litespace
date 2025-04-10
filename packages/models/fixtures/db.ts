@@ -47,9 +47,9 @@ export async function flush() {
     await ratings.builder(tx).del();
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
+    await confirmationCodes.builder(tx).del();
     await users.builder(tx).del();
     await contactRequests.builder(tx).del();
-    await confirmationCodes.builder(tx).del();
   });
 }
 

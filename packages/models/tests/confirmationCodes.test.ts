@@ -2,8 +2,11 @@ import { confirmationCodes } from "@/confirmationCodes";
 import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/utils/utils";
 import { IConfirmationCode } from "@litespace/types";
-import { expect } from "chai";
+import { use, expect } from "chai";
 import dayjs from "@/lib/dayjs";
+import chaiAsPromised from "chai-as-promised";
+
+use(chaiAsPromised);
 
 const EXPIRY = dayjs.utc().add(24, "hour").toISOString();
 const VALID_CODE = 12345;
@@ -25,21 +28,13 @@ describe("Confirmation Codes", () => {
     });
 
     it("should fail and never accept any number above 5 digits", async () => {
-      try {
-        await confirmationCodes.create({
+      await expect(
+        confirmationCodes.create({
           code: 123456, // 6 digits (should fail)
           purpose: IConfirmationCode.Purpose.ResetPassword,
           expiresAt: EXPIRY,
-        });
-
-        // If no error is thrown, fail the test
-        throw new Error(
-          "Test failed: Code creation should have thrown an error."
-        );
-      } catch (error) {
-        if (error instanceof Error)
-          expect(error.message).to.include("out of range for type smallint");
-      }
+        })
+      ).to.eventually.be.rejectedWith(/out of range for type smallint/);
     });
 
     it("should succeed and return 2 codes", async () => {
@@ -61,27 +56,22 @@ describe("Confirmation Codes", () => {
     });
 
     it("should fail due to duplicate codes and purposes", async () => {
-      try {
-        await confirmationCodes.create({
+      const user = await fixtures.user({});
+      await confirmationCodes.create({
+        userId: user.id,
+        code: VALID_CODE,
+        purpose: IConfirmationCode.Purpose.ResetPassword,
+        expiresAt: EXPIRY,
+      });
+
+      await expect(
+        confirmationCodes.create({
+          userId: user.id,
           code: VALID_CODE,
           purpose: IConfirmationCode.Purpose.ResetPassword,
           expiresAt: EXPIRY,
-        });
-
-        await confirmationCodes.create({
-          code: VALID_CODE,
-          purpose: IConfirmationCode.Purpose.ResetPassword,
-          expiresAt: EXPIRY,
-        });
-
-        // If no error is thrown, fail the test
-        throw new Error(
-          "Test failed: Code creation should have thrown an error."
-        );
-      } catch (error) {
-        if (error instanceof Error)
-          expect(error.message).to.include("violates unique constraint");
-      }
+        })
+      ).eventually.be.rejectedWith(/violates unique constraint/);
     });
   });
 
@@ -101,8 +91,7 @@ describe("Confirmation Codes", () => {
 
     it("should return null", async () => {
       const code = await confirmationCodes.findById(5);
-      if (!code) return expect(code).to.be.eq(null);
-      throw new Error("Test Failed: code wasn't null");
+      return expect(code).to.be.eq(null);
     });
   });
 
@@ -114,13 +103,12 @@ describe("Confirmation Codes", () => {
         expiresAt: EXPIRY,
       });
 
-      const code = await confirmationCodes.findByCodeAndPurpose({
+      const [code] = await confirmationCodes.findByCodeAndPurpose({
         code: VALID_CODE,
         purpose: IConfirmationCode.Purpose.ResetPassword,
       });
-      if (!code) return;
-      expect(code[0].code).to.be.eq(VALID_CODE);
-      expect(code[0].purpose).to.be.eq(IConfirmationCode.Purpose.ResetPassword);
+      expect(code.code).to.be.eq(VALID_CODE);
+      expect(code.purpose).to.be.eq(IConfirmationCode.Purpose.ResetPassword);
     });
 
     it("should return mutliple codes", async () => {

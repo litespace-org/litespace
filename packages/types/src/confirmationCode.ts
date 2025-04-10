@@ -7,6 +7,7 @@ export enum Purpose {
 
 export type Self = {
   id: number;
+  userId: number | null;
   code: number;
   purpose: Purpose;
   createdAt: string;
@@ -15,6 +16,7 @@ export type Self = {
 
 export type Row = {
   id: number;
+  user_id: number | null;
   code: number;
   purpose: Purpose;
   created_at: Date;
@@ -22,6 +24,7 @@ export type Row = {
 };
 
 export type CreatePayload = {
+  userId?: number | null;
   purpose: Purpose;
   code: number;
   expiresAt: string;

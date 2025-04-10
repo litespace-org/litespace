@@ -8,6 +8,14 @@ export async function safe<T>(handler: () => Promise<T>) {
   }
 }
 
+export async function safePromise<T>(promise: Promise<T>) {
+  try {
+    return await promise;
+  } catch (error) {
+    return error instanceof Error ? error : new Error("unkown");
+  }
+}
+
 export function isApiError(value: unknown): value is ApiError {
   return (
     typeof value === "string" &&
