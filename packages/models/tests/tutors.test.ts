@@ -44,11 +44,32 @@ describe(nameof(Tutors), () => {
   });
 
   describe(nameof(tutors.findUncontactedTutorsForStudent), () => {
-    it("should retrieve tutors that a specific student hasn't open a chat room with yet", async () => {
+    it("should retrieve tutors that a specific student hasn't opened a chat room with yet", async () => {
+      const admin = await fixtures.user({ role: Role.SuperAdmin });
+      const studio = await fixtures.user({ role: Role.Studio });
       const student = await fixtures.user({ role: Role.Student });
 
       const mockTutors = await Promise.all(
-        range(0, 5).map(() => fixtures.tutor())
+        range(0, 5).map(() =>
+          fixtures.tutor(
+            {
+              bio: "empty",
+              about: "empty",
+              video: "./video.mp4",
+              thumbnail: "./image.jpg",
+              studioId: studio.id,
+              activated: true,
+              activatedBy: admin.id,
+            },
+            {
+              image: "./photo.jpg",
+              city: IUser.City.Giza,
+              phone: "01143759540",
+              verifiedEmail: true,
+              verifiedPhone: true,
+            }
+          )
+        )
       );
 
       await fixtures.room([student.id, mockTutors[0].id]);
