@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "build:pkgs": "pnpm assets build && pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm headless build && pnpm auth build &&  pnpm ui build && pnpm radio build && pnpm kafka build",
-    "build:server:pkgs": "pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm auth build && pnpm radio build",
+    "build:server:pkgs": "pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm auth build && pnpm radio build && pnpm kafka build",
     "watch:atlas": "pnpm atlas watch",
     "watch:auth": "pnpm auth watch",
     "watch:emails": "pnpm emails watch",

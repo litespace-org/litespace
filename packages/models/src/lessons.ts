@@ -142,15 +142,20 @@ export class Lessons {
     id: number,
     payload: ILesson.UpdatePayload,
     tx?: Knex.Transaction
-  ) {
-    await this.builder(tx)
+  ): Promise<ILesson.Self> {
+    const rows = await this.builder(tx)
       .lessons.update({
         slot_id: payload.slotId,
         start: payload.start ? dayjs.utc(payload.start).toDate() : undefined,
         duration: payload.duration,
         updated_at: dayjs.utc().toDate(),
       })
-      .where("id", id);
+      .where("id", id)
+      .returning("*");
+
+    const row = first(rows);
+    if (!row) throw new Error("Lesson not found; should never happen");
+    return this.from(row);
   }
 
   async cancel({

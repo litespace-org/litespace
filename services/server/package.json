@@ -18,7 +18,7 @@
     "pm2:start": "pm2 start ecosystem.config.js",
     "peer": "peerjs --port 4001 --key peer --path /ls",
     "check": "tsc --noEmit",
-    "wait": "wait-on tcp:4000"
+    "wait": "wait-on tcp:4000 --timeout 30s"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
