@@ -18,7 +18,7 @@
     "pm2:start": "pm2 start ecosystem.config.js",
     "peer": "peerjs --port 4001 --key peer --path /ls",
     "check": "tsc --noEmit",
-    "wait": "wait-on tcp:4000"
+    "wait": "wait-on tcp:4000 --timeout 30s"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
@@ -65,6 +65,7 @@
     "@litespace/radio": "workspace:^",
     "@litespace/types": "workspace:^",
     "@litespace/utils": "workspace:^",
+    "@litespace/kafka": "workspace:^",
     "@types/multer": "^1.4.12",
     "axios": "^1.6.8",
     "body-parser": "^1.20.2",

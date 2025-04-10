@@ -30,6 +30,8 @@ export * as IWhatsapp from "@/whatsapp";
 export * as ITelegram from "@/telegram";
 export * as IEcho from "@/echo";
 export * as IShortUrl from "@/ShortUrl";
+export * as IKafka from "@/kafka";
+export * as IMessenger from "@/messenger";
 
 export * from "@/api";
 export * from "@/utils";

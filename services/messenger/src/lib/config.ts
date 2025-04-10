@@ -15,14 +15,6 @@ const schema = zod.object({
       id: zod.coerce.number().int().positive(),
       hash: zod.string().trim().length(32),
     }),
-    enabled: envBoolean.default("true"),
-  }),
-  whatsapp: zod.object({
-    enabled: envBoolean.default("true"),
-  }),
-  credentials: zod.object({
-    username: zod.string(),
-    password: zod.string(),
   }),
   environment: zod.union([
     zod.literal("local"),
@@ -42,14 +34,6 @@ export const config = schema.parse({
       id: process.env.TELEGRAM_CLIENT_API_ID,
       hash: process.env.TELEGRAM_CLIENT_API_HASH,
     },
-    enabled: process.env.ENABLE_TELEGRAM,
-  },
-  whatsapp: {
-    enabled: process.env.ENABLE_WHATSAPP,
-  },
-  credentials: {
-    username: process.env.USERNAME,
-    password: process.env.PASSWORD,
   },
   environment: process.env.ENVIRONMENT,
 });

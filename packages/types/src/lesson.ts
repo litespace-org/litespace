@@ -71,6 +71,8 @@ export type PopuldatedMemberRow = {
   role: IUser.Role;
   phone: string | null;
   verified_phone: boolean;
+  enabled_whatsapp: boolean;
+  enabled_telegram: boolean;
 };
 
 export type PopuldatedMember = {
@@ -80,6 +82,8 @@ export type PopuldatedMember = {
   image: IUser.Self["image"];
   role: IUser.Role;
   phone: string | null;
+  enabledWhatsapp: boolean;
+  enabledTelegram: boolean;
   verifiedPhone: boolean;
 };
 

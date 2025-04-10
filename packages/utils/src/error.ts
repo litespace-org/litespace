@@ -8,7 +8,7 @@ export async function safe<T>(handler: () => Promise<T>) {
   }
 }
 
-export async function safePromise<T>(promise: Promise<T>) {
+export async function safePromise<T>(promise: Promise<T>): Promise<T | Error> {
   try {
     return await promise;
   } catch (error) {

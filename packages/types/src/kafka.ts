@@ -1,0 +1,25 @@
+export type Topics =
+  | {
+      topic: "whatsapp";
+      value: {
+        to: string;
+        message: string;
+      };
+    }
+  | {
+      topic: "telegram";
+      value: {
+        to: string;
+        message: string;
+      };
+    };
+
+export type TopicType = Topics["topic"];
+
+export type TopicOf<T extends TopicType> = Extract<Topics, { topic: T }>;
+
+export type ValueOf<T extends TopicType> = TopicOf<T>["value"];
+
+export type SendTopicPayload<T extends TopicType> = TopicOf<T> & {
+  key?: string;
+};

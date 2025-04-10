@@ -1,4 +1,4 @@
-import { ISessionEvent, ISession } from "@litespace/types";
+import { ISessionEvent, ISession, IUser, IMessenger } from "@litespace/types";
 
 export type WorkerMessage =
   | {
@@ -20,6 +20,36 @@ export type WorkerMessage =
         userId: number;
         sessionId: ISession.Id;
       };
+    }
+  | {
+      type: "send-message";
+      payload:
+        | {
+            type: "create-lesson";
+            studentName: string | null;
+            start: string;
+            duration: number;
+            phone: string;
+            method: IMessenger.Method;
+          }
+        | {
+            type: "update-lesson";
+            studentName: string | null;
+            previous: { start: string; duration: number };
+            current: { start: string; duration: number };
+            phone: string;
+            method: IMessenger.Method;
+          }
+        | {
+            type: "cancel-lesson";
+            start: string;
+            canceller: {
+              name: string | null;
+              role: IUser.Role;
+            };
+            phone: string;
+            method: IMessenger.Method;
+          };
     };
 
 export type WorkerMessageType = WorkerMessage["type"];
@@ -28,3 +58,6 @@ export type WorkerMessageOf<T extends WorkerMessageType> = Extract<
   WorkerMessage,
   { type: T }
 >;
+
+export type WorkerMessagePayloadOf<T extends WorkerMessageType> =
+  WorkerMessageOf<T>["payload"];

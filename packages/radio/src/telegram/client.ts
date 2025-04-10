@@ -64,4 +64,8 @@ export class TelegramClient {
   async sendMessage(entity: EntityLike, params: SendMessageParams) {
     return await this.client.sendMessage(entity, params);
   }
+
+  public asPhoneNumber(phone: string): string {
+    return `+2${phone}`;
+  }
 }

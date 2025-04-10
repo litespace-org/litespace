@@ -16,7 +16,7 @@ import {
   forbidden,
   notfound,
 } from "@/lib/error";
-import { ILesson, IUser, Wss } from "@litespace/types";
+import { ILesson, Wss } from "@litespace/types";
 import {
   lessons,
   users,
@@ -29,7 +29,6 @@ import { Knex } from "knex";
 import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
-import { safe } from "@litespace/utils/error";
 import {
   isAdmin,
   isStudent,
@@ -37,11 +36,12 @@ import {
   isUser,
 } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
-import dayjs from "@/lib/dayjs";
 import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
 import { isEmpty, isEqual } from "lodash";
 import { genSessionId } from "@litespace/utils";
 import { withImageUrls } from "@/lib/user";
+import dayjs from "@/lib/dayjs";
+import { sendBackgroundMessage } from "@/workers";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -149,6 +149,19 @@ function create(context: ApiContext) {
         }
       );
 
+      if (tutor.phone && tutor.verifiedPhone)
+        await sendBackgroundMessage({
+          type: "send-message",
+          payload: {
+            type: "create-lesson",
+            duration: lesson.duration,
+            start: lesson.start,
+            method: "telegram", //! WE SHOULD USE user.notification_method
+            phone: tutor.phone,
+            studentName: user.name,
+          },
+        });
+
       const response: ILesson.CreateLessonApiResponse = lesson;
       res.status(200).json(response);
 
@@ -213,13 +226,36 @@ function update(context: ApiContext) {
       });
       if (!canBookLesson) return next(busyTutor());
 
-      await lessons.update(payload.lessonId, {
+      const updated = await lessons.update(payload.lessonId, {
         start: payload.start,
         duration: payload.duration,
         slotId: payload.slotId,
       });
 
       res.sendStatus(200);
+
+      // Notify the other member that the lesson is canceled
+      const otherMember = members.find((member) => member.userId !== user.id);
+      if (!otherMember) return;
+
+      if (otherMember.phone && otherMember.verifiedPhone)
+        return sendBackgroundMessage({
+          type: "send-message",
+          payload: {
+            type: "update-lesson",
+            current: {
+              start: updated.start,
+              duration: updated.duration,
+            },
+            previous: {
+              start: lesson.start,
+              duration: lesson.duration,
+            },
+            method: "telegram", //! WE SHOULD USE user.notification_method
+            phone: otherMember.phone,
+            studentName: user.name,
+          },
+        });
 
       // notify tutors that lessons have been rebooked
       context.io.sockets
@@ -323,7 +359,7 @@ async function findLessonById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-function cancel(context: ApiContext) {
+function cancel(_context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
       const user = req.user;
@@ -345,33 +381,24 @@ function cancel(context: ApiContext) {
 
       res.status(200).send();
 
-      //! todo: cache updates should be done at the worker thread
-      const error = await safe(async () => {
-        const tutor = members.find(
-          (member) =>
-            member.role === IUser.Role.Tutor ||
-            member.role === IUser.Role.TutorManager
-        );
+      // Notify the other member that the lesson is canceled
+      const otherMember = members.find((member) => member.userId !== user.id);
+      if (!otherMember) return;
 
-        if (!tutor)
-          throw new Error(
-            "Tutor not found in the lesson members; should never happen."
-          );
-
-        const slot = await availabilitySlots.findById(lesson.slotId);
-        if (!slot) throw new Error("Slot not found; should never happen");
-
-        const payload = {
-          tutor: tutor.userId,
-          lesson: lesson.id,
-        };
-
-        // notify client
-        context.io.sockets
-          .to(Wss.Room.TutorsCache)
-          .emit(Wss.ServerEvent.LessonCanceled, payload);
-      });
-      if (error instanceof Error) console.error(error);
+      if (otherMember.phone && otherMember.verifiedPhone)
+        return sendBackgroundMessage({
+          type: "send-message",
+          payload: {
+            type: "cancel-lesson",
+            canceller: {
+              name: user.name,
+              role: user.role,
+            },
+            method: "telegram", //! WE SHOULD USE user.notification_method
+            phone: otherMember.phone,
+            start: lesson.start,
+          },
+        });
     }
   );
 }

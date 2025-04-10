@@ -12,6 +12,8 @@ import {
 } from "@/whatsapp/store";
 import { isBoom } from "@hapi/boom";
 import { pino } from "pino";
+import { sleep } from "@litespace/utils/time";
+import ms from "ms";
 
 function shouldReconnect(error: unknown): boolean {
   return (
@@ -57,6 +59,27 @@ export class WhatsApp {
     return this;
   }
 
+  /**
+   * Wait until the connection happens
+   * @param timeout timeout before failing in millseconds
+   */
+  async wait(timeout: number) {
+    let current = 0;
+    while (true) {
+      if (this.connection === "open") return;
+
+      if (current >= timeout)
+        throw new Error(`[whatsapp] connection timeout: ${this.connection}`);
+
+      const interval = ms("2s");
+      console.log(
+        "[whatsapp] connection is not yet open, checking again in 2 seconds."
+      );
+      await sleep(interval);
+      current += interval;
+    }
+  }
+
   async connectAsync(): Promise<WhatsApp> {
     this.init();
     this.onCredsUpdate();
@@ -83,7 +106,6 @@ export class WhatsApp {
     if (!this.socket) throw new Error("Socket is not initialized");
 
     this.socket.ev.on("connection.update", (update) => {
-      console.log({ update });
       this.connection = update.connection || "close";
       if (update.qr) this.qr = update.qr;
 

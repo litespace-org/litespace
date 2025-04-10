@@ -135,10 +135,10 @@ export const platformConfig = {
 
 export const MAX_FULL_FLAG_DAYS = 14;
 
-export const tokensExpireTime: Record<IToken.Type, string> = {
+export const tokensExpireTime = {
   [IToken.Type.VerifyEmail]: "24h",
   [IToken.Type.ForgetPassword]: "30m",
-};
+} as const;
 
 export const telegramConfig = {
   token: zod

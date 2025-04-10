@@ -5,8 +5,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build:pkgs": "pnpm assets build && pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm headless build && pnpm auth build &&  pnpm ui build && pnpm radio build",
-    "build:server:pkgs": "pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm auth build && pnpm radio build",
+    "build:pkgs": "pnpm assets build && pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm headless build && pnpm auth build &&  pnpm ui build && pnpm radio build && pnpm kafka build",
+    "build:server:pkgs": "pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm auth build && pnpm radio build && pnpm kafka build",
     "watch:atlas": "pnpm atlas watch",
     "watch:auth": "pnpm auth watch",
     "watch:emails": "pnpm emails watch",
@@ -71,7 +71,8 @@
     "blog": "pnpm --filter @litespace/blog",
     "tasks": "pnpm --filter @litespace/tasks",
     "messenger": "pnpm --filter @litespace/messenger",
-    "studio": "pnpm --filter @litespace/studio"
+    "studio": "pnpm --filter @litespace/studio",
+    "kafka": "pnpm --filter @litespace/kafka"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.2",
@@ -80,7 +81,7 @@
     "@litespace/atlas": "workspace:^",
     "@litespace/types": "workspace:^",
     "@types/autocannon": "^7.12.5",
-    "@types/ms": "^0.7.34",
+    "@types/ms": "^2.1.0",
     "@types/node": "^22.7.5",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
     "@typescript-eslint/parser": "^8.12.2",

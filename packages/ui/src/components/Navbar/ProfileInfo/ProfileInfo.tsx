@@ -26,7 +26,7 @@ const ProfileInfo: React.FC<{
         />
       </div>
       {md ? (
-        <div className="flex flex-col gap-[1px]">
+        <div className="flex flex-col text-start gap-[1px]">
           <Typography
             tag="span"
             className="text-natural-950 text-caption font-semibold"
