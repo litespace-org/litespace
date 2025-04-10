@@ -16,6 +16,7 @@ export type ExtraInputProps = {
   state?: "error" | "success";
   label?: string;
   helper?: string;
+  alignText?: "start" | "center" | "end";
 };
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
@@ -34,6 +35,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       idleDir = "rtl",
       icon,
       endAction,
+      alignText = "start",
       className,
       ...props
     },
@@ -115,7 +117,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 // Disabled
                 "text-natural-500 placeholder:text-natural-500 cursor-not-allowed":
                   disabled,
-              }
+                "text-center": alignText === "center",
+                "text-end": alignText === "end",
+              },
+              className
             )}
             ref={ref}
             {...props}
