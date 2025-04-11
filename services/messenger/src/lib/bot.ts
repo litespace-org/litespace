@@ -6,6 +6,6 @@ export const telegramBot = new TelegramBot(config.telegram.bot.token);
 export const msg = async (text: string) =>
   await telegramBot.sendMessage({
     chat: config.telegram.bot.chat,
-    text: `[messenger/${config}]: ${text}`,
+    text: `[messenger/${config.environment}]: ${text}`,
     parseMode: "text",
   });
