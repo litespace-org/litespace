@@ -10,7 +10,9 @@ export class Producer {
       clientId: "litespace",
       brokers: ["localhost:9092"],
     });
-    this.producer = this.kafka.producer();
+    this.producer = this.kafka.producer({
+      allowAutoTopicCreation: true,
+    });
   }
 
   async connect() {

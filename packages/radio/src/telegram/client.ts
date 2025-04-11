@@ -1,8 +1,9 @@
-import { TelegramClient as Telegram } from "telegram";
+import { Api, TelegramClient as Telegram } from "telegram";
 import { StoreSession } from "telegram/sessions";
 import prompts from "prompts";
 import { EntityLike } from "telegram/define";
 import { SendMessageParams } from "telegram/client/messages";
+import { generateRandomBytes, readBigIntFromBuffer } from "telegram/Helpers";
 
 type Config = {
   api: {
@@ -59,6 +60,32 @@ export class TelegramClient {
     });
 
     this.client.session.save();
+  }
+
+  async isContact(phone: string): Promise<boolean> {
+    const peer = await this.client.invoke(
+      new Api.contacts.ResolvePhone({
+        phone,
+      })
+    );
+
+    const [user] = peer.users;
+    return !!user && user instanceof Api.User && !!user.contact;
+  }
+
+  async importContact(phone: string) {
+    await this.client.invoke(
+      new Api.contacts.ImportContacts({
+        contacts: [
+          new Api.InputPhoneContact({
+            clientId: readBigIntFromBuffer(generateRandomBytes(8)),
+            firstName: "User: ",
+            lastName: phone,
+            phone,
+          }),
+        ],
+      })
+    );
   }
 
   async sendMessage(entity: EntityLike, params: SendMessageParams) {
