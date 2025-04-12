@@ -54,10 +54,13 @@ const pingSessionMemberPayload = zod.object({
   userId: id,
 });
 
-const pongSessionMember = zod.object({
+const pongSessionMemberPayload = zod.object({
   sessionId,
   userId: id,
 });
+
+const announceIncomingOfferPayload = zod.object({ sessionId });
+const readyToReceiveOfferPayload = zod.object({ sessionId });
 
 export class Session extends WssHandler {
   public init(): Session {
@@ -89,6 +92,14 @@ export class Session extends WssHandler {
     this.socket.on(
       Wss.ClientEvent.PongSessionMember,
       this.onPongSessionMember.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.AnnounceIncomingOffer,
+      this.onAnnounceIncomingOffer.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.PeerReadyToReceiveOffer,
+      this.onPeerReadyToReceiveOffer.bind(this)
     );
     return this;
   }
@@ -297,7 +308,7 @@ export class Session extends WssHandler {
       const user = this.user;
       if (isGhost(user)) return;
 
-      const { sessionId, userId } = pongSessionMember.parse(data);
+      const { sessionId, userId } = pongSessionMemberPayload.parse(data);
       const ok = await canAccessSession({
         sessionId,
         userId: user.id,
@@ -311,6 +322,38 @@ export class Session extends WssHandler {
       this.call(callback, {
         code: Wss.AcknowledgeCode.Ok,
       });
+    });
+    if (result instanceof Error) stdout.error(result.message);
+  }
+
+  async onAnnounceIncomingOffer(data: unknown) {
+    const result = await safe(async () => {
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const { sessionId } = announceIncomingOfferPayload.parse(data);
+      const ok = await canAccessSession({ sessionId, userId: user.id });
+      if (!ok) return;
+
+      this.socket.broadcast
+        .to(asSessionRoomId(sessionId))
+        .emit(Wss.ServerEvent.AnnounceIncomingOffer, {});
+    });
+    if (result instanceof Error) stdout.error(result.message);
+  }
+
+  async onPeerReadyToReceiveOffer(data: unknown) {
+    const result = await safe(async () => {
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const { sessionId } = readyToReceiveOfferPayload.parse(data);
+      const ok = await canAccessSession({ sessionId, userId: user.id });
+      if (!ok) return;
+
+      this.socket.broadcast
+        .to(asSessionRoomId(sessionId))
+        .emit(Wss.ServerEvent.PeerReadyToReceiveOffer, {});
     });
     if (result instanceof Error) stdout.error(result.message);
   }

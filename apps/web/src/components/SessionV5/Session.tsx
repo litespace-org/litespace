@@ -91,9 +91,12 @@ const Session: React.FC<{
         {memberStream ? (
           <Movable
             container={ref}
-            className="absolute bottom-4 right-4 z-session-movable-stream w-56 shadow-session-movable-stream rounded-lg"
+            className="absolute bottom-4 right-4 z-session-movable-stream shadow-session-movable-stream rounded-lg"
           >
-            <div style={{ aspectRatio: movableStreamAspectRatio }}>
+            <div
+              className="h-52"
+              style={{ aspectRatio: movableStreamAspectRatio }}
+            >
               <Stream
                 stream={selfStream}
                 userId={selfId}
