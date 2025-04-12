@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "start": "env-cmd node dist/index.js",
     "start:whatsapp": "env-cmd node dist/whatsapp.js",
     "start:telegram": "env-cmd node dist/telegram.js",
     "produce": "vite-node scripts/produce.ts",
