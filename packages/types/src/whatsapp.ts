@@ -1,4 +1,1 @@
-export type SendMessagePayload = {
-  phone: string;
-  text: string;
-};
+export type _ = unknown;

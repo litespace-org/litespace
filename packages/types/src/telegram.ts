@@ -1,6 +1,7 @@
-import { EntityLike } from "telegram/define";
+import { Api } from "telegram";
 
-export type SendMessagePayload = {
-  entity: EntityLike;
-  message: string;
+export type ResolvePhonePayload = {
+  phone: string;
 };
+
+export type ResolvePhoneResponse = Api.TypeUser | null;

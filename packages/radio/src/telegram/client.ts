@@ -1,8 +1,9 @@
-import { TelegramClient as Telegram } from "telegram";
+import { Api, TelegramClient as Telegram } from "telegram";
 import { StoreSession } from "telegram/sessions";
 import prompts from "prompts";
 import { EntityLike } from "telegram/define";
 import { SendMessageParams } from "telegram/client/messages";
+import { safePromise } from "@litespace/utils";
 
 type Config = {
   api: {
@@ -59,6 +60,23 @@ export class TelegramClient {
     });
 
     this.client.session.save();
+  }
+
+  async resolvePhone(phone: string): Promise<Api.User | null> {
+    // Ref: https://gram.js.org/tl/contacts/ResolvePhone
+    // Ref: https://core.telegram.org/method/contacts.resolvePhone
+    const result = await safePromise(
+      this.client.invoke(
+        new Api.contacts.ResolvePhone({
+          phone,
+        })
+      )
+    );
+    if (result instanceof Api.RpcError && result.errorCode === 400) return null;
+    if (result instanceof Error) throw result;
+    const [user] = result.users;
+    if (!user) return null;
+    return user as Api.User;
   }
 
   async sendMessage(entity: EntityLike, params: SendMessageParams) {
