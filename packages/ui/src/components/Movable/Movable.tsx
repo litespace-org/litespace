@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import cn from "classnames";
 
-export const MovableMedia: React.FC<{
+export const Movable: React.FC<{
   container: React.RefObject<HTMLElement>;
   children: React.ReactNode;
   className?: string;

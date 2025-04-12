@@ -50,7 +50,7 @@ export const Calendar: React.FC<Props> = ({
 
   if (error)
     return (
-      <div className="mt-[15vh]">
+      <div className="mt-[15vh] max-w-fit mx-auto">
         <LoadingError
           size="medium"
           error={intl("manage-schedule.manage-dialog.error.message")}

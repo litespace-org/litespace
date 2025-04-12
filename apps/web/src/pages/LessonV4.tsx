@@ -6,7 +6,7 @@ import {
   Session,
   PermissionsDialog,
   StreamInfo,
-} from "@litespace/ui/Session";
+} from "@/components/Session";
 import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -28,7 +28,6 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
 import CalendarFilled from "@litespace/assets/CalendarFilled";
 import dayjs from "@/lib/dayjs";
-import Timer from "@/components/Session/Timer";
 import { capture } from "@/lib/sentry";
 import { isTutor } from "@litespace/utils";
 import Spinner from "@litespace/assets/Spinner";
@@ -286,10 +285,6 @@ const Lesson: React.FC = () => {
                   {dayjs(lesson.data.lesson.start).format("DD MMMM YYYY")}
                 </Typography>
               </div>
-              <Timer
-                start={lesson.data.lesson.start}
-                duration={lesson.data.lesson.duration}
-              />
             </div>
           ) : null}
         </div>

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Stream } from "@/components/Session/Stream";
 import { StreamInfo } from "@/components/Session/types";
-import { organizeStreams } from "@/lib/stream";
+import { organizeStreams } from "@/components/Session/utils";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { isEmpty } from "lodash";
 import cn from "classnames";

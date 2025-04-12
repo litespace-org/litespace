@@ -26,12 +26,39 @@ declare module "peerjs" {
   }
 }
 
-export function isPermissionDenied(error: Error): boolean {
+export function isNotAllowed(error: Error): boolean {
   return (
-    error.name === "NotAllowedError" &&
-    error.message === "Permission denied" &&
-    "code" in error &&
-    error.code === 0
+    // Firefox
+    error.name === "NotAllowedError" ||
+    // Chrome
+    error.name === "PermissionDeniedError"
+  );
+}
+
+export function isDeviceNotFound(error: Error) {
+  return (
+    // Firefox
+    error.name === "NotFoundError" ||
+    // Chrome
+    error.name === "DevicesNotFoundError"
+  );
+}
+
+export function isNotReadableError(error: Error) {
+  return (
+    // Firefox
+    error.name === "NotReadableError" ||
+    // Chrome
+    error.name === "TrackStartError"
+  );
+}
+
+export function isOverConstrainedError(error: Error) {
+  return (
+    // Firefox
+    error.name === "OverconstrainedError" ||
+    // Chrome
+    error.name === "ConstraintNotSatisfiedError"
   );
 }
 
@@ -55,16 +82,20 @@ type UseUserMediaReturn = {
   /**
    * Request user media stream with the provided constrains.
    */
-  capture: (
+  capture: (config: {
     /**
      * Flag to enable or disable video in the user media stream.
      */
-    video?: boolean,
+    video?: boolean;
     /**
      * @default false
      */
-    silent?: boolean
-  ) => Promise<MediaStream | Error>;
+    silent?: boolean;
+    /**
+     * @default desktop
+     */
+    layout?: Layout;
+  }) => Promise<MediaStream | Error>;
   /**
    * Stop all tracks in the media stream.
    */
@@ -103,10 +134,27 @@ type UseUserMediaReturn = {
   speaking: boolean;
 };
 
-export function useUserMedia(
-  onStop?: Void,
-  onError?: (error: Error) => void
-): UseUserMediaReturn {
+export type Layout = "mobile" | "tablet" | "desktop";
+
+export const layoutAspectRatio = {
+  mobile: {
+    aspectRatio: 9 / 16,
+    width: 720,
+    height: 1280,
+  },
+  tablet: {
+    aspectRatio: 4 / 3,
+    width: 640,
+    height: 480,
+  },
+  desktop: {
+    aspectRatio: 16 / 9,
+    width: 1280,
+    height: 720,
+  },
+} as const;
+
+export function useUserMedia(onStop?: Void): UseUserMediaReturn {
   const logger = useLogger();
   const [loading, setLoading] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -118,13 +166,22 @@ export function useUserMedia(
   const [denied, setUserDenied] = useState<boolean>(false);
 
   const getUserMedia = useCallback(
-    async (video?: boolean): Promise<Error | MediaStream> => {
+    async ({
+      video,
+      layout = "desktop",
+    }: {
+      video?: boolean;
+      layout?: Layout;
+    }): Promise<Error | MediaStream> => {
       return await safe(async () => {
         // Ref: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
         // Ref: https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
         // Ref: https://www.webrtc-developers.com/getusermedia-constraints-explained/
         // Ref: https://webrtchacks.com/getusermedia-resolutions-3/
         // Ref: https://www.webrtc-developers.com/getusermedia-constraints-explained/#applying-new-constraints
+        // Ref: https://blog.addpipe.com/getusermedia-video-constraints/
+        // Ref: https://blog.addpipe.com/common-getusermedia-errors/
+        const { aspectRatio, width, height } = layoutAspectRatio[layout];
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
             noiseSuppression: true,
@@ -132,18 +189,30 @@ export function useUserMedia(
           },
           video: video
             ? {
+                /**
+                 * Fallback constrains in case that non of the `advanced` got
+                 * applied.
+                 */
+                width: { ideal: width },
+                height: { ideal: height },
+                aspectRatio: { ideal: aspectRatio },
+                //! Make sure that you understand how the `advanced` constrain works.
+                //! Important Articel: https://www.webrtc-developers.com/getusermedia-constraints-explained/
                 advanced: [
+                  /**
+                   * Best case scenario: all width, height, aspect ratio can be
+                   * applied.
+                   */
                   {
-                    width: { exact: 1280 },
-                    height: { exact: 720 },
+                    width: { exact: width },
+                    height: { exact: height },
+                    aspectRatio: { exact: aspectRatio },
                   },
+                  /**
+                   * In case the previous constrains failed, we will use only the aspect ratio.
+                   */
                   {
-                    width: { exact: 640 },
-                    height: { exact: 480 },
-                  },
-                  {
-                    width: { min: 800, ideal: 1024 },
-                    height: { min: 640, ideal: 720 },
+                    aspectRatio: { exact: aspectRatio },
                   },
                 ],
               }
@@ -155,6 +224,7 @@ export function useUserMedia(
             capabilities: track.getCapabilities(),
             constraint: track.getConstraints(),
             settings: track.getSettings(),
+            layout,
           });
         }
 
@@ -180,28 +250,17 @@ export function useUserMedia(
   }, [onTrackEnd, stream]);
 
   const capture = useCallback(
-    async (video?: boolean, silent: boolean = false) => {
+    async ({ video, layout }: { video?: boolean; layout?: Layout }) => {
       setLoading(true);
-      const capturedStream = await getUserMedia(video);
+      const capturedStream = await getUserMedia({ video, layout });
       const error = capturedStream instanceof Error;
-      const denied = error ? isPermissionDenied(capturedStream) : false;
       if (error) logger.error(capturedStream);
 
       /**
        * Stopping the previous stream incase we got a new stream.
        */
       if (!error) stop();
-
-      // user canceled the process.
-      if (denied) {
-        setError(null);
-        setUserDenied(true);
-        setStream(null);
-        setLoading(false);
-        return capturedStream;
-      }
-
-      if (error && onError && !silent) onError(capturedStream);
+      if (error && isNotAllowed(capturedStream)) setUserDenied(true);
       setError(error ? capturedStream : null);
       setStream(error ? null : capturedStream);
       setLoading(false);
@@ -225,7 +284,7 @@ export function useUserMedia(
       // setStream(output);
       // return output;
     },
-    [getUserMedia, logger, onError, stop]
+    [getUserMedia, logger, stop]
   );
 
   const toggleMic = useCallback(() => {
@@ -519,7 +578,7 @@ export function useShareScreen(onStop?: Void) {
     );
     setLoading(false);
     const error = stream instanceof Error;
-    const denied = error ? isPermissionDenied(stream) : false;
+    const denied = error ? isNotAllowed(stream) : false;
 
     // user canceled the process.
     if (denied) {
@@ -580,7 +639,6 @@ export function useSessionV3({
   userIds,
   sessionId,
   isCaller,
-  onUserMediaStreamError,
 }: SessionV3Payload) {
   const { peer, ready } = usePeerJs(userIds.current);
   const [otherMemberStream, setOtherMemberStream] =
@@ -645,7 +703,7 @@ export function useSessionV3({
     mainCall.close();
   }, [mainCall]);
 
-  const userMedia = useUserMedia(onUserMediaStreamStop, onUserMediaStreamError);
+  const userMedia = useUserMedia(onUserMediaStreamStop);
   const screen = useShareScreen(onScreenStreamStop);
 
   /**
@@ -1139,10 +1197,10 @@ export function useSessionManager({
 }: {
   sessionId?: ISession.Id;
   selfId?: number;
-  onLeave(userId: number): void;
-  onJoin(userId: number): void;
-  onInitialMembers(userIds: number[]): void;
-  onReconnect(members: number[]): void;
+  onLeave?(userId: number): void;
+  onJoin?(userId: number): void;
+  onInitialMembers?(userIds: number[]): void;
+  onReconnect?(members: number[]): void;
 }) {
   const logger = useLogger();
   const socket = useSocket();
@@ -1163,16 +1221,6 @@ export function useSessionManager({
   const [listening, setListening] = useState<boolean>(false);
   const [joining, setJoining] = useState<boolean>(false);
 
-  const joined = useMemo(
-    () => !!selfId && members.includes(selfId),
-    [members, selfId]
-  );
-
-  const hasJoined = useCallback(
-    (memberId?: number) => !!memberId && !!members.includes(memberId),
-    [members]
-  );
-
   const findSessionMembers = useCallback(async () => {
     if (!sessionId) return [];
     return await api.session.findMembers(sessionId);
@@ -1183,7 +1231,18 @@ export function useSessionManager({
     queryKey: [QueryKey.FindSessionMembers, sessionId],
     enabled: !!sessionId,
     refetchOnWindowFocus: false,
+    gcTime: 0,
   });
+
+  const joined = useMemo(
+    () => !!selfId && members.includes(selfId),
+    [members, selfId]
+  );
+
+  const hasJoined = useCallback(
+    (memberId?: number) => !!memberId && !!members.includes(memberId),
+    [members]
+  );
 
   const listen = useCallback(() => {
     if (!socket || !sessionId) return;
@@ -1210,7 +1269,7 @@ export function useSessionManager({
     ({ userId }: { userId: number }) => {
       if (selfId === userId) setJoining(false);
       setMembers((prev) => uniq([...prev, userId]));
-      onJoinRef.current(userId);
+      onJoinRef.current?.(userId);
     },
     [selfId]
   );
@@ -1219,7 +1278,7 @@ export function useSessionManager({
     ({ userId }: { userId: number }) => {
       if (selfId === userId) setJoining(false);
       setMembers((prev) => [...prev].filter((member) => member !== userId));
-      onLeaveRef.current(userId);
+      onLeaveRef.current?.(userId);
     },
     [selfId]
   );
@@ -1230,7 +1289,7 @@ export function useSessionManager({
     listen();
     join();
     const data = await sessionMembersQuery.refetch();
-    if (data.data) onReconnectRef.current(data.data);
+    if (data.data) onReconnectRef.current?.(data.data);
   }, [join, listen, listening, logger, sessionMembersQuery]);
 
   const onDisconnect = useCallback(() => {
@@ -1267,14 +1326,20 @@ export function useSessionManager({
 
   useEffect(() => {
     if (sessionMembersQuery.data && !sessionMembersQuery.isLoading)
-      return setMembers((prev) => {
-        const members = uniq([...prev, ...sessionMembersQuery.data]);
-        onInitialMembersRef.current(members);
-        return members;
-      });
+      setMembers(sessionMembersQuery.data);
   }, [sessionMembersQuery.data, sessionMembersQuery.isLoading]);
 
-  return { join, leave, members, listening, joining, joined, hasJoined };
+  return {
+    join,
+    leave,
+    members,
+    listening,
+    joining,
+    joined,
+    loadingMembers:
+      sessionMembersQuery.isLoading || sessionMembersQuery.isFetching,
+    hasJoined,
+  };
 }
 
 // ================================== Session V4 ==============================================
@@ -1667,12 +1732,14 @@ function usePeer({
 }) {
   const logger = useLogger();
   const socket = useSocket();
-  const [peer, setPeer] = useState(createPeer());
+  const [activePeer, setActivePeer] = useState<RTCPeerConnection | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [connectionState, setConnectionState] =
     useState<RTCPeerConnectionState>("new");
   const [iceGatheringState, setIceGatheringState] =
     useState<RTCIceGatheringState>("new");
+  const [iceConnectionState, setIceConnectionState] =
+    useState<RTCIceConnectionState>("new");
 
   const onConnectionStateChangeRef = useRef(onConnectionStateChange);
 
@@ -1681,65 +1748,35 @@ function usePeer({
   });
 
   const restartPeer = useCallback(() => {
-    setPeer(createPeer());
-  }, []);
+    activePeer?.close();
+    setActivePeer(createPeer());
+  }, [activePeer]);
 
-  const init = useCallback(
-    async (stream: MediaStream, shareOffer: boolean) => {
-      if (!sessionId || !socket) return;
-      const peer = initPeer();
-      const tracks = stream.getTracks();
-      tracks.forEach((track) => peer.addTrack(track, stream));
-      // setPeer(peer);
-      if (!shareOffer) return;
+  const createOffer = useCallback(async () => {
+    activePeer?.close();
+    const peer = createPeer();
 
-      const offer = await peer.createOffer(offerOptions);
-      await peer.setLocalDescription(new RTCSessionDescription(offer));
-      logger.log(`Created an offer (${offer.type})`);
+    if (!sessionId || !socket) return;
+    // Must be done before creating the offer
+    // Audio transceiver must be added before the video transceiver.
+    peer.addTransceiver("audio");
+    peer.addTransceiver("video");
+    const offer = await peer.createOffer(offerOptions);
+    await peer.setLocalDescription(new RTCSessionDescription(offer));
+    logger.log(`Created an offer (${offer.type})`);
 
-      const localDescription = peer.localDescription;
-      if (!localDescription)
-        return logger.log(
-          "Invalid state: local dession description is missing."
-        );
+    const localDescription = peer.localDescription;
+    if (!localDescription)
+      return logger.log("Invalid state: local dession description is missing.");
 
-      socket.emit(Wss.ClientEvent.SessionOffer, {
-        sessionId,
-        offer: localDescription,
-      });
-    },
-    [logger, sessionId, socket]
-  );
+    logger.log(`Share session offer (${offer.type})`);
+    socket.emit(Wss.ClientEvent.SessionOffer, {
+      sessionId,
+      offer: localDescription,
+    });
 
-  const createOffer = useCallback(
-    async (restart?: boolean) => {
-      const localPeer = restart ? createPeer() : peer;
-
-      if (!sessionId || !socket) return;
-      // Must be done before creating the offer
-      // Audio transceiver must be added before the video transceiver.
-      peer.addTransceiver("audio");
-      peer.addTransceiver("video");
-      const offer = await peer.createOffer(offerOptions);
-      await peer.setLocalDescription(new RTCSessionDescription(offer));
-      logger.log(`Created an offer (${offer.type})`);
-
-      const localDescription = peer.localDescription;
-      if (!localDescription)
-        return logger.log(
-          "Invalid state: local dession description is missing."
-        );
-
-      logger.log(`Share session offer (${offer.type})`);
-      socket.emit(Wss.ClientEvent.SessionOffer, {
-        sessionId,
-        offer: localDescription,
-      });
-
-      if (restart) setPeer(localPeer);
-    },
-    [logger, peer, sessionId, socket]
-  );
+    setActivePeer(peer);
+  }, [activePeer, logger, sessionId, socket]);
 
   // ==================== Errors ====================
 
@@ -1753,145 +1790,161 @@ function usePeer({
   );
 
   useEffect(() => {
-    peer.addEventListener("icecandidateerror", onIceCandidateError);
+    activePeer?.addEventListener("icecandidateerror", onIceCandidateError);
 
     return () => {
-      peer.removeEventListener("icecandidateerror", onIceCandidateError);
+      activePeer?.removeEventListener("icecandidateerror", onIceCandidateError);
     };
-  }, [onIceCandidateError, peer]);
+  }, [activePeer, onIceCandidateError]);
+
+  const recoverConnection = useCallback(async () => {
+    if (!socket || !sessionId || !memberId || !selfId) return;
+    const pong = new Promise<boolean>((resolve) => {
+      socket.on(Wss.ServerEvent.PongSessionMember, ({ userId }) =>
+        resolve(userId === selfId)
+      );
+
+      setTimeout(() => resolve(false), 5_000);
+    });
+
+    const delivered = await new Promise<boolean>((resolve) => {
+      socket.emit(
+        Wss.ClientEvent.PingSessionMember,
+        {
+          sessionId,
+          userId: memberId,
+        },
+        (ack) => {
+          if (!ack) return;
+          resolve(true);
+        }
+      );
+
+      setTimeout(() => resolve(false), 5_000);
+    });
+
+    if (!delivered)
+      return logger.log(
+        `Ping event timeout, never received an acknowledgment from the server. Current user might be disconnected from the server. Once the connection is re-established, the negotiation will start again.`
+      );
+
+    const isOtherMemberPresent = await pong;
+
+    if (isOtherMemberPresent) {
+      const shareOffer = selfId > memberId;
+      logger.log(
+        `Other member is still in the room (verified). Share offer: ${shareOffer}`
+      );
+      if (shareOffer) createOffer();
+    } else
+      logger.log(
+        "No response from the other member. Properly having a network issue. When back online, he will be the one who start the session (create the offer)."
+      );
+  }, [createOffer, logger, memberId, selfId, sessionId, socket]);
 
   // ==================== State ====================
 
   const onConnectionStateChangeInternal = useCallback(async () => {
-    const state = peer.connectionState;
+    const state = activePeer?.connectionState;
     if (!state) return;
     logger.log("Peer connection state:", state);
     setConnectionState(state);
     // Analyise connection state failure
     if (!sessionId || !memberId || !selfId || !socket) return;
-    if (state === "failed") {
-      const pong = new Promise<boolean>((resolve) => {
-        socket.on(Wss.ServerEvent.PongSessionMember, ({ userId }) =>
-          resolve(userId === selfId)
-        );
-
-        setTimeout(() => resolve(false), 5_000);
-      });
-
-      const delivered = await new Promise<boolean>((resolve) => {
-        socket.emit(
-          Wss.ClientEvent.PingSessionMember,
-          {
-            sessionId,
-            userId: memberId,
-          },
-          (ack) => {
-            if (!ack) return;
-            resolve(true);
-          }
-        );
-
-        setTimeout(() => resolve(false), 5_000);
-      });
-
-      if (!delivered)
-        return logger.log(
-          `Ping event timeout, never received an acknowledgment from the server. Current user might be disconnected from the server. Once the connection is re-established, the negotiation will start again.`
-        );
-
-      const isOtherMemberPresent = await pong;
-
-      if (isOtherMemberPresent) {
-        const shareOffer = selfId > memberId;
-        logger.log(
-          `Other member is still in the room (verified). Sahre offer: ${shareOffer}`
-        );
-        if (shareOffer) createOffer(true);
-      } else
-        logger.log(
-          "No response from the other member. Properly having a network issue. When back online, he will be the one who start the session (create the offer)."
-        );
-    }
+    if (state === "failed") recoverConnection();
   }, [
-    createOffer,
+    activePeer?.connectionState,
     logger,
     memberId,
-    peer.connectionState,
+    recoverConnection,
     selfId,
     sessionId,
     socket,
   ]);
 
   const onIceConnectionStateChange = useCallback(async () => {
-    const state = peer.iceConnectionState;
+    const state = activePeer?.iceConnectionState;
+    if (!state) return;
+    setIceConnectionState(state);
     logger.log("Ice connection state:", state);
     if (state === "failed" || state === "disconnected") {
       // Ref: https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Session_lifetime#ice_restart
       logger.log("Restart ice");
-      peer.setConfiguration({ iceServers });
-      peer.restartIce();
+      activePeer.setConfiguration({ iceServers });
+      activePeer.restartIce();
     }
-  }, [logger, peer]);
+    if (state === "disconnected") recoverConnection();
+  }, [activePeer, logger, recoverConnection]);
 
   const onIceGatheringStateChange = useCallback(() => {
-    const state = peer.iceGatheringState;
+    const state = activePeer?.iceGatheringState;
     if (!state) return;
     logger.log("ICE gathering state:", state);
     setIceGatheringState(state);
-  }, [logger, peer.iceGatheringState]);
+  }, [activePeer?.iceGatheringState, logger]);
 
   const onSignalingStateChange = useCallback(() => {
-    const state = peer.signalingState;
+    const state = activePeer?.signalingState;
     logger.log("Signaling state:", state || "N/A");
-  }, [logger, peer.signalingState]);
+  }, [activePeer?.signalingState, logger]);
 
   useEffect(() => {
-    peer.addEventListener(
+    activePeer?.addEventListener(
       "connectionstatechange",
       onConnectionStateChangeInternal
     );
 
-    peer.addEventListener("icegatheringstatechange", onIceGatheringStateChange);
-    peer.addEventListener(
+    activePeer?.addEventListener(
+      "icegatheringstatechange",
+      onIceGatheringStateChange
+    );
+    activePeer?.addEventListener(
       "iceconnectionstatechange",
       onIceConnectionStateChange
     );
 
-    peer.addEventListener("signalingstatechange", onSignalingStateChange);
+    activePeer?.addEventListener(
+      "signalingstatechange",
+      onSignalingStateChange
+    );
 
     return () => {
-      peer.removeEventListener(
+      activePeer?.removeEventListener(
         "connectionstatechange",
         onConnectionStateChangeInternal
       );
 
-      peer.removeEventListener(
+      activePeer?.removeEventListener(
         "icegatheringstatechange",
         onIceGatheringStateChange
       );
-      peer.removeEventListener(
+      activePeer?.removeEventListener(
         "iceconnectionstatechange",
         onIceConnectionStateChange
       );
 
-      peer.removeEventListener("signalingstatechange", onSignalingStateChange);
+      activePeer?.removeEventListener(
+        "signalingstatechange",
+        onSignalingStateChange
+      );
     };
   }, [
+    activePeer,
     onConnectionStateChange,
     onConnectionStateChangeInternal,
     onIceConnectionStateChange,
     onIceGatheringStateChange,
     onSignalingStateChange,
-    peer,
   ]);
 
   // ==================== Handle streams ====================
 
   const replaceStream = useCallback(
     (stream: MediaStream) => {
+      if (!activePeer) return;
       const [audioTrack] = stream.getAudioTracks();
       const [videoTrack] = stream.getVideoTracks();
-      const transceivers = peer.getTransceivers();
+      const transceivers = activePeer.getTransceivers();
 
       for (const transceiver of transceivers) {
         if (transceiver.mid === AUDIO_TRANSCEIVERS_MID && audioTrack)
@@ -1901,7 +1954,7 @@ function usePeer({
           transceiver.sender.replaceTrack(videoTrack);
       }
     },
-    [peer]
+    [activePeer]
   );
 
   const onTrack = useCallback(
@@ -1940,11 +1993,11 @@ function usePeer({
   );
 
   useEffect(() => {
-    peer.addEventListener("track", onTrack);
+    activePeer?.addEventListener("track", onTrack);
     return () => {
-      peer.removeEventListener("track", onTrack);
+      activePeer?.removeEventListener("track", onTrack);
     };
-  }, [onTrack, peer]);
+  }, [onTrack, activePeer]);
 
   // ==================== Signaling ====================
 
@@ -1968,42 +2021,44 @@ function usePeer({
 
   const onSessionOffer = useCallback(
     async ({ offer }: Wss.EventPayload<Wss.ServerEvent.SessionOffer>) => {
+      activePeer?.close();
       logger.log(`Received an offer (${offer.type})`);
+      const peer = createPeer();
       if (!sessionId || !socket) return;
       await peer.setRemoteDescription(offer);
 
       // must be done before creating the answer
       const transceivers = peer.getTransceivers();
 
-      for (const transceiver of transceivers) {
+      for (const transceiver of transceivers)
         transceiver.direction = "sendrecv";
-      }
 
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
 
       logger.log(`Share session answer (${answer.type})`);
       socket.emit(Wss.ClientEvent.SessionAnswer, { sessionId, answer });
+      setActivePeer(peer);
     },
-    [logger, peer, sessionId, socket]
+    [activePeer, logger, sessionId, socket]
   );
 
   const onSessionAnswer = useCallback(
     async ({ answer }: Wss.EventPayload<Wss.ServerEvent.SessionAnswer>) => {
       logger.log(`Received an answer (${answer.type})`);
-      await peer.setRemoteDescription(answer);
+      await activePeer?.setRemoteDescription(answer);
     },
-    [logger, peer]
+    [logger, activePeer]
   );
 
   const onRemoteIceCandidate = useCallback(
     ({ candidate }: Wss.EventPayload<Wss.ServerEvent.IceCandidate>) => {
       logger.log(`Received an ice candidate`);
       // cache ice candicates and consume it when the remote description is set.
-      if (!peer.remoteDescription) return;
-      peer.addIceCandidate(candidate);
+      if (!activePeer?.remoteDescription) return;
+      activePeer?.addIceCandidate(candidate);
     },
-    [logger, peer]
+    [activePeer, logger]
   );
 
   const onPingSessionMember = useCallback(
@@ -2040,29 +2095,31 @@ function usePeer({
   ]);
 
   useEffect(() => {
-    peer.addEventListener("icecandidate", onLocalIceCandidate);
+    activePeer?.addEventListener("icecandidate", onLocalIceCandidate);
 
     return () => {
-      peer.removeEventListener("icecandidate", onLocalIceCandidate);
+      activePeer?.removeEventListener("icecandidate", onLocalIceCandidate);
     };
-  }, [onLocalIceCandidate, peer]);
+  }, [onLocalIceCandidate, activePeer]);
 
   // ==================== Cleanup ====================
 
   const close = useCallback(() => {
     stream?.getTracks().forEach((track) => track.stop());
     setStream(null);
-  }, [stream]);
+    activePeer?.close();
+    setActivePeer(null);
+  }, [activePeer, stream]);
 
   return {
     stream,
     connectionState,
     iceGatheringState,
+    iceConnectionState,
     createOffer,
     replaceStream,
     close,
     createPeer,
-    init,
     restartPeer,
   };
 }
@@ -2086,6 +2143,8 @@ type SessionV5Payload = {
  * 4. https://www.webrtc-developers.com/getusermedia-constraints-explained/
  * 5. https://webrtchacks.com/getusermedia-resolutions-3/
  * 6. https://www.webrtc-developers.com/getusermedia-constraints-explained/#applying-new-constraints
+ * 7. https://blog.addpipe.com/getusermedia-video-constraints/
+ * 8. https://blog.addpipe.com/common-getusermedia-errors/
  */
 export function useSessionV5({
   selfId,
@@ -2126,7 +2185,7 @@ export function useSessionV5({
       const otherMember = members.find((member) => member === memberId);
       if (!otherMember || !userMedia.stream) return;
       console.log("Reconnect with the other member");
-      peer.createOffer(true);
+      peer.createOffer();
     },
   });
 

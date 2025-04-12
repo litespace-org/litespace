@@ -4,7 +4,7 @@ import { UserAvatar } from "@/components/Session/UserAvatar";
 import { StreamInfo } from "@/components/Session/types";
 import cn from "classnames";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
-import speaking from "@/components/Session/speechIndicatorAnimation.json";
+import speaking from "@/components/Session/audioWave.json";
 import Lottie from "react-lottie";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 

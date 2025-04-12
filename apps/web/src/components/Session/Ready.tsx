@@ -1,18 +1,18 @@
 import React from "react";
 import { IUser, Void } from "@litespace/types";
-import { useFormatMessage } from "@/hooks";
-import { Typography } from "@/components/Typography";
+import { Typography } from "@litespace/ui/Typography";
+import { Button } from "@litespace/ui/Button";
 import { useMemo } from "react";
-import { Button } from "@/components/Button";
 import cn from "classnames";
 import dayjs from "dayjs";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 export const Ready: React.FC<{
   otherMember: {
     id: number;
     role: IUser.Role;
     gender: IUser.Gender;
-    incall: boolean;
+    joined: boolean;
   };
   error?: boolean;
   start: string;
@@ -81,7 +81,7 @@ export const Ready: React.FC<{
         >
           {intl("session.ready.title")}
         </Typography>
-        {otherMember.incall ? (
+        {otherMember.joined ? (
           <Typography
             tag="p"
             className="text-natural-800 font-semibold text-caption"

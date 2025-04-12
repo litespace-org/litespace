@@ -93,7 +93,7 @@ export const Content: React.FC<{
 
   if (error)
     return (
-      <div className="mt-[15vh]">
+      <div className="mt-[15vh] mx-auto max-w-fit">
         <LoadingError
           size={lg ? "large" : "small"}
           error={intl("upcoming-lessons.loading-error")}

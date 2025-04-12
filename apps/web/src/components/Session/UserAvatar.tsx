@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar } from "@/components/Avatar";
+import { Avatar } from "@litespace/ui/Avatar";
 import { motion } from "framer-motion";
 import cn from "classnames";
 

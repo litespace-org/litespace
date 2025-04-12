@@ -11,7 +11,7 @@ import { useCallback, useMemo } from "react";
 export function useInvalidateQuery() {
   const client = useQueryClient();
   return useCallback(
-    (keys: (string | number)[]) => client.invalidateQueries({ queryKey: keys }),
+    (keys: unknown[]) => client.invalidateQueries({ queryKey: keys }),
     [client]
   );
 }

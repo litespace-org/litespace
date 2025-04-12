@@ -47,7 +47,7 @@ const Content: React.FC<{
 
   if (error)
     return (
-      <div className="mt-[15vh]">
+      <div className="mt-[15vh] max-w-fit mx-auto">
         <LoadingError
           error={intl("tutors.error")}
           size={mq.lg ? "large" : "small"}

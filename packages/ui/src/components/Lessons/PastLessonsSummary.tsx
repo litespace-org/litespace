@@ -82,7 +82,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
       ) : null}
 
       {error && retry && !loading ? (
-        <div className="mt-[72px] mb-[76px]">
+        <div className="mt-[72px] mb-[76px] max-w-fit mx-auto">
           <LoadingError
             size={md ? "medium" : "small"}
             error={

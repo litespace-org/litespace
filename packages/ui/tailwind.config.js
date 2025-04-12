@@ -52,6 +52,12 @@ export default {
         toast: "14",
         "stream-avatar": "16",
         "stream-chat": "18",
+        "stream-v2-avatar": "1",
+        "stream-v2-mute-icon": "2",
+        "stream-v2-speaking": "2",
+        "stream-v2-user-name": "2",
+        "stream-v2-spinner": "2",
+        "session-movable-stream": "3",
       },
       screens: {
         "3xl": "1600px",
@@ -346,6 +352,7 @@ export default {
       "form-submit-container": "0px -4px 20px 0px rgba(0, 0, 0, .08)",
       "tutor-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       slot: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
+      "session-movable-stream": "0px 4px 20px 0px rgba(0, 0, 0, 0.10)",
     },
   },
   plugins: [

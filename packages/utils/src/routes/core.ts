@@ -65,8 +65,18 @@ type GenericPayload = {
 
 type WebPayload =
   | {
-      route: Web.TutorProfile | Web.Lesson;
+      route: Web.Lesson;
       id: number;
+      query?: BaseQuery;
+    }
+  | {
+      route: Web.TutorProfile;
+      id: number;
+      query?: BaseQuery;
+    }
+  | {
+      route: Web.Register;
+      role: "student" | "tutor";
       query?: BaseQuery;
     }
   | {
@@ -75,11 +85,6 @@ type WebPayload =
         type: ISession.Type;
         id: string;
       };
-    }
-  | {
-      route: Web.Register;
-      role: "student" | "tutor";
-      query?: BaseQuery;
     }
   | {
       route: Exclude<
@@ -126,18 +131,28 @@ type DashboardPayload =
       query?: BaseQuery;
     };
 
+export type PayloadOf<T extends Web | Landing | Dashboard> = Extract<
+  WebPayload | DashboardPayload | LandingPayload,
+  { route: T }
+>;
+
+export type UrlParamsOf<T extends Web | Landing | Dashboard> = Omit<
+  PayloadOf<T>,
+  "query" | "route"
+>;
+
 export class RoutesManager {
   constructor(public readonly client: Env.Client) {}
 
   public readonly isMatch = {
     web(base: Web, target: string): boolean {
-      // https://regex101.com/r/8Y2LKA/1
+      // Ref: https://regex101.com/r/8Y2LKA/1
       if (base === Web.Register)
-        return /\/register\/(tutor|student)\/?/.test(target);
-      // https://regex101.com/r/a1B4Dw/1
-      if (base === Web.TutorProfile) return /\/?t\/([^/]+)\/?/.test(target);
-      // https://regex101.com/r/jbiJh7/1
-      if (base === Web.Lesson) return /\/?lesson\/([^/]+)\/?/.test(target);
+        return /^\/register\/(tutor|student)\/?$/.test(target);
+      // Ref: https://regex101.com/r/a1B4Dw/1
+      if (base === Web.TutorProfile) return /\/?t\/([^/]+)\/?$/.test(target);
+      // Ref: https://regex101.com/r/f36T16/1
+      if (base === Web.Lesson) return /^\/?lesson\/([^/]+)\/?$/.test(target);
       return isStrictMatch(base, target);
     },
     landing(base: Landing, target: string): boolean {
