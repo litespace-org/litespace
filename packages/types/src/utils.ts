@@ -16,6 +16,12 @@ export type Optional<T> = T | undefined;
 
 export type EmptyObject = Record<never, never>;
 
+export type Identity<T> = { [P in keyof T]: T[P] };
+
+export type Replace<T, K extends keyof T, V> = Identity<
+  Pick<T, Exclude<keyof T, K>> & { [P in K]: V }
+>;
+
 export type Element<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 

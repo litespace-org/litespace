@@ -1,6 +1,5 @@
 import { router } from "@/lib/routes";
 import { capture } from "@/lib/sentry";
-import { useUserContext } from "@litespace/headless/context/user";
 import { useLogger } from "@litespace/headless/logger";
 import { Optional, Void } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
@@ -9,7 +8,7 @@ import { isForbidden } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export type ErrorPayload = {
   raw: unknown;
@@ -32,8 +31,6 @@ export function useOnError(payload: OnErrorPayload) {
   const navigate = useNavigate();
   const handlerRef = useRef<Optional<Handler | null>>(payload.handler);
   const resetQueryRef = useRef<Optional<Void>>(undefined);
-  const location = useLocation();
-  const { logout } = useUserContext();
   const logger = useLogger();
 
   useEffect(() => {
@@ -52,19 +49,12 @@ export function useOnError(payload: OnErrorPayload) {
       capture(error);
 
       // Direct the user to the login page.
-      if (isForbidden(error)) {
-        logout();
+      if (isForbidden(error))
         return navigate(
           router.web({
             route: Web.Login,
-            query: {
-              // Once the user is logged in, he should be redirected to the same page.
-              // TODO: handle search params.
-              redirect: location.pathname,
-            },
           })
         );
-      }
 
       if (!handlerRef.current) return;
       const messageId = getErrorMessageId(error);
@@ -73,7 +63,7 @@ export function useOnError(payload: OnErrorPayload) {
         raw: error,
       });
     },
-    [location.pathname, logger, logout, navigate]
+    [logger, navigate]
   );
 
   useEffect(() => {

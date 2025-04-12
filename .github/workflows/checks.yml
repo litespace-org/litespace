@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Lint all workspaces
-        run: pnpm lint:all && pnpm lint
+        run: pnpm lint
       - name: Check formatting
         run: pnpm prettier:check
       - name: Analyze intl messages

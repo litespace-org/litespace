@@ -1,7 +1,7 @@
 import { Void } from "@litespace/types";
 import React, { useMemo } from "react";
 import CallIncoming from "@litespace/assets/CallIncoming";
-import { Button, ButtonType, ButtonVariant } from "@/components/Button";
+import { Button, ButtonType, ButtonVariant } from "@litespace/ui/Button";
 import Microphone from "@litespace/assets/Microphone";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Video from "@litespace/assets/Video";
@@ -75,11 +75,17 @@ export const Toggle: React.FC<{
   );
 };
 
-export const Actions: React.FC<{
-  chat?: { toggle: Void; enabled: boolean };
-  screen?: { toggle: Void; enabled: boolean; error?: boolean };
-  video?: { toggle: Void; enabled: boolean; error?: boolean };
-  audio?: { toggle: Void; enabled: boolean; error?: boolean };
+export type Controller = {
+  toggle: Void;
+  enabled: boolean;
+  error?: boolean;
+};
+
+const Controllers: React.FC<{
+  chat?: Controller;
+  screen?: Controller;
+  video?: Controller;
+  audio?: Controller;
   leave?: Void;
 }> = ({ leave, chat, screen, video, audio }) => {
   return (
@@ -134,4 +140,4 @@ export const Actions: React.FC<{
   );
 };
 
-export default Actions;
+export default Controllers;

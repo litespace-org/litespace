@@ -20,3 +20,7 @@ export function genSessionId(type: ISession.Type): ISession.Id {
 export function getSessionType(id: ISession.Id): ISession.Type {
   return first(id.split(":")) as ISession.Type;
 }
+
+export function isValidSessionType(value: unknown): value is ISession.Type {
+  return value === "lesson" || value === "interview";
+}

@@ -1,7 +1,6 @@
 import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
-import clarity from "@/lib/clarity";
 import { router } from "@/lib/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
@@ -10,7 +9,12 @@ import { isForbidden } from "@litespace/utils";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
 import cn from "classnames";
 import React, { useEffect, useMemo, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { useSaveLogs } from "@/hooks/logger";
 
 const publicRoutes: Web[] = [
@@ -26,6 +30,11 @@ const Root: React.FC = () => {
   const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { user, error, logout } = useUserContext();
+  /**
+   * `nav` is a url param used to hide the page navigation. It is mainlly used
+   * in the lesson page.
+   */
+  const [params] = useSearchParams({ nav: "true" });
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,7 +47,6 @@ const Root: React.FC = () => {
 
   useEffect(() => {
     if (!isForbidden(error) || publicRoute) return;
-    logout();
     navigate(Web.Login);
   }, [error, logout, navigate, publicRoute]);
 
@@ -52,6 +60,7 @@ const Root: React.FC = () => {
   }, [navigate, location.pathname, user, publicRoute]);
 
   const showNavigation = useMemo(() => {
+    if (params.get("nav") === "false") return false;
     const routes: Web[] = [
       Web.Login,
       Web.Register,
@@ -64,12 +73,16 @@ const Root: React.FC = () => {
       router.isMatch.web(route, location.pathname)
     );
     return !match;
-  }, [location.pathname]);
+  }, [location.pathname, params]);
 
-  useEffect(() => {
-    const customeId = user?.id.toString() || "un-authorized";
-    clarity.identify(customeId);
-  }, [user?.id]);
+  const fullScreenPage = useMemo(() => {
+    const routes: Web[] = [
+      Web.PreSession,
+      Web.Lesson,
+      // Web.Chat, // TODO: chat page should be aded.
+    ];
+    return routes.some((route) => router.isMatch.web(route, location.pathname));
+  }, [location.pathname]);
 
   useEffect(() => {
     const regularUser = isRegularUser(user);
@@ -90,15 +103,21 @@ const Root: React.FC = () => {
       ) : null}
 
       <div
-        className={cn("min-h-screen flex flex-col w-full overflow-x-hidden", {
-          "after:content-[''] after:absolute after:z-10 after:top-[72px] md:after:top-[88px] lg:after:top-0 after:bottom-0 after:right-0 after:left-0 after:bg-black after:bg-opacity-20 after:backdrop-blur-sm":
-            showMobileSidebar && !mq.lg,
-        })}
+        className={cn(
+          "flex flex-col w-full overflow-x-hidden",
+          fullScreenPage ? "h-screen overflow-hidden" : "min-h-screen",
+          {
+            "after:content-[''] after:absolute after:z-10 after:top-[72px] md:after:top-[88px] lg:after:top-0 after:bottom-0 after:right-0 after:left-0 after:bg-black after:bg-opacity-20 after:backdrop-blur-sm":
+              showMobileSidebar && !mq.lg,
+          }
+        )}
       >
         <CompleteProfileBanner />
+
         {showNavigation ? (
           <Navbar toggleSidebar={() => setShowMobileSidebar((prev) => !prev)} />
         ) : null}
+
         <Outlet />
       </div>
     </div>

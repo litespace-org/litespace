@@ -76,3 +76,8 @@ export function isGhost(user: unknown): user is IUser.Ghost {
     !Number.isNaN(Number(user.replace(GHOST_USERNAME_PREFIX, "")))
   );
 }
+
+export function getEmailUserName(email: string) {
+  const [username] = email.split("@");
+  return username || null;
+}

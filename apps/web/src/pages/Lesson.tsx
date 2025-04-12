@@ -1,15 +1,14 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Typography } from "@litespace/ui/Typography";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   PreSession,
   Session,
   PermissionsDialog,
   StreamInfo,
-} from "@litespace/ui/Session";
+} from "@/components/Session";
 import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useDevices, useSessionV5 } from "@litespace/headless/sessions";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
@@ -23,14 +22,9 @@ import {
 import { asOtherMember, isOnline, isTyping } from "@/lib/room";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
-import ArrowRightLong from "@litespace/assets/ArrowRightLong";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
-import CalendarFilled from "@litespace/assets/CalendarFilled";
-import dayjs from "@/lib/dayjs";
-import Timer from "@/components/Session/Timer";
 import { capture } from "@/lib/sentry";
-import { isTutor } from "@litespace/utils";
 import { useOnError } from "@/hooks/error";
 
 //! WHY?
@@ -209,7 +203,10 @@ const Lesson: React.FC = () => {
       !sessionv5.userMedia.error &&
       !devices.loading
     )
-      sessionv5.userMedia.capture(devices.info.camera.permissioned, true);
+      sessionv5.userMedia.capture({
+        video: devices.info.camera.permissioned,
+        silent: true,
+      });
   }, [
     devices.error,
     devices.info.camera.permissioned,
@@ -236,69 +233,11 @@ const Lesson: React.FC = () => {
         chatEnabled && !mq.lg ? "" : "p-6"
       )}
     >
-      {chatEnabled && !mq.lg ? null : (
-        <div className="mb-4 lg:mb-6 flex gap-2 flex-wrap items-center justify-between">
-          <div className="flex flex-row items-center justify-start gap-2">
-            <Link
-              className="lg:hidden w-6 h-6"
-              to={isTutor(user) ? Web.StudentDashboard : Web.TutorDashboard}
-            >
-              <ArrowRightLong />
-            </Link>
-            <div className="flex items-center gap-1">
-              <Typography
-                tag="h4"
-                className="text-natural-950 font-bold text-body lg:text-subtitle-2"
-              >
-                {intl("lesson.title")}
-                {lessonMembers?.other.name ? "/" : null}
-              </Typography>
-              {lessonMembers?.other.name ? (
-                <Typography
-                  tag="span"
-                  className="text-brand-700 font-bold text-body lg:text-subtitle-2"
-                >
-                  {lessonMembers.other.name}
-                </Typography>
-              ) : null}
-            </div>
-
-            {/* {sessionv5.consumer.connectionState === "connecting" ||
-            sessionv5.consumer.iceGatheringState === "gathering" ? (
-              <div
-                dir="ltr"
-                className="flex flex-row gap-2 items-center justify-center"
-              >
-                <Typography tag="span">Connecting...</Typography>
-                <Spinner className="w-6 h-6" />
-              </div>
-            ) : null} */}
-          </div>
-          {lesson.data ? (
-            <div className="flex gap-2 md:gap-4 items-center">
-              <div className="flex gap-1 items-center">
-                <CalendarFilled className="w-4 h-4 md:w-6 md:h-6" />
-                <Typography
-                  className="text-natural-700 text-tiny md:text-caption md:font-semibold"
-                  tag="p"
-                >
-                  {dayjs(lesson.data.lesson.start).format("DD MMMM YYYY")}
-                </Typography>
-              </div>
-              <Timer
-                start={lesson.data.lesson.start}
-                duration={lesson.data.lesson.duration}
-              />
-            </div>
-          ) : null}
-        </div>
-      )}
-
       <PermissionsDialog
         onSubmit={(permission) => {
           const enableVideoStream = permission === "mic-and-camera";
           sessionv5.userMedia
-            .capture(enableVideoStream)
+            .capture({ video: enableVideoStream })
             .then((stream: MediaStream | Error) => {
               const error = stream instanceof Error;
               // todo: add toast error
@@ -335,7 +274,7 @@ const Lesson: React.FC = () => {
 
       {lesson.isLoading ? (
         <div className="mt-[15vh]">
-          <Loader size="large" text={intl("session.loading")} />
+          <Loader size="large" text={intl("lesson.loading")} />
         </div>
       ) : null}
 
@@ -343,7 +282,7 @@ const Lesson: React.FC = () => {
         <div className="mt-[15vh]">
           <LoadingError
             size="large"
-            error={intl("session.loading-error")}
+            error={intl("lesson.loading-error")}
             retry={lesson.refetch}
           />
         </div>
@@ -371,7 +310,7 @@ const Lesson: React.FC = () => {
               //! TODO: gender is not in the response.
               //! TODO: gender should be optional
               gender: IUser.Gender.Male,
-              incall: sessionv5.manager.hasJoined(lessonMembers.other.userId),
+              joined: sessionv5.manager.hasJoined(lessonMembers.other.userId),
               role: lessonMembers.other.role,
             },
           }}

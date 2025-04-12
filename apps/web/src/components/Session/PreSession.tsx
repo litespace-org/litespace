@@ -19,7 +19,7 @@ export type Props = {
       id: number;
       gender: IUser.Gender;
       role: IUser.Role;
-      incall: boolean;
+      joined: boolean;
     };
   };
   video: {
