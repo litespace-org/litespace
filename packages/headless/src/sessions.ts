@@ -154,6 +154,46 @@ export const layoutAspectRatio = {
   },
 } as const;
 
+function getVideoContrains(layout: Layout) {
+  /**
+   * After testing (chrome on android and ios), it is better to just ask for the
+   * `default` video without any extra constrains as it will cause unexpected
+   * output.
+   */
+  if (layout === "mobile") return true;
+
+  const { aspectRatio, width, height } = layoutAspectRatio[layout];
+
+  return {
+    /**
+     * Fallback constrains in case that non of the `advanced` got
+     * applied.
+     */
+    width: { ideal: width },
+    height: { ideal: height },
+    aspectRatio: { ideal: aspectRatio },
+    //! Make sure that you understand how the `advanced` constrain works.
+    //! Important Articel: https://www.webrtc-developers.com/getusermedia-constraints-explained/
+    advanced: [
+      /**
+       * Best case scenario: all width, height, aspect ratio can be
+       * applied.
+       */
+      {
+        width: { exact: width },
+        height: { exact: height },
+        aspectRatio: { exact: aspectRatio },
+      },
+      /**
+       * In case the previous constrains failed, we will use only the aspect ratio.
+       */
+      {
+        aspectRatio: { exact: aspectRatio },
+      },
+    ],
+  };
+}
+
 export function useUserMedia(onStop?: Void): UseUserMediaReturn {
   const logger = useLogger();
   const [loading, setLoading] = useState<boolean>(false);
@@ -181,42 +221,12 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
         // Ref: https://www.webrtc-developers.com/getusermedia-constraints-explained/#applying-new-constraints
         // Ref: https://blog.addpipe.com/getusermedia-video-constraints/
         // Ref: https://blog.addpipe.com/common-getusermedia-errors/
-        const { aspectRatio, width, height } = layoutAspectRatio[layout];
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
             noiseSuppression: true,
             echoCancellation: true, // Optional: Enable echo cancellation
           },
-          video: video
-            ? {
-                /**
-                 * Fallback constrains in case that non of the `advanced` got
-                 * applied.
-                 */
-                width: { ideal: width },
-                height: { ideal: height },
-                aspectRatio: { ideal: aspectRatio },
-                //! Make sure that you understand how the `advanced` constrain works.
-                //! Important Articel: https://www.webrtc-developers.com/getusermedia-constraints-explained/
-                advanced: [
-                  /**
-                   * Best case scenario: all width, height, aspect ratio can be
-                   * applied.
-                   */
-                  {
-                    width: { exact: width },
-                    height: { exact: height },
-                    aspectRatio: { exact: aspectRatio },
-                  },
-                  /**
-                   * In case the previous constrains failed, we will use only the aspect ratio.
-                   */
-                  {
-                    aspectRatio: { exact: aspectRatio },
-                  },
-                ],
-              }
-            : undefined,
+          video: video ? getVideoContrains(layout) : undefined,
         });
 
         for (const track of stream.getTracks()) {
@@ -1231,7 +1241,7 @@ export function useSessionManager({
     queryKey: [QueryKey.FindSessionMembers, sessionId],
     enabled: !!sessionId,
     refetchOnWindowFocus: false,
-    gcTime: 0,
+    // refetchInterval: 2_000,
   });
 
   const joined = useMemo(
@@ -1345,6 +1355,9 @@ export function useSessionManager({
 // ================================== Session V4 ==============================================
 
 const iceServers: RTCIceServer[] = [
+  {
+    urls: "stun:stun.l.google.com:19302",
+  },
   {
     urls: "stun:stun.litespace.org",
     username: "litespace",
@@ -1714,6 +1727,18 @@ function createPeer() {
   return new RTCPeerConnection({ iceServers });
 }
 
+function shouldShareOffer({
+  selfId,
+  memberId,
+}: {
+  selfId: number;
+  memberId: number;
+}) {
+  return selfId > memberId;
+}
+
+const defaultPeer = createPeer();
+
 const AUDIO_TRANSCEIVERS_MID = "0";
 const VIDEO_TRANSCEIVERS_MID = "1";
 
@@ -1732,7 +1757,7 @@ function usePeer({
 }) {
   const logger = useLogger();
   const socket = useSocket();
-  const [activePeer, setActivePeer] = useState<RTCPeerConnection | null>(null);
+  const [activePeer, setActivePeer] = useState<RTCPeerConnection>(defaultPeer);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [connectionState, setConnectionState] =
     useState<RTCPeerConnectionState>("new");
@@ -1740,6 +1765,7 @@ function usePeer({
     useState<RTCIceGatheringState>("new");
   const [iceConnectionState, setIceConnectionState] =
     useState<RTCIceConnectionState>("new");
+  const [reconnecting, setReconnecting] = useState<boolean>(false);
 
   const onConnectionStateChangeRef = useRef(onConnectionStateChange);
 
@@ -1748,12 +1774,18 @@ function usePeer({
   });
 
   const restartPeer = useCallback(() => {
-    activePeer?.close();
+    activePeer.close();
     setActivePeer(createPeer());
   }, [activePeer]);
 
+  const announceIncomingOffer = useCallback(() => {
+    if (!socket || !sessionId) return;
+    console.log("Announcing an incoming offer.");
+    socket.emit(Wss.ClientEvent.AnnounceIncomingOffer, { sessionId });
+  }, [sessionId, socket]);
+
   const createOffer = useCallback(async () => {
-    activePeer?.close();
+    activePeer.close();
     const peer = createPeer();
 
     if (!sessionId || !socket) return;
@@ -1780,6 +1812,7 @@ function usePeer({
 
   // ==================== Errors ====================
 
+  // Ref: https://www.webrtc-developers.com/oups-i-got-an-ice-error-701/
   const onIceCandidateError = useCallback(
     (event: RTCPeerConnectionIceErrorEvent) => {
       logger.log(
@@ -1790,15 +1823,17 @@ function usePeer({
   );
 
   useEffect(() => {
-    activePeer?.addEventListener("icecandidateerror", onIceCandidateError);
+    activePeer.addEventListener("icecandidateerror", onIceCandidateError);
 
     return () => {
-      activePeer?.removeEventListener("icecandidateerror", onIceCandidateError);
+      activePeer.removeEventListener("icecandidateerror", onIceCandidateError);
     };
   }, [activePeer, onIceCandidateError]);
 
   const recoverConnection = useCallback(async () => {
     if (!socket || !sessionId || !memberId || !selfId) return;
+    setReconnecting(true);
+
     const pong = new Promise<boolean>((resolve) => {
       socket.on(Wss.ServerEvent.PongSessionMember, ({ userId }) =>
         resolve(userId === selfId)
@@ -1823,39 +1858,44 @@ function usePeer({
       setTimeout(() => resolve(false), 5_000);
     });
 
-    if (!delivered)
+    if (!delivered) {
+      setReconnecting(false);
       return logger.log(
         `Ping event timeout, never received an acknowledgment from the server. Current user might be disconnected from the server. Once the connection is re-established, the negotiation will start again.`
       );
+    }
 
     const isOtherMemberPresent = await pong;
 
     if (isOtherMemberPresent) {
-      const shareOffer = selfId > memberId;
+      const shareOffer = shouldShareOffer({ selfId, memberId });
       logger.log(
         `Other member is still in the room (verified). Share offer: ${shareOffer}`
       );
-      if (shareOffer) createOffer();
+      if (shareOffer) announceIncomingOffer();
     } else
       logger.log(
         "No response from the other member. Properly having a network issue. When back online, he will be the one who start the session (create the offer)."
       );
-  }, [createOffer, logger, memberId, selfId, sessionId, socket]);
+
+    setReconnecting(false);
+  }, [announceIncomingOffer, logger, memberId, selfId, sessionId, socket]);
 
   // ==================== State ====================
 
   const onConnectionStateChangeInternal = useCallback(async () => {
-    const state = activePeer?.connectionState;
+    const state = activePeer.connectionState;
     if (!state) return;
     logger.log("Peer connection state:", state);
     setConnectionState(state);
     // Analyise connection state failure
     if (!sessionId || !memberId || !selfId || !socket) return;
-    if (state === "failed") recoverConnection();
+    if (state === "failed" && !reconnecting) recoverConnection();
   }, [
-    activePeer?.connectionState,
+    activePeer.connectionState,
     logger,
     memberId,
+    reconnecting,
     recoverConnection,
     selfId,
     sessionId,
@@ -1863,7 +1903,7 @@ function usePeer({
   ]);
 
   const onIceConnectionStateChange = useCallback(async () => {
-    const state = activePeer?.iceConnectionState;
+    const state = activePeer.iceConnectionState;
     if (!state) return;
     setIceConnectionState(state);
     logger.log("Ice connection state:", state);
@@ -1873,57 +1913,54 @@ function usePeer({
       activePeer.setConfiguration({ iceServers });
       activePeer.restartIce();
     }
-    if (state === "disconnected") recoverConnection();
-  }, [activePeer, logger, recoverConnection]);
+    if (state === "disconnected" && !reconnecting) recoverConnection();
+  }, [activePeer, logger, reconnecting, recoverConnection]);
 
   const onIceGatheringStateChange = useCallback(() => {
-    const state = activePeer?.iceGatheringState;
+    const state = activePeer.iceGatheringState;
     if (!state) return;
     logger.log("ICE gathering state:", state);
     setIceGatheringState(state);
-  }, [activePeer?.iceGatheringState, logger]);
+  }, [activePeer.iceGatheringState, logger]);
 
   const onSignalingStateChange = useCallback(() => {
-    const state = activePeer?.signalingState;
+    const state = activePeer.signalingState;
     logger.log("Signaling state:", state || "N/A");
-  }, [activePeer?.signalingState, logger]);
+  }, [activePeer.signalingState, logger]);
 
   useEffect(() => {
-    activePeer?.addEventListener(
+    activePeer.addEventListener(
       "connectionstatechange",
       onConnectionStateChangeInternal
     );
 
-    activePeer?.addEventListener(
+    activePeer.addEventListener(
       "icegatheringstatechange",
       onIceGatheringStateChange
     );
-    activePeer?.addEventListener(
+    activePeer.addEventListener(
       "iceconnectionstatechange",
       onIceConnectionStateChange
     );
 
-    activePeer?.addEventListener(
-      "signalingstatechange",
-      onSignalingStateChange
-    );
+    activePeer.addEventListener("signalingstatechange", onSignalingStateChange);
 
     return () => {
-      activePeer?.removeEventListener(
+      activePeer.removeEventListener(
         "connectionstatechange",
         onConnectionStateChangeInternal
       );
 
-      activePeer?.removeEventListener(
+      activePeer.removeEventListener(
         "icegatheringstatechange",
         onIceGatheringStateChange
       );
-      activePeer?.removeEventListener(
+      activePeer.removeEventListener(
         "iceconnectionstatechange",
         onIceConnectionStateChange
       );
 
-      activePeer?.removeEventListener(
+      activePeer.removeEventListener(
         "signalingstatechange",
         onSignalingStateChange
       );
@@ -1993,9 +2030,9 @@ function usePeer({
   );
 
   useEffect(() => {
-    activePeer?.addEventListener("track", onTrack);
+    activePeer.addEventListener("track", onTrack);
     return () => {
-      activePeer?.removeEventListener("track", onTrack);
+      activePeer.removeEventListener("track", onTrack);
     };
   }, [onTrack, activePeer]);
 
@@ -2021,24 +2058,22 @@ function usePeer({
 
   const onSessionOffer = useCallback(
     async ({ offer }: Wss.EventPayload<Wss.ServerEvent.SessionOffer>) => {
-      activePeer?.close();
       logger.log(`Received an offer (${offer.type})`);
-      const peer = createPeer();
       if (!sessionId || !socket) return;
-      await peer.setRemoteDescription(offer);
+      await activePeer.setRemoteDescription(offer);
 
       // must be done before creating the answer
-      const transceivers = peer.getTransceivers();
+      const transceivers = activePeer.getTransceivers();
 
       for (const transceiver of transceivers)
         transceiver.direction = "sendrecv";
 
-      const answer = await peer.createAnswer();
-      await peer.setLocalDescription(answer);
+      const answer = await activePeer.createAnswer();
+      await activePeer.setLocalDescription(answer);
 
       logger.log(`Share session answer (${answer.type})`);
       socket.emit(Wss.ClientEvent.SessionAnswer, { sessionId, answer });
-      setActivePeer(peer);
+      setActivePeer(activePeer);
     },
     [activePeer, logger, sessionId, socket]
   );
@@ -2046,7 +2081,7 @@ function usePeer({
   const onSessionAnswer = useCallback(
     async ({ answer }: Wss.EventPayload<Wss.ServerEvent.SessionAnswer>) => {
       logger.log(`Received an answer (${answer.type})`);
-      await activePeer?.setRemoteDescription(answer);
+      await activePeer.setRemoteDescription(answer);
     },
     [logger, activePeer]
   );
@@ -2055,8 +2090,8 @@ function usePeer({
     ({ candidate }: Wss.EventPayload<Wss.ServerEvent.IceCandidate>) => {
       logger.log(`Received an ice candidate`);
       // cache ice candicates and consume it when the remote description is set.
-      if (!activePeer?.remoteDescription) return;
-      activePeer?.addIceCandidate(candidate);
+      if (!activePeer.remoteDescription) return;
+      activePeer.addIceCandidate(candidate);
     },
     [activePeer, logger]
   );
@@ -2073,6 +2108,24 @@ function usePeer({
     [logger, memberId, selfId, sessionId, socket]
   );
 
+  const onAnnounceIncomingOffer = useCallback(() => {
+    if (!socket || !sessionId) return;
+    console.log(
+      "Received an offer announcement; Resting my peer connection to be ready to accept the offer."
+    );
+    // Rest current peer to be ready to accept the incoming offer.
+    activePeer.close();
+    setActivePeer(createPeer());
+    // Notify my peer that I am ready to accept his offer.
+    socket.emit(Wss.ClientEvent.PeerReadyToReceiveOffer, { sessionId });
+  }, [activePeer, sessionId, socket]);
+
+  const onPeerReadyToReceiveOffer = useCallback(() => {
+    if (!socket || !sessionId) return;
+    console.log("Peer is ready to accept my offer; creating an offer...");
+    createOffer();
+  }, [createOffer, sessionId, socket]);
+
   useEffect(() => {
     if (!socket) return;
 
@@ -2080,13 +2133,28 @@ function usePeer({
     socket.on(Wss.ServerEvent.SessionAnswer, onSessionAnswer);
     socket.on(Wss.ServerEvent.IceCandidate, onRemoteIceCandidate);
     socket.on(Wss.ServerEvent.PingSessionMember, onPingSessionMember);
+    socket.on(Wss.ServerEvent.AnnounceIncomingOffer, onAnnounceIncomingOffer);
+    socket.on(
+      Wss.ServerEvent.PeerReadyToReceiveOffer,
+      onPeerReadyToReceiveOffer
+    );
     return () => {
       socket.off(Wss.ServerEvent.SessionOffer, onSessionOffer);
       socket.off(Wss.ServerEvent.SessionAnswer, onSessionAnswer);
       socket.off(Wss.ServerEvent.IceCandidate, onRemoteIceCandidate);
       socket.off(Wss.ServerEvent.PingSessionMember, onPingSessionMember);
+      socket.off(
+        Wss.ServerEvent.PeerReadyToReceiveOffer,
+        onPeerReadyToReceiveOffer
+      );
+      socket.off(
+        Wss.ServerEvent.AnnounceIncomingOffer,
+        onAnnounceIncomingOffer
+      );
     };
   }, [
+    onAnnounceIncomingOffer,
+    onPeerReadyToReceiveOffer,
     onPingSessionMember,
     onRemoteIceCandidate,
     onSessionAnswer,
@@ -2095,10 +2163,10 @@ function usePeer({
   ]);
 
   useEffect(() => {
-    activePeer?.addEventListener("icecandidate", onLocalIceCandidate);
+    activePeer.addEventListener("icecandidate", onLocalIceCandidate);
 
     return () => {
-      activePeer?.removeEventListener("icecandidate", onLocalIceCandidate);
+      activePeer.removeEventListener("icecandidate", onLocalIceCandidate);
     };
   }, [onLocalIceCandidate, activePeer]);
 
@@ -2107,8 +2175,7 @@ function usePeer({
   const close = useCallback(() => {
     stream?.getTracks().forEach((track) => track.stop());
     setStream(null);
-    activePeer?.close();
-    setActivePeer(null);
+    activePeer.close();
   }, [activePeer, stream]);
 
   return {
@@ -2121,6 +2188,7 @@ function usePeer({
     close,
     createPeer,
     restartPeer,
+    announceIncomingOffer,
   };
 }
 
@@ -2185,7 +2253,7 @@ export function useSessionV5({
       const otherMember = members.find((member) => member === memberId);
       if (!otherMember || !userMedia.stream) return;
       console.log("Reconnect with the other member");
-      peer.createOffer();
+      peer.announceIncomingOffer();
     },
   });
 
@@ -2201,7 +2269,7 @@ export function useSessionV5({
     if (!memberId) return;
     manager.join();
     const otherMemberJoined = manager.members.includes(memberId);
-    if (otherMemberJoined) await peer.createOffer();
+    if (otherMemberJoined) await peer.announceIncomingOffer();
   }, [manager, memberId, peer]);
 
   // ==================== Leave ====================

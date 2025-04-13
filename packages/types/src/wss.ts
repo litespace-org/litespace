@@ -1,4 +1,4 @@
-import { IMessage, ISession, ITutor, Server } from "@/index";
+import { EmptyObject, IMessage, ISession, ITutor, Server } from "@/index";
 import { SessionDescription } from "@/webrtc";
 
 /**
@@ -15,6 +15,8 @@ export enum ClientEvent {
   LeaveSession = "LeaveSession",
   SessionOffer = "SessionOffer",
   SessionAnswer = "SessionAnswer",
+  AnnounceIncomingOffer = "AnnounceIncomingOffer",
+  PeerReadyToReceiveOffer = "ReadyToReceiveOffer",
   IceCandidate = "IceCandidate",
   PingSessionMember = "PingSessionMember",
   PongSessionMember = "PongSessionMember",
@@ -49,6 +51,8 @@ export enum ServerEvent {
   IceCandidate = "IceCandidate",
   PingSessionMember = "PingSessionMember",
   PongSessionMember = "PongSessionMember",
+  AnnounceIncomingOffer = "AnnounceIncomingOffer",
+  PeerReadyToReceiveOffer = "ReadyToReceiveOffer",
   UserJoinedSession = "UserJoinedSession",
 
   /**
@@ -158,6 +162,12 @@ export type ClientEventsMap = {
     sessionId: ISession.Id;
     userId: number;
   }>;
+  [ClientEvent.AnnounceIncomingOffer]: EventCallback<{
+    sessionId: ISession.Id;
+  }>;
+  [ClientEvent.PeerReadyToReceiveOffer]: EventCallback<{
+    sessionId: ISession.Id;
+  }>;
 };
 
 /**
@@ -221,6 +231,8 @@ export type ServerEventsMap = {
   [ServerEvent.PongSessionMember]: EventCallback<{
     userId: number;
   }>;
+  [ServerEvent.AnnounceIncomingOffer]: EventCallback<EmptyObject>;
+  [ServerEvent.PeerReadyToReceiveOffer]: EventCallback<EmptyObject>;
 };
 
 // Generic types to extract the payload of the events

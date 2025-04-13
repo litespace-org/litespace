@@ -77,7 +77,6 @@ const Root: React.FC = () => {
 
   const fullScreenPage = useMemo(() => {
     const routes: Web[] = [
-      Web.PreSession,
       Web.Lesson,
       // Web.Chat, // TODO: chat page should be aded.
     ];
