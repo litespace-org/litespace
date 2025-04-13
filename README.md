@@ -166,6 +166,7 @@ To create a new package, follow these steps:
 | Web storybook (vite) | apps/web           | 3002 |
 | UI storybook (vite)  | packages/ui        | 3003 |
 | Landing (next)       | apps/landing       | 3004 |
+| Emails               | packages/emails    | 3005 |
 | API server           | services/server    | 4000 |
 | Peer server          | services/server    | 4001 |
 | Messenger            | services/messenger | 4002 |

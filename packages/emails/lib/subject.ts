@@ -6,4 +6,8 @@ export const EMAIL_SUBJECT: Record<EmailTemplate, string> = {
   [EmailTemplate.ForgetPassword]: translate.string(
     "forget-password-email.title"
   ),
+  [EmailTemplate.VerifyEmailV2]: translate.string("verify-email.desc.v2"),
+  [EmailTemplate.ForgetPasswordV2]: translate.string(
+    "forget-password-email.desc.v2"
+  ),
 };
