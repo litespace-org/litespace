@@ -73,6 +73,7 @@ const Content: React.FC<{ lessonId: number; self: IUser.Self }> = ({
         name: member.name,
         gender: IUser.Gender.Male,
         role: member.role,
+        image: member.image,
       }}
       onLeave={() => {
         if (!lesson.data) return;

@@ -1359,11 +1359,6 @@ const iceServers: RTCIceServer[] = [
     urls: "stun:stun.l.google.com:19302",
   },
   {
-    urls: "stun:stun.litespace.org",
-    username: "litespace",
-    credential: "litespace",
-  },
-  {
     urls: "turn:turn.litespace.org",
     username: "litespace",
     credential: "litespace",
@@ -1817,7 +1812,8 @@ function usePeer({
   const onIceCandidateError = useCallback(
     (event: RTCPeerConnectionIceErrorEvent) => {
       logger.log(
-        `Ice Candidate Error: ${event.errorText} (${event.errorCode})`
+        `Ice Candidate Error: ${event.errorText} (${event.errorCode})`,
+        event
       );
     },
     [logger]
@@ -2056,7 +2052,7 @@ function usePeer({
       if (!candidate || !socket || !sessionId) return;
 
       console.log(
-        `Share ice candidate: ${candidate.type}/${candidate.protocol}`
+        `Share ice candidate: ${candidate.type}/${candidate.protocol}\n${candidate.candidate}`
       );
       socket.emit(Wss.ClientEvent.IceCandidate, {
         candidate: event.candidate.toJSON(),
