@@ -1873,6 +1873,7 @@ function usePeer({
         `Other member is still in the room (verified). Share offer: ${shareOffer}`
       );
       if (shareOffer) announceIncomingOffer();
+      else logger.log("The other member should send an offer announcement");
     } else
       logger.log(
         "No response from the other member. Properly having a network issue. When back online, he will be the one who start the session (create the offer)."
@@ -2100,12 +2101,13 @@ function usePeer({
     ({ userId }: Wss.EventPayload<Wss.ServerEvent.PingSessionMember>) => {
       if (userId !== selfId || !sessionId || !memberId) return;
       logger.log("Got a ping, respond with pong");
+      if (shouldShareOffer({ selfId, memberId })) announceIncomingOffer();
       socket?.emit(Wss.ClientEvent.PongSessionMember, {
         sessionId,
         userId: memberId,
       });
     },
-    [logger, memberId, selfId, sessionId, socket]
+    [announceIncomingOffer, logger, memberId, selfId, sessionId, socket]
   );
 
   const onAnnounceIncomingOffer = useCallback(() => {
