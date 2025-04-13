@@ -12,7 +12,7 @@ import { router } from "@/lib/route";
 import { isRegularUser } from "@litespace/utils";
 
 const Root: React.FC = () => {
-  const { user } = useUserContext();
+  const { user, logout } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();
   useAuthRoutes();
@@ -33,11 +33,13 @@ const Root: React.FC = () => {
     // Handling users that not allowed to use the dashboard
     const regularUser = isRegularUser(user);
 
-    if (user && regularUser)
+    if (user && regularUser) {
+      logout();
       window.location.replace(
         router.landing({ route: Landing.Home, full: true })
       );
-  }, [location.pathname, navigate, user]);
+    }
+  }, [location.pathname, logout, navigate, user]);
 
   return (
     <>

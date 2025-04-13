@@ -53,10 +53,12 @@ export function useGoogle({
         });
 
       const regularUser = isRegularUser(info.user);
-      if (info.user && !regularUser)
+      if (info.user && !regularUser) {
+        user.logout();
         return window.location.replace(
           router.landing({ route: Landing.Home, full: true })
         );
+      }
 
       user.set(info);
 

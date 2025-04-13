@@ -85,11 +85,13 @@ const Root: React.FC = () => {
 
   useEffect(() => {
     const regularUser = isRegularUser(user);
-    if (user && !regularUser)
+    if (user && !regularUser) {
+      logout();
       window.location.replace(
         router.landing({ route: Landing.Home, full: true })
       );
-  }, [navigate, user]);
+    }
+  }, [logout, navigate, user]);
 
   useSaveLogs({
     enableKeyboardShortcut: true,

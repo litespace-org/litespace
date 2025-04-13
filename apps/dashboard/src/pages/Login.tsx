@@ -41,10 +41,12 @@ const Login: React.FC = () => {
   const mutation = useLoginUser({
     onSuccess(result) {
       const regularUser = isRegularUser(result.user);
-      if (regularUser)
+      if (regularUser) {
+        user.logout();
         return window.location.replace(
           router.landing({ route: Landing.Home, full: true })
         );
+      }
 
       user.set(result);
       return navigate(Dashboard.Root);
