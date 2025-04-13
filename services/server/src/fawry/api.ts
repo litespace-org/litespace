@@ -95,4 +95,4 @@ class Api extends Base {
   }
 }
 
-export const FawryApi = new Api(createClient(environment));
+export const fawryApi = new Api(createClient(environment));

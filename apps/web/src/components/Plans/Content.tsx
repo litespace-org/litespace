@@ -10,6 +10,8 @@ import { LocalId } from "@litespace/ui/locales";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { PlansDataProps, Tab } from "@/components/Plans/types";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { getAddCardIntegrationURL } from "@/lib/fawry";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const PLANS_TITLE_ID_MAP: { [key: number]: LocalId } = {
   1: "plans.titles.beginning",
@@ -53,6 +55,7 @@ const Content: React.FC<{
 
   const notifyComingSoon = useCallback(() => {
     toast.success({
+      id: "notify-comming-soon",
       title: intl("plans.subscribe.soon.title"),
       description: intl("plans.subscribe.soon.description"),
     });

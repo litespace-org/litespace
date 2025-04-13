@@ -14,6 +14,7 @@ import topic from "@/routes/topic";
 import cache from "@/routes/cache";
 import session from "@/routes/session";
 import contactRequest from "@/routes/contactRequest";
+import fawry from "@/routes/fawry";
 
 export default {
   user,
@@ -32,4 +33,5 @@ export default {
   cache,
   session,
   availabilitySlot,
+  fawry
 };

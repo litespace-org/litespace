@@ -1,3 +1,4 @@
+import jsSHA from "jssha";
 import {
   CancelPaymentAuthPayload,
   CancelUnpaidOrderPayload,
@@ -9,12 +10,23 @@ import {
 } from "@/fawry/types/requests";
 
 function generateSignature(...data: unknown[]) {
+  // concatenate data values
   let dataString = "";
   for (const value of data) {
-    dataString += value || "";
+    if (typeof value === "string")
+      dataString += value || "";
+    else if (value?.toString)
+      dataString += value.toString() || "";
   }
-  return btoa(dataString);
+
+  // hash the concatenated string with sha256 digest
+  let sha256 = new jsSHA('SHA-256', 'TEXT');
+  sha256.update(dataString);
+
+  // return the hashed value
+  return sha256.getHash("HEX");
 }
+
 /**
  * The SHA-256 digested for the following concatenated string "merchantCode + merchantRefNum +
  * customerProfileId (if exists, otherwise "") + paymentMethod + amount (in two decimal format
