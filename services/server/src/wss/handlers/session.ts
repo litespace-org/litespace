@@ -205,6 +205,11 @@ export class Session extends WssHandler {
         },
       });
 
+      // Their is not need to emit the `MemberLeftSession` event incase the user
+      // is not in the session.
+      const members = await cache.session.getMembers(sessionId);
+      if (!members.includes(user.id)) return;
+
       // Remove user from the session by removing its id from the cache
       await cache.session.removeMember({
         userId: user.id,
