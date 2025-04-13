@@ -5,7 +5,7 @@ const regex =
   /```release(\r|\n|\r\n)(?<workspaces>[A-Za-z@/,]*)(\r|\n|\r\n)```/;
 
 const client = axios.create({
-  baseURL: "https://apollo.litespace.org",
+  baseURL: "https://deployer.litespace.org",
 });
 
 const expected = [

@@ -1,6 +1,6 @@
 name: Staging deployment
 env:
-  APOLLO_STAGING_SECRET: ${{ secrets.APOLLO_STAGING_SECRET }}
+  DEPLOYER_STAGING_SECRET: ${{ secrets.DEPLOYER_STAGING_SECRET }}
 on:
   pull_request:
     branches:
@@ -13,5 +13,5 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger staging deployment using the Apollo server
-        run: curl --fail -X POST "https://apollo.staging.litespace.org?workspaces=all&secret=$APOLLO_STAGING_SECRET"
+      - name: Trigger staging deployment using the deployer server
+        run: curl --fail -X POST "https://deployer.staging.litespace.org?workspaces=all&secret=$DEPLOYER_STAGING_SECRET"
