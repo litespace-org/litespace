@@ -1,4 +1,3 @@
-import Button from "@/components/Common/Button";
 import Typography from "@/components/Common/Typography";
 import Footer from "@/components/Layout/Footer";
 import Header from "@/components/Layout/Header";
@@ -8,7 +7,7 @@ import { Container, Section } from "@react-email/components";
 import * as React from "react";
 import Link from "@/components/Common/Link";
 
-export function ForgetPassword({ redirectUrl }: { redirectUrl: string }) {
+export function ForgetPassword({ code }: { code: number }) {
   return (
     <Template preview={translate.string("forget-password-email.title")}>
       <Header />
@@ -33,11 +32,14 @@ export function ForgetPassword({ redirectUrl }: { redirectUrl: string }) {
 
       <Container>
         <Section className="mt-[48px] text-center">
-          <Button href={redirectUrl}>
-            <Typography element="body" text="natural-50">
-              {translate("forget-password-email.confirm")}
-            </Typography>
-          </Button>
+          <Typography
+            element="h3"
+            weight="bold"
+            text="natural-950"
+            spacedBy={16}
+          >
+            {code}
+          </Typography>
         </Section>
       </Container>
 
