@@ -173,6 +173,7 @@ To create a new package, follow these steps:
 | Echo                 | services/echo      | 4004 |
 | Studio               | services/studio    | 4005 |
 | Kafka UI             | System             | 4006 |
+| Tasks                | services/jobs      | 4007 |
 | PostgreSQL           | System             | 5432 |
 | Redis                | System             | 6379 |
 | Kafka                | System             | 9092 |

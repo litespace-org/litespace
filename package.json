@@ -64,7 +64,7 @@
     "landing": "pnpm --filter @litespace/landing",
     "mobile": "pnpm --filter @litespace/mobile",
     "blog": "pnpm --filter @litespace/blog",
-    "tasks": "pnpm --filter @litespace/tasks",
+    "jobs": "pnpm --filter @litespace/jobs",
     "messenger": "pnpm --filter @litespace/messenger",
     "studio": "pnpm --filter @litespace/studio",
     "kafka": "pnpm --filter @litespace/kafka"

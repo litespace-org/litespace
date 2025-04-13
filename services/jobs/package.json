@@ -1,6 +1,6 @@
 {
-  "name": "@litespace/tasks",
-  "description": "LiteSpace automated tasks & cron jobs",
+  "name": "@litespace/jobs",
+  "description": "LiteSpace automated jobs & cron jobs",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "start": "env-cmd node dist/index.js",
@@ -11,8 +11,10 @@
     "@litespace/models": "workspace:^",
     "@litespace/types": "workspace:^",
     "@litespace/utils": "workspace:^",
+    "@litespace/kafka": "workspace:^",
     "dayjs": "^1.11.13",
-    "commander": "^13.1.0",
+    "express": "^4.19.2",
+    "node-schedule": "^2.1.1",
     "zod": "^3.23.8",
     "ms": "^2.1.3"
   },

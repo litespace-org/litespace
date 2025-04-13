@@ -3,6 +3,11 @@ import zod from "zod";
 const schema = zod.object({
   telegram: zod.object({
     token: zod.string(),
+
+    chat: zod.coerce.number().negative().int(),
+  }),
+  telegramBot: zod.object({
+    token: zod.string(),
     chat: zod.coerce.number().negative().int(),
   }),
   env: zod.union([

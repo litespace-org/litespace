@@ -1475,6 +1475,49 @@ importers:
         specifier: ^3.5.2
         version: 3.5.3(typescript@5.4.5)
 
+  services/jobs:
+    dependencies:
+      '@litespace/kafka':
+        specifier: workspace:^
+        version: link:../../packages/kafka
+      '@litespace/models':
+        specifier: workspace:^
+        version: link:../../packages/models
+      '@litespace/radio':
+        specifier: workspace:^
+        version: link:../../packages/radio
+      '@litespace/types':
+        specifier: workspace:^
+        version: link:../../packages/types
+      '@litespace/utils':
+        specifier: workspace:^
+        version: link:../../packages/utils
+      commander:
+        specifier: ^13.1.0
+        version: 13.1.0
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13(patch_hash=aa81ceb75c492cff223134948ee626fc02bb04b49873a531b674f73099fd868b)
+      ms:
+        specifier: ^2.1.3
+        version: 2.1.3
+      node-schedule:
+        specifier: ^2.1.1
+        version: 2.1.1
+      zod:
+        specifier: ^3.23.8
+        version: 3.24.1
+    devDependencies:
+      ts-patch:
+        specifier: ^3.2.1
+        version: 3.3.0
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+      typescript-transform-paths:
+        specifier: ^3.5.2
+        version: 3.5.3(typescript@5.4.5)
+
   services/messenger:
     dependencies:
       '@litespace/auth':
@@ -1880,43 +1923,6 @@ importers:
       tsconfig-paths-webpack-plugin:
         specifier: ^4.2.0
         version: 4.2.0
-      typescript:
-        specifier: ^5.4.5
-        version: 5.4.5
-      typescript-transform-paths:
-        specifier: ^3.5.2
-        version: 3.5.3(typescript@5.4.5)
-
-  services/tasks:
-    dependencies:
-      '@litespace/models':
-        specifier: workspace:^
-        version: link:../../packages/models
-      '@litespace/radio':
-        specifier: workspace:^
-        version: link:../../packages/radio
-      '@litespace/types':
-        specifier: workspace:^
-        version: link:../../packages/types
-      '@litespace/utils':
-        specifier: workspace:^
-        version: link:../../packages/utils
-      commander:
-        specifier: ^13.1.0
-        version: 13.1.0
-      dayjs:
-        specifier: ^1.11.13
-        version: 1.11.13(patch_hash=aa81ceb75c492cff223134948ee626fc02bb04b49873a531b674f73099fd868b)
-      ms:
-        specifier: ^2.1.3
-        version: 2.1.3
-      zod:
-        specifier: ^3.23.8
-        version: 3.24.1
-    devDependencies:
-      ts-patch:
-        specifier: ^3.2.1
-        version: 3.3.0
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
