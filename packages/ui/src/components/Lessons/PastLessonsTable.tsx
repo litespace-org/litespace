@@ -30,10 +30,10 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
   const { lg, xl } = useMediaQuery();
 
   const columns = useMemo(() => {
-    const date = intl("student-dashboard.table.date");
-    const duration = intl("student-dashboard.table.duration");
-    const tutor = intl("student-dashboard.table.tutor");
-    const student = intl("tutor-dashboard.table.student");
+    const date = intl("table.date");
+    const duration = intl("table.duration");
+    const tutor = intl("table.tutor");
+    const student = intl("table.student");
 
     if (isTutor) return [date, duration, student];
 

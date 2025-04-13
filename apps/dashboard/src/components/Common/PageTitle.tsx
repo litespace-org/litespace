@@ -12,7 +12,10 @@ const PageTitle: React.FC<{
 }> = ({ title, fetching, count, className }) => {
   return (
     <div className={cn("flex flex-row items-center gap-4", className)}>
-      <Typography tag="h1" className="text-h4">
+      <Typography
+        tag="h5"
+        className="text-subtitle-2 font-bold text-natural-950"
+      >
         {title}
         &nbsp;
         {count ? <RecordsCount count={count} /> : null}

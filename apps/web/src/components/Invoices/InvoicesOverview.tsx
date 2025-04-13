@@ -21,7 +21,7 @@ const InvoicesOverview: React.FC<{ tutorId?: number }> = ({ tutorId }) => {
         tag="h1"
         className="text-natural-950 text-body md:text-subtitle-2 font-bold"
       >
-        {intl("tutor-invoices.overview.title")}
+        {intl("invoices.overview.title")}
       </Typography>
 
       <Overview
