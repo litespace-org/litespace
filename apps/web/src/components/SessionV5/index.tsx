@@ -36,6 +36,7 @@ const Main: React.FC<{
     name: string | null;
     gender: IUser.Gender;
     role: IUser.Role;
+    image: string | null;
   };
   onLeave: Void;
 }> = ({ self, member, sessionId, start, duration, onLeave }) => {
@@ -295,7 +296,7 @@ const Main: React.FC<{
           memberStream={session.peer.stream}
           memberId={member.id}
           memberName={member.name}
-          memberImage={self.image}
+          memberImage={member.image}
           memberAudio={session.member.audio}
           memberVideo={session.member.video}
           memberSpeaking={session.member.speaking}
