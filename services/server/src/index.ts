@@ -17,6 +17,7 @@ import { cache } from "@/lib/cache";
 import { msg } from "@/lib/telegram";
 import "colors";
 import { Wss } from "@litespace/types";
+import { isAxiosError } from "axios";
 
 // global error handling
 // this is needed to prevent the server process from exit.
@@ -24,9 +25,14 @@ process.on("uncaughtException", async (error) => {
   console.log("Uncaught exception");
   console.error(error);
   try {
-    await msg(`uncaught exception: ${error.message}`);
+    await msg(
+      `uncaught exception: ${error.message}\n${error.stack?.split("\n")}`
+    );
   } catch (error) {
-    console.log(`Faield to notify the exception`, error);
+    console.log(
+      `Faield to notify the exception`,
+      isAxiosError(error) ? error.response : error
+    );
   }
 });
 
