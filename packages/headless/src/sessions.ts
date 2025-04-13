@@ -1724,7 +1724,8 @@ export function useSessionV4({
 // ================================== Session V5 ==============================================
 
 function createPeer() {
-  return new RTCPeerConnection({ iceServers });
+  const peer = new RTCPeerConnection({ iceServers });
+  return peer;
 }
 
 function shouldShareOffer({
@@ -1831,7 +1832,7 @@ function usePeer({
   }, [activePeer, onIceCandidateError]);
 
   const recoverConnection = useCallback(async () => {
-    if (!socket || !sessionId || !memberId || !selfId) return;
+    if (!socket || !sessionId || !memberId || !selfId || reconnecting) return;
     setReconnecting(true);
 
     const pong = new Promise<boolean>((resolve) => {
@@ -1880,7 +1881,15 @@ function usePeer({
       );
 
     setReconnecting(false);
-  }, [announceIncomingOffer, logger, memberId, selfId, sessionId, socket]);
+  }, [
+    announceIncomingOffer,
+    logger,
+    memberId,
+    reconnecting,
+    selfId,
+    sessionId,
+    socket,
+  ]);
 
   // ==================== State ====================
 
@@ -1893,7 +1902,7 @@ function usePeer({
     if (!sessionId || !memberId || !selfId || !socket) return;
     if (state === "failed" && !reconnecting) recoverConnection();
   }, [
-    activePeer.connectionState,
+    activePeer,
     logger,
     memberId,
     reconnecting,
