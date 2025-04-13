@@ -2101,13 +2101,22 @@ function usePeer({
     ({ userId }: Wss.EventPayload<Wss.ServerEvent.PingSessionMember>) => {
       if (userId !== selfId || !sessionId || !memberId) return;
       logger.log("Got a ping, respond with pong");
-      if (shouldShareOffer({ selfId, memberId })) announceIncomingOffer();
+      if (shouldShareOffer({ selfId, memberId }) && !reconnecting)
+        announceIncomingOffer();
       socket?.emit(Wss.ClientEvent.PongSessionMember, {
         sessionId,
         userId: memberId,
       });
     },
-    [announceIncomingOffer, logger, memberId, selfId, sessionId, socket]
+    [
+      announceIncomingOffer,
+      logger,
+      memberId,
+      reconnecting,
+      selfId,
+      sessionId,
+      socket,
+    ]
   );
 
   const onAnnounceIncomingOffer = useCallback(() => {
