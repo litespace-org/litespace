@@ -52,6 +52,14 @@ const Main: React.FC<{
     selfId: self.id,
     memberId: member.id,
     sessionId,
+    onMemberJoin() {
+      const audio = new Audio("/join-session.mp3");
+      audio.play();
+    },
+    onMemberLeave() {
+      const audio = new Audio("/leave-session.mp3");
+      audio.play();
+    },
   });
 
   const layout = useMemo((): Layout => {

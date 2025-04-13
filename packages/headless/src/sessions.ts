@@ -2198,6 +2198,8 @@ type SessionV5Payload = {
   selfId?: number;
   sessionId?: ISession.Id;
   memberId?: number;
+  onMemberJoin?(userId: number): void;
+  onMemberLeave?(userId: number): void;
 };
 
 /**
@@ -2220,7 +2222,17 @@ export function useSessionV5({
   selfId,
   memberId,
   sessionId,
+  onMemberJoin,
+  onMemberLeave,
 }: SessionV5Payload) {
+  const onMemberJoinRef = useRef(onMemberJoin);
+  const onMemberLeaveRef = useRef(onMemberLeave);
+
+  useEffect(() => {
+    onMemberJoinRef.current = onMemberJoin;
+    onMemberLeaveRef.current = onMemberLeave;
+  });
+
   const logger = useLogger();
   const userMedia = useUserMedia();
   const peer = usePeer({
@@ -2235,6 +2247,7 @@ export function useSessionV5({
     selfId,
     sessionId,
     onJoin(userId) {
+      onMemberJoin?.(userId);
       if (!selfId || selfId === userId) return;
       // Share audio and video status when the other member joins.
       notifyCamera(userMedia.video);
@@ -2242,6 +2255,7 @@ export function useSessionV5({
       logger.log(`${userId} joined the session`);
     },
     onLeave(userId) {
+      onMemberLeave?.(userId);
       logger.log(`${userId} left the session: close=${userId === memberId}`);
       logger.log("Closing and reinitialize peer connection");
       if (userId === selfId) return;
