@@ -20,7 +20,3 @@ services:
       KAFKA_NUM_PARTITIONS: 3
       # Auto create topics on first use
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-
-networks:
-
-volumes:
