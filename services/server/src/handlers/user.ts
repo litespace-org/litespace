@@ -90,6 +90,7 @@ const updateUserPayload = zod.object({
   bio: zod.optional(zod.union([zod.null(), string])),
   about: zod.optional(zod.union([zod.null(), string])),
   city: zod.optional(zod.union([zod.nativeEnum(IUser.City), zod.null()])),
+  notificationMethod: zod.optional(zod.nativeEnum(IUser.NotificationMethod)),
   phone: zod.optional(zod.union([zod.string().max(15).trim(), zod.null()])),
 });
 
@@ -225,8 +226,7 @@ function update(_: ApiContext) {
         notice,
         phone,
         city,
-        enabledTelegram,
-        enabledWhatsapp,
+        notificationMethod,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
       // return forbidden if the currentUser is neither admin nor studio and tring to update other user data
@@ -279,8 +279,7 @@ function update(_: ApiContext) {
                 // Reset user verification status incase his email updated.
                 verifiedEmail: email ? false : undefined,
                 password: password ? hashPassword(password.new) : undefined,
-                enabledTelegram,
-                enabledWhatsapp,
+                notificationMethod,
               };
           const user = await users.update(id, updatePayload, tx);
 

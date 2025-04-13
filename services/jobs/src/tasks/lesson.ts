@@ -5,8 +5,29 @@ import { lessons } from "@litespace/models";
 import { ILesson, IUser } from "@litespace/types";
 import { Web } from "@litespace/utils/routes";
 
+const TIMEZONE = "Africa/Cairo";
+
+function sendReminder(
+  producer: Producer,
+  notificationMethod: number,
+  phone: string,
+  message: string
+) {
+  const preferredMethod = IUser.NotificationMethod[notificationMethod];
+
+  if (preferredMethod !== "whatsapp" && preferredMethod !== "telegram") return;
+
+  producer.send({
+    topic: preferredMethod,
+    value: {
+      to: phone,
+      message,
+    },
+  });
+}
+
 export async function sendLessonReminders(producer: Producer) {
-  const now = dayjs().tz("Africa/Cairo");
+  const now = dayjs().tz(TIMEZONE);
 
   const upcommingLessons = await lessons.find({
     after: dayjs.utc().toISOString(),
@@ -54,76 +75,51 @@ export async function sendLessonReminders(producer: Producer) {
 
   // loop over lessonMembers and send messages
   lessonMap.forEach((data) => {
-    const lessonStart = dayjs(data.lesson.start).tz("Africa/Cairo");
-
-    const isStudentVerified =
-      data.members.student.phone && data.members.student.verifiedPhone;
-
-    const isTutorVerified =
-      data.members.tutor.phone && data.members.tutor.verifiedPhone;
-
-    const studentMessage = `Reminder: Your lesson with ${data.members.tutor.name} is starting in ${lessonStart.diff(now, "minutes")} minutes.
-you can join by using this link: ${router.web({
-      route: Web.Lesson,
-      id: data.lesson.id,
-      full: true,
-    })}
-          `;
-
-    const tutorMessage = `Reminder: Your lesson with ${data.members.student.name} is starting in ${lessonStart.diff(now, "minutes")} minutes.
-you can join by using this link: ${router.web({
-      route: Web.Lesson,
-      id: data.lesson.id,
-      full: true,
-    })}
-          `;
+    const lessonStart = dayjs(data.lesson.start).tz(TIMEZONE);
 
     // ======================= Send message to Students ================
 
-    if (data.members.student.enabledTelegram && isStudentVerified) {
-      const phone = data.members.student.phone;
-      producer.send({
-        topic: "telegram",
-        value: {
-          to: phone!,
-          message: studentMessage,
-        },
-      });
-    }
+    const studentMessage = `
+    Reminder: Your lesson with ${data.members.tutor.name} is starting in ${lessonStart.diff(now, "minutes")} minutes.
+    You can join by using this link: ${router.web({
+      route: Web.Lesson,
+      id: data.lesson.id,
+      full: true,
+    })}
+  `;
 
-    if (data.members.student.enabledWhatsapp && isStudentVerified) {
-      const phone = data.members.student.phone;
-      producer.send({
-        topic: "whatsapp",
-        value: {
-          to: phone!,
-          message: studentMessage,
-        },
-      });
-    }
+    if (
+      data.members.student.notificationMethod &&
+      data.members.student.phone &&
+      data.members.student.verifiedPhone
+    )
+      sendReminder(
+        producer,
+        data.members.student.notificationMethod,
+        data.members.student.phone,
+        studentMessage
+      );
 
     // =================== Send message to Tutors ================
+    const tutorMessage = `
+    Reminder: Your lesson with ${data.members.student.name} is starting in ${lessonStart.diff(now, "minutes")} minutes.
+    You can join by using this link: ${router.web({
+      route: Web.Lesson,
+      id: data.lesson.id,
+      full: true,
+    })}
+  `;
 
-    if (data.members.tutor.enabledTelegram && isTutorVerified) {
-      const phone = data.members.tutor.phone;
-      producer.send({
-        topic: "telegram",
-        value: {
-          to: phone!,
-          message: tutorMessage,
-        },
-      });
-    }
-
-    if (data.members.tutor.enabledWhatsapp && isTutorVerified) {
-      const phone = data.members.tutor.phone;
-      producer.send({
-        topic: "whatsapp",
-        value: {
-          to: phone!,
-          message: tutorMessage,
-        },
-      });
-    }
+    if (
+      data.members.tutor.notificationMethod &&
+      data.members.tutor.phone &&
+      data.members.tutor.verifiedPhone
+    )
+      sendReminder(
+        producer,
+        data.members.tutor.notificationMethod,
+        data.members.tutor.phone,
+        tutorMessage
+      );
   });
 }

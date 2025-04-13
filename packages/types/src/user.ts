@@ -63,8 +63,7 @@ export type Self = {
   creditScore: number;
   city: City | null;
   phone: string | null;
-  enabledWhatsapp: boolean;
-  enabledTelegram: boolean;
+  notificationMethod: NotificationMethod | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -84,8 +83,7 @@ export type Row = {
   credit_score: number;
   city: City | null;
   phone: string | null;
-  enabled_whatsapp: boolean;
-  enabled_telegram: boolean;
+  notification_method: number | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -105,8 +103,7 @@ export type CreatePayload = {
   address?: string;
   birthYear?: number;
   gender?: Gender;
-  enabledWhatsapp?: boolean;
-  enabledTelegram?: boolean;
+  notificationMethod?: NotificationMethod | null;
 };
 
 export type UpdatePayload = {
@@ -122,8 +119,7 @@ export type UpdatePayload = {
   creditScore?: number;
   phone?: string | null;
   city?: City | null;
-  enabledWhatsapp?: boolean;
-  enabledTelegram?: boolean;
+  notificationMethod?: NotificationMethod | null;
 };
 
 export type UpdateApiPayload = {
@@ -146,9 +142,15 @@ export type UpdateApiPayload = {
   about?: string | null;
   phone?: string | null;
   city?: City | null;
-  enabledWhatsapp?: boolean;
-  enabledTelegram?: boolean;
+  notificationMethod?: NotificationMethod | null;
 };
+
+export enum NotificationMethod {
+  whatsapp = 1,
+  welegram = 2,
+  wmail = 3,
+  wessenger = 4,
+}
 
 export enum AssetFileName {
   Image = "image",
