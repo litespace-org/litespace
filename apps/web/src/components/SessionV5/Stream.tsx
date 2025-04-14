@@ -101,6 +101,8 @@ const Stream: React.FC<{
           "flex items-center justify-center",
           // coloring (same color as #stream).
           "bg-natural-100",
+          // layout
+          "flex flex-col gap-4",
           !video ? "visible" : "invisible"
         )}
       >
@@ -113,6 +115,15 @@ const Stream: React.FC<{
         >
           <Avatar src={userImage} alt={userName} seed={userId} />
         </div>
+
+        {userName ? (
+          <Typography
+            tag="p"
+            className="text-subtitle-1 text-natural-700 font-medium"
+          >
+            {userName}
+          </Typography>
+        ) : null}
       </div>
 
       <video
@@ -168,7 +179,7 @@ const Stream: React.FC<{
       <div // Ref: https://css-tricks.com/design-considerations-text-images/
         id="user-name"
         className={cn(
-          !userName ? "invisible" : "visible",
+          userName && video ? "visible" : "invisible",
           "absolute z-stream-v2-user-name",
           "bg-natural-50 rounded-full px-2",
           {

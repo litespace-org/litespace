@@ -1356,7 +1356,7 @@ export function useSessionManager({
 
 const iceServers: RTCIceServer[] = [
   {
-    urls: "stun:stun.l.google.com:19302",
+    urls: "stun:stun.litespace.org",
   },
   {
     urls: "turn:turn.litespace.org",
@@ -2077,6 +2077,9 @@ function usePeer({
       const answer = await activePeer.createAnswer();
       await activePeer.setLocalDescription(answer);
 
+      if (!activePeer.canTrickleIceCandidates)
+        logger.error("Remote peer doesn't trickle ice");
+
       logger.log(`Share session answer (${answer.type})`);
       socket.emit(Wss.ClientEvent.SessionAnswer, { sessionId, answer });
       setActivePeer(activePeer);
@@ -2088,6 +2091,8 @@ function usePeer({
     async ({ answer }: Wss.EventPayload<Wss.ServerEvent.SessionAnswer>) => {
       logger.log(`Received an answer (${answer.type})`);
       await activePeer.setRemoteDescription(answer);
+      if (!activePeer.canTrickleIceCandidates)
+        logger.error("Remote peer doesn't trickle ice");
     },
     [logger, activePeer]
   );
