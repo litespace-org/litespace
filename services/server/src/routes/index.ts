@@ -33,5 +33,5 @@ export default {
   cache,
   session,
   availabilitySlot,
-  fawry
+  fawry,
 };

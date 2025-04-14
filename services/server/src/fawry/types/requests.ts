@@ -4,39 +4,47 @@ import {
   PaymentMethod,
 } from "@/fawry/types/ancillaries";
 
-export type GeneralRequestPayload = {
-  // The merchant code provided by FawryPay team during the account setup.
+export type BaseRequestPayload = {
+  /**
+   * The merchant code provided by FawryPay team during the account setup.
+   */
   merchantCode: string;
-  // The unique reference number for the charge request in merchant system.
+  /**
+   * The unique reference number for the charge request in merchant system.
+   */
   merchantRefNum: number;
-  // The customer mobile in merchant system: 01xxxxxxx.
+  /**
+   * The customer mobile in merchant system: 01xxxxxxx.
+   */
   customerMobile: string;
-  // The customer e-mail in merchant system: test@email.com.
+  /**
+   * The customer e-mail in merchant system: test@email.com.
+   */
   customerEmail: string;
-  // The charge amount: must be in the form of xx.xx.
+  /**
+   * The charge amount: must be in the form of xx.xx.
+   */
   amount: number;
   currencyCode: CurrencyCode;
   language: Language;
-  chargeItems: [
-    {
-      /**
-       * The id for the charge item
-       */
-      itemId: string;
-      /**
-       * Description of charge item.
-       */
-      description: string;
-      /**
-       * Price per unit charge item.
-       */
-      price: number;
-      /**
-       * Quantity of the charge items.
-       */
-      quantity: number;
-    },
-  ];
+  chargeItems: Array<{
+    /**
+     * The id for the charge item
+     */
+    itemId: string;
+    /**
+     * Description of charge item.
+     */
+    description: string;
+    /**
+     * Price per unit charge item.
+     */
+    price: number;
+    /**
+     * Quantity of the charge items.
+     */
+    quantity: number;
+  }>;
   /**
    * The SHA-256 digested for the following concatenated string "merchantCode + merchantRefNum +
    * customerProfileId (if exists, otherwise "") + paymentMethod + amount (in two decimal format
@@ -60,7 +68,7 @@ export type GeneralRequestPayload = {
   orderWebHookUrl?: string;
 };
 
-export type PayWithCardPayload = GeneralRequestPayload & {
+export type PayWithCardPayload = BaseRequestPayload & {
   paymentMethod: "CARD";
   /**
    * Card cvv code.
@@ -107,7 +115,7 @@ export type PayWithCardPayload = GeneralRequestPayload & {
  */
 type Timestamp = number;
 
-export type PayWithEWalletPayload = GeneralRequestPayload & {
+export type PayWithEWalletPayload = BaseRequestPayload & {
   paymentMethod: "MWALLET";
   /**
    * Use this element to set specific expiration time for the generated order.
@@ -118,13 +126,13 @@ export type PayWithEWalletPayload = GeneralRequestPayload & {
   paymentExpiry?: Timestamp;
 };
 
-export type PayWithRefNumPayload = GeneralRequestPayload & {
+export type PayWithRefNumPayload = BaseRequestPayload & {
   paymentMethod: "PAYATFAWRY";
   /**
    * Use this element to set specific expiration time for the generated order.
-   * After this time, the QR shall expire and the client will not be able to
-   * confirm payment throuth it. This element take value as timestamp or in
-   * the format of date in milliseconds, e.g. 1631138400000.
+   * After this time, the received reference number shall expire and the client
+   * will not be able to pay using it. This element take value as timestamp or
+   * in the format of date in milliseconds, e.g. 1631138400000.
    */
   paymentExpiry?: Timestamp;
 };

@@ -1,36 +1,29 @@
-import jsSHA from "jssha";
 import {
   CancelPaymentAuthPayload,
   CancelUnpaidOrderPayload,
   CapturePaymentPayload,
   DeleteCardTokenPayload,
-  GeneralRequestPayload,
+  BaseRequestPayload,
   ListCardTokensPayload,
   RefundPayload,
 } from "@/fawry/types/requests";
+import { createHash } from "node:crypto";
 
-function generateSignature(...data: unknown[]) {
+function generateSignature(...data: Array<string | number | undefined>) {
   // concatenate data values
   let dataString = "";
   for (const value of data) {
-    if (typeof value === "string")
-      dataString += value || "";
-    else if (value?.toString)
-      dataString += value.toString() || "";
+    if (typeof value === "string") dataString += value || "";
+    else if (value?.toString) dataString += value.toString() || "";
   }
-
   // hash the concatenated string with sha256 digest
-  let sha256 = new jsSHA('SHA-256', 'TEXT');
-  sha256.update(dataString);
-
-  // return the hashed value
-  return sha256.getHash("HEX");
+  return createHash("sha256").update(dataString).digest("hex");
 }
 
 /**
- * The SHA-256 digested for the following concatenated string "merchantCode + merchantRefNum +
+ * The SHA-256 digested for the following concatenated string: "merchantCode + merchantRefNum +
  * customerProfileId (if exists, otherwise "") + paymentMethod + amount (in two decimal format
- * 10.00) + cardNumber + cardExpiryYear + cardExpiryMonth + cvv + returnUrl + secureKey"
+ * 10.00) + (cardNumber + cardExpiryYear + cardExpiryMonth or just, cardToken) + cvv + returnUrl + secureKey"
  */
 export function forGeneralRequest(
   data: {
@@ -38,10 +31,11 @@ export function forGeneralRequest(
     cardNumber?: number;
     cardExpiryYear?: number;
     cardExpiryMonth?: number;
+    cardToken?: string;
     cvv?: number;
     returnUrl?: string;
   } & Pick<
-    GeneralRequestPayload,
+    BaseRequestPayload,
     | "merchantCode"
     | "merchantRefNum"
     | "customerProfileId"
@@ -49,15 +43,21 @@ export function forGeneralRequest(
     | "amount"
   >
 ): string {
+  const cardInfo =
+    data.cardToken ||
+    data.cardNumber
+      ?.toString()
+      .concat(
+        data.cardExpiryYear?.toString() || "",
+        data.cardExpiryMonth?.toString() || ""
+      );
   return generateSignature(
     data.merchantCode,
     data.merchantRefNum,
     data.customerProfileId,
     data.paymentMethod,
     data.amount,
-    data.cardNumber,
-    data.cardExpiryYear,
-    data.cardExpiryMonth,
+    cardInfo,
     data.cvv,
     data.returnUrl,
     data.secureKey

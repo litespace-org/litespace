@@ -150,3 +150,8 @@ export const telegramConfig = {
     .number({ message: "Missing telegram chat id" })
     .parse(Number(process.env.TELEGRAM_CHAT)),
 };
+
+export const fawryConfig = {
+  merchantCode: zod.string().parse(process.env.FAWRY_MERCHANT_CODE),
+  secureKey: zod.string().parse(process.env.FAWRY_SECURE_KEY),
+};
