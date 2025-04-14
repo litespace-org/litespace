@@ -163,6 +163,21 @@ const Main: React.FC<{
     layout,
   ]);
 
+  const memberStream = useMemo(() => {
+    const stream = session.peer.stream;
+    if (!stream) return null;
+    /**
+     * The sound will not work incase the user joined the session without his
+     * video enabled. That's why we isolate the audio tracks from the video
+     * tracks into a new stream.
+     *
+     * Tip: Try to comment out the line below and use the user stream directly.
+     * You should not hear the other user under the right conditions.
+     */
+    if (!session.member.video) return new MediaStream(stream.getAudioTracks());
+    return stream;
+  }, [session.member.video, session.peer.stream]);
+
   const videoController: Controller = useMemo(
     () => ({
       enabled: session.userMedia.video,
@@ -293,7 +308,7 @@ const Main: React.FC<{
           selfAudio={session.userMedia.audio}
           selfVideo={session.userMedia.video}
           selfSpeaking={session.userMedia.speaking}
-          memberStream={session.peer.stream}
+          memberStream={memberStream}
           memberId={member.id}
           memberName={member.name}
           memberImage={member.image}
