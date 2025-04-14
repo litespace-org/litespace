@@ -57,7 +57,7 @@
     "types": "pnpm --filter @litespace/types",
     "radio": "pnpm --filter @litespace/radio",
     "server": "pnpm --filter @litespace/server",
-    "apollo": "pnpm --filter @litespace/apollo",
+    "deployer": "pnpm --filter @litespace/deployer",
     "web": "pnpm --filter @litespace/web",
     "dashboard": "pnpm --filter @litespace/dashboard",
     "landing": "pnpm --filter @litespace/landing",

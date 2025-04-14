@@ -2,7 +2,7 @@ name: Release
 
 env:
   RELEASE_BODY: ${{ github.event.release.body }}
-  APOLLO_PROD_SECRET: ${{ secrets.APOLLO_PROD_SECRET }}
+  DEPLOYER_PROD_SECRET: ${{ secrets.DEPLOYER_PROD_SECRET }}
 
 on:
   release:
@@ -38,4 +38,4 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Start production deployment
-        run: pnpm release --release-body $"$RELEASE_BODY" --secret "$APOLLO_PROD_SECRET"
+        run: pnpm release --release-body $"$RELEASE_BODY" --secret "$DEPLOYER_PROD_SECRET"

@@ -17,7 +17,7 @@ services/server/uploads/
 services/server/coverage/
 .vercel
 
-# apollo 
+# deployer 
 config.json
 
 # radio

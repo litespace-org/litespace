@@ -169,7 +169,7 @@ To create a new package, follow these steps:
 | API server           | services/server    | 4000 |
 | Peer server          | services/server    | 4001 |
 | Messenger            | services/messenger | 4002 |
-| Apollo               | services/apollo    | 4003 |
+| Deployer             | services/deployer  | 4003 |
 | Echo                 | services/echo      | 4004 |
 | Studio               | services/studio    | 4005 |
 | Kafka UI             | System             | 4006 |
