@@ -9,6 +9,7 @@ import (
 
 type PeerId int // each client should supply the server with a unique number
 type PeersMap map[PeerId]*PeerContainer
+type PeerChansMap map[PeerId]chan *PeerContainer
 
 // this describes a peer connection between the client (producer/consumer) and the server.
 type PeerContainer struct {

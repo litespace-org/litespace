@@ -6,6 +6,7 @@ import (
 	"echo/state"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
@@ -15,7 +16,6 @@ import (
 func main() {
 	app := fiber.New()
 
-	// TODO: add cors optios
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:3000, https://app.staging.litespace.org, https://app.litespace.org, https://echo.staging.litespace.org",
 		AllowCredentials: true,
@@ -51,39 +51,40 @@ func main() {
 		candidates := make(chan string)
 
 		go func() {
-			var tmp = []string{}
 			var peer *state.PeerContainer
+			state.CountThreadsUp()
+			defer state.CountThreadsDown()
 			for {
+				c := <-candidates
+				if c == "close" {
+					return
+				}
 				if peer == nil {
-					peer = state.Get(id)
+					peer = state.GetPeer(id)
 				}
-				select {
-				case c := <-candidates:
-					if peer == nil {
-						tmp = append(tmp, c)
-					} else {
-						peer.AddIceCandidate(c)
-					}
-				default:
-					if tmp != nil && peer != nil {
-						for _, c := range tmp {
-							peer.AddIceCandidate(c)
-						}
-						tmp = nil
-					}
+				if peer == nil {
+					peer = state.WaitPeer(id)
 				}
+				peer.AddIceCandidate(c)
 			}
 		}()
 
+		timer := time.AfterFunc(30*time.Second, func() {
+			candidates <- "close"
+			c.Close()
+			state.RmvWS(id)
+		})
+		state.CountThreadsUp()
+		defer state.CountThreadsDown()
 		for {
 			msgType, msg, err := c.ReadMessage()
 			if err != nil {
 				log.Println("error:", err)
 				break
 			}
-
 			if msgType == websocket.TextMessage {
 				candidates <- string(msg)
+				timer.Reset(5 * time.Second)
 			}
 		}
 	}))

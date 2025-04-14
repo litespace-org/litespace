@@ -26,8 +26,8 @@ established before, by retrieving it from the state package.
 */
 func GetPeerConn(id int, config webrtc.Configuration) (*webrtc.PeerConnection, error) {
 	// check if the peer connection is already established
-	if state.Get(id) != nil {
-		return state.Get(id).Conn, nil
+	if state.GetPeer(id) != nil {
+		return state.GetPeer(id).Conn, nil
 	}
 
 	mediaEngine := &webrtc.MediaEngine{}
@@ -67,9 +67,9 @@ func GetPeerConn(id int, config webrtc.Configuration) (*webrtc.PeerConnection, e
 	conn.OnConnectionStateChange(func(connState webrtc.PeerConnectionState) {
 		log.Printf("Peer %d: %s", id, connState)
 		if connState == webrtc.PeerConnectionStateConnected {
-			state.Add(id, conn)
+			state.AddPeer(id, conn)
 		} else {
-			state.Remove(id)
+			state.RmvPeer(id)
 		}
 	})
 
@@ -87,7 +87,7 @@ func GetPeerConn(id int, config webrtc.Configuration) (*webrtc.PeerConnection, e
 		}
 
 		// store the track address in the state map
-		peer := state.Get(id)
+		peer := state.GetPeer(id)
 		if peer == nil {
 			log.Println("peer container not found! should never happen.")
 			return
@@ -96,6 +96,8 @@ func GetPeerConn(id int, config webrtc.Configuration) (*webrtc.PeerConnection, e
 
 		// write the buffer from the remote track in the local track simultaneously
 		rtpBuf := make([]byte, 1400)
+		state.CountThreadsUp()
+		defer state.CountThreadsDown()
 		for {
 			i, _, readErr := remoteTrack.Read(rtpBuf)
 			if readErr != nil {
@@ -139,7 +141,7 @@ if the connection cannot be closed. and nothing happens if the peer
 connection cannot be found.
 */
 func ClosePeerConn(id int) error {
-	peer := state.Get(id)
+	peer := state.GetPeer(id)
 	if peer == nil {
 		return nil
 	}

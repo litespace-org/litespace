@@ -13,7 +13,15 @@ import (
 // a fiber handler that only responds with the number of current open peer connections.
 func Stats(c *fiber.Ctx) error {
 	return c.JSON(
-		struct{ Peers int }{Peers: state.Count()},
+		struct {
+			Peers   int
+			Sockets int
+			Threads int
+		}{
+			Peers:   state.GetPeersCount(),
+			Sockets: state.GetSocketsCount(),
+			Threads: state.GetThreadsCount(),
+		},
 	)
 }
 
@@ -37,7 +45,7 @@ func Consume(c *fiber.Ctx) error {
 	// TODO: handle consume request for a producer in advance
 
 	// add the tracks of the producer to the consumer peer connection
-	producerPeer := state.Get(body.ProducerPeerId)
+	producerPeer := state.GetPeer(body.ProducerPeerId)
 
 	if producerPeer == nil {
 		return c.SendStatus(404)
@@ -61,6 +69,8 @@ func Consume(c *fiber.Ctx) error {
 		// like NACK this needs to be called.
 		go func() {
 			rtcpBuf := make([]byte, 1500)
+			state.CountThreadsUp()
+			defer state.CountThreadsDown()
 			for {
 				if _, _, rtcpErr := rtpSender.Read(rtcpBuf); rtcpErr != nil {
 					log.Printf(
@@ -109,7 +119,7 @@ func Produce(c *fiber.Ctx) error {
 		)
 	}
 
-	if state.Get(body.PeerId) != nil {
+	if state.GetPeer(body.PeerId) != nil {
 		return c.SendStatus(fiber.StatusConflict)
 	}
 

@@ -9,20 +9,29 @@ import (
 )
 
 var peers = make(PeersMap)
-var sockets = make(map[int]*websocket.Conn)
+var peer_chans = make(PeerChansMap)
 
 // Returns the number of peers (produers + consumers) in the state.
-func Count() int {
+func GetPeersCount() int {
 	return len(peers)
 }
 
 // returns a specific PeerContainer from the state map.
-func Get(id int) *PeerContainer {
+func GetPeer(id int) *PeerContainer {
 	return peers[PeerId(id)]
 }
 
+// returns a specific PeerContainer from the state map.
+func WaitPeer(id int) *PeerContainer {
+	if peer_chans[PeerId(id)] == nil {
+		peer_chans[PeerId(id)] = make(chan *PeerContainer)
+	}
+	defer delete(peer_chans, PeerId(id))
+	return <-peer_chans[PeerId(id)]
+}
+
 // add a new peer connection in the state map.
-func Add(
+func AddPeer(
 	id int,
 	conn *webrtc.PeerConnection,
 ) error {
@@ -38,7 +47,16 @@ func Add(
 	}
 
 	peers[PeerId(id)] = &container
+	if peer_chans[PeerId(id)] != nil {
+		peer_chans[PeerId(id)] <- &container
+	}
 	return nil
+}
+
+var sockets = make(map[int]*websocket.Conn)
+
+func GetSocketsCount() int {
+	return len(sockets)
 }
 
 func GetWS(id int) *websocket.Conn {
@@ -55,9 +73,13 @@ func AddWS(id int, ws *websocket.Conn) error {
 	return nil
 }
 
+func RmvWS(id int) {
+	delete(sockets, id)
+}
+
 // ensures the connection is disconnected, and clears the container
 // and its associated streams from the memory.
-func Remove(id int) error {
+func RmvPeer(id int) error {
 	container := peers[PeerId(id)]
 
 	if container == nil {
@@ -74,4 +96,18 @@ func Remove(id int) error {
 	delete(sockets, id)
 
 	return nil
+}
+
+var no_threads int = 0
+
+func GetThreadsCount() int {
+	return no_threads
+}
+
+func CountThreadsUp() {
+	no_threads += 1
+}
+
+func CountThreadsDown() {
+	no_threads -= 1
 }
