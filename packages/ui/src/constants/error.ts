@@ -2,6 +2,7 @@ import { LocalId } from "@/locales";
 import { ApiError, ApiErrorCode, FieldError } from "@litespace/types";
 
 export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
+  [ApiError.ServiceUnavailable]: "error.api.service-unavailable",
   [ApiError.Unauthenticated]: "error.api.unauthenticated",
   [ApiError.Forbidden]: "error.api.forbidden",
   [ApiError.BadRequest]: "error.api.bad-request",

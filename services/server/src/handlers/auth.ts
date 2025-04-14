@@ -5,8 +5,9 @@ import {
   emailAlreadyVerified,
   forbidden,
   notfound,
+  serviceUnavailable,
 } from "@/lib/error";
-import { knex, tutors, users } from "@litespace/models";
+import { knex, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import { hashPassword, withImageUrl } from "@/lib/user";
 import { IToken, IUser } from "@litespace/types";
@@ -133,12 +134,16 @@ async function loginWithGoogle(
   if (user && (!role || role === user.role)) return await success(user);
 
   if (role) {
+    // TODO: remove this condition once the turor onboarding is finalized.
+    if (role === IUser.Role.Tutor) return next(serviceUnavailable());
+
     const freshUser = await knex.transaction(async (tx) => {
       const user = await users.create(
         { email: data.email, role, verifiedEmail: data.verified },
         tx
       );
-      if (role === IUser.Role.Tutor) await tutors.create(user.id, tx);
+      // TODO: uncomment this once the tutor onboarding is finalized.
+      // if (role === IUser.Role.Tutor) await tutors.create(user.id, tx);
       return user;
     });
     return await success(freshUser);
