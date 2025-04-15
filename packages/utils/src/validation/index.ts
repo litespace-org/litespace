@@ -52,3 +52,5 @@ export {
   isValidContactRequestTitle,
   isValidContactRequestMessage,
 } from "@/validation/contactRequest";
+
+export { isValidConfirmationCode } from "@/validation/code";

@@ -67,3 +67,5 @@ export const TUTOR_NAME_REGEX = /^[\u0600-\u06ff\s]+$/;
  * Interview duration in minutes.
  */
 export const INTERVIEW_DURATION = 30;
+
+export const CONFIRMATION_CODE_DIGIT_COUNT = 5;
