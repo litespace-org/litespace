@@ -55,16 +55,21 @@ export class ConfirmationCodes {
     return await this.findOneBy("id", id);
   }
 
-  async findByCodeAndPurpose({
+  async find({
     tx,
-    ...payload
+    code,
+    purpose,
+    userId,
   }: WithOptionalTx<IConfirmationCode.FindPayload>): Promise<
     IConfirmationCode.Self[]
   > {
-    const rows = await this.builder(tx)
-      .select(this.columns)
-      .where({ ...payload });
+    const baseBuilder = this.builder(tx);
 
+    if (code) baseBuilder.where("code", code);
+    if (purpose) baseBuilder.where("purpose", purpose);
+    if (userId) baseBuilder.where("user_id", userId);
+
+    const rows = await baseBuilder.select(this.columns);
     return rows.map((row) => this.from(row));
   }
 
@@ -72,6 +77,9 @@ export class ConfirmationCodes {
     await this.builder(tx).delete().where(this.column("id"), id);
   }
 
+  /**
+   *  @deprecated use {@link ConfirmationCodes.deleteById}
+   */
   async deleteByCodeAndPurpose({
     tx,
     ...payload

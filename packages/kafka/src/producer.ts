@@ -1,4 +1,4 @@
-import { Kafka, Producer as BaseProducer } from "kafkajs";
+import { Kafka, Producer as BaseProducer, Partitioners } from "kafkajs";
 import { IKafka } from "@litespace/types";
 
 export class Producer {
@@ -10,7 +10,9 @@ export class Producer {
       clientId: "litespace",
       brokers: ["localhost:9092"],
     });
-    this.producer = this.kafka.producer();
+    this.producer = this.kafka.producer({
+      createPartitioner: Partitioners.LegacyPartitioner,
+    });
   }
 
   async connect() {

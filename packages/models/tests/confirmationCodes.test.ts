@@ -95,7 +95,7 @@ describe("Confirmation Codes", () => {
     });
   });
 
-  describe(nameof(confirmationCodes.findByCodeAndPurpose), () => {
+  describe(nameof(confirmationCodes.find), () => {
     it("should return code", async () => {
       await confirmationCodes.create({
         code: VALID_CODE,
@@ -103,7 +103,7 @@ describe("Confirmation Codes", () => {
         expiresAt: EXPIRY,
       });
 
-      const [code] = await confirmationCodes.findByCodeAndPurpose({
+      const [code] = await confirmationCodes.find({
         code: VALID_CODE,
         purpose: IConfirmationCode.Purpose.ResetPassword,
       });
@@ -124,7 +124,7 @@ describe("Confirmation Codes", () => {
         expiresAt: EXPIRY,
       });
 
-      const code = await confirmationCodes.findByCodeAndPurpose({
+      const code = await confirmationCodes.find({
         code: VALID_CODE,
       });
 
@@ -137,7 +137,7 @@ describe("Confirmation Codes", () => {
     });
 
     it("should return null", async () => {
-      const code = await confirmationCodes.findByCodeAndPurpose({
+      const code = await confirmationCodes.find({
         code: VALID_CODE,
         purpose: IConfirmationCode.Purpose.ResetPassword,
       });

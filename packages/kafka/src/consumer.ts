@@ -40,6 +40,7 @@ export class Consumer<T extends IKafka.TopicType> {
   }) {
     await this.consumer.subscribe({ topics, fromBeginning });
   }
+
   async run({
     eachMessage,
   }: {

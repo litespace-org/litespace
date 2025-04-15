@@ -20,6 +20,7 @@ import { Cache } from "@/api/cache";
 import { Session } from "@/api/session";
 import { ContactRequest } from "@/api/contactRequest";
 import { Fawry } from "@/api/fawry";
+import { ConfirmationCode } from "@/api/confirmationCode";
 
 export class Api {
   public readonly user: User;
@@ -42,6 +43,7 @@ export class Api {
   public readonly topic: Topic;
   public readonly session: Session;
   public readonly fawry: Fawry;
+  public readonly confirmationCode: ConfirmationCode;
 
   constructor(server: Env.Server, token: AuthToken | null) {
     const client = createClient("api", server, token);
@@ -65,5 +67,6 @@ export class Api {
     this.topic = new Topic(client);
     this.session = new Session(client);
     this.fawry = new Fawry(client);
+    this.confirmationCode = new ConfirmationCode(client);
   }
 }

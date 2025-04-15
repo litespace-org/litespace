@@ -44,6 +44,21 @@ export const illegalInvoiceUpdate = () =>
 export const emailAlreadyVerified = () =>
   error(ApiError.EmailAlreadyVerified, 400);
 
+export const phoneAlreadyVerified = () =>
+  error(ApiError.PhoneAlreadyVerified, 400);
+
+export const incorrectPhone = () => error(ApiError.IncorrectPhone, 400);
+
+export const invalidPhone = () => error(ApiError.InvalidPhone, 400);
+
+export const unResolvedPhone = () => error(ApiError.UnResolvedPhone, 403);
+
+export const expiredVerificationCode = () =>
+  error(ApiError.ExpiredVerificationCode, 410);
+
+export const invalidVerificationCode = () =>
+  error(ApiError.InvalidVerificationCode, 400);
+
 export const wrongPassword = () => error(ApiError.WrongPassword, 400);
 
 export const interviewAlreadySigned = () =>
