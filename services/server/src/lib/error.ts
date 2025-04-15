@@ -34,6 +34,8 @@ export const busyTutorManager = () => error(ApiError.BusyTutorManager, 400);
 
 export const unexpected = () => error(ApiError.Unexpected, 500);
 
+export const serviceUnavailable = () => error(ApiError.ServiceUnavailable, 503);
+
 export const illegalInvoiceUpdate = () =>
   error(ApiError.IllegalInvoiceUpdate, 400);
 
