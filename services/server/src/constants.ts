@@ -1,4 +1,4 @@
-import { IToken } from "@litespace/types";
+import { Env, IToken } from "@litespace/types";
 import { price } from "@litespace/utils/value";
 import zod from "zod";
 
@@ -7,6 +7,10 @@ export enum Environment {
   Staging = "staging",
   Production = "production",
 }
+
+const messengerEnvs = ["local", "staging", "production"] as const satisfies
+  | Env.Server[]
+  | Env.Client[];
 
 export const environment = zod
   .enum(
@@ -154,4 +158,16 @@ export const telegramConfig = {
 export const fawryConfig = {
   merchantCode: zod.string().parse(process.env.FAWRY_MERCHANT_CODE),
   secureKey: zod.string().parse(process.env.FAWRY_SECURE_KEY),
+};
+
+export const messengerConfig = {
+  server: zod.enum(messengerEnvs).parse(process.env.Messenger),
+  username: zod
+    .string({ message: "Missing Messenger Username" })
+    .trim()
+    .parse(process.env.MESSENGER_USERNAME),
+  password: zod
+    .string({ message: "Missing Messenger Password" })
+    .trim()
+    .parse(process.env.MESSENGER_PASSWORD),
 };
