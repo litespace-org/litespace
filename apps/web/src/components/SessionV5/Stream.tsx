@@ -102,7 +102,7 @@ const Stream: React.FC<{
           // coloring (same color as #stream).
           "bg-natural-100",
           // layout
-          "flex flex-col gap-4",
+          "flex flex-col gap-2",
           !video ? "visible" : "invisible"
         )}
       >
@@ -119,7 +119,10 @@ const Stream: React.FC<{
         {userName ? (
           <Typography
             tag="p"
-            className="text-subtitle-1 text-natural-700 font-medium"
+            className={cn("text-natural-700 font-medium text-center", {
+              "text-subtitle-1 ": size === "md" || size === "lg",
+              "text-caption": size === "sm",
+            })}
           >
             {userName}
           </Typography>
