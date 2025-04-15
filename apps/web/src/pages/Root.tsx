@@ -40,15 +40,11 @@ const Root: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { speed, estimate } = useInternetSpeed();
+  const { estimate } = useInternetSpeed();
 
   useEffect(() => {
     estimate();
   }, [estimate]);
-
-  useEffect(() => {
-    console.log("internet speed: ", speed, "kb/s");
-  }, [speed]);
 
   const publicRoute = useMemo(() => {
     return publicRoutes.some((route) =>

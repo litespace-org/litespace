@@ -4,3 +4,5 @@ export type FindAssetsApiResponse = {
   list: string[];
   total: number;
 };
+
+export type SampleAssetApiResponse = string;

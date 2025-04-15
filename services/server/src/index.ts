@@ -59,8 +59,6 @@ io.engine.use(
 io.engine.use(onlyForHandshake(authorizeSocket));
 io.on("connection", wssHandler);
 
-app.use("/speed-test-sample", express.static("public/sample.bmp"));
-
 app.use(
   logger(function (tokens, req, res) {
     return [

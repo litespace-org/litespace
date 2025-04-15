@@ -1,5 +1,5 @@
 import { ResponseError } from "@litespace/utils/error";
-import { AxiosError } from "axios";
+import { AxiosError, isAxiosError } from "axios";
 import { NextFunction, Request, Response } from "express";
 import { first } from "lodash";
 import { ZodError } from "zod";
@@ -74,7 +74,10 @@ export function errorHandler(
       name: "logs.json",
       caption,
     }).catch((error) => {
-      console.log(`Failed to notify error`, error);
+      console.log(
+        `Failed to notify error`,
+        isAxiosError(error) ? error.response : error
+      );
     });
 
   return res.status(statusCode).json({ message, code: errorCode });
