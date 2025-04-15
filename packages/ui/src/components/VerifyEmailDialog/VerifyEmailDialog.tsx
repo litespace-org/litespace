@@ -7,20 +7,19 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 import React, { useState } from "react";
+import { isValidConfirmationCode } from "@litespace/utils/validation";
 
 export const VerifyEmailDialog: React.FC<{
   email: string;
   open: boolean;
-  code: number;
   loading: boolean;
-  verify: (val: number) => void;
+  verify: (value: number) => void;
   close: Void;
   resend: Void;
-}> = ({ email, open, code, loading, verify, resend, close }) => {
+}> = ({ email, open, loading, verify, resend, close }) => {
   const intl = useFormatMessage();
-  const { sm, lg } = useMediaQuery();
-
-  const [newCode, setNewCode] = useState<number>(0);
+  const { sm } = useMediaQuery();
+  const [code, setCode] = useState<number>(0);
 
   return (
     <Dialog
@@ -30,7 +29,7 @@ export const VerifyEmailDialog: React.FC<{
           tag="p"
           className="text-body md:text-subtitle-1 font-bold text-natural-950"
         >
-          {intl("page.login-otp.title")}
+          {intl("verify-email-dialog.title")}
         </Typography>
       }
       open={open}
@@ -42,58 +41,50 @@ export const VerifyEmailDialog: React.FC<{
           tag="h3"
           className="text-tiny md:text-caption font-semibold text-natural-950"
         >
-          {lg
-            ? intl("page.login-otp.description.large-screens")
-            : intl("page.login-otp.description.small-screens")}
+          {intl("verify-email-dialog.desc")}
         </Typography>
         <div className="flex flex-col gap-6 justify-center text-center my-8 md:my-12">
-          <div>
-            <Typography
-              tag="span"
-              className="text-caption font-semibold text-natural-600"
-            >
-              {intl("page.login-otp-enter")}
-            </Typography>
-            &nbsp;
-            <Typography
-              tag="span"
-              className="text-caption font-semibold text-natural-950"
-            >
-              {email}
-            </Typography>
-          </div>
-          <div className="max-w-56 mx-auto">
+          <Typography
+            tag="span"
+            className="text-caption font-semibold text-natural-600"
+          >
+            {intl.rich("verify-email-dialog.email", {
+              email: <Typography tag="span">{email}</Typography>,
+            })}
+          </Typography>
+
+          <div className="mx-auto">
             <ConfirmationCode
-              code={code}
               disabled={loading}
-              setCode={(code) => setNewCode(code)}
+              setCode={(code) => {
+                setCode(code);
+                verify(code);
+              }}
             />
           </div>
-          <div>
+
+          <Button
+            onClick={resend}
+            variant="tertiary"
+            size="medium"
+            className="mx-auto"
+          >
             <Typography
               tag="span"
               className="text-caption font-semibold text-natural-600"
             >
-              {intl("page.login-otp.not-sent")}
+              {intl("verify-email-dialog.resend")}
             </Typography>
-            &nbsp;
-            <Typography
-              tag="span"
-              className="text-caption text-brand-700 font-semibold hover:cursor-pointer"
-              onClick={resend}
-            >
-              {intl("page.login-otp.resend")}
-            </Typography>
-          </div>
+          </Button>
         </div>
         <div className="flex gap-4 md:gap-6">
           <Button
-            onClick={() => verify(newCode)}
+            onClick={() => {
+              if (code) verify(code);
+            }}
             size="large"
             className="flex-1"
-            disabled={
-              loading || newCode.toString().length !== code.toString().length
-            }
+            disabled={loading || !isValidConfirmationCode(code)}
             loading={loading}
           >
             {intl("labels.confirm")}

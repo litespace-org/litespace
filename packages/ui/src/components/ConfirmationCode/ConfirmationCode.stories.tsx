@@ -18,9 +18,15 @@ type Story = StoryObj<typeof ConfirmationCode>;
 
 export const Primary: Story = {
   args: {
-    code: 12345,
     disabled: false,
-    setCode: (val) => console.log(val),
+    setCode: (value) => alert(value),
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    disabled: true,
+    setCode: (value) => alert(value),
   },
 };
 

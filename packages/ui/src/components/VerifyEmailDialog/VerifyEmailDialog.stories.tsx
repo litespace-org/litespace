@@ -1,6 +1,7 @@
 import React from "react";
 import { StoryObj, Meta } from "@storybook/react";
 import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";
+import { faker } from "@faker-js/faker/locale/ar";
 
 const meta: Meta<typeof VerifyEmailDialog> = {
   title: "VerifyEmailDialog",
@@ -19,8 +20,7 @@ type Story = StoryObj<typeof VerifyEmailDialog>;
 export const Primary: Story = {
   args: {
     open: true,
-    email: "someone@litespace.org",
-    code: 12345,
+    email: faker.internet.email(),
     loading: false,
     resend: () => alert("resending email..."),
     verify: (val) => alert(`verifing value of ${val}`),

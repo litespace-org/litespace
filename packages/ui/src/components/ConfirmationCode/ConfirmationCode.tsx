@@ -1,7 +1,10 @@
 import { PatternInput } from "@/components/PatternInput";
-import { CONFIRMATION_CODE_LENGTH } from "@/constants/number";
 import { SINGLE_NUMBER_REGEX } from "@/constants/regex";
-import { isEqual, isNaN, range } from "lodash";
+import {
+  CONFIRMATION_CODE_DIGIT_COUNT,
+  isValidConfirmationCode,
+} from "@litespace/utils";
+import { range } from "lodash";
 import React, {
   useCallback,
   useEffect,
@@ -9,112 +12,119 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export const ConfirmationCode: React.FC<{
-  code: number;
   disabled: boolean;
+  autoFocus?: boolean;
   setCode: (code: number) => void;
-}> = ({ code, disabled, setCode }) => {
-  const [newCode, setNewCode] = useState<string[]>(
-    Array(CONFIRMATION_CODE_LENGTH).fill("")
-  );
+}> = ({ disabled, setCode }) => {
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [digits, setDigits] = useState<string[]>([]);
   // State has the index of the focused input
-  const [focused, setFocused] = useState(0);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [focused, setFocused] = useState(-1);
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-  inputRefs.current = useMemo(
-    () =>
-      range(CONFIRMATION_CODE_LENGTH).map(
-        (_, index) => inputRefs.current[index] ?? null
-      ),
-    []
-  );
-
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!SINGLE_NUMBER_REGEX.test(e.target.value)) return;
-      setNewCode((prev) =>
-        prev.map((val, idx) => (idx === focused ? e.target.value : val))
-      );
-      setFocused((prev) => (prev < 4 ? prev + 1 : 4));
-    },
-    [focused]
-  );
-
-  // Handle backspace key
-  const handleBackspace = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key !== "Backspace") return;
-
-      if (newCode[focused])
-        setNewCode((prev) =>
-          prev.map((val, idx) => (idx === focused ? "" : val))
-        );
-
-      if (!newCode[focused]) {
-        setFocused((prev) => (prev > 0 ? prev - 1 : 0));
-        setNewCode((prev) =>
-          prev.map((val, idx) => (idx === focused - 1 ? "" : val))
-        );
-      }
-    },
-    [focused, newCode]
-  );
-
-  // Handle inputs states
-  const handleInputsStatus = useCallback(() => {
-    const numericalCode = parseInt(newCode.join(""));
-    if (!newCode.every((val) => !!val)) return;
-    if (isEqual(code, numericalCode)) return "success";
-    else return "error";
-  }, [code, newCode]);
-
-  // Handle paste code from clipboard
-  const handlePaste = useCallback(async () => {
-    const text = await navigator.clipboard.readText();
-    const copiedCode = text.split("");
-    const isValidCode = copiedCode.every((val) => !isNaN(parseFloat(val)));
-
-    if (!isValidCode) return;
-
-    copiedCode.forEach((num, index) => {
-      const input = inputRefs.current[index];
-      if (!input) return;
-      input.value = num.toString();
-    });
-
-    setNewCode(() => text.slice(0, 5).split(""));
+  const focus = useCallback((index: number) => {
+    const input = inputRefs.current[index];
+    if (!input) return;
+    input.focus();
+    setFocused(index);
   }, []);
 
-  useEffect(() => {
-    inputRefs.current[focused]?.focus();
-    setCode(parseInt(newCode.join("")));
-  }, [focused, newCode, setCode]);
+  const setDigit = useCallback((digit: string, index: number) => {
+    if (index >= CONFIRMATION_CODE_DIGIT_COUNT || index < 0) return;
+    setDigits((prev) => {
+      const cloned = structuredClone(prev);
+      cloned[index] = digit;
+      return cloned;
+    });
+  }, []);
+
+  const isValidCode = useCallback((digits: string[]) => {
+    const value = Number(digits.join(""));
+    return isValidConfirmationCode(value);
+  }, []);
+
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+      const value = e.target.value;
+      console.log(value);
+      if (!SINGLE_NUMBER_REGEX.test(value)) return;
+      setDigit(value, index);
+      focus(index + 1);
+    },
+    [focus, setDigit]
+  );
+
+  useHotkeys(
+    "backspace",
+    () => {
+      setDigit("", focused);
+      focus(focused - 1);
+    },
+    {
+      preventDefault: true,
+      enableOnFormTags: true,
+    },
+    [focused, setDigit, focus]
+  );
+
+  const onPaste = useCallback(async () => {
+    const text = await navigator.clipboard.readText();
+    const copiedCode = text.split("");
+    const valid = isValidCode(copiedCode);
+    if (!valid) return;
+
+    copiedCode.forEach((digit, index) => {
+      const input = inputRefs.current[index];
+      if (!input) return;
+      input.value = digit.toString();
+    });
+
+    const value = text.slice(0, CONFIRMATION_CODE_DIGIT_COUNT).split("");
+    const length = value.length;
+    focus(length - 1);
+    setDigits(value);
+  }, [focus, isValidCode]);
+
+  const code = useMemo(() => {
+    if (!isValidCode(digits)) return null;
+    return Number(digits.join(""));
+  }, [digits, isValidCode]);
 
   useEffect(() => {
-    window.addEventListener("keydown", handleBackspace);
+    if (code && !submitted && !disabled) {
+      setCode(code);
+      setSubmitted(true);
+    }
+  }, [code, disabled, setCode, submitted]);
 
-    return () => window.removeEventListener("keydown", handleBackspace);
-  }, [handleBackspace]);
+  useEffect(() => {
+    if (!code) setSubmitted(false);
+  }, [code]);
 
   return (
     <div dir="ltr" className="flex gap-4 max-w-full justify-center">
-      {range(CONFIRMATION_CODE_LENGTH).map((_, index) => (
+      {range(CONFIRMATION_CODE_DIGIT_COUNT).map((_, index) => (
         <PatternInput
           key={index}
+          autoFocus={index === 0}
           ref={(input) => (inputRefs.current[index] = input)}
-          onFocus={() => setFocused(index)}
-          value={newCode[index]}
+          onFocus={() => {
+            const input = inputRefs.current[index];
+            if (input) input.select();
+            setFocused(index);
+          }}
+          value={digits[index] || ""}
           format="#"
           idleDir="ltr"
           size={1}
-          alignText="center"
           mask=" "
-          state={handleInputsStatus()}
-          onChange={(e) => handleInputChange(e)}
-          onPaste={() => handlePaste()}
+          onChange={(e) => onChange(e, index)}
+          onPaste={onPaste}
           disabled={disabled}
-          className="w-[18px]"
+          className="w-[18px] text-center"
         />
       ))}
     </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
 import { InputType, InputAction, InputSize } from "@/components/Input/types";
@@ -16,7 +16,6 @@ export type ExtraInputProps = {
   state?: "error" | "success";
   label?: string;
   helper?: string;
-  alignText?: "start" | "center" | "end";
 };
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
@@ -35,12 +34,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       idleDir = "rtl",
       icon,
       endAction,
-      alignText = "start",
       className,
       ...props
     },
     ref
   ) => {
+    const inputInternalRef = useRef<HTMLInputElement | null>(null);
+
     return (
       <div
         className={cn(
@@ -62,6 +62,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ) : null}
         <div
           data-disabled={disabled}
+          onClick={() => {
+            inputInternalRef.current?.focus();
+          }}
           className={cn(
             // base
             "w-full px-3",
@@ -117,12 +120,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 // Disabled
                 "text-natural-500 placeholder:text-natural-500 cursor-not-allowed":
                   disabled,
-                "text-center": alignText === "center",
-                "text-end": alignText === "end",
               },
               className
             )}
-            ref={ref}
+            ref={(input) => {
+              if (typeof ref === "function") ref(input);
+              inputInternalRef.current = input;
+            }}
             {...props}
           />
           <Action disabled={disabled} action={endAction} filled={!!value} />
