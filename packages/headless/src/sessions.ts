@@ -2021,7 +2021,7 @@ function usePeer({
       if (audioTrack && transceiverKind === "audio")
         transceiver.sender.replaceTrack(audioTrack);
 
-      if (audioTrack && transceiverKind === "video")
+      if (videoTrack && transceiverKind === "video")
         transceiver.sender.replaceTrack(videoTrack);
 
       setStream((prevStream) => {

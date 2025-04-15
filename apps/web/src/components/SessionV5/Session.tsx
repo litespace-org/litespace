@@ -94,7 +94,7 @@ const Session: React.FC<{
             className="absolute bottom-4 right-4 z-session-movable-stream shadow-session-movable-stream rounded-lg"
           >
             <div
-              className="h-52"
+              className="w-60"
               style={{ aspectRatio: movableStreamAspectRatio }}
             >
               <Stream
