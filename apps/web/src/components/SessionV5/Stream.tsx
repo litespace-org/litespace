@@ -52,7 +52,8 @@ const Stream: React.FC<{
       id="stream"
       className={cn(
         "relative flex items-center justify-center bg-natural-100 rounded-2xl",
-        "w-full h-full max-h-full overflow-hidden"
+        "w-full h-full max-h-full overflow-hidden",
+        speaking && "ring-4 ring-secondary-400"
       )}
     >
       <div
