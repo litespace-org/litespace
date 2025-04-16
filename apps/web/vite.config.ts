@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from "node:path";
+import { location } from "@litespace/assets";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 const backend = process.env.VITE_BACKEND;
 const development = backend === "production";
@@ -71,6 +73,14 @@ export default defineConfig({
         // TODO: fill this array with sourcemaps files
         filesToDeleteAfterUpload: [],
       },
+    }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: location + "*.svg",
+          dest: ".",
+        },
+      ],
     }),
   ],
   resolve: {
