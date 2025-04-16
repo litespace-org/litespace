@@ -53,6 +53,7 @@ const Content: React.FC<{
 
   const notifyComingSoon = useCallback(() => {
     toast.success({
+      id: "notify-comming-soon",
       title: intl("plans.subscribe.soon.title"),
       description: intl("plans.subscribe.soon.description"),
     });

@@ -19,6 +19,7 @@ import { AuthToken, createClient } from "@/lib/client";
 import { Cache } from "@/api/cache";
 import { Session } from "@/api/session";
 import { ContactRequest } from "@/api/contactRequest";
+import { Fawry } from "@/api/fawry";
 
 export class Api {
   public readonly user: User;
@@ -40,6 +41,7 @@ export class Api {
   public readonly cache: Cache;
   public readonly topic: Topic;
   public readonly session: Session;
+  public readonly fawry: Fawry;
 
   constructor(server: Env.Server, token: AuthToken | null) {
     const client = createClient("api", server, token);
@@ -62,5 +64,6 @@ export class Api {
     this.cache = new Cache(client);
     this.topic = new Topic(client);
     this.session = new Session(client);
+    this.fawry = new Fawry(client);
   }
 }

@@ -1,54 +1,165 @@
+import { fawryConfig } from "@/constants";
 import {
   CancelPaymentAuthPayload,
   CancelUnpaidOrderPayload,
   CapturePaymentPayload,
-  DeleteCardTokenPayload,
-  GeneralRequestPayload,
-  ListCardTokensPayload,
+  BaseRequestPayload,
   RefundPayload,
+  PayWithRefNumPayload,
+  PayWithEWalletPayload,
+  PayWithCardAndBankInstallmentsPayload,
 } from "@/fawry/types/requests";
+import { createHash } from "node:crypto";
+import { PaymentMethod } from "@/fawry/types/ancillaries";
 
-function generateSignature(...data: unknown[]) {
-  let dataString = "";
-  for (const value of data) {
-    dataString += value || "";
-  }
-  return btoa(dataString);
+function generateSignature(...data: Array<string | number | undefined>) {
+  const payload = data
+    .map((value) => value?.toString())
+    .filter((value) => !!value)
+    .join("");
+  return createHash("sha256").update(payload).digest("hex");
 }
+
 /**
- * The SHA-256 digested for the following concatenated string "merchantCode + merchantRefNum +
+ * The SHA-256 digested for the following concatenated string: "merchantCode + merchantRefNum +
  * customerProfileId (if exists, otherwise "") + paymentMethod + amount (in two decimal format
- * 10.00) + cardNumber + cardExpiryYear + cardExpiryMonth + cvv + returnUrl + secureKey"
+ * 10.00) + (cardNumber + cardExpiryYear + cardExpiryMonth or just, cardToken) + cvv + returnUrl + secureKey"
  */
-export function forGeneralRequest(
+export function forPayWithCard(
   data: {
-    secureKey: string;
-    cardNumber?: number;
-    cardExpiryYear?: number;
-    cardExpiryMonth?: number;
-    cvv?: number;
-    returnUrl?: string;
-  } & Pick<
-    GeneralRequestPayload,
-    | "merchantCode"
-    | "merchantRefNum"
-    | "customerProfileId"
-    | "paymentMethod"
-    | "amount"
-  >
+    merchantRefNum: BaseRequestPayload["merchantRefNum"];
+    customerProfileId: BaseRequestPayload["customerProfileId"];
+    amount: BaseRequestPayload["amount"];
+    cvv: number;
+    returnUrl: string;
+  } & (
+    | { cardToken: string }
+    | {
+        cardNumber: string;
+        cardExpiryYear: string;
+        cardExpiryMonth: string;
+      }
+  )
 ): string {
+  const paymentMethod: PaymentMethod = "CARD";
+  const cardInfo =
+    "cardToken" in data
+      ? data.cardToken
+      : [data.cardNumber, data.cardExpiryYear, data.cardExpiryMonth].join("");
+
   return generateSignature(
-    data.merchantCode,
+    fawryConfig.merchantCode,
     data.merchantRefNum,
     data.customerProfileId,
-    data.paymentMethod,
-    data.amount,
-    data.cardNumber,
-    data.cardExpiryYear,
-    data.cardExpiryMonth,
+    paymentMethod,
+    data.amount.toFixed(2),
+    cardInfo,
     data.cvv,
     data.returnUrl,
-    data.secureKey
+    fawryConfig.secureKey
+  );
+}
+
+/**
+ * SHA-256 with the following order:
+ * 1. merchantCode
+ * 2. merchantRefNum
+ * 3. customerProfileId
+ * 4. payment ("PAYATFAWRY")
+ * 5. amount
+ * 6. secureKey
+ */
+export function forPayWithRefNum({
+  merchantRefNum,
+  customerProfileId,
+  amount,
+}: {
+  merchantRefNum: PayWithRefNumPayload["merchantRefNum"];
+  customerProfileId: PayWithRefNumPayload["customerProfileId"];
+  amount: PayWithRefNumPayload["amount"];
+}): string {
+  const paymentMethod: PaymentMethod = "PAYATFAWRY";
+  return generateSignature(
+    fawryConfig.merchantCode,
+    merchantRefNum,
+    customerProfileId,
+    paymentMethod,
+    amount.toFixed(2),
+    fawryConfig.secureKey
+  );
+}
+
+/**
+ * SHA-256 with the following order:
+ * 1. merchantCode
+ * 2. merchantRefNum
+ * 3. customerProfileId
+ * 4. payment ("MWALLET")
+ * 5. amount
+ * 6. secureKey
+ */
+export function forPayWithEWallet({
+  merchantRefNum,
+  customerProfileId,
+  amount,
+}: {
+  merchantRefNum: PayWithEWalletPayload["merchantRefNum"];
+  customerProfileId: PayWithEWalletPayload["customerProfileId"];
+  amount: PayWithEWalletPayload["amount"];
+}): string {
+  const paymentMethod: PaymentMethod = "MWALLET";
+  return generateSignature(
+    fawryConfig.merchantCode,
+    merchantRefNum,
+    customerProfileId,
+    paymentMethod,
+    amount.toFixed(2),
+    fawryConfig.secureKey
+  );
+}
+
+/**
+ * SHA-256 with the following order:
+ * 1. merchantCode
+ * 2. merchantRefNum
+ * 3. customerProfileId
+ * 4. payment ("CARD")
+ * 5. amount
+ * 7. cardToken (or cardNumber + cardExpiryYear + cardExpiryMonth)
+ * 6. secureKey
+ */
+export function forPayWithBankInstallment(
+  data: {
+    merchantRefNum: PayWithCardAndBankInstallmentsPayload["merchantRefNum"];
+    customerProfileId: PayWithCardAndBankInstallmentsPayload["customerProfileId"];
+    amount: PayWithCardAndBankInstallmentsPayload["amount"];
+    installmentPlanId: PayWithCardAndBankInstallmentsPayload["installmentPlanId"];
+    cvv: PayWithCardAndBankInstallmentsPayload["cvv"];
+  } & (
+    | { cardToken: string }
+    | {
+        cardNumber: string;
+        cardExpiryYear: string;
+        cardExpiryMonth: string;
+      }
+  )
+): string {
+  const paymentMethod: PaymentMethod = "CARD";
+  const cardInfo =
+    "cardToken" in data
+      ? data.cardToken
+      : [data.cardNumber, data.cardExpiryYear, data.cardExpiryMonth].join("");
+
+  return generateSignature(
+    fawryConfig.merchantCode,
+    data.merchantRefNum,
+    data.customerProfileId,
+    paymentMethod,
+    data.amount.toFixed(2),
+    cardInfo,
+    data.cvv,
+    data.installmentPlanId,
+    fawryConfig.secureKey
   );
 }
 
@@ -58,19 +169,14 @@ export function forGeneralRequest(
  * reason (if exists) + secureKey
  */
 export function forRefundRequest(
-  data: {
-    secureKey: string;
-  } & Pick<
-    RefundPayload,
-    "merchantCode" | "referenceNumber" | "refundAmount" | "reason"
-  >
+  data: Pick<RefundPayload, "referenceNumber" | "refundAmount" | "reason">
 ): string {
   return generateSignature(
-    data.merchantCode,
+    fawryConfig.merchantCode,
     data.referenceNumber,
     data.refundAmount,
     data.reason,
-    data.secureKey
+    fawryConfig.secureKey
   );
 }
 
@@ -78,15 +184,11 @@ export function forRefundRequest(
  * The SHA-256 digested for the following concatenated string merchantCode +
  * customerProfileId + secureKey
  */
-export function forListCardTokensRequest(
-  data: {
-    secureKey: string;
-  } & Pick<ListCardTokensPayload, "merchantCode" | "customerProfileId">
-): string {
+export function forListCardTokensRequest(customerProfileId: number): string {
   return generateSignature(
-    data.merchantCode,
-    data.customerProfileId,
-    data.secureKey
+    fawryConfig.merchantCode,
+    customerProfileId,
+    fawryConfig.secureKey
   );
 }
 
@@ -94,15 +196,11 @@ export function forListCardTokensRequest(
  * The SHA-256 digested for the following concatenated string merchantCode +
  * customerProfileId + secureKey
  */
-export function forDeleteCardTokenRequest(
-  data: {
-    secureKey: string;
-  } & Pick<DeleteCardTokenPayload, "merchantCode" | "customerProfileId">
-): string {
+export function forDeleteCardTokenRequest(customerProfileId: number): string {
   return generateSignature(
-    data.merchantCode,
-    data.customerProfileId,
-    data.secureKey
+    fawryConfig.merchantCode,
+    customerProfileId,
+    fawryConfig.secureKey
   );
 }
 
@@ -111,15 +209,16 @@ export function forDeleteCardTokenRequest(
  * (orderRefNo + merchantAccount + lang + secureKey
  */
 export function forCancelUnpaidOrderRequest(
-  data: {
-    secureKey: string;
-  } & Pick<CancelUnpaidOrderPayload, "orderRefNo" | "merchantAccount" | "lang">
+  data: Pick<
+    CancelUnpaidOrderPayload,
+    "orderRefNo" | "merchantAccount" | "lang"
+  >
 ): string {
   return generateSignature(
     data.orderRefNo,
     data.merchantAccount,
     data.lang,
-    data.secureKey
+    fawryConfig.secureKey
   );
 }
 
@@ -128,18 +227,13 @@ export function forCancelUnpaidOrderRequest(
  * (if exist in two decimal format 10.00, otherwise "") + merchantCode + secureKey"
  */
 export function forCapturePaymentRequest(
-  data: {
-    secureKey: string;
-  } & Pick<
-    CapturePaymentPayload,
-    "merchantRefNum" | "captureAmount" | "merchantCode"
-  >
+  data: Pick<CapturePaymentPayload, "merchantRefNum" | "captureAmount">
 ): string {
   return generateSignature(
     data.merchantRefNum,
     data.captureAmount,
-    data.merchantCode,
-    data.secureKey
+    fawryConfig.merchantCode,
+    fawryConfig.secureKey
   );
 }
 
@@ -147,13 +241,11 @@ export function forCapturePaymentRequest(
  * The SHA-256 digested for the following concatenated string "merchantRefNum + merchantCode + secureKey"
  */
 export function forCancelPaymentAuthRequest(
-  data: {
-    secureKey: string;
-  } & Pick<CancelPaymentAuthPayload, "merchantRefNum" | "merchantCode">
+  merchantRefNum: CancelPaymentAuthPayload["merchantRefNum"]
 ): string {
   return generateSignature(
-    data.merchantRefNum,
-    data.merchantCode,
-    data.secureKey
+    merchantRefNum,
+    fawryConfig.merchantCode,
+    fawryConfig.secureKey
   );
 }

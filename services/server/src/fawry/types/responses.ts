@@ -3,7 +3,7 @@ import {
   PaymentMethod,
   VerStatus,
 } from "@/fawry/types/ancillaries";
-import { CancelPaymentErrorCode, ErrorCode } from "@/fawry/types/errors";
+import { FawryStatusCode } from "@/fawry/types/errors";
 
 type GeneralResponse = {
   /**
@@ -14,7 +14,7 @@ type GeneralResponse = {
   /**
    * The response status code.
    */
-  statusCode: ErrorCode;
+  statusCode: FawryStatusCode;
   /**
    * Exact description of the status of FawryPay response.
    */
@@ -252,7 +252,7 @@ export type ListCardTokensResponse = GeneralResponse & {
 export type DeleteCardTokenResponse = GeneralResponse & {};
 
 export type CancelUnpaidOrderResponse = {
-  code: CancelPaymentErrorCode;
+  code: number;
   description: string;
   reason: string;
 };
@@ -459,7 +459,7 @@ export type GetPaymentStatusResponse = {
    * Number of Months for the instalment
    */
   installmentMonths: number;
-  failureErrorCode: ErrorCode;
+  failureErrorCode: FawryStatusCode;
   failureReason: string;
   /**
    * The SHA-256 digested for the following concatenated string fawryRefNumber + merchantRefNum +

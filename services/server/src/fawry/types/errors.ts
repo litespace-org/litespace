@@ -1,52 +1,207 @@
-export enum ErrorCode {
-  INVALID_MECHANT_CODE = 9901,
-  ORDER_NOT_FOUND = 9938,
-  INVALID_SIGNATURE = 9946,
-  REFUND_AMOUNT_EXCEEDED = 9935,
-  ORDER_NOT_PAID = 9954,
-  TRANSACTION_REFUSED = 99901 | 99905 | 99937 | 99939 | 99970 | 99971 | 99975,
-  TRANSACTION_INCORRECT = 99903,
-  CARD_LOST_OR_STOLEN = 99904,
-  FRAUD_CARD = 99906,
-  TRANSACTION_DECLINED = 99907,
-  TRANSACTION_FAILED = 99908 | 99910,
-  PROCESSING_CARD_ERROR = 99912,
-  TRANSACTION_INCORRECT_AMOUNT = 99913,
-  INVALID_CARD = 99914,
-  CARD_ISSUER_NOT_FOUND = 99915,
-  ISSUER_NOT_RESPONDING = 99922,
-  ACCOUNT_SETUP_ERROR = 99930,
-  CARD_NOT_ALLOWED_BY_BANK = 99931 | 99957,
-  FRAUD_CARD_SUSPECTED = 99934 | 99967,
-  LOST_CARD_NUMBER = 99941,
-  CARD_NOT_ALLOWED = 99942,
-  STOLEN_CARD = 99943,
-  ONLINE_TRANSACTIONS_NOT_ALLOWED = 99949,
-  INSUFFICIENT_FUNDS = 99951,
-  EXPIRED_CARD = 99954,
-  INCORRECT_PIN_CODE = 99955,
-  CARD_NOT_FOUND = 99956,
-  ACCOUNT_CONFIG_ERROR = 99958,
-  FRAUDULENT_TRANSACTION = 99959,
-  CARD_LIMIT_EXCEEDED = 99961 | 99965,
-  INVALID_CARD_IN_REGION = 99962,
-  SECURITY_CHECKS_VIOLATION = 99963,
-  TRANSACTION_ERROR = 99976 | 99977 | 99978 | 99979 | 99980 | 99981 | 99987,
-  TRANSACTION_ERROR_FROM_BANK = 99984,
-  NOT_ALLOWED_AMOUNT = 99985 | 21010,
-  BANK_TECHNICAL_ERROR = 99986 | 99988 | 99989,
-  BANK_CONTACTING_ERROR = 99991,
-  TRANSACTION_ROUTE_ERROR = 99992,
-  TECHNICAL_ERROR = 99994 | 99996,
-  UNAUTHORIZED_CARD = 55006,
-  INVALID_AMOUNT = 21004,
+export enum FawryStatusEnum {
+  Ok,
+  InvalidMechantCode,
+  OrderNotFound,
+  InvalidSignature,
+  RefundAmountExceeded,
+  OrderNotPaid,
+  TransactionRefused,
+  TransactionIncorrect,
+  CardLostOrStolen,
+  FraudCard,
+  TransactionDeclined,
+  TransactionFailed,
+  ProcessingCardError,
+  TransactionIncorrectAmount,
+  InvalidCard,
+  CardIssuerNotFound,
+  IssuerNotResponding,
+  AccountSetupError,
+  CardNotAllowedByBank,
+  FraudCardSuspected,
+  LostCardNumber,
+  CardNotAllowed,
+  StolenCard,
+  OnlineTransactionsNotAllowed,
+  InsufficientFunds,
+  ExpiredCard,
+  IncorrectPinCode,
+  CardNotFound,
+  AccountConfigError,
+  FraudulentTransaction,
+  CardLimitExceeded,
+  InvalidCardInRegion,
+  SecurityChecksViolation,
+  TransactionError,
+  TransactionErrorFromBank,
+  NotAllowedAmount,
+  BankTechnicalError,
+  BankContactingError,
+  TransactionRouteError,
+  TechnicalError,
+  UnauthorizedCard,
+  InvalidAmount,
 }
 
-export enum CancelPaymentErrorCode {
-  UNAUTHORIZED = 401,
-  ORDER_NOT_FOUND = 404 | 9938,
-  ORDER_ALREADY_PAID = 400,
-  ORDER_ALREADY_CANCELLED = 400 | 9984,
-  INVALID_MERCHANT_CODE = 9901,
-  INVALID_SIGNATURE = 9946,
+export type FawryStatusCode =
+  | 200
+  | 9901
+  | 9938
+  | 9946
+  | 9935
+  | 9954
+  | 99901
+  | 99905
+  | 99937
+  | 99939
+  | 99970
+  | 99971
+  | 99975
+  | 99903
+  | 99904
+  | 99906
+  | 99907
+  | 99908
+  | 99910
+  | 99912
+  | 99913
+  | 99914
+  | 99915
+  | 99922
+  | 99930
+  | 99931
+  | 99957
+  | 99934
+  | 99967
+  | 99941
+  | 99942
+  | 99943
+  | 99949
+  | 99951
+  | 99954
+  | 99955
+  | 99956
+  | 99958
+  | 99959
+  | 99961
+  | 99965
+  | 99962
+  | 99963
+  | 99976
+  | 99977
+  | 99978
+  | 99979
+  | 99980
+  | 99981
+  | 99987
+  | 99984
+  | 99985
+  | 21010
+  | 99986
+  | 99988
+  | 99989
+  | 99991
+  | 99992
+  | 99994
+  | 99996
+  | 55006
+  | 21004;
+
+export const FawryStatusMap: Record<FawryStatusCode, FawryStatusEnum> =
+  Object.freeze({
+    200: FawryStatusEnum.Ok,
+    9901: FawryStatusEnum.InvalidMechantCode,
+    9938: FawryStatusEnum.OrderNotFound,
+    9946: FawryStatusEnum.InvalidSignature,
+    9935: FawryStatusEnum.RefundAmountExceeded,
+    9954: FawryStatusEnum.OrderNotPaid,
+    99901: FawryStatusEnum.TransactionRefused,
+    99905: FawryStatusEnum.TransactionRefused,
+    99937: FawryStatusEnum.TransactionRefused,
+    99939: FawryStatusEnum.TransactionRefused,
+    99970: FawryStatusEnum.TransactionRefused,
+    99971: FawryStatusEnum.TransactionRefused,
+    99975: FawryStatusEnum.TransactionRefused,
+    99903: FawryStatusEnum.TransactionIncorrect,
+    99904: FawryStatusEnum.CardLostOrStolen,
+    99906: FawryStatusEnum.FraudCard,
+    99907: FawryStatusEnum.TransactionDeclined,
+    99908: FawryStatusEnum.TransactionFailed,
+    99910: FawryStatusEnum.TransactionFailed,
+    99912: FawryStatusEnum.ProcessingCardError,
+    99913: FawryStatusEnum.TransactionIncorrectAmount,
+    99914: FawryStatusEnum.InvalidCard,
+    99915: FawryStatusEnum.CardIssuerNotFound,
+    99922: FawryStatusEnum.IssuerNotResponding,
+    99930: FawryStatusEnum.AccountSetupError,
+    99931: FawryStatusEnum.CardNotAllowedByBank,
+    99957: FawryStatusEnum.CardNotAllowedByBank,
+    99934: FawryStatusEnum.FraudCardSuspected,
+    99967: FawryStatusEnum.FraudCardSuspected,
+    99941: FawryStatusEnum.LostCardNumber,
+    99942: FawryStatusEnum.CardNotAllowed,
+    99943: FawryStatusEnum.StolenCard,
+    99949: FawryStatusEnum.OnlineTransactionsNotAllowed,
+    99951: FawryStatusEnum.InsufficientFunds,
+    99954: FawryStatusEnum.ExpiredCard,
+    99955: FawryStatusEnum.IncorrectPinCode,
+    99956: FawryStatusEnum.CardNotFound,
+    99958: FawryStatusEnum.AccountConfigError,
+    99959: FawryStatusEnum.FraudulentTransaction,
+    99961: FawryStatusEnum.CardLimitExceeded,
+    99965: FawryStatusEnum.CardLimitExceeded,
+    99962: FawryStatusEnum.InvalidCardInRegion,
+    99963: FawryStatusEnum.SecurityChecksViolation,
+    99976: FawryStatusEnum.TransactionError,
+    99977: FawryStatusEnum.TransactionError,
+    99978: FawryStatusEnum.TransactionError,
+    99979: FawryStatusEnum.TransactionError,
+    99980: FawryStatusEnum.TransactionError,
+    99981: FawryStatusEnum.TransactionError,
+    99987: FawryStatusEnum.TransactionError,
+    99984: FawryStatusEnum.TransactionErrorFromBank,
+    99985: FawryStatusEnum.NotAllowedAmount,
+    21010: FawryStatusEnum.NotAllowedAmount,
+    99986: FawryStatusEnum.BankTechnicalError,
+    99988: FawryStatusEnum.BankTechnicalError,
+    99989: FawryStatusEnum.BankTechnicalError,
+    99991: FawryStatusEnum.BankContactingError,
+    99992: FawryStatusEnum.TransactionRouteError,
+    99994: FawryStatusEnum.TechnicalError,
+    99996: FawryStatusEnum.TechnicalError,
+    55006: FawryStatusEnum.UnauthorizedCard,
+    21004: FawryStatusEnum.InvalidAmount,
+  });
+
+export enum CancelPaymentErrorEnum {
+  Unauthorized,
+  OrderNotFound,
+  OrderAlreadyPaid,
+  OrderAlreadyCancelled,
+  InvalidMerchantCode,
+  InvalidSignature,
 }
+
+export type CancelPaymentErrorCode =
+  | 401
+  | 404
+  | 9938
+  | 400
+  | 9984
+  | 9901
+  | 9946;
+
+export const CancelPaymentErrorCode: Record<
+  CancelPaymentErrorCode,
+  CancelPaymentErrorEnum
+> = Object.freeze({
+  401: CancelPaymentErrorEnum.Unauthorized,
+  404: CancelPaymentErrorEnum.OrderNotFound,
+  9938: CancelPaymentErrorEnum.OrderNotFound,
+  400:
+    CancelPaymentErrorEnum.OrderAlreadyPaid |
+    CancelPaymentErrorEnum.OrderAlreadyCancelled,
+  9984: CancelPaymentErrorEnum.OrderAlreadyCancelled,
+  9901: CancelPaymentErrorEnum.InvalidMerchantCode,
+  9946: CancelPaymentErrorEnum.InvalidSignature,
+});
