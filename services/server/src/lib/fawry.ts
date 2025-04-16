@@ -5,48 +5,40 @@ import { IUser } from "@litespace/types";
 
 export function forgeFawryPayload({
   merchantRefNum,
-  amount,
   paymentMethod,
+  chargeItems = [],
+  description = "",
+  signature,
+  amount,
   user,
-  chargeItems,
-  description,
-  orderWebHookUrl,
 }: {
-  merchantRefNum: number;
-  amount: number;
-  paymentMethod: PaymentMethod;
-  user: IUser.Self;
-  signature?: string;
   chargeItems?: BaseRequestPayload["chargeItems"];
+  paymentMethod: PaymentMethod;
+  merchantRefNum: number;
   description?: string;
-  orderWebHookUrl?: string;
-}): Omit<BaseRequestPayload, "signature"> | Error {
-  if (user.name === null || user.phone === null) {
-    return new Error("username and phone cannot be null.");
-  }
+  signature: string;
+  user: IUser.Self;
+  amount: number;
+}): BaseRequestPayload {
+  if (user.name === null || user.phone === null)
+    throw new Error(
+      "User name or phone number is missing; should never happen."
+    );
+
   return {
     merchantRefNum,
     paymentMethod,
-    amount,
-
     customerProfileId: user.id,
     customerName: user.name,
     customerMobile: user.phone,
     customerEmail: user.email,
-
-    chargeItems: chargeItems || [
-      {
-        itemId: "LiteSpace Subscription",
-        description: "",
-        price: amount,
-        quantity: 1,
-      },
-    ],
-    description: description || "",
-    orderWebHookUrl,
-
+    chargeItems,
+    description,
+    orderWebHookUrl: "/todo",
     currencyCode: "EGP",
     language: "ar-eg",
+    amount,
     merchantCode: fawryConfig.merchantCode,
+    signature,
   };
 }

@@ -8,16 +8,10 @@ import { IFawry } from "@litespace/types";
 import { fawryApi } from "@/fawry/api";
 import { bad, forbidden } from "@/lib/error";
 import { forgeFawryPayload } from "@/lib/fawry";
-import { signature } from "@/fawry/lib";
+import { genSignature } from "@/fawry/lib";
 import { fawryConfig } from "@/constants";
 import { datetime } from "@/validation/utils";
 import dayjs from "@/lib/dayjs";
-import {
-  CancelUnpaidOrderPayload,
-  DeleteCardTokenPayload,
-  ListCardTokensPayload,
-  RefundPayload,
-} from "@/fawry/types/requests";
 
 const payWithCardPayload = zod.object({
   amount: zod.number(),
@@ -67,10 +61,21 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
 
   // TODO: store transaction in the database
 
+  const txId = Math.floor(Math.random() * 1000); // TODO: get transaction id from the db
+  const signature = genSignature.forPayWithCard({
+    amount: payload.amount,
+    cardToken: payload.cardToken,
+    cvv: payload.cvv,
+    returnUrl: "todo",
+    customerProfileId: user.id,
+    merchantRefNum: txId,
+  });
+
   const forgedPayload = forgeFawryPayload({
-    merchantRefNum: Math.floor(Math.random() * 1000), // TODO: get transaction id from the db
+    merchantRefNum: txId,
     paymentMethod: "CARD",
     amount: payload.amount,
+    signature,
     user,
   });
   if (forgedPayload instanceof Error) return next(bad());
@@ -84,10 +89,6 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
       returnUrl: payload.returnUrl,
       enable3DS: true,
       authCaptureModePayment: true,
-      signature: signature.forGeneralRequest({
-        secureKey: fawryConfig.secureKey,
-        ...forgedPayload,
-      }),
     });
 
   // TODO: store orderRefNumber in the transaction row
@@ -110,14 +111,18 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
   const payload = payWithRefNumPayload.parse(req.body);
 
   // TODO: store transaction in the database
-
+  const txId = Math.floor(Math.random() * 1000);
   const forgedPayload = forgeFawryPayload({
-    merchantRefNum: Math.floor(Math.random() * 1000), // TODO: get transaction id from the db
+    merchantRefNum: txId,
     paymentMethod: "PAYATFAWRY",
     amount: payload.amount,
+    signature: genSignature.forPayWithRefNum({
+      merchantRefNum: txId,
+      amount: payload.amount,
+      customerProfileId: user.id,
+    }),
     user,
   });
-  if (forgedPayload instanceof Error) return next(bad());
 
   const {
     orderStatus,
@@ -133,10 +138,6 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
     paymentExpiry: payload.paymentExpirey
       ? dayjs(payload.paymentExpirey).utc().unix()
       : undefined,
-    signature: signature.forGeneralRequest({
-      secureKey: fawryConfig.secureKey,
-      ...forgedPayload,
-    }),
   });
 
   // TODO: store orderRefNumber in the transaction row
@@ -163,11 +164,17 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
   const payload = payWithEWalletPayload.parse(req.body);
 
   // TODO: store transaction in the database
+  const txId = Math.floor(Math.random() * 1000);
 
   const forgedPayload = forgeFawryPayload({
-    merchantRefNum: Math.floor(Math.random() * 1000), // TODO: get transaction id from the db
+    merchantRefNum: txId,
     paymentMethod: "MWALLET",
     amount: payload.amount,
+    signature: genSignature.forPayWithEWallet({
+      merchantRefNum: txId,
+      amount: payload.amount,
+      customerProfileId: user.id,
+    }),
     user,
   });
   if (forgedPayload instanceof Error) return next(bad());
@@ -184,10 +191,6 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
     paymentExpiry: payload.paymentExpirey
       ? dayjs(payload.paymentExpirey).utc().unix()
       : undefined,
-    signature: signature.forGeneralRequest({
-      secureKey: fawryConfig.secureKey,
-      ...forgedPayload,
-    }),
   });
 
   // TODO: store orderRefNumber in the transaction row
@@ -215,12 +218,20 @@ async function payWithBankInstallments(
   const payload = payWithBankInstallmentsPayload.parse(req.body);
 
   // TODO: store transaction in the database
-
+  const txId = Math.floor(Math.random() * 1000); // TODO: get transaction id from the db
   const forgedPayload = forgeFawryPayload({
-    merchantRefNum: Math.floor(Math.random() * 1000), // TODO: get transaction id from the db
+    merchantRefNum: txId,
     paymentMethod: "CARD",
     amount: payload.amount,
     user,
+    signature: genSignature.forPayWithBankInstallment({
+      merchantRefNum: txId,
+      amount: payload.amount,
+      cvv: payload.cvv,
+      cardToken: payload.cardToken,
+      customerProfileId: user.id,
+      installmentPlanId: 1,
+    }),
   });
   if (forgedPayload instanceof Error) return next(bad());
 
@@ -242,10 +253,6 @@ async function payWithBankInstallments(
     returnUrl: payload.returnUrl,
     enable3DS: true,
     authCaptureModePayment: true,
-    signature: signature.forGeneralRequest({
-      secureKey: fawryConfig.secureKey,
-      ...forgedPayload,
-    }),
   });
 
   // TODO: store orderRefNumber in the transaction row
@@ -275,17 +282,14 @@ async function cancelUnpaidOrder(
 
   const payload = cancelUnpaidOrderPayload.parse(req.body);
 
-  const forgedPayload: Omit<CancelUnpaidOrderPayload, "signature"> = {
+  const { code, description, reason } = await fawryApi.cancelUnpaidOrder({
     merchantAccount: fawryConfig.merchantCode,
     orderRefNo: payload.orderRefNum,
     lang: "ar-eg",
-  };
-
-  const { code, description, reason } = await fawryApi.cancelUnpaidOrder({
-    ...forgedPayload,
-    signature: signature.forCancelUnpaidOrderRequest({
-      secureKey: fawryConfig.secureKey,
-      ...forgedPayload,
+    signature: genSignature.forCancelUnpaidOrderRequest({
+      orderRefNo: "1",
+      lang: "ar-eg",
+      merchantAccount: fawryConfig.merchantCode,
     }),
   });
 
@@ -307,18 +311,15 @@ async function refund(req: Request, res: Response, next: NextFunction) {
 
   const payload = refundPayload.parse(req.body);
 
-  const forgedPayload: Omit<RefundPayload, "signature"> = {
+  const { statusCode, statusDescription } = await fawryApi.refund({
     merchantCode: fawryConfig.merchantCode,
     referenceNumber: payload.orderRefNum,
     refundAmount: payload.refundAmount,
     reason: payload.reason,
-  };
-
-  const { statusCode, statusDescription } = await fawryApi.refund({
-    ...forgedPayload,
-    signature: signature.forRefundRequest({
-      secureKey: fawryConfig.secureKey,
-      ...forgedPayload,
+    signature: genSignature.forRefundRequest({
+      referenceNumber: payload.orderRefNum,
+      reason: payload.reason,
+      refundAmount: payload.refundAmount,
     }),
   });
 
@@ -337,18 +338,11 @@ async function listCardTokens(req: Request, res: Response, next: NextFunction) {
   const allowed = isRegularUser(user);
   if (!allowed) return next(forbidden());
 
-  const forgedPayload: Omit<ListCardTokensPayload, "signature"> = {
-    merchantCode: fawryConfig.merchantCode,
-    customerProfileId: user.id,
-  };
-
   const { cards, statusCode, statusDescription } =
     await fawryApi.listCardTokens({
-      ...forgedPayload,
-      signature: signature.forListCardTokensRequest({
-        secureKey: fawryConfig.secureKey,
-        ...forgedPayload,
-      }),
+      merchantCode: fawryConfig.merchantCode,
+      customerProfileId: user.id,
+      signature: genSignature.forListCardTokensRequest(user.id),
     });
 
   const response: IFawry.ListCardTokensResponse = {
@@ -371,18 +365,11 @@ async function deleteCardToken(
 
   const payload = deleteCardTokenPayload.parse(req.body);
 
-  const forgedPayload: Omit<DeleteCardTokenPayload, "signature"> = {
+  const { statusCode, statusDescription } = await fawryApi.deleteCardToken({
     merchantCode: fawryConfig.merchantCode,
     customerProfileId: user.id,
     cardToken: payload.cardToken,
-  };
-
-  const { statusCode, statusDescription } = await fawryApi.deleteCardToken({
-    ...forgedPayload,
-    signature: signature.forDeleteCardTokenRequest({
-      secureKey: fawryConfig.secureKey,
-      ...forgedPayload,
-    }),
+    signature: genSignature.forDeleteCardTokenRequest(user.id),
   });
 
   const response: IFawry.DeleteCardTokenResponse = {

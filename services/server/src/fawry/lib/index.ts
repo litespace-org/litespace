@@ -1,1 +1,1 @@
-export * as signature from "@/fawry/lib/signature";
+export * as genSignature from "@/fawry/lib/signature";

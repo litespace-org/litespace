@@ -7,12 +7,7 @@ import { Web } from "@litespace/utils/routes";
  */
 export function getAddCardIntegrationURL(userId: number, returnUrl?: string) {
   const accNo = env.fawryAccountNumber;
-  const url =
-    returnUrl ||
-    router.web({
-      route: Web.Root,
-      full: true,
-    });
+  const url = returnUrl || router.web({ route: Web.Root, full: true });
   const base =
     env.client === "production"
       ? "https://www.atfawry.com/atfawry/plugin/card-token"
