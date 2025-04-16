@@ -4,8 +4,10 @@
   "description": "LiteSpace static assets collection",
   "private": true,
   "scripts": {
-    "build": "svgr --out-dir dist --ext tsx --typescript --jsx-runtime automatic --template svg-template.js --memo -- assets",
+    "build:svg": "svgr --out-dir dist --ext tsx --typescript --jsx-runtime automatic --template svg-template.js --memo -- assets",
+    "build": "pnpm build:svg && pnpm types",
     "exports": "vite-node scripts/exports.ts",
+    "types": "vite-node scripts/types.ts",
     "view:svg": "vite-node scripts/view.ts"
   },
   "keywords": [],
@@ -17,6 +19,11 @@
     "vite-node": "^2.1.2"
   },
   "exports": {
+    ".": {
+      "import": "./dist/index.esm.mjs",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
+    },
     "./AstroStudent1": "./dist/AstroStudent1.tsx",
     "./AstroStudent2": "./dist/AstroStudent2.tsx",
     "./AstroStudent3": "./dist/AstroStudent3.tsx",
