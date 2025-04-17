@@ -36,12 +36,12 @@ const Content: React.FC = () => {
       </Section>
 
       <Section>
-        <Title id="terms/body/account-register/title" />
+        <Title id="terms/body/privacy-and-protection/title" />
         <Text id="terms/body/privacy-and-protection/content" />
       </Section>
 
       <Section>
-        <Title id="terms/body/account-register/title" />
+        <Title id="terms/body/payment-and-subscription/title" />
 
         <BulletList
           items={[
@@ -49,14 +49,9 @@ const Content: React.FC = () => {
             intl("terms/body/payment-and-subscription/content/2"),
             intl("terms/body/payment-and-subscription/content/3"),
             intl("terms/body/payment-and-subscription/content/4"),
+            intl("terms/body/payment-and-subscription/content/5"),
           ]}
         />
-      </Section>
-
-      <Section>
-        <Title id="terms/body/payments/title" />
-        <Text id="terms/body/payments/desc/1" />
-        <Text id="terms/body/payments/desc/2" />
       </Section>
 
       <Section>
