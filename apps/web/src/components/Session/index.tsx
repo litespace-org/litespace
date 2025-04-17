@@ -183,12 +183,15 @@ const Main: React.FC<{
       enabled: session.userMedia.video,
       toggle: onVideoToggle,
       error:
-        !devices.info.camera.connected || !devices.info.camera.permissioned,
+        !devices.info.camera.connected ||
+        !devices.info.camera.permissioned ||
+        !session.userMedia.hasVideoTracks,
     }),
     [
+      session.userMedia.video,
+      session.userMedia.hasVideoTracks,
       devices.info.camera.connected,
       devices.info.camera.permissioned,
-      session.userMedia.video,
       onVideoToggle,
     ]
   );
@@ -199,13 +202,15 @@ const Main: React.FC<{
       toggle: onToggleAudio,
       error:
         !devices.info.microphone.connected ||
-        !devices.info.microphone.permissioned,
+        !devices.info.microphone.permissioned ||
+        !session.userMedia.hasAudioTracks,
     }),
     [
+      session.userMedia.audio,
+      session.userMedia.hasAudioTracks,
+      onToggleAudio,
       devices.info.microphone.connected,
       devices.info.microphone.permissioned,
-      session.userMedia.audio,
-      onToggleAudio,
     ]
   );
 
