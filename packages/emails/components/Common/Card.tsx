@@ -7,9 +7,9 @@ const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <Container
       className={cn(
         "p-6 rounded-[16px] bg-natural-50 max-w-[504px]",
-        "flex flex-col items-center justify-center text-center",
-        "shadow-[0px_4px_20px_0px_#00000014]"
+        "flex flex-col items-center justify-center text-center"
       )}
+      style={{ border: "1px solid #cccccc" }}
     >
       {children}
     </Container>
