@@ -31,9 +31,11 @@ import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/utils/time";
 import { randomUUID } from "crypto";
 import { confirmationCodes } from "@/confirmationCodes";
+import { transactions } from "@/transactions";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await transactions.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
