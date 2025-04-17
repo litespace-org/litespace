@@ -353,6 +353,7 @@ export default {
       "tutor-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       slot: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
       "session-movable-stream": "0px 4px 20px 0px rgba(0, 0, 0, 0.10)",
+      table: "0px 4px 20px 0px rgba(0, 0, 0, .08)",
     },
   },
   plugins: [
