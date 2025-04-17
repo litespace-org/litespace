@@ -49,7 +49,6 @@ export const ConfirmationCode: React.FC<{
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
       const value = e.target.value;
-      console.log(value);
       if (!SINGLE_NUMBER_REGEX.test(value)) return;
       setDigit(value, index);
       focus(index + 1);
@@ -105,7 +104,7 @@ export const ConfirmationCode: React.FC<{
   }, [code]);
 
   return (
-    <div dir="ltr" className="flex gap-4 max-w-full justify-center">
+    <div dir="ltr" className="w-[284px] flex gap-4 max-w-full justify-center">
       {range(CONFIRMATION_CODE_DIGIT_COUNT).map((_, index) => (
         <PatternInput
           key={index}
