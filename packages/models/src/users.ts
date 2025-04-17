@@ -23,8 +23,7 @@ export class Users {
         role: user.role,
         verified_email: user.verifiedEmail,
         verified_phone: user.verifiedPhone,
-        enabled_telegram: user.enabledTelegram,
-        enabled_whatsapp: user.enabledWhatsapp,
+        notification_method: user.notificationMethod,
         created_at: now,
         updated_at: now,
       },
@@ -56,8 +55,7 @@ export class Users {
         phone: payload.phone,
         city: payload.city,
         credit_score: payload.creditScore,
-        enabled_telegram: payload.enabledTelegram,
-        enabled_whatsapp: payload.enabledWhatsapp,
+        notification_method: payload.notificationMethod,
         updated_at: now,
       })
       .where("id", id)
@@ -178,8 +176,7 @@ export class Users {
       creditScore: row.credit_score,
       phone: row.phone,
       city: row.city,
-      enabledWhatsapp: row.enabled_whatsapp,
-      enabledTelegram: row.enabled_telegram,
+      notificationMethod: row.notification_method,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

@@ -18,8 +18,13 @@
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["src/*"],
-      "@fixtures/*": ["fixtures/*"]
-    }
+      "@fixtures/*": ["fixtures/*"],
+      "@cli/*": ["scripts/cli/*"]
+    },
+    "plugins": [
+      { "transform": "typescript-transform-paths" },
+      { "transform": "typescript-transform-paths", "afterDeclarations": true }
+    ]
   },
-  "include": ["src/", "tests/"]
+  "include": ["src/", "tests/", "scripts"]
 }

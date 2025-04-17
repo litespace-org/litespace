@@ -73,24 +73,25 @@ const createUserPayload = zod.object({
 });
 
 const updateUserPayload = zod.object({
-  email: zod.optional(email),
-  password: zod.optional(
-    zod.object({
+  email: email.optional(),
+  password: zod
+    .object({
       current: zod.union([zod.string(), zod.null()]),
       new: zod.string(),
     })
-  ),
-  name: zod.optional(zod.union([zod.null(), string])),
-  gender: zod.optional(gender),
-  notice: zod.optional(zod.number().positive().int()),
-  birthYear: zod.optional(zod.number().positive()),
-  image: zod.optional(zod.null()),
-  thumbnail: zod.optional(zod.null()),
-  video: zod.optional(zod.null()),
-  bio: zod.optional(zod.union([zod.null(), string])),
-  about: zod.optional(zod.union([zod.null(), string])),
-  city: zod.optional(zod.union([zod.nativeEnum(IUser.City), zod.null()])),
-  phone: zod.optional(zod.union([zod.string().max(15).trim(), zod.null()])),
+    .optional(),
+  name: zod.union([zod.null(), string]).optional(),
+  gender: gender.optional(),
+  notice: zod.number().positive().int().optional(),
+  birthYear: zod.number().positive().optional(),
+  image: zod.null().optional(),
+  thumbnail: zod.null().optional(),
+  video: zod.null().optional(),
+  bio: zod.union([zod.null(), string]).optional(),
+  about: zod.union([zod.null(), string]).optional(),
+  city: zod.union([zod.nativeEnum(IUser.City), zod.null()]).optional(),
+  notificationMethod: zod.nativeEnum(IUser.NotificationMethod).optional(),
+  phone: zod.union([zod.string().max(15).trim(), zod.null()]).optional(),
 });
 
 const orderByOptions = ["created_at", "updated_at"] as const satisfies Array<
@@ -225,8 +226,7 @@ function update(_: ApiContext) {
         notice,
         phone,
         city,
-        enabledTelegram,
-        enabledWhatsapp,
+        notificationMethod,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
       // return forbidden if the currentUser is neither admin nor studio and tring to update other user data
@@ -279,8 +279,7 @@ function update(_: ApiContext) {
                 // Reset user verification status incase his email updated.
                 verifiedEmail: email ? false : undefined,
                 password: password ? hashPassword(password.new) : undefined,
-                enabledTelegram,
-                enabledWhatsapp,
+                notificationMethod,
               };
           const user = await users.update(id, updatePayload, tx);
 

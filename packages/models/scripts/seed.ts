@@ -38,6 +38,12 @@ const birthYear = () =>
 const phone = () =>
   sample(["01032142699", "01150970374", "01018303125", "01143759540"])!;
 
+const notificationMethod = () =>
+  sample([
+    IUser.NotificationMethod.Whatsapp,
+    IUser.NotificationMethod.Telegram,
+  ])!;
+
 const city = () =>
   sample(
     Object.values(IUser.City).filter((city) => !Number.isNaN(Number(city)))
@@ -52,6 +58,7 @@ async function main(): Promise<void> {
     name: faker.person.fullName(),
     role: IUser.Role.SuperAdmin,
     password,
+    notificationMethod: notificationMethod(),
     birthYear: birthYear(),
   });
 
@@ -91,6 +98,7 @@ async function main(): Promise<void> {
           await users.update(
             student.id,
             {
+              notificationMethod: notificationMethod(),
               phone: phone(),
               city: city(),
               image: `/image-${idx + 1}.png`,
@@ -144,6 +152,7 @@ async function main(): Promise<void> {
         await users.update(
           tutor.id,
           {
+            notificationMethod: notificationMethod(),
             phone: phone(),
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
             city: city(),
@@ -201,6 +210,7 @@ async function main(): Promise<void> {
           await users.update(
             tutor.id,
             {
+              notificationMethod: notificationMethod(),
               phone: phone(),
               gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
               city: city(),

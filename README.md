@@ -172,6 +172,7 @@ To create a new package, follow these steps:
 | Deployer             | services/deployer  | 4003 |
 | Echo                 | services/echo      | 4004 |
 | Studio               | services/studio    | 4005 |
+| Jobs                 | services/jobs      | N/A  |
 | Kafka UI             | System             | 4006 |
 | PostgreSQL           | System             | 5432 |
 | Redis                | System             | 6379 |

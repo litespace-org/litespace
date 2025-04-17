@@ -20,6 +20,10 @@ export type TopicOf<T extends TopicType> = Extract<Topics, { topic: T }>;
 
 export type ValueOf<T extends TopicType> = TopicOf<T>["value"];
 
-export type SendTopicPayload<T extends TopicType> = TopicOf<T> & {
-  key?: string;
+export type SendTopicPayload<T extends TopicType> = {
+  topic: T;
+  messages: Array<{
+    key?: string;
+    value: ValueOf<T>;
+  }>;
 };

@@ -71,8 +71,7 @@ export type PopuldatedMemberRow = {
   role: IUser.Role;
   phone: string | null;
   verified_phone: boolean;
-  enabled_whatsapp: boolean;
-  enabled_telegram: boolean;
+  notification_method: IUser.Row["notification_method"];
 };
 
 export type PopuldatedMember = {
@@ -82,8 +81,7 @@ export type PopuldatedMember = {
   image: IUser.Self["image"];
   role: IUser.Role;
   phone: string | null;
-  enabledWhatsapp: boolean;
-  enabledTelegram: boolean;
+  notificationMethod: IUser.Self["notificationMethod"];
   verifiedPhone: boolean;
 };
 

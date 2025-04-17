@@ -19,9 +19,12 @@
     "migrate:test:ci": "env-cmd -f .env.test.ci pnpm base:migrate",
     "seed": "env-cmd -f .env vite-node scripts/seed.ts",
     "reseed": "pnpm migrate down 0 && pnpm migrate up && pnpm seed",
+    "build:scripts": "tsc -p tsconfig.scripts.json",
+    "cli": "env-cmd -f .env node dist/scripts/cli/index.js",
     "test": "jest --runInBand --detectOpenHandles --forceExit",
     "test:local": "env-cmd -f .env.test pnpm run test",
-    "test:ci": "env-cmd -f .env.test.ci pnpm run test"
+    "test:ci": "env-cmd -f .env.test.ci pnpm run test",
+    "prepare": "ts-patch install -s"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
@@ -37,6 +40,8 @@
     "@types/chai-as-promised": "^8.0.2",
     "@types/jest": "^29.5.12",
     "babel-jest": "^29.7.0",
+    "commander": "^13.1.0",
+    "prompts": "^2.4.2",
     "chai": "^5.2.0",
     "colors": "^1.4.0",
     "env-cmd": "^10.1.0",
@@ -52,6 +57,8 @@
     "ts-jest": "^29.2.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
+    "ts-patch": "^3.2.1",
+    "typescript-transform-paths": "^3.5.2",
     "vite-node": "^2.1.2",
     "zod": "^3.23.8"
   },

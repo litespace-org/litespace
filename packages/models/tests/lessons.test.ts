@@ -7,6 +7,19 @@ import { nameof } from "@litespace/utils/utils";
 import { concat, entries, first, sum } from "lodash";
 import dayjs from "@/lib/dayjs";
 
+const now = dayjs().utc();
+
+function min(minutes: number) {
+  return now.add(minutes, "minutes");
+}
+
+/**
+ * Add `minutes` to the current time and convert it to iso date string.
+ */
+function imin(minutes: number) {
+  return min(minutes).toISOString();
+}
+
 describe("Lessons", () => {
   beforeEach(async () => {
     return await fixtures.flush();
@@ -734,6 +747,121 @@ describe("Lessons", () => {
         });
         expect(found.total).to.eq(test.count);
       }
+    });
+
+    it("should filter lessons that all totally or partially before `after` when providing the `strict` flag", async () => {
+      await fixtures.lesson({ start: imin(0), duration: 30 });
+      await fixtures.lesson({ start: imin(15), duration: 30 });
+      await fixtures.lesson({ start: imin(30), duration: 30 });
+
+      expect(
+        await lessons.find({ after: imin(5) }).then((result) => result.list)
+      ).to.be.of.length(3);
+
+      expect(
+        await lessons.find({ after: imin(15) }).then((result) => result.list)
+      ).to.be.of.length(3);
+
+      expect(
+        await lessons
+          .find({ after: imin(15), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(2);
+
+      expect(
+        await lessons
+          .find({ after: imin(30), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(1);
+
+      expect(
+        await lessons
+          .find({ after: imin(31), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(0);
+    });
+
+    it("should filter lessons that all totally or partially after `before` when providing the `strict` flag", async () => {
+      await fixtures.lesson({ start: imin(0), duration: 30 });
+      await fixtures.lesson({ start: imin(15), duration: 30 });
+      await fixtures.lesson({ start: imin(30), duration: 30 });
+
+      expect(
+        await lessons.find({ before: imin(5) }).then((result) => result.list)
+      ).to.be.of.length(1);
+
+      expect(
+        await lessons.find({ before: imin(16) }).then((result) => result.list)
+      ).to.be.of.length(2);
+
+      expect(
+        await lessons.find({ before: imin(30) }).then((result) => result.list)
+      ).to.be.of.length(2);
+
+      expect(
+        await lessons.find({ before: imin(60) }).then((result) => result.list)
+      ).to.be.of.length(3);
+
+      expect(
+        await lessons
+          .find({ before: imin(5), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(0);
+
+      expect(
+        await lessons
+          .find({ before: imin(16), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(0);
+
+      expect(
+        await lessons
+          .find({ before: imin(30), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(1);
+
+      expect(
+        await lessons
+          .find({ before: imin(45), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(2);
+
+      expect(
+        await lessons
+          .find({ before: imin(60), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(3);
+    });
+
+    it("should filter lessons that all totally or partially after `before` and before `after` when providing the `strict` flag", async () => {
+      await fixtures.lesson({ start: imin(0), duration: 15 });
+      await fixtures.lesson({ start: imin(0), duration: 30 });
+      await fixtures.lesson({ start: imin(15), duration: 30 });
+      await fixtures.lesson({ start: imin(30), duration: 30 });
+
+      expect(
+        await lessons
+          .find({ after: imin(0), before: imin(31) })
+          .then((result) => result.list)
+      ).to.be.of.length(4);
+
+      expect(
+        await lessons
+          .find({ after: imin(5), before: imin(45) })
+          .then((result) => result.list)
+      ).to.be.of.length(4);
+
+      expect(
+        await lessons
+          .find({ after: imin(5), before: imin(45), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(1);
+
+      expect(
+        await lessons
+          .find({ after: imin(5), before: imin(60), strict: true })
+          .then((result) => result.list)
+      ).to.be.of.length(2);
     });
 
     it("should tutor lessons with pagination", async () => {

@@ -213,8 +213,7 @@ export class Lessons {
       image: users.column("image"),
       role: users.column("role"),
       phone: users.column("phone"),
-      enabled_whatsapp: users.column("enabled_whatsapp"),
-      enabled_telegram: users.column("enabled_telegram"),
+      notification_method: users.column("notification_method"),
       verified_phone: users.column("verified_phone"),
     };
 
@@ -246,6 +245,7 @@ export class Lessons {
     after,
     before,
     slots,
+    strict,
     ...pagination
   }: WithOptionalTx<IFilter.SkippablePagination & SearchFilter>): Promise<
     Paginated<ILesson.Self>
@@ -260,6 +260,7 @@ export class Lessons {
       after,
       before,
       slots,
+      strict,
     });
 
     const total = await countRows(baseBuilder.clone(), {
@@ -569,8 +570,7 @@ export class Lessons {
       role: row.role,
       phone: row.phone,
       verifiedPhone: row.verified_phone,
-      enabledTelegram: row.enabled_telegram,
-      enabledWhatsapp: row.enabled_whatsapp,
+      notificationMethod: row.notification_method,
     };
   }
 
