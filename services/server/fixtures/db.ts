@@ -12,6 +12,7 @@ import {
   availabilitySlots,
   contactRequests,
   sessionEvents,
+  transactions,
 } from "@litespace/models";
 import {
   IInterview,
@@ -23,6 +24,7 @@ import {
   ISession,
   IAvailabilitySlot,
   ITutor,
+  ITransaction,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -31,12 +33,13 @@ import { Time } from "@litespace/utils/time";
 export { faker } from "@faker-js/faker/locale/ar";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { randomUUID } from "crypto";
+import { randomInt, randomUUID } from "crypto";
 
 dayjs.extend(utc);
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await transactions.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
@@ -471,6 +474,17 @@ async function makeInterviews(payload: {
   }
 }
 
+async function transaction(
+  payload?: Partial<ITransaction.CreatePayload>
+): Promise<ITransaction.Self> {
+  return await transactions.create({
+    userId: payload?.userId || (await user()).id,
+    amount: payload?.amount || randomInt(1000),
+    paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
+    providerRefNum: payload?.providerRefNum || null,
+  });
+}
+
 export default {
   user,
   tutor,
@@ -483,6 +497,7 @@ export default {
   flush,
   topic,
   slot,
+  transaction,
   room: makeRoom,
   message: makeMessage,
   make: {

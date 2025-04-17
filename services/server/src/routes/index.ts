@@ -16,6 +16,7 @@ import asset from "@/routes/asset";
 import session from "@/routes/session";
 import contactRequest from "@/routes/contactRequest";
 import fawry from "@/routes/fawry";
+import transaction from "@/routes/transaction";
 
 export default {
   user,
@@ -36,4 +37,5 @@ export default {
   session,
   availabilitySlot,
   fawry,
+  transaction,
 };

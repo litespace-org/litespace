@@ -1,4 +1,4 @@
-import { IFilter } from "@/index";
+import { IFilter, Paginated } from "@/index";
 
 export enum Status {
   New,
@@ -69,6 +69,8 @@ export type FindQuery = IFilter.SkippablePagination & {
   after?: string;
   before?: string;
 };
+
+export type FindApiResponse = Paginated<Self>;
 
 export type CreatePayload = {
   userId: number;
