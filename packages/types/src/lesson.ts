@@ -71,7 +71,7 @@ export type PopuldatedMemberRow = {
   role: IUser.Role;
   phone: string | null;
   verified_phone: boolean;
-  notification_method: IUser.Self["notificationMethod"];
+  notification_method: IUser.Row["notification_method"];
 };
 
 export type PopuldatedMember = {

@@ -83,7 +83,7 @@ export type Row = {
   credit_score: number;
   city: City | null;
   phone: string | null;
-  notification_method: number | null;
+  notification_method: NotificationMethod | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -146,10 +146,8 @@ export type UpdateApiPayload = {
 };
 
 export enum NotificationMethod {
-  whatsapp = 1,
-  welegram = 2,
-  wmail = 3,
-  wessenger = 4,
+  Whatsapp = 1,
+  Telegram = 2,
 }
 
 export enum AssetFileName {

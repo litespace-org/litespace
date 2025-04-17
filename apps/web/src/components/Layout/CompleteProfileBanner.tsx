@@ -36,13 +36,18 @@ const CompleteProfileBanner: React.FC = () => {
     return isTutor && !!info && isOnboard(info);
   }, [meta, isTutor, user]);
 
-  if (
-    isOnboarded ||
-    !isTutor ||
-    router.isMatch.web(Web.TutorSettings, location.pathname) ||
-    router.isMatch.web(Web.Lesson, location.pathname)
-  )
-    return null;
+  const ignoreRoute = useMemo(() => {
+    const routes: Web[] = [
+      Web.TutorSettings,
+      Web.Lesson,
+      Web.Login,
+      Web.Register,
+      Web.CompleteProfile,
+    ];
+    return routes.some((route) => router.isMatch.web(route, location.pathname));
+  }, [location.pathname]);
+
+  if (isOnboarded || !isTutor || ignoreRoute) return null;
 
   return (
     <div className="bg-brand-700 flex items-center justify-center gap-4 h-[72px] w-full">

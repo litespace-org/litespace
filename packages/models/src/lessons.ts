@@ -245,6 +245,7 @@ export class Lessons {
     after,
     before,
     slots,
+    strict,
     ...pagination
   }: WithOptionalTx<IFilter.SkippablePagination & SearchFilter>): Promise<
     Paginated<ILesson.Self>
@@ -259,6 +260,7 @@ export class Lessons {
       after,
       before,
       slots,
+      strict,
     });
 
     const total = await countRows(baseBuilder.clone(), {

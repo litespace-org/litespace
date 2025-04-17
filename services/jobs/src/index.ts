@@ -1,25 +1,18 @@
-import { Producer } from "@litespace/kafka";
-import express from "express";
-import { PORT } from "@/constants";
 import schedule from "node-schedule";
-import { sendLessonReminders } from "@/tasks/lesson";
-
-const producer = new Producer();
-producer.connect();
-
-const app = express();
+import { sendLessonReminders } from "@/jobs/lesson";
 
 async function main() {
   // Run the job immediately on startup
-  await sendLessonReminders(producer);
-
+  await sendLessonReminders();
   // Schedule the job to run every 15 minutes
-  schedule.scheduleJob(
-    "*/15 * * * *",
-    async () => await sendLessonReminders(producer)
-  );
+  schedule.scheduleJob("*/15 * * * *", sendLessonReminders);
 
-  app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+  process.on("SIGINT", async function () {
+    await schedule.gracefulShutdown();
+  });
 }
 
-main();
+main().catch((error) => {
+  console.log(error);
+  process.exit(1);
+});

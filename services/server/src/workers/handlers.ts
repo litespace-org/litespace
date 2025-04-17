@@ -109,9 +109,13 @@ export async function sendMessage(
 
   await producer.send({
     topic: payload.method,
-    value: {
-      to: payload.phone,
-      message,
-    },
+    messages: [
+      {
+        value: {
+          to: payload.phone,
+          message,
+        },
+      },
+    ],
   });
 }

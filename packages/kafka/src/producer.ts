@@ -19,17 +19,14 @@ export class Producer {
 
   async send<T extends IKafka.TopicType>({
     topic,
-    key,
-    value,
+    messages,
   }: IKafka.SendTopicPayload<T>) {
     await this.producer.send({
       topic,
-      messages: [
-        {
-          key,
-          value: JSON.stringify(value),
-        },
-      ],
+      messages: messages.map(({ value, key }) => ({
+        key,
+        value: JSON.stringify(value),
+      })),
     });
   }
 
