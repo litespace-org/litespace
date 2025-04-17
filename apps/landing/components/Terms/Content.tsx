@@ -54,6 +54,12 @@ const Content: React.FC = () => {
       </Section>
 
       <Section>
+        <Title id="terms/body/payments/title" />
+        <Text id="terms/body/payments/desc/1" />
+        <Text id="terms/body/payments/desc/2" />
+      </Section>
+
+      <Section>
         <Title id="terms/body/refund-policy/title" />
         <Text id="terms/body/refund-policy/content" />
       </Section>
@@ -132,9 +138,6 @@ const Content: React.FC = () => {
           <SocialLinks />
         </div>
       </Section>
-
-      {/* <Section>
-      </Section> */}
     </div>
   );
 };
