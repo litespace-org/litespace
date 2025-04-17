@@ -41,6 +41,7 @@ type useFindInvoicesByUserProps = {
   >;
   list: IInvoice.Self[] | null;
   more: Void;
+  hasMore: boolean;
 };
 
 export function useFindInvoicesByUser(
@@ -169,13 +170,14 @@ export function useCancelInvoiceById({
   onSuccess,
   onError,
 }: {
-  id: number;
+  id: number | null;
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
   const api = useApi();
 
   const cancel = useCallback(async () => {
+    if (!id) return;
     return await api.invoice.updateByReceiver(id, {
       cancel: true,
     });
