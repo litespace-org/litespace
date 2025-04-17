@@ -1,7 +1,7 @@
 import { destructureWithdrawMethod } from "@/components/utils/withdraw";
-import { IWithdrawMethod } from "@litespace/types";
+import { IInvoice } from "@litespace/types";
 import { useMemo } from "react";
 
-export function useWithdrawMethod(method: IWithdrawMethod.Type) {
+export function useWithdrawMethod(method: IInvoice.WithdrawMethod) {
   return useMemo(() => destructureWithdrawMethod(method), [method]);
 }

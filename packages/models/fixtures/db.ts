@@ -12,6 +12,7 @@ import {
   tutors,
   availabilitySlots,
   contactRequests,
+  invoices,
 } from "@/index";
 import {
   IInterview,
@@ -34,6 +35,7 @@ import { confirmationCodes } from "@/confirmationCodes";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await invoices.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
