@@ -23,6 +23,7 @@ export const Text: React.FC<{ id: LocalId } | { children: React.ReactNode }> = (
     <Typography
       tag="p"
       className="text-natural-950 text-body sm:text-subtitle-1 font-medium"
+      dir="auto"
     >
       {"id" in props ? intl(props.id) : props.children}
     </Typography>
