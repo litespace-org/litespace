@@ -1,0 +1,15 @@
+meta {
+  name: get-all-lessons
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{api}}/api/v1/lesson/list?users[]=2
+  body: none
+  auth: inherit
+}
+
+params:query {
+  users[]: 2
+}
