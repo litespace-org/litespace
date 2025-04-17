@@ -21,6 +21,7 @@ import { logger } from "@/lib/logger";
 import App from "@/App";
 
 import "@/lib/ga";
+import "@/lib/window";
 import "@litespace/ui/tailwind.css";
 
 const queryClient = new QueryClient({

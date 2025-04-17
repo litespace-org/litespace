@@ -1,95 +1,83 @@
-import React from "react";
-import { Ready } from "@/components/Session/Ready";
 import { IUser, Void } from "@litespace/types";
-import Actions from "@/components/Session/Actions";
-import cn from "classnames";
+import React, { useEffect } from "react";
 import Stream from "@/components/Session/Stream";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import Controllers, { Controller } from "@/components/Session/Controllers";
+import Ready from "@/components/Session/Ready";
+import { useSearchParams } from "react-router-dom";
 
-export type Props = {
-  stream: MediaStream | null;
-  members: {
-    current: {
-      id: number;
-      imageUrl: string | null;
-      name: string | null;
-      role: IUser.Role;
-    };
-    other: {
-      id: number;
-      gender: IUser.Gender;
-      role: IUser.Role;
-      joined: boolean;
-    };
+const PreSession: React.FC<{
+  self: {
+    id: number;
+    image: string | null;
+    name: string | null;
+    stream: MediaStream | null;
+    audio: boolean;
+    video: boolean;
+    speaking: boolean;
   };
-  video: {
-    enabled: boolean;
-    toggle: Void;
-    error?: boolean;
+  member: {
+    id: number;
+    role: IUser.Role;
+    gender: IUser.Gender;
+    joined: boolean;
   };
-  audio: {
-    enabled: boolean;
-    toggle: Void;
-    error?: boolean;
-  };
-  session: {
-    /**
-     * ISO UTC date.
-     */
-    start: string;
-    duration: number;
-  };
-  speaking: boolean;
-  joining: boolean;
+  start: string;
+  duration: number;
   join: Void;
-};
-
-export const PreSession: React.FC<Props> = ({
-  stream,
-  members,
-  video,
-  session,
-  audio,
-  speaking,
-  joining,
+  disabled: boolean;
+  loading: boolean;
+  error: boolean;
+  video: Controller;
+  audio: Controller;
+}> = ({
+  self,
+  member,
+  start,
+  duration,
   join,
+  disabled,
+  loading,
+  error,
+  audio,
+  video,
 }) => {
-  const mq = useMediaQuery();
+  const [params, setParams] = useSearchParams();
+
+  /**
+   * Based on the design, the pre-session should have a navigation. We need to
+   * make sure to remove it incase it is still their.
+   */
+  useEffect(() => {
+    if (params.get("nav")) setParams({});
+  }, [params, setParams]);
+
   return (
-    <div
-      id="pre-session"
-      className={cn(
-        "rounded-2xl lg:w-full h-full max-h-[calc(100vh-160px)] lg:max-h-full",
-        "flex flex-col lg:grid lg:grid-cols-[1fr,auto] lg:grid-rows-[auto,1fr] items-center lg:items-start gap-4 lg:gap-6"
-      )}
-    >
-      <div className="h-full w-full rounded-2xl flex items-stretch relative overflow-hidden bg-natural-100">
+    <div className="h-full flex flex-col gap-4 max-w-screen-3xl mx-auto">
+      <div className="flex-1 h-0">
         <Stream
+          stream={self.stream}
+          video={self.video}
+          audio={self.audio}
+          speaking={self.speaking}
+          userId={self.id}
+          userImage={self.image}
+          userName={self.name}
+          size="md"
           muted
-          mirror
-          aspect={mq.lg ? "desktop" : "mobile"}
-          stream={{
-            stream,
-            speaking,
-            audio: audio.enabled,
-            video: video.enabled,
-            user: members.current,
-            cast: false,
-          }}
         />
       </div>
-      <div className="grow w-[306px] flex justify-center items-center lg:h-full">
+      <div className="flex flex-col gap-4">
         <Ready
-          error={audio.error}
-          otherMember={members.other}
-          start={session.start}
-          duration={session.duration}
-          disabled={audio.error}
+          otherMember={member}
+          start={start}
+          duration={duration}
           join={join}
-          loading={joining}
+          disabled={disabled}
+          loading={loading}
+          error={error}
         />
+        <Controllers video={video} audio={audio} />
       </div>
-      <Actions video={video} audio={audio} />
     </div>
   );
 };
