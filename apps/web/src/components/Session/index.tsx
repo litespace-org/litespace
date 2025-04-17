@@ -7,7 +7,6 @@ import {
   Layout,
   useDevices,
   useSessionV5,
-  layoutAspectRatio,
 } from "@litespace/headless/sessions";
 import { ISession, IUser, Void } from "@litespace/types";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -16,13 +15,14 @@ import {
   Props as PermissionsDialogProps,
 } from "@/components/Session/PermissionsDialog";
 import { getEmailUserName, safePromise } from "@litespace/utils";
-import PreSession from "@/components/SessionV5/PreSession";
-import Session from "@/components/SessionV5/Session";
-import { Controller } from "@/components/SessionV5/Controllers";
+import PreSession from "@/components/Session/PreSession";
+import Session from "@/components/Session/Session";
+import { Controller } from "@/components/Session/Controllers";
 import { useLogger } from "@litespace/headless/logger";
 import { capture } from "@/lib/sentry";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { simulateMobile } from "@/lib/window";
 
 const Main: React.FC<{
   resourceId: number;
@@ -64,21 +64,21 @@ const Main: React.FC<{
   });
 
   const layout = useMemo((): Layout => {
+    if (simulateMobile()) return "simulated-mobile";
     if (mq.xl) return "desktop";
     if (mq.sm) return "tablet";
     return "mobile";
   }, [mq.sm, mq.xl]);
 
   const onVideoToggle = useCallback(() => {
-    if (!devices.info.camera.permissioned) return setReRequestPermission(true);
+    if (!session.userMedia.hasVideoTracks) return setReRequestPermission(true);
     return session.userMedia.toggleCamera();
-  }, [devices.info.camera.permissioned, session.userMedia]);
+  }, [session.userMedia]);
 
   const onToggleAudio = useCallback(() => {
-    if (!devices.info.microphone.permissioned)
-      return setReRequestPermission(true);
+    if (!session.userMedia.hasAudioTracks) return setReRequestPermission(true);
     return session.userMedia.toggleMic();
-  }, [devices.info.microphone.permissioned, session.userMedia]);
+  }, [session.userMedia]);
 
   const onUserMediaError = useCallback(
     (error: Error, permission: PermissionsDialogProps["loading"]) => {
@@ -222,7 +222,15 @@ const Main: React.FC<{
           const result = await safePromise(
             session.userMedia.capture({ video, layout })
           );
+          const error = result instanceof Error;
           if (result instanceof Error) onUserMediaError(result, permission);
+
+          /**
+           * Replacing streams is important during the session else the other
+           * member will never get the updated stream (e.g., user enable camera
+           * duing the session)
+           */
+          if (!error) session.peer.replaceStream(result);
 
           /**
            * Once we captured the meida stream, the devices permissions state
@@ -230,7 +238,7 @@ const Main: React.FC<{
            */
           devices.recheck();
           setPermission(undefined);
-          setReRequestPermission(false);
+          if (reRequestPermission) setReRequestPermission(error);
         }}
         loading={session.userMedia.loading ? permission : undefined}
         /**
@@ -317,7 +325,7 @@ const Main: React.FC<{
           memberSpeaking={session.member.speaking}
           audioController={audioController}
           videoController={videoController}
-          movableStreamAspectRatio={layoutAspectRatio[layout].aspectRatio}
+          layout={layout}
           connecting={
             session.peer.connectionState === "connecting" ||
             session.peer.iceGatheringState === "gathering" ||

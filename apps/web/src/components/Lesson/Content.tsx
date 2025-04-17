@@ -5,7 +5,7 @@ import { IUser } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import React, { useMemo } from "react";
-import Session from "@/components/SessionV5";
+import Session from "@/components/Session";
 import { asRateLessonQuery } from "@/lib/query";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";

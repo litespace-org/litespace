@@ -1,95 +1,131 @@
+import React, { useEffect, useMemo, useRef } from "react";
+import Stream from "@/components/Session/Stream";
+import Controllers, { Controller } from "@/components/Session/Controllers";
 import { Void } from "@litespace/types";
-import React from "react";
-import { Actions } from "@/components/Session/Actions";
-import { SessionStreams } from "@/components/Session/SessionStreams";
-import { StreamInfo } from "@/components/Session/types";
-import cn from "classnames";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { Movable } from "@litespace/ui/Movable";
+import { useSearchParams } from "react-router-dom";
+import { first } from "lodash";
+import { Layout, layoutAspectRatio } from "@litespace/headless/sessions";
 
-type Props = {
-  streams: StreamInfo[];
-  currentUserId: number;
-  chat: { enabled: boolean; toggle: Void };
-  video: {
-    enabled: boolean;
-    error?: boolean;
-    toggle: Void;
-  };
-  cast?: {
-    enabled: boolean;
-    error?: boolean;
-    toggle: Void;
-  };
-  audio: {
-    enabled: boolean;
-    toggle: Void;
-    error?: boolean;
-  };
-  timer: {
-    duration: number;
-    startAt: string;
-  };
+const Session: React.FC<{
+  selfStream: MediaStream;
+  selfId: number;
+  selfName: string | null;
+  selfImage: string | null;
+  selfAudio: boolean;
+  selfVideo: boolean;
+  selfSpeaking: boolean;
+  memberStream: MediaStream | null;
+  memberId: number;
+  memberName: string | null;
+  memberImage: string | null;
+  memberAudio: boolean;
+  memberVideo: boolean;
+  memberSpeaking: boolean;
+  connecting: boolean;
+  audioController: Controller;
+  videoController: Controller;
+  layout: Layout;
   leave: Void;
-  chatPanel?: React.ReactNode;
-  alert?: string;
-};
-
-export const Session: React.FC<Props> = ({
-  chatPanel,
+}> = ({
+  selfStream,
+  selfId,
+  selfImage,
+  selfName,
+  selfAudio,
+  selfVideo,
+  selfSpeaking,
+  memberStream,
+  memberId,
+  memberImage,
+  memberName,
+  memberAudio,
+  memberVideo,
+  memberSpeaking,
+  audioController,
+  videoController,
+  connecting,
+  layout,
   leave,
-  audio,
-  video,
-  cast,
-  streams,
-  currentUserId,
-  chat,
 }) => {
-  const mq = useMediaQuery();
+  const ref = useRef<HTMLDivElement>(null);
+  const [params, setParams] = useSearchParams();
+
+  /**
+   * Based on the desing, the session should not have any navigation.
+   */
+  useEffect(() => {
+    if (params.get("nav") !== "false") setParams({ nav: "false" });
+  }, [params, setParams]);
+
+  const movableStreamAspectRatio = useMemo(() => {
+    const defaultAspectRatio = layoutAspectRatio[layout].aspectRatio;
+    const track = first(selfStream.getVideoTracks());
+    return track?.getSettings().aspectRatio || defaultAspectRatio;
+  }, [layout, selfStream]);
 
   return (
-    <div
-      id="session"
-      className="flex relative flex-col gap-4 lg:gap-6 h-[max(calc(100vh-190px),800px)] overflow-hidden" // why -190px ?!
-    >
+    <div className="h-full flex flex-col gap-4">
       <div
-        className={cn(
-          "w-full flex-1 h-[calc(100%-40px-24px)]",
-          chat.enabled ? "relative lg:flex lg:flex-row lg:gap-6" : "flex"
-        )}
+        className="flex-1 relative flex flex-col items-center justify-center gap-4"
+        ref={ref}
       >
-        <SessionStreams
-          currentUserId={currentUserId}
-          streams={streams}
-          chat={chat.enabled}
-        />
+        {memberStream ? (
+          <Stream
+            stream={memberStream}
+            userId={memberId}
+            userImage={memberImage}
+            userName={memberName}
+            audio={memberAudio}
+            video={memberVideo}
+            speaking={memberSpeaking}
+            loading={connecting}
+            size="lg"
+          />
+        ) : (
+          <Stream
+            stream={selfStream}
+            userId={selfId}
+            userImage={selfImage}
+            userName={selfName}
+            audio={selfAudio}
+            video={selfVideo}
+            speaking={selfSpeaking}
+            size="lg"
+            muted
+          />
+        )}
 
-        <div
-          key="chat"
-          className={cn(
-            "h-full shadow shadow-message-panel rounded-2xl overflow-hidden w-[344px] flex-shrink-0",
-            chat.enabled && mq.lg ? "visible" : "hidden"
-          )}
-        >
-          {chatPanel}
-        </div>
+        {memberStream ? (
+          <Movable
+            container={ref}
+            className="absolute bottom-4 right-4 z-session-movable-stream shadow-session-movable-stream rounded-lg"
+          >
+            <div
+              className="w-32 md:w-60"
+              style={{ aspectRatio: movableStreamAspectRatio }}
+            >
+              <Stream
+                stream={selfStream}
+                userId={selfId}
+                userImage={selfImage}
+                userName={selfName}
+                audio={selfAudio}
+                video={selfVideo}
+                speaking={selfSpeaking}
+                size="sm"
+                muted
+              />
+            </div>
+          </Movable>
+        ) : null}
       </div>
 
-      <Actions
+      <Controllers
+        audio={audioController}
+        video={videoController}
         leave={leave}
-        screen={cast}
-        video={video}
-        audio={audio}
-        chat={chat}
       />
-
-      <div
-        className={cn(
-          "absolute w-full h-full top-0 left-0 z-stream-chat",
-          chat.enabled && !mq.lg ? "visible" : "hidden"
-        )}
-      >
-        {chatPanel}
-      </div>
     </div>
   );
 };

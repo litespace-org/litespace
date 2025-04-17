@@ -132,12 +132,25 @@ type UseUserMediaReturn = {
    * `true` if the user is actively speaking.
    */
   speaking: boolean;
+  /**
+   * `true` if the current user stream has video tracks.
+   */
+  hasVideoTracks: boolean;
+  /**
+   * `true` if the current user stream has audio tracks.
+   */
+  hasAudioTracks: boolean;
 };
 
-export type Layout = "mobile" | "tablet" | "desktop";
+export type Layout = "mobile" | "simulated-mobile" | "tablet" | "desktop";
 
 export const layoutAspectRatio = {
   mobile: {
+    aspectRatio: 9 / 16,
+    width: 720,
+    height: 1280,
+  },
+  "simulated-mobile": {
     aspectRatio: 9 / 16,
     width: 720,
     height: 1280,
@@ -272,7 +285,7 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
       if (!error) stop();
       if (error && isNotAllowed(capturedStream)) setUserDenied(true);
       setError(error ? capturedStream : null);
-      setStream(error ? null : capturedStream);
+      if (!error) setStream(capturedStream);
       setLoading(false);
       return capturedStream;
 
@@ -339,6 +352,14 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
     };
   }, [onStop, onTrackEnd, stream]);
 
+  const hasVideoTracks = useMemo(() => {
+    return !isEmpty(stream?.getVideoTracks());
+  }, [stream]);
+
+  const hasAudioTracks = useMemo(() => {
+    return !isEmpty(stream?.getAudioTracks());
+  }, [stream]);
+
   return {
     speaking,
     loading,
@@ -353,6 +374,8 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
     video,
     camera,
     denied,
+    hasVideoTracks,
+    hasAudioTracks,
   };
 }
 
