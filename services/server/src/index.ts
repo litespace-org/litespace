@@ -94,6 +94,7 @@ app.use("/api/v1/cache", routes.cache);
 app.use("/api/v1/asset", routes.asset);
 app.use("/api/v1/session", routes.session);
 app.use("/api/v1/fawry", routes.fawry);
+app.use("/api/v1/tx", routes.transaction);
 app.use(errorHandler);
 
 server.listen(serverConfig.port, serverConfig.host, () =>
