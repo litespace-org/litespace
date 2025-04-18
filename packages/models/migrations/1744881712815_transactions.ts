@@ -7,7 +7,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     amount: { type: "INT", notNull: true },
     status: { type: "SMALLINT", notNull: true },
     payment_method: { type: "SMALLINT", notNull: true },
-    provider_ref_num: { type: "INT", notNull: false },
+    provider_ref_num: { type: "INT", notNull: false, default: null },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -15,6 +15,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
-  pgm.dropIndex("transactions", "id");
-  pgm.dropTable("transactions");
+  pgm.dropIndex("transactions", "id", { ifExists: true });
+  pgm.dropTable("transactions", { ifExists: true });
 }

@@ -17,6 +17,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.SessionNotFound]: "error.api.session-not-found",
   [ApiError.UserNotFound]: "error.api.user-not-found",
   [ApiError.TutorNotFound]: "error.api.tutor-not-found",
+  [ApiError.TransactionNotFound]: "error.api.not-found",
   [ApiError.StudentNotFound]: "error.api.student-not-found",
   [ApiError.LessonNotFound]: "error.api.lesson-not-found",
   [ApiError.SlotNotFound]: "error.api.slot-not-found",

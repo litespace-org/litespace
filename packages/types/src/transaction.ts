@@ -13,7 +13,7 @@ export enum Status {
 export enum PaymentMethod {
   Card,
   EWallet,
-  Bank,
+  BankInstallment,
   Fawry,
 }
 
@@ -59,13 +59,17 @@ export type Self = {
   updatedAt: string;
 };
 
-export type FindQuery = IFilter.SkippablePagination & {
-  id?: number;
+export type ModelFindQuery = IFilter.SkippablePagination & ModelFindFilter;
+
+export type FindQueryApi = ModelFindQuery;
+
+export type ModelFindFilter = {
+  ids?: number[];
   users?: number[];
-  amount?: number;
-  status?: Status;
-  paymentMethod?: PaymentMethod;
-  providerRefNum?: number | null;
+  amount?: number | { gte: number; lte: number; gt: number; lt: number };
+  statuses?: Status[];
+  paymentMethods?: PaymentMethod[];
+  providerRefNums?: Array<number | null>;
   after?: string;
   before?: string;
 };

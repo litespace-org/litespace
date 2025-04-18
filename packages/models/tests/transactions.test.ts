@@ -76,6 +76,7 @@ describe("transactions", () => {
         fixtures.tutor(),
         fixtures.tutor(),
       ]);
+
       const users2 = await Promise.all([
         fixtures.tutor(),
         fixtures.tutor(),
@@ -94,8 +95,8 @@ describe("transactions", () => {
       const res = await transactions.find({
         users: users2.map((u) => u.id),
         amount: 200,
-        paymentMethod: ITransaction.PaymentMethod.Card,
-        providerRefNum: null,
+        paymentMethods: [ITransaction.PaymentMethod.Card],
+        providerRefNums: [null],
       });
 
       expect(res.total).to.be.eq(3);
@@ -115,7 +116,7 @@ describe("transactions", () => {
 
       const res = await transactions.findById(tx.id);
       expect(res).to.deep.eq(tx);
-      const res2 = await transactions.findById(321);
+      const res2 = await transactions.findById(-1);
       expect(res2).to.be.null;
     });
   });

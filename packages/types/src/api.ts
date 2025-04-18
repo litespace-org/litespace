@@ -3,7 +3,6 @@ import { FieldError } from "@/validation";
 export enum ApiError {
   Unauthenticated = "unauthenticated",
   Forbidden = "forbidden",
-  Transaction = "transaction",
   BadRequest = "bad-request",
   RoomExists = "room-exists",
   UserExists = "user-exists",
@@ -14,6 +13,7 @@ export enum ApiError {
   Unexpected = "unexpected",
   NotFound = "not-found",
   SessionNotFound = "session-not-found",
+  TransactionNotFound = "transaction-not-found",
   UserNotFound = "user-not-found",
   TutorNotFound = "tutor-not-found",
   StudentNotFound = "student-not-found",

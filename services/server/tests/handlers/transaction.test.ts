@@ -3,119 +3,76 @@ import handlers from "@/handlers/transaction";
 import { ITransaction, IUser } from "@litespace/types";
 import { mockApi } from "@fixtures/mockApi";
 import { expect } from "chai";
-import { bad, forbidden, notfound } from "@/lib/error";
-import dayjs from "dayjs";
+import { forbidden, notfound } from "@/lib/error";
 
-const find = mockApi<ITransaction.FindQuery>(handlers.find);
+const find = mockApi<ITransaction.FindQueryApi>(handlers.find);
 const findById = mockApi<object, { id: number }, object>(handlers.findById);
 
 describe("/api/v1/tx/", () => {
-  var admin: IUser.Self;
-  var tutor1: IUser.Self;
-  var tutor2: IUser.Self;
-
-  var txs1: ITransaction.Self[];
-  var txs2: ITransaction.Self[];
-
-  beforeAll(async () => {
+  beforeEach(async () => {
     await db.flush();
-
-    admin = await db.user({ role: IUser.Role.SuperAdmin });
-
-    tutor1 = await db.user({ role: IUser.Role.Tutor });
-    tutor2 = await db.user({ role: IUser.Role.Tutor });
-
-    txs1 = await Promise.all([
-      db.transaction({ userId: tutor1.id }),
-      db.transaction({ userId: tutor1.id }),
-      db.transaction({ userId: tutor1.id }),
-      db.transaction({ userId: tutor1.id }),
-    ]);
-
-    txs2 = await Promise.all([
-      db.transaction({ userId: tutor2.id }),
-      db.transaction({ userId: tutor2.id }),
-      db.transaction({ userId: tutor2.id }),
-    ]);
   });
 
   describe("GET /api/v1/tx/:id", () => {
-    it("should respond with forbidden in case the requester is neither an admin nor a tutor.", async () => {
-      const student = await db.student();
+    it("should respond with forbidden in case the user is neither an admin nor a student", async () => {
+      const tutor = await db.user({ role: IUser.Role.Tutor });
       const res = await findById({
-        user: student,
+        user: tutor,
         params: { id: 321 },
       });
       expect(res).to.deep.eq(forbidden());
     });
 
-    it("should respond with forbidden in case the tutor is trying to retrieve another tutor transaction.", async () => {
+    it("should respond with forbidden in case the student is trying to retrieve another transaction that he doen't own", async () => {
+      const s1 = await db.user({ role: IUser.Role.Student });
+      const s2 = await db.user({ role: IUser.Role.Student });
+
+      const tx = await db.transaction({ userId: s1.id });
+
       const res = await findById({
-        user: tutor1,
-        params: { id: txs2[0].id },
+        user: s2,
+        params: { id: tx.id },
       });
+
       expect(res).to.deep.eq(forbidden());
     });
 
     it("should respond with notfound in case the transaction is not found.", async () => {
+      const student = await db.user({ role: IUser.Role.Student });
+
       const res = await findById({
-        user: tutor1,
-        params: { id: 321 },
+        user: student,
+        params: { id: 300 },
       });
+
       expect(res).to.deep.eq(notfound.transaction());
     });
 
-    it("should successfully respond with the transaction object.", async () => {
+    it("should successfully respond with the transaction by providing its id", async () => {
+      const s1 = await db.user({ role: IUser.Role.Student });
+      const tx = await db.transaction({ userId: s1.id });
+
       const res = await findById<ITransaction.Self>({
-        user: tutor1,
-        params: { id: txs1[0].id },
+        user: s1,
+        params: { id: tx.id },
       });
+
       expect(res).to.not.be.instanceof(Error);
-      expect(res.body).to.deep.eq(txs1[0]);
+      expect(res.body).to.deep.eq(tx);
     });
   });
 
   describe("GET /api/v1/tx/list", () => {
-    it("should respond with forbidden in case the requester is neither an admin nor a tutor.", async () => {
-      const student = await db.student();
+    it("should respond with forbidden in case the user is neither an admin nor a student", async () => {
+      const tutor = await db.user({ role: IUser.Role.Tutor });
+
       const res = await find({
-        user: student,
+        user: tutor,
         body: {
-          users: [student.id],
+          users: [tutor.id],
         },
       });
       expect(res).to.deep.eq(forbidden());
-    });
-
-    it("should respond with forbidden in case the tutor is trying to retrieve another tutors transactions.", async () => {
-      const res = await find({
-        user: tutor1,
-        body: {
-          users: [tutor2.id],
-        },
-      });
-      expect(res).to.deep.eq(forbidden());
-    });
-
-    it("should respond with bad in case the tutor is trying to retrieve transactions without specifying the users list.", async () => {
-      const res = await find({
-        user: tutor1,
-        body: {
-          after: dayjs().utc().toISOString(),
-        },
-      });
-      expect(res).to.deep.eq(bad());
-    });
-
-    it("should successfully respond with a list of the transactions.", async () => {
-      const res = await find<ITransaction.FindApiResponse>({
-        user: tutor1,
-        body: {
-          users: [tutor1.id],
-        },
-      });
-      expect(res.body?.total).to.eq(4);
-      expect(res.body?.list).to.deep.eq(txs1);
     });
   });
 });

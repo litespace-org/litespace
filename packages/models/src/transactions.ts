@@ -1,13 +1,17 @@
 import { ITransaction, Paginated } from "@litespace/types";
-import { column, countRows, knex, withSkippablePagination } from "@/query";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withSkippablePagination,
+} from "@/query";
 import { first, isEmpty } from "lodash";
 import { Knex } from "knex";
 import dayjs from "dayjs";
 
 export class Transactions {
   table = "transactions" as const;
-
-  columns = (value: keyof ITransaction.Row) => column(value, this.table);
 
   async create(
     payload: ITransaction.CreatePayload
@@ -42,7 +46,7 @@ export class Transactions {
         },
         "*"
       )
-      .where("id", id);
+      .where(this.column("id"), id);
 
     const row = first(rows);
     if (!row) throw new Error("Transaction not found; should never happen");
@@ -51,35 +55,21 @@ export class Transactions {
   }
 
   async findById(id: number): Promise<ITransaction.Self | null> {
-    const { list } = await this.find({ id });
+    const { list } = await this.find({ ids: [id] });
     return first(list) || null;
   }
 
   async find({
     tx,
-    id,
-    users,
-    amount,
-    status,
-    paymentMethod,
-    providerRefNum,
     page,
     size,
-  }: ITransaction.FindQuery & { tx?: Knex.Transaction }): Promise<
+    ...query
+  }: WithOptionalTx<ITransaction.ModelFindQuery>): Promise<
     Paginated<ITransaction.Self>
   > {
-    const baseBuilder = this.applySearchFilter(this.builder(tx), {
-      id,
-      users,
-      amount,
-      status,
-      paymentMethod,
-      providerRefNum,
-    });
-    const total = await countRows(baseBuilder.clone(), {
-      column: this.columns("id"),
-    });
-    const queryBuilder = baseBuilder.clone().select();
+    const base = this.applySearchFilter(this.builder(tx), query);
+    const total = await countRows(base.clone(), { column: this.column("id") });
+    const queryBuilder = base.clone().select();
     const rows = await withSkippablePagination(queryBuilder, { page, size });
     return { list: rows.map((row) => this.from(row)), total };
   }
@@ -100,39 +90,45 @@ export class Transactions {
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
     {
-      id,
-      users,
+      ids = [],
+      users = [],
       amount,
-      status,
-      paymentMethod,
-      providerRefNum,
+      statuses = [],
+      paymentMethods = [],
+      providerRefNums = [],
       after,
       before,
-    }: ITransaction.FindQuery
+    }: ITransaction.ModelFindFilter
   ): Knex.QueryBuilder<R, T> {
-    if (users && !isEmpty(users))
-      builder.whereIn(this.columns("user_id"), users);
+    if (!isEmpty(users)) builder.whereIn(this.column("user_id"), users);
 
-    if (id) builder.where(this.columns("id"), id);
-    if (amount) builder.where(this.columns("amount"), amount);
-    if (status) builder.where(this.columns("status"), status);
+    if (!isEmpty(ids)) builder.whereIn(this.column("id"), ids);
 
-    if (paymentMethod)
-      builder.where(this.columns("payment_method"), paymentMethod);
+    if (typeof amount === "number")
+      builder.where(this.column("amount"), amount);
 
-    if (providerRefNum)
-      builder.where(this.columns("provider_ref_num"), providerRefNum);
+    if (!isEmpty(statuses)) builder.where(this.column("status"), statuses);
+
+    if (!isEmpty(paymentMethods))
+      builder.whereIn(this.column("payment_method"), paymentMethods);
+
+    if (!isEmpty(providerRefNums)) {
+      const refNums = providerRefNums.filter((ref) => ref !== null);
+      const includeNull = providerRefNums.includes(null);
+
+      builder.where((builder) => {
+        builder.whereIn(this.column("provider_ref_num"), refNums);
+        if (includeNull)
+          builder.orWhere(this.column("provider_ref_num"), "IS", null);
+      });
+    }
 
     if (after)
-      builder.where(
-        this.columns("created_at"),
-        ">=",
-        dayjs.utc(after).toDate()
-      );
+      builder.where(this.column("created_at"), ">=", dayjs.utc(after).toDate());
 
     if (before)
       builder.where(
-        this.columns("created_at"),
+        this.column("created_at"),
         "<=",
         dayjs.utc(before).toDate()
       );
@@ -144,6 +140,10 @@ export class Transactions {
     return tx
       ? tx<ITransaction.Row>(this.table)
       : knex<ITransaction.Row>(this.table);
+  }
+
+  column(value: keyof ITransaction.Row) {
+    return column(value, this.table);
   }
 }
 
