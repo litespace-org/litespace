@@ -120,7 +120,7 @@
         return console.error("Your browser does not support WebSockets.");
 
       const peerId = document.getElementById("peer-id").value;
-      ws = new WebSocket("wss://" + document.location.host + "/ws/" + peerId);
+      ws = new WebSocket("ws://" + document.location.host + "/ws/" + peerId);
       ws.onopen = () => console.log("ws connected.");
       ws.onclose = () => console.log("ws disconnected.");
       ws.onmessage = (event) => {

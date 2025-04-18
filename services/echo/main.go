@@ -2,7 +2,8 @@ package main
 
 import (
 	"echo/handlers"
-	"echo/utils/state"
+	"echo/lib/state"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )

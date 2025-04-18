@@ -26,3 +26,7 @@ go.work.sum
 
 # air
 tmp
+
+# assets
+*.ivf 
+*.ogg

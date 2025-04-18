@@ -1,12 +1,10 @@
 package handlers
 
 import (
-	"echo/constants"
-	"echo/utils"
-	"echo/utils/state"
+	"echo/lib/state"
+	"echo/lib/utils"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/pion/webrtc/v4"
 )
 
 // a fiber handler that only responds with the number of current open peer connections,
@@ -37,15 +35,10 @@ func Consume(appstate *state.State) func(*fiber.Ctx) error {
 		var body ApiConsumePayload
 
 		if err := c.BodyParser(&body); err != nil {
-			return c.SendStatus(
-				fiber.StatusBadRequest,
-			)
+			return c.SendStatus(fiber.StatusBadRequest)
 		}
 
-		peer := utils.Must(appstate.Peers.AddWithConfig(
-			body.PeerId,
-			&constants.Config,
-		)).(*state.PeerContainer)
+		peer := utils.Must(appstate.Peers.Add(body.PeerId))
 
 		// TODO: handle multiple requests (perhaps we can use set data structure for OutTracks)
 		// TODO: handle consume request for a producer in advance
@@ -55,22 +48,18 @@ func Consume(appstate *state.State) func(*fiber.Ctx) error {
 		if producerPeer == nil {
 			return c.SendStatus(fiber.StatusNotFound)
 		}
+
 		for _, track := range producerPeer.Tracks {
 			peer.SendTrack(track)
 		}
 
 		// decode the remote sdp and set it in the peer connection
-		utils.Must(
-			nil,
-			peer.Conn.SetRemoteDescription(
-				body.SessionDescription,
-			),
-		)
+		utils.Unwrap(peer.Conn.SetRemoteDescription(body.SessionDescription))
 
 		// create answer, set it in the peer connection, and encode and
 		// send it in JSON response payload
-		localSDB := utils.Must(peer.Conn.CreateAnswer(nil)).(webrtc.SessionDescription)
-		utils.Must(nil, peer.Conn.SetLocalDescription(localSDB))
+		localSDB := utils.Must(peer.Conn.CreateAnswer(nil))
+		utils.Unwrap(peer.Conn.SetLocalDescription(localSDB))
 
 		return c.JSON(&localSDB)
 	}
@@ -85,28 +74,18 @@ func Produce(appstate *state.State) func(*fiber.Ctx) error {
 
 		var body ApiProducePayload
 		if err := c.BodyParser(&body); err != nil {
-			return c.SendStatus(
-				fiber.StatusBadRequest,
-			)
+			return c.SendStatus(fiber.StatusBadRequest)
 		}
 
-		peer := utils.Must(appstate.Peers.AddWithConfig(
-			body.PeerId,
-			&constants.Config,
-		)).(*state.PeerContainer)
+		peer := utils.Must(appstate.Peers.Add(body.PeerId))
 
-		utils.Must(nil, peer.Conn.SetRemoteDescription(body.SessionDescription))
+		utils.Unwrap(peer.Conn.SetRemoteDescription(body.SessionDescription))
 
 		// create answer, set it in the peer connection, and encode and
 		// send it in JSON response payload
-		var localSDB = utils.Must(peer.Conn.CreateAnswer(nil)).(webrtc.SessionDescription)
+		var localSDB = utils.Must(peer.Conn.CreateAnswer(nil))
 
-		utils.Must(
-			nil,
-			peer.Conn.SetLocalDescription(
-				localSDB,
-			),
-		)
+		utils.Unwrap(peer.Conn.SetLocalDescription(localSDB))
 
 		return c.JSON(&localSDB)
 	}

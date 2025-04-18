@@ -75,9 +75,9 @@ func (ps *PeersStorage) AddWithSocket(id int, socket *websocket.Conn) (*PeerCont
 
 // Add a new peer container, with a new peer connection configured. It returns error
 // in case there's a peer connection already.
-func (ps *PeersStorage) AddWithConfig(id int, config *webrtc.Configuration) (*PeerContainer, error) {
+func (ps *PeersStorage) Add(id int) (*PeerContainer, error) {
 	if ps.PeerMap[id] != nil {
-		_, err := ps.PeerMap[id].InitConn(config)
+		_, err := ps.PeerMap[id].InitConn()
 		return ps.PeerMap[id], err
 	}
 
@@ -89,7 +89,7 @@ func (ps *PeersStorage) AddWithConfig(id int, config *webrtc.Configuration) (*Pe
 		iceCandidates: []string{},
 		onDestroy:     func() { ps.Remove(id) },
 	}
-	_, err := container.InitConn(config)
+	_, err := container.InitConn()
 	if err != nil {
 		return nil, err
 	}
@@ -108,9 +108,9 @@ func (ps *PeersStorage) Remove(id int) {
 	if container == nil {
 		return
 	}
-	if container.Destroyed == false {
+	if !container.Destroyed {
 		container.Destroy()
 	}
+
 	delete(ps.PeerMap, id)
-	return
 }

@@ -1,10 +1,14 @@
 package state
 
 import (
+	"echo/constants"
+	"echo/lib/record"
+	"echo/lib/utils"
 	"encoding/json"
 	"errors"
 	"io"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/gofiber/contrib/websocket"
@@ -42,17 +46,35 @@ connections and streams as well.
 Note: it returns the peer connection with the associated id if it's already
 established before, by retrieving it from the state package.
 */
-func (pc *PeerContainer) InitConn(config *webrtc.Configuration) (*webrtc.PeerConnection, error) {
-	if pc.Destroyed == true {
-		return nil, errors.New("cannot initialize a connection on a destroyed peer container!")
+func (pc *PeerContainer) InitConn() (*webrtc.PeerConnection, error) {
+	if pc.Destroyed {
+		return nil, errors.New("cannot initialize a connection on a destroyed peer container")
 	}
 
 	if pc.Conn != nil {
-		return nil, errors.New("connection is already initialized.")
+		return nil, errors.New("connection is already initialized")
 	}
 
 	mediaEngine := &webrtc.MediaEngine{}
-	if err := mediaEngine.RegisterDefaultCodecs(); err != nil {
+
+	// Register video (vp8) codec
+	if err := mediaEngine.RegisterCodec(
+		webrtc.RTPCodecParameters{
+			RTPCodecCapability: webrtc.RTPCodecCapability{
+				MimeType: webrtc.MimeTypeVP8, ClockRate: 90000, Channels: 0, SDPFmtpLine: "", RTCPFeedback: nil,
+			},
+			PayloadType: 96,
+		}, webrtc.RTPCodecTypeVideo,
+	); err != nil {
+		panic(err)
+	}
+
+	if err := mediaEngine.RegisterCodec(webrtc.RTPCodecParameters{
+		RTPCodecCapability: webrtc.RTPCodecCapability{
+			MimeType: webrtc.MimeTypeOpus, ClockRate: 48000, Channels: 0, SDPFmtpLine: "", RTCPFeedback: nil,
+		},
+		PayloadType: 111,
+	}, webrtc.RTPCodecTypeAudio); err != nil {
 		panic(err)
 	}
 
@@ -81,11 +103,20 @@ func (pc *PeerContainer) InitConn(config *webrtc.Configuration) (*webrtc.PeerCon
 	conn, err := webrtc.NewAPI(
 		webrtc.WithMediaEngine(mediaEngine),
 		webrtc.WithInterceptorRegistry(interceptorRegistry),
-	).NewPeerConnection(*config)
+	).NewPeerConnection(constants.Config)
 
 	conn.OnTrack(pc.onTrack)
 	conn.OnICECandidate(pc.onICECandidate)
 	conn.OnConnectionStateChange(pc.onConnectionStateChange)
+	conn.OnConnectionStateChange(func(pcs webrtc.PeerConnectionState) {
+		log.Printf("Peer connection state: %s", pcs.String())
+	})
+	conn.OnICEConnectionStateChange(func(is webrtc.ICEConnectionState) {
+		log.Printf("Ice connection state: %s", is.String())
+	})
+	conn.OnICEGatheringStateChange(func(is webrtc.ICEGatheringState) {
+		log.Printf("Ice gathering state: %s", is.String())
+	})
 
 	conn.OnDataChannel(func(dc *webrtc.DataChannel) {
 		log.Println("data channel recieved from peer", pc.Id, "with label", dc.Label())
@@ -160,7 +191,7 @@ func (pc *PeerContainer) SendTrack(track *webrtc.TrackLocalStaticRTP) error {
 
 // close both webrtc and socket connections, and clear variables from memory
 func (pc *PeerContainer) Destroy() {
-	if pc.Destroyed == true {
+	if pc.Destroyed {
 		return
 	}
 	pc.destroyPeer()
@@ -204,10 +235,23 @@ func (pc *PeerContainer) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPR
 		remoteTrack.ID(),
 		remoteTrack.ID(),
 	)
+
 	if newTrackErr != nil {
 		panic(newTrackErr)
 	}
+
 	pc.Tracks = append(pc.Tracks, localTrack)
+
+	codec := remoteTrack.Codec()
+	if strings.EqualFold(codec.MimeType, webrtc.MimeTypeOpus) {
+		log.Println("Got Opus track, saving to disk as output.opus (48 kHz, 2 channels)")
+		ogg := utils.Must(record.NewOggWritter())
+		record.SaveToDisk(ogg, remoteTrack)
+	} else if strings.EqualFold(codec.MimeType, webrtc.MimeTypeVP8) {
+		log.Println("Got VP8 track, saving to disk as output.ivf")
+		ivf := utils.Must(record.NewIvfWritter())
+		record.SaveToDisk(ivf, remoteTrack)
+	}
 
 	// write the buffer from the remote track in the local track simultaneously
 	rtpBuf := make([]byte, 1400)
@@ -232,9 +276,15 @@ func (pc *PeerContainer) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPR
 // it as soon as it is ready. We don't wait to emit a Offer/Answer until they are
 // all available
 func (pc *PeerContainer) onICECandidate(candidate *webrtc.ICECandidate) {
+	if candidate != nil {
+		log.Printf("Ice candiate: %s/%s", candidate.Typ.String(), candidate.Protocol.String())
+	}
+
 	if candidate == nil {
+		log.Printf("Got a null candiate; Ice gathering done.")
 		return
 	}
+
 	if pc.Socket == nil && pc.DataChannel == nil {
 		// NOTE: this should never happen as the specification is that:
 		// the connection cannot be established without sockets exist, and once it's
