@@ -9,11 +9,17 @@ import (
 // ancillary function used to clean the code in handlers;
 // by wrapping db methods and return the result if no error
 // is found, or panic otherwise.
-func Must(res any, err error) any {
+func Must[V interface{}](res V, err error) V {
 	if err != nil {
 		panic(err)
 	}
 	return res
+}
+
+func Unwrap(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 // ancillary function that shall be used (deferred) in the

@@ -6,7 +6,7 @@ var Config = webrtc.Configuration{
 	ICEServers: []webrtc.ICEServer{
 		{
 			URLs: []string{
-				"stun:surn.litespace.org",
+				"stun:stun.litespace.org",
 			},
 			Username:   "litespace",
 			Credential: "litespace",
