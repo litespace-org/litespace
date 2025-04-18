@@ -99,6 +99,9 @@
     var ws = null; // web socket
 
     const candidates = [];
+    const recievedCandidates = [];
+
+    let connected = false;
 
     setInterval(() => {
       if (!ws || ws.readyState !== 1) return;
@@ -121,8 +124,15 @@
       ws.onopen = () => console.log("ws connected.");
       ws.onclose = () => console.log("ws disconnected.");
       ws.onmessage = (event) => {
-        pc.addIceCandidate(JSON.parse(event.data));
         console.log("new ice-candidate has been received.");
+        if (!connected) {
+          recievedCandidates.push(event.data);
+          return;
+        }
+        while (recievedCandidates.length > 0) {
+          pc.addIceCandidate(JSON.parse(recievedCandidates.pop()));
+        }
+        pc.addIceCandidate(JSON.parse(event.data));
       };
 
       pc = new RTCPeerConnection({
@@ -140,7 +150,10 @@
         ],
       });
 
-      pc.oniceconnectionstatechange = (e) => log(pc.iceConnectionState);
+      pc.oniceconnectionstatechange = (e) => {
+        log(pc.iceConnectionState);
+        connected = pc.iceConnectionState === "connected";
+      };
       pc.onicecandidate = (event) => {
         if (event.candidate === null) {
           sdp = pc.localDescription;
@@ -155,7 +168,23 @@
         });
       };
 
-      pc.addTransceiver("video");
+      const dataChannel = pc.createDataChannel("main");
+      dataChannel.addEventListener("open", (event) => {
+        console.log("data channel openned");
+      });
+      dataChannel.addEventListener("close", (event) => {
+        console.log("data channel closed");
+      });
+      dataChannel.addEventListener("message", async (event) => {
+        const msg = JSON.parse(await event.data.text());
+        while (recievedCandidates.length > 0) {
+          pc.addIceCandidate(JSON.parse(recievedCandidates.pop()));
+        }
+        if (msg.newIceCandidate !== "") {
+          pc.addIceCandidate(JSON.parse(msg.newIceCandidate));
+          console.log("new ice-candidate has been received.");
+        }
+      });
 
       navigator.mediaDevices
         .getUserMedia({ video: cam, audio: mic })
@@ -184,6 +213,10 @@
         for (const track of event.streams[0].getTracks()) {
           el.srcObject.addTrack(track);
         }
+      };
+
+      pc.ondatachannel = () => {
+        console.log("ASDAJSKLD");
       };
     }
 
