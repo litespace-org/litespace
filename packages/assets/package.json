@@ -33,6 +33,7 @@
     "./LongLeftArrow": "./dist/LongLeftArrow.tsx",
     "./LongRightArrow": "./dist/LongRightArrow.tsx",
     "./AbstractLine": "./dist/AbstractLine.tsx",
+    "./AccessMicAndCam": "./dist/AccessMicAndCam.tsx",
     "./AccountPromotion": "./dist/AccountPromotion.tsx",
     "./AddCircleFilled": "./dist/AddCircleFilled.tsx",
     "./AddCircle": "./dist/AddCircle.tsx",

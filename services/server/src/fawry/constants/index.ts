@@ -1,1 +1,1 @@
-export * as Paths from "@/fawry/constants/paths";
+export * from "@/fawry/constants/urls";

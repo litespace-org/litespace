@@ -1,5 +1,5 @@
 meta {
-  name: tutor
+  name: login-tutor
   type: http
   seq: 2
 }
@@ -15,4 +15,8 @@ body:json {
     "email": "tutor-1@litespace.org",
     "password": "Password@8"
   }
+}
+
+script:post-response {
+  if (res.body.token) bru.setEnvVar('token', res.body.token)
 }

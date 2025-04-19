@@ -20,7 +20,16 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ) {
-  console.error(error);
+  console.error(
+    isAxiosError(error)
+      ? {
+          type: "Axios Error",
+          data: error.response?.data,
+          status: error.status,
+          message: error.message,
+        }
+      : error
+  );
 
   let statusCode = 400;
   let message = "Unexpected error, please retry";
@@ -80,5 +89,5 @@ export function errorHandler(
       );
     });
 
-  return res.status(statusCode).json({ message, code: errorCode });
+  return res.status(statusCode).json({ code: errorCode, message });
 }

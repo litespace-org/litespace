@@ -1,13 +1,21 @@
 import axios, { AxiosInstance } from "axios";
 import { Environment } from "@/constants";
+import {
+  FAWRY_API_URL_PROD,
+  FAWRY_API_URL_STAGING,
+} from "@/fawry/constants/urls";
 
 export function createClient(env: Environment): AxiosInstance {
   const client = axios.create({
     baseURL:
       env == Environment.Production
-        ? "https://www.FawryPay.com"
-        : "https://atfawry.fawrystaging.com",
-    headers: { "Content-Type": "application/json" },
+        ? FAWRY_API_URL_PROD
+        : FAWRY_API_URL_STAGING,
+    headers: {
+      "Content-Type": "application/json",
+      Connection: "keep-alive",
+    },
+    timeout: 1000 * 10000,
   });
   return client;
 }
@@ -42,7 +50,7 @@ export class Base {
   async del<T, R = void, P = object>(attr: HTTPMethodAttr<T, P>): Promise<R> {
     return this.client
       .delete(attr.route, {
-        data: JSON.stringify(attr.payload),
+        data: attr.payload,
         params: attr.params,
       })
       .then((response) => response.data);

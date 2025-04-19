@@ -1,0 +1,21 @@
+meta {
+  name: pay-with-card
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api}}/api/v1/fawry/pay/card
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "planId": 1,
+    "cardToken": "fbfc4d7c67002174100bcc7b3a1e956454720aa3cb98ed268cf815c453bbb5ac",
+    "cvv": 123,
+    "duration": null,
+    "phone": "01143759540"
+  }
+}

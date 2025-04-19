@@ -2,22 +2,32 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 
-import { isRegularUser } from "@litespace/utils";
+import {
+  isAdmin,
+  isRegularUser,
+  isStudent,
+  isValidPhone,
+} from "@litespace/utils";
 import { IFawry } from "@litespace/types";
 
-import { fawryApi } from "@/fawry/api";
-import { bad, forbidden } from "@/lib/error";
+import { fawry } from "@/fawry/api";
+import { bad, forbidden, notfound } from "@/lib/error";
 import { forgeFawryPayload } from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
 import { fawryConfig } from "@/constants";
-import { datetime } from "@/validation/utils";
+import { datetime, id } from "@/validation/utils";
 import dayjs from "@/lib/dayjs";
+import { FAWRY_API_URL_CURRENT, FAWRY_ROUTES } from "@/fawry/constants";
+import { clientRouter } from "@/lib/client";
+import { Web } from "@litespace/utils/routes";
+import { users } from "@litespace/models";
 
 const payWithCardPayload = zod.object({
-  amount: zod.number(),
+  planId: id,
   cardToken: zod.string(),
   cvv: zod.number(),
-  returnUrl: zod.string(),
+  duration: zod.null(),
+  phone: zod.string().optional(),
 });
 
 const payWithRefNumPayload = zod.object({
@@ -39,7 +49,7 @@ const payWithBankInstallmentsPayload = zod.object({
 });
 
 const cancelUnpaidOrderPayload = zod.object({
-  orderRefNum: zod.string(),
+  transactionId: id,
 });
 
 const refundPayload = zod.object({
@@ -52,49 +62,45 @@ const deleteCardTokenPayload = zod.object({
   cardToken: zod.string(),
 });
 
+const getPaymentStatusPayload = zod.object({
+  transactionId: id,
+});
+
 async function payWithCard(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isRegularUser(user);
   if (!allowed) return next(forbidden());
 
-  const payload = payWithCardPayload.parse(req.body);
+  const payload: IFawry.PayWithCardPayload = payWithCardPayload.parse(req.body);
 
-  // TODO: store transaction in the database
+  const userPhone = user.phone;
+  const reqPhone = payload.phone;
+  const phone = userPhone || reqPhone;
+  const noPhone = !userPhone && !reqPhone;
+  const invalidReqPhone = reqPhone && !isValidPhone(reqPhone);
+  const mismatch = userPhone && reqPhone && userPhone !== reqPhone;
+  if (noPhone || !phone || invalidReqPhone || mismatch)
+    return next(bad("Invalid or missing phone number"));
 
-  const txId = Math.floor(Math.random() * 1000); // TODO: get transaction id from the db
-  const signature = genSignature.forPayWithCard({
-    amount: payload.amount,
-    cardToken: payload.cardToken,
-    cvv: payload.cvv,
-    returnUrl: "todo",
-    customerProfileId: user.id,
-    merchantRefNum: txId,
-  });
-
-  const forgedPayload = forgeFawryPayload({
-    merchantRefNum: txId,
-    paymentMethod: "CARD",
-    amount: payload.amount,
-    signature,
-    user,
-  });
-  if (forgedPayload instanceof Error) return next(bad());
+  // Update user phone if needed.
+  if (!userPhone) await users.update(user.id, { phone });
 
   const { nextAction, statusCode, statusDescription } =
-    await fawryApi.payWithCard({
-      ...forgedPayload,
-      paymentMethod: "CARD",
+    await fawry.payWithCardToken({
+      customer: {
+        id: user.id,
+        email: user.email,
+        name: user.name || "LiteSpace Student",
+        phone,
+      },
+      transactionId: Math.floor(Math.random() * 1000),
+      amount: 100.23,
       cardToken: payload.cardToken,
       cvv: payload.cvv,
-      returnUrl: payload.returnUrl,
-      enable3DS: true,
-      authCaptureModePayment: true,
     });
 
-  // TODO: store orderRefNumber in the transaction row
-
   const response: IFawry.PayWithCardResponse = {
-    transactionId: forgedPayload.merchantRefNum,
+    transactionId: 1,
     redirectUrl: nextAction.redirectUrl,
     statusCode,
     statusDescription,
@@ -121,7 +127,12 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
       amount: payload.amount,
       customerProfileId: user.id,
     }),
-    user,
+    customer: {
+      id: user.id,
+      phone: user.phone || "",
+      email: user.email,
+      name: user.name || undefined,
+    },
   });
 
   const {
@@ -132,7 +143,7 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
     paymentTime,
     statusCode,
     statusDescription,
-  } = await fawryApi.payWithRefNum({
+  } = await fawry.payWithRefNum({
     ...forgedPayload,
     paymentMethod: "PAYATFAWRY",
     paymentExpiry: payload.paymentExpirey
@@ -175,7 +186,12 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
       amount: payload.amount,
       customerProfileId: user.id,
     }),
-    user,
+    customer: {
+      id: user.id,
+      phone: user.phone || "",
+      email: user.email,
+      name: user.name || undefined,
+    },
   });
   if (forgedPayload instanceof Error) return next(bad());
 
@@ -185,7 +201,7 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
     walletQr,
     statusCode,
     statusDescription,
-  } = await fawryApi.payWithEWallet({
+  } = await fawry.payWithEWallet({
     ...forgedPayload,
     paymentMethod: "MWALLET",
     paymentExpiry: payload.paymentExpirey
@@ -223,7 +239,12 @@ async function payWithBankInstallments(
     merchantRefNum: txId,
     paymentMethod: "CARD",
     amount: payload.amount,
-    user,
+    customer: {
+      id: user.id,
+      phone: user.phone || "",
+      email: user.email,
+      name: user.name || undefined,
+    },
     signature: genSignature.forPayWithBankInstallment({
       merchantRefNum: txId,
       amount: payload.amount,
@@ -244,7 +265,7 @@ async function payWithBankInstallments(
     paymentTime,
     statusCode,
     statusDescription,
-  } = await fawryApi.payWithBankInstallments({
+  } = await fawry.payWithBankInstallments({
     ...forgedPayload,
     paymentMethod: "CARD",
     installmentPlanId: payload.planId,
@@ -277,29 +298,23 @@ async function cancelUnpaidOrder(
   next: NextFunction
 ) {
   const user = req.user;
-  const allowed = isRegularUser(user);
+  const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
   const payload = cancelUnpaidOrderPayload.parse(req.body);
 
-  const { code, description, reason } = await fawryApi.cancelUnpaidOrder({
-    merchantAccount: fawryConfig.merchantCode,
-    orderRefNo: payload.orderRefNum,
-    lang: "ar-eg",
-    signature: genSignature.forCancelUnpaidOrderRequest({
-      orderRefNo: "1",
-      lang: "ar-eg",
-      merchantAccount: fawryConfig.merchantCode,
-    }),
-  });
+  const { fawryRefNumber } = await fawry.getPaymentStatus(
+    payload.transactionId
+  );
+
+  const { code, description, reason } =
+    await fawry.cancelUnpaidOrder(fawryRefNumber);
 
   const response: IFawry.CancelUnpaidOrderResponse = {
     statusCode: code,
     statusDescription: description,
     reason,
   };
-
-  // TODO: update transaction in the database
 
   res.json(response);
 }
@@ -311,7 +326,7 @@ async function refund(req: Request, res: Response, next: NextFunction) {
 
   const payload = refundPayload.parse(req.body);
 
-  const { statusCode, statusDescription } = await fawryApi.refund({
+  const { statusCode, statusDescription } = await fawry.refund({
     merchantCode: fawryConfig.merchantCode,
     referenceNumber: payload.orderRefNum,
     refundAmount: payload.refundAmount,
@@ -333,17 +348,38 @@ async function refund(req: Request, res: Response, next: NextFunction) {
   res.json(response);
 }
 
-async function listCardTokens(req: Request, res: Response, next: NextFunction) {
+async function getAddCardTokenUrl(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const user = req.user;
-  const allowed = isRegularUser(user);
+  const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { cards, statusCode, statusDescription } =
-    await fawryApi.listCardTokens({
-      merchantCode: fawryConfig.merchantCode,
-      customerProfileId: user.id,
-      signature: genSignature.forListCardTokensRequest(user.id),
-    });
+  const url = new URL(FAWRY_ROUTES.ADD_CARD_TOKEN, FAWRY_API_URL_CURRENT);
+  const params = new URLSearchParams({
+    accNo: fawryConfig.merchantCode,
+    customerProfileId: user.id.toString(),
+    returnUrl: clientRouter.web({ route: Web.Subscription, full: true }),
+    locale: "ar",
+  }).toString();
+
+  const response = {
+    url: `${url}?${params}`,
+  };
+
+  res.status(200).json(response);
+}
+
+async function listCardTokens(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user) || isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const { cards, statusCode, statusDescription } = await fawry.listCardTokens(
+    user.id
+  );
 
   const response: IFawry.ListCardTokensResponse = {
     cards,
@@ -360,16 +396,19 @@ async function deleteCardToken(
   next: NextFunction
 ) {
   const user = req.user;
-  const allowed = isRegularUser(user);
+  const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const payload = deleteCardTokenPayload.parse(req.body);
+  const { cardToken } = deleteCardTokenPayload.parse(req.body);
+  const customerProfileId = user.id;
 
-  const { statusCode, statusDescription } = await fawryApi.deleteCardToken({
-    merchantCode: fawryConfig.merchantCode,
-    customerProfileId: user.id,
-    cardToken: payload.cardToken,
-    signature: genSignature.forDeleteCardTokenRequest(user.id),
+  const { cards } = await fawry.listCardTokens(user.id);
+  const exist = cards.find((card) => card.token === cardToken);
+  if (!exist) return next(notfound.base());
+
+  const { statusCode, statusDescription } = await fawry.deleteCardToken({
+    customerProfileId,
+    cardToken,
   });
 
   const response: IFawry.DeleteCardTokenResponse = {
@@ -380,6 +419,25 @@ async function deleteCardToken(
   res.json(response);
 }
 
+async function getPaymentStatus(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const { transactionId } = getPaymentStatusPayload.parse(req.body);
+
+  const result = await fawry.getPaymentStatus(transactionId);
+
+  // todo: add response type
+  const response = result;
+
+  res.status(200).json(response);
+}
+
 export default {
   payWithCard: safeRequest(payWithCard),
   payWithRefNum: safeRequest(payWithRefNum),
@@ -387,6 +445,8 @@ export default {
   payWithBankInstallments: safeRequest(payWithBankInstallments),
   cancelUnpaidOrder: safeRequest(cancelUnpaidOrder),
   refund: safeRequest(refund),
+  getAddCardTokenUrl: safeRequest(getAddCardTokenUrl),
   listCardTokens: safeRequest(listCardTokens),
   deleteCardToken: safeRequest(deleteCardToken),
+  getPaymentStatus: safeRequest(getPaymentStatus),
 };

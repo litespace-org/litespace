@@ -5,10 +5,9 @@ import { isSessionId, logger, safe } from "@litespace/utils";
 import { ISessionEvent, Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { asSessionRoomId } from "@/wss/utils";
-
-import zod from "zod";
 import { id, sessionId } from "@/validation/utils";
 import { sendBackgroundMessage } from "@/workers";
+import zod from "zod";
 
 const stdout = logger("wss");
 

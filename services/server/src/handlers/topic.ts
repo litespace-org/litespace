@@ -21,7 +21,6 @@ import safeRequest from "express-async-handler";
 import zod from "zod";
 import { Knex } from "knex";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
-import { FindUserTopicsApiResponse } from "@litespace/types/dist/esm/topic";
 import { isEmpty } from "lodash";
 import { sendBackgroundMessage } from "@/workers";
 
@@ -139,7 +138,7 @@ async function findUserTopics(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const userTopics = await topics.findUserTopics({ users: [user.id] });
-  const response: FindUserTopicsApiResponse = userTopics;
+  const response: ITopic.FindUserTopicsApiResponse = userTopics;
   res.status(200).json(response);
 }
 

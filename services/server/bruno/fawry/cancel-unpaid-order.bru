@@ -1,0 +1,17 @@
+meta {
+  name: cancel-unpaid-order
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{api}}/api/v1/fawry/cancel-unpaid-order
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "transactionId": 459
+  }
+}

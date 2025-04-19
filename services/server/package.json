@@ -1,10 +1,9 @@
 {
   "name": "@litespace/server",
   "version": "1.0.0",
-  "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "env-cmd ts-node dist/index.js",
+    "start": "env-cmd node --experimental-modules dist/index.js",
     "start:test:server": "pnpm build && ts-node dist/index.js",
     "start:local:test:server": "env-cmd -f .env.test pnpm start:test:server",
     "start:ci:test:server": "env-cmd -f .env.test.ci pnpm start:test:server",
@@ -19,6 +18,12 @@
     "peer": "peerjs --port 4001 --key peer --path /ls",
     "check": "tsc --noEmit",
     "wait": "wait-on tcp:4000 --timeout 30s"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",

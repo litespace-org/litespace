@@ -1,0 +1,17 @@
+meta {
+  name: get-payment-status
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{api}}/api/v1/fawry/payment-status
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "transactionId": 459
+  }
+}
