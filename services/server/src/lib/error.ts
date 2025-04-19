@@ -1,10 +1,11 @@
 import { ApiError, ApiErrorCode } from "@litespace/types";
 import { ResponseError } from "@litespace/utils/error";
 
-const error = (errorCode: ApiErrorCode, statusCode: number) =>
+const error = (errorCode: ApiErrorCode, statusCode: number, message?: string) =>
   new ResponseError({
     errorCode,
     statusCode,
+    message,
   });
 
 export const apierror = error;
@@ -13,7 +14,8 @@ export const unauthenticated = () => error(ApiError.Unauthenticated, 401);
 
 export const forbidden = () => error(ApiError.Forbidden, 403);
 
-export const bad = () => error(ApiError.BadRequest, 400);
+export const bad = (message?: string) =>
+  error(ApiError.BadRequest, 400, message);
 
 export const conflictingInterview = () =>
   error(ApiError.ConflictingInterview, 409);

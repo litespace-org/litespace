@@ -4,6 +4,13 @@ import {
   PaymentMethod,
 } from "@/fawry/types/ancillaries";
 
+export type Customer = {
+  id: number;
+  phone: string;
+  name?: string;
+  email: string;
+};
+
 export type BaseRequestPayload = {
   /**
    * The merchant code provided by FawryPay team during the account setup.
@@ -16,11 +23,11 @@ export type BaseRequestPayload = {
   /**
    * The customer mobile in merchant system: 01xxxxxxx.
    */
-  customerMobile: string;
+  customerMobile: Customer["phone"];
   /**
    * The customer e-mail in merchant system: test@email.com.
    */
-  customerEmail: string;
+  customerEmail: Customer["email"];
   /**
    * The charge amount: must be in the form of xx.xx.
    */
@@ -56,11 +63,11 @@ export type BaseRequestPayload = {
   /**
    * The unique customer profile ID in merchant system. This can be the user ID.
    */
-  customerProfileId?: number;
+  customerProfileId: Customer["id"];
   /**
    * The customer name in merchant system.
    */
-  customerName?: string;
+  customerName: Customer["name"];
   /**
    * WebHook Url used to notify your application back end when an event
    * happens in this order like order paid, expired or refund

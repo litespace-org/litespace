@@ -5,7 +5,7 @@ export class Fawry extends Base {
   public async payWithCard(
     payload: IFawry.PayWithCardPayload
   ): Promise<IFawry.PayWithCardResponse> {
-    return await this.post({ route: "/api/v1/fawry/pay/card-token", payload });
+    return await this.post({ route: "/api/v1/fawry/pay/card", payload });
   }
 
   public async payWithRefNum(
@@ -52,7 +52,7 @@ export class Fawry extends Base {
     payload: IFawry.DeleteCardTokenPayload
   ): Promise<IFawry.DeleteCardTokenResponse> {
     return await this.del({
-      route: "/api/v1/fawry/card-token/delete",
+      route: "/api/v1/fawry/card-token",
       payload,
     });
   }

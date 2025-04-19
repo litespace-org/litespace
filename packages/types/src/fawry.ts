@@ -23,10 +23,11 @@ export type OrderStatus =
   | "FAILED";
 
 export type PayWithCardPayload = {
-  amount: number;
+  phone?: string;
+  planId: number;
+  duration: null; // TODO: ISubscription.Duration
   cardToken: string;
   cvv: number;
-  returnUrl: string;
 };
 
 export type PayWithCardResponse = GeneralResponse & {

@@ -230,6 +230,7 @@ export type CreateCardTokenResponse = GeneralResponse & {
 
 export type ListCardTokensResponse = GeneralResponse & {
   cards: Array<{
+    isDefault: boolean;
     /**
      * The saved card token for your requested client ID.
      */
@@ -243,9 +244,15 @@ export type ListCardTokensResponse = GeneralResponse & {
      */
     lastFourDigits: number;
     /**
+     * The first six digits of the card
+     */
+    firstSixDigits: number;
+    /**
      * The card issuer brand name
      */
     brand: string;
+    cardHolderName: string;
+    accountTypeCode: string;
   }>;
 };
 

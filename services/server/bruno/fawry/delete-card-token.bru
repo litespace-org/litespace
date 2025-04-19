@@ -1,0 +1,17 @@
+meta {
+  name: delete-card-token
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{api}}/api/v1/fawry/card-token/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "cardToken": "90e2aa351b670e58c613503b60c069acefda7866a060ab10d6d3a7fe2991f429"
+  }
+}

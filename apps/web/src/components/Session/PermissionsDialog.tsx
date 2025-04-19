@@ -1,12 +1,13 @@
 import React, { useMemo } from "react";
 import { Dialog } from "@litespace/ui/Dialog";
-import Devices from "@litespace/assets/Devices";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
 import cn from "classnames";
 import { Void } from "@litespace/types";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { Svg } from "@litespace/ui/Svg";
+import { AssetId } from "@litespace/assets";
 
 export type Props = {
   onSubmit: (permission: "mic-and-camera" | "mic-only") => void;
@@ -56,7 +57,10 @@ export const PermissionsDialog: React.FC<Props> = ({
         )}
       >
         <div className="mb-4 md:mb-8">
-          <Devices className="w-[196px] h-[172px] md:w-[298px] md:h-[260px]" />
+          <Svg
+            id={AssetId.AccessMicAndCam}
+            className="w-[196px] h-[172px] md:w-[298px] md:h-[260px]"
+          />
         </div>
 
         <div

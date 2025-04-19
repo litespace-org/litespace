@@ -54,7 +54,13 @@ function savePackageJson(pkg: PackageJson): void {
 async function main() {
   const exports = await getExports();
   const pkg = loadPackageJson();
-  const updated = { ...pkg, exports };
+  const updated = {
+    ...pkg,
+    exports: {
+      ".": pkg.exports["."],
+      ...exports,
+    },
+  };
   savePackageJson(updated);
   console.log("Done.");
 }

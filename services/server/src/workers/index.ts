@@ -4,7 +4,7 @@ import { WorkerMessage } from "@/workers/types";
 import { serverConfig } from "@/constants";
 
 export const background = new Worker(
-  path.join(serverConfig.build, "workers/background.js")
+  path.join(serverConfig.build, "workers/background")
 );
 
 export function sendBackgroundMessage(message: WorkerMessage) {

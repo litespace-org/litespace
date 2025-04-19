@@ -97,8 +97,6 @@ app.use("/api/v1/fawry", routes.fawry);
 app.use("/api/v1/tx", routes.transaction);
 app.use(errorHandler);
 
-server.listen(serverConfig.port, serverConfig.host, () =>
-  console.log(
-    `Server is running on ${serverConfig.host}:${serverConfig.port}`.cyan
-  )
+server.listen(serverConfig.port, () =>
+  console.log(`Server is running on port ${serverConfig.port}`.cyan)
 );

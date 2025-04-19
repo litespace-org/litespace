@@ -1,7 +1,6 @@
-import { BaseRequestPayload } from "@/fawry/types/requests";
+import { BaseRequestPayload, Customer } from "@/fawry/types/requests";
 import { PaymentMethod } from "@/fawry/types/ancillaries";
 import { fawryConfig } from "@/constants";
-import { IUser } from "@litespace/types";
 
 export function forgeFawryPayload({
   merchantRefNum,
@@ -10,28 +9,23 @@ export function forgeFawryPayload({
   description = "",
   signature,
   amount,
-  user,
+  customer,
 }: {
   chargeItems?: BaseRequestPayload["chargeItems"];
   paymentMethod: PaymentMethod;
   merchantRefNum: number;
   description?: string;
   signature: string;
-  user: IUser.Self;
+  customer: Customer;
   amount: number;
 }): BaseRequestPayload {
-  if (user.name === null || user.phone === null)
-    throw new Error(
-      "User name or phone number is missing; should never happen."
-    );
-
   return {
     merchantRefNum,
     paymentMethod,
-    customerProfileId: user.id,
-    customerName: user.name,
-    customerMobile: user.phone,
-    customerEmail: user.email,
+    customerProfileId: customer.id,
+    customerName: customer.name,
+    customerMobile: customer.phone,
+    customerEmail: customer.email,
     chargeItems,
     description,
     orderWebHookUrl: "/todo",

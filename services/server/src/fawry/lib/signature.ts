@@ -8,6 +8,7 @@ import {
   PayWithRefNumPayload,
   PayWithEWalletPayload,
   PayWithCardAndBankInstallmentsPayload,
+  GetPaymentStatusPayload,
 } from "@/fawry/types/requests";
 import { createHash } from "node:crypto";
 import { PaymentMethod } from "@/fawry/types/ancillaries";
@@ -24,6 +25,17 @@ function generateSignature(...data: Array<string | number | undefined>) {
  * The SHA-256 digested for the following concatenated string: "merchantCode + merchantRefNum +
  * customerProfileId (if exists, otherwise "") + paymentMethod + amount (in two decimal format
  * 10.00) + (cardNumber + cardExpiryYear + cardExpiryMonth or just, cardToken) + cvv + returnUrl + secureKey"
+ *
+ * SHA-256 with the following order:
+ * 1. merchantCode
+ * 2. merchantRefNum
+ * 3. customerProfileId
+ * 4. payment ("CARD")
+ * 5. amount
+ * 6. ("cardNumber + cardExpiryYear + cardExpiryMonth" or "cardToken")
+ * 7. cvv
+ * 8. returnUrl
+ * 6. secureKey
  */
 export function forPayWithCard(
   data: {
@@ -42,7 +54,7 @@ export function forPayWithCard(
   )
 ): string {
   const paymentMethod: PaymentMethod = "CARD";
-  const cardInfo =
+  const card =
     "cardToken" in data
       ? data.cardToken
       : [data.cardNumber, data.cardExpiryYear, data.cardExpiryMonth].join("");
@@ -53,7 +65,7 @@ export function forPayWithCard(
     data.customerProfileId,
     paymentMethod,
     data.amount.toFixed(2),
-    cardInfo,
+    card,
     data.cvv,
     data.returnUrl,
     fawryConfig.secureKey
@@ -193,13 +205,23 @@ export function forListCardTokensRequest(customerProfileId: number): string {
 }
 
 /**
- * The SHA-256 digested for the following concatenated string merchantCode +
- * customerProfileId + secureKey
+ * SHA-256 with the following order:
+ * 1. merchantCode
+ * 2. customerProfileId
+ * 3. cardToken
+ * 4. secureKey
  */
-export function forDeleteCardTokenRequest(customerProfileId: number): string {
+export function forDeleteCardTokenRequest({
+  customerProfileId,
+  cardToken,
+}: {
+  customerProfileId: number;
+  cardToken: string;
+}): string {
   return generateSignature(
     fawryConfig.merchantCode,
     customerProfileId,
+    cardToken,
     fawryConfig.secureKey
   );
 }
@@ -209,14 +231,11 @@ export function forDeleteCardTokenRequest(customerProfileId: number): string {
  * (orderRefNo + merchantAccount + lang + secureKey
  */
 export function forCancelUnpaidOrderRequest(
-  data: Pick<
-    CancelUnpaidOrderPayload,
-    "orderRefNo" | "merchantAccount" | "lang"
-  >
+  data: Pick<CancelUnpaidOrderPayload, "orderRefNo" | "lang">
 ): string {
   return generateSignature(
     data.orderRefNo,
-    data.merchantAccount,
+    fawryConfig.merchantCode,
     data.lang,
     fawryConfig.secureKey
   );
@@ -246,6 +265,16 @@ export function forCancelPaymentAuthRequest(
   return generateSignature(
     merchantRefNum,
     fawryConfig.merchantCode,
+    fawryConfig.secureKey
+  );
+}
+
+export function forGetPaymentStatus(
+  merchantRefNumber: GetPaymentStatusPayload["merchantRefNumber"]
+) {
+  return generateSignature(
+    fawryConfig.merchantCode,
+    merchantRefNumber,
     fawryConfig.secureKey
   );
 }

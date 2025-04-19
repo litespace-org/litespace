@@ -55,11 +55,13 @@ export class ResponseError extends Error {
   constructor({
     errorCode,
     statusCode,
+    message,
   }: {
     errorCode: ApiErrorCode;
     statusCode: number;
+    message?: string;
   }) {
-    super(errorCode);
+    super(message || errorCode);
     this.statusCode = statusCode;
     this.errorCode = errorCode;
   }
