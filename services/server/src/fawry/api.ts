@@ -1,9 +1,19 @@
-import { environment, fawryConfig } from "@/constants";
-import { Base, createClient } from "@/fawry/lib/axios";
+import { fawryConfig } from "@/constants";
+import { Base } from "@litespace/atlas";
 import { Requests, Responses } from "@/fawry/types";
-import { FAWRY_ROUTES } from "@/fawry/constants";
+import { FAWRY_API_URL_CURRENT, FAWRY_ROUTES } from "@/fawry/constants";
 import { genSignature } from "@/fawry/lib";
 import { forgeFawryPayload } from "@/lib/fawry";
+import axios, { AxiosInstance } from "axios";
+import https from "node:https";
+
+export function createClient(): AxiosInstance {
+  return axios.create({
+    baseURL: FAWRY_API_URL_CURRENT,
+    headers: { "Content-Type": "application/json" },
+    httpsAgent: new https.Agent({ keepAlive: false }),
+  });
+}
 
 class Api extends Base {
   async payWithCardToken({
@@ -209,4 +219,4 @@ class Api extends Base {
   }
 }
 
-export const fawry = new Api(createClient(environment));
+export const fawry = new Api(createClient());

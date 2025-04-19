@@ -99,9 +99,11 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
       cvv: payload.cvv,
     });
 
+  console.log({ nextAction });
+
   const response: IFawry.PayWithCardResponse = {
     transactionId: 1,
-    redirectUrl: nextAction.redirectUrl,
+    redirectUrl: "",
     statusCode,
     statusDescription,
   };
@@ -307,6 +309,7 @@ async function cancelUnpaidOrder(
     payload.transactionId
   );
 
+  // todo: code, description, and reason are undefined for success status.
   const { code, description, reason } =
     await fawry.cancelUnpaidOrder(fawryRefNumber);
 
