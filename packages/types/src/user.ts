@@ -60,6 +60,8 @@ export type Self = {
   role: Role;
   verifiedEmail: boolean;
   verifiedPhone: boolean;
+  verifiedWhatsApp: boolean;
+  verifiedTelegram: boolean;
   creditScore: number;
   city: City | null;
   phone: string | null;
@@ -80,6 +82,8 @@ export type Row = {
   role: Role;
   verified_email: boolean;
   verified_phone: boolean;
+  verified_whatsapp: boolean;
+  verified_telegram: boolean;
   credit_score: number;
   city: City | null;
   phone: string | null;
@@ -106,7 +110,7 @@ export type CreatePayload = {
   notificationMethod?: NotificationMethod | null;
 };
 
-export type UpdatePayload = {
+export type UpdatePayloadModel = {
   email?: string;
   password?: string;
   name?: string | null;
@@ -116,6 +120,8 @@ export type UpdatePayload = {
   gender?: Gender;
   verifiedEmail?: boolean;
   verifiedPhone?: boolean;
+  verifiedWhatsApp?: boolean;
+  verifiedTelegram?: boolean;
   creditScore?: number;
   phone?: string | null;
   city?: City | null;
@@ -149,6 +155,8 @@ export enum NotificationMethod {
   Whatsapp = 1,
   Telegram = 2,
 }
+
+export type NotificationMethodLiteral = "whatsapp" | "telegram";
 
 export enum AssetFileName {
   Image = "image",

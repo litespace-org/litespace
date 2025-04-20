@@ -78,20 +78,21 @@ async function main() {
         whatsapp.sendMessage(id, { text: value.message })
       );
       if (result instanceof Error)
-        await msg(`'Failed to send the whatsapp message: ${result.message}`);
+        await msg(`failed to send the whatsapp message: ${result.message}`);
       whatsappConsumer.wait(["whatsapp"], ms("5s"));
     },
   });
 
   await telegramConsumer.run({
     async eachMessage({ topic, value }) {
-      console.log(`[${topic}]: processing mesage`);
+      console.log(`[${topic}]: processing mesage`, value);
       if (!value) return;
 
       const phone = telegram.asPhoneNumber(value.to);
       const user = await safePromise(telegram.resolvePhone(phone));
+
       if (user instanceof Error || !user) {
-        await msg("Failed to resolve phone number");
+        await msg("failed to resolve phone number");
         return;
       }
 
@@ -99,7 +100,7 @@ async function main() {
         telegram.sendMessage(user.id, { message: value.message })
       );
       if (result instanceof Error)
-        await msg(`'Failed to send telegram message: ${result.message}`);
+        await msg(`failed to send telegram message: ${result.message}`);
       telegramConsumer.wait(["telegram"], ms("5s"));
     },
   });

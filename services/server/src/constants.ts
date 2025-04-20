@@ -1,5 +1,6 @@
-import { IToken } from "@litespace/types";
+import { Env, IToken } from "@litespace/types";
 import { price } from "@litespace/utils/value";
+import { unionOfLiterals } from "@/validation/utils";
 import zod from "zod";
 
 export enum Environment {
@@ -8,16 +9,15 @@ export enum Environment {
   Production = "production",
 }
 
-export const environment = zod
-  .enum(
-    [Environment.Development, Environment.Staging, Environment.Production],
-    { message: "Missing server environment" }
-  )
-  .parse(process.env.ENVIRONMENT);
+export const environment = unionOfLiterals<Env.Server>([
+  "local",
+  "staging",
+  "production",
+]).parse(process.env.ENVIRONMENT);
 
-export const isDev = environment === Environment.Development;
-export const isStaging = environment === Environment.Staging;
-export const isProduction = environment === Environment.Production;
+export const isDev = environment === "local";
+export const isStaging = environment === "staging";
+export const isProduction = environment === "production";
 
 const schema = {
   string: zod.string().trim(),
@@ -154,4 +154,15 @@ export const telegramConfig = {
 export const fawryConfig = {
   merchantCode: zod.string().parse(process.env.FAWRY_MERCHANT_CODE),
   secureKey: zod.string().parse(process.env.FAWRY_SECURE_KEY),
+};
+
+export const messengerConfig = {
+  username: zod
+    .string({ message: "Missing messenger username" })
+    .trim()
+    .parse(process.env.MESSENGER_USERNAME),
+  password: zod
+    .string({ message: "Missing messenger password" })
+    .trim()
+    .parse(process.env.MESSENGER_PASSWORD),
 };

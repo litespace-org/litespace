@@ -1,3 +1,5 @@
+import { IConfirmationCode, IKafka, IUser } from "@litespace/types";
+
 export const MINUTES_IN_HOUR = 60;
 export const HOURS_IN_DAY = 24;
 export const MINUTES_IN_DAY = 60 * 24;
@@ -69,3 +71,44 @@ export const TUTOR_NAME_REGEX = /^[\u0600-\u06ff\s]+$/;
 export const INTERVIEW_DURATION = 30;
 
 export const CONFIRMATION_CODE_DIGIT_COUNT = 5;
+export const CONFIRMATION_CODE_VALIDITY_MINUTES = 15;
+
+export const NOTIFICATION_METHOD_TO_PURPOSE: Record<
+  IUser.NotificationMethod,
+  IConfirmationCode.Purpose
+> = {
+  [IUser.NotificationMethod.Whatsapp]: IConfirmationCode.Purpose.VerifyWhatsApp,
+  [IUser.NotificationMethod.Telegram]: IConfirmationCode.Purpose.VerifyTelegram,
+};
+
+export const NOTIFICATION_METHOD_LITERAL_TO_NOTIFICATION_METHOD: Record<
+  IUser.NotificationMethodLiteral,
+  IUser.NotificationMethod
+> = {
+  whatsapp: IUser.NotificationMethod.Whatsapp,
+  telegram: IUser.NotificationMethod.Telegram,
+};
+
+export const NOTIFICATION_METHOD_LITERAL_TO_PURPOSE: Record<
+  IUser.NotificationMethodLiteral,
+  IConfirmationCode.Purpose
+> = {
+  whatsapp: IConfirmationCode.Purpose.VerifyWhatsApp,
+  telegram: IConfirmationCode.Purpose.VerifyTelegram,
+};
+
+export const NOTIFICATION_METHOD_TO_KAFKA_TOPIC: Record<
+  IUser.NotificationMethod,
+  IKafka.TopicType
+> = {
+  [IUser.NotificationMethod.Whatsapp]: "whatsapp",
+  [IUser.NotificationMethod.Telegram]: "telegram",
+};
+
+export const NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC: Record<
+  IUser.NotificationMethodLiteral,
+  IKafka.TopicType
+> = {
+  whatsapp: "whatsapp",
+  telegram: "telegram",
+};

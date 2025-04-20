@@ -1,3 +1,5 @@
+import { IUser } from "@/index";
+
 export enum Purpose {
   VerifyWhatsApp = 1,
   VerifyTelegram = 2,
@@ -30,12 +32,18 @@ export type CreatePayload = {
   expiresAt: string;
 };
 
-export type FindPayload = {
-  code: number;
+export type FindPayloadModel = {
+  code?: number;
+  userId?: number;
   purpose?: Purpose;
 };
 
-export type DeleteByCodeAndPurpose = {
+export type SendVerifyNotificationMethodCodePayload = {
+  phone?: string;
+  method: IUser.NotificationMethodLiteral;
+};
+
+export type VerifyNotificationMethodCodePayload = {
   code: number;
-  purpose?: number;
+  method: IUser.NotificationMethodLiteral;
 };

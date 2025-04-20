@@ -1,0 +1,18 @@
+meta {
+  name: verify-notification-method-code
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api}}/api/v1/confirmation-code/notification/verify
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "code": 29805,
+    "method": "telegram"
+  }
+}

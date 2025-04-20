@@ -194,7 +194,7 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
 
 async function tutor(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
-  userPayload?: Partial<IUser.UpdatePayload>
+  userPayload?: Partial<IUser.UpdatePayloadModel>
 ) {
   const info = await user({ role: IUser.Role.Tutor });
   const tutor = await tutors.create(info.id);
@@ -209,7 +209,7 @@ function student() {
 
 async function tutorManager(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
-  userPayload?: Partial<IUser.UpdatePayload>
+  userPayload?: Partial<IUser.UpdatePayloadModel>
 ) {
   const info = await user({ role: IUser.Role.TutorManager });
   const tutor = await tutors.create(info.id);

@@ -1,11 +1,11 @@
-import { Api as AtlasApi, TokenType } from "@litespace/atlas";
+import { Api as AtlasApi, AuthToken, TokenType } from "@litespace/atlas";
 import { IUser } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { sample } from "lodash";
 import db from "@fixtures/db";
 import { tutors } from "@litespace/models";
 
-function asBearerToken(token?: string) {
+function asBearerToken(token?: string): AuthToken | null {
   if (!token) return null;
   return {
     type: TokenType.Bearer,

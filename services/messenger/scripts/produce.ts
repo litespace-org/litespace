@@ -39,7 +39,7 @@ async function main() {
     for (let i = 0; i < count; i++) {
       await producer.send({
         topic: method,
-        value: { to: phone, message: message + ` #${i + 1}` },
+        messages: [{ value: { to: phone, message: message + ` #${i + 1}` } }],
       });
     }
 

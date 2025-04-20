@@ -1,4 +1,4 @@
-import { ISessionEvent, ISession, IUser, IMessenger } from "@litespace/types";
+import { ISessionEvent, ISession, IUser } from "@litespace/types";
 
 export type WorkerMessage =
   | {
@@ -30,7 +30,7 @@ export type WorkerMessage =
             start: string;
             duration: number;
             phone: string;
-            method: IMessenger.Method;
+            method: IUser.NotificationMethod;
           }
         | {
             type: "update-lesson";
@@ -38,7 +38,7 @@ export type WorkerMessage =
             previous: { start: string; duration: number };
             current: { start: string; duration: number };
             phone: string;
-            method: IMessenger.Method;
+            method: IUser.NotificationMethod;
           }
         | {
             type: "cancel-lesson";
@@ -48,7 +48,7 @@ export type WorkerMessage =
               role: IUser.Role;
             };
             phone: string;
-            method: IMessenger.Method;
+            method: IUser.NotificationMethod;
           };
     };
 

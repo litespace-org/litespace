@@ -37,7 +37,7 @@ export class Users {
 
   async update(
     id: number,
-    payload: IUser.UpdatePayload,
+    payload: IUser.UpdatePayloadModel,
     tx?: Knex.Transaction
   ): Promise<IUser.Self> {
     const now = dayjs.utc().toDate();
@@ -50,6 +50,8 @@ export class Users {
         address: payload.address,
         verified_email: payload.verifiedEmail,
         verified_phone: payload.verifiedPhone,
+        verified_whatsapp: payload.verifiedWhatsApp,
+        verified_telegram: payload.verifiedTelegram,
         password: payload.password,
         birth_year: payload.birthYear,
         phone: payload.phone,
@@ -173,6 +175,8 @@ export class Users {
       role: row.role,
       verifiedEmail: row.verified_email,
       verifiedPhone: row.verified_phone,
+      verifiedWhatsApp: row.verified_whatsapp,
+      verifiedTelegram: row.verified_telegram,
       creditScore: row.credit_score,
       phone: row.phone,
       city: row.city,

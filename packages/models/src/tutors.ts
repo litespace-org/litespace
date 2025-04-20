@@ -32,6 +32,8 @@ const fullTutorFields: FullTutorFieldsMap = {
   gender: users.column("gender"),
   verifiedEmail: users.column("verified_email"),
   verifiedPhone: users.column("verified_phone"),
+  verifiedWhatsApp: users.column("verified_whatsapp"),
+  verifiedTelegram: users.column("verified_telegram"),
   creditScore: users.column("credit_score"),
   city: users.column("city"),
   phone: users.column("phone"),
