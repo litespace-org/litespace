@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path/posix";
 import { glob } from "glob";
 import { camelCase, upperFirst } from "lodash";
@@ -6,7 +7,9 @@ import * as ts from "typescript";
 
 // e.g. assets/arrow-down.svg => arrow-down.svg
 function getAssetName(file: string) {
-  return path.basename(file);
+  return os.platform() == "win32"
+    ? path.win32.basename(file)
+    : path.basename(file);
 }
 
 function asEnumKey(file: string) {
