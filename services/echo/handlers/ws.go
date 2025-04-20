@@ -37,12 +37,15 @@ func NewSocketConn(appstate *state.State) fiber.Handler {
 
 		peer := utils.Must(appstate.Peers.AddWithSocket(id, c))
 
-		state.IncreaseThread()
-		defer state.DecreaseThread()
+		utils.IncreaseThread()
+		defer utils.DecreaseThread()
 		for {
 			msgType, msg, err := c.ReadMessage()
 			if err != nil {
 				log.Println("error:", err)
+				if peer.Conn == nil {
+					peer.Destroy()
+				}
 				break
 			}
 			if msgType == websocket.TextMessage {
