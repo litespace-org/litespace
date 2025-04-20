@@ -36,7 +36,7 @@ export enum ApiError {
   SubscriptionNotFound = "subscription-not-found",
   EmailAlreadyVerified = "email-already-verified",
   PhoneAlreadyVerified = "phone-already-verified",
-  UnResolvedPhone = "unresolved-phone",
+  UnresolvedPhone = "unresolved-phone",
   InvalidPhone = "invalid-phone",
   IncorrectPhone = "incorrect-phone",
   ExpiredVerificationCode = "expired-verification-code",

@@ -23,7 +23,6 @@ module.exports = {
     "<rootDir>/fixtures/s3.ts",
     "<rootDir>/fixtures/worker.ts",
     "<rootDir>/fixtures/telegram.ts",
-    "<rootDir>/fixtures/messenger.ts",
     "<rootDir>/fixtures/kafka.ts",
   ],
 };

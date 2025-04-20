@@ -4,25 +4,30 @@ import chaiAsPromised from "chai-as-promised";
 import {
   bad,
   expiredVerificationCode,
-  invalidPhone,
   invalidVerificationCode,
-  phoneAlreadyVerified,
-  unResolvedPhone,
+  unresolvedPhone,
 } from "@/lib/error";
 import dayjs from "@/lib/dayjs";
-import { IConfirmationCode, IUser } from "@litespace/types";
+import { IConfirmationCode, ITelegram, IUser } from "@litespace/types";
 import { mockApi } from "@fixtures/mockApi";
 import handlers from "@/handlers/confirmationCode";
 import { safe } from "@litespace/utils";
 import { use as chaiUse, expect } from "chai";
+import { messenger } from "@/lib/messenger";
 
 chaiUse(chaiAsPromised);
 
-const sendCode = mockApi<IConfirmationCode.SendCodePayload>(handlers.sendCode);
+const resolvePhoneMock = jest.spyOn(messenger.telegram, "resolvePhone");
 
-const verifyCode = mockApi<IConfirmationCode.VerifyCodePayload>(
-  handlers.verifyCode
-);
+const sendVerifyNotificationMethodCode =
+  mockApi<IConfirmationCode.SendVerifyNotificationMethodCodePayload>(
+    handlers.sendVerifyNotificationMethodCode
+  );
+
+const verifyNotificationMethodCode =
+  mockApi<IConfirmationCode.VerifyNotificationMethodCodePayload>(
+    handlers.verifyNotificationMethodCode
+  );
 
 describe("/api/v1/confirmation-code", () => {
   beforeEach(async () => {
@@ -36,8 +41,8 @@ describe("/api/v1/confirmation-code", () => {
 
       expect(user.phone).to.null;
       const response = await safe(async () =>
-        sendCode({
-          body: { phone, method: IUser.NotificationMethod.Whatsapp },
+        sendVerifyNotificationMethodCode({
+          body: { phone, method: "whatsapp" },
           user,
         })
       );
@@ -58,9 +63,13 @@ describe("/api/v1/confirmation-code", () => {
       const phone = "01018303125";
       const user = await db.student();
 
+      resolvePhoneMock.mockImplementationOnce(() =>
+        Promise.resolve({ id: 1 } as unknown as ITelegram.ResolvePhoneResponse)
+      );
+
       const response = await safe(async () =>
-        sendCode({
-          body: { phone, method: IUser.NotificationMethod.Telegram },
+        sendVerifyNotificationMethodCode({
+          body: { phone, method: "telegram" },
           user,
         })
       );
@@ -83,11 +92,8 @@ describe("/api/v1/confirmation-code", () => {
       });
 
       const response = await safe(async () =>
-        sendCode({
-          body: {
-            phone,
-            method: IUser.NotificationMethod.Whatsapp,
-          },
+        sendVerifyNotificationMethodCode({
+          body: { phone, method: "whatsapp" },
           user,
         })
       );
@@ -103,78 +109,53 @@ describe("/api/v1/confirmation-code", () => {
       const phone = "01018303125";
       const user = await db.student();
 
-      await users.update(user.id, {
-        phone,
-      });
+      await users.update(user.id, { phone });
       const updatedUser = await users.findById(user.id);
 
       const response = await safe(async () =>
-        sendCode({
+        sendVerifyNotificationMethodCode({
           body: {
             phone: "01228769906",
-            method: IUser.NotificationMethod.Whatsapp,
+            method: "whatsapp",
           },
           user: updatedUser!,
         })
       );
 
-      expect(response).to.deep.eq(bad());
+      expect(response).to.deep.eq(bad("Invalid or missing phone number"));
     });
 
-    it("should reject because we phone is already verified", async () => {
-      const phone = "01018303125";
-      const user = await db.student();
-
-      await users.update(user.id, {
-        phone,
-        notificationMethod: IUser.NotificationMethod.Whatsapp,
-        verifiedPhone: true,
+    it("should reject because phone is invalid", async () => {
+      const user = await users.create({
+        role: IUser.Role.Student,
+        email: "user@test.com",
       });
 
-      const updatedUser = await users.findById(user.id);
-
       const response = await safe(async () =>
-        sendCode({
-          body: {
-            phone: "01018303125",
-            method: IUser.NotificationMethod.Whatsapp,
-          },
-          user: updatedUser!,
-        })
-      );
-
-      expect(response).to.deep.eq(phoneAlreadyVerified());
-    });
-
-    it("should reject because we phone is invalid", async () => {
-      const user = await db.student();
-
-      const response = await safe(async () =>
-        sendCode({
-          body: {
-            phone: "132186",
-            method: IUser.NotificationMethod.Whatsapp,
-          },
+        sendVerifyNotificationMethodCode({
+          body: { phone: "132186", method: "whatsapp" },
           user,
         })
       );
 
-      expect(response).to.deep.eq(invalidPhone());
+      expect(response).to.deep.eq(bad("Invalid or missing phone number"));
     });
 
     it("should reject because we phone is unresolved", async () => {
       const user = await db.student();
 
+      resolvePhoneMock.mockImplementationOnce(() => Promise.resolve(null));
+
       const response = await safe(async () =>
-        sendCode({
+        sendVerifyNotificationMethodCode({
           body: {
             phone: "01018303124",
-            method: IUser.NotificationMethod.Telegram,
+            method: "telegram",
           },
           user,
         })
       );
-      expect(response).to.deep.eq(unResolvedPhone());
+      expect(response).to.deep.eq(unresolvedPhone());
     });
   });
 
@@ -194,8 +175,8 @@ describe("/api/v1/confirmation-code", () => {
       });
 
       const response = await safe(async () =>
-        verifyCode({
-          body: { code: code.code, method: IUser.NotificationMethod.Telegram },
+        verifyNotificationMethodCode({
+          body: { code: code.code, method: "telegram" },
           user,
         })
       );
@@ -226,8 +207,8 @@ describe("/api/v1/confirmation-code", () => {
       });
 
       const response = await safe(async () =>
-        verifyCode({
-          body: { code: 1235, method: IUser.NotificationMethod.Telegram },
+        verifyNotificationMethodCode({
+          body: { code: 1235, method: "telegram" },
           user,
         })
       );
@@ -251,8 +232,8 @@ describe("/api/v1/confirmation-code", () => {
       });
 
       const response = await safe(async () =>
-        verifyCode({
-          body: { code: code.code, method: IUser.NotificationMethod.Telegram },
+        verifyNotificationMethodCode({
+          body: { code: code.code, method: "telegram" },
           user,
         })
       );

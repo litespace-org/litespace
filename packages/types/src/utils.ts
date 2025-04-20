@@ -16,6 +16,8 @@ export type Optional<T> = T | undefined;
 
 export type EmptyObject = Record<never, never>;
 
+export type OmitProp<T extends object, K extends keyof T> = Omit<T, K>;
+
 export type Identity<T> = { [P in keyof T]: T[P] };
 
 export type Replace<T, K extends keyof T, V> = Identity<

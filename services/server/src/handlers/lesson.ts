@@ -149,14 +149,14 @@ function create(context: ApiContext) {
         }
       );
 
-      if (tutor.phone && tutor.verifiedPhone)
+      if (tutor.phone && tutor.verifiedPhone && tutor.notificationMethod)
         await sendBackgroundMessage({
           type: "send-message",
           payload: {
             type: "create-lesson",
             duration: lesson.duration,
             start: lesson.start,
-            method: "telegram", //! WE SHOULD USE user.notification_method
+            method: tutor.notificationMethod,
             phone: tutor.phone,
             studentName: user.name,
           },
@@ -238,7 +238,11 @@ function update(context: ApiContext) {
       const otherMember = members.find((member) => member.userId !== user.id);
       if (!otherMember) return;
 
-      if (otherMember.phone && otherMember.verifiedPhone)
+      if (
+        otherMember.phone &&
+        otherMember.verifiedPhone &&
+        otherMember.notificationMethod
+      )
         return sendBackgroundMessage({
           type: "send-message",
           payload: {
@@ -251,7 +255,7 @@ function update(context: ApiContext) {
               start: lesson.start,
               duration: lesson.duration,
             },
-            method: "telegram", //! WE SHOULD USE user.notification_method
+            method: otherMember.notificationMethod,
             phone: otherMember.phone,
             studentName: user.name,
           },
@@ -385,7 +389,11 @@ function cancel(_context: ApiContext) {
       const otherMember = members.find((member) => member.userId !== user.id);
       if (!otherMember) return;
 
-      if (otherMember.phone && otherMember.verifiedPhone)
+      if (
+        otherMember.phone &&
+        otherMember.verifiedPhone &&
+        otherMember.notificationMethod
+      )
         return sendBackgroundMessage({
           type: "send-message",
           payload: {
@@ -394,7 +402,7 @@ function cancel(_context: ApiContext) {
               name: user.name,
               role: user.role,
             },
-            method: "telegram", //! WE SHOULD USE user.notification_method
+            method: otherMember.notificationMethod,
             phone: otherMember.phone,
             start: lesson.start,
           },

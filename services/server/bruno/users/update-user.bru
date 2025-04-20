@@ -1,0 +1,17 @@
+meta {
+  name: update-user
+  type: http
+  seq: 1
+}
+
+put {
+  url: {{api}}/api/v1/user/1
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "phone": "01552832217"
+  }
+}

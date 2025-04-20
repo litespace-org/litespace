@@ -1,0 +1,17 @@
+meta {
+  name: send-notification-method-verification-code
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{api}}/api/v1/confirmation-code/notification/send
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "method": "whatsapp"
+  }
+}

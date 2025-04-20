@@ -12,6 +12,7 @@ import { cache } from "@/lib/cache";
 import { isOnboard } from "@litespace/utils/tutor";
 import dayjs from "@/lib/dayjs";
 import { producer } from "@/lib/kafka";
+import { NOTIFICATION_METHOD_TO_KAFKA_TOPIC } from "@litespace/utils";
 
 export async function sendAuthTokenEmail({
   email,
@@ -108,7 +109,7 @@ export async function sendMessage(
   const message = formatMessage(payload);
 
   await producer.send({
-    topic: payload.method,
+    topic: NOTIFICATION_METHOD_TO_KAFKA_TOPIC[payload.method],
     messages: [
       {
         value: {

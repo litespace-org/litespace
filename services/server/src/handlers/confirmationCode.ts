@@ -2,84 +2,120 @@ import {
   bad,
   expiredVerificationCode,
   forbidden,
-  invalidPhone,
   invalidVerificationCode,
-  phoneAlreadyVerified,
-  unResolvedPhone,
+  unresolvedPhone,
 } from "@/lib/error";
 import { confirmationCodes, knex, users } from "@litespace/models";
-import { IUser } from "@litespace/types";
-import { isUser, isValidPhone, orUndefined } from "@litespace/utils";
+import { IConfirmationCode, IUser } from "@litespace/types";
+import {
+  CONFIRMATION_CODE_VALIDITY_MINUTES,
+  isUser,
+  NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC,
+  NOTIFICATION_METHOD_LITERAL_TO_NOTIFICATION_METHOD,
+  NOTIFICATION_METHOD_LITERAL_TO_PURPOSE,
+} from "@litespace/utils";
 import { NextFunction, Request, Response } from "express";
 import zod from "zod";
 import dayjs from "@/lib/dayjs";
 import safeRequest from "express-async-handler";
 import { first } from "lodash";
-import { getPurpose, sendCodeToUser } from "@/lib/confirmationCodes";
+import { generateConfirmationCode } from "@/lib/confirmationCodes";
 import { messenger } from "@/lib/messenger";
+import { withPhone } from "@/lib/user";
+import { producer } from "@/lib/kafka";
+import { unionOfLiterals } from "@/validation/utils";
 
-const sendCodePayload = zod.object({
+const method = unionOfLiterals<IUser.NotificationMethodLiteral>([
+  "whatsapp",
+  "telegram",
+]);
+
+const sendVerifyNotificationMethodCodePayload = zod.object({
   phone: zod.string().optional(),
-  method: zod.nativeEnum(IUser.NotificationMethod),
+  method,
 });
 
-const verifyCodePayload = zod.object({
-  code: zod.number().min(1000).max(9999),
-  method: zod.nativeEnum(IUser.NotificationMethod),
+const verifyNotificationMethodCodePayload = zod.object({
+  code: zod.number(),
+  method,
 });
 
-async function sendCode(req: Request, res: Response, next: NextFunction) {
+async function sendVerifyNotificationMethodCode(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const user = req.user;
-  if (!isUser(user)) return next(forbidden());
+  const allowed = isUser(user);
+  if (!allowed) return next(forbidden());
 
-  const targetPhone = user.phone;
-  const { phone, method } = sendCodePayload.parse(req.body);
+  const payload: IConfirmationCode.SendVerifyNotificationMethodCodePayload =
+    sendVerifyNotificationMethodCodePayload.parse(req.body);
+  const { valid, update, phone } = withPhone(user.phone, payload.phone);
 
-  if (targetPhone && phone !== targetPhone) return next(bad());
+  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
+  if (update) await users.update(user.id, { phone });
 
-  if (!targetPhone && !phone) return next(bad());
+  const purpose = NOTIFICATION_METHOD_LITERAL_TO_PURPOSE[payload.method];
 
-  if (user.verifiedPhone) return next(phoneAlreadyVerified());
+  // Remove any confirmation code that blongs to the current user under the same
+  // purpose. This way users will only have one code under a given purpose at
+  // any given point of time.
+  await confirmationCodes.delete({
+    users: [user.id],
+    purposes: [purpose],
+  });
 
-  const to = phone || targetPhone;
-  if (!to) return next(bad());
+  const code = await confirmationCodes.create({
+    userId: user.id,
+    purpose,
+    code: generateConfirmationCode(),
+    expiresAt: dayjs
+      .utc()
+      .add(CONFIRMATION_CODE_VALIDITY_MINUTES, "minutes")
+      .toISOString(),
+  });
 
-  const validPhoneNumber = isValidPhone(to);
-  if (validPhoneNumber !== true) return next(invalidPhone());
+  const resolvedPhone =
+    payload.method !== "telegram" ||
+    (await messenger.telegram.resolvePhone({ phone }).then((phone) => !!phone));
+  if (!resolvedPhone) return next(unresolvedPhone());
 
-  if (phone && !targetPhone)
-    await users.update(user.id, {
-      phone,
-    });
+  const topic = NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC[payload.method];
 
-  if (method === IUser.NotificationMethod.Telegram) {
-    sendCodeToUser({ to, id: user.id, method: "whatsapp" });
-  }
+  await producer.send({
+    topic,
+    messages: [
+      {
+        value: {
+          to: phone,
+          message: `LiteSpace here! Your verification code: ${code.code}. Please note this code is only valid for the next ${CONFIRMATION_CODE_VALIDITY_MINUTES} minutes. If you didn't ask for this, no action is needed.`,
+        },
+      },
+    ],
+  });
 
-  if (method === IUser.NotificationMethod.Telegram) {
-    const resolvedPhone = await messenger.telegram.resolvePhone({
-      phone: to,
-    });
-
-    if (!resolvedPhone) return next(unResolvedPhone());
-
-    sendCodeToUser({ to, id: user.id, method: "telegram" });
-  }
-
-  res.status(200);
+  res.sendStatus(200);
 }
 
-async function verifyCode(req: Request, res: Response, next: NextFunction) {
+async function verifyNotificationMethodCode(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const user = req.user;
   if (!isUser(user)) return next(forbidden());
 
-  const { code, method } = verifyCodePayload.parse(req.body);
-  if (!code) return next(bad());
+  const {
+    code,
+    method,
+  }: IConfirmationCode.VerifyNotificationMethodCodePayload =
+    verifyNotificationMethodCodePayload.parse(req.body);
 
   const confirmationCodeList = await confirmationCodes.find({
     code,
     userId: user.id,
-    purpose: orUndefined(getPurpose(method)),
+    purpose: NOTIFICATION_METHOD_LITERAL_TO_PURPOSE[method],
   });
 
   const confirmationCode = first(confirmationCodeList);
@@ -89,32 +125,35 @@ async function verifyCode(req: Request, res: Response, next: NextFunction) {
   const isExpired = dayjs.utc(confirmationCode.expiresAt).isBefore(now);
 
   if (isExpired) {
-    await confirmationCodes.deleteById({
-      id: confirmationCode.id,
-    });
+    await confirmationCodes.deleteById({ id: confirmationCode.id });
     return next(expiredVerificationCode());
   }
 
+  const verifiedTelegram = method === "telegram" || user.verifiedTelegram;
+  const verifiedWhatsApp = method === "whatsapp" || user.verifiedWhatsApp;
+
   await knex.transaction(async (tx) => {
-    await confirmationCodes.deleteById({
-      tx,
-      id: confirmationCode.id,
-    });
+    await confirmationCodes.deleteById({ tx, id: confirmationCode.id });
 
     await users.update(
       user.id,
       {
         verifiedPhone: true,
-        notificationMethod: method,
+        notificationMethod:
+          NOTIFICATION_METHOD_LITERAL_TO_NOTIFICATION_METHOD[method],
+        verifiedWhatsApp,
+        verifiedTelegram,
       },
       tx
     );
   });
 
-  res.status(200);
+  res.sendStatus(200);
 }
 
 export default {
-  sendCode: safeRequest(sendCode),
-  verifyCode: safeRequest(verifyCode),
+  sendVerifyNotificationMethodCode: safeRequest(
+    sendVerifyNotificationMethodCode
+  ),
+  verifyNotificationMethodCode: safeRequest(verifyNotificationMethodCode),
 };

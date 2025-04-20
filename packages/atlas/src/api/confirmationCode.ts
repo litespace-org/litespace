@@ -2,18 +2,20 @@ import { Base } from "@/lib/base";
 import { IConfirmationCode } from "@litespace/types";
 
 export class ConfirmationCode extends Base {
-  async sendCode(payload: IConfirmationCode.SendCodePayload): Promise<void> {
+  async sendVerifyNotificationMethodCode(
+    payload: IConfirmationCode.SendVerifyNotificationMethodCodePayload
+  ): Promise<void> {
     return await this.post({
-      route: `/api/v1/confirmation-code/send-verification-code`,
+      route: `/api/v1/confirmation-code/notification/send`,
       payload,
     });
   }
 
-  async verifyCode(
-    payload: IConfirmationCode.VerifyCodePayload
+  async verifyNotificationMethodCode(
+    payload: IConfirmationCode.VerifyNotificationMethodCodePayload
   ): Promise<void> {
     return await this.post({
-      route: `/api/v1/confirmation-code/verify`,
+      route: `/api/v1/confirmation-code/notification/verify`,
       payload,
     });
   }

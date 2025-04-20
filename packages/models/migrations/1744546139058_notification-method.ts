@@ -7,7 +7,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 
   pgm.addColumn("users", {
     notification_method: {
-      type: "SMALLINT",
+      type: "smallint",
       notNull: false,
       default: null,
     },
@@ -22,12 +22,12 @@ export async function down(pgm: MigrationBuilder): Promise<void> {
   //  Recreate the old columns to allow reversibility
   pgm.addColumn("users", {
     enabled_whatsapp: {
-      type: "BOOLEAN",
+      type: "boolean",
       notNull: true,
       default: false,
     },
     enabled_telegram: {
-      type: "BOOLEAN",
+      type: "boolean",
       notNull: true,
       default: false,
     },

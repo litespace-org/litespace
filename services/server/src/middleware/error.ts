@@ -48,7 +48,7 @@ export function errorHandler(
   } else if (error instanceof AxiosError) {
     message = error.response?.data ? error.response.data : error.message;
     statusCode = error.response?.status || 400;
-    caption = `axios error: ${message}`;
+    caption = `axios error: ${JSON.stringify(message)}`;
   } else if (error instanceof DatabaseError) {
     caption = `database error: ${error.message}`;
   } else if (error instanceof S3ServiceException) {

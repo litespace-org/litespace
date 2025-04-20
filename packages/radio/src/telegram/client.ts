@@ -4,6 +4,7 @@ import prompts from "prompts";
 import { EntityLike } from "telegram/define";
 import { SendMessageParams } from "telegram/client/messages";
 import { safePromise } from "@litespace/utils";
+import { RPCError } from "telegram/errors";
 
 type Config = {
   api: {
@@ -72,7 +73,7 @@ export class TelegramClient {
         })
       )
     );
-    if (result instanceof Api.RpcError && result.errorCode === 400) return null;
+    if (result instanceof RPCError && result.code === 400) return null;
     if (result instanceof Error) throw result;
     const [user] = result.users;
     if (!user) return null;

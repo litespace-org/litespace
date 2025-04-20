@@ -2,7 +2,7 @@ import { IConfirmationCode } from "@litespace/types";
 import { column, knex, WithOptionalTx } from "@/query";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
-import { first } from "lodash";
+import { first, isEmpty } from "lodash";
 
 export class ConfirmationCodes {
   readonly table = "confirmation_codes" as const;
@@ -60,14 +60,14 @@ export class ConfirmationCodes {
     code,
     purpose,
     userId,
-  }: WithOptionalTx<IConfirmationCode.FindPayload>): Promise<
+  }: WithOptionalTx<IConfirmationCode.FindPayloadModel>): Promise<
     IConfirmationCode.Self[]
   > {
     const baseBuilder = this.builder(tx);
 
-    if (code) baseBuilder.where("code", code);
-    if (purpose) baseBuilder.where("purpose", purpose);
-    if (userId) baseBuilder.where("user_id", userId);
+    if (code) baseBuilder.where(this.column("code"), code);
+    if (purpose) baseBuilder.where(this.column("purpose"), purpose);
+    if (userId) baseBuilder.where(this.column("user_id"), userId);
 
     const rows = await baseBuilder.select(this.columns);
     return rows.map((row) => this.from(row));
@@ -77,16 +77,35 @@ export class ConfirmationCodes {
     await this.builder(tx).delete().where(this.column("id"), id);
   }
 
-  /**
-   *  @deprecated use {@link ConfirmationCodes.deleteById}
-   */
-  async deleteByCodeAndPurpose({
+  async delete({
+    ids = [],
+    users = [],
+    purposes = [],
+    codes = [],
     tx,
-    ...payload
-  }: WithOptionalTx<IConfirmationCode.DeleteByCodeAndPurpose>): Promise<void> {
-    await this.builder(tx)
-      .delete()
-      .where({ ...payload });
+  }: WithOptionalTx<{
+    ids?: number[];
+    users?: Array<number | null>;
+    purposes?: IConfirmationCode.Purpose[];
+    codes?: number[];
+  }>) {
+    const builder = this.builder(tx);
+
+    if (!isEmpty(ids)) builder.whereIn(this.column("id"), ids);
+    if (!isEmpty(users)) {
+      const userIds = users.filter((id) => id !== null);
+      const includeNull = users.includes(null);
+
+      builder.where((builder) => {
+        builder.whereIn(this.column("user_id"), userIds);
+        if (includeNull) builder.orWhere(this.column("user_id"), "IS", null);
+      });
+    }
+
+    if (!isEmpty(purposes)) builder.whereIn(this.column("purpose"), purposes);
+    if (!isEmpty(codes)) builder.whereIn(this.column("code"), codes);
+
+    await builder.delete();
   }
 
   builder(tx?: Knex.Transaction) {

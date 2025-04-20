@@ -26,5 +26,5 @@
       { "transform": "typescript-transform-paths", "afterDeclarations": true }
     ]
   },
-  "include": ["src/", "tests/", "scripts"]
+  "include": ["src/", "tests/", "scripts/", "fixtures/"]
 }

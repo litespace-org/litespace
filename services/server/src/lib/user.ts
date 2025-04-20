@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import s3 from "@/lib/s3";
+import { isValidPhone } from "@litespace/utils/validation";
 
 export function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -49,4 +50,20 @@ export async function withImageUrls<
       },
 >(users: T[]): Promise<T[]> {
   return await Promise.all(users.map((user) => withImageUrl(user)));
+}
+
+export function withPhone(
+  userPhone: string | null,
+  backupPhone?: string
+): { valid: boolean; phone?: string; update: boolean } {
+  const phone = userPhone || backupPhone;
+  const validPhone = isValidPhone(phone) === true;
+  const mismatch = userPhone && backupPhone && userPhone !== backupPhone;
+  const valid = !!phone && !mismatch && !!validPhone;
+
+  return {
+    valid,
+    phone,
+    update: valid && !userPhone,
+  };
 }

@@ -5,6 +5,7 @@ import { IConfirmationCode } from "@litespace/types";
 import { use, expect } from "chai";
 import dayjs from "@/lib/dayjs";
 import chaiAsPromised from "chai-as-promised";
+import time from "@fixtures/time";
 
 use(chaiAsPromised);
 
@@ -25,16 +26,6 @@ describe("Confirmation Codes", () => {
       });
       expect(code.code).to.be.eq(VALID_CODE);
       expect(code.purpose).to.be.eq(IConfirmationCode.Purpose.ResetPassword);
-    });
-
-    it("should fail and never accept any number above 5 digits", async () => {
-      await expect(
-        confirmationCodes.create({
-          code: 123456, // 6 digits (should fail)
-          purpose: IConfirmationCode.Purpose.ResetPassword,
-          expiresAt: EXPIRY,
-        })
-      ).to.eventually.be.rejectedWith(/out of range for type smallint/);
     });
 
     it("should succeed and return 2 codes", async () => {
@@ -159,20 +150,87 @@ describe("Confirmation Codes", () => {
     });
   });
 
-  describe(nameof(confirmationCodes.deleteByCodeAndPurpose), () => {
-    it("should delete code", async () => {
-      const created = await confirmationCodes.create({
-        code: VALID_CODE,
-        purpose: IConfirmationCode.Purpose.ResetPassword,
-        expiresAt: EXPIRY,
+  describe(nameof(confirmationCodes.delete), () => {
+    it("should delete by code ids", async () => {
+      const c1 = await confirmationCodes.create({
+        code: 1,
+        expiresAt: time.iso(1),
+        purpose: IConfirmationCode.Purpose.VerifyWhatsApp,
       });
 
-      await confirmationCodes.deleteByCodeAndPurpose({
-        code: created.code,
-        purpose: created.purpose,
+      const c2 = await confirmationCodes.create({
+        code: 1,
+        expiresAt: time.iso(1),
+        purpose: IConfirmationCode.Purpose.VerifyWhatsApp,
       });
-      const code = await confirmationCodes.findById(created.id);
-      expect(code).to.be.eq(null);
+
+      await confirmationCodes.delete({ ids: [c1.id] });
+
+      await expect(confirmationCodes.findById(c1.id)).to.eventually.be.null;
+
+      await expect(confirmationCodes.findById(c2.id)).to.eventually.not.be.null;
+    });
+
+    it("should delete codes the belongs to a given user", async () => {
+      const u1 = await fixtures.user({});
+      const u2 = await fixtures.user({});
+
+      await confirmationCodes.create({
+        code: 1,
+        expiresAt: time.iso(1),
+        userId: u1.id,
+        purpose: IConfirmationCode.Purpose.VerifyWhatsApp,
+      });
+
+      await confirmationCodes.create({
+        code: 2,
+        userId: u1.id,
+        expiresAt: time.iso(1),
+        purpose: IConfirmationCode.Purpose.VerifyWhatsApp,
+      });
+
+      await confirmationCodes.create({
+        code: 1,
+        userId: u2.id,
+        expiresAt: time.iso(1),
+        purpose: IConfirmationCode.Purpose.VerifyWhatsApp,
+      });
+
+      await confirmationCodes.delete({ users: [u1.id] });
+
+      await expect(confirmationCodes.find({ userId: u1.id })).to.eventually.be
+        .empty;
+
+      await expect(
+        confirmationCodes.find({ userId: u2.id })
+      ).to.eventually.be.of.length(1);
+    });
+
+    it("should delete codes the belongs to a given user under a given purpose", async () => {
+      const u1 = await fixtures.user({});
+
+      const c1 = await confirmationCodes.create({
+        code: 1,
+        expiresAt: time.iso(1),
+        userId: u1.id,
+        purpose: IConfirmationCode.Purpose.VerifyWhatsApp,
+      });
+
+      const c2 = await confirmationCodes.create({
+        code: 2,
+        userId: u1.id,
+        expiresAt: time.iso(1),
+        purpose: IConfirmationCode.Purpose.VerifyTelegram,
+      });
+
+      await confirmationCodes.delete({
+        users: [u1.id],
+        purposes: [IConfirmationCode.Purpose.VerifyWhatsApp],
+      });
+
+      await expect(confirmationCodes.findById(c1.id)).to.eventually.be.null;
+
+      await expect(confirmationCodes.findById(c2.id)).to.eventually.be.not.null;
     });
   });
 });

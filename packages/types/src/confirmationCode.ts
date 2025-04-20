@@ -32,23 +32,18 @@ export type CreatePayload = {
   expiresAt: string;
 };
 
-export type FindPayload = {
+export type FindPayloadModel = {
   code?: number;
   userId?: number;
   purpose?: Purpose;
 };
 
-export type DeleteByCodeAndPurpose = {
-  code: number;
-  purpose?: number;
-};
-
-export type SendCodePayload = {
+export type SendVerifyNotificationMethodCodePayload = {
   phone?: string;
-  method: IUser.NotificationMethod;
+  method: IUser.NotificationMethodLiteral;
 };
 
-export type VerifyCodePayload = {
+export type VerifyNotificationMethodCodePayload = {
   code: number;
-  method: IUser.NotificationMethod;
+  method: IUser.NotificationMethodLiteral;
 };

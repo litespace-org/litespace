@@ -12,7 +12,7 @@ import {
   IFilter,
   ISession,
 } from "@litespace/types";
-import zod from "zod";
+import zod, { ZodLiteral } from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();
 
@@ -122,3 +122,14 @@ export const skippablePagination = zod.object({
   size: zod.optional(pageSize).default(10),
   full: zod.optional(boolean).default(false),
 });
+
+export function unionOfLiterals<T extends string | number>(
+  constants: readonly T[]
+) {
+  const literals = constants.map((x) => zod.literal(x)) as unknown as readonly [
+    ZodLiteral<T>,
+    ZodLiteral<T>,
+    ...ZodLiteral<T>[],
+  ];
+  return zod.union(literals);
+}

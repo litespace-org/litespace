@@ -46,7 +46,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.ConflictingSchedule]: "error.api.conflicting-schedule",
   [ApiError.ReachedBookingLimit]: "error.api.reached-booking-limit",
   [ApiError.PhoneAlreadyVerified]: "error.api.phone-already-verified",
-  [ApiError.UnResolvedPhone]: "error.api.unresolved-phone",
+  [ApiError.UnresolvedPhone]: "error.api.unresolved-phone",
   [ApiError.IncorrectPhone]: "error.api.incorrect-phone",
   [ApiError.ExpiredVerificationCode]: "error.api.expired-verification-code",
   [ApiError.InvalidVerificationCode]: "error.api.invalid-verification-code",
