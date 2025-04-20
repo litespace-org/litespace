@@ -35,6 +35,7 @@ export { Stepper } from "@/components/Stepper";
 export { TextEditor } from "@/components/TextEditor";
 export { LessonCard, EmptyLessons } from "@/components/Lessons";
 export { ErrorPage } from "@/components/ErrorPage";
+export { ForgetPasswordDialog } from "@/components/ForgetPasswordDialog";
 export { Loading } from "@/components/Loading";
 export { RawHtml } from "@/components/RawHtml";
 export { Price } from "@/components/Price";

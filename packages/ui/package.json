@@ -26,6 +26,7 @@
     "./Drawer": "./dist/components/Drawer/index.js",
     "./Duration": "./dist/components/Duration/index.js",
     "./ErrorPage": "./dist/components/ErrorPage/index.js",
+    "./ForgetPasswordDialog": "./dist/components/ForgetPasswordDialog/index.js",
     "./Form": "./dist/components/Form/index.js",
     "./Gender": "./dist/components/Gender/index.js",
     "./IconField": "./dist/components/IconField/index.js",

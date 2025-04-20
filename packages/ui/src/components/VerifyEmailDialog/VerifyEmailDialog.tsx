@@ -36,20 +36,27 @@ export const VerifyEmailDialog: React.FC<{
       close={close}
       className={cn({ "w-full": !sm })}
     >
-      <div className="mt-4 md:mt-2 flex flex-col ">
+      <div className="mt-4 sm:mt-2 flex flex-col ">
         <Typography
           tag="h3"
           className="text-tiny md:text-caption font-semibold text-natural-950"
         >
           {intl("verify-email-dialog.desc")}
         </Typography>
-        <div className="flex flex-col gap-6 justify-center text-center my-8 md:my-12">
+        <div className="flex flex-col gap-6 justify-center text-center my-8 sm:mt-6 sm:mb-12">
           <Typography
             tag="span"
             className="text-caption font-semibold text-natural-600"
           >
             {intl.rich("verify-email-dialog.email", {
-              email: <Typography tag="span">{email}</Typography>,
+              email: (
+                <Typography
+                  tag="span"
+                  className="text-natural-950 font-semibold text-caption"
+                >
+                  {email}
+                </Typography>
+              ),
             })}
           </Typography>
 
