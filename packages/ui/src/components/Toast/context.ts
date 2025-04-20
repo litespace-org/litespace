@@ -27,6 +27,13 @@ export function useToast() {
     [toast]
   );
 
+  const info = useCallback(
+    (data: AddToastData) => {
+      return toast.add(data, "info");
+    },
+    [toast]
+  );
+
   const error = useCallback(
     (data: AddToastData) => {
       return toast.add(data, "error");
@@ -41,5 +48,5 @@ export function useToast() {
     [toast]
   );
 
-  return { success, error, warning };
+  return { success, info, error, warning };
 }

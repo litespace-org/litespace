@@ -1,10 +1,12 @@
 import React, { useMemo } from "react";
-import { Root, Title, Description } from "@radix-ui/react-toast";
+import { Root, Title, Description, Close } from "@radix-ui/react-toast";
 import cn from "classnames";
 import { ToastId, ToastType } from "@/components/Toast/types";
 import Check from "@litespace/assets/CheckCircleFill";
 import Warning from "@litespace/assets/WarningFill";
 import XErrored from "@litespace/assets/XErroredFill";
+import X from "@litespace/assets/X";
+import WarningInfo from "@litespace/assets/WarningInfo";
 import { motion } from "framer-motion";
 import { Typography } from "@/components/Typography";
 
@@ -17,6 +19,7 @@ const IconMap: Record<
   >
 > = {
   error: XErrored,
+  info: WarningInfo,
   warning: Warning,
   success: Check,
 };
@@ -48,32 +51,35 @@ export const Toast: React.FC<{
         description ? "items-start" : "items-center"
       )}
     >
+      <Close className="absolute top-4 left-4">
+        <X className="w-4 h-4" />
+      </Close>
       <div
         className={cn(
           "absolute top-0 right-0",
-          "h-full w-1/2 translate-x-[calc(50%-2rem)]",
-          {
-            "bg-toast-success": type === "success",
-            "bg-toast-warning": type === "warning",
-            "bg-toast-error": type === "error",
-          }
+          "h-full w-1/2 translate-x-[calc(50%-2rem)]"
+          // {
+          //   "bg-toast-success": type === "success",
+          //   "bg-toast-warning": type === "warning",
+          //   "bg-toast-error": type === "error",
+          // }
         )}
       />
 
-      <div
-        className={cn(
-          "rounded-full w-8 h-8 flex items-center justify-center shrink-0",
-          {
-            "bg-success-900": type === "success",
-            "bg-warning-900": type === "warning",
-            "bg-destructive-900": type === "error",
-          }
-        )}
-      >
-        <Icon />
-      </div>
       <div className="grow">
-        <Title asChild>
+        <Title className="flex">
+          <div
+            className={cn(
+              "rounded-full w-5 h-5 flex items-center justify-center shrink-0"
+              // {
+              //   "bg-success-900": type === "success",
+              //   "bg-warning-900": type === "warning",
+              //   "bg-destructive-900": type === "error",
+              // }
+            )}
+          >
+            <Icon />
+          </div>
           <Typography
             tag="span"
             className={cn("font-bold w-4/5 text-body", {
@@ -104,12 +110,12 @@ export const Toast: React.FC<{
         className={cn(
           "absolute -bottom-[7px] left-0",
           "blur-[4px]",
-          "h-[14px] rounded-[10px]",
-          {
-            "bg-success-500": type === "success",
-            "bg-warning-500": type === "warning",
-            "bg-destructive-500": type === "error",
-          }
+          "h-[14px] rounded-[10px]"
+          // {
+          //   "bg-success-500": type === "success",
+          //   "bg-warning-500": type === "warning",
+          //   "bg-destructive-500": type === "error",
+          // }
         )}
       />
 
@@ -119,12 +125,12 @@ export const Toast: React.FC<{
         transition={{ duration: TOAST_DURATION / 1000 }}
         className={cn(
           "absolute -bottom-[7px] left-0",
-          "h-[14px] rounded-[10px]",
-          {
-            "bg-success-500": type === "success",
-            "bg-warning-500": type === "warning",
-            "bg-destructive-500": type === "error",
-          }
+          "h-[14px] rounded-[10px]"
+          // {
+          //   "bg-success-500": type === "success",
+          //   "bg-warning-500": type === "warning",
+          //   "bg-destructive-500": type === "error",
+          // }
         )}
       />
     </Root>

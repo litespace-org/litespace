@@ -15,7 +15,9 @@ const meta: Meta<Component> = {
   decorators: [],
 };
 
-export const Success: StoryObj<Component> = {
+type Story = StoryObj<Component>;
+
+export const Success: Story = {
   render() {
     const toast = useToast();
 
@@ -61,7 +63,48 @@ export const Success: StoryObj<Component> = {
   },
 };
 
-export const Warning: StoryObj<Component> = {
+export const Info: Story = {
+  render() {
+    const toast = useToast();
+    return (
+      <Direction>
+        <div className="flex flex-row gap-2">
+          <Button
+            onClick={() =>
+              toast.info({
+                title: faker.lorem.words(4),
+                description: faker.lorem.words(5),
+              })
+            }
+          >
+            Short
+          </Button>
+          <Button
+            onClick={() =>
+              toast.info({
+                title: faker.lorem.words(10),
+                description: faker.lorem.words(40),
+              })
+            }
+          >
+            Long
+          </Button>
+          <Button
+            onClick={() =>
+              toast.info({
+                title: faker.lorem.words(10),
+              })
+            }
+          >
+            Title Only
+          </Button>
+        </div>
+      </Direction>
+    );
+  },
+};
+
+export const Warning: Story = {
   render() {
     const toast = useToast();
     return (
@@ -102,7 +145,7 @@ export const Warning: StoryObj<Component> = {
   },
 };
 
-export const Error: StoryObj<Component> = {
+export const Error: Story = {
   render() {
     const toast = useToast();
     return (
@@ -145,7 +188,7 @@ export const Error: StoryObj<Component> = {
   },
 };
 
-export const MultiToast: StoryObj<Component> = {
+export const MultiToast: Story = {
   args: {
     title: faker.lorem.words(5),
     description: faker.lorem.words(8),
