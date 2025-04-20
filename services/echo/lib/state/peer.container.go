@@ -8,7 +8,6 @@ import (
 	"errors"
 	"io"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/gofiber/contrib/websocket"
@@ -108,9 +107,9 @@ func (pc *PeerContainer) InitConn() (*webrtc.PeerConnection, error) {
 	conn.OnTrack(pc.onTrack)
 	conn.OnICECandidate(pc.onICECandidate)
 	conn.OnConnectionStateChange(pc.onConnectionStateChange)
-	conn.OnConnectionStateChange(func(pcs webrtc.PeerConnectionState) {
-		log.Printf("Peer connection state: %s", pcs.String())
-	})
+	// conn.OnConnectionStateChange(func(pcs webrtc.PeerConnectionState) {
+	// 	log.Printf("Peer connection state: %s", pcs.String())
+	// })
 	conn.OnICEConnectionStateChange(func(is webrtc.ICEConnectionState) {
 		log.Printf("Ice connection state: %s", is.String())
 	})
@@ -172,8 +171,8 @@ func (pc *PeerContainer) SendTrack(track *webrtc.TrackLocalStaticRTP) error {
 	// like NACK this needs to be called.
 	go func() {
 		rtcpBuf := make([]byte, 1500)
-		IncreaseThread()
-		defer DecreaseThread()
+		utils.IncreaseThread()
+		defer utils.DecreaseThread()
 		for {
 			if _, _, rtcpErr := rtpSender.Read(rtcpBuf); rtcpErr != nil {
 				log.Printf(
@@ -242,29 +241,21 @@ func (pc *PeerContainer) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPR
 
 	pc.Tracks = append(pc.Tracks, localTrack)
 
-	codec := remoteTrack.Codec()
-	if strings.EqualFold(codec.MimeType, webrtc.MimeTypeOpus) {
-		log.Println("Got Opus track, saving to disk as output.opus (48 kHz, 2 channels)")
-		ogg := utils.Must(record.NewOggWritter())
-		record.SaveToDisk(ogg, remoteTrack)
-	} else if strings.EqualFold(codec.MimeType, webrtc.MimeTypeVP8) {
-		log.Println("Got VP8 track, saving to disk as output.ivf")
-		ivf := utils.Must(record.NewIvfWritter())
-		record.SaveToDisk(ivf, remoteTrack)
-	}
-
 	// write the buffer from the remote track in the local track simultaneously
-	rtpBuf := make([]byte, 1400)
-	IncreaseThread()
-	defer DecreaseThread()
+	codec := remoteTrack.Codec()
+	writer := record.GetWriter(codec)
+
+	utils.IncreaseThread()
+	defer utils.DecreaseThread()
 	for {
-		i, _, readErr := remoteTrack.Read(rtpBuf)
+		packet, _, readErr := remoteTrack.ReadRTP()
+		record.SavePacketToDisk(writer, packet)
 		if readErr != nil {
 			log.Println(readErr)
 			break
 		}
 		// ErrClosedPipe means we don't have any subscribers, this is ok if no peers have connected yet
-		if _, err := localTrack.Write(rtpBuf[:i]); err != nil && !errors.Is(err, io.ErrClosedPipe) {
+		if err := localTrack.WriteRTP(packet); err != nil && !errors.Is(err, io.ErrClosedPipe) {
 			log.Println(err)
 			break
 		}

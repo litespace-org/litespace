@@ -19,7 +19,7 @@ func Stats(appstate *state.State) func(*fiber.Ctx) error {
 			}{
 				Peers:   appstate.Peers.CountPeers(),
 				Sockets: appstate.Peers.CountSockets(),
-				Threads: state.CountThreads(),
+				Threads: utils.CountThreads(),
 			},
 		)
 	}

@@ -25,10 +25,10 @@ type DataChannelContainer struct {
 
 func (dcc *DataChannelContainer) Init() error {
 	if dcc.Channel == nil {
-		return errors.New("couldn't initialize; channel is undefined!")
+		return errors.New("couldn't initialize; channel is undefined")
 	}
 	dcc.Channel.OnMessage(func(msg webrtc.DataChannelMessage) {
-		if msg.IsString == false {
+		if !msg.IsString {
 			log.Println("datachannel", dcc.Channel.ID(), ": unsupported message type.")
 			return
 		}
@@ -48,7 +48,7 @@ func (dcc *DataChannelContainer) Init() error {
 
 func (dcc *DataChannelContainer) Send(msg DataChannelMsg) error {
 	if dcc.Channel == nil {
-		return errors.New("couldn't send a message; channel is undefined!")
+		return errors.New("couldn't send a message; channel is undefined")
 	}
 	b, err := json.Marshal(msg)
 	if err != nil {
