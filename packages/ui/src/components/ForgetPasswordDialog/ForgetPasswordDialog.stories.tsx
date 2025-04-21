@@ -2,7 +2,10 @@ import { StoryObj, Meta } from "@storybook/react";
 import { ForgetPasswordDialog } from "@/components/ForgetPasswordDialog";
 import React, { useState } from "react";
 
-const meta: Meta<typeof ForgetPasswordDialog> = {
+type Component = typeof ForgetPasswordDialog;
+type Story = StoryObj<Component>;
+
+const meta: Meta<Component> = {
   title: "ForgetPasswordDialog",
   component: ForgetPasswordDialog,
   decorators: [
@@ -13,8 +16,6 @@ const meta: Meta<typeof ForgetPasswordDialog> = {
     ),
   ],
 };
-
-type Story = StoryObj<typeof ForgetPasswordDialog>;
 
 export const Primary: Story = {
   args: {
