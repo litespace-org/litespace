@@ -16,7 +16,7 @@ export function createClient(): AxiosInstance {
 }
 
 class Api extends Base {
-  async payWithCardToken({
+  async payWithCard({
     transactionId,
     amount,
     cardToken,
@@ -61,7 +61,7 @@ class Api extends Base {
       cardToken,
       cvv,
       enable3DS: true,
-      authCaptureModePayment: true,
+      authCaptureModePayment: false,
       returnUrl: "https://google.com/",
     };
 

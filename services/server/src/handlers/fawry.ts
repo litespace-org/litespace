@@ -85,8 +85,8 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
   // Update user phone if needed.
   if (!userPhone) await users.update(user.id, { phone });
 
-  const { nextAction, statusCode, statusDescription } =
-    await fawry.payWithCardToken({
+  const { nextAction, statusCode, statusDescription } = await fawry.payWithCard(
+    {
       customer: {
         id: user.id,
         email: user.email,
@@ -97,13 +97,15 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
       amount: 100.23,
       cardToken: payload.cardToken,
       cvv: payload.cvv,
-    });
+    }
+  );
 
-  console.log({ nextAction });
+  // todo: handle errors...
+  // note: nextAction is undefined in case of a error
 
   const response: IFawry.PayWithCardResponse = {
     transactionId: 1,
-    redirectUrl: "",
+    redirectUrl: nextAction.redirectUrl,
     statusCode,
     statusDescription,
   };
