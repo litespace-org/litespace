@@ -104,7 +104,7 @@ export const ConfirmationCode: React.FC<{
   }, [code]);
 
   return (
-    <div dir="ltr" className="w-[284px] flex gap-4 max-w-full justify-center">
+    <div dir="ltr" className="flex gap-4 max-w-full justify-center">
       {range(CONFIRMATION_CODE_DIGIT_COUNT).map((_, index) => (
         <PatternInput
           key={index}

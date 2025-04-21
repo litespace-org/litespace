@@ -12,11 +12,12 @@ import { isValidConfirmationCode } from "@litespace/utils/validation";
 export const VerifyEmailDialog: React.FC<{
   email: string;
   open: boolean;
-  loading: boolean;
+  sending: boolean;
+  verifiying: boolean;
   verify: (value: number) => void;
   close: Void;
   resend: Void;
-}> = ({ email, open, loading, verify, resend, close }) => {
+}> = ({ email, open, sending, verifiying, verify, resend, close }) => {
   const intl = useFormatMessage();
   const { sm } = useMediaQuery();
   const [code, setCode] = useState<number>(0);
@@ -34,7 +35,7 @@ export const VerifyEmailDialog: React.FC<{
       }
       open={open}
       close={close}
-      className={cn({ "w-full": !sm })}
+      className={cn(sm ? "w-[512px]" : "w-full")}
     >
       <div className="mt-4 sm:mt-2 flex flex-col ">
         <Typography
@@ -43,7 +44,7 @@ export const VerifyEmailDialog: React.FC<{
         >
           {intl("verify-email-dialog.desc")}
         </Typography>
-        <div className="flex flex-col gap-6 justify-center text-center my-8 sm:mt-6 sm:mb-12">
+        <div className="flex flex-col gap-6 justify-center text-center my-6">
           <Typography
             tag="span"
             className="text-caption font-semibold text-natural-600"
@@ -62,7 +63,7 @@ export const VerifyEmailDialog: React.FC<{
 
           <div className="mx-auto">
             <ConfirmationCode
-              disabled={loading}
+              disabled={sending || verifiying}
               setCode={(code) => {
                 setCode(code);
                 verify(code);
@@ -71,10 +72,15 @@ export const VerifyEmailDialog: React.FC<{
           </div>
 
           <Button
-            onClick={resend}
+            onClick={() => {
+              resend();
+              setCode(0);
+            }}
             variant="tertiary"
             size="medium"
             className="mx-auto"
+            disabled={sending || verifiying}
+            loading={sending}
           >
             <Typography
               tag="span"
@@ -91,8 +97,8 @@ export const VerifyEmailDialog: React.FC<{
             }}
             size="large"
             className="flex-1"
-            disabled={loading || !isValidConfirmationCode(code)}
-            loading={loading}
+            disabled={verifiying || sending || !isValidConfirmationCode(code)}
+            loading={verifiying}
           >
             {intl("labels.confirm")}
           </Button>
@@ -101,6 +107,7 @@ export const VerifyEmailDialog: React.FC<{
             size="large"
             variant="secondary"
             className="flex-1"
+            disabled={sending || verifiying}
           >
             {intl("labels.cancel")}
           </Button>
