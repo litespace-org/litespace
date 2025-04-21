@@ -113,7 +113,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               "grow bg-inherit focus-within:outline-none font-medium text-[0.875rem] leading-[150%] h-full",
               // Placeholder
-              "placeholder:text-natural-600",
+              "placeholder:text-natural-600 placeholder:font-cairo",
               {
                 // Filled
                 "text-natural-950": !disabled && value,

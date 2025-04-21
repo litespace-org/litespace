@@ -4,3 +4,4 @@ export {
   type ExtraInputProps,
 } from "@/components/Input/Input";
 export { type InputType } from "@/components/Input/types";
+export { Password } from "@/components/Input/Password";

@@ -18,6 +18,7 @@
     "./mediaQuery": "./dist/mediaQuery/index.js",
     "./logger": "./dist/logger/index.js",
     "./auth": "./dist/auth.js",
+    "./form": "./dist/form.js",
     "./login": "./dist/login.js",
     "./users": "./dist/users.js",
     "./utils": "./dist/utils.js",

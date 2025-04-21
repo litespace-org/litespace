@@ -21,10 +21,36 @@ export const Primary: Story = {
   args: {
     open: true,
     email: faker.internet.email(),
-    loading: false,
-    resend: () => alert("resending email..."),
-    verify: (val) => alert(`verifing value of ${val}`),
-    close: () => alert("closing dialog..."),
+    sending: false,
+    verifiying: false,
+
+    resend: () => console.log("resending email..."),
+    verify: (code) => console.log(`code: ${code}`),
+    close: () => console.log("close dialog..."),
+  },
+};
+
+export const Sending: Story = {
+  args: {
+    open: true,
+    email: faker.internet.email(),
+    sending: true,
+    verifiying: false,
+    resend: () => console.log("resending email..."),
+    verify: (code) => console.log(`code: ${code}`),
+    close: () => console.log("close dialog..."),
+  },
+};
+
+export const Verifing: Story = {
+  args: {
+    open: true,
+    email: faker.internet.email(),
+    sending: false,
+    verifiying: true,
+    resend: () => console.log("resending email..."),
+    verify: (code) => console.log(`code: ${code}`),
+    close: () => console.log("close dialog..."),
   },
 };
 

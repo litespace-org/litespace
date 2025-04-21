@@ -49,7 +49,6 @@ export const ConfirmationCode: React.FC<{
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
       const value = e.target.value;
-      console.log(value);
       if (!SINGLE_NUMBER_REGEX.test(value)) return;
       setDigit(value, index);
       focus(index + 1);
