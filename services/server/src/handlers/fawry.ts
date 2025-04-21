@@ -2,25 +2,29 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 
-import {
-  isAdmin,
-  isRegularUser,
-  isStudent,
-  isValidPhone,
-} from "@litespace/utils";
-import { IFawry } from "@litespace/types";
+import { isAdmin, isRegularUser, isStudent, price } from "@litespace/utils";
+import { IFawry, ITransaction, Wss } from "@litespace/types";
 
 import { fawry } from "@/fawry/api";
 import { bad, forbidden, notfound } from "@/lib/error";
 import { forgeFawryPayload } from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
 import { fawryConfig } from "@/constants";
-import { datetime, id } from "@/validation/utils";
+import { datetime, id, unionOfLiterals } from "@/validation/utils";
 import dayjs from "@/lib/dayjs";
-import { FAWRY_API_URL_CURRENT, FAWRY_ROUTES } from "@/fawry/constants";
+import {
+  FAWRY_API_URL_CURRENT,
+  FAWRY_ROUTES,
+  TRANSACTION_PAYMENT_METHOD_TO_FAWRY_PAYMENT_METHOD,
+  TRANSACTION_STATUS_TO_FAWRY_ORDER_STATUS,
+} from "@/fawry/constants";
 import { clientRouter } from "@/lib/client";
 import { Web } from "@litespace/utils/routes";
-import { users } from "@litespace/models";
+import { transactions, users } from "@litespace/models";
+import { ApiContext } from "@/types/api";
+import { OrderStatus, PaymentMethod } from "@/fawry/types/ancillaries";
+import { asUserRoomId } from "@/wss/utils";
+import { withPhone } from "@/lib/user";
 
 const payWithCardPayload = zod.object({
   planId: id,
@@ -66,24 +70,61 @@ const getPaymentStatusPayload = zod.object({
   transactionId: id,
 });
 
+const setPaymentStatusPayload = zod.object({
+  requestId: zod.string(),
+  fawryRefNumber: zod.string(),
+  merchantRefNumber: zod.string(),
+  customerName: zod.string().optional(),
+  customerMobile: zod.string().optional(),
+  customerMail: zod.string().optional(),
+  customerMerchantId: zod.string(),
+  paymentAmount: zod.number(),
+  orderAmount: zod.number(),
+  fawryFees: zod.number(),
+  orderStatus: unionOfLiterals<OrderStatus>([
+    "NEW",
+    "PAID",
+    "CANCELED",
+    "REFUNDED",
+    "EXPIRED",
+    "PARTIAL_REFUNDED",
+    "FAILED",
+  ]),
+  paymentMethod: unionOfLiterals<PaymentMethod>([
+    "CARD",
+    "MWALLET",
+    "PAYATFAWRY",
+  ]),
+  paymentTime: zod.number().optional(),
+  paymentRefrenceNumber: zod.string().optional(),
+  messageSignature: zod.string(),
+  failureErrorCode: zod.number().optional(),
+  failureReason: zod.string().optional(),
+});
+
 async function payWithCard(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isRegularUser(user);
   if (!allowed) return next(forbidden());
 
   const payload: IFawry.PayWithCardPayload = payWithCardPayload.parse(req.body);
-
-  const userPhone = user.phone;
-  const reqPhone = payload.phone;
-  const phone = userPhone || reqPhone;
-  const noPhone = !userPhone && !reqPhone;
-  const invalidReqPhone = reqPhone && !isValidPhone(reqPhone);
-  const mismatch = userPhone && reqPhone && userPhone !== reqPhone;
-  if (noPhone || !phone || invalidReqPhone || mismatch)
-    return next(bad("Invalid or missing phone number"));
-
+  const { valid, phone, update } = withPhone(user.phone, payload.phone);
+  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
   // Update user phone if needed.
-  if (!userPhone) await users.update(user.id, { phone });
+  if (!update) await users.update(user.id, { phone });
+
+  const amount = 100;
+
+  const transaction = await transactions.create({
+    userId: user.id,
+    providerRefNum: null,
+    /**
+     * Any number (e.g., amount, price) that enter the database should be scaled
+     * up and any extra decimals should be removed.
+     */
+    amount: price.scale(amount),
+    paymentMethod: ITransaction.PaymentMethod.Card,
+  });
 
   const { nextAction, statusCode, statusDescription } = await fawry.payWithCard(
     {
@@ -93,19 +134,18 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
         name: user.name || "LiteSpace Student",
         phone,
       },
-      transactionId: Math.floor(Math.random() * 1000),
-      amount: 100.23,
+      transactionId: transaction.id,
+      amount: transaction.amount,
       cardToken: payload.cardToken,
       cvv: payload.cvv,
     }
   );
 
-  // todo: handle errors...
-  // note: nextAction is undefined in case of a error
+  console.log({ statusCode, statusDescription });
 
   const response: IFawry.PayWithCardResponse = {
     transactionId: 1,
-    redirectUrl: nextAction.redirectUrl,
+    redirectUrl: nextAction?.redirectUrl,
     statusCode,
     statusDescription,
   };
@@ -421,7 +461,7 @@ async function deleteCardToken(
     statusDescription,
   };
 
-  res.json(response);
+  res.status(200).json(response);
 }
 
 async function getPaymentStatus(
@@ -443,6 +483,73 @@ async function getPaymentStatus(
   res.status(200).json(response);
 }
 
+function setPaymentStatus(context: ApiContext) {
+  return safeRequest(async function handler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const paylaod = setPaymentStatusPayload.parse(req.body);
+
+    // Validate signature: the signature in the request MUST match the one
+    // generated by us.
+    const signature = genSignature.forPaymentDetails({
+      fawryRefNumber: paylaod.fawryRefNumber,
+      merchantRefNumber: paylaod.merchantRefNumber,
+      paymentAmount: paylaod.paymentAmount,
+      orderAmount: paylaod.orderAmount,
+      orderStatus: paylaod.orderStatus,
+      paymentMethod: paylaod.paymentMethod,
+      paymentRefrenceNumber: paylaod.paymentRefrenceNumber,
+    });
+
+    if (signature !== paylaod.messageSignature)
+      return next(forbidden("Invalid signature."));
+
+    const transactionId = Number(paylaod.merchantRefNumber);
+    const userId = Number(paylaod.customerMerchantId);
+    const fawryRefNumber = Number(paylaod.fawryRefNumber);
+
+    const transaction = await transactions.findById(transactionId);
+    if (!transaction)
+      return next(
+        bad(
+          "Transaction not found; invalid or missing merchant reference number; should never happen."
+        )
+      );
+
+    if (transaction.userId !== userId)
+      return next(
+        bad(
+          "User id mismatch; invalid customer merchant id; should never happen."
+        )
+      );
+
+    const status =
+      TRANSACTION_STATUS_TO_FAWRY_ORDER_STATUS[paylaod.orderStatus];
+
+    const method =
+      TRANSACTION_PAYMENT_METHOD_TO_FAWRY_PAYMENT_METHOD[paylaod.paymentMethod];
+
+    if (method !== transaction.paymentMethod)
+      return next(bad("Payment method mismatch; should never happen."));
+
+    // Update the transaction with the latest status.
+    await transactions.update(transactionId, {
+      status,
+      providerRefNum: fawryRefNumber,
+    });
+
+    // Notify user that his payment status got updated
+    context.io
+      .to(asUserRoomId(userId))
+      .emit(Wss.ServerEvent.PaymentStatusUpdate, {});
+
+    // Terminate request with fawry.
+    res.sendStatus(200);
+  });
+}
+
 export default {
   payWithCard: safeRequest(payWithCard),
   payWithRefNum: safeRequest(payWithRefNum),
@@ -454,4 +561,5 @@ export default {
   listCardTokens: safeRequest(listCardTokens),
   deleteCardToken: safeRequest(deleteCardToken),
   getPaymentStatus: safeRequest(getPaymentStatus),
+  setPaymentStatus,
 };

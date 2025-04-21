@@ -1,11 +1,11 @@
 import {
   OrderStatus,
   PaymentMethod,
-  VerStatus,
+  PaymentDetails,
 } from "@/fawry/types/ancillaries";
 import { FawryStatusCode } from "@/fawry/types/errors";
 
-type GeneralResponse = {
+type Base = {
   /**
    * Specific type of the response.
    * Example: "PaymentStatusResponse", "ChargeResponse", etc.
@@ -21,10 +21,10 @@ type GeneralResponse = {
   statusDescription: string;
 };
 
-export type PayWithCardResponse = GeneralResponse & {
-  nextAction: {
+export type PayWithCard = Base & {
+  nextAction?: {
     /**
-     * Redirect URL for you to redirect your client for payment authentication.
+     * Redirect url for you to redirect your client for payment authentication.
      */
     redirectUrl: string;
     /**
@@ -35,7 +35,7 @@ export type PayWithCardResponse = GeneralResponse & {
   };
 };
 
-export type PayWithEWalletResponse = GeneralResponse & {
+export type PayWithEWallet = Base & {
   /**
    * The reference number of the order on FawryPay system which is displayed to
    * the customer and used during the payment.
@@ -54,7 +54,7 @@ export type PayWithEWalletResponse = GeneralResponse & {
   walletQr: string;
 };
 
-export type PayWithRefNumResponse = GeneralResponse & {
+export type PayWithRefNum = Base & {
   /**
    * FawryPay issued transaction reference number.
    */
@@ -182,7 +182,7 @@ export type GetInstallmentPlansResponse = {
   requiredItemsValidation: boolean;
 };
 
-export type PayWithCardAndBankInstallmentsResponse = PayWithRefNumResponse & {
+export type PayWithCardAndBankInstallments = PayWithRefNum & {
   /**
    * Payment authentication number.
    * Example: 12336534
@@ -190,9 +190,9 @@ export type PayWithCardAndBankInstallmentsResponse = PayWithRefNumResponse & {
   authNumber: string;
 };
 
-export type RefundResponse = GeneralResponse & {};
+export type RefundResponse = Base & {};
 
-export type CreateCardTokenResponse = GeneralResponse & {
+export type CreateCardTokenResponse = Base & {
   nextAction: {
     /**
      * Redirect URL for you to redirect your client for payment authentication.
@@ -228,7 +228,7 @@ export type CreateCardTokenResponse = GeneralResponse & {
   };
 };
 
-export type ListCardTokensResponse = GeneralResponse & {
+export type ListCardTokens = Base & {
   cards: Array<{
     isDefault: boolean;
     /**
@@ -256,7 +256,7 @@ export type ListCardTokensResponse = GeneralResponse & {
   }>;
 };
 
-export type DeleteCardTokenResponse = GeneralResponse & {};
+export type DeleteCardTokenResponse = Base & {};
 
 export type CancelUnpaidOrderResponse = {
   code: number;
@@ -264,9 +264,9 @@ export type CancelUnpaidOrderResponse = {
   reason: string;
 };
 
-export type AuthorizePaymentResponse = PayWithRefNumResponse & {};
+export type AuthorizePayment = PayWithRefNum & {};
 
-export type CapturePaymentResponse = GeneralResponse & {
+export type CapturePaymentResponse = Base & {
   /**
    * The reference number of the order on FawryPay system
    */
@@ -285,7 +285,7 @@ export type CapturePaymentResponse = GeneralResponse & {
   orderStatus: OrderStatus;
 };
 
-export type CancelPaymentAuthResponse = GeneralResponse & {
+export type CancelPaymentAuth = Base & {
   /**
    * The reference number of the order on FawryPay system
    */
@@ -304,175 +304,4 @@ export type CancelPaymentAuthResponse = GeneralResponse & {
   orderStatus: OrderStatus;
 };
 
-export type GetPaymentStatusResponse = {
-  /**
-   * UUID generated Request id
-   */
-  requestId: string;
-  /**
-   * The reference number of this order in atFawry system which is
-   * displayed to the customer and used during the payment
-   */
-  fawryRefNumber: string;
-  merchantRefNumber: string;
-  customerName: string;
-  customerMobile: string;
-  customerMail: string;
-  customerMerchantId: string;
-  /**
-   * The amount value received from merchant to be paid by the customer,
-   * merchant can use it to verify that the customer pay the required amount
-   * to enable the service to the customer
-   */
-  paymentAmount: number;
-  /**
-   * The payment Amount without the fees.
-   */
-  orderAmount: number;
-  /**
-   * The fees added by fawry for the order amount.
-   */
-  fawryFees: number;
-  /**
-   * Shipping fees amount if applicable
-   */
-  shippingFees: number;
-  /**
-   * The updated status of your transaction.
-   */
-  orderStatus: OrderStatus;
-  paymentMethod: PaymentMethod;
-  /**
-   * The actual time for the payment if the Order Status is PAID
-   */
-  paymentTime: Date;
-  /**
-   * The transaction number in the bank
-   */
-  authNumber: number;
-  /**
-   * Unique number registered in FawryPay system to keep track of the payment
-   */
-  paymentRefrenceNumber: string;
-  /**
-   * The order expiry in hours for this order if the merchant need to set specific
-   * expiry for this order if not set we will use the configured expiry hour per merchant
-   */
-  orderExpiryDate: number;
-  /**
-   * There is some ambiguity in the docs for this part
-   * see https://developer.fawrystaging.com/docs/server-apis/payment-notifications/get-payment-status-v2
-   */
-  orderItems: [
-    {
-      itemCode: string;
-      price: number;
-      quantity: number;
-    },
-  ];
-  /**
-   * "threeDSInfo" will be included only if the card is 3D secured.
-   */
-  threeDSInfo: {
-    /**
-     * The 3-D Secure Electronic Commerce Indicator, which is set to '05'
-     * when the cardholder authenticates OK, and '08' when the cardholder
-     * is not enrolled. (These values may change depending on the locale or issuer).
-     */
-    eci: string;
-    /**
-     * unique transaction identifier that is generated by the merchant to identify the 3DS transaction.
-     */
-    xid: string;
-    /**
-     * This field is only included if the card is within an enrolled range.
-     * It will take values (Y - Yes, N - No, U - Unavailable for Checking).
-     */
-    enrolled: "Y" | "N" | "U";
-    /**
-     * This field is only included if payment authentication was used and a PARes
-     * was received by the MPI. It will take values (Y - Yes, N - No, A - Attempted
-     * Authentication, U - Unavailable for Checking).
-     */
-    status: string;
-    /**
-     * A date supplied by the acquirer to indicate when this transaction will be settled.
-     * If the batch has today's date then it will be settled the next day. When the acquirer
-     * closes the batch at the end of the day, the date will roll over to the next processing
-     * day's date.
-     */
-    batchNumber: string;
-    /**
-     * Indicates the type of transaction type. It must be equal to 'pay'.
-     */
-    command: string;
-    message: string;
-    /**
-     * The Verification Security Level is generated at the card issuer as a token to prove
-     * that the cardholder was enrolled and authenticated OK. It is shown for all transactions
-     * except those with authentication status “Failure”. This field contains the security level
-     * to be used in the AUTH message. '05' - Fully Authenticated. '06' - Not authenticated,
-     * (cardholder not participating), liability shift. '07' - Not authenticated. Usually due
-     * to a system problem, for example the merchant password is invalid.
-     */
-    verSecurityLevel: string;
-    /**
-     * The status codes used by the Payment Server. response code value to show whether
-     * the card authentication was successful or not.
-     */
-    verStatus: VerStatus;
-    verType: "3DS" | "SPA";
-    /**
-     * this value is generated by the card issuer as a token to prove that the cardholder
-     * authenticated OK. This is a base64 encoded value.
-     */
-    verToken: string;
-    /**
-     * The version of the Payment Client API being used. The current version is 1.
-     */
-    version: string;
-    /**
-     * Mezza receipt number.
-     */
-    receiptNumber: string;
-    /**
-     * Hosted checkout session ID. Incase the authentication required a session id.
-     */
-    sessionId: string;
-  };
-  invoiceInfo: {
-    /**
-     * Number of the invoice.
-     */
-    number: string;
-    /**
-     * Business Reference Number of the invoice.
-     */
-    businessRefNumber: string;
-    /**
-     * Due Date of the invoice.
-     */
-    dueDate: string;
-    /**
-     * Expiry Date of the invoice.
-     */
-    expiryDate: string;
-  };
-  /**
-   * Customer Paid amount as Interest fees
-   */
-  installmentInterestAmount: number;
-  /**
-   * Number of Months for the instalment
-   */
-  installmentMonths: number;
-  failureErrorCode: FawryStatusCode;
-  failureReason: string;
-  /**
-   * The SHA-256 digested for the following concatenated string fawryRefNumber + merchantRefNum +
-   * Payment amount(in two decimal format 10.00)+Order amount(in two decimal format 10.00)+Order Status +
-   * Payment method + Payment reference number ( if exist as in case of notification for order creation this
-   * element will be empty) + secureKey
-   */
-  messageSignature: string;
-};
+export type GetPaymentStatus = PaymentDetails;

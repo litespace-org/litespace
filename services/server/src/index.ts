@@ -30,7 +30,7 @@ process.on("uncaughtException", async (error) => {
     );
   } catch (error) {
     console.log(
-      `Faield to notify the exception`,
+      `Faield to notify exception`,
       isAxiosError(error) ? error.response : error
     );
   }
@@ -93,7 +93,7 @@ app.use("/api/v1/withdraw-method/", routes.withdrawMethod);
 app.use("/api/v1/cache", routes.cache);
 app.use("/api/v1/asset", routes.asset);
 app.use("/api/v1/session", routes.session);
-app.use("/api/v1/fawry", routes.fawry);
+app.use("/api/v1/fawry", routes.fawry(context));
 app.use("/api/v1/tx", routes.transaction);
 app.use("/api/v1/confirmation-code", routes.confirmationCode);
 

@@ -3,7 +3,7 @@ import { logger, safe } from "@litespace/utils";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { rooms } from "@litespace/models";
-import { asSessionRoomId, asChatRoomId } from "@/wss/utils";
+import { asSessionRoomId, asChatRoomId, asUserRoomId } from "@/wss/utils";
 import { cache } from "@/lib/cache";
 import { msg } from "@/lib/telegram";
 
@@ -26,7 +26,7 @@ export class Connection extends WssHandler {
       await cache.onlineStatus.addUser(user.id);
       this.announceStatus({ userId: user.id, online: true });
       this.joinChatRooms();
-
+      this.socket.join(asUserRoomId(user.id));
       if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
     });
     if (error instanceof Error) stdout.error(error.message);

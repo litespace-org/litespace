@@ -32,7 +32,7 @@ export type PayWithCardPayload = {
 
 export type PayWithCardResponse = GeneralResponse & {
   transactionId: number;
-  redirectUrl: string;
+  redirectUrl?: string;
 };
 
 export type PayWithRefNumPayload = {

@@ -12,7 +12,7 @@ export const apierror = error;
 
 export const unauthenticated = () => error(ApiError.Unauthenticated, 401);
 
-export const forbidden = () => error(ApiError.Forbidden, 403);
+export const forbidden = (msg?: string) => error(ApiError.Forbidden, 403, msg);
 
 export const bad = (message?: string) =>
   error(ApiError.BadRequest, 400, message);
@@ -34,7 +34,8 @@ export const busyTutor = () => error(ApiError.BusyTutor, 400);
 
 export const busyTutorManager = () => error(ApiError.BusyTutorManager, 400);
 
-export const unexpected = () => error(ApiError.Unexpected, 500);
+export const unexpected = (msg?: string) =>
+  error(ApiError.Unexpected, 500, msg);
 
 export const serviceUnavailable = () => error(ApiError.ServiceUnavailable, 503);
 
