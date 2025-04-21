@@ -4,7 +4,6 @@ import { Button } from "@litespace/ui/Button";
 import { Controller, Field, Form, Label } from "@litespace/ui/Form";
 import {
   useValidateDiscount,
-  useValidatePlanAlias,
   useValidatePlanWeeklyMinutes,
   useValidatePrice,
 } from "@litespace/ui/hooks/validation";
@@ -18,16 +17,11 @@ import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
 type IForm = {
-  alias: string;
   weeklyMinutes: Duration;
-  fullMonthPrice: number;
-  fullMonthDiscount: number;
-  fullQuarterPrice: number;
-  fullQuarterDiscount: number;
-  halfYearPrice: number;
-  halfYearDiscount: number;
-  fullYearPrice: number;
-  fullYearDiscount: number;
+  baseMonthlyPrice: number; // scaled
+  monthDiscount: number; // scaled
+  quarterDiscount: number; // scaled
+  yearDiscount: number; // scaled
   forInvitesOnly: boolean;
   active: boolean;
 };
@@ -42,25 +36,18 @@ const PlanForm: React.FC<{
   open: boolean;
   close: Void;
   refresh: Void;
-  plan?: IPlan.MappedAttributes;
+  plan?: IPlan.Self;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ open, plan, close, refresh, setOpen }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const form = useForm<IForm>({
     defaultValues: {
-      alias: plan ? plan.alias : "",
       weeklyMinutes: Duration.from(plan ? plan.weeklyMinutes.toString() : "0"),
-      fullMonthPrice: plan ? price.unscale(plan.fullMonthPrice) : 0,
-      fullMonthDiscount: plan ? percentage.unscale(plan.fullMonthDiscount) : 0,
-      fullQuarterPrice: plan ? price.unscale(plan.fullQuarterPrice) : 0,
-      fullQuarterDiscount: plan
-        ? percentage.unscale(plan.fullQuarterDiscount)
-        : 0,
-      halfYearPrice: plan ? price.unscale(plan.halfYearPrice) : 0,
-      halfYearDiscount: plan ? percentage.unscale(plan.halfYearDiscount) : 0,
-      fullYearPrice: plan ? price.unscale(plan.fullYearPrice) : 0,
-      fullYearDiscount: plan ? percentage.unscale(plan.fullYearDiscount) : 0,
+      baseMonthlyPrice: plan ? price.unscale(plan.baseMonthlyPrice) : 0,
+      monthDiscount: plan ? percentage.unscale(plan.monthDiscount) : 0,
+      quarterDiscount: plan ? price.unscale(plan.quarterDiscount) : 0,
+      yearDiscount: plan ? percentage.unscale(plan.yearDiscount) : 0,
       forInvitesOnly: plan ? plan.forInvitesOnly : false,
       active: plan ? plan.active : false,
     },
@@ -99,7 +86,6 @@ const PlanForm: React.FC<{
 
   const createPlan = useCreatePlan({ onSuccess, onError });
   const updatePlan = useUpdatePlan({ onSuccess, onError });
-  const aliasRules = useValidatePlanAlias();
   const weeklyMinutesRules = useValidatePlanWeeklyMinutes();
   const priceRules = useValidatePrice();
   const discountRules = useValidateDiscount();
@@ -107,26 +93,19 @@ const PlanForm: React.FC<{
   const onSubmit = useCallback(
     (data: IForm) => {
       const payload = {
-        alias: data.alias,
         active: data.active,
         weeklyMinutes: data.weeklyMinutes.minutes(),
         forInvitesOnly: data.forInvitesOnly,
-        fullMonthPrice: price.scale(data.fullMonthPrice),
-        fullMonthDiscount: percentage.scale(data.fullMonthDiscount),
-        fullQuarterPrice: price.scale(data.fullQuarterPrice),
-        fullQuarterDiscount: percentage.scale(data.fullQuarterDiscount),
-        halfYearPrice: price.scale(data.halfYearPrice),
-        halfYearDiscount: percentage.scale(data.halfYearDiscount),
-        fullYearPrice: price.scale(data.fullYearPrice),
-        fullYearDiscount: percentage.scale(data.fullYearDiscount),
+        baseMonthlyPrice: price.scale(data.baseMonthlyPrice),
+        monthDiscount: percentage.scale(data.monthDiscount),
+        quarterDiscount: price.scale(data.quarterDiscount),
+        yearDiscount: percentage.scale(data.yearDiscount),
       };
       if (plan) updatePlan.mutate({ id: plan.id, payload });
       else createPlan.mutate(payload);
     },
     [createPlan, plan, updatePlan]
   );
-
-  const errors = form.formState.errors;
 
   return (
     <Dialog
@@ -145,20 +124,6 @@ const PlanForm: React.FC<{
         <div>
           <Field
             className="mb-1"
-            label={<Label>{intl("dashboard.plan.title")}</Label>}
-            field={
-              <Controller.Input
-                control={form.control}
-                name="alias"
-                value={form.watch("alias")}
-                rules={aliasRules}
-                state={errors.alias ? "error" : undefined}
-                helper={errors.alias?.message}
-              />
-            }
-          />
-          <Field
-            className="mb-1"
             label={<Label>{intl("dashboard.plan.weeklyMinutes")}</Label>}
             field={
               <Controller.Duration
@@ -175,8 +140,8 @@ const PlanForm: React.FC<{
               field={
                 <Controller.NumericInput
                   control={form.control}
-                  name="fullMonthPrice"
-                  value={form.watch("fullMonthPrice")}
+                  name="baseMonthlyPrice"
+                  value={form.watch("baseMonthlyPrice")}
                   allowNegative={false}
                   decimalScale={2}
                   prefix="EGP "
@@ -190,152 +155,80 @@ const PlanForm: React.FC<{
               field={
                 <Controller.NumericInput
                   control={form.control}
-                  name="fullMonthDiscount"
-                  value={form.watch("fullMonthDiscount")}
+                  name="monthDiscount"
+                  value={form.watch("monthDiscount")}
                   allowNegative={false}
                   decimalScale={2}
                   prefix={`(${formatPriceAfterDiscount(
-                    form.watch("fullMonthPrice"),
-                    form.watch("fullMonthDiscount")
+                    form.watch("monthDiscount"),
+                    form.watch("monthDiscount")
                   )}) % `}
                   rules={discountRules}
                 />
               }
             />
           </div>
-          <div className="flex justify-around gap-3 mb-1">
-            <Field
-              label={<Label>{intl("dashboard.plan.fullQuarterPrice")}</Label>}
-              field={
-                <Controller.NumericInput
-                  control={form.control}
-                  name="fullQuarterPrice"
-                  value={form.watch("fullQuarterPrice")}
-                  allowNegative={false}
-                  thousandSeparator={","}
-                  decimalScale={2}
-                  prefix={"EGP "}
-                  rules={priceRules}
-                />
-              }
-            />
-            <Field
-              label={
-                <Label>{intl("dashboard.plan.fullQuarterDiscount")}</Label>
-              }
-              field={
-                <Controller.NumericInput
-                  control={form.control}
-                  name="fullQuarterDiscount"
-                  value={form.watch("fullQuarterDiscount")}
-                  allowNegative={false}
-                  decimalScale={2}
-                  prefix={`(${formatPriceAfterDiscount(
-                    form.watch("fullQuarterPrice"),
-                    form.watch("fullQuarterDiscount")
-                  )}) % `}
-                  rules={discountRules}
-                />
-              }
-            />
-          </div>
-          <div className="flex justify-around gap-3 mb-1">
-            <Field
-              label={<Label>{intl("dashboard.plan.halfYearPrice")}</Label>}
-              field={
-                <Controller.NumericInput
-                  control={form.control}
-                  name="halfYearPrice"
-                  value={form.watch("halfYearPrice")}
-                  allowNegative={false}
-                  thousandSeparator=","
-                  decimalScale={2}
-                  prefix={"EGP "}
-                  rules={priceRules}
-                />
-              }
-            />
-            <Field
-              label={<Label>{intl("dashboard.plan.halfYearDiscount")}</Label>}
-              field={
-                <Controller.NumericInput
-                  control={form.control}
-                  name="halfYearDiscount"
-                  value={form.watch("halfYearDiscount")}
-                  allowNegative={false}
-                  prefix={`(${formatPriceAfterDiscount(
-                    form.watch("halfYearPrice"),
-                    form.watch("halfYearDiscount")
-                  )}) % `}
-                  max={100}
-                  decimalScale={2}
-                  rules={discountRules}
-                />
-              }
-            />
-          </div>
-          <div className="flex justify-around gap-3 mb-1">
-            <Field
-              label={<Label>{intl("dashboard.plan.fullYearPrice")}</Label>}
-              field={
-                <Controller.NumericInput
-                  control={form.control}
-                  name="fullYearPrice"
-                  value={form.watch("fullYearPrice")}
-                  allowNegative={false}
-                  prefix="EGP "
-                  thousandSeparator=","
-                  decimalScale={2}
-                  rules={priceRules}
-                />
-              }
-            />
-            <Field
-              label={<Label>{intl("dashboard.plan.fullYearDiscount")}</Label>}
-              field={
-                <Controller.NumericInput
-                  control={form.control}
-                  name="fullYearDiscount"
-                  value={form.watch("fullYearDiscount")}
-                  prefix={`(${formatPriceAfterDiscount(
-                    form.watch("fullYearPrice"),
-                    form.watch("fullYearDiscount")
-                  )}) % `}
-                  max={100}
-                  decimalScale={2}
-                  allowNegative={false}
-                  rules={discountRules}
-                />
-              }
-            />
-          </div>
-          <div className="flex justify-around gap-2 mt-3 mb-1">
-            <Field
-              variant="row"
-              label={<Label>{intl("dashboard.plan.forInvitesOnly")}</Label>}
-              field={
-                <Controller.Switch
-                  control={form.control}
-                  name="forInvitesOnly"
-                />
-              }
-            />
-            <Field
-              variant="row"
-              label={<Label>{intl("dashboard.plan.active")}</Label>}
-              field={<Controller.Switch control={form.control} name="active" />}
-            />
-          </div>
-
-          <Button
-            size={"medium"}
-            loading={createPlan.isPending}
-            disabled={createPlan.isPending}
-            htmlType="submit"
-          >
-            {intl(plan ? "labels.update" : "labels.create")}
-          </Button>
+          <Field
+            label={<Label>{intl("dashboard.plan.fullQuarterDiscount")}</Label>}
+            field={
+              <Controller.NumericInput
+                control={form.control}
+                name="quarterDiscount"
+                value={form.watch("quarterDiscount")}
+                allowNegative={false}
+                decimalScale={2}
+                prefix={`(${formatPriceAfterDiscount(
+                  form.watch("quarterDiscount"),
+                  form.watch("quarterDiscount")
+                )}) % `}
+                rules={discountRules}
+              />
+            }
+          />
         </div>
+        <div className="flex justify-around gap-3 mb-1">
+          <Field
+            label={<Label>{intl("dashboard.plan.halfYearDiscount")}</Label>}
+            field={
+              <Controller.NumericInput
+                control={form.control}
+                name="yearDiscount"
+                value={form.watch("yearDiscount")}
+                allowNegative={false}
+                prefix={`(${formatPriceAfterDiscount(
+                  form.watch("yearDiscount"),
+                  form.watch("yearDiscount")
+                )}) % `}
+                max={100}
+                decimalScale={2}
+                rules={discountRules}
+              />
+            }
+          />
+        </div>
+        <div className="flex justify-around gap-2 mt-3 mb-1">
+          <Field
+            variant="row"
+            label={<Label>{intl("dashboard.plan.forInvitesOnly")}</Label>}
+            field={
+              <Controller.Switch control={form.control} name="forInvitesOnly" />
+            }
+          />
+          <Field
+            variant="row"
+            label={<Label>{intl("dashboard.plan.active")}</Label>}
+            field={<Controller.Switch control={form.control} name="active" />}
+          />
+        </div>
+
+        <Button
+          size={"medium"}
+          loading={createPlan.isPending}
+          disabled={createPlan.isPending}
+          htmlType="submit"
+        >
+          {intl(plan ? "labels.update" : "labels.create")}
+        </Button>
       </Form>
     </Dialog>
   );

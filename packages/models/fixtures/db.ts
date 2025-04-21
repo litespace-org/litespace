@@ -23,18 +23,26 @@ import {
   ISession,
   IAvailabilitySlot,
   ITutor,
+  ITransaction,
+  ISubscription,
+  IPlan,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/utils/time";
-import { randomUUID } from "crypto";
+import { randomInt, randomUUID } from "crypto";
 import { confirmationCodes } from "@/confirmationCodes";
 import { transactions } from "@/transactions";
+import { subscriptions } from "@/subscriptions";
+import { plans } from "@/plans";
+import { percentage, price } from "@litespace/utils";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await subscriptions.builder(tx).del();
+    await plans.builder(tx).del();
     await transactions.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
@@ -125,6 +133,14 @@ const or = {
   async slotId(id?: number): Promise<number> {
     if (!id) return await slot().then((slot) => slot.id);
     return id;
+  },
+  async planId(id?: number): Promise<number> {
+    if (!id) return await plan().then((plan) => plan.id);
+    return id;
+  },
+  boolean(cond?: boolean) {
+    if (cond === undefined) return sample([false, true]);
+    return cond;
   },
   start(start?: string): string {
     if (!start) return faker.date.soon().toISOString();
@@ -439,17 +455,61 @@ async function makeInterviews(payload: {
         interviewee,
       });
 
-      if (status)
-        await interviews.update(interviewObj.ids.self, {
-          status,
-        });
+      if (status) await interviews.update(interviewObj.ids.self, { status });
 
-      if (level)
-        await interviews.update(interviewObj.ids.self, {
-          level,
-        });
+      if (level) await interviews.update(interviewObj.ids.self, { level });
     }
   }
+}
+
+async function transaction(
+  payload?: Partial<ITransaction.CreatePayload>
+): Promise<ITransaction.Self> {
+  return await transactions.create({
+    userId: payload?.userId || (await user({})).id,
+    amount: payload?.amount || randomInt(1000),
+    paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
+    providerRefNum: payload?.providerRefNum || null,
+  });
+}
+
+async function plan(
+  payload?: Partial<IPlan.CreatePayload>
+): Promise<IPlan.Self> {
+  return await plans.create({
+    weeklyMinutes: payload?.weeklyMinutes || randomInt(1000),
+    baseMonthlyPrice: payload?.baseMonthlyPrice || randomPrice(),
+    monthDiscount: payload?.monthDiscount || randomDiscount(),
+    quarterDiscount: payload?.quarterDiscount || randomDiscount(),
+    yearDiscount: payload?.yearDiscount || randomDiscount(),
+    forInvitesOnly: or.boolean(payload?.active),
+    active: or.boolean(payload?.active),
+  });
+}
+
+function randomPrice() {
+  return price.scale(randomInt(5000));
+}
+
+function randomDiscount() {
+  return percentage.scale(randomInt(100));
+}
+
+async function subscription(
+  payload?: Partial<ISubscription.CreatePayload>
+): Promise<ISubscription.Self> {
+  const userId = await or.studentId(payload?.userId);
+  return await subscriptions.create({
+    userId,
+    planId: await or.planId(payload?.planId),
+    txId: payload?.txId || (await transaction({ userId })).id,
+    period: sample([
+      ISubscription.Period.Year,
+      ISubscription.Period.Month,
+      ISubscription.Period.Quarter,
+    ]),
+    quota: payload?.quota || randomInt(1000),
+  });
 }
 
 export default {
@@ -463,6 +523,9 @@ export default {
   flush,
   topic,
   slot,
+  plan,
+  transaction,
+  subscription,
   room: makeRoom,
   rating: makeRating,
   message: makeMessage,
