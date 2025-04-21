@@ -14,7 +14,7 @@ export const Primary: StoryObj<typeof ConfirmationDialog> = {
     open: true,
     title: faker.lorem.words(5),
     description: faker.lorem.words(20),
-    icon: <CheckCircle />,
+    icon: <CheckCircle className="w-6 h-6" />,
     actions: {
       primary: { label: faker.lorem.word(), onClick: () => alert("primary") },
     },
@@ -27,7 +27,7 @@ export const WithSecondaryAction: StoryObj<typeof ConfirmationDialog> = {
     title: faker.lorem.words(5),
     description: faker.lorem.words(20),
     type: "main",
-    icon: <CheckCircle />,
+    icon: <CheckCircle className="w-6 h-6" />,
     actions: {
       primary: { label: faker.lorem.word(), onClick: () => alert("primary") },
       secondary: {
@@ -44,7 +44,7 @@ export const Warnning: StoryObj<typeof ConfirmationDialog> = {
     title: faker.lorem.words(5),
     description: faker.lorem.words(20),
     type: "warning",
-    icon: <CheckCircle />,
+    icon: <CheckCircle className="w-6 h-6" />,
     actions: {
       primary: { label: faker.lorem.word(), onClick: () => alert("primary") },
       secondary: {
@@ -68,7 +68,7 @@ export const Error: StoryObj<typeof ConfirmationDialog> = {
       },
     },
     type: "error",
-    icon: <CheckCircle />,
+    icon: <CheckCircle className="w-6 h-6" />,
   },
 };
 
@@ -92,7 +92,7 @@ export const Loading: StoryObj<typeof ConfirmationDialog> = {
       },
     },
     type: "error",
-    icon: <CheckCircle />,
+    icon: <CheckCircle className="w-6 h-6" />,
   },
 };
 
@@ -109,7 +109,7 @@ export const ProgressMain: StoryObj<typeof ConfirmationDialog> = {
       },
     },
     type: "main",
-    icon: <CheckCircle />,
+    icon: <CheckCircle className="w-6 h-6" />,
   },
 };
 
@@ -126,7 +126,7 @@ export const ProgressError: StoryObj<typeof ConfirmationDialog> = {
       },
     },
     type: "error",
-    icon: <CheckCircle />,
+    icon: <CheckCircle className="w-6 h-6" />,
   },
 };
 
@@ -142,7 +142,7 @@ export const ProgressDynamic: StoryObj<typeof ConfirmationDialog> = {
       },
     },
     type: "main",
-    icon: <CheckCircle />,
+    icon: <CheckCircle className="w-6 h-6" />,
   },
   render(props) {
     const [progress, setProgress] = useState<number>(0);

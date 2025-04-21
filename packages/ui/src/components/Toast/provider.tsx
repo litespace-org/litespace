@@ -33,7 +33,7 @@ export const ToastProvider: React.FC<{
     <ToastContext.Provider
       value={useMemo(() => ({ add, remove }), [add, remove])}
     >
-      <Provider swipeDirection="left">
+      <Provider>
         {children}
 
         {toasts.map((toast) => (
@@ -47,6 +47,7 @@ export const ToastProvider: React.FC<{
               if (!open) remove(toast.id);
             }}
             open
+            actions={toast.actions}
           />
         ))}
 

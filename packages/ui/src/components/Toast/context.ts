@@ -1,10 +1,21 @@
 import { createContext, useCallback, useContext } from "react";
 import { ToastId, ToastType } from "@/components/Toast/types";
+import { ButtonType, ButtonVariant } from "@/components/Button";
+
+export type ToastAction = {
+  label: string;
+  onClick?: () => boolean;
+  loading?: boolean;
+  disabled?: boolean;
+  variant?: ButtonVariant;
+  type?: ButtonType;
+};
 
 export type AddToastData = {
   id?: ToastId;
   title: React.ReactNode;
   description?: React.ReactNode;
+  actions?: Array<ToastAction>;
 };
 
 export type ToastData = AddToastData & { id: ToastId; type: ToastType };

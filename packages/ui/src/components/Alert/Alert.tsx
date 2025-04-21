@@ -39,7 +39,7 @@ export const Alert: React.FC<{
         ) : warning ? (
           <AlertTriangle className="text-warning-600" />
         ) : success ? (
-          <CheckCircle className="text-[var(--colors-green9)]" />
+          <CheckCircle className="w-6 h-6 text-[var(--colors-green9)]" />
         ) : info ? (
           <Info className="text-[var(--colors-blue9)]" />
         ) : null}
