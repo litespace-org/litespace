@@ -18,24 +18,24 @@ export function createClient(): AxiosInstance {
 class Api extends Base {
   async payWithCard({
     transactionId,
-    amount,
     cardToken,
-    cvv,
     customer,
+    amount,
+    cvv,
   }: {
-    transactionId: number;
-    amount: number;
-    cardToken: string;
-    cvv: number;
     customer: Requests.Customer;
-  }): Promise<Responses.PayWithCardResponse> {
+    transactionId: number;
+    cardToken: string;
+    amount: number;
+    cvv: number;
+  }): Promise<Responses.PayWithCard> {
     const signature = genSignature.forPayWithCard({
       amount,
       cardToken,
       customerProfileId: customer.id,
       merchantRefNum: transactionId,
-      cvv,
       returnUrl: "https://google.com/",
+      cvv,
     });
 
     const base = forgeFawryPayload({
@@ -70,19 +70,19 @@ class Api extends Base {
 
   async payWithRefNum(
     payload: Requests.PayWithRefNumPayload
-  ): Promise<Responses.PayWithRefNumResponse> {
+  ): Promise<Responses.PayWithRefNum> {
     return await this.post({ route: FAWRY_ROUTES.PAY_WITH_REFNUM, payload });
   }
 
   async payWithEWallet(
     payload: Requests.PayWithEWalletPayload
-  ): Promise<Responses.PayWithEWalletResponse> {
+  ): Promise<Responses.PayWithEWallet> {
     return await this.post({ route: FAWRY_ROUTES.PAY_WITH_EWALLET, payload });
   }
 
   async payWithBankInstallments(
     payload: Requests.PayWithCardAndBankInstallmentsPayload
-  ): Promise<Responses.PayWithCardAndBankInstallmentsResponse> {
+  ): Promise<Responses.PayWithCardAndBankInstallments> {
     return await this.post({
       route: FAWRY_ROUTES.PAY_WITH_BANK_INSTALLMENTS,
       payload,
@@ -91,7 +91,7 @@ class Api extends Base {
 
   async authorizePayment(
     payload: Requests.AuthorizePaymentPayload
-  ): Promise<Responses.AuthorizePaymentResponse> {
+  ): Promise<Responses.AuthorizePayment> {
     return await this.post({ route: FAWRY_ROUTES.AUTHORIZE_PAYMENT, payload });
   }
 
@@ -103,7 +103,7 @@ class Api extends Base {
 
   async cancelAuthPayment(
     payload: Requests.CancelPaymentAuthPayload
-  ): Promise<Responses.CancelPaymentAuthResponse> {
+  ): Promise<Responses.CancelPaymentAuth> {
     return await this.post({
       route: FAWRY_ROUTES.CANCEL_AUTHORIZED_PAYMENT,
       payload,
@@ -112,7 +112,7 @@ class Api extends Base {
 
   async getPaymentStatus(
     merchantRefNumber: number
-  ): Promise<Responses.GetPaymentStatusResponse> {
+  ): Promise<Responses.GetPaymentStatus> {
     const id = merchantRefNumber.toString();
 
     const payload: Requests.GetPaymentStatusPayload = {
@@ -175,7 +175,7 @@ class Api extends Base {
 
   async listCardTokens(
     customerProfileId: number
-  ): Promise<Responses.ListCardTokensResponse> {
+  ): Promise<Responses.ListCardTokens> {
     const payload: Requests.ListCardTokensPayload = {
       customerProfileId,
       merchantCode: fawryConfig.merchantCode,

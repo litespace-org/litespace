@@ -7,6 +7,7 @@ import { DatabaseError } from "pg";
 import { ApiErrorCode, ApiError, IUser } from "@litespace/types";
 import { S3ServiceException } from "@aws-sdk/client-s3";
 import { doc } from "@/lib/telegram";
+import { createHash } from "node:crypto";
 
 function getZodMessage(error: ZodError) {
   const issue = first(error.errors);
@@ -58,10 +59,27 @@ export function errorHandler(
     caption = `unkown api error: ${message}`;
   }
 
+  /**
+   * Identifying user using the "hash" of the its ip address.
+   *
+   * ## Why hash?
+   * 1. Privacy: the ip is considered a private/personal user information.
+   * 2. Security: if user ip address is leaked, a hacker can perform a DDoS (or
+   *    just DoS) on his public ip address.
+   *
+   * By hasing we are able to identiy the user without knowing his ip address.
+   *
+   * ## Why `sha1`
+   * It is super fast relatively to other hashing alogrithms.
+   */
+  const ip = first(req.headers["x-real-ip"]) || req.socket.remoteAddress;
+  const id = ip ? createHash("sha1").update(ip).digest("hex") : "unkown";
+
   if (caption)
     doc({
       content: JSON.stringify(
         {
+          id,
           stack: error.stack?.split("\n"),
           message: error.message,
           name: error.name,
@@ -84,7 +102,7 @@ export function errorHandler(
       caption,
     }).catch((error) => {
       console.log(
-        `Failed to notify error`,
+        `Failed to notify api error`,
         isAxiosError(error) ? error.response : error
       );
     });

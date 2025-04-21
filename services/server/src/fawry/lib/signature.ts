@@ -11,7 +11,7 @@ import {
   GetPaymentStatusPayload,
 } from "@/fawry/types/requests";
 import { createHash } from "node:crypto";
-import { PaymentMethod } from "@/fawry/types/ancillaries";
+import { PaymentDetails, PaymentMethod } from "@/fawry/types/ancillaries";
 
 function generateSignature(...data: Array<string | number | undefined>) {
   const payload = data
@@ -269,12 +269,56 @@ export function forCancelPaymentAuthRequest(
   );
 }
 
+/**
+ * SHA-256 with the following order:
+ * 1. merchantCode
+ * 2. merchantRefNumber
+ * 3. secureKey
+ */
 export function forGetPaymentStatus(
   merchantRefNumber: GetPaymentStatusPayload["merchantRefNumber"]
 ) {
   return generateSignature(
     fawryConfig.merchantCode,
     merchantRefNumber,
+    fawryConfig.secureKey
+  );
+}
+
+/**
+ * @name getPaymentDetails
+ * @description
+ * SHA-256 with the following order:
+ * 1. fawryRefNumber
+ * 2. merchantRefNumber
+ * 3. paymentAmount (in two decimal format: e.g., 10.00)
+ * 4. orderAmount (in two decimal format e.g., 10.00)
+ * 5. orderStatus
+ * 6. paymentMethod
+ * 7. paymentRefrenceNumber (if exist as in case of notification for order
+ *    creation this element will be empty)
+ * 8. secureKey
+ */
+export function forPaymentDetails(
+  data: Pick<
+    PaymentDetails,
+    | "fawryRefNumber"
+    | "merchantRefNumber"
+    | "paymentAmount"
+    | "orderAmount"
+    | "orderStatus"
+    | "paymentMethod"
+    | "paymentRefrenceNumber"
+  >
+): string {
+  return generateSignature(
+    data.fawryRefNumber,
+    data.merchantRefNumber,
+    data.paymentAmount.toFixed(2),
+    data.orderAmount.toFixed(2),
+    data.orderStatus,
+    data.paymentMethod,
+    data.paymentRefrenceNumber,
     fawryConfig.secureKey
   );
 }

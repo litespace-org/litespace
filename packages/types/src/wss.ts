@@ -54,28 +54,23 @@ export enum ServerEvent {
   AnnounceIncomingOffer = "AnnounceIncomingOffer",
   PeerReadyToReceiveOffer = "ReadyToReceiveOffer",
   UserJoinedSession = "UserJoinedSession",
-
   /**
    * @deprecated
    */
   UserSharedScreen = "UserSharedScreen",
   UserStatusChanged = "UserStatusChanged",
   UserTyping = "UserTyping",
-
   CameraToggled = "CameraToggle",
   MicToggled = "MicToggled",
-
   TutorsCacheUpdated = "TutorsCacheUpdated",
   TutorUpdated = "TutorUpdated",
-
   LessonBooked = "LessonBooked",
   LessonRebooked = "LessonRebooked",
   LessonCanceled = "LessonCanceled",
-
   InvoiceUpdated = "InvoiceUpdated",
   InvoiceDeleted = "InvoiceDeleted",
-
   ServerStats = "ServerStats",
+  PaymentStatusUpdate = "PaymentStatusUpdate",
 }
 
 export enum Room {
@@ -233,6 +228,7 @@ export type ServerEventsMap = {
   }>;
   [ServerEvent.AnnounceIncomingOffer]: EventCallback<EmptyObject>;
   [ServerEvent.PeerReadyToReceiveOffer]: EventCallback<EmptyObject>;
+  [ServerEvent.PaymentStatusUpdate]: EventCallback<EmptyObject>;
 };
 
 // Generic types to extract the payload of the events

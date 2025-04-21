@@ -1,0 +1,34 @@
+meta {
+  name: set-payment-status
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{api}}/api/v1/fawry/payment-status
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "requestId": "b5e0c09998cb49b991a8ee273127f268",
+    "fawryRefNumber": "776215646",
+    "merchantRefNumber": "1411222",
+    "customerMerchantId": "3",
+    "paymentAmount": 100.23,
+    "orderAmount": 100.23,
+    "fawryFees": 0,
+    "orderStatus": "EXPIRED",
+    "paymentMethod": "CARD",
+    "messageSignature": "d34f78de3a8a5179c4812a717009399698fa237515720ba043dc96ab1d6deb76",
+    "orderExpiryDate": 1745160576099,
+    "orderItems": [
+      {
+        "itemCode": "1",
+        "price": 100.23,
+        "quantity": 1
+      }
+    ]
+  }
+}

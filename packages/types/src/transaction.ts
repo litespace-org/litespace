@@ -12,7 +12,7 @@ export enum Status {
 
 export enum PaymentMethod {
   Card,
-  EWallet,
+  MWallet,
   BankInstallment,
   Fawry,
 }
