@@ -102,7 +102,7 @@ const setPaymentStatusPayload = zod.object({
   paymentTime: zod.number().optional(),
   paymentRefrenceNumber: zod.string().optional(),
   messageSignature: zod.string(),
-  failureErrorCode: zod.number().optional(),
+  failureErrorCode: zod.coerce.number().optional(),
   failureReason: zod.string().optional(),
 });
 

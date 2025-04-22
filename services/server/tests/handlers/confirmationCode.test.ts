@@ -19,15 +19,14 @@ chaiUse(chaiAsPromised);
 
 const resolvePhoneMock = jest.spyOn(messenger.telegram, "resolvePhone");
 
-const sendVerifyNotificationMethodCode =
-  mockApi<IConfirmationCode.SendVerifyNotificationMethodCodePayload>(
-    handlers.sendVerifyNotificationMethodCode
+const sendVerifyPhoneCode =
+  mockApi<IConfirmationCode.SendVerifyPhoneCodePayload>(
+    handlers.sendVerifyPhoneCode
   );
 
-const verifyNotificationMethodCode =
-  mockApi<IConfirmationCode.VerifyNotificationMethodCodePayload>(
-    handlers.verifyNotificationMethodCode
-  );
+const verifyPhoneCode = mockApi<IConfirmationCode.VerifyPhoneCodePayload>(
+  handlers.verifyPhoneCode
+);
 
 describe("/api/v1/confirmation-code", () => {
   beforeEach(async () => {
@@ -41,10 +40,7 @@ describe("/api/v1/confirmation-code", () => {
 
       expect(user.phone).to.null;
       const response = await safe(async () =>
-        sendVerifyNotificationMethodCode({
-          body: { phone, method: "whatsapp" },
-          user,
-        })
+        sendVerifyPhoneCode({ body: { phone, method: "whatsapp" }, user })
       );
 
       expect(response).to.not.be.instanceof(Error);
@@ -68,7 +64,7 @@ describe("/api/v1/confirmation-code", () => {
       );
 
       const response = await safe(async () =>
-        sendVerifyNotificationMethodCode({
+        sendVerifyPhoneCode({
           body: { phone, method: "telegram" },
           user,
         })
@@ -92,7 +88,7 @@ describe("/api/v1/confirmation-code", () => {
       });
 
       const response = await safe(async () =>
-        sendVerifyNotificationMethodCode({
+        sendVerifyPhoneCode({
           body: { phone, method: "whatsapp" },
           user,
         })
@@ -113,7 +109,7 @@ describe("/api/v1/confirmation-code", () => {
       const updatedUser = await users.findById(user.id);
 
       const response = await safe(async () =>
-        sendVerifyNotificationMethodCode({
+        sendVerifyPhoneCode({
           body: {
             phone: "01228769906",
             method: "whatsapp",
@@ -132,7 +128,7 @@ describe("/api/v1/confirmation-code", () => {
       });
 
       const response = await safe(async () =>
-        sendVerifyNotificationMethodCode({
+        sendVerifyPhoneCode({
           body: { phone: "132186", method: "whatsapp" },
           user,
         })
@@ -147,7 +143,7 @@ describe("/api/v1/confirmation-code", () => {
       resolvePhoneMock.mockImplementationOnce(() => Promise.resolve(null));
 
       const response = await safe(async () =>
-        sendVerifyNotificationMethodCode({
+        sendVerifyPhoneCode({
           body: {
             phone: "01018303124",
             method: "telegram",
@@ -175,7 +171,7 @@ describe("/api/v1/confirmation-code", () => {
       });
 
       const response = await safe(async () =>
-        verifyNotificationMethodCode({
+        verifyPhoneCode({
           body: { code: code.code, method: "telegram" },
           user,
         })
@@ -207,7 +203,7 @@ describe("/api/v1/confirmation-code", () => {
       });
 
       const response = await safe(async () =>
-        verifyNotificationMethodCode({
+        verifyPhoneCode({
           body: { code: 1235, method: "telegram" },
           user,
         })
@@ -232,7 +228,7 @@ describe("/api/v1/confirmation-code", () => {
       });
 
       const response = await safe(async () =>
-        verifyNotificationMethodCode({
+        verifyPhoneCode({
           body: { code: code.code, method: "telegram" },
           user,
         })

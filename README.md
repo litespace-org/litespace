@@ -192,3 +192,9 @@ To create a new package, follow these steps:
 | Safari        | ❔     | ❔          | ✅     | ❔            | ❔    |
 | Chrome Mobile | ❔     | ❔          | ❔     | ✅            | ❔    |
 | Brave         | ❔     | ❔          | ❔     | ❔            | ❔    |
+
+## Payment
+
+- [Fawry docs](https://developer.fawrystaging.com/docs-home)
+- [Fawry POS emulator](https://developer.fawrystaging.com/public/pay-order/index.php)
+- [Fawry staging login](https://atfawry.fawrystaging.com/be-login/auth/login)

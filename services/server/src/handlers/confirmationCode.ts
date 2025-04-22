@@ -40,7 +40,7 @@ const verifyNotificationMethodCodePayload = zod.object({
   method,
 });
 
-async function sendVerifyNotificationMethodCode(
+async function sendVerifyPhoneCode(
   req: Request,
   res: Response,
   next: NextFunction
@@ -49,7 +49,7 @@ async function sendVerifyNotificationMethodCode(
   const allowed = isUser(user);
   if (!allowed) return next(forbidden());
 
-  const payload: IConfirmationCode.SendVerifyNotificationMethodCodePayload =
+  const payload: IConfirmationCode.SendVerifyPhoneCodePayload =
     sendVerifyNotificationMethodCodePayload.parse(req.body);
   const { valid, update, phone } = withPhone(user.phone, payload.phone);
 
@@ -98,7 +98,7 @@ async function sendVerifyNotificationMethodCode(
   res.sendStatus(200);
 }
 
-async function verifyNotificationMethodCode(
+async function verifyPhoneCode(
   req: Request,
   res: Response,
   next: NextFunction
@@ -106,10 +106,7 @@ async function verifyNotificationMethodCode(
   const user = req.user;
   if (!isUser(user)) return next(forbidden());
 
-  const {
-    code,
-    method,
-  }: IConfirmationCode.VerifyNotificationMethodCodePayload =
+  const { code, method }: IConfirmationCode.VerifyPhoneCodePayload =
     verifyNotificationMethodCodePayload.parse(req.body);
 
   const confirmationCodeList = await confirmationCodes.find({
@@ -152,8 +149,6 @@ async function verifyNotificationMethodCode(
 }
 
 export default {
-  sendVerifyNotificationMethodCode: safeRequest(
-    sendVerifyNotificationMethodCode
-  ),
-  verifyNotificationMethodCode: safeRequest(verifyNotificationMethodCode),
+  sendVerifyPhoneCode: safeRequest(sendVerifyPhoneCode),
+  verifyPhoneCode: safeRequest(verifyPhoneCode),
 };
