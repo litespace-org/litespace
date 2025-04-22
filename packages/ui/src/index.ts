@@ -28,6 +28,7 @@ export { Drawer } from "@/components/Drawer";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";
 export { VideoPlayer } from "@/components/VideoPlayer";
+export { Tabs } from "@/components/Tabs";
 export { Timeline, type TimelineItem } from "@/components/Timeline";
 export { Alert, AlertType } from "@/components/Alert";
 export { Switch } from "@/components/Switch";
