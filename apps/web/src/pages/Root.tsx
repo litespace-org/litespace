@@ -25,6 +25,7 @@ const publicRoutes: Web[] = [
   Web.ResetPassword,
   Web.Register,
   Web.TutorProfile,
+  Web.CardAdded,
 ];
 
 const Root: React.FC = () => {
@@ -75,6 +76,7 @@ const Root: React.FC = () => {
       Web.ResetPassword,
       Web.CompleteProfile,
       Web.VerifyEmail,
+      Web.CardAdded,
     ];
     const match = routes.some((route) =>
       router.isMatch.web(route, location.pathname)

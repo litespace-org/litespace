@@ -1,6 +1,6 @@
 import { StoryObj, Meta } from "@storybook/react";
 import { IframeDialog } from "@/components/IframeDialog/IframeDialog";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 
 type Component = typeof IframeDialog;
 type Story = StoryObj<Component>;
@@ -24,6 +24,30 @@ export const Primary: Story = {
     onOpenChange(open) {
       console.log({ open });
     },
+  },
+};
+
+export const CardAdded: Story = {
+  args: {
+    open: true,
+    url: "http://localhost:3000/card-added",
+    onOpenChange(open) {
+      console.log({ open });
+    },
+  },
+  render(props) {
+    const onMessage = useCallback((e: MessageEvent<string>) => {
+      console.log(e.data);
+    }, []);
+
+    useEffect(() => {
+      window.addEventListener("message", onMessage);
+      return () => {
+        window.removeEventListener("message", onMessage);
+      };
+    }, [onMessage]);
+
+    return <IframeDialog {...props} />;
   },
 };
 
