@@ -1,11 +1,11 @@
 meta {
-  name: verify-notification-method-code
+  name: verify-phone-code
   type: http
   seq: 2
 }
 
 post {
-  url: {{api}}/api/v1/confirmation-code/notification/verify
+  url: {{api}}/api/v1/confirmation-code/phone/verify
   body: json
   auth: inherit
 }

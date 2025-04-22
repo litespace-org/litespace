@@ -3,7 +3,7 @@ import messenger from "@/handlers/confirmationCode";
 
 const router = Router();
 
-router.post("/notification/send", messenger.sendVerifyNotificationMethodCode);
-router.post("/notification/verify", messenger.verifyNotificationMethodCode);
+router.post("/phone/send", messenger.sendVerifyPhoneCode);
+router.post("/phone/verify", messenger.verifyPhoneCode);
 
 export default router;

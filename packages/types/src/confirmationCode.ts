@@ -38,12 +38,12 @@ export type FindPayloadModel = {
   purpose?: Purpose;
 };
 
-export type SendVerifyNotificationMethodCodePayload = {
+export type SendVerifyPhoneCodePayload = {
   phone?: string;
   method: IUser.NotificationMethodLiteral;
 };
 
-export type VerifyNotificationMethodCodePayload = {
+export type VerifyPhoneCodePayload = {
   code: number;
   method: IUser.NotificationMethodLiteral;
 };
