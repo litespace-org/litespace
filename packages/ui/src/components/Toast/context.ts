@@ -1,10 +1,18 @@
 import { createContext, useCallback, useContext } from "react";
 import { ToastId, ToastType } from "@/components/Toast/types";
 
+export type ToastAction = {
+  label: string;
+  onClick?: () => boolean;
+  loading?: boolean;
+  disabled?: boolean;
+};
+
 export type AddToastData = {
   id?: ToastId;
   title: React.ReactNode;
   description?: React.ReactNode;
+  actions?: Array<ToastAction>;
 };
 
 export type ToastData = AddToastData & { id: ToastId; type: ToastType };
@@ -27,6 +35,13 @@ export function useToast() {
     [toast]
   );
 
+  const info = useCallback(
+    (data: AddToastData) => {
+      return toast.add(data, "info");
+    },
+    [toast]
+  );
+
   const error = useCallback(
     (data: AddToastData) => {
       return toast.add(data, "error");
@@ -41,5 +56,5 @@ export function useToast() {
     [toast]
   );
 
-  return { success, error, warning };
+  return { success, info, error, warning };
 }

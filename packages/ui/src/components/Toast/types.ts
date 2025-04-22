@@ -1,3 +1,3 @@
-export type ToastType = "success" | "warning" | "error";
+export type ToastType = "success" | "info" | "warning" | "error";
 
 export type ToastId = number | string;

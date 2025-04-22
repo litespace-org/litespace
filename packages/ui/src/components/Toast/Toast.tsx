@@ -1,14 +1,18 @@
-import React, { useMemo } from "react";
-import { Root, Title, Description } from "@radix-ui/react-toast";
-import cn from "classnames";
+import { Button } from "@/components/Button";
+import { ToastAction } from "@/components/Toast/context";
 import { ToastId, ToastType } from "@/components/Toast/types";
-import Check from "@litespace/assets/CheckCircleFill";
-import Warning from "@litespace/assets/WarningFill";
-import XErrored from "@litespace/assets/XErroredFill";
-import { motion } from "framer-motion";
 import { Typography } from "@/components/Typography";
+import AlertCircle from "@litespace/assets/AlertCircle";
+import CheckCircle from "@litespace/assets/CheckCircle";
+import Error from "@litespace/assets/Error";
+import WarningInfo from "@litespace/assets/WarningInfo";
+import X from "@litespace/assets/X";
+import { Close, Description, Root, Title } from "@radix-ui/react-toast";
+import cn from "classnames";
+import { isEmpty } from "lodash";
+import React, { useMemo } from "react";
 
-const TOAST_DURATION = 10_000;
+const TOAST_DURATION = 4_000;
 
 const IconMap: Record<
   ToastType,
@@ -16,9 +20,10 @@ const IconMap: Record<
     (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element
   >
 > = {
-  error: XErrored,
-  warning: Warning,
-  success: Check,
+  error: Error,
+  info: AlertCircle,
+  warning: WarningInfo,
+  success: CheckCircle,
 };
 
 export const Toast: React.FC<{
@@ -28,9 +33,9 @@ export const Toast: React.FC<{
   description?: React.ReactNode;
   onOpenChange?: (value: boolean) => void;
   toastId?: ToastId;
-}> = ({ open, onOpenChange, title, description, toastId, type }) => {
+  actions?: Array<ToastAction>;
+}> = ({ open, onOpenChange, title, description, toastId, type, actions }) => {
   const Icon = useMemo(() => IconMap[type], [type]);
-
   return (
     <Root
       dir="rtl"
@@ -38,95 +43,84 @@ export const Toast: React.FC<{
       open={open}
       key={toastId}
       onOpenChange={onOpenChange}
+      onSwipeEnd={(e) => e.preventDefault()}
       className={cn(
-        "py-3 px-4 font-cairo rounded-lg shadow-toast",
+        "py-2 px-2 font-cairo rounded-lg shadow-toast overflow-hidden",
+        "border border-natural-100",
         "bg-natural-50 dark:bg-secondary-950",
-        "relative overflow-hidden",
-        "data-[swipe=cancel]:translate-x-0 data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:animate-hide data-[state=open]:animate-slide-in data-[swipe=end]:animate-swipe-out data-[swipe=cancel]:transition-[transform_200ms_ease-out]",
-        "flex gap-4",
-        "relative w-[257px] md:w-[343px]",
+        "data-[state=open]:animate-slide-in",
+        "flex flex-col gap-1",
+        "w-[calc(100vw-32px)] sm:w-[250px] md:w-[350px]",
+        "focus:outline-none focus-visible:ring focus:ring-2 focus:ring-secondary-600",
         description ? "items-start" : "items-center"
       )}
     >
-      <div
-        className={cn(
-          "absolute top-0 right-0",
-          "h-full w-1/2 translate-x-[calc(50%-2rem)]",
-          {
-            "bg-toast-success": type === "success",
-            "bg-toast-warning": type === "warning",
-            "bg-toast-error": type === "error",
-          }
-        )}
-      />
-
-      <div
-        className={cn(
-          "rounded-full w-8 h-8 flex items-center justify-center shrink-0",
-          {
-            "bg-success-900": type === "success",
-            "bg-warning-900": type === "warning",
-            "bg-destructive-900": type === "error",
-          }
-        )}
-      >
-        <Icon />
-      </div>
-      <div className="grow">
-        <Title asChild>
-          <Typography
-            tag="span"
-            className={cn("font-bold w-4/5 text-body", {
-              "text-success-700": type === "success",
-              "text-warning-700": type === "warning",
-              "text-destructive-700": type === "error",
+      <Title className="flex gap-2 items-center justify-center w-full">
+        <div
+          className={cn(
+            "flex items-center justify-center shrink-0",
+            "self-start py-0.5"
+          )}
+        >
+          <Icon
+            className={cn("w-5 h-5", {
+              "[&>*]:stroke-brand-600": type === "success",
+              "[&>*>*]:stroke-destructive-600": type === "error",
+              "[&>*>*]:stroke-secondary-600": type === "info",
             })}
+          />
+        </div>
+        <Typography
+          tag="span"
+          className={cn(
+            "font-bold flex-1 text-body text-natural-950 select-text"
+          )}
+        >
+          {title}
+        </Typography>
+
+        <Close
+          className={cn(
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 rounded-sm",
+            "self-start py-1"
+          )}
+        >
+          <X className="w-4 h-4 [&>*]:stroke-natural-600" />
+        </Close>
+      </Title>
+
+      {description ? (
+        <Description asChild className="ms-7">
+          <Typography
+            tag="p"
+            className="text-natural-600 font-semibold dark:text-natural-50 text-caption select-text"
           >
-            {title}
+            {description}
           </Typography>
-        </Title>
-        {description ? (
-          <Description asChild>
-            <Typography
-              tag="p"
-              className="text-natural-600 font-semibold dark:text-natural-50 text-caption"
+        </Description>
+      ) : null}
+
+      {actions && !isEmpty(actions) ? (
+        <div className="flex flex-row gap-4 ms-7 w-full">
+          {actions.map((action, idx) => (
+            <Button
+              key={idx}
+              variant="tertiary"
+              onClick={action.onClick}
+              loading={action.loading}
+              disabled={action.disabled}
+              type="main"
             >
-              {description}
-            </Typography>
-          </Description>
-        ) : null}
-      </div>
-
-      <motion.div
-        initial={{ width: "100%" }}
-        animate={{ width: "0%" }}
-        transition={{ duration: TOAST_DURATION / 1000 }}
-        className={cn(
-          "absolute -bottom-[7px] left-0",
-          "blur-[4px]",
-          "h-[14px] rounded-[10px]",
-          {
-            "bg-success-500": type === "success",
-            "bg-warning-500": type === "warning",
-            "bg-destructive-500": type === "error",
-          }
-        )}
-      />
-
-      <motion.div
-        initial={{ width: "100%" }}
-        animate={{ width: "0%" }}
-        transition={{ duration: TOAST_DURATION / 1000 }}
-        className={cn(
-          "absolute -bottom-[7px] left-0",
-          "h-[14px] rounded-[10px]",
-          {
-            "bg-success-500": type === "success",
-            "bg-warning-500": type === "warning",
-            "bg-destructive-500": type === "error",
-          }
-        )}
-      />
+              <Typography
+                tag="span"
+                className="text-natural-700 text-body font-medium"
+              >
+                {action.label}
+              </Typography>
+            </Button>
+          ))}
+        </div>
+      ) : null}
     </Root>
   );
 };

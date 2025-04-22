@@ -278,28 +278,16 @@ export default {
         "discount-primary": "#FFFFFFCC",
       },
       keyframes: {
-        hide: {
-          from: { opacity: "1" },
-          to: { opacity: "0" },
-        },
         "slide-in": {
           from: { transform: "translateX(-25px)" },
           to: { transform: "translateX(0)" },
-        },
-        "swipe-out": {
-          from: { transform: "translateX(var(--radix-toast-swipe-end-x))" },
-          to: {
-            transform: "translateX(calc(-100% - var(--viewport-padding)))",
-          },
         },
       },
       rotate: {
         "x-180": "180deg",
       },
       animation: {
-        hide: "hide 100ms ease-in",
         "slide-in": "slide-in 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-        "swipe-out": "swipe-out 100ms ease-out",
       },
       lineClamp: {
         3: "3",

@@ -172,6 +172,7 @@
     "./VideoSlash": "./dist/VideoSlash.tsx",
     "./Video": "./dist/Video.tsx",
     "./WarningFill": "./dist/WarningFill.tsx",
+    "./WarningInfo": "./dist/WarningInfo.tsx",
     "./WhatsApp": "./dist/WhatsApp.tsx",
     "./XErroredFill": "./dist/XErroredFill.tsx",
     "./X": "./dist/X.tsx",
