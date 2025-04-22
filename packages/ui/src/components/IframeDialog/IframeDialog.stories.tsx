@@ -1,13 +1,13 @@
 import { StoryObj, Meta } from "@storybook/react";
-import { AddCardDialog } from "@/components/AddCardDialog/AddCardDialog";
+import { IframeDialog } from "@/components/IframeDialog/IframeDialog";
 import React from "react";
 
-type Component = typeof AddCardDialog;
+type Component = typeof IframeDialog;
 type Story = StoryObj<Component>;
 
 const meta: Meta<Component> = {
-  title: "AddCardDialog",
-  component: AddCardDialog,
+  title: "IframeDialog",
+  component: IframeDialog,
   decorators: [
     (Story) => (
       <div>
@@ -20,8 +20,7 @@ const meta: Meta<Component> = {
 export const Primary: Story = {
   args: {
     open: true,
-    addCardUrl:
-      "https://atfawry.fawrystaging.com/atfawry/plugin/card-token?accNo=770000020774&customerProfileId=4&returnUrl=https%3A%2F%2Fapp.staging.litespace.org%2Fsubscription&locale=ar",
+    url: "https://atfawry.fawrystaging.com/atfawry/plugin/card-token?accNo=770000020774&customerProfileId=4&returnUrl=https%3A%2F%2Fapp.staging.litespace.org%2Fsubscription&locale=ar",
     onOpenChange(open) {
       console.log({ open });
     },

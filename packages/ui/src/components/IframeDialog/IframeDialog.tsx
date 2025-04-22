@@ -4,11 +4,11 @@ import cn from "classnames";
 import { Button } from "@/components/Button";
 import X from "@litespace/assets/X";
 
-export const AddCardDialog: React.FC<{
+export const IframeDialog: React.FC<{
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  addCardUrl: string;
-}> = ({ open, addCardUrl, onOpenChange }) => {
+  url: string;
+}> = ({ open, url, onOpenChange }) => {
   return (
     <Root open={open} onOpenChange={onOpenChange}>
       <Portal>
@@ -20,7 +20,7 @@ export const AddCardDialog: React.FC<{
           className={cn("fixed inset-0 z-dialog")}
           aria-describedby="Add card dialog"
         >
-          <Title className="hidden">Add card dialog</Title>
+          <Title className="hidden">Iframe dialog</Title>
           <div className="w-full h-full relative">
             <div className="absolute top-0 left-0 w-full bg-natural-50 h-16 flex items-center justify-center px-4">
               <Button
@@ -38,10 +38,7 @@ export const AddCardDialog: React.FC<{
                 "absolute top-16 sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2"
               )}
             >
-              <iframe
-                className="h-full w-full sm:rounded-md"
-                src={addCardUrl}
-              />
+              <iframe className="h-full w-full sm:rounded-md" src={url} />
             </div>
           </div>
         </Content>
