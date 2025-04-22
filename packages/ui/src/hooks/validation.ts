@@ -12,6 +12,7 @@ import {
   isValidPhone,
   isValidTutorBio,
   isValidUserName,
+  isValidCVV,
 } from "@litespace/utils/validation";
 
 export function useRequired() {
@@ -130,6 +131,32 @@ export function useValidateBio(required: boolean = false) {
 }
 
 export function useValidatePhone(required?: boolean) {
+  const intl = useFormatMessage();
+
+  return useCallback(
+    (value: unknown) => {
+      if (!required && !value) return true;
+      const valid = isValidPhone(value);
+      if (valid === FieldError.InvalidPhone)
+        return intl("error.phone-number.invlaid");
+      return true;
+    },
+    [intl, required]
+  );
+}
+
+export function useValidateCVV(required?: boolean) {
+  return useCallback(
+    (value: unknown) => {
+      if (!required && !value) return true;
+      const valid = isValidCVV("" + value);
+      return valid;
+    },
+    [required]
+  );
+}
+
+export function useValidateCard(required?: boolean) {
   const intl = useFormatMessage();
 
   return useCallback(

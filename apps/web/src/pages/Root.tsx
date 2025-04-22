@@ -77,6 +77,7 @@ const Root: React.FC = () => {
       Web.CompleteProfile,
       Web.VerifyEmail,
       Web.CardAdded,
+      Web.Checkout,
     ];
     const match = routes.some((route) =>
       router.isMatch.web(route, location.pathname)

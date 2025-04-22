@@ -302,6 +302,7 @@ export default {
       "ls-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.2)",
       "ls-x-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.25)",
       "message-panel": "0px 4px 25px 0px #0000000D",
+      "plan-info": "0px 4px 25px 0px rgba(0, 0, 0, 0.04)",
       sidebar: "0px 14px 42px 0px rgba(0, 0, 0, 0.08)",
       "app-sidebar": "0px 14px 42px 0px rgba(0, 0, 0, 0.08)",
       "app-navbar": "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
