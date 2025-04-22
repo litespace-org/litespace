@@ -54,7 +54,7 @@ export const ToastProvider: React.FC<{
         <Viewport
           className={cn(
             "fixed z-toast list-none flex flex-col gap-2.5",
-            "p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]",
+            "p-[var(--viewport-padding)] outline-none [--viewport-padding:_16px] sm:[--viewport-padding:_25px]",
             {
               "top-0 left-0": postion === "top-left",
               "bottom-0 left-0": postion === "bottom-left",

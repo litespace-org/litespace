@@ -45,81 +45,82 @@ export const Toast: React.FC<{
       onOpenChange={onOpenChange}
       onSwipeEnd={(e) => e.preventDefault()}
       className={cn(
-        "py-3 px-4 font-cairo rounded-lg shadow-toast",
+        "py-2 px-2 font-cairo rounded-lg shadow-toast overflow-hidden",
+        "border border-natural-100",
         "bg-natural-50 dark:bg-secondary-950",
-        "relative overflow-hidden",
         "data-[state=open]:animate-slide-in",
-        "flex gap-4",
-        "relative  w-[calc(100vw-50px)] sm:w-[257px] md:w-[343px]",
+        "flex flex-col gap-1",
+        "w-[calc(100vw-32px)] sm:w-[250px] md:w-[350px]",
+        "focus:outline-none focus-visible:ring focus:ring-2 focus:ring-secondary-600",
         description ? "items-start" : "items-center"
       )}
     >
-      <Close className="absolute top-4 left-4">
-        <X className="w-4 h-4" />
-      </Close>
-      <div
-        className={cn(
-          "absolute top-0 right-0",
-          "h-full w-1/2 translate-x-[calc(50%-2rem)]"
-        )}
-      />
+      <Title className="flex gap-2 items-center justify-center w-full">
+        <div
+          className={cn(
+            "flex items-center justify-center shrink-0",
+            "self-start py-0.5"
+          )}
+        >
+          <Icon
+            className={cn("w-5 h-5", {
+              "[&>*]:stroke-brand-600": type === "success",
+              "[&>*>*]:stroke-destructive-600": type === "error",
+              "[&>*>*]:stroke-secondary-600": type === "info",
+            })}
+          />
+        </div>
+        <Typography
+          tag="span"
+          className={cn(
+            "font-bold flex-1 text-body text-natural-950 select-text"
+          )}
+        >
+          {title}
+        </Typography>
 
-      <div className="grow">
-        <Title className="flex gap-2 items-center">
-          <div
-            className={cn(
-              "rounded-full w-5 h-5 flex items-center justify-center shrink-0"
-            )}
-          >
-            <Icon
-              className={cn({
-                "[&>*]:stroke-brand-600": type === "success",
-                "[&>*>*]:stroke-destructive-600": type === "error",
-                "[&>*>*]:stroke-secondary-600": type === "info",
-              })}
-            />
-          </div>
+        <Close
+          className={cn(
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 rounded-sm",
+            "self-start py-1"
+          )}
+        >
+          <X className="w-4 h-4 [&>*]:stroke-natural-600" />
+        </Close>
+      </Title>
+
+      {description ? (
+        <Description asChild className="ms-7">
           <Typography
-            tag="span"
-            className={cn("font-bold w-4/5 text-body text-natural-950")}
+            tag="p"
+            className="text-natural-600 font-semibold dark:text-natural-50 text-caption select-text"
           >
-            {title}
+            {description}
           </Typography>
-        </Title>
-        {description ? (
-          <Description asChild>
-            <Typography
-              tag="p"
-              className="text-natural-600 font-semibold dark:text-natural-50 text-caption"
-            >
-              {description}
-            </Typography>
-          </Description>
-        ) : null}
+        </Description>
+      ) : null}
 
-        {!isEmpty(actions) ? (
-          <div className="flex gap-4 mt-4">
-            {actions?.map((action, idx) => (
-              <Button
-                key={idx}
-                variant={action.variant || "tertiary"}
-                className="flex-1"
-                onClick={action.onClick}
-                loading={action.loading}
-                disabled={action.disabled}
-                type={action.type || "main"}
+      {actions && !isEmpty(actions) ? (
+        <div className="flex flex-row gap-4 ms-7 w-full">
+          {actions.map((action, idx) => (
+            <Button
+              key={idx}
+              variant="tertiary"
+              onClick={action.onClick}
+              loading={action.loading}
+              disabled={action.disabled}
+              type="main"
+            >
+              <Typography
+                tag="span"
+                className="text-natural-700 text-body font-medium"
               >
-                <Typography
-                  tag="span"
-                  className="text-natural-700 text-body font-medium"
-                >
-                  {action.label}
-                </Typography>
-              </Button>
-            ))}
-          </div>
-        ) : null}
-      </div>
+                {action.label}
+              </Typography>
+            </Button>
+          ))}
+        </div>
+      ) : null}
     </Root>
   );
 };
