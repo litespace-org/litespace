@@ -17,14 +17,14 @@ export function createClient(): AxiosInstance {
 
 class Api extends Base {
   async payWithCard({
-    transactionId,
+    merchantRefNum,
     cardToken,
     customer,
     amount,
     cvv,
   }: {
     customer: Requests.Customer;
-    transactionId: number;
+    merchantRefNum: number;
     cardToken: string;
     amount: number;
     cvv: number;
@@ -33,13 +33,13 @@ class Api extends Base {
       amount,
       cardToken,
       customerProfileId: customer.id,
-      merchantRefNum: transactionId,
+      merchantRefNum,
       returnUrl: "https://google.com/",
       cvv,
     });
 
     const base = forgeFawryPayload({
-      merchantRefNum: transactionId,
+      merchantRefNum,
       paymentMethod: "CARD",
       amount,
       signature,

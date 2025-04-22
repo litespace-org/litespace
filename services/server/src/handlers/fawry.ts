@@ -25,6 +25,10 @@ import { ApiContext } from "@/types/api";
 import { OrderStatus, PaymentMethod } from "@/fawry/types/ancillaries";
 import { asUserRoomId } from "@/wss/utils";
 import { withPhone } from "@/lib/user";
+import {
+  decodeMerchantRefNumber,
+  encodeMerchantRefNumber,
+} from "@/fawry/lib/ids";
 
 const payWithCardPayload = zod.object({
   planId: id,
@@ -134,17 +138,18 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
         name: user.name || "LiteSpace Student",
         phone,
       },
-      transactionId: transaction.id,
+      merchantRefNum: encodeMerchantRefNumber({
+        transactionId: transaction.id,
+        createdAt: transaction.createdAt,
+      }),
       amount: transaction.amount,
       cardToken: payload.cardToken,
       cvv: payload.cvv,
     }
   );
 
-  console.log({ statusCode, statusDescription });
-
   const response: IFawry.PayWithCardResponse = {
-    transactionId: 1,
+    transactionId: transaction.id,
     redirectUrl: nextAction?.redirectUrl,
     statusCode,
     statusDescription,
@@ -474,8 +479,15 @@ async function getPaymentStatus(
   if (!allowed) return next(forbidden());
 
   const { transactionId } = getPaymentStatusPayload.parse(req.body);
+  const transaction = await transactions.findById(transactionId);
+  if (!transaction) return next(notfound.transaction());
 
-  const result = await fawry.getPaymentStatus(transactionId);
+  const merchantRefNumber = encodeMerchantRefNumber({
+    transactionId: transaction.id,
+    createdAt: transaction.createdAt,
+  });
+
+  const result = await fawry.getPaymentStatus(merchantRefNumber);
 
   // todo: add response type
   const response = result;
@@ -506,7 +518,7 @@ function setPaymentStatus(context: ApiContext) {
     if (signature !== paylaod.messageSignature)
       return next(forbidden("Invalid signature."));
 
-    const transactionId = Number(paylaod.merchantRefNumber);
+    const transactionId = decodeMerchantRefNumber(paylaod.merchantRefNumber);
     const userId = Number(paylaod.customerMerchantId);
     const fawryRefNumber = Number(paylaod.fawryRefNumber);
 
