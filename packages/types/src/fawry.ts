@@ -1,4 +1,4 @@
-type GeneralResponse = {
+type BaseResponse = {
   /**
    * Fawry Api response status code
    */
@@ -30,7 +30,7 @@ export type PayWithCardPayload = {
   cvv: number;
 };
 
-export type PayWithCardResponse = GeneralResponse & {
+export type PayWithCardResponse = BaseResponse & {
   transactionId: number;
   redirectUrl?: string;
 };
@@ -43,7 +43,7 @@ export type PayWithRefNumPayload = {
   paymentExpirey?: string;
 };
 
-export type PayWithRefNumResponse = GeneralResponse & {
+export type PayWithRefNumResponse = BaseResponse & {
   transactionId: number;
   orderStatus: OrderStatus;
   /**
@@ -73,7 +73,7 @@ export type PayWithEWalletPayload = {
   paymentExpirey?: string;
 };
 
-export type PayWithEWalletResponse = GeneralResponse & {
+export type PayWithEWalletResponse = BaseResponse & {
   transactionId: number;
   /**
    * The reference number of the order on FawryPay system which is displayed to
@@ -96,7 +96,7 @@ export type PayWithBankInstallmentsPayload = {
   returnUrl: string;
 };
 
-export type PayWithBankInstallmentsResponse = GeneralResponse & {
+export type PayWithBankInstallmentsResponse = BaseResponse & {
   transactionId: number;
   /**
    * Payment authentication number.
@@ -129,7 +129,7 @@ export type CancelUnpaidOrderPayload = {
   orderRefNum: string;
 };
 
-export type CancelUnpaidOrderResponse = GeneralResponse & {
+export type CancelUnpaidOrderResponse = BaseResponse & {
   reason: string;
 };
 
@@ -148,9 +148,9 @@ export type RefundPayload = {
   reason?: string;
 };
 
-export type RefundResponse = GeneralResponse & {};
+export type RefundResponse = BaseResponse & {};
 
-export type ListCardTokensResponse = GeneralResponse & {
+export type ListCardTokensResponse = BaseResponse & {
   cards: Array<{
     /**
      * The saved card token for your requested client ID.
@@ -175,4 +175,6 @@ export type DeleteCardTokenPayload = {
   cardToken: string;
 };
 
-export type DeleteCardTokenResponse = GeneralResponse & {};
+export type DeleteCardTokenResponse = BaseResponse;
+
+export type GetPaymentStatusResponse = unknown;
