@@ -4,7 +4,6 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Web } from "@litespace/utils/routes";
 import * as Sentry from "@sentry/react";
 import { Loader } from "@litespace/ui/Loading";
-import { env } from "@/lib/env";
 
 const Root = lazy(() => import("@/pages/Root"));
 const Login = lazy(() => import("@/pages/Login"));
@@ -28,7 +27,7 @@ const ScheduleManagement = lazy(() => import("@/pages/ScheduleManagement"));
 const ForgetPassword = lazy(() => import("@/pages/ForgetPassword"));
 const TutorDashboard = lazy(() => import("@/pages/TutorDashboard"));
 const Invoices = lazy(() => import("@/pages/Invoices"));
-const WebRTC = lazy(() => import("@/pages/WebRTC"));
+const CardAdded = lazy(() => import("@/pages/CardAdded"));
 
 const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
@@ -107,13 +106,10 @@ const router = createRouter([
         path: Web.ForgetPassword,
         element: <Fallback children={<ForgetPassword />} />,
       },
-
-      env.client !== "production"
-        ? {
-            path: Web.WebRTC,
-            element: <Fallback children={<WebRTC />} />,
-          }
-        : {},
+      {
+        path: Web.CardAdded,
+        element: <Fallback children={<CardAdded />} />,
+      },
     ],
     errorElement: <Fallback children={<ErrorPage />} />,
   },

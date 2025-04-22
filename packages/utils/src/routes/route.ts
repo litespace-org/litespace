@@ -24,7 +24,7 @@ export enum Web {
   ForgetPassword = "/forget-password",
   Lesson = "/lesson/:id",
   Session = "/session",
-  WebRTC = "/webrtc",
+  CardAdded = "/card-added",
 }
 
 export enum Landing {
