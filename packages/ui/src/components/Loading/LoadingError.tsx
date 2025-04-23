@@ -36,7 +36,7 @@ export const LoadingError: React.FC<{
   }, [intl, logger, toast, user?.id]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-[226px]">
+    <div className="flex flex-col items-center justify-center">
       <div
         className={cn(
           "flex items-center justify-center bg-destructive-200 rounded-full",

@@ -29,7 +29,7 @@ export const Tabs = <T extends string>({
           <Typography
             tag="h6"
             className={cn(
-              "font-normal text-body ",
+              "font-normal text-body whitespace-nowrap",
               id === tab
                 ? "text-brand-700"
                 : "text-natural-500 group-hover:text-brand-500 group-active:text-brand-700"

@@ -96,7 +96,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           {title}
         </Typography>
       }
-      className={mq.md ? "w-[584px]" : "w-screen"}
+      className={mq.md ? "w-[744px]" : "w-screen"}
       close={confirming ? undefined : onClose}
       open={opened}
       position={mq.sm ? "center" : "bottom"}
@@ -139,7 +139,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
             <Animate
               key="topics"
               className={cn(
-                "flex flex-wrap gap-2 md:gap-6 my-8 md:my-12 overflow-auto max-h-[264px]",
+                "flex flex-wrap gap-2 md:gap-4 my-8 md:my-6 overflow-auto max-h-[264px]",
                 "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
               )}
             >
@@ -151,15 +151,13 @@ export const TopicSelectionDialog: React.FC<Props> = ({
                     (disableSelection && !selection.includes(topic.id))
                   }
                   className={cn(
-                    "rounded-2xl p-3 md:p-4 transition-colors duration-200",
+                    "rounded-full p-3 md:py-2 md:px-3 transition-colors duration-200 border",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
                     {
-                      "bg-natural-100 text-natural-950": !selection.includes(
-                        topic.id
-                      ),
-                      "bg-brand-700 text-natural-50": !!selection.includes(
-                        topic.id
-                      ),
+                      "bg-natural-100 text-natural-950 border-transparent":
+                        !selection.includes(topic.id),
+                      "bg-brand-200 border-brand-700 text-brand-700":
+                        !!selection.includes(topic.id),
                     }
                   )}
                   onClick={() => onSelect(topic.id)}

@@ -90,7 +90,10 @@ const updateUserPayload = zod.object({
   bio: zod.union([zod.null(), string]).optional(),
   about: zod.union([zod.null(), string]).optional(),
   city: zod.union([zod.nativeEnum(IUser.City), zod.null()]).optional(),
-  notificationMethod: zod.nativeEnum(IUser.NotificationMethod).optional(),
+  notificationMethod: zod
+    .nativeEnum(IUser.NotificationMethod)
+    .nullable()
+    .optional(),
   phone: zod.union([zod.string().max(15).trim(), zod.null()]).optional(),
 });
 

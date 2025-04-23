@@ -32,7 +32,7 @@ export const Avatar: React.FC<{
         data-status={status}
         className={cn(
           "opacity-0 transition-opacity duration-300 ease-linear",
-          "data-[status=loaded]:opacity-100 absolute w-full h-full",
+          src ? "data-[status=loaded]:opacity-100 absolute w-full h-full" : "",
           {
             "object-contain": object === "contain",
             "object-fill": object === "fill",
@@ -51,7 +51,7 @@ export const Avatar: React.FC<{
         data-status={status}
         className={cn(
           "opacity-100 transition-opacity duration-300",
-          "data-[status=loaded]:opacity-0",
+          src ? "data-[status=loaded]:opacity-0" : "",
           "absolute top-0 left-0 w-full h-full z-chat-avatar"
         )}
       >

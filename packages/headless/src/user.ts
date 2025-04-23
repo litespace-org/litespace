@@ -134,14 +134,14 @@ export function useUploadUserImage({
     [api.user]
   );
 
-  const muation = useMutation({
+  const mutation = useMutation({
     mutationFn: upload,
     mutationKey: [MutationKey.UploadUserAssets],
     onSuccess,
     onError,
   });
 
-  return { muation, progress };
+  return { mutation, progress };
 }
 
 export type UploadTutorAssetsPayload = {

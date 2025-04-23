@@ -20,7 +20,7 @@ const UploadPhoto: React.FC<{
   const mq = useMediaQuery();
   const { user } = useUserContext();
 
-  const { muation } = useUploadUserImage({});
+  const { mutation } = useUploadUserImage({});
 
   const photoUrl = useMemo(() => {
     if (!photo) return user?.image;
@@ -40,7 +40,7 @@ const UploadPhoto: React.FC<{
           const file = first(event.target.files);
           if (!file || !user) return;
           setPhoto(file);
-          muation.mutate({
+          mutation.mutate({
             image: file,
           });
         }}
@@ -62,8 +62,8 @@ const UploadPhoto: React.FC<{
 
         <Button
           size="large"
-          loading={muation.isPending}
-          disabled={muation.isPending}
+          loading={mutation.isPending}
+          disabled={mutation.isPending}
           onClick={() => {
             if (!ref.current) return;
             ref.current.click();
