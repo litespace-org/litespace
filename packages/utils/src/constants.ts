@@ -92,7 +92,7 @@ export const NOTIFICATION_METHOD_TO_PURPOSE: Record<
   [IUser.NotificationMethod.Telegram]: IConfirmationCode.Purpose.VerifyTelegram,
 };
 
-export const NOTIFICATION_METHOD_LITERAL_TO_NOTIFICATION_METHOD: Record<
+export const NOTIFICATION_METHOD_LITERAL_TO_ENUM: Record<
   IUser.NotificationMethodLiteral,
   IUser.NotificationMethod
 > = {

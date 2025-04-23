@@ -37,6 +37,11 @@ export type AuthTokenEmail = {
   user: number;
 };
 
+export type CodeEmail = {
+  type: Type.VerifyEmail | Type.ForgetPassword;
+  user: number;
+};
+
 export type VerifyEmailJwtPayload = {
   type: Type.VerifyEmail;
   user: number;

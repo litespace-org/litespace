@@ -36,7 +36,6 @@ import {
 import { ApiContext } from "@/types/api";
 import { OrderStatus, PaymentMethod } from "@/fawry/types/ancillaries";
 import { asUserRoomId } from "@/wss/utils";
-import { withPhone } from "@/lib/user";
 import {
   decodeMerchantRefNumber,
   encodeMerchantRefNumber,
@@ -48,6 +47,7 @@ const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "quarter",
   "year",
 ]);
+import { selectPhone } from "@/lib/confirmationCodes";
 
 const payWithCardPayload = zod.object({
   planId: id,
@@ -136,10 +136,10 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const payload: IFawry.PayWithCardPayload = payWithCardPayload.parse(req.body);
-  const { valid, phone, update } = withPhone(user.phone, payload.phone);
-  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
-  // update user phone if needed.
-  if (!update) await users.update(user.id, { phone });
+
+  const phone = selectPhone(user.phone, payload.phone);
+  if (phone instanceof Error) return next(phone);
+  if (!user.phone) await users.update(user.id, { phone });
 
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());
@@ -192,10 +192,9 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
     req.body
   );
 
-  const { valid, phone, update } = withPhone(user.phone, payload.phone);
-  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
-  // Update user phone if needed.
-  if (!update) await users.update(user.id, { phone });
+  const phone = selectPhone(user.phone, payload.phone);
+  if (phone instanceof Error) return next(phone);
+  if (!user.phone) await users.update(user.id, { phone });
 
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());
@@ -249,10 +248,9 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
     req.body
   );
 
-  const { valid, phone, update } = withPhone(user.phone, payload.phone);
-  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
-  // Update user phone if needed.
-  if (!update) await users.update(user.id, { phone });
+  const phone = selectPhone(user.phone, payload.phone);
+  if (phone instanceof Error) return next(phone);
+  if (!user.phone) await users.update(user.id, { phone });
 
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());

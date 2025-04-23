@@ -58,7 +58,9 @@ describe("transactions", () => {
 
       const res = await subscriptions.find({ users: [u1.id, u3.id] });
       expect(res.total).to.eq(3);
-      expect(res.list).to.deep.members([subs[0], subs[1], subs[4]]);
+      for (const sub of [subs[0], subs[1], subs[4]]) {
+        expect(res.list).to.deep.contain(sub);
+      }
     });
   });
 

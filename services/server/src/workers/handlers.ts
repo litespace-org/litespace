@@ -46,6 +46,29 @@ export async function sendAuthTokenEmail({
   if (error instanceof Error) console.error(nameof(sendAuthTokenEmail), error);
 }
 
+export async function sendCodeEmail({
+  email,
+  code,
+  type,
+}: {
+  email: string;
+  code: number;
+  type: IToken.Type.ForgetPassword | IToken.Type.VerifyEmail;
+}) {
+  const error = await safe(async () => {
+    await emailer.send({
+      to: email,
+      template:
+        type === IToken.Type.VerifyEmail
+          ? EmailTemplate.VerifyEmailV2
+          : EmailTemplate.ForgetPasswordV2,
+      props: { code },
+    });
+  });
+
+  if (error instanceof Error) console.error(nameof(sendCodeEmail), error);
+}
+
 /**
  * This function is responsible of updating the tutors cache data and verifying its integrity
  */
