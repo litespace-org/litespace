@@ -1,5 +1,10 @@
 import { IConfirmationCode, IKafka, IPlan, IUser } from "@litespace/types";
 
+export const WEEKS_IN_YEAR = 52;
+export const WEEKS_PER_MONTH = 4;
+export const WEEKS_IN_QUARTER = 12;
+export const MONTHS_IN_QUARTER = 3;
+export const MONTHS_IN_YEAR = 12;
 export const MINUTES_IN_HOUR = 60;
 export const HOURS_IN_DAY = 24;
 export const MINUTES_IN_DAY = 60 * 24;

@@ -51,6 +51,7 @@
     "./Popover": "./dist/components/Popover/index.js",
     "./Price": "./dist/components/Price/index.js",
     "./Profile": "./dist/components/Profile/index.js",
+    "./RadioButton": "./dist/components/RadioButton/index.js",
     "./Rating": "./dist/components/Rating/index.js",
     "./RatingDialog": "./dist/components/RatingDialog/index.js",
     "./RawHtml": "./dist/components/RawHtml/index.js",
