@@ -170,6 +170,20 @@ async function loginWithAuthToken(
   res.status(200).json(response);
 }
 
+async function refreshAuthToken(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isUser(user);
+  if (!allowed) return next(forbidden());
+
+  const token = encodeAuthJwt(user.id, jwtSecret);
+  const response: IUser.RefreshAuthTokenApiResponse = token;
+  res.status(200).json(response);
+}
+
 async function forgetPassword(req: Request, res: Response) {
   const { email, callbackUrl }: IUser.ForgetPasswordApiPayload =
     forgotPasswordPayload.parse(req.body);
@@ -260,4 +274,5 @@ export default {
   resetPassword: safeRequest(resetPassword),
   verifyEmail: safeRequest(verifyEmail),
   sendVerificationEmail: safeRequest(sendVerificationEmail),
+  refreshAuthToken: safeRequest(refreshAuthToken),
 };

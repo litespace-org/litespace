@@ -189,7 +189,9 @@ export type ResetPasswordApiResponse = LoginApiResponse;
 
 export type LoginWithAuthTokenApiResponse = LoginApiResponse;
 
-export type FindCurrentUserApiResponse = LoginApiResponse;
+export type FindCurrentUserApiResponse = Self;
+
+export type RefreshAuthTokenApiResponse = string;
 
 export type ForgetPasswordApiPayload = {
   email: string;

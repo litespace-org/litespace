@@ -5,7 +5,6 @@ import { router } from "@/lib/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Landing, Web } from "@litespace/utils/routes";
-import { useInternetSpeed } from "@litespace/headless/utils";
 import { isForbidden } from "@litespace/utils";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
 import cn from "classnames";
@@ -40,12 +39,6 @@ const Root: React.FC = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  const { estimate } = useInternetSpeed();
-
-  useEffect(() => {
-    estimate();
-  }, [estimate]);
 
   const publicRoute = useMemo(() => {
     return publicRoutes.some((route) =>

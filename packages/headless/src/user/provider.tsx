@@ -6,6 +6,9 @@ import { CacheKey } from "@/constants";
 import { ITutor, IUser } from "@litespace/types";
 import { useFindTutorMeta } from "@/tutor";
 import { useServer } from "@/server";
+import dayjs from "@/lib/dayjs";
+import { useRefreshAuthToken } from "@/auth";
+import { TokenType } from "@litespace/atlas";
 
 type Data = {
   user: IUser.Self | null;
@@ -29,20 +32,32 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [userData, setUserData] = useState<Data>(userCache || defaultData);
-  const { token, setBearerToken, removeToken } = useServer();
-  const { query } = useCurrentUser(!!token);
+  const { token, tokenPayload, tokenExpired, setBearerToken, removeToken } =
+    useServer();
 
-  const tutorId = useMemo(() => {
-    if (!userData.user?.role) return;
-    const tutor = [IUser.Role.Tutor, IUser.Role.TutorManager].includes(
-      userData.user.role
+  //=================== Refersh token =====================
+
+  const refershToken = useRefreshAuthToken({
+    onSuccess: (token) => {
+      setBearerToken(token, true);
+    },
+  });
+
+  const shouldRefreshToken = useMemo(() => {
+    return (
+      token?.type === TokenType.Bearer &&
+      !!tokenPayload?.exp &&
+      // Refersh the auth token if it has 2 days left until expiry.
+      dayjs.unix(tokenPayload.exp).utc().diff(dayjs.utc(), "day", true) <= 2
     );
-    if (!tutor) return;
-    return userData.user?.id;
-  }, [userData.user?.id, userData.user?.role]);
+  }, [token?.type, tokenPayload?.exp]);
 
-  const { query: meta } = useFindTutorMeta(tutorId);
+  useEffect(() => {
+    if (shouldRefreshToken && !refershToken.isPending && !refershToken.isError)
+      refershToken.mutate();
+  }, [refershToken, shouldRefreshToken]);
 
+  //=================== User state handlers =====================
   const setData: Context["set"] = useCallback(
     ({ user, meta, token, remember = true }) => {
       if (token) setBearerToken(token, remember);
@@ -64,11 +79,23 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     removeToken();
   }, [removeToken]);
 
+  //=================== User data (and tutor's metadata) =====================
+  const { query } = useCurrentUser(!tokenExpired && !!token);
+
+  const tutorId = useMemo(() => {
+    if (!userData.user?.role) return;
+    const tutor = [IUser.Role.Tutor, IUser.Role.TutorManager].includes(
+      userData.user.role
+    );
+    if (!tutor) return;
+    return userData.user.id;
+  }, [userData.user?.id, userData.user?.role]);
+
+  const { query: meta } = useFindTutorMeta(tutorId);
+
   useEffect(() => {
     if (!query.data || query.isLoading || query.isFetching) return;
-    // todo: better handling for the session tokens
-    // setBearerToken(query.data.token);
-    setData({ user: query.data.user });
+    setData({ user: query.data });
   }, [query.data, query.isFetching, query.isLoading, setBearerToken, setData]);
 
   useEffect(() => {
