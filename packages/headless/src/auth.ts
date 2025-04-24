@@ -101,3 +101,18 @@ export function useSendVerifyEmail({
     mutationKey: [MutationKey.ReVerifyEmail],
   });
 }
+
+export function useRefreshAuthToken({
+  onSuccess,
+}: {
+  onSuccess?: OnSuccess<IUser.RefreshAuthTokenApiResponse>;
+}) {
+  const api = useApi();
+  const refresh = useCallback(() => api.auth.refreshToken(), [api.auth]);
+
+  return useMutation({
+    mutationFn: refresh,
+    mutationKey: [MutationKey.RefreshAuthToken],
+    onSuccess,
+  });
+}

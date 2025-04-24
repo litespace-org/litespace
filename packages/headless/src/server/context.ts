@@ -5,6 +5,15 @@ import React, { useContext } from "react";
 export type Context = {
   server: Env.Server;
   token: AuthToken | null;
+  /**
+   * Decoded bearer token payload.
+   */
+  tokenPayload?: {
+    id: number;
+    iat: number;
+    exp: number;
+  };
+  tokenExpired?: boolean;
   setAuthToken(token: AuthToken, remember?: boolean): void;
   setBearerToken(token: string, remember?: boolean): void;
   removeToken: Void;

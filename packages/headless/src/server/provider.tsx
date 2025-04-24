@@ -4,6 +4,21 @@ import { AuthToken, TokenType } from "@litespace/atlas";
 import { useCallback, useMemo, useState } from "react";
 import { AbstractStorage } from "@/storage";
 import { CacheKey } from "@/constants/cache";
+import zod from "zod";
+import dayjs from "@/lib/dayjs";
+
+const tokenPayload = zod.object({
+  id: zod.number(),
+  iat: zod.number(),
+  exp: zod.number(),
+});
+
+function getTokenPayload(token: string): Context["tokenPayload"] {
+  const rawPayloadBase64 = token.split(".")[1];
+  if (!rawPayloadBase64) return;
+  const rawPayloadJson = atob(rawPayloadBase64);
+  return tokenPayload.parse(JSON.parse(rawPayloadJson));
+}
 
 export const ServerProvider: React.FC<{
   server: Env.Server;
@@ -34,16 +49,26 @@ export const ServerProvider: React.FC<{
     storage?.remove(CacheKey.AuthToken);
   }, [storage]);
 
-  const context = useMemo(
-    (): Context => ({
+  const context = useMemo((): Context => {
+    const tokenPayload =
+      token?.type === TokenType.Bearer
+        ? getTokenPayload(token.value)
+        : undefined;
+
+    const tokenExpired = tokenPayload
+      ? dayjs.unix(tokenPayload.exp).utc().isBefore(dayjs.utc())
+      : undefined;
+
+    return {
       setAuthToken,
       setBearerToken,
       removeToken,
       server,
       token,
-    }),
-    [removeToken, server, setAuthToken, setBearerToken, token]
-  );
+      tokenPayload,
+      tokenExpired,
+    };
+  }, [removeToken, server, setAuthToken, setBearerToken, token]);
 
   return (
     <ServerContext.Provider value={context}>{children}</ServerContext.Provider>

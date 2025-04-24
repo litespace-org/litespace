@@ -36,11 +36,8 @@ export class Auth extends Base {
     });
   }
 
-  async token(token: string) {
-    await this.post({
-      route: "/api/v1/auth/token",
-      payload: { token },
-    });
+  async refreshToken(): Promise<IUser.RefreshAuthTokenApiResponse> {
+    return this.post({ route: "/api/v1/auth/refresh-token" });
   }
 
   async verifyEmail(token: string): Promise<void> {

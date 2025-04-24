@@ -354,10 +354,7 @@ async function findCurrentUser(
   const allowed = isUser(user);
   if (!allowed) return next(forbidden());
 
-  const response: IUser.FindCurrentUserApiResponse = {
-    user: await withImageUrl(user),
-    token: encodeAuthJwt(user.id, jwtSecret),
-  };
+  const response: IUser.FindCurrentUserApiResponse = await withImageUrl(user);
 
   res.status(200).json(response);
 }
