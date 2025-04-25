@@ -431,21 +431,35 @@ async function main(): Promise<void> {
     });
   }
 
-  await plans.create({
-    alias: "Basic",
-    weeklyMinutes: 2.5 * 60,
-    fullMonthPrice: 1000_00,
-    fullQuarterPrice: 2000_00,
-    halfYearPrice: 2000_00,
-    fullYearPrice: 3000_00,
-    fullMonthDiscount: 10_01,
-    fullQuarterDiscount: 20_33,
-    halfYearDiscount: 30_80,
-    fullYearDiscount: 40_09,
-    forInvitesOnly: false,
-    active: true,
-    createdBy: admin.id,
-  });
+  await Promise.all([
+    plans.create({
+      weeklyMinutes: 2.5 * 60,
+      forInvitesOnly: false,
+      baseMonthlyPrice: price.scale(2500),
+      monthDiscount: price.scale(250),
+      quarterDiscount: price.scale(500),
+      yearDiscount: price.scale(750),
+      active: true,
+    }),
+    plans.create({
+      weeklyMinutes: 5 * 60,
+      forInvitesOnly: false,
+      baseMonthlyPrice: price.scale(4000),
+      monthDiscount: price.scale(500),
+      quarterDiscount: price.scale(850),
+      yearDiscount: price.scale(1400),
+      active: true,
+    }),
+    plans.create({
+      weeklyMinutes: 8 * 60,
+      forInvitesOnly: false,
+      baseMonthlyPrice: price.scale(6000),
+      monthDiscount: price.scale(1000),
+      quarterDiscount: price.scale(1500),
+      yearDiscount: price.scale(2250),
+      active: true,
+    }),
+  ]);
 
   await knex.transaction(async (tx) => {
     const roomId = await rooms.create([tutor.id, tutorManager.id], tx);

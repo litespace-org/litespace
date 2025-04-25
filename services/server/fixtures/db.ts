@@ -14,6 +14,8 @@ import {
   sessionEvents,
   transactions,
   confirmationCodes,
+  plans,
+  subscriptions,
 } from "@litespace/models";
 import {
   IInterview,
@@ -26,6 +28,8 @@ import {
   IAvailabilitySlot,
   ITutor,
   ITransaction,
+  ISubscription,
+  IPlan,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -35,11 +39,14 @@ export { faker } from "@faker-js/faker/locale/ar";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { randomInt, randomUUID } from "crypto";
+import { percentage, price } from "@litespace/utils";
 
 dayjs.extend(utc);
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await subscriptions.builder(tx).del();
+    await plans.builder(tx).del();
     await transactions.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
@@ -127,6 +134,18 @@ const or = {
   async slotId(id?: number, userId?: number): Promise<number> {
     if (!id) return await slot({ userId }).then((slot) => slot.id);
     return id;
+  },
+  async planId(id?: number): Promise<number> {
+    if (!id) return await plan().then((plan) => plan.id);
+    return id;
+  },
+  async txId(id?: number, userId?: number): Promise<number> {
+    if (!id) return await transaction({ userId }).then((tx) => tx.id);
+    return id;
+  },
+  boolean(cond?: boolean) {
+    if (cond === undefined) return sample([false, true]);
+    return cond;
   },
   start(start?: string): string {
     if (!start) return faker.date.soon().toISOString();
@@ -487,6 +506,45 @@ async function transaction(
   });
 }
 
+async function plan(
+  payload?: Partial<IPlan.CreatePayload>
+): Promise<IPlan.Self> {
+  return await plans.create({
+    weeklyMinutes: payload?.weeklyMinutes || randomInt(1000),
+    baseMonthlyPrice: payload?.baseMonthlyPrice || randomPrice(),
+    monthDiscount: payload?.monthDiscount || randomDiscount(),
+    quarterDiscount: payload?.quarterDiscount || randomDiscount(),
+    yearDiscount: payload?.yearDiscount || randomDiscount(),
+    forInvitesOnly: or.boolean(payload?.active),
+    active: or.boolean(payload?.active),
+  });
+}
+
+function randomPrice() {
+  return price.scale(randomInt(5000));
+}
+
+function randomDiscount() {
+  return percentage.scale(randomInt(100));
+}
+
+async function subscription(
+  payload?: Partial<ISubscription.CreatePayload>
+): Promise<ISubscription.Self> {
+  const userId = await or.studentId(payload?.userId);
+  return await subscriptions.create({
+    userId,
+    planId: await or.planId(payload?.planId),
+    txId: await or.txId(payload?.txId, userId),
+    period: sample([
+      ISubscription.Period.Year,
+      ISubscription.Period.Month,
+      ISubscription.Period.Quarter,
+    ]),
+    quota: payload?.quota || randomInt(1000),
+  });
+}
+
 export default {
   user,
   tutor,
@@ -500,6 +558,8 @@ export default {
   topic,
   slot,
   transaction,
+  plan,
+  subscription,
   room: makeRoom,
   message: makeMessage,
   make: {

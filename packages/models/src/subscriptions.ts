@@ -1,213 +1,167 @@
-// import { query } from "@/query";
-// import { first } from "lodash";
+import { ISubscription, Paginated } from "@litespace/types";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withSkippablePagination,
+} from "@/query";
+import { first, isEmpty } from "lodash";
+import { Knex } from "knex";
+import dayjs from "dayjs";
 
-// class Subscriptions {
-//   async create(
-//     subscription: Omit<Subscription.Self, "id" | "createdAt" | "updatedAt">
-//   ): Promise<number> {
-//     const { rows } = await query<
-//       { id: number },
-//       [
-//         studentId: number,
-//         montlyMinutes: number,
-//         remainingMinutes: number,
-//         autoRenewal: boolean,
-//         start: string,
-//         end: string,
-//       ]
-//     >(
-//       `
-//         INSERT INTO
-//             "subscriptions" (
-//                 "student_id",
-//                 "monthly_minutes",
-//                 "remaining_minutes",
-//                 "auto_renewal",
-//                 "start",
-//                 "end",
-//                 "created_at",
-//                 "updated_at"
-//             )
-//         VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
-//         RETURNING id;
-//       `,
-//       [
-//         subscription.studentId,
-//         subscription.monthlyMinutes,
-//         subscription.remainingMinutes,
-//         subscription.autoRenewal,
-//         subscription.start,
-//         subscription.end,
-//       ]
-//     );
+export class Subscriptions {
+  table = "subscriptions" as const;
 
-//     const row = first(rows);
-//     if (!row) throw new Error("Subscription not found; should never happen");
-//     return row.id;
-//   }
+  async create(
+    payload: ISubscription.CreatePayload
+  ): Promise<ISubscription.Self> {
+    const now = new Date();
+    const rows = await this.builder().insert(
+      {
+        user_id: payload.userId,
+        plan_id: payload.planId,
+        tx_id: payload.txId,
+        period: payload.period,
+        quota: payload.quota,
+        start: now,
+        end: dayjs(now).utc().add(payload.quota).toDate(),
+        extended_by: null,
+        created_at: now,
+        updated_at: now,
+      },
+      "*"
+    );
+    const row = first(rows);
+    if (!row) throw new Error("subscription not found; should never happen");
+    return this.from(row);
+  }
 
-//   async update(
-//     subscription: Partial<
-//       Omit<Subscription.Self, "student_id" | "updated_at" | "created_at">
-//     > & { id: number }
-//   ): Promise<void> {
-//     await query<
-//       {},
-//       [
-//         montlyMinutes: number | undefined,
-//         remainingMinutes: number | undefined,
-//         autoRenewal: boolean | undefined,
-//         start: string | undefined,
-//         end: string | undefined,
-//         id: number,
-//       ]
-//     >(
-//       `
-//         UPDATE "subscriptions" as s
-//         SET
-//             "monthly_minutes" = COALESCE($1, s.monthly_minutes),
-//             "remaining_minutes" = COALESCE($2, s.remaining_minutes),
-//             "auto_renewal" = COALESCE($3, s.auto_renewal),
-//             "start" = COALESCE($4, s.start),
-//             "end" = COALESCE($5, s.end),
-//             "updated_at" = NOW()
-//         WHERE
-//             id = $6;
-//       `,
-//       [
-//         subscription.monthlyMinutes,
-//         subscription.remainingMinutes,
-//         subscription.autoRenewal,
-//         subscription.start,
-//         subscription.end,
-//         subscription.id,
-//       ]
-//     );
-//   }
+  async update(
+    id: number,
+    payload: ISubscription.UpdatePayload
+  ): Promise<ISubscription.Self> {
+    const now = new Date();
+    const rows = await this.builder()
+      .update(
+        {
+          extended_by: payload.extendedBy,
+          updated_at: now,
+        },
+        "*"
+      )
+      .where(this.column("id"), id);
 
-//   async delete(id: number) {
-//     await query<{}, [id: number]>(
-//       `DELETE FROM "subscriptions" WHERE id = $1;`,
-//       [id]
-//     );
-//   }
+    const row = first(rows);
+    if (!row) throw new Error("subscription not found; should never happen");
+    return this.from(row);
+  }
 
-//   async findById(id: number): Promise<Subscription.Self | null> {
-//     const { rows } = await query<Subscription.Row, [id: number]>(
-//       `
-//         SELECT
-//             "id",
-//             "student_id",
-//             "monthly_minutes",
-//             "remaining_minutes",
-//             "auto_renewal",
-//             "start",
-//             "end",
-//             "created_at",
-//             "updated_at"
-//         FROM "subscriptions"
-//         WHERE
-//             id = $1;
-//       `,
-//       [id]
-//     );
+  async findById(id: number): Promise<ISubscription.Self | null> {
+    const { list } = await this.find({ ids: [id] });
+    return first(list) || null;
+  }
 
-//     const row = first(rows);
-//     if (!row) return null;
-//     return this.from(row);
-//   }
+  async find({
+    tx,
+    page,
+    size,
+    ...query
+  }: WithOptionalTx<ISubscription.ModelFindQuery>): Promise<
+    Paginated<ISubscription.Self>
+  > {
+    const base = this.applySearchFilter(this.builder(tx), query);
+    const total = await countRows(base.clone(), { column: this.column("id") });
+    const queryBuilder = base.clone().select();
+    const rows = await withSkippablePagination(queryBuilder, { page, size });
+    return { list: rows.map((row) => this.from(row)), total };
+  }
 
-//   async findByStudentId(studentId: number): Promise<Subscription.Self | null> {
-//     const { rows } = await query<Subscription.Row, [studentId: number]>(
-//       `
-//         SELECT
-//             "id",
-//             "student_id",
-//             "monthly_minutes",
-//             "remaining_minutes",
-//             "auto_renewal",
-//             "start",
-//             "end",
-//             "created_at",
-//             "updated_at"
-//         FROM "subscriptions"
-//         WHERE
-//             student_id = $1;
-//       `,
-//       [studentId]
-//     );
+  from(row: ISubscription.Row): ISubscription.Self {
+    return {
+      id: row.id,
+      userId: row.user_id,
+      planId: row.plan_id,
+      txId: row.tx_id,
+      period: row.period,
+      quota: row.quota,
+      start: row.start.toISOString(),
+      end: row.end.toISOString(),
+      extendedBy: row.extended_by,
+      createdAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
+    };
+  }
 
-//     const row = first(rows);
-//     if (!row) return null;
-//     return this.from(row);
-//   }
+  applySearchFilter<R extends object, T>(
+    builder: Knex.QueryBuilder<R, T>,
+    {
+      ids = [],
+      users = [],
+      plans = [],
+      periods = [],
+      quota,
+      extended,
+      start,
+      end,
+    }: ISubscription.ModelFindFilter
+  ): Knex.QueryBuilder<R, T> {
+    if (!isEmpty(users)) builder.whereIn(this.column("user_id"), users);
 
-//   async findAll(): Promise<Subscription.Self[]> {
-//     const { rows } = await query<Subscription.Row, []>(
-//       `
-//         SELECT
-//             "id",
-//             "student_id",
-//             "monthly_minutes",
-//             "remaining_minutes",
-//             "auto_renewal",
-//             "start",
-//             "end",
-//             "created_at",
-//             "updated_at"
-//         FROM "subscriptions";
-//       `,
-//       []
-//     );
+    if (!isEmpty(ids)) builder.whereIn(this.column("id"), ids);
 
-//     return rows.map((row) => this.from(row));
-//   }
+    if (!isEmpty(plans)) builder.whereIn(this.column("plan_id"), plans);
 
-//   from(row: Subscription.Row): Subscription.Self {
-//     return {
-//       id: row.id,
-//       studentId: row.student_id,
-//       monthlyMinutes: row.monthly_minutes,
-//       remainingMinutes: row.remaining_minutes,
-//       autoRenewal: row.auto_renewal,
-//       start: row.start.toISOString(),
-//       end: row.end.toISOString(),
-//       createdAt: row.created_at.toISOString(),
-//       updatedAt: row.updated_at.toISOString(),
-//     };
-//   }
-// }
+    if (!isEmpty(periods)) builder.whereIn(this.column("period"), periods);
 
-// export namespace Subscription {
-//   export enum Period {
-//     Month = "month",
-//     Quarter = "quarter",
-//     Year = "year",
-//   }
+    if (typeof quota === "number") {
+      builder.where(this.column("quota"), quota);
+    } else if (typeof quota === "object") {
+      if (quota.gt) builder.where(this.column("quota"), ">", quota);
+      if (quota.gte) builder.where(this.column("quota"), ">=", quota);
+      if (quota.lt) builder.where(this.column("quota"), "<", quota);
+      if (quota.lte) builder.where(this.column("quota"), "<=", quota);
+    }
 
-//   export type Self = {
-//     id: number;
-//     studentId: number;
-//     monthlyMinutes: number;
-//     remainingMinutes: number;
-//     autoRenewal: boolean;
-//     start: string;
-//     end: string;
-//     createdAt: string;
-//     updatedAt: string;
-//   };
+    if (extended !== undefined) {
+      if (extended) builder.whereNotNull(this.column("extended_by"));
+      else builder.whereNull(this.column("extended_by"));
+    }
 
-//   export type Row = {
-//     id: number;
-//     student_id: number;
-//     monthly_minutes: number;
-//     remaining_minutes: number;
-//     auto_renewal: boolean;
-//     start: Date;
-//     end: Date;
-//     created_at: Date;
-//     updated_at: Date;
-//   };
-// }
+    if (start) {
+      if (start.after)
+        builder.where(
+          this.column("start"),
+          ">=",
+          dayjs.utc(start.after).toDate()
+        );
+      if (start.before)
+        builder.where(
+          this.column("start"),
+          "<=",
+          dayjs.utc(start.before).toDate()
+        );
+    }
 
-// export const subscriptions = new Subscriptions();
+    if (end) {
+      if (end.after)
+        builder.where(this.column("end"), ">=", dayjs.utc(end.after).toDate());
+      if (end.before)
+        builder.where(this.column("end"), "<=", dayjs.utc(end.before).toDate());
+    }
+
+    return builder;
+  }
+
+  builder(tx?: Knex.Transaction) {
+    return tx
+      ? tx<ISubscription.Row>(this.table)
+      : knex<ISubscription.Row>(this.table);
+  }
+
+  column(value: keyof ISubscription.Row) {
+    return column(value, this.table);
+  }
+}
+
+export const subscriptions = new Subscriptions();

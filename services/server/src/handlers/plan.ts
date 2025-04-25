@@ -4,7 +4,6 @@ import {
   boolean,
   identityObject,
   pagination,
-  string,
   withNamedId,
 } from "@/validation/utils";
 import { IPlan } from "@litespace/types";
@@ -16,30 +15,21 @@ import zod from "zod";
 const number = zod.number().int().positive().gt(0);
 
 const createPlanPayload = zod.object({
-  alias: string,
   weeklyMinutes: number,
-  fullMonthPrice: number,
-  fullQuarterPrice: number,
-  halfYearPrice: number,
-  fullYearPrice: number,
-  fullMonthDiscount: number,
-  fullQuarterDiscount: number,
-  halfYearDiscount: number,
-  fullYearDiscount: number,
+  baseMonthlyPrice: number,
+  monthDiscount: number,
+  quarterDiscount: number,
+  yearDiscount: number,
   forInvitesOnly: boolean,
   active: boolean,
 });
 
 const updatePlanPayload = zod.object({
   weeklyMinutes: zod.optional(number),
-  fullMonthPrice: zod.optional(number),
-  fullQuarterPrice: zod.optional(number),
-  halfYearPrice: zod.optional(number),
-  fullYearPrice: zod.optional(number),
-  fullMonthDiscount: zod.optional(number),
-  fullQuarterDiscount: zod.optional(number),
-  halfYearDiscount: zod.optional(number),
-  fullYearDiscount: zod.optional(number),
+  baseMonthlyPrice: zod.optional(number),
+  monthDiscount: zod.optional(number),
+  quarterDiscount: zod.optional(number),
+  yearDiscount: zod.optional(number),
   forInvitesOnly: zod.optional(boolean),
   active: zod.optional(boolean),
 });
@@ -50,34 +40,23 @@ async function create(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const {
-    alias,
     weeklyMinutes,
-    fullMonthPrice,
-    fullQuarterPrice,
-    halfYearPrice,
-    fullYearPrice,
-    fullMonthDiscount,
-    fullQuarterDiscount,
-    halfYearDiscount,
-    fullYearDiscount,
+    baseMonthlyPrice,
+    monthDiscount,
+    quarterDiscount,
+    yearDiscount,
     forInvitesOnly,
     active,
   }: IPlan.CreateApiPayload = createPlanPayload.parse(req.body);
 
   const plan = await plans.create({
-    alias,
     weeklyMinutes,
-    fullMonthPrice,
-    fullQuarterPrice,
-    halfYearPrice,
-    fullYearPrice,
-    fullMonthDiscount,
-    fullQuarterDiscount,
-    halfYearDiscount,
-    fullYearDiscount,
+    baseMonthlyPrice,
+    monthDiscount,
+    quarterDiscount,
+    yearDiscount,
     forInvitesOnly,
     active,
-    createdBy: user.id,
   });
 
   res.status(200).json(plan);
@@ -90,34 +69,23 @@ async function update(req: Request, res: Response, next: NextFunction) {
 
   const { id } = withNamedId("id").parse(req.params);
   const {
-    alias,
     weeklyMinutes,
-    fullMonthPrice,
-    fullQuarterPrice,
-    halfYearPrice,
-    fullYearPrice,
-    fullMonthDiscount,
-    fullQuarterDiscount,
-    halfYearDiscount,
-    fullYearDiscount,
+    baseMonthlyPrice,
+    monthDiscount,
+    quarterDiscount,
+    yearDiscount,
     forInvitesOnly,
     active,
   }: IPlan.UpdateApiPayload = updatePlanPayload.parse(req.body);
 
   const plan = await plans.update(id, {
-    alias,
     weeklyMinutes,
-    fullMonthPrice,
-    fullQuarterPrice,
-    halfYearPrice,
-    fullYearPrice,
-    fullMonthDiscount,
-    fullQuarterDiscount,
-    halfYearDiscount,
-    fullYearDiscount,
+    baseMonthlyPrice,
+    monthDiscount,
+    quarterDiscount,
+    yearDiscount,
     forInvitesOnly,
     active,
-    updatedBy: user.id,
   });
 
   res.status(200).json(plan);

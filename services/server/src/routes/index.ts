@@ -17,6 +17,7 @@ import session from "@/routes/session";
 import contactRequest from "@/routes/contactRequest";
 import fawry from "@/routes/fawry";
 import transaction from "@/routes/transaction";
+import subscription from "@/routes/subscription";
 import confirmationCode from "@/routes/confirmationCode";
 
 export default {
@@ -39,5 +40,6 @@ export default {
   availabilitySlot,
   fawry,
   transaction,
+  subscription,
   confirmationCode,
 };

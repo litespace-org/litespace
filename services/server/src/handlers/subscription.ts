@@ -1,0 +1,84 @@
+import zod from "zod";
+import { ISubscription } from "@litespace/types";
+import { NextFunction, Request, Response } from "express";
+import safeRequest from "express-async-handler";
+import { forbidden, notfound } from "@/lib/error";
+import {
+  id,
+  pageNumber,
+  pageSize,
+  withNamedId,
+  number,
+  string,
+} from "@/validation/utils";
+import { isAdmin, isStudent } from "@litespace/utils/user";
+import { subscriptions } from "@litespace/models";
+
+const findQuery = zod.object({
+  ids: id.array().optional(),
+  users: id.array().optional(),
+  plans: id.array().optional(),
+  periods: zod.nativeEnum(ISubscription.Period).array().optional(),
+  quota: number
+    .min(0)
+    .optional()
+    .or(
+      zod
+        .object({
+          gte: number.optional(),
+          lte: number.optional(),
+          gt: number.optional(),
+          lt: number.optional(),
+        })
+        .optional()
+    ),
+  start: zod
+    .object({
+      after: string.optional(),
+      before: string.optional(),
+    })
+    .optional(),
+  end: zod
+    .object({
+      after: string.optional(),
+      before: string.optional(),
+    })
+    .optional(),
+  page: pageNumber.optional().default(1),
+  size: pageSize.optional().default(10),
+});
+
+async function find(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isAdmin(user) || isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const query: ISubscription.FindQueryApi = findQuery.parse(req.query);
+
+  const response: ISubscription.FindApiResponse = await subscriptions.find({
+    ...query,
+    users: isStudent(user) ? [user.id] : query.users,
+  });
+
+  res.status(200).json(response);
+}
+
+async function findById(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isAdmin(user) || isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const { id } = withNamedId("id").parse(req.params);
+  const sub = await subscriptions.findById(id);
+  if (!sub) return next(notfound.subscription());
+
+  if (isStudent(user) && user.id != sub.userId) return next(forbidden());
+
+  const response: ISubscription.Self = sub;
+  res.status(200).json(response);
+}
+
+export default {
+  find: safeRequest(find),
+  findById: safeRequest(findById),
+};

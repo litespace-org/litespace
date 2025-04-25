@@ -3,7 +3,7 @@ import { IPlan, Void } from "@litespace/types";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback } from "react";
 
-export function usePlans(): UseQueryResult<IPlan.MappedAttributes[], Error> {
+export function usePlans(): UseQueryResult<IPlan.Self[], Error> {
   const api = useApi();
   const findPlans = useCallback(() => api.plan.find(), [api.plan]);
   return useQuery({

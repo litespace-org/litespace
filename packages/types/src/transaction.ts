@@ -59,10 +59,6 @@ export type Self = {
   updatedAt: string;
 };
 
-export type ModelFindQuery = IFilter.SkippablePagination & ModelFindFilter;
-
-export type FindQueryApi = ModelFindQuery;
-
 export type ModelFindFilter = {
   ids?: number[];
   users?: number[];
@@ -73,6 +69,10 @@ export type ModelFindFilter = {
   after?: string;
   before?: string;
 };
+
+export type ModelFindQuery = IFilter.SkippablePagination & ModelFindFilter;
+
+export type FindQueryApi = ModelFindQuery;
 
 export type FindApiResponse = Paginated<Self>;
 

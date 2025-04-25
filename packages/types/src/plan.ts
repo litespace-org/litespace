@@ -2,92 +2,44 @@ import { Paginated } from "@/utils";
 
 export type Row = {
   id: number;
-  alias: string;
   weekly_minutes: number;
-  full_month_price: number;
-  full_quarter_price: number;
-  half_year_price: number;
-  full_year_price: number;
-  full_month_discount: number;
-  full_quarter_discount: number;
-  half_year_discount: number;
-  full_year_discount: number;
+  base_monthly_price: number; // scaled
+  month_discount: number; // scaled
+  quarter_discount: number; // scaled
+  year_discount: number; // scaled
   for_invites_only: boolean;
   active: boolean;
   created_at: Date;
-  created_by: number;
   updated_at: Date;
-  updated_by: number;
 };
 
 export type Self = {
   id: number;
-  alias: string;
   weeklyMinutes: number;
-  fullMonthPrice: number;
-  fullQuarterPrice: number;
-  halfYearPrice: number;
-  fullYearPrice: number;
-  fullMonthDiscount: number;
-  fullQuarterDiscount: number;
-  halfYearDiscount: number;
-  fullYearDiscount: number;
+  baseMonthlyPrice: number; // scaled
+  monthDiscount: number; // scaled
+  quarterDiscount: number; // scaled
+  yearDiscount: number; // scaled
   forInvitesOnly: boolean;
   active: boolean;
   createdAt: string;
-  createdBy: number;
   updatedAt: string;
-  updatedBy: number;
-};
-
-type SelectableSelf = Omit<
-  Self,
-  "createdAt" | "updatedAt" | "createdBy" | "updatedBy"
->;
-
-/**
- * Attach updator and creator info to the plan object
- */
-export type Attributed = SelectableSelf & {
-  createdAt: Date;
-  createdById: number;
-  createdByEmail: string;
-  createdByName: string;
-  updatedAt: Date;
-  updatedById: number;
-  updatedByEmail: string;
-  updatedByName: string;
-};
-
-export type MappedAttributes = SelectableSelf & {
-  createdAt: string;
-  createdBy: { id: number; email: string; name: string };
-  updatedAt: string;
-  updatedBy: { id: number; email: string; name: string };
 };
 
 export type CreatePayload = {
-  alias: string;
   weeklyMinutes: number;
-  fullMonthPrice: number;
-  fullQuarterPrice: number;
-  halfYearPrice: number;
-  fullYearPrice: number;
-  fullMonthDiscount: number;
-  fullQuarterDiscount: number;
-  halfYearDiscount: number;
-  fullYearDiscount: number;
+  baseMonthlyPrice: number; // scaled
+  monthDiscount: number; // scaled
+  quarterDiscount: number; // scaled
+  yearDiscount: number; // scaled
   forInvitesOnly: boolean;
   active: boolean;
-  createdBy: number;
 };
 
-export type UpdatePayload = Partial<Omit<CreatePayload, "createdBy">> & {
-  updatedBy: number;
-};
+export type UpdatePayload = Partial<CreatePayload>;
 
-export type CreateApiPayload = Omit<CreatePayload, "createdBy">;
+export type CreateApiPayload = CreatePayload;
 
-export type UpdateApiPayload = Omit<UpdatePayload, "updatedBy">;
+export type UpdateApiPayload = UpdatePayload;
 
 export type FindPlansApiResponse = Paginated<Self>;
