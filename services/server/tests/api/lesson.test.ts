@@ -31,7 +31,7 @@ describe("/api/v1/lesson/", () => {
       const lessonsCount = 10;
 
       const slot = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: date.toISOString(),
         end: date.add(lessonsCount / 2, "hour").toISOString(),
       });
@@ -43,7 +43,7 @@ describe("/api/v1/lesson/", () => {
           start: subslot.start,
           slot: slot.id,
           duration: 30,
-          tutor: tutor.user.id,
+          tutor: tutor.id,
         });
       }
 
@@ -74,7 +74,7 @@ describe("/api/v1/lesson/", () => {
 
       for (const test of tests) {
         const found = await tutorApi.api.lesson.findLessons({
-          users: [tutor.user.id],
+          users: [tutor.id],
           after: test.after,
           before: test.before,
         });
@@ -92,7 +92,7 @@ describe("/api/v1/lesson/", () => {
 
       const date = dayjs.utc().subtract(1, "day").startOf("day");
       const slot = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: date.toISOString(),
         end: date.add(1, "day").toISOString(),
       });
@@ -100,7 +100,7 @@ describe("/api/v1/lesson/", () => {
       const res = await safe(async () => {
         return await studentApi.api.lesson.create({
           slotId: slot.id,
-          tutorId: tutor.user.id,
+          tutorId: tutor.id,
           start: date.add(3, "hour").toISOString(),
           duration: 30,
         });
@@ -117,7 +117,7 @@ describe("/api/v1/lesson/", () => {
 
       const date = dayjs.utc().add(1, "day").startOf("day");
       const slot = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: date.toISOString(),
         end: date.add(1, "day").toISOString(),
       });
@@ -126,7 +126,7 @@ describe("/api/v1/lesson/", () => {
       await safe(async () => {
         return await studentApi.api.lesson.create({
           slotId: slot.id,
-          tutorId: tutor.user.id,
+          tutorId: tutor.id,
           start: date.add(18, "hour").toISOString(),
           duration: 30,
         });
@@ -135,7 +135,7 @@ describe("/api/v1/lesson/", () => {
       const res = await safe(async () => {
         return await studentApi.api.lesson.create({
           slotId: slot.id,
-          tutorId: tutor.user.id,
+          tutorId: tutor.id,
           start: date.add(3, "hour").toISOString(),
           duration: 30,
         });
@@ -153,7 +153,7 @@ describe("/api/v1/lesson/", () => {
 
       const date = dayjs.utc().add(1, "day").startOf("day");
       const slot = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: date.toISOString(),
         end: date.add(1, "day").toISOString(),
       });
@@ -163,8 +163,8 @@ describe("/api/v1/lesson/", () => {
         return await knex.transaction(async (tx) => {
           return await lessons.create({
             slot: slot.id,
-            tutor: tutor.user.id,
-            student: student.user.id,
+            tutor: tutor.id,
+            student: student.id,
             session: genSessionId("lesson"),
             start: dayjs.utc().subtract(15, "minute").toISOString(),
             duration: 30,
@@ -179,7 +179,7 @@ describe("/api/v1/lesson/", () => {
       const res = await safe(async () => {
         return await studentApi.api.lesson.create({
           slotId: slot.id,
-          tutorId: tutor.user.id,
+          tutorId: tutor.id,
           start: date.add(3, "hour").toISOString(),
           duration: 30,
         });
@@ -269,7 +269,7 @@ describe("/api/v1/lesson/", () => {
 
       const lesson = await db.lesson({
         tutor: tutor.id,
-        student: student.user.id,
+        student: student.id,
         timing: "future",
         slot: slot.id,
       });

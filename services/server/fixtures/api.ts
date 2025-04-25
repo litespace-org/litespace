@@ -22,10 +22,12 @@ export function unexpectedApiSuccess() {
 }
 
 export class Api {
+  token: string;
   public readonly api: AtlasApi;
 
   constructor(token?: string) {
     this.api = api(token);
+    this.token = token || "";
   }
 
   static async fromCredentials(email: string, password: string) {
@@ -52,8 +54,8 @@ export class Api {
     const res = await this.forUser(IUser.Role.Tutor);
 
     // insert row in tutors table
-    const cur = await res.findCurrentUser();
-    await tutors.create(cur.user.id);
+    const current = await res.findCurrentUser();
+    await tutors.create(current.id);
 
     return res;
   }

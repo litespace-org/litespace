@@ -18,13 +18,13 @@ describe("/api/v1/rating/", () => {
       const newTutor = await db.tutor();
 
       await ratings.create({
-        raterId: student.user.id,
+        raterId: student.id,
         rateeId: newTutor.id,
         value: 4,
         feedback: "Very good instructor.",
       });
 
-      const res = await studentApi.api.rating.findRaterRatings(student.user.id);
+      const res = await studentApi.api.rating.findRaterRatings(student.id);
 
       expect(res.list).to.have.length(1);
       expect(res.list[0].feedback).to.eq("Very good instructor.");
@@ -36,7 +36,7 @@ describe("/api/v1/rating/", () => {
       const newTutor = await db.tutor();
 
       await ratings.create({
-        raterId: student.user.id,
+        raterId: student.id,
         rateeId: newTutor.id,
         value: 4,
         feedback: "Very good instructor.",
@@ -54,7 +54,7 @@ describe("/api/v1/rating/", () => {
       const newTutor = await db.tutor();
 
       const rating = await ratings.create({
-        raterId: student.user.id,
+        raterId: student.id,
         rateeId: newTutor.id,
         value: 4,
         feedback: "Very good instructor.",
@@ -112,7 +112,7 @@ describe("/api/v1/rating/", () => {
 
       const requester = await studentApi.findCurrentUser();
       await ratings.create({
-        raterId: requester.user.id,
+        raterId: requester.id,
         rateeId: newTutor.id,
         value: 1,
         feedback:
@@ -167,7 +167,7 @@ describe("/api/v1/rating/", () => {
       const newTutor = await db.tutor();
 
       await ratings.create({
-        raterId: newStudent.user.id,
+        raterId: newStudent.id,
         rateeId: newTutor.id,
         value: 4,
         feedback: "",
@@ -226,7 +226,7 @@ describe("/api/v1/rating/", () => {
       const newTutor = await db.tutor();
 
       const newRating = await ratings.create({
-        raterId: newStudent.user.id,
+        raterId: newStudent.id,
         rateeId: newTutor.id,
         value: 4,
         feedback: "",
@@ -269,7 +269,7 @@ describe("/api/v1/rating/", () => {
       const newTutor = await db.tutor();
 
       const newRating = await ratings.create({
-        raterId: newStudent.user.id,
+        raterId: newStudent.id,
         rateeId: newTutor.id,
         value: 4,
         feedback: "",
