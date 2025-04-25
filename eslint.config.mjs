@@ -105,7 +105,12 @@ export default [
     },
   },
   {
-    files: ["**/*.stories.tsx", "packages/radio/**", "packages/**/*.test.ts"],
+    files: [
+      "**/*.stories.tsx",
+      "packages/radio/**",
+      "packages/**/*.test.ts",
+      "services/server/fixtures/**",
+    ],
     rules: {
       "react-hooks/rules-of-hooks": "off",
     },

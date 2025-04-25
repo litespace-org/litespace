@@ -14,11 +14,12 @@ function router(context: ApiContext) {
   router.post("/refund", fawry.refund);
 
   router.get("/card-token/url", fawry.getAddCardTokenUrl);
-  router.get("/card-token/list", fawry.listCardTokens);
+  router.get("/card-token/list", fawry.findCardTokens);
   router.delete("/card-token", fawry.deleteCardToken);
 
   router.get("/payment-status", fawry.getPaymentStatus);
   router.post("/payment-status", fawry.setPaymentStatus(context));
+  router.post("/payment-status/sync", fawry.syncPaymentStatus);
 
   return router;
 }

@@ -63,7 +63,8 @@ export class Plans {
       .where(this.column("id"), id)
       .select("*");
     const row = first(rows);
-    return row ? this.from(row) : null;
+    if (!row) return null;
+    return this.from(row);
   }
 
   async find({

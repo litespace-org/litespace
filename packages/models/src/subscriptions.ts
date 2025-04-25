@@ -14,18 +14,18 @@ export class Subscriptions {
   table = "subscriptions" as const;
 
   async create(
-    payload: ISubscription.CreatePayload
+    payload: WithOptionalTx<ISubscription.CreatePayload>
   ): Promise<ISubscription.Self> {
     const now = new Date();
-    const rows = await this.builder().insert(
+    const rows = await this.builder(payload.tx).insert(
       {
         user_id: payload.userId,
         plan_id: payload.planId,
         tx_id: payload.txId,
         period: payload.period,
-        quota: payload.quota,
-        start: now,
-        end: dayjs(now).utc().add(payload.quota).toDate(),
+        weekly_minutes: payload.weeklyMinutes,
+        start: dayjs.utc(payload.start).toDate(),
+        end: dayjs.utc(payload.end).toDate(),
         extended_by: null,
         created_at: now,
         updated_at: now,
@@ -39,13 +39,18 @@ export class Subscriptions {
 
   async update(
     id: number,
-    payload: ISubscription.UpdatePayload
+    payload: ISubscription.UpdatePayload,
+    tx?: Knex.Transaction
   ): Promise<ISubscription.Self> {
     const now = new Date();
-    const rows = await this.builder()
+    const rows = await this.builder(tx)
       .update(
         {
           extended_by: payload.extendedBy,
+          terminated_at:
+            typeof payload.terminatedAt === "string"
+              ? dayjs.utc(payload.terminatedAt).toDate()
+              : payload.terminatedAt,
           updated_at: now,
         },
         "*"
@@ -66,6 +71,7 @@ export class Subscriptions {
     tx,
     page,
     size,
+    full,
     ...query
   }: WithOptionalTx<ISubscription.ModelFindQuery>): Promise<
     Paginated<ISubscription.Self>
@@ -73,8 +79,21 @@ export class Subscriptions {
     const base = this.applySearchFilter(this.builder(tx), query);
     const total = await countRows(base.clone(), { column: this.column("id") });
     const queryBuilder = base.clone().select();
-    const rows = await withSkippablePagination(queryBuilder, { page, size });
+    const rows = await withSkippablePagination(queryBuilder, {
+      page,
+      size,
+      full,
+    });
     return { list: rows.map((row) => this.from(row)), total };
+  }
+
+  async findByTxId(
+    txId: number,
+    tx?: Knex.Transaction
+  ): Promise<ISubscription.Self | null> {
+    const subscriptions = await this.find({ transactions: [txId], tx });
+    const subscription = first(subscriptions.list);
+    return subscription || null;
   }
 
   from(row: ISubscription.Row): ISubscription.Self {
@@ -84,10 +103,11 @@ export class Subscriptions {
       planId: row.plan_id,
       txId: row.tx_id,
       period: row.period,
-      quota: row.quota,
+      weeklyMinutes: row.weekly_minutes,
       start: row.start.toISOString(),
       end: row.end.toISOString(),
       extendedBy: row.extended_by,
+      terminatedAt: row.terminated_at ? row.terminated_at.toISOString() : null,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
@@ -100,7 +120,9 @@ export class Subscriptions {
       users = [],
       plans = [],
       periods = [],
-      quota,
+      transactions = [],
+      terminated,
+      weeklyMinutes,
       extended,
       start,
       end,
@@ -114,41 +136,57 @@ export class Subscriptions {
 
     if (!isEmpty(periods)) builder.whereIn(this.column("period"), periods);
 
-    if (typeof quota === "number") {
-      builder.where(this.column("quota"), quota);
-    } else if (typeof quota === "object") {
-      if (quota.gt) builder.where(this.column("quota"), ">", quota);
-      if (quota.gte) builder.where(this.column("quota"), ">=", quota);
-      if (quota.lt) builder.where(this.column("quota"), "<", quota);
-      if (quota.lte) builder.where(this.column("quota"), "<=", quota);
+    if (!isEmpty(transactions))
+      builder.whereIn(this.column("tx_id"), transactions);
+
+    if (typeof terminated !== "undefined")
+      builder.where(
+        this.column("terminated_at"),
+        terminated ? "IS NOT" : "IS",
+        null
+      );
+
+    const exactWeeklyMinutesMatch = typeof weeklyMinutes === "number";
+
+    if (exactWeeklyMinutesMatch)
+      builder.where(this.column("weekly_minutes"), weeklyMinutes);
+
+    if (weeklyMinutes && !exactWeeklyMinutesMatch && weeklyMinutes.gt)
+      builder.where(this.column("weekly_minutes"), ">", weeklyMinutes.gt);
+
+    if (weeklyMinutes && !exactWeeklyMinutesMatch && weeklyMinutes.gte)
+      builder.where(this.column("weekly_minutes"), ">=", weeklyMinutes.gte);
+
+    if (weeklyMinutes && !exactWeeklyMinutesMatch && weeklyMinutes.lt)
+      builder.where(this.column("weekly_minutes"), "<", weeklyMinutes.lt);
+
+    if (weeklyMinutes && !exactWeeklyMinutesMatch && weeklyMinutes.lte)
+      builder.where(this.column("weekly_minutes"), "<=", weeklyMinutes.lte);
+
+    if (extended === true) builder.whereNotNull(this.column("extended_by"));
+
+    if (extended === false) builder.whereNull(this.column("extended_by"));
+
+    if (start?.after) {
+      builder.where(
+        this.column("start"),
+        ">=",
+        dayjs.utc(start.after).toDate()
+      );
     }
 
-    if (extended !== undefined) {
-      if (extended) builder.whereNotNull(this.column("extended_by"));
-      else builder.whereNull(this.column("extended_by"));
-    }
+    if (start?.before)
+      builder.where(
+        this.column("start"),
+        "<=",
+        dayjs.utc(start.before).toDate()
+      );
 
-    if (start) {
-      if (start.after)
-        builder.where(
-          this.column("start"),
-          ">=",
-          dayjs.utc(start.after).toDate()
-        );
-      if (start.before)
-        builder.where(
-          this.column("start"),
-          "<=",
-          dayjs.utc(start.before).toDate()
-        );
-    }
+    if (end?.after)
+      builder.where(this.column("end"), ">=", dayjs.utc(end.after).toDate());
 
-    if (end) {
-      if (end.after)
-        builder.where(this.column("end"), ">=", dayjs.utc(end.after).toDate());
-      if (end.before)
-        builder.where(this.column("end"), "<=", dayjs.utc(end.before).toDate());
-    }
+    if (end?.before)
+      builder.where(this.column("end"), "<=", dayjs.utc(end.before).toDate());
 
     return builder;
   }

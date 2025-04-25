@@ -80,7 +80,7 @@ export type PayWithCardPayload = BaseRequestPayload & {
   /**
    * Card cvv code.
    */
-  cvv: number;
+  cvv: string;
   /**
    * Set to "true" to enable 3DS authentication.
    */

@@ -2,25 +2,37 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 
-import { isAdmin, isRegularUser, isStudent, price } from "@litespace/utils";
-import { IFawry, ITransaction, Wss } from "@litespace/types";
+import {
+  isAdmin,
+  isRegularUser,
+  isStudent,
+  PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD,
+  PLAN_PERIOD_TO_MONTH_COUNT,
+} from "@litespace/utils";
+import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
 
 import { fawry } from "@/fawry/api";
-import { bad, forbidden, notfound } from "@/lib/error";
+import { bad, forbidden, notfound, unexpected } from "@/lib/error";
 import { forgeFawryPayload } from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
 import { fawryConfig } from "@/constants";
-import { datetime, id, unionOfLiterals } from "@/validation/utils";
+import { id, unionOfLiterals } from "@/validation/utils";
 import dayjs from "@/lib/dayjs";
 import {
   FAWRY_API_URL_CURRENT,
   FAWRY_ROUTES,
   TRANSACTION_PAYMENT_METHOD_TO_FAWRY_PAYMENT_METHOD,
-  TRANSACTION_STATUS_TO_FAWRY_ORDER_STATUS,
+  ORDER_STATUS_TO_TRANSACTION_STATUS,
 } from "@/fawry/constants";
 import { clientRouter } from "@/lib/client";
 import { Web } from "@litespace/utils/routes";
-import { transactions, users } from "@litespace/models";
+import {
+  knex,
+  plans,
+  subscriptions,
+  transactions,
+  users,
+} from "@litespace/models";
 import { ApiContext } from "@/types/api";
 import { OrderStatus, PaymentMethod } from "@/fawry/types/ancillaries";
 import { asUserRoomId } from "@/wss/utils";
@@ -29,23 +41,33 @@ import {
   decodeMerchantRefNumber,
   encodeMerchantRefNumber,
 } from "@/fawry/lib/ids";
+import { calculatePlanPrice } from "@/lib/plan";
+
+const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
+  "month",
+  "quarter",
+  "year",
+]);
 
 const payWithCardPayload = zod.object({
   planId: id,
   cardToken: zod.string(),
-  cvv: zod.number(),
-  duration: zod.null(),
+  period: planPeroid,
+  cvv: zod.string().length(3),
   phone: zod.string().optional(),
 });
 
 const payWithRefNumPayload = zod.object({
-  amount: zod.number(),
-  paymentExpirey: datetime.optional(),
+  planId: id,
+  period: planPeroid,
+  phone: zod.string().optional(),
 });
 
 const payWithEWalletPayload = zod.object({
-  amount: zod.number(),
-  paymentExpirey: datetime.optional(),
+  planId: id,
+  period: planPeroid,
+  wallet: zod.string(),
+  phone: zod.string().optional(),
 });
 
 const payWithBankInstallmentsPayload = zod.object({
@@ -59,6 +81,8 @@ const payWithBankInstallmentsPayload = zod.object({
 const cancelUnpaidOrderPayload = zod.object({
   transactionId: id,
 });
+
+const syncPaymentPayload = zod.object({ transactionId: id });
 
 const refundPayload = zod.object({
   orderRefNum: zod.string(),
@@ -114,19 +138,21 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
   const payload: IFawry.PayWithCardPayload = payWithCardPayload.parse(req.body);
   const { valid, phone, update } = withPhone(user.phone, payload.phone);
   if (!valid || !phone) return next(bad("Invalid or missing phone number"));
-  // Update user phone if needed.
+  // update user phone if needed.
   if (!update) await users.update(user.id, { phone });
 
-  const amount = 100;
+  const plan = await plans.findById(payload.planId);
+  if (!plan) return next(notfound.plan());
+
+  const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
+  const { total, totalScaled } = calculatePlanPrice({ period, plan });
 
   const transaction = await transactions.create({
     userId: user.id,
     providerRefNum: null,
-    /**
-     * Any number (e.g., amount, price) that enter the database should be scaled
-     * up and any extra decimals should be removed.
-     */
-    amount: price.scale(amount),
+    planId: plan.id,
+    planPeriod: period,
+    amount: totalScaled,
     paymentMethod: ITransaction.PaymentMethod.Card,
   });
 
@@ -142,7 +168,7 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
         transactionId: transaction.id,
         createdAt: transaction.createdAt,
       }),
-      amount: transaction.amount,
+      amount: total,
       cardToken: payload.cardToken,
       cvv: payload.cvv,
     }
@@ -163,54 +189,53 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
   const allowed = isRegularUser(user);
   if (!allowed) return next(forbidden());
 
-  const payload = payWithRefNumPayload.parse(req.body);
+  const payload: IFawry.PayWithRefNumPayload = payWithRefNumPayload.parse(
+    req.body
+  );
 
-  // TODO: store transaction in the database
-  const txId = Math.floor(Math.random() * 1000);
-  const forgedPayload = forgeFawryPayload({
-    merchantRefNum: txId,
-    paymentMethod: "PAYATFAWRY",
-    amount: payload.amount,
-    signature: genSignature.forPayWithRefNum({
-      merchantRefNum: txId,
-      amount: payload.amount,
-      customerProfileId: user.id,
-    }),
-    customer: {
-      id: user.id,
-      phone: user.phone || "",
-      email: user.email,
-      name: user.name || undefined,
-    },
+  const { valid, phone, update } = withPhone(user.phone, payload.phone);
+  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
+  // Update user phone if needed.
+  if (!update) await users.update(user.id, { phone });
+
+  const plan = await plans.findById(payload.planId);
+  if (!plan) return next(notfound.plan());
+
+  const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
+  const { total, totalScaled } = calculatePlanPrice({ period, plan });
+
+  const transaction = await transactions.create({
+    userId: user.id,
+    providerRefNum: null,
+    planId: plan.id,
+    planPeriod: period,
+    amount: totalScaled,
+    paymentMethod: ITransaction.PaymentMethod.Fawry,
   });
 
-  const {
-    orderStatus,
-    orderAmount,
-    paymentAmount,
-    fawryFees,
-    paymentTime,
-    statusCode,
-    statusDescription,
-  } = await fawry.payWithRefNum({
-    ...forgedPayload,
-    paymentMethod: "PAYATFAWRY",
-    paymentExpiry: payload.paymentExpirey
-      ? dayjs(payload.paymentExpirey).utc().unix()
-      : undefined,
+  const merchantRefNumber = encodeMerchantRefNumber({
+    transactionId: transaction.id,
+    createdAt: transaction.createdAt,
   });
 
-  // TODO: store orderRefNumber in the transaction row
+  const { referenceNumber, statusCode, statusDescription } =
+    await fawry.payWithRefNum({
+      amount: total,
+      customer: {
+        id: user.id,
+        email: user.email,
+        name: user.name || "LiteSpace Student",
+        phone,
+      },
+      merchantRefNum: merchantRefNumber,
+    });
+
+  if (statusCode !== 200 || !referenceNumber)
+    return next(unexpected(statusDescription));
 
   const response: IFawry.PayWithRefNumResponse = {
-    transactionId: forgedPayload.merchantRefNum,
-    orderStatus,
-    orderAmount,
-    paymentAmount,
-    fawryFees,
-    paymentTime,
-    statusCode,
-    statusDescription,
+    transactionId: transaction.id,
+    referenceNumber: Number(referenceNumber),
   };
 
   res.json(response);
@@ -221,51 +246,53 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
   const allowed = isRegularUser(user);
   if (!allowed) return next(forbidden());
 
-  const payload = payWithEWalletPayload.parse(req.body);
+  const payload: IFawry.PayWithEWalletPayload = payWithEWalletPayload.parse(
+    req.body
+  );
 
-  // TODO: store transaction in the database
-  const txId = Math.floor(Math.random() * 1000);
+  const { valid, phone, update } = withPhone(user.phone, payload.phone);
+  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
+  // Update user phone if needed.
+  if (!update) await users.update(user.id, { phone });
 
-  const forgedPayload = forgeFawryPayload({
-    merchantRefNum: txId,
-    paymentMethod: "MWALLET",
-    amount: payload.amount,
-    signature: genSignature.forPayWithEWallet({
-      merchantRefNum: txId,
-      amount: payload.amount,
-      customerProfileId: user.id,
-    }),
+  const plan = await plans.findById(payload.planId);
+  if (!plan) return next(notfound.plan());
+
+  const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
+  const { total, totalScaled } = calculatePlanPrice({ period, plan });
+
+  const transaction = await transactions.create({
+    userId: user.id,
+    providerRefNum: null,
+    planId: plan.id,
+    planPeriod: period,
+    amount: totalScaled,
+    paymentMethod: ITransaction.PaymentMethod.EWallet,
+  });
+
+  const merchantRefNumber = encodeMerchantRefNumber({
+    transactionId: transaction.id,
+    createdAt: transaction.createdAt,
+  });
+
+  const payment = await fawry.payWithEWallet({
+    merchantRefNum: merchantRefNumber,
+    amount: total,
     customer: {
       id: user.id,
-      phone: user.phone || "",
       email: user.email,
-      name: user.name || undefined,
+      name: user.name || "LiteSpace Student",
+      phone,
     },
   });
-  if (forgedPayload instanceof Error) return next(bad());
 
-  const {
-    referenceNumber,
-    merchantRefNumber,
-    walletQr,
-    statusCode,
-    statusDescription,
-  } = await fawry.payWithEWallet({
-    ...forgedPayload,
-    paymentMethod: "MWALLET",
-    paymentExpiry: payload.paymentExpirey
-      ? dayjs(payload.paymentExpirey).utc().unix()
-      : undefined,
-  });
-
-  // TODO: store orderRefNumber in the transaction row
+  if (payment.statusCode !== 200)
+    return next(unexpected(payment.statusDescription));
 
   const response: IFawry.PayWithEWalletResponse = {
-    transactionId: Number(merchantRefNumber),
-    orderRefNum: referenceNumber,
-    walletQr,
-    statusCode,
-    statusDescription,
+    transactionId: transaction.id,
+    referenceNumber: payment.referenceNumber,
+    walletQr: payment.walletQr,
   };
 
   res.json(response);
@@ -297,7 +324,7 @@ async function payWithBankInstallments(
     signature: genSignature.forPayWithBankInstallment({
       merchantRefNum: txId,
       amount: payload.amount,
-      cvv: payload.cvv,
+      cvv: payload.cvv.toString(),
       cardToken: payload.cardToken,
       customerProfileId: user.id,
       installmentPlanId: 1,
@@ -319,7 +346,7 @@ async function payWithBankInstallments(
     paymentMethod: "CARD",
     installmentPlanId: payload.planId,
     cardToken: payload.cardToken,
-    cvv: payload.cvv,
+    cvv: payload.cvv.toString(),
     returnUrl: payload.returnUrl,
     enable3DS: true,
     authCaptureModePayment: true,
@@ -351,10 +378,18 @@ async function cancelUnpaidOrder(
   if (!allowed) return next(forbidden());
 
   const payload = cancelUnpaidOrderPayload.parse(req.body);
+  const transaction = await transactions.findById(payload.transactionId);
 
-  const { fawryRefNumber } = await fawry.getPaymentStatus(
-    payload.transactionId
-  );
+  if (!transaction) return next(notfound.transaction());
+  if (isStudent(user) && transaction.userId !== user.id)
+    return next(forbidden());
+
+  const merchantRefNumber = encodeMerchantRefNumber({
+    transactionId: transaction.id,
+    createdAt: transaction.createdAt,
+  });
+
+  const { fawryRefNumber } = await fawry.getPaymentStatus(merchantRefNumber);
 
   // todo: code, description, and reason are undefined for success status.
   const { code, description, reason } =
@@ -411,18 +446,18 @@ async function getAddCardTokenUrl(
   const params = new URLSearchParams({
     accNo: fawryConfig.merchantCode,
     customerProfileId: user.id.toString(),
-    returnUrl: clientRouter.web({ route: Web.Subscription, full: true }),
+    returnUrl: clientRouter.web({ route: Web.CardAdded, full: true }),
     locale: "ar",
   }).toString();
 
-  const response = {
+  const response: IFawry.GetAddCardTokenUrlResponse = {
     url: `${url}?${params}`,
   };
 
   res.status(200).json(response);
 }
 
-async function listCardTokens(req: Request, res: Response, next: NextFunction) {
+async function findCardTokens(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
@@ -431,7 +466,7 @@ async function listCardTokens(req: Request, res: Response, next: NextFunction) {
     user.id
   );
 
-  const response: IFawry.ListCardTokensResponse = {
+  const response: IFawry.FindCardTokensResponse = {
     cards,
     statusCode,
     statusDescription,
@@ -475,12 +510,14 @@ async function getPaymentStatus(
   next: NextFunction
 ) {
   const user = req.user;
-  const allowed = isAdmin(user);
+  const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
   const { transactionId } = getPaymentStatusPayload.parse(req.body);
   const transaction = await transactions.findById(transactionId);
   if (!transaction) return next(notfound.transaction());
+  if (isStudent(user) && transaction.userId !== user.id)
+    return next(forbidden());
 
   const merchantRefNumber = encodeMerchantRefNumber({
     transactionId: transaction.id,
@@ -516,7 +553,7 @@ function setPaymentStatus(context: ApiContext) {
     });
 
     if (signature !== paylaod.messageSignature)
-      return next(forbidden("Invalid signature."));
+      return next(forbidden("Invalid signature"));
 
     const transactionId = decodeMerchantRefNumber(paylaod.merchantRefNumber);
     const userId = Number(paylaod.customerMerchantId);
@@ -526,30 +563,59 @@ function setPaymentStatus(context: ApiContext) {
     if (!transaction)
       return next(
         bad(
-          "Transaction not found; invalid or missing merchant reference number; should never happen."
+          "Transaction not found; invalid or missing merchant reference number; should never happen"
         )
       );
 
     if (transaction.userId !== userId)
       return next(
         bad(
-          "User id mismatch; invalid customer merchant id; should never happen."
+          "User id mismatch; invalid customer merchant id; should never happen"
         )
       );
 
-    const status =
-      TRANSACTION_STATUS_TO_FAWRY_ORDER_STATUS[paylaod.orderStatus];
-
+    const status = ORDER_STATUS_TO_TRANSACTION_STATUS[paylaod.orderStatus];
     const method =
       TRANSACTION_PAYMENT_METHOD_TO_FAWRY_PAYMENT_METHOD[paylaod.paymentMethod];
 
     if (method !== transaction.paymentMethod)
-      return next(bad("Payment method mismatch; should never happen."));
+      return next(bad("Payment method mismatch; should never happen"));
 
-    // Update the transaction with the latest status.
-    await transactions.update(transactionId, {
-      status,
-      providerRefNum: fawryRefNumber,
+    const plan = await plans.findById(transaction.planId);
+    if (!plan) throw new Error("Plan not found; should never happen");
+
+    const subscription = await subscriptions.findByTxId(transaction.id);
+    const monthCount = PLAN_PERIOD_TO_MONTH_COUNT[transaction.planPeriod];
+    const now = dayjs.utc();
+    const end = now.add(monthCount, "month");
+    const paid = status === ITransaction.Status.Paid;
+
+    await knex.transaction(async (tx) => {
+      // Update the transaction with the latest status.
+      await transactions.update(
+        transactionId,
+        {
+          status,
+          providerRefNum: fawryRefNumber,
+        },
+        tx
+      );
+
+      if (!paid && subscription)
+        return await subscriptions.update(subscription.id, {
+          terminatedAt: now.toISOString(),
+        });
+
+      await subscriptions.create({
+        tx,
+        txId: transactionId,
+        period: transaction.planPeriod,
+        planId: transaction.planId,
+        weeklyMinutes: plan.weeklyMinutes,
+        userId,
+        start: now.toISOString(),
+        end: end.toISOString(),
+      });
     });
 
     // Notify user that his payment status got updated
@@ -562,6 +628,76 @@ function setPaymentStatus(context: ApiContext) {
   });
 }
 
+async function syncPaymentStatus(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isStudent(user) || isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const { transactionId } = syncPaymentPayload.parse(req.body);
+  const transaction = await transactions.findById(transactionId);
+  if (!transaction) return next(notfound.transaction());
+
+  const merchantRefNumber = encodeMerchantRefNumber({
+    transactionId: transaction.id,
+    createdAt: transaction.createdAt,
+  });
+
+  const payment = await fawry.getPaymentStatus(merchantRefNumber);
+  const status = ORDER_STATUS_TO_TRANSACTION_STATUS[payment.orderStatus];
+
+  if (status === transaction.status) {
+    res.status(304);
+    return;
+  }
+
+  const plan = await plans.findById(transaction.planId);
+  if (!plan) throw new Error("Plan not found; should never happen");
+
+  const monthCount = PLAN_PERIOD_TO_MONTH_COUNT[transaction.planPeriod];
+  const subscription = await subscriptions.findByTxId(transaction.id);
+
+  await knex.transaction(async (tx) => {
+    await transactions.update(
+      transaction.id,
+      {
+        status,
+        providerRefNum: Number(payment.fawryRefNumber),
+      },
+      tx
+    );
+
+    const paid = status === ITransaction.Status.Paid;
+
+    // terminate subscription in case the tx was canceled, refunded, or failed.
+    if (subscription && !paid)
+      return await subscriptions.update(subscription.id, {
+        terminatedAt: dayjs.utc().toISOString(),
+      });
+
+    if (paid && !subscription) {
+      // Default to now in case the payment time is missing.
+      const start = dayjs.utc(payment.paymentTime) || dayjs.utc();
+      const end = start.add(monthCount, "month");
+      return subscriptions.create({
+        tx,
+        txId: transaction.id,
+        period: transaction.planPeriod,
+        planId: transaction.planId,
+        weeklyMinutes: plan.weeklyMinutes,
+        userId: transaction.userId,
+        start: start.toISOString(),
+        end: end.toISOString(),
+      });
+    }
+  });
+
+  res.sendStatus(200);
+}
+
 export default {
   payWithCard: safeRequest(payWithCard),
   payWithRefNum: safeRequest(payWithRefNum),
@@ -570,8 +706,9 @@ export default {
   cancelUnpaidOrder: safeRequest(cancelUnpaidOrder),
   refund: safeRequest(refund),
   getAddCardTokenUrl: safeRequest(getAddCardTokenUrl),
-  listCardTokens: safeRequest(listCardTokens),
+  findCardTokens: safeRequest(findCardTokens),
   deleteCardToken: safeRequest(deleteCardToken),
   getPaymentStatus: safeRequest(getPaymentStatus),
+  syncPaymentStatus: safeRequest(syncPaymentStatus),
   setPaymentStatus,
 };

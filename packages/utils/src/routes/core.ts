@@ -1,5 +1,5 @@
 import { Dashboard, Landing, Web } from "@/routes/route";
-import { Env, ISession, IShortUrl, ISubscription } from "@litespace/types";
+import { Env, IPlan, ISession, IShortUrl } from "@litespace/types";
 import { clients } from "@/routes/clients";
 
 function isStrictMatch(
@@ -89,7 +89,7 @@ type WebPayload =
   | {
       route: Web.Checkout;
       planId: number;
-      period: ISubscription.Period;
+      period: IPlan.PeriodLiteral;
       query?: BaseQuery;
     }
   | {

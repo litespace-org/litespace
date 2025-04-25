@@ -28,11 +28,10 @@ export function forgeFawryPayload({
     customerEmail: customer.email,
     chargeItems,
     description,
-    orderWebHookUrl: "/todo",
     currencyCode: "EGP",
     language: "ar-eg",
-    amount,
     merchantCode: fawryConfig.merchantCode,
     signature,
+    amount,
   };
 }

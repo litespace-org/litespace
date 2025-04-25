@@ -822,6 +822,7 @@
   "global.gender.female": "أنثي",
   "global.goto": "إلي صفحة {name}",
   "global.sure": "هل أنت متأكد؟",
+  "error.invlaid-cvv": "رقم التحقق من البطاقة غير صالح، برجاء التحقق من البيانات",
   "error.alert": "حدث خطأ ما",
   "error.form.invalid": "غير مناسب",
   "error.required": "مطلوب",

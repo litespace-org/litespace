@@ -1,7 +1,6 @@
 import { PASSWORD_REGEX } from "@litespace/utils";
 import {
   IUser,
-  ISubscription,
   IDate,
   StringLiteral,
   IInterview,
@@ -11,6 +10,7 @@ import {
   banks,
   IFilter,
   ISession,
+  IPlan,
 } from "@litespace/types";
 import zod, { ZodLiteral } from "zod";
 
@@ -89,7 +89,7 @@ export const role = zod.nativeEnum(IUser.Role);
 
 export const url = zod.string().url().trim();
 
-export const subscriptionPeriod = zod.nativeEnum(ISubscription.Period);
+export const planPeriod = zod.nativeEnum(IPlan.Period);
 
 export const interviewStatus = zod.coerce.number(
   zod.nativeEnum(IInterview.Status)

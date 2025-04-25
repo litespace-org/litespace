@@ -27,7 +27,7 @@ class Api extends Base {
     merchantRefNum: number;
     cardToken: string;
     amount: number;
-    cvv: number;
+    cvv: string;
   }): Promise<Responses.PayWithCard> {
     const signature = genSignature.forPayWithCard({
       amount,
@@ -47,12 +47,12 @@ class Api extends Base {
       chargeItems: [
         {
           itemId: "1",
-          description: "Desc",
-          price: 100,
+          description: "LiteSpace subscription",
+          price: amount,
           quantity: 1,
         },
       ],
-      description: "Description",
+      description: "LiteSpace subscription",
     });
 
     const payload: Requests.PayWithCardPayload = {
@@ -68,15 +68,70 @@ class Api extends Base {
     return await this.post({ route: FAWRY_ROUTES.PAY_WITH_CARD, payload });
   }
 
-  async payWithRefNum(
-    payload: Requests.PayWithRefNumPayload
-  ): Promise<Responses.PayWithRefNum> {
+  async payWithRefNum({
+    merchantRefNum,
+    amount,
+    customer,
+  }: {
+    merchantRefNum: number;
+    amount: number;
+    customer: Requests.Customer;
+  }): Promise<Responses.PayWithRefNum> {
+    const base = forgeFawryPayload({
+      paymentMethod: "PAYATFAWRY",
+      merchantRefNum,
+      amount,
+      signature: genSignature.forPayWithRefNum({
+        merchantRefNum,
+        customerProfileId: customer.id,
+        amount,
+      }),
+      customer,
+      chargeItems: [
+        {
+          itemId: merchantRefNum.toString(),
+          description: "LiteSpace subscription",
+          price: amount,
+          quantity: 1,
+        },
+      ],
+      description: "Pay LiteSpace subscription",
+    });
+
+    const payload: Requests.PayWithRefNumPayload = {
+      ...base,
+      paymentMethod: "PAYATFAWRY",
+    };
+
     return await this.post({ route: FAWRY_ROUTES.PAY_WITH_REFNUM, payload });
   }
 
-  async payWithEWallet(
-    payload: Requests.PayWithEWalletPayload
-  ): Promise<Responses.PayWithEWallet> {
+  async payWithEWallet({
+    merchantRefNum,
+    amount,
+    customer,
+  }: {
+    merchantRefNum: number;
+    amount: number;
+    customer: Requests.Customer;
+  }): Promise<Responses.PayWithEWallet> {
+    const forgedPayload = forgeFawryPayload({
+      merchantRefNum,
+      paymentMethod: "MWALLET",
+      amount,
+      signature: genSignature.forPayWithEWallet({
+        merchantRefNum: merchantRefNum,
+        customerProfileId: customer.id,
+        amount,
+      }),
+      customer,
+    });
+
+    const payload: Requests.PayWithEWalletPayload = {
+      ...forgedPayload,
+      paymentMethod: "MWALLET",
+    };
+
     return await this.post({ route: FAWRY_ROUTES.PAY_WITH_EWALLET, payload });
   }
 

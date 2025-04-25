@@ -1,0 +1,11 @@
+meta {
+  name: get-subscriptions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{api}}/api/v1/sub/list
+  body: none
+  auth: inherit
+}

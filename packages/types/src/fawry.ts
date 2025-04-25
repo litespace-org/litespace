@@ -1,3 +1,5 @@
+import { IPlan } from "@/index";
+
 type BaseResponse = {
   /**
    * Fawry Api response status code
@@ -25,9 +27,9 @@ export type OrderStatus =
 export type PayWithCardPayload = {
   phone?: string;
   planId: number;
-  duration: null; // TODO: ISubscription.Duration
+  period: IPlan.PeriodLiteral;
   cardToken: string;
-  cvv: number;
+  cvv: string;
 };
 
 export type PayWithCardResponse = BaseResponse & {
@@ -36,51 +38,26 @@ export type PayWithCardResponse = BaseResponse & {
 };
 
 export type PayWithRefNumPayload = {
-  amount: number;
-  /**
-   * ISO datetime
-   */
-  paymentExpirey?: string;
+  phone?: string;
+  planId: number;
+  period: IPlan.PeriodLiteral;
 };
 
-export type PayWithRefNumResponse = BaseResponse & {
+export type PayWithRefNumResponse = {
   transactionId: number;
-  orderStatus: OrderStatus;
-  /**
-   * Order amount in two decimal places format.
-   */
-  orderAmount: number;
-  /**
-   * The paid amount in two decimal places format.
-   */
-  paymentAmount: number;
-  /**
-   * The payment processing fees.
-   */
-  fawryFees: number;
-  /**
-   * Timestamp to record when the payment has been processed.
-   * Example: 1607879720568
-   */
-  paymentTime: number;
+  referenceNumber: number;
 };
 
 export type PayWithEWalletPayload = {
-  amount: number;
-  /**
-   * ISO datetime
-   */
-  paymentExpirey?: string;
+  planId: number;
+  period: IPlan.PeriodLiteral;
+  wallet: string;
+  phone?: string;
 };
 
-export type PayWithEWalletResponse = BaseResponse & {
+export type PayWithEWalletResponse = {
   transactionId: number;
-  /**
-   * The reference number of the order on FawryPay system which is displayed to
-   * the customer and used during the payment.
-   * Example: 100162801
-   */
-  orderRefNum: string;
+  referenceNumber: string;
   /**
    * Base 64 encoded PNG QR code image.
    * Example: "data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgA....=="
@@ -150,7 +127,7 @@ export type RefundPayload = {
 
 export type RefundResponse = BaseResponse & {};
 
-export type ListCardTokensResponse = BaseResponse & {
+export type FindCardTokensResponse = BaseResponse & {
   cards: Array<{
     /**
      * The saved card token for your requested client ID.
@@ -178,3 +155,7 @@ export type DeleteCardTokenPayload = {
 export type DeleteCardTokenResponse = BaseResponse;
 
 export type GetPaymentStatusResponse = unknown;
+
+export type GetAddCardTokenUrlResponse = {
+  url: string;
+};

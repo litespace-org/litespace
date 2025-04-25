@@ -34,7 +34,7 @@ describe("transactions", () => {
       expect(res.userId).to.eq(sub1.userId);
       expect(res.txId).to.eq(sub1.txId);
       expect(res.planId).to.eq(sub1.planId);
-      expect(res.quota).to.eq(sub1.quota);
+      expect(res.weeklyMinutes).to.eq(sub1.weeklyMinutes);
       expect(res.start).to.eq(sub1.start);
       expect(res.end).to.eq(sub1.end);
       expect(res.period).to.eq(sub1.period);

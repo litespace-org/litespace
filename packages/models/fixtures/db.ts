@@ -42,8 +42,8 @@ import { percentage, price } from "@litespace/utils";
 export async function flush() {
   await knex.transaction(async (tx) => {
     await subscriptions.builder(tx).del();
-    await plans.builder(tx).del();
     await transactions.builder(tx).del();
+    await plans.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
@@ -137,6 +137,15 @@ const or = {
   async planId(id?: number): Promise<number> {
     if (!id) return await plan().then((plan) => plan.id);
     return id;
+  },
+  planPeriod(period?: IPlan.Period) {
+    if (!period)
+      return sample([
+        IPlan.Period.Month,
+        IPlan.Period.Quarter,
+        IPlan.Period.Year,
+      ]);
+    return period;
   },
   boolean(cond?: boolean) {
     if (cond === undefined) return sample([false, true]);
@@ -470,6 +479,8 @@ async function transaction(
     amount: payload?.amount || randomInt(1000),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
+    planId: await or.planId(payload?.planId),
+    planPeriod: or.planPeriod(payload?.planPeriod),
   });
 }
 
@@ -503,12 +514,10 @@ async function subscription(
     userId,
     planId: await or.planId(payload?.planId),
     txId: payload?.txId || (await transaction({ userId })).id,
-    period: sample([
-      ISubscription.Period.Year,
-      ISubscription.Period.Month,
-      ISubscription.Period.Quarter,
-    ]),
-    quota: payload?.quota || randomInt(1000),
+    period: or.planPeriod(payload?.period),
+    weeklyMinutes: payload?.weeklyMinutes || randomInt(1000),
+    start: payload?.start || faker.date.future().toISOString(),
+    end: payload?.end || faker.date.future().toISOString(),
   });
 }
 

@@ -21,6 +21,22 @@ type Base = {
   statusDescription: string;
 };
 
+type ErrorResponse = {
+  /**
+   * Specific type of the response.
+   * Example: "PaymentStatusResponse", "ChargeResponse", etc.
+   */
+  type: string;
+  /**
+   * The response status code.
+   */
+  statusCode: Exclude<FawryStatusCode, 200>;
+  /**
+   * Exact description of the status of FawryPay response.
+   */
+  statusDescription: string;
+};
+
 export type PayWithCard = Base & {
   nextAction?: {
     /**
@@ -35,30 +51,35 @@ export type PayWithCard = Base & {
   };
 };
 
-export type PayWithEWallet = Base & {
-  /**
-   * The reference number of the order on FawryPay system which is displayed to
-   * the customer and used during the payment.
-   * Example: 100162801
-   */
-  referenceNumber: string;
-  /**
-   * The reference number of the order on merchant's system
-   * Example: 23124654641
-   */
-  merchantRefNumber: string;
-  /**
-   * Base 64 encoded PNG QR code image.
-   * Example: "data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgA....=="
-   */
-  walletQr: string;
-};
+export type PayWithEWallet =
+  | {
+      statusCode: 200;
+      statusDescription: string;
+
+      /**
+       * The reference number of the order on FawryPay system which is displayed to
+       * the customer and used during the payment.
+       * Example: 100162801
+       */
+      referenceNumber: string;
+      /**
+       * The reference number of the order on merchant's system
+       * Example: 23124654641
+       */
+      merchantRefNumber: string;
+      /**
+       * Base 64 encoded PNG QR code image.
+       * Example: "data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgA....=="
+       */
+      walletQr: string;
+    }
+  | ErrorResponse;
 
 export type PayWithRefNum = Base & {
   /**
    * FawryPay issued transaction reference number.
    */
-  referenceNumber: string;
+  referenceNumber?: string;
   /**
    * Merchant issued transaction reference number. This is the same as the reference number you have set in your charge request.
    */

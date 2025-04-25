@@ -1,7 +1,7 @@
 import { OrderStatus, PaymentMethod } from "@/fawry/types/ancillaries";
 import { ITransaction } from "@litespace/types";
 
-export const TRANSACTION_STATUS_TO_FAWRY_ORDER_STATUS: Record<
+export const ORDER_STATUS_TO_TRANSACTION_STATUS: Record<
   OrderStatus,
   ITransaction.Status
 > = {
@@ -19,6 +19,6 @@ export const TRANSACTION_PAYMENT_METHOD_TO_FAWRY_PAYMENT_METHOD: Record<
   ITransaction.PaymentMethod
 > = {
   CARD: ITransaction.PaymentMethod.Card,
-  MWALLET: ITransaction.PaymentMethod.MWallet,
+  MWALLET: ITransaction.PaymentMethod.EWallet,
   PAYATFAWRY: ITransaction.PaymentMethod.Fawry,
 };

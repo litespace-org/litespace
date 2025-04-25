@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useIntl } from "react-intl";
 import { LocalId, messages } from "@/locales";
 import dayjs from "@/lib/dayjs";
@@ -12,8 +12,10 @@ import {
   isValidPhone,
   isValidTutorBio,
   isValidUserName,
-  isValidCVV,
+  isValidCvv,
 } from "@litespace/utils/validation";
+import { keys } from "lodash";
+import { Validators } from "@litespace/headless/form";
 
 export function useRequired() {
   const intl = useFormatMessage();
@@ -145,14 +147,17 @@ export function useValidatePhone(required?: boolean) {
   );
 }
 
-export function useValidateCVV(required?: boolean) {
+export function useValidateCvv() {
+  const intl = useFormatMessage();
+
   return useCallback(
-    (value: unknown) => {
-      if (!required && !value) return true;
-      const valid = isValidCVV("" + value);
+    (value: string) => {
+      if (!value) return intl("error.required");
+      const valid = isValidCvv(value);
+      if (!valid) return intl("error.invlaid-cvv");
       return valid;
     },
-    [required]
+    [intl]
   );
 }
 
@@ -465,4 +470,39 @@ export function useValidateDiscount() {
     }),
     [intl]
   );
+}
+
+type ValidatePayload<T extends object, K extends keyof T> = {
+  required?: boolean;
+  validate?: (value: T[K]) => LocalId | null;
+};
+
+export function useMakeValidators<T extends object>(validators: {
+  [K in keyof T]?: ValidatePayload<T, K>;
+}): Validators<T> {
+  const intl = useFormatMessage();
+  const validatorsRef = useRef(validators);
+
+  useEffect(() => {
+    validatorsRef.current = validators;
+  });
+
+  return useMemo(() => {
+    const output: Validators<T> = {};
+
+    for (const key of keys(validatorsRef.current)) {
+      const safeKey = key as keyof T;
+      const safeValue = validatorsRef.current[safeKey];
+      if (!safeValue?.required && !safeValue?.validate) continue;
+
+      output[safeKey] = (value) => {
+        if (safeValue.required && !value) return intl("error.required");
+        const messageId = safeValue.validate?.(value);
+        if (messageId) return intl(messageId);
+        return true;
+      };
+    }
+
+    return output;
+  }, [intl]);
 }

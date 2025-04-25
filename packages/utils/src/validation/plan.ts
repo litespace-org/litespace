@@ -6,7 +6,7 @@ import {
   MIN_PLAN_DISCOUNT,
   MIN_PLAN_WEEKLY_MINUTES,
 } from "@/constants";
-import { FieldError } from "@litespace/types";
+import { FieldError, IPlan } from "@litespace/types";
 
 export function isValidPlanAlias(
   planAlias: string
@@ -57,4 +57,10 @@ export function isValidPlanDiscount(
   if (discount == MIN_PLAN_DISCOUNT) return FieldError.PlanTotalDiscount;
   if (discount > MAX_PLAN_DISCOUNT) return FieldError.MaxPlanDiscountExceeded;
   return true;
+}
+
+export function isValidPlanPeriodLiteral(
+  period: string
+): period is IPlan.PeriodLiteral {
+  return period === "month" || period === "quarter" || period === "year";
 }

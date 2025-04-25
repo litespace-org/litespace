@@ -10,8 +10,10 @@ export type SelectProps<T extends string | number> = {
   children?: React.ReactNode;
   showDropdownIcon?: boolean;
   disabled?: boolean;
+  state?: "error" | "success";
   helper?: string;
   onChange?: (value: T) => void;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export type SelectList<T extends string | number> = Array<{

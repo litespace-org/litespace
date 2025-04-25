@@ -14,8 +14,25 @@ import {
 } from "@radix-ui/react-select";
 import ArrowDown from "@litespace/assets/ArrowDown";
 import { Typography } from "@/components/Typography";
-import { isEmpty } from "lodash";
 import { SelectProps } from "@/components/Select/types";
+import { motion, AnimatePresence } from "framer-motion";
+
+const framer = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 10 },
+  transition: { duration: 0.2 },
+};
+
+export const Helper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return (
+    <motion.div {...framer} className="flex">
+      {children}
+    </motion.div>
+  );
+};
 
 export const Select = <T extends string | number>({
   id,
@@ -26,9 +43,11 @@ export const Select = <T extends string | number>({
   showDropdownIcon = true,
   disabled = false,
   size = "large",
+  state,
   helper,
   onChange,
   className,
+  onOpenChange,
 }: SelectProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
 
@@ -52,17 +71,23 @@ export const Select = <T extends string | number>({
     <Root
       dir="rtl"
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(open) => {
+        setOpen(open);
+        onOpenChange?.(open);
+      }}
       value={value?.toString()}
       onValueChange={onValueChange}
-      disabled={isEmpty(options) || disabled}
+      disabled={disabled}
     >
       <div className={className}>
         {label ? (
           <Typography
             htmlFor={id}
             tag="label"
-            className="mb-1 text-natural-950 text-caption font-semibold inline-block"
+            className={cn("mb-1 text-caption font-semibold inline-block", {
+              "text-natural-950": !disabled,
+              "text-natural-500": disabled,
+            })}
           >
             {label}
           </Typography>
@@ -74,13 +99,21 @@ export const Select = <T extends string | number>({
           disabled={disabled}
           role="button"
           className={cn(
-            "flex flex-row justify-between items-center",
+            "group flex flex-row justify-between items-center",
             "w-full rounded-lg p-2",
             "bg-natural-50 transition-colors duration-200",
-            "border border-natural-300",
             "transition-colors duration-200",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-            "focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:ring-inset",
+            "disabled:cursor-not-allowed disabled:bg-natural-100 disabled:border-natural-200",
+            "focus-visible:outline-none focus-visible:ring-2 focus:ring-secondary-600",
+            "border",
+            {
+              // default or filled
+              "border-natural-300": !state && !disabled,
+              // error
+              "border-destructive-600": state === "error",
+              // success
+              "border-brand-600": state === "success",
+            },
             {
               "h-7": size === "small",
               "h-8": size === "medium",
@@ -90,13 +123,18 @@ export const Select = <T extends string | number>({
         >
           <Typography
             tag="span"
-            className={cn(
-              "text-natural-600 font-medium text-caption",
-              disabled && "text-natural-300"
-            )}
+            className={cn("font-medium text-caption", {
+              // filled
+              "text-natural-950": !disabled && value,
+              // placeholder
+              "text-natural-600": !value && !disabled,
+              // disabled
+              "text-natural-500": disabled,
+            })}
           >
             {text || placeholder}
           </Typography>
+
           {showDropdownIcon ? (
             <Icon>
               <ArrowDown
@@ -111,14 +149,28 @@ export const Select = <T extends string | number>({
           ) : null}
         </Trigger>
 
-        {helper ? (
-          <Typography
-            tag="span"
-            className="mt-1 text-natural-600 text-tiny font-semibold"
-          >
-            {helper}
-          </Typography>
-        ) : null}
+        <AnimatePresence mode="wait" initial={false}>
+          {helper ? (
+            <Helper>
+              <Typography
+                tag="span"
+                className={cn("mt-1 text-tiny font-semibold", {
+                  // default or filled
+                  "text-natural-600 group-focus-within:text-natural-600":
+                    !state && !disabled,
+                  // success
+                  "text-success-600": state === "success",
+                  // error
+                  "text-destructive-600": state === "error",
+                  // disabled
+                  "text-natural-500": disabled,
+                })}
+              >
+                {helper}
+              </Typography>
+            </Helper>
+          ) : null}
+        </AnimatePresence>
 
         <Portal>
           <Content

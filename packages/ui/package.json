@@ -92,6 +92,7 @@
     "./hooks/invoice": "./dist/hooks/invoice.js",
     "./hooks/withdraw": "./dist/hooks/withdraw.js",
     "./hooks/dom": "./dist/hooks/dom.js",
+    "./lib/validate": "./dist/lib/validate.js",
     "./locales": "./dist/locales/index.js",
     "./errorMessage": "./dist/lib/error.js",
     "./redux": "./dist/lib/redux.js",
