@@ -70,16 +70,17 @@ describe("/api/v1/user/", () => {
       it("should update a user", async () => {
         const userApi = await Api.forStudent();
         const u0 = await userApi.api.user.findCurrentUser();
-        await userApi.api.user.update(u0.user.id, {
+        await userApi.api.user.update(u0.id, {
           name: "updated-1",
         });
+
         const u1 = await userApi.api.user.findCurrentUser();
-        await userApi.api.user.update(u0.user.id, {
+        await userApi.api.user.update(u0.id, {
           name: "updated-2",
         });
         const u2 = await userApi.api.user.findCurrentUser();
-        expect(u1.user.name).to.be.eq("updated-1");
-        expect(u2.user.name).to.be.eq("updated-2");
+        expect(u1.name).to.be.eq("updated-1");
+        expect(u2.name).to.be.eq("updated-2");
       });
     });
 
@@ -281,7 +282,7 @@ describe("/api/v1/user/", () => {
 
     it("should successfully retrieve list of tutors with which the student has not chat room yet.", async () => {
       const studentApi = await Api.forStudent();
-      const student = (await studentApi.findCurrentUser()).user;
+      const student = await studentApi.findCurrentUser();
 
       const mockTutors = await Promise.all(range(0, 5).map(() => db.tutor()));
 
@@ -402,16 +403,16 @@ describe("/api/v1/user/", () => {
       const tutor = await tutorApi.findCurrentUser();
 
       // make the tutor onboard
-      await tutors.update(tutor.user.id, {
+      await tutors.update(tutor.id, {
         about: faker.lorem.paragraphs(),
         bio: faker.person.bio(),
         activated: true,
-        activatedBy: tutor.user.id,
+        activatedBy: tutor.id,
         video: "/video.mp4",
         thumbnail: "/thumbnail.jpg",
         notice: 10,
       });
-      await users.update(tutor.user.id, {
+      await users.update(tutor.id, {
         verifiedEmail: true,
         verifiedPhone: true,
         image: "/image.jpg",
@@ -422,15 +423,15 @@ describe("/api/v1/user/", () => {
 
       // defining slots
       const slot1 = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: dayjs.utc().subtract(2, "days").toISOString(),
       });
       const slot2 = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: dayjs.utc().add(2, "days").toISOString(),
       });
       const slot3 = await db.slot({
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: dayjs.utc().add(3, "days").toISOString(),
       });
 
@@ -438,20 +439,20 @@ describe("/api/v1/user/", () => {
       const students = await db.students(3);
 
       const { lesson: lesson1 } = await db.lesson({
-        tutor: tutor.user.id,
+        tutor: tutor.id,
         student: students[0].id,
         slot: slot1.id,
         start: slot1.start,
       });
 
       await db.lesson({
-        tutor: tutor.user.id,
+        tutor: tutor.id,
         student: students[1].id,
         slot: slot2.id,
       });
 
       await db.lesson({
-        tutor: tutor.user.id,
+        tutor: tutor.id,
         student: students[2].id,
         slot: slot3.id,
         canceled: true, // should not be counted

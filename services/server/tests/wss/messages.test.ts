@@ -14,9 +14,8 @@ describe("wss message test suite", () => {
   describe("sending messages", () => {
     it("should throw not found error if the room doesn't exist.", async () => {
       const tutorApi = await Api.forTutor();
-      const tutor = await tutorApi.findCurrentUser();
 
-      const tutorSocket = new ClientSocket(tutor.token);
+      const tutorSocket = new ClientSocket(tutorApi.token);
       const res = await tutorSocket.sendMessage(
         123,
         "The lesson will start soon."
@@ -30,13 +29,11 @@ describe("wss message test suite", () => {
       const tutor = await tutorApi.findCurrentUser();
 
       const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id], tx)
+        rooms.create([tutor.id], tx)
       );
 
       const studentApi = await Api.forStudent();
-      const student = await studentApi.findCurrentUser();
-
-      const studentSocket = new ClientSocket(student.token);
+      const studentSocket = new ClientSocket(studentApi.token);
       const res = await studentSocket.sendMessage(roomId, "Hello.");
 
       expect(res.code).to.eq(Wss.AcknowledgeCode.NotMember);
@@ -49,9 +46,8 @@ describe("wss message test suite", () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
 
-      const roomId = await db.room([tutor.user.id, student.user.id]);
-
-      const studentSocket = new ClientSocket(student.token);
+      const roomId = await db.room([tutor.id, student.id]);
+      const studentSocket = new ClientSocket(studentApi.token);
       const res = await studentSocket.sendMessage(roomId, "Hello.");
       expect(res.code).to.eq(Wss.AcknowledgeCode.Ok);
 
@@ -67,10 +63,10 @@ describe("wss message test suite", () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
 
-      const roomId = await db.room([tutor.user.id, student.user.id]);
+      const roomId = await db.room([tutor.id, student.id]);
 
-      const tutorSocket = new ClientSocket(tutor.token);
-      const studentSocket = new ClientSocket(student.token);
+      const tutorSocket = new ClientSocket(tutorApi.token);
+      const studentSocket = new ClientSocket(studentApi.token);
 
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
       const res = await studentSocket.wait(Wss.ServerEvent.RoomMessage);
@@ -80,11 +76,8 @@ describe("wss message test suite", () => {
 
     it("should emit an wss event to the sender if sending message has been reverted.", async () => {
       const studentApi = await Api.forStudent();
-      const student = await studentApi.findCurrentUser();
-
-      const studentSocket = new ClientSocket(student.token);
+      const studentSocket = new ClientSocket(studentApi.token);
       const res = await studentSocket.sendMessage(123, "Hello.");
-
       expect(res.code).to.eq(Wss.AcknowledgeCode.RoomNotFound);
     });
   });
@@ -92,9 +85,7 @@ describe("wss message test suite", () => {
   describe("deleting messages", () => {
     it("should return not found if the message doesn't exist.", async () => {
       const tutorApi = await Api.forTutor();
-      const tutor = await tutorApi.findCurrentUser();
-      const tutorSocket = new ClientSocket(tutor.token);
-
+      const tutorSocket = new ClientSocket(tutorApi.token);
       const res = await tutorSocket.deleteMessage(123);
       expect(res.code).to.eq(Wss.AcknowledgeCode.MessageNotFound);
     });
@@ -102,10 +93,9 @@ describe("wss message test suite", () => {
     it("should return not found if the message is already deleted.", async () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
-      const tutorSocket = new ClientSocket(tutor.token);
-
+      const tutorSocket = new ClientSocket(tutorApi.token);
       const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id], tx)
+        rooms.create([tutor.id], tx)
       );
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
       // wait for message to be saved in db
@@ -123,18 +113,16 @@ describe("wss message test suite", () => {
     it("should return forbidden if the user is not the owner.", async () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
-      const tutorSocket = new ClientSocket(tutor.token);
-
+      const tutorSocket = new ClientSocket(tutorApi.token);
       const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id], tx)
+        rooms.create([tutor.id], tx)
       );
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
       // wait for message to be saved in db
       const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage);
 
       const secTutorApi = await Api.forTutor();
-      const secTutor = await secTutorApi.findCurrentUser();
-      const secTutorSocket = new ClientSocket(secTutor.token);
+      const secTutorSocket = new ClientSocket(secTutorApi.token);
 
       const res = await secTutorSocket.deleteMessage(msg.id);
       expect(res.code).to.eq(Wss.AcknowledgeCode.NotOwner);
@@ -143,10 +131,9 @@ describe("wss message test suite", () => {
     it("should successfully delete the message (mark as deleted).", async () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
-      const tutorSocket = new ClientSocket(tutor.token);
-
+      const tutorSocket = new ClientSocket(tutorApi.token);
       const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id], tx)
+        rooms.create([tutor.id], tx)
       );
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
       // wait for message to be saved in db
@@ -169,10 +156,7 @@ describe("wss message test suite", () => {
   describe("reading messages", () => {
     it("should throw not found error if the message doesn't exist.", async () => {
       const studentApi = await Api.forStudent();
-      const student = await studentApi.findCurrentUser();
-
-      const studentSocket = new ClientSocket(student.token);
-
+      const studentSocket = new ClientSocket(studentApi.token);
       const res = await studentSocket.markMessageAsRead(123);
       expect(res.code).to.eq(Wss.AcknowledgeCode.MessageNotFound);
     });
@@ -184,10 +168,10 @@ describe("wss message test suite", () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
 
-      const roomId = await db.room([tutor.user.id, student.user.id]);
+      const roomId = await db.room([tutor.id, student.id]);
 
-      const tutorSocket = new ClientSocket(tutor.token);
-      const studentSocket = new ClientSocket(student.token);
+      const tutorSocket = new ClientSocket(tutorApi.token);
+      const studentSocket = new ClientSocket(studentApi.token);
 
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
       // wait for message to be saved in db
@@ -201,16 +185,13 @@ describe("wss message test suite", () => {
     it("should throw forbidden error if the reader is not a member of the messages room.", async () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
-
       const studentApi = await Api.forStudent();
-      const student = await studentApi.findCurrentUser();
-
       const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id], tx)
+        rooms.create([tutor.id], tx)
       );
 
-      const tutorSocket = new ClientSocket(tutor.token);
-      const studentSocket = new ClientSocket(student.token);
+      const tutorSocket = new ClientSocket(tutorApi.token);
+      const studentSocket = new ClientSocket(studentApi.token);
 
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
 
@@ -224,10 +205,10 @@ describe("wss message test suite", () => {
     it("should NOT mark read by the owner.", async () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
-      const tutorSocket = new ClientSocket(tutor.token);
+      const tutorSocket = new ClientSocket(tutorApi.token);
 
       const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id], tx)
+        rooms.create([tutor.id], tx)
       );
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
 
@@ -245,10 +226,10 @@ describe("wss message test suite", () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
 
-      const roomId = await db.room([tutor.user.id, student.user.id]);
+      const roomId = await db.room([tutor.id, student.id]);
 
-      const tutorSocket = new ClientSocket(tutor.token);
-      const studentSocket = new ClientSocket(student.token);
+      const tutorSocket = new ClientSocket(tutorApi.token);
+      const studentSocket = new ClientSocket(studentApi.token);
 
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
 
@@ -257,7 +238,7 @@ describe("wss message test suite", () => {
 
       studentSocket.markMessageAsRead(msg.id);
       const res = await tutorSocket.wait(Wss.ServerEvent.RoomMessageRead);
-      expect(res.userId).to.eq(student.user.id);
+      expect(res.userId).to.eq(student.id);
     });
   });
 });

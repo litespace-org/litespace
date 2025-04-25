@@ -93,7 +93,7 @@ describe("/api/v1/topic/", () => {
       expect(res2).to.eq("OK");
 
       const myTopics = await topics.findUserTopics({
-        users: [student.user.id],
+        users: [student.id],
       });
       expect(myTopics.length).to.eq(3);
     });
@@ -162,7 +162,7 @@ describe("/api/v1/topic/", () => {
       expect(res).to.deep.eq("OK");
 
       const myTopics = await topics.findUserTopics({
-        users: [student.user.id],
+        users: [student.id],
       });
       expect(myTopics.length).to.eq(1);
     });
@@ -224,7 +224,7 @@ describe("/api/v1/topic/", () => {
       );
 
       await topics.registerUserTopics({
-        user: student.user.id,
+        user: student.id,
         topics: mockTopicIds.slice(0, 2),
       });
 
@@ -256,7 +256,7 @@ describe("/api/v1/topic/", () => {
       );
 
       await topics.registerUserTopics({
-        user: student.user.id,
+        user: student.id,
         topics: mockTopicIds.slice(0, 2),
       });
 
@@ -288,7 +288,7 @@ describe("/api/v1/topic/", () => {
       );
 
       await topics.registerUserTopics({
-        user: student.user.id,
+        user: student.id,
         topics: mockTopicIds.slice(0, 30),
       });
 
@@ -320,7 +320,7 @@ describe("/api/v1/topic/", () => {
       );
 
       await topics.registerUserTopics({
-        user: student.user.id,
+        user: student.id,
         topics: mockTopicIds.slice(0, 2),
       });
 
@@ -360,7 +360,7 @@ describe("/api/v1/topic/", () => {
       );
 
       await topics.registerUserTopics({
-        user: student.user.id,
+        user: student.id,
         topics: mockTopicIds.slice(0, 2),
       });
 
@@ -392,7 +392,7 @@ describe("/api/v1/topic/", () => {
       );
 
       await topics.registerUserTopics({
-        user: student.user.id,
+        user: student.id,
         topics: mockTopicIds.slice(0, 2),
       });
 
@@ -424,7 +424,7 @@ describe("/api/v1/topic/", () => {
       );
 
       await topics.registerUserTopics({
-        user: student.user.id,
+        user: student.id,
         topics: mockTopicIds.slice(0, 2),
       });
 

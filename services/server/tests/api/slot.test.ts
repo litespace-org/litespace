@@ -120,11 +120,11 @@ describe("/api/v1/availability-slot/", () => {
         ],
       });
 
-      const slots = await availabilitySlots.find({ users: [tutor.user.id] });
+      const slots = await availabilitySlots.find({ users: [tutor.id] });
       expect(slots.total).to.eq(1);
 
       const c1 = {
-        userId: tutor.user.id,
+        userId: tutor.id,
         start: now.add(1, "hour").toISOString(),
         end: now.add(6, "hours").toISOString(),
       };
@@ -140,7 +140,7 @@ describe("/api/v1/availability-slot/", () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
       const now = dayjs.utc();
-      await genMockData(tutor.user.id, now);
+      await genMockData(tutor.id, now);
 
       const res = await safe(async () =>
         tutorApi.api.availabilitySlot.set({
@@ -199,7 +199,7 @@ describe("/api/v1/availability-slot/", () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
       const now = dayjs.utc();
-      const mock = await genMockData(tutor.user.id, now);
+      const mock = await genMockData(tutor.id, now);
 
       const newSlotData = {
         id: mock.slots[0].id,
@@ -225,7 +225,7 @@ describe("/api/v1/availability-slot/", () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
       const now = dayjs.utc();
-      const mock = await genMockData(tutor.user.id, now);
+      const mock = await genMockData(tutor.id, now);
 
       const newSlotData = {
         id: mock.slots[0].id,
@@ -243,14 +243,14 @@ describe("/api/v1/availability-slot/", () => {
       });
 
       const lesson = await lessons.findById(mock.lessons[0].lesson.id);
-      expect(lesson?.canceledBy).to.eq(tutor.user.id);
+      expect(lesson?.canceledBy).to.eq(tutor.id);
     });
 
     it("should successfully delete an existing slot", async () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
       const now = dayjs.utc();
-      const mock = await genMockData(tutor.user.id, now);
+      const mock = await genMockData(tutor.id, now);
 
       await tutorApi.api.availabilitySlot.set({
         actions: [
@@ -269,7 +269,7 @@ describe("/api/v1/availability-slot/", () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
       const now = dayjs.utc();
-      const mock = await genMockData(tutor.user.id, now);
+      const mock = await genMockData(tutor.id, now);
 
       const res = await safe(async () =>
         tutorApi.api.availabilitySlot.set({

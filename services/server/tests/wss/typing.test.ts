@@ -4,8 +4,8 @@ import { ClientSocket } from "@fixtures/wss";
 import { IUser, Wss } from "@litespace/types";
 
 describe("Typing", () => {
-  let tutor: IUser.LoginApiResponse;
-  let student: IUser.LoginApiResponse;
+  let tutor: IUser.FindCurrentUserApiResponse;
+  let student: IUser.FindCurrentUserApiResponse;
   let room: number;
   let tutorSocket: ClientSocket;
   let studentSocket: ClientSocket;
@@ -19,9 +19,9 @@ describe("Typing", () => {
     const studentApi = await Api.forStudent();
     student = await studentApi.findCurrentUser();
 
-    room = await db.room([student.user.id, tutor.user.id]);
-    tutorSocket = new ClientSocket(tutor.token);
-    studentSocket = new ClientSocket(student.token);
+    room = await db.room([student.id, tutor.id]);
+    tutorSocket = new ClientSocket(tutorApi.token);
+    studentSocket = new ClientSocket(studentApi.token);
   });
 
   afterEach(() => {
@@ -36,13 +36,12 @@ describe("Typing", () => {
     const { userId, roomId } = await result;
 
     expect(roomId).toBe(room);
-    expect(userId).toBe(student.user.id);
+    expect(userId).toBe(student.id);
   }, 99999);
 
   it("should omit typing event incase user is not a room member", async () => {
     const unauthedStudentApi = await Api.forStudent();
-    const unauthedStudent = await unauthedStudentApi.findCurrentUser();
-    const unauthedStudentSocket = new ClientSocket(unauthedStudent.token);
+    const unauthedStudentSocket = new ClientSocket(unauthedStudentApi.token);
 
     const result = tutorSocket.wait(Wss.ServerEvent.UserTyping);
     unauthedStudentSocket.userTyping(room);

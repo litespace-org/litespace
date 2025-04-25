@@ -7,8 +7,8 @@ import { expect } from "chai";
 import { cache } from "@/lib/cache";
 
 describe("sessions test suite", () => {
-  let tutor: IUser.LoginApiResponse;
-  let student: IUser.LoginApiResponse;
+  let tutor: IUser.FindCurrentUserApiResponse;
+  let student: IUser.FindCurrentUserApiResponse;
 
   let tutorApi: Api;
   let studentApi: Api;
@@ -36,7 +36,7 @@ describe("sessions test suite", () => {
     const now = dayjs.utc();
 
     const slot = await db.slot({
-      userId: tutor.user.id,
+      userId: tutor.id,
       start: now.startOf("day").toISOString(),
       end: now.add(2, "day").startOf("day").toISOString(),
     });
@@ -45,10 +45,10 @@ describe("sessions test suite", () => {
       start: now.add(1, "hour").toISOString(),
       duration: 30,
       slotId: slot.id,
-      tutorId: tutor.user.id,
+      tutorId: tutor.id,
     });
 
-    const tutorSocket = new ClientSocket(tutor.token);
+    const tutorSocket = new ClientSocket(tutorApi.token);
     let ack = await tutorSocket.preJoinSession(lesson.sessionId);
 
     const sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
@@ -57,12 +57,12 @@ describe("sessions test suite", () => {
 
     const result = tutorSocket.wait(Wss.ServerEvent.MemberJoinedSession);
 
-    const studentSocket = new ClientSocket(student.token);
+    const studentSocket = new ClientSocket(studentApi.token);
     ack = await studentSocket.joinSession(lesson.sessionId);
     expect(ack.code).to.eq(Wss.AcknowledgeCode.Ok);
 
     const { userId } = await result;
-    expect(userId).to.eq(student.user.id);
+    expect(userId).to.eq(student.id);
 
     tutorSocket.client.disconnect();
     studentSocket.client.disconnect();
@@ -72,7 +72,7 @@ describe("sessions test suite", () => {
     const now = dayjs.utc();
 
     const slot = await db.slot({
-      userId: tutor.user.id,
+      userId: tutor.id,
       start: now.startOf("day").toISOString(),
       end: now.add(2, "day").startOf("day").toISOString(),
     });
@@ -81,26 +81,26 @@ describe("sessions test suite", () => {
       start: now.add(1, "hour").toISOString(),
       duration: 30,
       slotId: slot.id,
-      tutorId: tutor.user.id,
+      tutorId: tutor.id,
     });
 
-    const tutorSocket = new ClientSocket(tutor.token);
+    const tutorSocket = new ClientSocket(tutorApi.token);
     let ack = await tutorSocket.joinSession(lesson.sessionId);
 
     let sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
     expect(ack.code).to.eq(Wss.AcknowledgeCode.Ok);
     expect(sessionMembersIds).to.be.of.length(1);
-    expect(sessionMembersIds[0]).to.be.eq(tutor.user.id);
+    expect(sessionMembersIds[0]).to.be.eq(tutor.id);
 
-    const studentSocket = new ClientSocket(student.token);
+    const studentSocket = new ClientSocket(studentApi.token);
     ack = await studentSocket.joinSession(lesson.sessionId);
 
     sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
     expect(ack.code).to.eq(Wss.AcknowledgeCode.Ok);
     expect(sessionMembersIds).to.be.of.length(2);
     expect(sessionMembersIds.map((memberId) => memberId)).to.be.members([
-      student.user.id,
-      tutor.user.id,
+      student.id,
+      tutor.id,
     ]);
 
     tutorSocket.client.disconnect();
@@ -111,7 +111,7 @@ describe("sessions test suite", () => {
     const now = dayjs.utc();
 
     const slot = await db.slot({
-      userId: tutor.user.id,
+      userId: tutor.id,
       start: now.startOf("day").toISOString(),
       end: now.add(2, "day").startOf("day").toISOString(),
     });
@@ -120,14 +120,13 @@ describe("sessions test suite", () => {
       start: now.add(1, "hour").toISOString(),
       duration: 30,
       slotId: slot.id,
-      tutorId: tutor.user.id,
+      tutorId: tutor.id,
     });
 
     const newTutorApi = await Api.forTutor();
-    const newTutor = await newTutorApi.findCurrentUser();
 
-    const tutorSocket = new ClientSocket(newTutor.token);
-    const studentSocket = new ClientSocket(student.token);
+    const tutorSocket = new ClientSocket(newTutorApi.token);
+    const studentSocket = new ClientSocket(studentApi.token);
 
     const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
     tutorSocket.joinSession(lesson.sessionId);
@@ -144,7 +143,7 @@ describe("sessions test suite", () => {
     const now = dayjs.utc();
 
     const slot = await db.slot({
-      userId: tutor.user.id,
+      userId: tutor.id,
       start: now.add(1, "day").startOf("day").toISOString(),
       end: now.add(2, "day").startOf("day").toISOString(),
     });
@@ -153,14 +152,12 @@ describe("sessions test suite", () => {
       start: slot.start,
       duration: 30,
       slotId: slot.id,
-      tutorId: tutor.user.id,
+      tutorId: tutor.id,
     });
 
     const newTutorApi = await Api.forTutor();
-    const newTutor = await newTutorApi.findCurrentUser();
-
-    const tutorSocket = new ClientSocket(newTutor.token);
-    const studentSocket = new ClientSocket(student.token);
+    const tutorSocket = new ClientSocket(newTutorApi.token);
+    const studentSocket = new ClientSocket(studentApi.token);
 
     const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
     tutorSocket.joinSession(lesson.sessionId);
