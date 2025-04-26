@@ -28,6 +28,7 @@ export const Select = <T extends string | number>({
   size = "large",
   helper,
   onChange,
+  className,
 }: SelectProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
 
@@ -56,7 +57,7 @@ export const Select = <T extends string | number>({
       onValueChange={onValueChange}
       disabled={isEmpty(options) || disabled}
     >
-      <div>
+      <div className={className}>
         {label ? (
           <Typography
             htmlFor={id}

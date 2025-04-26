@@ -35,6 +35,7 @@
     "./AbstractLine": "./dist/AbstractLine.tsx",
     "./AccessMicAndCam": "./dist/AccessMicAndCam.tsx",
     "./AccountPromotion": "./dist/AccountPromotion.tsx",
+    "./AddCard": "./dist/AddCard.tsx",
     "./AddCircleFilled": "./dist/AddCircleFilled.tsx",
     "./AddCircle": "./dist/AddCircle.tsx",
     "./AlertCircle": "./dist/AlertCircle.tsx",

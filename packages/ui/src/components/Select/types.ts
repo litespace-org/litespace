@@ -1,5 +1,6 @@
 export type SelectProps<T extends string | number> = {
   id?: string;
+  className?: string;
   label?: string;
   placeholder?: string;
   options?: SelectList<T>;

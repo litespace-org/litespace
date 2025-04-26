@@ -1,5 +1,5 @@
 import { Dashboard, Landing, Web } from "@/routes/route";
-import { Env, ISession, IShortUrl } from "@litespace/types";
+import { Env, ISession, IShortUrl, ISubscription } from "@litespace/types";
 import { clients } from "@/routes/clients";
 
 function isStrictMatch(
@@ -87,9 +87,19 @@ type WebPayload =
       };
     }
   | {
+      route: Web.Checkout;
+      planId: number;
+      period: ISubscription.Period;
+      query?: BaseQuery;
+    }
+  | {
       route: Exclude<
         Web,
-        Web.TutorProfile | Web.Lesson | Web.Register | Web.Session
+        | Web.TutorProfile
+        | Web.Lesson
+        | Web.Register
+        | Web.Session
+        | Web.Checkout
       >;
       query?: BaseQuery;
     };
@@ -153,6 +163,8 @@ export class RoutesManager {
       if (base === Web.TutorProfile) return /\/?t\/([^/]+)\/?$/.test(target);
       // Ref: https://regex101.com/r/f36T16/1
       if (base === Web.Lesson) return /^\/?lesson\/([^/]+)\/?$/.test(target);
+      if (base === Web.Checkout)
+        return /^\/?checkout\/([^/]+)\/([^/]+)\/?$/.test(target);
       return isStrictMatch(base, target);
     },
     landing(base: Landing, target: string): boolean {

@@ -54,3 +54,5 @@ export {
 } from "@/validation/contactRequest";
 
 export { isValidConfirmationCode } from "@/validation/code";
+
+export { isValidCVV } from "@/validation/checkout";
