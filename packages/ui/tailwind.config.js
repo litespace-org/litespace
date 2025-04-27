@@ -41,6 +41,8 @@ export default {
         "calendar-hour": "1",
         "landing-ellipse": "1",
         "landing-sidebar": "2",
+        "iframe-dialog-overlay": "1",
+        "iframe-dialog-conent": "2",
         navbar: "1",
         sidebar: "2",
         "online-indicator": "2",

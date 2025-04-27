@@ -3,12 +3,6 @@ import { price } from "@litespace/utils/value";
 import { unionOfLiterals } from "@/validation/utils";
 import zod from "zod";
 
-export enum Environment {
-  Development = "development",
-  Staging = "staging",
-  Production = "production",
-}
-
 export const environment = unionOfLiterals<Env.Server>([
   "local",
   "staging",

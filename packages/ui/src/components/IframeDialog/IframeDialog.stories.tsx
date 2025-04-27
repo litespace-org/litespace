@@ -22,7 +22,7 @@ export const Primary: Story = {
     open: true,
     url: "https://atfawry.fawrystaging.com/atfawry/plugin/card-token?accNo=770000020774&customerProfileId=4&returnUrl=https%3A%2F%2Fapp.staging.litespace.org%2Fsubscription&locale=ar",
     onOpenChange(open) {
-      console.log({ open });
+      alert(`open=${open}`);
     },
   },
 };
@@ -32,7 +32,7 @@ export const CardAdded: Story = {
     open: true,
     url: "http://localhost:3000/card-added",
     onOpenChange(open) {
-      console.log({ open });
+      alert(`open=${open}`);
     },
   },
   render(props) {
@@ -48,6 +48,16 @@ export const CardAdded: Story = {
     }, [onMessage]);
 
     return <IframeDialog {...props} />;
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    open: true,
+    loading: true,
+    onOpenChange(open) {
+      alert(`open=${open}`);
+    },
   },
 };
 

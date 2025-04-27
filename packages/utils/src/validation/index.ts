@@ -25,6 +25,7 @@ export {
   isValidPlanPrice,
   isValidPlanDiscount,
   isValidPlanWeeklyMinutes,
+  isValidPlanPeriodLiteral,
 } from "@/validation/plan";
 
 export {
@@ -55,4 +56,4 @@ export {
 
 export { isValidConfirmationCode } from "@/validation/code";
 
-export { isValidCVV } from "@/validation/checkout";
+export { isValidCvv } from "@/validation/payment";

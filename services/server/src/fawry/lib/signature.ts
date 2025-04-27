@@ -42,7 +42,7 @@ export function forPayWithCard(
     merchantRefNum: BaseRequestPayload["merchantRefNum"];
     customerProfileId: BaseRequestPayload["customerProfileId"];
     amount: BaseRequestPayload["amount"];
-    cvv: number;
+    cvv: string;
     returnUrl: string;
   } & (
     | { cardToken: string }

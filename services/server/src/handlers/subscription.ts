@@ -1,5 +1,5 @@
 import zod from "zod";
-import { ISubscription } from "@litespace/types";
+import { IPlan, ISubscription } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { forbidden, notfound } from "@/lib/error";
@@ -13,13 +13,16 @@ import {
 } from "@/validation/utils";
 import { isAdmin, isStudent } from "@litespace/utils/user";
 import { subscriptions } from "@litespace/models";
+import dayjs from "@/lib/dayjs";
+import { first } from "lodash";
+import { calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription } from "@/lib/subscription";
 
 const findQuery = zod.object({
   ids: id.array().optional(),
   users: id.array().optional(),
   plans: id.array().optional(),
-  periods: zod.nativeEnum(ISubscription.Period).array().optional(),
-  quota: number
+  periods: zod.nativeEnum(IPlan.Period).array().optional(),
+  weeklyMinutes: number
     .min(0)
     .optional()
     .or(
@@ -69,16 +72,47 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const { id } = withNamedId("id").parse(req.params);
-  const sub = await subscriptions.findById(id);
-  if (!sub) return next(notfound.subscription());
+  const subscription = await subscriptions.findById(id);
+  if (!subscription) return next(notfound.subscription());
 
-  if (isStudent(user) && user.id != sub.userId) return next(forbidden());
+  if (isStudent(user) && user.id != subscription.userId)
+    return next(forbidden());
 
-  const response: ISubscription.Self = sub;
+  const response: ISubscription.FindByIdApiResponse = subscription;
+  res.status(200).json(response);
+}
+
+async function findCurrent(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const now = dayjs.utc();
+  const { list } = await subscriptions.find({
+    users: [user.id],
+    terminated: false,
+    end: { after: now.toISOString() },
+  });
+
+  const subscription = first(list);
+
+  const remainingWeeklyMinutes = subscription
+    ? await calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription({
+        subscription,
+        time: now.toISOString(),
+      })
+    : 0;
+
+  const response: ISubscription.FindCurrentApiResponse = {
+    info: subscription || null,
+    remainingWeeklyMinutes,
+  };
+
   res.status(200).json(response);
 }
 
 export default {
   find: safeRequest(find),
   findById: safeRequest(findById),
+  findCurrent: safeRequest(findCurrent),
 };

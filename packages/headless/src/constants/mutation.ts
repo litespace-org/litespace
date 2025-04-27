@@ -28,4 +28,6 @@ export enum MutationKey {
   FlushCache = "flush-cache",
   CreateContactRequest = "create-contact-request",
   RefreshAuthToken = "refresh-auth-token",
+  PayWithCard = "pay-with-card",
+  DeleteCardToken = "delete-card-token",
 }

@@ -1,4 +1,4 @@
-import { IConfirmationCode, IKafka, IUser } from "@litespace/types";
+import { IConfirmationCode, IKafka, IPlan, IUser } from "@litespace/types";
 
 export const MINUTES_IN_HOUR = 60;
 export const HOURS_IN_DAY = 24;
@@ -6,6 +6,8 @@ export const MINUTES_IN_DAY = 60 * 24;
 export const MINUTES_IN_WEEK = 60 * 24 * 7;
 export const MIN_AGE = 10;
 export const MAX_AGE = 70;
+export const WEEKS_IN_MONTH = 4;
+export const DAYS_IN_WEEK = 7;
 export const MIN_USER_NAME_LENGTH = 2;
 export const MAX_USER_NAME_LENGTH = 30;
 export const MIN_INTERVIEW_LEVEL = 1;
@@ -58,6 +60,8 @@ export const MIN_CONTACT_REQUEST_TITLE_LENGTH = 5;
 export const MAX_CONTACT_REQUEST_TITLE_LENGTH = 128;
 export const MIN_CONTACT_REQUEST_MESSAGE_LENGTH = 10;
 export const MAX_CONTACT_REQUEST_MESSAGE_LENGTH = 1000;
+export const MIN_LESSON_DURATION = 15;
+export const MAX_LESSON_DURATION = 30;
 
 // All users except tutors and tutor-managers can have their names in either Arabic or English or both.
 // https://regex101.com/r/ER7McY/1
@@ -111,4 +115,28 @@ export const NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC: Record<
 > = {
   whatsapp: "whatsapp",
   telegram: "telegram",
+};
+
+export const PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL: Record<
+  IPlan.Period,
+  IPlan.PeriodLiteral
+> = {
+  [IPlan.Period.Month]: "month",
+  [IPlan.Period.Quarter]: "quarter",
+  [IPlan.Period.Year]: "year",
+};
+
+export const PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD: Record<
+  IPlan.PeriodLiteral,
+  IPlan.Period
+> = {
+  month: IPlan.Period.Month,
+  quarter: IPlan.Period.Quarter,
+  year: IPlan.Period.Year,
+};
+
+export const PLAN_PERIOD_TO_MONTH_COUNT: Record<IPlan.Period, number> = {
+  [IPlan.Period.Month]: 1,
+  [IPlan.Period.Quarter]: 3,
+  [IPlan.Period.Year]: 12,
 };

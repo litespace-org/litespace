@@ -1,32 +1,27 @@
-import { IFilter, Paginated } from ".";
-
-export enum Period {
-  Month,
-  Quarter,
-  Year,
-}
+import { IFilter, IPlan, Paginated } from "@/index";
 
 export type Row = {
   id: number;
   user_id: number;
   plan_id: number;
   tx_id: number;
-  period: Period;
-  quota: number;
+  period: IPlan.Period;
+  weekly_minutes: number;
   start: Date;
   end: Date;
   extended_by: number | null;
+  terminated_at: Date | null;
   created_at: Date;
   updated_at: Date;
 };
 
 export type Self = {
   /**
-   * The Id of the subscription row in the db.
+   * The id of the subscription row in the database.
    */
   id: number;
   /**
-   * The id of the user of the subscription.
+   * The id of the subscription owner.
    */
   userId: number;
   /**
@@ -34,19 +29,14 @@ export type Self = {
    */
   planId: number;
   /**
-   * The id of the transaction that the user has proceeded to make the subscription.
+   * The id of the transaction associated with the subscription.
    */
   txId: number;
   /**
    * The period of the subscription: either a month, three monthes, or a year.
    */
-  period: Period;
-  /**
-   * The amount of remaining minutes in user subscription.
-   * Note: it's being calculated by multiplying the subscription period
-   * by the plan.weeklyMinutes.
-   */
-  quota: number;
+  period: IPlan.Period;
+  weeklyMinutes: number;
   /**
    * The start date of the subscription.
    */
@@ -59,35 +49,42 @@ export type Self = {
    * The id of the extendee subscription.
    */
   extendedBy: number | null;
+  terminatedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
 export type CreatePayload = Pick<
   Self,
-  "userId" | "planId" | "txId" | "period" | "quota"
+  "userId" | "planId" | "txId" | "period" | "weeklyMinutes" | "start" | "end"
 >;
 
-export type UpdatePayload = Pick<Self, "extendedBy">;
+export type UpdatePayload = Partial<Pick<Self, "extendedBy" | "terminatedAt">>;
 
 export type ModelFindFilter = {
   ids?: number[];
   users?: number[];
   plans?: number[];
-  periods?: Period[];
-  quota?: number | { gte?: number; lte?: number; gt?: number; lt?: number };
+  periods?: IPlan.Period[];
+  transactions?: number[];
+  weeklyMinutes?:
+    | number
+    | { gte?: number; lte?: number; gt?: number; lt?: number };
+  terminated?: boolean;
   extended?: boolean;
-  start?: {
-    after?: string;
-    before?: string;
-  };
-  end?: {
-    after?: string;
-    before?: string;
-  };
+  start?: { after?: string; before?: string };
+  end?: { after?: string; before?: string };
 };
 
 export type ModelFindQuery = IFilter.SkippablePagination & ModelFindFilter;
 
 export type FindQueryApi = ModelFindQuery;
+
 export type FindApiResponse = Paginated<Self>;
+
+export type FindByIdApiResponse = Self;
+
+export type FindCurrentApiResponse = {
+  info: Self | null;
+  remainingWeeklyMinutes: number;
+};

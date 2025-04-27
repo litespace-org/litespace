@@ -1,11 +1,9 @@
-import { Environment, environment } from "@/constants";
+import { environment } from "@/constants";
 
 export const FAWRY_API_URL_PROD = "https://www.fawrypay.com";
 export const FAWRY_API_URL_STAGING = "https://atfawry.fawrystaging.com";
 export const FAWRY_API_URL_CURRENT =
-  environment === Environment.Production
-    ? FAWRY_API_URL_PROD
-    : FAWRY_API_URL_STAGING;
+  environment === "production" ? FAWRY_API_URL_PROD : FAWRY_API_URL_STAGING;
 
 export const FAWRY_ROUTES = {
   PAY_WITH_REFNUM: "/ECommerceWeb/Fawry/payments/charge",

@@ -21,7 +21,7 @@ import {
 import dayjs from "dayjs";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { logger } from "@litespace/utils/log";
-import { price } from "@litespace/utils/value";
+import { percentage, price } from "@litespace/utils/value";
 import { first, range, sample } from "lodash";
 import { Knex } from "knex";
 import utc from "dayjs/plugin/utc";
@@ -436,27 +436,27 @@ async function main(): Promise<void> {
       weeklyMinutes: 2.5 * 60,
       forInvitesOnly: false,
       baseMonthlyPrice: price.scale(2500),
-      monthDiscount: price.scale(250),
-      quarterDiscount: price.scale(500),
-      yearDiscount: price.scale(750),
+      monthDiscount: percentage.scale(10),
+      quarterDiscount: percentage.scale(20),
+      yearDiscount: percentage.scale(30),
       active: true,
     }),
     plans.create({
       weeklyMinutes: 5 * 60,
       forInvitesOnly: false,
       baseMonthlyPrice: price.scale(4000),
-      monthDiscount: price.scale(500),
-      quarterDiscount: price.scale(850),
-      yearDiscount: price.scale(1400),
+      monthDiscount: percentage.scale(15),
+      quarterDiscount: percentage.scale(20),
+      yearDiscount: percentage.scale(30),
       active: true,
     }),
     plans.create({
       weeklyMinutes: 8 * 60,
       forInvitesOnly: false,
       baseMonthlyPrice: price.scale(6000),
-      monthDiscount: price.scale(1000),
-      quarterDiscount: price.scale(1500),
-      yearDiscount: price.scale(2250),
+      monthDiscount: percentage.scale(20),
+      quarterDiscount: percentage.scale(25),
+      yearDiscount: percentage.scale(30),
       active: true,
     }),
   ]);

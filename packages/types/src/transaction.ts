@@ -1,4 +1,4 @@
-import { IFilter, Paginated } from "@/index";
+import { IFilter, IPlan, Paginated } from "@/index";
 
 export enum Status {
   New,
@@ -12,7 +12,7 @@ export enum Status {
 
 export enum PaymentMethod {
   Card,
-  MWallet,
+  EWallet,
   BankInstallment,
   Fawry,
 }
@@ -20,16 +20,11 @@ export enum PaymentMethod {
 export type Row = {
   id: number;
   user_id: number;
-  /**
-   * the price, with two decimal point, represeted as an integer (multiplies by 100)
-   */
+  plan_id: number;
+  plan_period: IPlan.Period;
   amount: number;
   status: Status;
   payment_method: PaymentMethod;
-  /**
-   * this is defined to map between transactions and ref numbers
-   * from third party services. e.g. fawry orderRefNum.
-   */
   provider_ref_num: number | null;
   created_at: Date;
   updated_at: Date;
@@ -38,6 +33,8 @@ export type Row = {
 export type Self = {
   id: number;
   userId: number;
+  planId: number;
+  planPeriod: IPlan.Period;
   /**
    * the price, with two decimal point, represeted as an integer (multiplies by 100)
    */
@@ -59,9 +56,11 @@ export type Self = {
   updatedAt: string;
 };
 
-export type ModelFindFilter = {
+export type FindFilterModel = {
   ids?: number[];
   users?: number[];
+  plans?: number[];
+  planPeriods?: IPlan.Period[];
   amount?: number | { gte: number; lte: number; gt: number; lt: number };
   statuses?: Status[];
   paymentMethods?: PaymentMethod[];
@@ -70,14 +69,16 @@ export type ModelFindFilter = {
   before?: string;
 };
 
-export type ModelFindQuery = IFilter.SkippablePagination & ModelFindFilter;
+export type FindQueryModel = IFilter.SkippablePagination & FindFilterModel;
 
-export type FindQueryApi = ModelFindQuery;
+export type FindQueryApi = FindQueryModel;
 
 export type FindApiResponse = Paginated<Self>;
 
 export type CreatePayload = {
   userId: number;
+  planId: number;
+  planPeriod: IPlan.Period;
   amount: number;
   paymentMethod: PaymentMethod;
   /**

@@ -4,10 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 type Config<T extends object> = {
   defaults: T;
   onSubmit: (data: T) => void;
-  validate?: { [K in keyof T]?: (value: T[K]) => true | string };
+  validators?: Validators<T>;
 };
 
-type ErrorMap<T extends object> = { [key in keyof T]?: string };
+export type Validators<T extends object> = {
+  [K in keyof T]?: (value: T[K]) => true | string;
+};
+
+export type ErrorMap<T extends object> = { [key in keyof T]?: string };
 
 export function useForm<T extends object>(config: Config<T>) {
   const configRef = useRef(config);
@@ -30,7 +34,7 @@ export function useForm<T extends object>(config: Config<T>) {
         };
       });
 
-      const validate = configRef.current.validate?.[key];
+      const validate = configRef.current.validators?.[key];
       if (!validate || !submitted) return;
 
       const valid = validate(value);
@@ -51,7 +55,7 @@ export function useForm<T extends object>(config: Config<T>) {
     for (const [key, value] of entries(state)) {
       const safeKey = key as keyof T;
       const safeValue = value as T[keyof T];
-      const validate = configRef.current.validate?.[safeKey];
+      const validate = configRef.current.validators?.[safeKey];
       if (!validate) continue;
       const valid = validate(safeValue);
       if (valid !== true) errors[safeKey] = valid;

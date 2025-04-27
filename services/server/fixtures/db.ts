@@ -46,8 +46,8 @@ dayjs.extend(utc);
 export async function flush() {
   await knex.transaction(async (tx) => {
     await subscriptions.builder(tx).del();
-    await plans.builder(tx).del();
     await transactions.builder(tx).del();
+    await plans.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
@@ -151,6 +151,15 @@ const or = {
     if (!start) return faker.date.soon().toISOString();
     return start;
   },
+  planPeriod(period?: IPlan.Period) {
+    if (!period)
+      return sample([
+        IPlan.Period.Month,
+        IPlan.Period.Quarter,
+        IPlan.Period.Year,
+      ]);
+    return period;
+  },
 } as const;
 
 type LessonReturn = {
@@ -177,7 +186,7 @@ export async function lesson(
             : payload?.start || faker.date.soon().toISOString(),
       duration: payload?.duration || sample([15, 30]),
       price: payload?.price || faker.number.int(500),
-      slot: await or.slotId(payload?.slot, payload?.tutor),
+      slot: await or.slotId(payload?.slot, tutor),
       student,
       tutor,
       tx,
@@ -499,10 +508,12 @@ async function transaction(
   payload?: Partial<ITransaction.CreatePayload>
 ): Promise<ITransaction.Self> {
   return await transactions.create({
-    userId: payload?.userId || (await user()).id,
+    userId: await or.studentId(payload?.userId),
     amount: payload?.amount || randomInt(1000),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
+    planId: await or.planId(payload?.planId),
+    planPeriod: or.planPeriod(payload?.planPeriod),
   });
 }
 
@@ -536,12 +547,10 @@ async function subscription(
     userId,
     planId: await or.planId(payload?.planId),
     txId: await or.txId(payload?.txId, userId),
-    period: sample([
-      ISubscription.Period.Year,
-      ISubscription.Period.Month,
-      ISubscription.Period.Quarter,
-    ]),
-    quota: payload?.quota || randomInt(1000),
+    period: or.planPeriod(payload?.period),
+    weeklyMinutes: payload?.weeklyMinutes || randomInt(1000),
+    start: payload?.start || faker.date.future().toISOString(),
+    end: payload?.end || faker.date.future().toISOString(),
   });
 }
 

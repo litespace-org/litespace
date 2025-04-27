@@ -48,7 +48,7 @@ export const ForgetPasswordDialog: React.FC<{
 
   const forgetPasswordForm = useForm<{ email: string }>({
     defaults: { email: "" },
-    validate: { email: validateEmail },
+    validators: { email: validateEmail },
     onSubmit(data) {
       if (!isValidEmail(data.email)) return;
       sendCode(data.email);
@@ -57,7 +57,7 @@ export const ForgetPasswordDialog: React.FC<{
 
   const resetPasswordForm = useForm<{ code: number; password: string }>({
     defaults: { code: 0, password: "" },
-    validate: { password: validatePassword },
+    validators: { password: validatePassword },
     onSubmit(data) {
       if (!isValidPassword(data.password) || !data.code) return;
       return resetPassword(data);

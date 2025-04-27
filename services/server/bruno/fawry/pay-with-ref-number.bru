@@ -1,0 +1,18 @@
+meta {
+  name: pay-with-ref-number
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{api}}/api/v1/fawry/pay/ref-num
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "planId": 1,
+    "period": "month"
+  }
+}

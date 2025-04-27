@@ -36,4 +36,6 @@ export enum QueryKey {
   FindRoomByMembers = "find-room-by-members",
   FindStudioTutor = "find-studio-tutor",
   FindStudioTutors = "find-studio-tutors",
+  GetAddCardTokenUrl = "get-add-card-token-url",
+  FindCardTokens = "find-card-tokens",
 }

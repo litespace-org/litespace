@@ -20,6 +20,8 @@ export class Transactions {
     const rows = await this.builder().insert(
       {
         user_id: payload.userId,
+        plan_id: payload.planId,
+        plan_period: payload.planPeriod,
         amount: payload.amount,
         status: ITransaction.Status.New,
         payment_method: payload.paymentMethod,
@@ -36,9 +38,10 @@ export class Transactions {
 
   async update(
     id: number,
-    payload: ITransaction.UpdatePayload
+    payload: ITransaction.UpdatePayload,
+    tx?: Knex.Transaction
   ): Promise<ITransaction.Self> {
-    const rows = await this.builder()
+    const rows = await this.builder(tx)
       .update(
         {
           status: payload.status,
@@ -64,7 +67,7 @@ export class Transactions {
     page,
     size,
     ...query
-  }: WithOptionalTx<ITransaction.ModelFindQuery>): Promise<
+  }: WithOptionalTx<ITransaction.FindQueryModel>): Promise<
     Paginated<ITransaction.Self>
   > {
     const base = this.applySearchFilter(this.builder(tx), query);
@@ -78,6 +81,8 @@ export class Transactions {
     return {
       id: row.id,
       userId: row.user_id,
+      planId: row.plan_id,
+      planPeriod: row.plan_period,
       amount: row.amount,
       status: row.status,
       paymentMethod: row.payment_method,
@@ -92,17 +97,24 @@ export class Transactions {
     {
       ids = [],
       users = [],
+      plans = [],
+      planPeriods = [],
       amount,
       statuses = [],
       paymentMethods = [],
       providerRefNums = [],
       after,
       before,
-    }: ITransaction.ModelFindFilter
+    }: ITransaction.FindFilterModel
   ): Knex.QueryBuilder<R, T> {
+    if (!isEmpty(ids)) builder.whereIn(this.column("id"), ids);
+
     if (!isEmpty(users)) builder.whereIn(this.column("user_id"), users);
 
-    if (!isEmpty(ids)) builder.whereIn(this.column("id"), ids);
+    if (!isEmpty(plans)) builder.whereIn(this.column("plan_id"), plans);
+
+    if (!isEmpty(planPeriods))
+      builder.whereIn(this.column("plan_period"), planPeriods);
 
     if (typeof amount === "number")
       builder.where(this.column("amount"), amount);

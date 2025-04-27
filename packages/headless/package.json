@@ -37,7 +37,8 @@
     "./cache": "./dist/cache.js",
     "./storage": "./dist/storage/index.js",
     "./recorder": "./dist/recorder.js",
-    "./contactRequest": "./dist/contactRequest.js"
+    "./contactRequest": "./dist/contactRequest.js",
+    "./fawry": "./dist/fawry.js"
   },
   "react-native": {
     "./auth": "./dist/auth.js",
