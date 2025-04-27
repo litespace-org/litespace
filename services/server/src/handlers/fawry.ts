@@ -12,7 +12,13 @@ import {
 import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
 
 import { fawry } from "@/fawry/api";
-import { bad, forbidden, notfound, unexpected } from "@/lib/error";
+import {
+  bad,
+  fawryPaymentError,
+  forbidden,
+  notfound,
+  unexpected,
+} from "@/lib/error";
 import { forgeFawryPayload } from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
 import { fawryConfig } from "@/constants";
@@ -156,29 +162,28 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
     paymentMethod: ITransaction.PaymentMethod.Card,
   });
 
-  const { nextAction, statusCode, statusDescription } = await fawry.payWithCard(
-    {
-      customer: {
-        id: user.id,
-        email: user.email,
-        name: user.name || "LiteSpace Student",
-        phone,
-      },
-      merchantRefNum: encodeMerchantRefNumber({
-        transactionId: transaction.id,
-        createdAt: transaction.createdAt,
-      }),
-      amount: total,
-      cardToken: payload.cardToken,
-      cvv: payload.cvv,
-    }
-  );
+  const result = await fawry.payWithCard({
+    customer: {
+      id: user.id,
+      email: user.email,
+      name: user.name || "LiteSpace Student",
+      phone,
+    },
+    merchantRefNum: encodeMerchantRefNumber({
+      transactionId: transaction.id,
+      createdAt: transaction.createdAt,
+    }),
+    amount: total,
+    cardToken: payload.cardToken,
+    cvv: payload.cvv,
+  });
+
+  if (result.statusCode !== 200)
+    return next(fawryPaymentError(result.statusDescription));
 
   const response: IFawry.PayWithCardResponse = {
     transactionId: transaction.id,
-    redirectUrl: nextAction?.redirectUrl,
-    statusCode,
-    statusDescription,
+    redirectUrl: result.nextAction.redirectUrl,
   };
 
   res.json(response);

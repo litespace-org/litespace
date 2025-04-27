@@ -149,23 +149,24 @@ const Payment: React.FC<{
       >
         <div className="flex flex-col gap-4">
           <Typography tag="p" className="text-body font-medium">
-            {intl("page.checkout.payment.description")}
+            {intl("checkout.payment.description")}
           </Typography>
 
           <div className="flex flex-row items-end gap-4">
             <Select
               id="card"
-              label={intl("page.checkout.payment.card-number")}
+              label={intl("checkout.payment.card-number")}
               className="flex-1"
               value={form.state.card}
               options={cardOptions}
-              placeholder={intl(
-                "page.checkout.payment.card-number-placeholder"
-              )}
+              placeholder={intl("checkout.payment.card-number-placeholder")}
               onChange={(value) => form.set("card", value)}
               state={form.errors.card ? "error" : undefined}
               helper={form.errors.card}
-              // disabled={isEmpty(cardOptions)}
+              asButton={isEmpty(cardOptions)}
+              onTriggerClick={() => {
+                if (isEmpty(cardOptions)) setShowAddCardTokenDialog(true);
+              }}
               onOpenChange={(open) => {
                 if (open && isEmpty(cardOptions))
                   setShowAddCardTokenDialog(true);
@@ -184,7 +185,7 @@ const Payment: React.FC<{
               className={cn(form.errors.card && "mb-[22px]")}
             >
               <Typography tag="span" className="text-body font-medium">
-                {intl("page.checkout.payment.add-card")}
+                {intl("checkout.payment.add-card")}
               </Typography>
             </Button>
           </div>
@@ -197,8 +198,8 @@ const Payment: React.FC<{
               format="###"
               idleDir="rtl"
               inputSize="large"
-              label={intl("page.checkout.payment.cvv-label")}
-              placeholder={intl("page.checkout.payment.cvv")}
+              label={intl("checkout.payment.cvv-label")}
+              placeholder={intl("checkout.payment.cvv")}
               state={form.errors.cvv ? "error" : undefined}
               helper={form.errors.cvv}
               onValueChange={({ value }) => form.set("cvv", value)}
@@ -212,10 +213,8 @@ const Payment: React.FC<{
               inputSize="large"
               name="phone"
               format="### #### ####"
-              label={intl("page.checkout.payment.phone-number")}
-              placeholder={intl(
-                "page.checkout.payment.phone-number-placeholder"
-              )}
+              label={intl("checkout.payment.phone-number")}
+              placeholder={intl("checkout.payment.phone-number-placeholder")}
               state={form.errors.phone ? "error" : undefined}
               helper={form.errors.phone}
               value={form.state.phone}
@@ -231,14 +230,14 @@ const Payment: React.FC<{
           size="large"
           htmlType="submit"
           className="w-full"
-          disabled={false}
-          loading={false}
+          disabled={payWithCard.isPending}
+          loading={payWithCard.isPending}
         >
-          {intl("page.checkout.payment.confirm-button")}
+          {intl("checkout.payment.confirm-button")}
         </Button>
 
         <Typography tag="p" className="text-tiny font-normal">
-          {intl("page.checkout.payment.confirmation-code-note")}
+          {intl("checkout.payment.confirmation-code-note")}
         </Typography>
       </form>
 
@@ -250,6 +249,16 @@ const Payment: React.FC<{
           setShowAddCardTokenDialog(open);
         }}
       />
+
+      {payWithCard.data ? (
+        <IframeDialog
+          open
+          onOpenChange={(open) => {
+            if (!open) payWithCard.reset();
+          }}
+          url={payWithCard.data.redirectUrl}
+        />
+      ) : null}
     </div>
   );
 };

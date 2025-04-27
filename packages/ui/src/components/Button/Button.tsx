@@ -21,6 +21,7 @@ export const Button: React.FC<{
   loading?: boolean;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
+  tabIndex?: number;
 }> = ({
   children,
   variant = "primary",
@@ -33,6 +34,7 @@ export const Button: React.FC<{
   loading,
   startIcon,
   endIcon,
+  tabIndex,
 }) => {
   const is = useMemo(
     () => ({
@@ -59,6 +61,7 @@ export const Button: React.FC<{
       data-size={size}
       data-type={type}
       data-variant={variant}
+      tabIndex={tabIndex}
       className={cn(
         // Teneral styles
         "text-center font-normal group",

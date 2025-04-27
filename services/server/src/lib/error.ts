@@ -65,6 +65,9 @@ export const wrongPassword = () => error(ApiError.WrongPassword, 400);
 export const interviewAlreadySigned = () =>
   error(ApiError.InterviewAlreadySigned, 400);
 
+export const fawryPaymentError = (msg?: string) =>
+  error(ApiError.FawryPaymentError, 500, msg);
+
 export const exists = {
   room: () => error(ApiError.RoomExists, 400),
   user: () => error(ApiError.UserExists, 400),
