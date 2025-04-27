@@ -47,6 +47,8 @@ export const Select = <T extends string | number>({
   helper,
   onChange,
   className,
+  asButton,
+  onTriggerClick,
   onOpenChange,
 }: SelectProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -72,6 +74,7 @@ export const Select = <T extends string | number>({
       dir="rtl"
       open={open}
       onOpenChange={(open) => {
+        if (asButton) return;
         setOpen(open);
         onOpenChange?.(open);
       }}
@@ -97,6 +100,7 @@ export const Select = <T extends string | number>({
           id={id}
           data-open={open}
           disabled={disabled}
+          onClick={onTriggerClick}
           role="button"
           className={cn(
             "group flex flex-row justify-between items-center",
@@ -136,7 +140,7 @@ export const Select = <T extends string | number>({
           </Typography>
 
           {showDropdownIcon ? (
-            <Icon>
+            <Icon className="arrow-down">
               <ArrowDown
                 data-open={open}
                 className={cn(

@@ -41,11 +41,15 @@ export const IframeDialog: React.FC<{
           ) : (
             <div
               className={cn(
-                "w-full h-full sm:w-[512px] sm:h-[750px]",
+                "w-full h-full sm:w-[512px] sm:h-[750px] bg-natural-50",
                 "absolute top-16 sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-iframe-dialog-conent"
               )}
             >
-              <iframe className="h-full w-full sm:rounded-md" src={url} />
+              <iframe
+                name="iframe"
+                className="h-full w-full sm:rounded-md"
+                src={url}
+              />
             </div>
           )}
         </Content>

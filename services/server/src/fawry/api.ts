@@ -34,7 +34,7 @@ class Api extends Base {
       cardToken,
       customerProfileId: customer.id,
       merchantRefNum,
-      returnUrl: "https://google.com/",
+      returnUrl: "https://app.staging.litespace.org",
       cvv,
     });
 
@@ -62,7 +62,7 @@ class Api extends Base {
       cvv,
       enable3DS: true,
       authCaptureModePayment: false,
-      returnUrl: "https://google.com/",
+      returnUrl: "https://app.staging.litespace.org",
     };
 
     return await this.post({ route: FAWRY_ROUTES.PAY_WITH_CARD, payload });

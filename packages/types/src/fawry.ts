@@ -32,7 +32,7 @@ export type PayWithCardPayload = {
   cvv: string;
 };
 
-export type PayWithCardResponse = BaseResponse & {
+export type PayWithCardResponse = {
   transactionId: number;
   redirectUrl?: string;
 };

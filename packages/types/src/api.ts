@@ -50,6 +50,7 @@ export enum ApiError {
   ConflictingSchedule = "conflicting-schedule",
   ReachedBookingLimit = "reached-booking-limit",
   ServiceUnavailable = "service-unavailable",
+  FawryPaymentError = "fawry-payment-error",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

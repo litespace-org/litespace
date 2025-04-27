@@ -37,25 +37,29 @@ type ErrorResponse = {
   statusDescription: string;
 };
 
-export type PayWithCard = Base & {
-  nextAction?: {
-    /**
-     * Redirect url for you to redirect your client for payment authentication.
-     */
-    redirectUrl: string;
-    /**
-     * The type of response.
-     * Example: "THREE_D_SECURE"
-     */
-    type: string;
-  };
+type SuccessResponse = {
+  statusCode: 200;
+  statusDescription: string;
 };
 
-export type PayWithEWallet =
-  | {
-      statusCode: 200;
-      statusDescription: string;
+export type PayWithCard =
+  | (SuccessResponse & {
+      nextAction: {
+        /**
+         * Redirect url for you to redirect your client for payment authentication.
+         */
+        redirectUrl: string;
+        /**
+         * The type of response.
+         * Example: "THREE_D_SECURE"
+         */
+        type: string;
+      };
+    })
+  | ErrorResponse;
 
+export type PayWithEWallet =
+  | (SuccessResponse & {
       /**
        * The reference number of the order on FawryPay system which is displayed to
        * the customer and used during the payment.
@@ -72,7 +76,7 @@ export type PayWithEWallet =
        * Example: "data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgA....=="
        */
       walletQr: string;
-    }
+    })
   | ErrorResponse;
 
 export type PayWithRefNum = Base & {

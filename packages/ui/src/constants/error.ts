@@ -50,6 +50,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.IncorrectPhone]: "error.api.incorrect-phone",
   [ApiError.ExpiredVerificationCode]: "error.api.expired-verification-code",
   [ApiError.InvalidVerificationCode]: "error.api.invalid-verification-code",
+  [ApiError.FawryPaymentError]: "error.api.fawry-payment-error",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
   [FieldError.ShortPassword]: "error.field.short-password",
   [FieldError.LongPassword]: "error.field.long-password",
