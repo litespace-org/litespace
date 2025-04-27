@@ -43,3 +43,22 @@ export function isOnboard({
     !!studioId
   );
 }
+
+export function isProfileComplete({
+  name,
+  phone,
+  city,
+  gender,
+  birthYear,
+  bio,
+  about,
+}: Partial<
+  Pick<
+    ITutor.FullTutor,
+    "name" | "phone" | "city" | "gender" | "birthYear" | "bio" | "about"
+  >
+>): boolean {
+  return (
+    !!name && !!phone && !!city && !!gender && !!birthYear && !!bio && !!about
+  );
+}
