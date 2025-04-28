@@ -11,4 +11,8 @@ export class Subscription extends Base {
   ): Promise<ISubscription.FindApiResponse> {
     return this.get({ route: `/api/v1/sub/list`, params });
   }
+
+  async findCurrentSubscription(): Promise<ISubscription.FindCurrentApiResponse> {
+    return this.get({ route: `/api/v1/sub/current` });
+  }
 }
