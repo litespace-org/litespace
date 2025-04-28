@@ -56,7 +56,7 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
           </button>
         ) : null}
 
-        <div className="ms-auto">
+        <div className="ms-auto flex items-center justify-center">
           {user ? (
             <button
               onClick={async () => {

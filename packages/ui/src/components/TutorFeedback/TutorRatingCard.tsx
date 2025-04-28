@@ -8,7 +8,7 @@ import Quote from "@litespace/assets/Quote";
 import EditMessage from "@litespace/assets/EditMessage";
 import Trash from "@litespace/assets/Trash";
 import { RatingStars } from "@/components/RatingStars/RatingStars";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import cn from "classnames";
 import React from "react";
 
@@ -69,8 +69,8 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
         >
           <div className="overflow-hidden w-full h-full rounded-full">
             <Avatar
-              src={orUndefined(imageUrl)}
-              alt={orUndefined(studentName)}
+              src={optional(imageUrl)}
+              alt={optional(studentName)}
               seed={studentId.toString()}
             />
           </div>

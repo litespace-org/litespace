@@ -1,6 +1,6 @@
 import { UserOnlineStatus, OnlineStatus } from "@litespace/ui/OnlineStatus";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import React from "react";
 
 export const Image: React.FC<{
@@ -12,7 +12,7 @@ export const Image: React.FC<{
     <div className="relative w-56 h-56 rounded-full lg:w-72 lg:h-72 shrink-0">
       <div className="w-full h-full overflow-hidden rounded-full shadow-xl ring ring-background-selection">
         <img
-          src={orUndefined(image)}
+          src={optional(image)}
           className="inline-block object-cover w-full h-full"
         />
       </div>

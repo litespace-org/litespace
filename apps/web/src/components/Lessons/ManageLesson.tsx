@@ -11,7 +11,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { QueryKey } from "@litespace/headless/constants";
 import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
-import { orNull } from "@litespace/utils/utils";
+import { nullable } from "@litespace/utils/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import dayjs from "@/lib/dayjs";
 import { useInvalidateQuery } from "@litespace/headless/query";
@@ -203,8 +203,8 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
       slotId={payload.type === "update" ? payload.slotId : undefined}
       start={payload.type === "update" ? payload.start : undefined}
       duration={payload.type === "update" ? payload.duration : undefined}
-      imageUrl={orNull(tutor.data?.image)}
-      name={orNull(tutor.data?.name)}
+      imageUrl={nullable(tutor.data?.image)}
+      name={nullable(tutor.data?.name)}
       tutorId={tutorId}
       close={close}
       confirmationLoading={createLessonMutation.isPending}

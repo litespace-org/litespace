@@ -7,7 +7,7 @@ import { Avatar } from "@litespace/ui/Avatar";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
 import { useUserContext } from "@litespace/headless/context/user";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 import { useUploadUserImage } from "@litespace/headless/user";
 
 const UploadPhoto: React.FC<{
@@ -20,7 +20,7 @@ const UploadPhoto: React.FC<{
   const mq = useMediaQuery();
   const { user } = useUserContext();
 
-  const { muation } = useUploadUserImage({});
+  const { mutation } = useUploadUserImage({});
 
   const photoUrl = useMemo(() => {
     if (!photo) return user?.image;
@@ -40,15 +40,15 @@ const UploadPhoto: React.FC<{
           const file = first(event.target.files);
           if (!file || !user) return;
           setPhoto(file);
-          muation.mutate({
+          mutation.mutate({
             image: file,
           });
         }}
       />
       <div className="min-w-[84px] min-h-[84px] lg:w-[102px] lg:h-[102px] rounded-full overflow-hidden">
         <Avatar
-          src={orUndefined(photoUrl)}
-          alt={orUndefined(user?.name)}
+          src={optional(photoUrl)}
+          alt={optional(user?.name)}
           seed={id.toString()}
         />
       </div>
@@ -62,8 +62,8 @@ const UploadPhoto: React.FC<{
 
         <Button
           size="large"
-          loading={muation.isPending}
-          disabled={muation.isPending}
+          loading={mutation.isPending}
+          disabled={mutation.isPending}
           onClick={() => {
             if (!ref.current) return;
             ref.current.click();

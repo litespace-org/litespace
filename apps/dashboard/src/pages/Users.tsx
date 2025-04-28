@@ -9,7 +9,7 @@ import cn from "classnames";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { IFilter, IUser } from "@litespace/types";
 import { rolesMap } from "@/components/utils/user";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 
 export const Users: React.FC = () => {
   const intl = useFormatMessage();
@@ -27,10 +27,10 @@ export const Users: React.FC = () => {
 
   const filter = useMemo(
     (): IUser.FindUsersApiQuery => ({
-      role: orUndefined(role),
-      gender: orUndefined(gender),
+      role: optional(role),
+      gender: optional(gender),
       verified: typeof verified === "boolean" ? verified : undefined,
-      orderBy: orUndefined(orderBy),
+      orderBy: optional(orderBy),
       orderDirection,
     }),
     [gender, orderBy, orderDirection, role, verified]

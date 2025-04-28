@@ -2,7 +2,7 @@ import SlotRow from "@/components/ManageSchedule/SlotRow";
 import { Slot } from "@/components/ManageSchedule/types";
 import dayjs from "@/lib/dayjs";
 import { subtractSlots } from "@litespace/utils";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import { IAvailabilitySlot } from "@litespace/types";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
@@ -100,8 +100,8 @@ const DaySlots: React.FC<{
           return (
             <Animate key={idx}>
               <SlotRow
-                start={orUndefined(slot.start)}
-                end={orUndefined(slot.end)}
+                start={optional(slot.start)}
+                end={optional(slot.end)}
                 add={last && filled ? () => add({ day: iso }) : undefined}
                 remove={partial ? () => remove(slot.id) : undefined}
                 onFromChange={(start) => update({ id: slot.id, start })}

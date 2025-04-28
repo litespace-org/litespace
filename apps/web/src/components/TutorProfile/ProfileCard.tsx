@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import Star from "@litespace/assets/Star";
 import { Void } from "@litespace/types";
 import cn from "classnames";
@@ -91,8 +91,8 @@ export const ProfileCard: React.FC<{
           )}
         >
           <Avatar
-            src={orUndefined(image)}
-            alt={orUndefined(name)}
+            src={optional(image)}
+            alt={optional(name)}
             seed={id.toString()}
             object="cover"
           />

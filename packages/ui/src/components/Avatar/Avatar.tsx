@@ -3,7 +3,7 @@
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
 import { JazzIcon } from "@/components/Avatar/JazzIcon";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 
 type Status = "loading" | "loaded" | "error";
 
@@ -32,7 +32,7 @@ export const Avatar: React.FC<{
         data-status={status}
         className={cn(
           "opacity-0 transition-opacity duration-300 ease-linear",
-          "data-[status=loaded]:opacity-100 absolute w-full h-full",
+          src ? "data-[status=loaded]:opacity-100 absolute w-full h-full" : "",
           {
             "object-contain": object === "contain",
             "object-fill": object === "fill",
@@ -41,8 +41,8 @@ export const Avatar: React.FC<{
             "object-scale-down": object === "scale-down",
           }
         )}
-        src={orUndefined(src)}
-        alt={orUndefined(alt)}
+        src={optional(src)}
+        alt={optional(alt)}
         onLoad={onLoad}
         onError={onError}
       />
@@ -51,7 +51,7 @@ export const Avatar: React.FC<{
         data-status={status}
         className={cn(
           "opacity-100 transition-opacity duration-300",
-          "data-[status=loaded]:opacity-0",
+          src ? "data-[status=loaded]:opacity-0" : "",
           "absolute top-0 left-0 w-full h-full z-chat-avatar"
         )}
       >

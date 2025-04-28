@@ -29,6 +29,7 @@ const TutorDashboard = lazy(() => import("@/pages/TutorDashboard"));
 const Invoices = lazy(() => import("@/pages/Invoices"));
 const CardAdded = lazy(() => import("@/pages/CardAdded"));
 const Checkout = lazy(() => import("@/pages/Checkout"));
+const StudentSettingsV2 = lazy(() => import("@/pages/StudentSettingsV2"));
 
 const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
@@ -114,6 +115,10 @@ const router = createRouter([
       {
         path: Web.Checkout,
         element: <Fallback children={<Checkout />} />,
+      },
+      {
+        path: Web.StudentSettingsV2,
+        element: <Fallback children={<StudentSettingsV2 />} />,
       },
     ],
     errorElement: <Fallback children={<ErrorPage />} />,

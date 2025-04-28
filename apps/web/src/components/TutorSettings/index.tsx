@@ -13,8 +13,8 @@ import { QueryKey } from "@litespace/headless/constants";
 import {
   getNullableFiledUpdatedValue,
   getOptionalFieldUpdatedValue,
-  orNull,
-  orUndefined,
+  nullable,
+  optional,
 } from "@litespace/utils/utils";
 import ProfileCard from "@/components/TutorSettings/ProfileCard";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
@@ -40,7 +40,7 @@ const TutorSettings: React.FC<{
       about: info.about || "",
       email: info.email || "",
       phone: info.phone || "",
-      city: orUndefined(info.city),
+      city: optional(info.city),
       password: {
         current: "",
         confirm: "",
@@ -59,12 +59,12 @@ const TutorSettings: React.FC<{
 
   const dataChanged = useMemo(
     () =>
-      orNull(name.trim()) !== info.name ||
-      orNull(bio.trim()) !== info.bio ||
-      orNull(about.trim()) !== info.about ||
-      orNull(email.trim()) !== info.email ||
-      orNull(phone.trim()) !== info.phone ||
-      orNull(city) !== info.city ||
+      nullable(name.trim()) !== info.name ||
+      nullable(bio.trim()) !== info.bio ||
+      nullable(about.trim()) !== info.about ||
+      nullable(email.trim()) !== info.email ||
+      nullable(phone.trim()) !== info.phone ||
+      nullable(city) !== info.city ||
       !!password,
     [about, bio, name, city, phone, email, info, password]
   );

@@ -3,7 +3,7 @@ import { first } from "lodash";
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 
 enum Status {
   Active,
@@ -49,7 +49,7 @@ const Room: React.FC<{
         <div className="w-10 h-10 overflow-hidden rounded-full md:w-14 md:h-14 ring ring-dash-sidebar">
           <img
             className="object-cover w-full h-full"
-            src={orUndefined(member.image)}
+            src={optional(member.image)}
           />
         </div>
 

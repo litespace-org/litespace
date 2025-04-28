@@ -42,7 +42,7 @@ export const Primary: StoryObj<typeof TextEditor> = {
 
 export const Errored: StoryObj<typeof TextEditor> = {
   args: {
-    error: ar["error.email.invlaid"],
+    error: ar["error.email.invalid"],
   },
 };
 

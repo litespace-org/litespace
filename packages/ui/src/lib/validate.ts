@@ -1,7 +1,11 @@
 import { LocalId } from "@/locales";
+import { FieldError } from "@litespace/types";
 import {
   isValidPhone as isValidPhoneBase,
   isValidCvv as isValidCvvBase,
+  isValidUserName as isValidUserNameBase,
+  isValidEmail as isValidEmailBase,
+  isValidPassword as isValidPasswordBase,
 } from "@litespace/utils/validation";
 
 export function validateText({
@@ -31,4 +35,26 @@ export function isValidPhone(phone: string): LocalId | null {
 export function isValidCvv(cvv: string): LocalId | null {
   const valid = isValidCvvBase(cvv);
   return !valid ? "error.invlaid-cvv" : null;
+}
+
+export function isValidUserName(name: string): LocalId | null {
+  const valid = isValidUserNameBase(name);
+  if (valid === true) return null;
+  if (valid === FieldError.InvalidUserName) return "error.name.invalid";
+  if (valid === FieldError.ShortUserName) return "error.name.length.short";
+  return "error.name.length.long";
+}
+
+export function isValidEmail(email: string): LocalId | null {
+  const valid = isValidEmailBase(email);
+  if (valid === true) return null;
+  return "error.email.invalid";
+}
+
+export function isValidPassword(password: string): LocalId | null {
+  const valid = isValidPasswordBase(password);
+  if (valid === true) return null;
+  if (valid === FieldError.ShortPassword) return "error.password.short";
+  if (valid === FieldError.LongPassword) return "error.password.long";
+  return "error.password.invalid";
 }

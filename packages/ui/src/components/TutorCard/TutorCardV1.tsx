@@ -5,7 +5,7 @@ import { Typography } from "@/components/Typography";
 import { formatNumber } from "@/components/utils";
 import { useFormatMessage } from "@/hooks";
 import Star from "@litespace/assets/Star";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import cn from "classnames";
 import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
@@ -55,8 +55,8 @@ export const TutorCardV1: React.FC<CardProps> = ({
     >
       <div className="rounded-lg overflow-hidden shrink-0 w-[200px]">
         <Avatar
-          src={orUndefined(imageUrl)}
-          alt={orUndefined(name)}
+          src={optional(imageUrl)}
+          alt={optional(name)}
           seed={id.toString()}
           object="cover"
         />

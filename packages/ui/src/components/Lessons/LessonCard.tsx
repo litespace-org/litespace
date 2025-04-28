@@ -11,7 +11,7 @@ import { Menu, type MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import CheckCircle from "@litespace/assets/CheckCircle";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 
 export type Props = {
   start: string;
@@ -232,8 +232,8 @@ export const LessonCard: React.FC<Props> = ({
         <div className="flex gap-2">
           <div className="w-[65px] h-[65px] rounded-full overflow-hidden">
             <Avatar
-              src={orUndefined(member.image)}
-              alt={orUndefined(member.name)}
+              src={optional(member.image)}
+              alt={optional(member.name)}
               seed={member.id.toString()}
             />
           </div>

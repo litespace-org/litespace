@@ -1,7 +1,7 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import { isEmpty } from "lodash";
 import React from "react";
 
@@ -64,7 +64,7 @@ const ProfileInfo: React.FC<{
           >
             {intl("tutor.profile.tabs.profile.video")}
           </Typography>
-          <VideoPlayer src={orUndefined(video)} />
+          <VideoPlayer src={optional(video)} />
         </div>
       ) : null}
     </div>

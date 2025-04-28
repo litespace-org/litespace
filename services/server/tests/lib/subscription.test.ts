@@ -39,8 +39,8 @@ describe(nameof(calcualteWeeklyMinutesOfCurrentWeek), () => {
   });
 
   it("should calcualte available weekly minutes incase the user subscription is available for the entire week", () => {
-    const start = time.isoweek(10);
-    const end = time.isoweek(-10);
+    const start = time.isoweek(-10);
+    const end = time.isoweek(10);
     expect(
       calcualteWeeklyMinutesOfCurrentWeek({
         subscription: {
@@ -158,7 +158,7 @@ describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
     await expect(
       calculateRemainingWeeklyMinutesOfCurrentWeekByUserId({
         userId: user.id,
-        time: time.isomin(0),
+        time: time.now.startOf("week").toISOString(),
       })
     ).to.eventually.be.eq(75);
   });

@@ -16,7 +16,7 @@ import { RoomsMap } from "@litespace/headless/chat";
 import React, { useCallback, useMemo } from "react";
 import { LocalId } from "@litespace/ui/locales";
 import People from "@litespace/assets/People";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import dayjs from "@/lib/dayjs";
 import { InView } from "react-intersection-observer";
 
@@ -142,8 +142,8 @@ const Rooms: React.FC<{
                   ? data.otherMember.id // other member id
                   : data.id // tutor id
               }
-              imageUrl={orUndefined(room ? data.otherMember.image : data.image)}
-              name={orUndefined(room ? data.otherMember.name : data.name)}
+              imageUrl={optional(room ? data.otherMember.image : data.image)}
+              name={optional(room ? data.otherMember.name : data.name)}
               message={asRoomMessage({
                 message: room ? data.latestMessage : null,
                 bio: !room ? data.bio : null,

@@ -9,7 +9,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { Input } from "@litespace/ui/Input";
 import { debounce } from "lodash";
 import { IFilter, ITopic } from "@litespace/types";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import { Select } from "@litespace/ui/Select";
 
 const Topics = () => {
@@ -25,9 +25,9 @@ const Topics = () => {
 
   const filter = useMemo(
     () => ({
-      name: orUndefined(name),
-      orderBy: orUndefined(orderBy),
-      orderDirection: orUndefined(orderDirection),
+      name: optional(name),
+      orderBy: optional(orderBy),
+      orderDirection: optional(orderDirection),
     }),
     [name, orderBy, orderDirection]
   );

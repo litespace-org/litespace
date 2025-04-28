@@ -1,5 +1,5 @@
 import Star from "@litespace/assets/Star";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import cn from "classnames";
 import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
@@ -68,8 +68,8 @@ export const TutorCard: React.FC<{
         <div className="flex gap-2">
           <div className="block md:hidden w-[58px] h-[58px] rounded-lg overflow-hidden shrink-0">
             <Avatar
-              src={orUndefined(imageUrl)}
-              alt={orUndefined(name)}
+              src={optional(imageUrl)}
+              alt={optional(name)}
               seed={id.toString()}
               object="fill"
             />

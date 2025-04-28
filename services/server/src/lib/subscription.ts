@@ -24,7 +24,9 @@ export function calcualteWeeklyMinutesOfCurrentWeek({
   const userSubscriptionEndsThisWeek = weekEnd.isAfter(subscriptionEnd);
 
   if (userSubscribedThisWeek || userSubscriptionEndsThisWeek) {
-    const day = subscriptionStart.day();
+    const day = userSubscribedThisWeek
+      ? subscriptionStart.day()
+      : subscriptionEnd.day();
     /**
      * NOTE: atm the week starts on sunday (index = 0). It might change in the
      * future.

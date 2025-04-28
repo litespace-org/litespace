@@ -10,7 +10,7 @@ import { DatePicker } from "@/components/DatePicker";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
 import { Calendar } from "react-feather";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 
 export type DateInputProps = {
   placeholder?: string;
@@ -68,7 +68,7 @@ export const DateInput: React.FC<DateInputProps> = ({
       <Input
         placeholder={placeholder}
         state={error ? "error" : "success"}
-        helper={orUndefined(error)}
+        helper={optional(error)}
         value={value}
         disabled={disabled}
         onFocus={open}
