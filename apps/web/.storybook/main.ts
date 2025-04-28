@@ -21,7 +21,6 @@ const config: StorybookConfig = {
         "@": resolve(__dirname, "../src"),
       });
     }
-
     return config;
   },
   core: {

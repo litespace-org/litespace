@@ -37,6 +37,7 @@ export default {
       },
       zIndex: {
         "select-item": "1",
+        "radio-button": "1",
         "chat-avatar": "1",
         "calendar-hour": "1",
         "landing-ellipse": "1",

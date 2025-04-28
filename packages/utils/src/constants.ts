@@ -1,17 +1,18 @@
 import { IConfirmationCode, IKafka, IPlan, IUser } from "@litespace/types";
 
 export const WEEKS_IN_YEAR = 52;
-export const WEEKS_PER_MONTH = 4;
+export const WEEKS_IN_MONTH = 4;
 export const WEEKS_IN_QUARTER = 12;
 export const MONTHS_IN_QUARTER = 3;
 export const MONTHS_IN_YEAR = 12;
 export const MINUTES_IN_HOUR = 60;
+export const SECONDS_IN_MINUTE = 60;
+export const MILLISECONDS_IN_SECOND = 1000;
 export const HOURS_IN_DAY = 24;
 export const MINUTES_IN_DAY = 60 * 24;
 export const MINUTES_IN_WEEK = 60 * 24 * 7;
 export const MIN_AGE = 10;
 export const MAX_AGE = 70;
-export const WEEKS_IN_MONTH = 4;
 export const DAYS_IN_WEEK = 7;
 export const MIN_USER_NAME_LENGTH = 2;
 export const MAX_USER_NAME_LENGTH = 30;
@@ -144,4 +145,22 @@ export const PLAN_PERIOD_TO_MONTH_COUNT: Record<IPlan.Period, number> = {
   [IPlan.Period.Month]: 1,
   [IPlan.Period.Quarter]: 3,
   [IPlan.Period.Year]: 12,
+};
+
+export const PLAN_PERIOD_LITERAL_TO_MONTH_COUNT: Record<
+  IPlan.PeriodLiteral,
+  number
+> = {
+  month: 1,
+  quarter: 3,
+  year: 12,
+};
+
+export const PLAN_PERIOD_LITERAL_TO_WEEK_COUNT: Record<
+  IPlan.PeriodLiteral,
+  number
+> = {
+  month: WEEKS_IN_MONTH,
+  quarter: WEEKS_IN_MONTH * 3,
+  year: WEEKS_IN_MONTH * 12,
 };

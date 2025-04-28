@@ -14,7 +14,7 @@ const Decorator = (Story: React.FC) => {
     >
       <ToastProvider>
         <MediaQueryProvider>
-          <div dir="rtl" className="tw-font-cairo">
+          <div dir="rtl" className="font-cairo bg-natural-50">
             <MemoryRouter initialEntries={["/"]}>
               <Story />
             </MemoryRouter>

@@ -1,39 +1,37 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import cn from "classnames";
+import { OmitProp } from "@litespace/types";
 
-export const RadioButton: React.FC<{
-  label: React.ReactNode;
-  name: string;
-  onChange: (e: ChangeEvent) => void;
-  checked?: boolean;
-  className?: string;
-}> = ({ label, name, onChange, checked, className }) => {
+type InputProps = OmitProp<React.InputHTMLAttributes<HTMLInputElement>, "type">;
+
+export const RadioButton: React.FC<InputProps> = ({ className, ...props }) => {
   return (
-    <label className={cn("flex flex-row items-center", className)}>
-      <div className="w-7 h-7 p-2 relative">
-        <input
-          type="radio"
-          name={name}
-          className="peer opacity-0 absolute z-10"
-          onChange={onChange}
-          checked={checked}
-        />
-        <div
-          className={cn(
-            "absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2",
-            "w-5 h-5 rounded-full overflow-hidden border-4 border-brand-500"
-          )}
-        />
-        <div
-          className={cn(
-            "absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2",
-            "w-3 h-3 rounded-full overflow-hidden bg-brand-700 invisible",
-            "peer-checked:visible"
-          )}
-        />
-      </div>
-      {label}
-    </label>
+    <div className="w-7 h-7 p-2 relative">
+      <input
+        type="radio"
+        className={cn(
+          "peer opacity-0 absolute inset-0 z-radio-button cursor-pointer",
+          className
+        )}
+        {...props}
+      />
+
+      <div
+        className={cn(
+          "absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2",
+          "w-5 h-5 rounded-full overflow-hidden border-4 border-brand-500",
+          "peer-focus-visible:ring-2 peer-focus-visible:ring-secondary-600 peer-focus-visible:ring-offset-2"
+        )}
+      />
+
+      <div
+        className={cn(
+          "absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2",
+          "w-3 h-3 rounded-full overflow-hidden bg-brand-700 invisible",
+          "peer-checked:visible"
+        )}
+      />
+    </div>
   );
 };
 
