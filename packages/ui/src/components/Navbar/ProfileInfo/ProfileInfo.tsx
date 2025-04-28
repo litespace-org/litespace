@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Typography } from "@/components/Typography";
 import { Avatar } from "@/components/Avatar";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const ProfileInfo: React.FC<{
@@ -20,8 +20,8 @@ const ProfileInfo: React.FC<{
     <div className="flex gap-2">
       <div className="w-6 h-6 md:w-[40px] md:h-[40px] rounded-full overflow-hidden">
         <Avatar
-          src={orUndefined(imageUrl)}
-          alt={orUndefined(name)}
+          src={optional(imageUrl)}
+          alt={optional(name)}
           seed={id.toString()}
         />
       </div>

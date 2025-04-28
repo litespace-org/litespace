@@ -2,7 +2,7 @@ import React from "react";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { Typography } from "@/components/Typography";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
@@ -51,8 +51,8 @@ export const ChatHeader: React.FC<{
           >
             <div className="rounded-full overflow-hidden w-8 h-8 lg:w-14 lg:h-14 shrink-0">
               <Avatar
-                alt={orUndefined(name)}
-                src={orUndefined(image)}
+                alt={optional(name)}
+                src={optional(image)}
                 seed={id.toString()}
               />
             </div>

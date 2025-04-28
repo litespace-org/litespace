@@ -8,7 +8,7 @@ import Calendar from "@litespace/assets/Calendar";
 import Clock from "@litespace/assets/Clock";
 import Timer from "@litespace/assets/Timer";
 import { Void } from "@litespace/types";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import React from "react";
 
 export const Confirmation: React.FC<{
@@ -36,8 +36,8 @@ export const Confirmation: React.FC<{
       <div className="flex flex-row gap-4 md:gap-6">
         <div className="w-[73px] h-[73px] md:w-[120px] md:h-[120px] overflow-hidden rounded-full">
           <Avatar
-            src={orUndefined(imageUrl)}
-            alt={orUndefined(name)}
+            src={optional(imageUrl)}
+            alt={optional(name)}
             seed={tutorId.toString()}
           />
         </div>

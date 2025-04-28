@@ -26,7 +26,7 @@ export function validateText({
   return true;
 }
 
-export function isValidPhone(phone: string | null | undefined): LocalId | null {
+export function isValidPhone(phone: string): LocalId | null {
   const valid = isValidPhoneBase(phone);
   if (valid === true) return null;
   return "error.phone-number.invlaid";
@@ -37,28 +37,24 @@ export function isValidCvv(cvv: string): LocalId | null {
   return !valid ? "error.invlaid-cvv" : null;
 }
 
-export function isValidUserName(name: string | null): LocalId | null {
+export function isValidUserName(name: string): LocalId | null {
   const valid = isValidUserNameBase(name);
-
   if (valid === true) return null;
-  if (valid === FieldError.InvalidUserName)
-    return "error.field.invalid-user-name";
-  if (valid === FieldError.ShortUserName) return "error.field.short-user-name";
-  return "error.field.long-user-name";
+  if (valid === FieldError.InvalidUserName) return "error.name.invalid";
+  if (valid === FieldError.ShortUserName) return "error.name.length.short";
+  return "error.name.length.long";
 }
 
 export function isValidEmail(email: string): LocalId | null {
   const valid = isValidEmailBase(email);
-
   if (valid === true) return null;
-  return "error.field.invalid-email";
+  return "error.email.invalid";
 }
 
 export function isValidPassword(password: string): LocalId | null {
   const valid = isValidPasswordBase(password);
-
   if (valid === true) return null;
-  if (valid === FieldError.ShortPassword) return "error.field.short-password";
-  if (valid === FieldError.LongPassword) return "error.field.long-password";
-  return "error.field.invalid-password";
+  if (valid === FieldError.ShortPassword) return "error.password.short";
+  if (valid === FieldError.LongPassword) return "error.password.long";
+  return "error.password.invalid";
 }

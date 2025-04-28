@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/Input";
 import { Duration } from "@litespace/utils/duration";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 
 export const DurationInput: React.FC<{
   value?: Duration;
@@ -30,7 +30,7 @@ export const DurationInput: React.FC<{
       value={focused ? rawValue : value?.format() || ""}
       placeholder={placeholder}
       state={error ? "error" : "success"}
-      helper={orUndefined(helper)}
+      helper={optional(helper)}
       disabled={disabled}
     />
   );

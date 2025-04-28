@@ -8,7 +8,7 @@ type Config<T extends object> = {
 };
 
 export type Validators<T extends object> = {
-  [K in keyof T]?: (value: T[K]) => true | string;
+  [K in keyof T]?: (value: T[K], state: T) => true | string;
 };
 
 export type ErrorMap<T extends object> = { [key in keyof T]?: string };
@@ -26,18 +26,14 @@ export function useForm<T extends object>(config: Config<T>) {
 
   const set = useCallback(
     <K extends keyof T>(key: K, value: T[K]) => {
-      setState((prev) => {
-        const cloned = structuredClone(prev);
-        return {
-          ...cloned,
-          [key]: value,
-        };
-      });
+      const cloned = structuredClone(state);
+      const updated = { ...cloned, [key]: value };
+      setState(updated);
 
       const validate = configRef.current.validators?.[key];
       if (!validate || !submitted) return;
 
-      const valid = validate(value);
+      const valid = validate(value, updated);
       setErrors((prev) => {
         const cloned = structuredClone(prev);
         return {
@@ -46,7 +42,7 @@ export function useForm<T extends object>(config: Config<T>) {
         };
       });
     },
-    [submitted]
+    [state, submitted]
   );
 
   const submit = useCallback(() => {
@@ -57,7 +53,7 @@ export function useForm<T extends object>(config: Config<T>) {
       const safeValue = value as T[keyof T];
       const validate = configRef.current.validators?.[safeKey];
       if (!validate) continue;
-      const valid = validate(safeValue);
+      const valid = validate(safeValue, state);
       if (valid !== true) errors[safeKey] = valid;
     }
 

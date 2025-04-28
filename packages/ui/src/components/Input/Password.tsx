@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Input, InputProps } from "@/components/Input/Input";
 import Eye from "@litespace/assets/Eye";
 import EyeSlash from "@litespace/assets/EyeSlash";
+import { OmitProp } from "@litespace/types";
 
-export const Password: React.FC<InputProps> = (props) => {
+export const Password: React.FC<OmitProp<InputProps, "type">> = (props) => {
   const [hidden, setHidden] = useState(true);
   return (
     <Input

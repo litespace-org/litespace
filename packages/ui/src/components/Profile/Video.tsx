@@ -1,6 +1,6 @@
 import React from "react";
 import { VideoPlayer } from "@/components/VideoPlayer";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 
 const Video: React.FC<{
   video?: string | null;
@@ -9,7 +9,7 @@ const Video: React.FC<{
   if (!video || !name) return;
   return (
     <div className="aspect-[9/16]">
-      <VideoPlayer src={orUndefined(video)} />
+      <VideoPlayer src={optional(video)} />
     </div>
   );
 };

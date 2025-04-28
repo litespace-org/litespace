@@ -1,4 +1,3 @@
-import { Form } from "@litespace/ui/Form";
 import UploadPhoto from "@/components/StudentSettings/V2/UploadPhoto";
 import { Input } from "@litespace/ui/Input";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -8,14 +7,17 @@ import { useCallback, useMemo } from "react";
 import { Button } from "@litespace/ui/Button";
 import { IUser } from "@litespace/types";
 import { useForm } from "@litespace/headless/form";
-import { orUndefined } from "@litespace/utils";
+import {
+  getNullableFiledUpdatedValue,
+  getOptionalFieldUpdatedValue,
+  optional,
+} from "@litespace/utils";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useToast } from "@litespace/ui/Toast";
 import { useOnError } from "@/hooks/error";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { isEqual } from "lodash";
 import { PatternInput } from "@litespace/ui/PatternInput";
 import { ConfirmContactMethod } from "@/components/StudentSettings/V2/ConfirmContactMethod";
 import {
@@ -24,72 +26,84 @@ import {
   isValidUserName,
 } from "@litespace/ui/lib/validate";
 
-type FormProps = {
-  name: string | null;
+type Form = {
+  name: string;
   email: string;
-  phone?: string | null;
-  city?: IUser.City | null;
-  gender?: IUser.Gender | null;
+  phone: string;
+  city: IUser.City | null;
+  gender: IUser.Gender | null;
 };
 
-function canSubmit(formData: FormProps, user: FormProps) {
-  const initial = {
-    name: user.name,
-    email: user.email,
-    phone: user.phone || "",
-    city: user.city || null,
-    gender: user.gender || null,
-  };
-
-  return !isEqual(formData, initial);
-}
-
 export default function PersonalDetailsForm({
-  personalDetails,
   id,
+  name,
+  email,
   image,
+  phone,
+  city,
+  gender,
 }: {
-  personalDetails: FormProps;
-  image: string | null;
   id: number;
+  name: string | null;
+  email: string;
+  image: string | null;
+  phone: string | null;
+  city: IUser.City | null;
+  gender: IUser.Gender | null;
 }) {
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
 
-  const validators = useMakeValidators<FormProps>({
-    name: {
-      validate: isValidUserName,
-    },
-    email: {
-      validate: isValidEmail,
-    },
-    phone: {
-      validate: isValidPhone,
-    },
+  const validators = useMakeValidators<Form>({
+    name: { required: !!name, validate: isValidUserName },
+    email: { required: true, validate: isValidEmail },
+    phone: { required: false, validate: isValidPhone },
   });
 
-  const form = useForm<FormProps>({
+  const form = useForm<Form>({
     defaults: {
-      name: personalDetails.name,
-      email: personalDetails.email,
-      phone: personalDetails.phone,
-      city: personalDetails.city,
-      gender: orUndefined(personalDetails.gender),
+      name: name || "",
+      phone: phone || "",
+      email,
+      city,
+      gender,
     },
     validators,
     onSubmit: (data) => {
-      if (!data || !canSubmit(data, personalDetails)) return;
-
       mutation.mutate({
         id: id,
         payload: {
-          ...data,
-          gender: orUndefined(data.gender),
+          name: getNullableFiledUpdatedValue(name, data.name || null),
+          phone: getNullableFiledUpdatedValue(phone, data.phone || null),
+          email: getOptionalFieldUpdatedValue(email, data.email),
+          city: getNullableFiledUpdatedValue(city, data.city),
+          gender: getNullableFiledUpdatedValue(gender, data.gender),
         },
       });
     },
   });
+
+  const unchanged = useMemo(() => {
+    return (
+      (name || "") === form.state.name &&
+      (phone || "") === form.state.phone &&
+      email === form.state.email &&
+      city === form.state.city &&
+      gender === form.state.gender
+    );
+  }, [
+    city,
+    email,
+    form.state.city,
+    form.state.email,
+    form.state.gender,
+    form.state.name,
+    form.state.phone,
+    gender,
+    name,
+    phone,
+  ]);
 
   const onSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
@@ -128,76 +142,86 @@ export default function PersonalDetailsForm({
 
   return (
     <div>
-      <UploadPhoto id={id} name={personalDetails.name} image={image} />
+      <UploadPhoto id={id} name={name} image={image} />
       <div className="flex gap-10 mt-6">
-        <div className="w-full ">
-          <Form
+        <div className="w-[400px] flex-shrink-0">
+          <form
             onSubmit={form.onFormSubmit}
             className="w-full flex flex-col gap-4"
           >
             <Input
-              value={orUndefined(form.state.name)}
-              onChange={(e) => form.set("name", e.target.value)}
-              name="name"
               id="name"
+              name="name"
+              value={form.state.name}
+              onChange={(e) => form.set("name", e.target.value)}
               label={intl("labels.name")}
               placeholder={intl("labels.name.placeholder")}
               state={form.errors?.name ? "error" : undefined}
               helper={form.errors?.name}
+              autoComplete="off"
             />
+
             <Input
-              value={orUndefined(form.state.email)}
-              onChange={(e) => form.set("email", e.target.value)}
-              name="email"
               id="email"
+              name="email"
+              value={form.state.email}
+              onChange={(e) => form.set("email", e.target.value)}
               label={intl("labels.email")}
               placeholder={intl("labels.email.placeholder")}
               state={form.errors?.email ? "error" : undefined}
               helper={form.errors?.email}
+              autoComplete="off"
             />
             <PatternInput
+              id="phone"
+              name="phone"
               mask=" "
               format="### #### ####"
-              value={orUndefined(form.state.phone)}
-              onChange={(e) =>
-                form.set("phone", e.target.value.replace(/\s/g, ""))
-              }
-              name="phone"
-              id="phone"
+              value={optional(form.state.phone)}
+              onValueChange={(e) => form.set("phone", e.value)}
               label={intl("labels.phone")}
               placeholder={intl("labels.phone.placeholder")}
               state={form.errors?.phone ? "error" : undefined}
               helper={form.errors?.phone}
+              autoComplete="off"
             />
+
             <Select
-              value={orUndefined(form.state.city)}
-              onChange={(value) => form.set("city", value)}
               id="city"
+              value={optional(form.state.city)}
+              onChange={(value) => form.set("city", value)}
               options={cityOptions}
               label={intl("labels.city")}
               placeholder={intl("labels.city.placeholder")}
+              state={form.errors.city ? "error" : undefined}
+              helper={form.errors?.city}
             />
+
             <Select
-              value={orUndefined(form.state.gender)}
-              onChange={(value) => form.set("gender", value)}
               id="gender"
+              value={optional(form.state.gender)}
+              onChange={(value) => form.set("gender", value)}
               options={genderOptions}
               label={intl("labels.gender")}
               placeholder={intl("labels.gender.student-placeholder")}
+              state={form.errors.gender ? "error" : undefined}
+              helper={form.errors?.gender}
             />
-          </Form>
+          </form>
           <Button
             size="large"
-            disabled={
-              mutation.isPending || !canSubmit(form.state, personalDetails)
-            }
+            disabled={mutation.isPending || unchanged}
+            loading={mutation.isPending}
             onClick={form.submit}
             className="mt-10"
           >
             {intl("shared-settings.save")}
           </Button>
         </div>
-        <ConfirmContactMethod />
+
+        <div className="max-w-[640px]">
+          <ConfirmContactMethod />
+        </div>
       </div>
     </div>
   );

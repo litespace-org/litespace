@@ -117,7 +117,7 @@ export type UpdatePayloadModel = {
   image?: string | null;
   address?: string | null;
   birthYear?: number;
-  gender?: Gender;
+  gender?: Gender | null;
   verifiedEmail?: boolean;
   verifiedPhone?: boolean;
   verifiedWhatsApp?: boolean;
@@ -138,7 +138,7 @@ export type UpdateApiPayload = {
    */
   name?: string | null;
   address?: string | null;
-  gender?: Gender;
+  gender?: Gender | null;
   notice?: number;
   birthYear?: number;
   image?: null;

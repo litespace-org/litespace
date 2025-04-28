@@ -3,30 +3,25 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useForm } from "@litespace/headless/form";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { useUpdateUser } from "@litespace/headless/user";
-import { Element, IUser } from "@litespace/types";
+import { IUser } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { Form } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Select } from "@litespace/ui/Select";
 import { useToast } from "@litespace/ui/Toast";
+import { optional } from "@litespace/utils";
 import { useCallback, useMemo } from "react";
-
-function canSubmit(
-  initial: IUser.NotificationMethod | null,
-  current: IUser.NotificationMethod | null
-) {
-  return initial !== current;
-}
-
-// select can't have a null value, so I am using 0 to represent it
-const NO_USER_NOTIFICATION_METHOD = 0;
 
 export function NotificationSettings({
   id,
   notificationMethod,
+  verifiedTelegram,
+  verifiedWhatsApp,
 }: {
   id: number;
-  notificationMethod: IUser.Self["notificationMethod"];
+  notificationMethod: IUser.NotificationMethod | null;
+  verifiedWhatsApp: boolean;
+  verifiedTelegram: boolean;
 }) {
   const intl = useFormatMessage();
   const invalidateQuery = useInvalidateQuery();
@@ -34,11 +29,6 @@ export function NotificationSettings({
 
   const options = useMemo(
     () => [
-      {
-        label: intl("student-settings.edit.notification.none"),
-        value: NO_USER_NOTIFICATION_METHOD,
-        default: true,
-      },
       {
         label: intl("student-settings.edit.notification.whatsapp"),
         value: IUser.NotificationMethod.Whatsapp,
@@ -83,34 +73,35 @@ export function NotificationSettings({
     },
   });
 
-  const onChange = useCallback(
-    (val: Element<typeof options>["value"]) => {
-      if (val === NO_USER_NOTIFICATION_METHOD) {
-        form.set("notificationMethod", null);
-        return;
-      }
-      form.set("notificationMethod", val);
-    },
-    [form]
-  );
-
   return (
     <div>
       <Form onSubmit={form.onFormSubmit} className="max-w-[400px]">
         <Select
-          onChange={onChange}
+          onChange={(value) => {
+            if (
+              value === IUser.NotificationMethod.Whatsapp &&
+              !verifiedWhatsApp
+            )
+              return alert("verify whatsapp first");
+
+            if (
+              value === IUser.NotificationMethod.Telegram &&
+              !verifiedTelegram
+            )
+              return alert("verify telegram first");
+
+            form.set("notificationMethod", value);
+          }}
           id="notification-method"
-          label={intl("student-settings.edit.notification.title")}
-          value={form.state.notificationMethod || NO_USER_NOTIFICATION_METHOD}
+          label={intl("student-settings.edit.notification.label")}
+          placeholder={intl("student-settings.edit.notification.placeholder")}
+          value={optional(form.state.notificationMethod)}
           options={options}
         />
       </Form>
       <Button
         size="large"
-        disabled={
-          mutation.isPending ||
-          !canSubmit(form.state.notificationMethod, notificationMethod)
-        }
+        disabled={mutation.isPending}
         onClick={form.submit}
         className="mt-10"
       >

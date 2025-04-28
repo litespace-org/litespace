@@ -31,7 +31,7 @@ import { Typography } from "@litespace/ui/Typography";
 import Trash from "@litespace/assets/Trash";
 import { useUserContext } from "@litespace/headless/context/user";
 import { InView } from "react-intersection-observer";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import ManageLesson from "@/components/Lessons/ManageLesson";
 import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { useToast } from "@litespace/ui/Toast";
@@ -138,7 +138,7 @@ const Messages: React.FC<{
     deleteMessage,
     ackUserTyping,
     readMessage,
-  } = useChat(onMessage, orUndefined(user?.id));
+  } = useChat(onMessage, optional(user?.id));
   const invdalidate = useInvalidateQuery();
   const toast = useToast();
 

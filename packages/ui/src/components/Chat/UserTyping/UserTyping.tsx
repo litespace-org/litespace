@@ -1,7 +1,7 @@
 import { Avatar } from "@/components/Avatar";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import { IUser } from "@litespace/types";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
@@ -58,8 +58,8 @@ export const UserTyping: React.FC<{
       >
         <div className="w-7 h-7 rounded-full overflow-hidden">
           <Avatar
-            src={orUndefined(imageUrl)}
-            alt={orUndefined(name)}
+            src={optional(imageUrl)}
+            alt={optional(name)}
             seed={id.toString()}
           />
         </div>

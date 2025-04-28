@@ -22,17 +22,18 @@ const UploadPhoto: React.FC<{
   const intl = useFormatMessage();
   const ref = useRef<HTMLInputElement>(null);
   const { lg } = useMediaQuery();
-
-  const { mutation } = useUploadUserImage({});
   const invalidateQuery = useInvalidateQuery();
 
+  const { mutation } = useUploadUserImage({
+    onSuccess() {
+      invalidateQuery([QueryKey.FindCurrentUser]);
+    },
+  });
+
   const onClearPhotoSuccess = useCallback(() => {
-    toast.success({
-      title: intl("student-settings.upload.image.clear.success"),
-    });
     invalidateQuery([QueryKey.FindCurrentUser]);
     setPhoto(null);
-  }, [toast, intl, invalidateQuery]);
+  }, [invalidateQuery]);
 
   const onClearPhotoError = useOnError({
     type: "mutation",
@@ -61,13 +62,12 @@ const UploadPhoto: React.FC<{
         className="hidden"
         accept="image/jpeg,image/gif,image/png"
         ref={ref}
-        onChange={(event) => {
+        onChange={async (event) => {
           const file = first(event.target.files);
           if (!file) return;
           setPhoto(file);
-          mutation.mutate({
-            image: file,
-          });
+          mutation.reset();
+          mutation.mutate({ image: file });
         }}
       />
       <div className="min-w-[84px] min-h-[84px] lg:w-[102px] lg:h-[102px] rounded-full overflow-hidden">
@@ -93,6 +93,7 @@ const UploadPhoto: React.FC<{
           >
             {intl("student-settings.upload.image.change")}
           </Button>
+
           <Button
             size="large"
             variant="secondary"

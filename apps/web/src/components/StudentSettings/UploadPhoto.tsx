@@ -7,7 +7,7 @@ import { Avatar } from "@litespace/ui/Avatar";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
 import { useUserContext } from "@litespace/headless/context/user";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 import { useUploadUserImage } from "@litespace/headless/user";
 
 const UploadPhoto: React.FC<{
@@ -47,8 +47,8 @@ const UploadPhoto: React.FC<{
       />
       <div className="min-w-[84px] min-h-[84px] lg:w-[102px] lg:h-[102px] rounded-full overflow-hidden">
         <Avatar
-          src={orUndefined(photoUrl)}
-          alt={orUndefined(user?.name)}
+          src={optional(photoUrl)}
+          alt={optional(user?.name)}
           seed={id.toString()}
         />
       </div>

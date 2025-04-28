@@ -3,7 +3,7 @@
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
 import { JazzIcon } from "@/components/Avatar/JazzIcon";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 
 type Status = "loading" | "loaded" | "error";
 
@@ -41,8 +41,8 @@ export const Avatar: React.FC<{
             "object-scale-down": object === "scale-down",
           }
         )}
-        src={orUndefined(src)}
-        alt={orUndefined(alt)}
+        src={optional(src)}
+        alt={optional(alt)}
         onLoad={onLoad}
         onError={onError}
       />

@@ -3,7 +3,7 @@
 import Logo from "@litespace/assets/LogoV2";
 import React, { useMemo, useCallback, useState } from "react";
 import cn from "classnames";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 
 type Status = "loading" | "loaded" | "error";
 
@@ -72,8 +72,8 @@ export const AvatarV2: React.FC<{
             "object-scale-down": object === "scale-down",
           }
         )}
-        src={orUndefined(src)}
-        alt={orUndefined(alt)}
+        src={optional(src)}
+        alt={optional(alt)}
         onLoad={onLoad}
         onError={onError}
       />

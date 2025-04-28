@@ -94,7 +94,7 @@ export function useValidateEmail(required: boolean = false) {
       const valid = isValidEmail(value);
       if (!required && !value) return true;
       if (required && !value) return intl("error.required");
-      if (valid === FieldError.InvalidEmail) return intl("error.email.invlaid");
+      if (valid === FieldError.InvalidEmail) return intl("error.email.invalid");
       return true;
     },
     [required, intl]
@@ -281,7 +281,7 @@ export function useValidation() {
           pattern: {
             value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
             message: intl.formatMessage({
-              id: messages["error.email.invlaid"],
+              id: messages["error.email.invalid"],
             }),
           },
         },
@@ -474,7 +474,7 @@ export function useValidateDiscount() {
 
 type ValidatePayload<T extends object, K extends keyof T> = {
   required?: boolean;
-  validate?: (value: T[K]) => LocalId | null;
+  validate?: (value: T[K], state: T) => LocalId | null;
 };
 
 export function useMakeValidators<T extends object>(validators: {
@@ -495,9 +495,10 @@ export function useMakeValidators<T extends object>(validators: {
       const safeValue = validatorsRef.current[safeKey];
       if (!safeValue?.required && !safeValue?.validate) continue;
 
-      output[safeKey] = (value) => {
+      output[safeKey] = (value, state) => {
         if (safeValue.required && !value) return intl("error.required");
-        const messageId = safeValue.validate?.(value);
+        if (safeValue.required === false && !value) return true;
+        const messageId = safeValue.validate?.(value, state);
         if (messageId) return intl(messageId);
         return true;
       };

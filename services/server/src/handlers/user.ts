@@ -81,7 +81,7 @@ const updateUserPayload = zod.object({
     })
     .optional(),
   name: zod.union([zod.null(), string]).optional(),
-  gender: gender.optional(),
+  gender: gender.nullable().optional(),
   notice: zod.number().positive().int().optional(),
   birthYear: zod.number().positive().optional(),
   image: zod.null().optional(),

@@ -19,7 +19,7 @@ import More from "@litespace/assets/More";
 import Video from "@litespace/assets/Video";
 import { useFormatMessage } from "@/hooks";
 import { Avatar } from "@/components/Avatar";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import Clock from "@litespace/assets/Clock";
 
 type Props = Partial<LessonActions> & {
@@ -262,8 +262,8 @@ const EventGroupItem: React.FC<
       <div className="px-1 py-1 mb-1 flex flex-row gap-2 items-center justify-start">
         <div className="w-6 h-6 overflow-hidden rounded-full border border-natural-400 shrink-0">
           <Avatar
-            src={orUndefined(otherMember.image)}
-            alt={orUndefined(otherMember.name)}
+            src={optional(otherMember.image)}
+            alt={optional(otherMember.name)}
             seed={otherMember.id.toString()}
           />
         </div>

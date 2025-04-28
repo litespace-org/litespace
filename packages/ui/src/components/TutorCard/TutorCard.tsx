@@ -7,7 +7,7 @@ import Star from "@litespace/assets/Star";
 import { useFormatMessage } from "@/hooks";
 import { formatNumber } from "@/components/utils";
 import { Link } from "react-router-dom";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import { Tooltip } from "@/components/Tooltip";
 import { CardProps } from "@/components/TutorCard/types";
 import { isEmpty } from "lodash";
@@ -58,8 +58,8 @@ export const TutorCard: React.FC<CardProps> = ({
       <div className="flex flex-row gap-2 mb-2">
         <div className="rounded-lg overflow-hidden shrink-0 w-[58px] h-[58px]">
           <Avatar
-            src={orUndefined(imageUrl)}
-            alt={orUndefined(name)}
+            src={optional(imageUrl)}
+            alt={optional(name)}
             seed={id.toString()}
             object="cover"
           />

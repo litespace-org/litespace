@@ -10,7 +10,7 @@ import Picker from "@/components/TimePicker/Picker";
 import { Clock } from "react-feather";
 import { FormatterMap, Time } from "@litespace/utils/time";
 import cn from "classnames";
-import { orUndefined } from "@litespace/utils";
+import { optional } from "@litespace/utils";
 
 export type TimePickerProps = {
   placeholder?: string;
@@ -64,7 +64,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
       <Input
         placeholder={placeholder}
         state={error ? "error" : "success"}
-        helper={orUndefined(error)}
+        helper={optional(error)}
         value={value}
         disabled={disabled}
         onFocus={show}

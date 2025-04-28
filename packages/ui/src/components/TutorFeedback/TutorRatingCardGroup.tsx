@@ -1,7 +1,7 @@
 import { RatingStars } from "@/components/RatingStars";
 import { TutorRatingCardGroupProps } from "@/components/TutorFeedback/types";
 import Quote from "@litespace/assets/Quote";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import cn from "classnames";
 import React, { useMemo } from "react";
 import { Avatar } from "@/components/Avatar";
@@ -81,9 +81,9 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
               >
                 {idx < 4 || isLast ? (
                   <Avatar
-                    alt={orUndefined(rating.name)}
+                    alt={optional(rating.name)}
                     seed={rating.userId.toString()}
-                    src={idx <= 4 ? orUndefined(rating.imageUrl) : undefined}
+                    src={idx <= 4 ? optional(rating.imageUrl) : undefined}
                   />
                 ) : (
                   <Typography

@@ -181,7 +181,7 @@ const TopicSelection: React.FC = () => {
                   onClick={() => onRemoveTopic(topic.id)}
                   className="cursor-pointer"
                 >
-                  <Close2 className="w-6 h-6 ml-[2px] [&>*]:stroke-brand-700" />
+                  <Close2 className="w-6 h-6 ml-[2px] [&>*]:fill-brand-700" />
                 </button>
                 {topic.name.ar}
               </Typography>

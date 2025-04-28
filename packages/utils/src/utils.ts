@@ -1,11 +1,11 @@
 import { sanitizeMessage } from "@/chat";
 import { HTML_TAGS_REGEX } from "@/constants";
 
-export function orUndefined<T>(value: T): NonNullable<T> | undefined {
+export function optional<T>(value: T): NonNullable<T> | undefined {
   return value || undefined;
 }
 
-export function orNull<T>(value: T): NonNullable<T> | null {
+export function nullable<T>(value: T): NonNullable<T> | null {
   return value || null;
 }
 

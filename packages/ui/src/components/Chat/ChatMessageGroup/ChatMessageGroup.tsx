@@ -4,7 +4,7 @@ import { Avatar } from "@/components/Avatar";
 import { Typography } from "@/components/Typography";
 import { ChatMessage } from "@/components/Chat/ChatMessage";
 import { motion } from "framer-motion";
-import { orUndefined } from "@litespace/utils/utils";
+import { optional } from "@litespace/utils/utils";
 import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@/hooks";
 import { DisplayMessage } from "@/lib/chat";
@@ -72,8 +72,8 @@ export const ChatMessageGroup: React.FC<{
         )}
       >
         <Avatar
-          alt={orUndefined(name)}
-          src={orUndefined(image)}
+          alt={optional(name)}
+          src={optional(image)}
           seed={userId.toString()}
         />
       </div>
