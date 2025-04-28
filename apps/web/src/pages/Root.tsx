@@ -18,6 +18,7 @@ import {
 import { useSaveLogs } from "@/hooks/logger";
 import { isProfileComplete } from "@litespace/utils/tutor";
 import { useFindTutorMeta } from "@litespace/headless/tutor";
+import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -135,7 +136,7 @@ const Root: React.FC = () => {
         )}
       >
         <CompleteProfileBanner />
-
+        <WebrtcCheckDialog />
         {showNavigation ? (
           <Navbar toggleSidebar={() => setShowMobileSidebar((prev) => !prev)} />
         ) : null}
