@@ -13,7 +13,7 @@ export const Loader: React.FC<{
         className={cn("fill-brand-700", {
           "w-10 h-10": size === "small",
           "w-16 h-16": size === "medium",
-          "w-20 h-20": size === "large",
+          "w-20 h-20": size === "large", // TODO: update the size of the loader to the new dimensions 72px
         })}
       />
 

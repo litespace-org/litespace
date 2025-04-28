@@ -4,7 +4,6 @@ import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { formatDuration } from "@litespace/ui/utils";
-import { Button } from "@litespace/ui/Button";
 import {
   MILLISECONDS_IN_SECOND,
   percentage,
@@ -15,6 +14,11 @@ import { PaymentMethods } from "@/components/PlansV2/PaymentMethods";
 import { IPlan } from "@litespace/types";
 import PlanPeriod from "@/components/PlansV2/PlanPeriod";
 import { first, orderBy } from "lodash";
+import { Link } from "react-router-dom";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
+import { Button } from "@litespace/ui/Button";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Plan = Pick<
   IPlan.Self,
@@ -33,13 +37,13 @@ const PlansPanel: React.FC<{
 }> = ({ plans, planId, setPlanId }) => {
   const intl = useFormatMessage();
   return (
-    <div className="min-w-[276px] flex-1 flex flex-col gap-4">
+    <div className="min-w-[164px] lg:min-w-[276px] flex-1 flex flex-col gap-4">
       {plans.map((plan) => (
         <div
           key={plan.id}
           className={cn(
             "bg-natural-50 border border-natural-100 rounded-2xl shadow-plan-card-v2 p-4",
-            "flex flex-row gap-2 items-center cursor-pointer"
+            "flex flex-row gap-1 lg:gap-2 items-center cursor-pointer"
           )}
           onClick={() => setPlanId(plan.id)}
         >
@@ -53,7 +57,7 @@ const PlansPanel: React.FC<{
 
           <Typography
             tag="label"
-            className="text-caption font-bold text-natural-950 cursor-pointer"
+            className="text-tiny lg:text-caption font-bold text-natural-950 cursor-pointer"
             htmlFor={plan.id.toString()}
           >
             {intl("plan.labels.per-week", {
@@ -70,10 +74,10 @@ const PlansPanel: React.FC<{
 };
 
 export const Selector: React.FC<{
-  plans: Plan[];
-  select: (payload: { planId: number; period: IPlan.PeriodLiteral }) => void;
-}> = ({ plans, select }) => {
+  plans: IPlan.FindPlansApiResponse["list"];
+}> = ({ plans }) => {
   const intl = useFormatMessage();
+  const { sm } = useMediaQuery();
 
   const ordered = useMemo(() => {
     return orderBy(plans, (plan) => plan.weeklyMinutes, "asc");
@@ -94,12 +98,17 @@ export const Selector: React.FC<{
   if (!plan) return null;
 
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col sm:flex-row gap-4">
       <PlansPanel
         plans={ordered}
         planId={planId}
         setPlanId={(planId) => setPlanId(planId)}
       />
+      {!sm ? (
+        <Typography tag="h5" className="text-body font-bold text-natural-950">
+          {intl("plan.period.select")}
+        </Typography>
+      ) : null}
       <div className="flex-auto">
         <div className="flex flex-col gap-4">
           <PlanPeriod
@@ -127,13 +136,11 @@ export const Selector: React.FC<{
             weeklyMinutes={plan.weeklyMinutes}
           />
         </div>
-        <Button
-          size="large"
-          onClick={() => select({ planId, period })}
-          className="mt-4 w-full"
-        >
-          <Typography tag="span">{intl("plan.subscribe-now")}</Typography>
-        </Button>
+        <Link to={router.web({ route: Web.Checkout, period, planId })}>
+          <Button htmlType="button" size="large" className="mt-4 w-full">
+            <Typography tag="span">{intl("plan.subscribe-now")}</Typography>
+          </Button>
+        </Link>
       </div>
       <PaymentMethods />
     </div>

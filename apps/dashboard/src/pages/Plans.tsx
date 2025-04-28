@@ -17,7 +17,7 @@ export const Plans: React.FC = () => {
       <header className="flex items-center justify-between mb-3">
         <PageTitle
           title={intl("dashboard.plans.title")}
-          count={plans.data?.length}
+          count={plans.data?.list.length}
           fetching={plans.isFetching && !plans.isLoading}
         />
 
