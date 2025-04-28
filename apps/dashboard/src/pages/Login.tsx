@@ -80,6 +80,7 @@ const Login: React.FC = () => {
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-4">
               <Controller.Input
+                id="email"
                 control={control}
                 name="email"
                 value={email}
@@ -92,7 +93,9 @@ const Login: React.FC = () => {
               />
 
               <Controller.Password
+                id="password"
                 control={control}
+                idleDir="rtl"
                 name="password"
                 autoComplete="off"
                 value={password}

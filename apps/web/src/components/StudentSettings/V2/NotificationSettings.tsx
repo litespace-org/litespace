@@ -5,7 +5,6 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { useUpdateUser } from "@litespace/headless/user";
 import { IUser } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
-import { Form } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Select } from "@litespace/ui/Select";
 import { useToast } from "@litespace/ui/Toast";
@@ -75,7 +74,7 @@ export function NotificationSettings({
 
   return (
     <div>
-      <Form onSubmit={form.onFormSubmit} className="max-w-[400px]">
+      <form onSubmit={form.onSubmit} className="max-w-[400px]">
         <Select
           onChange={(value) => {
             if (
@@ -98,7 +97,7 @@ export function NotificationSettings({
           value={optional(form.state.notificationMethod)}
           options={options}
         />
-      </Form>
+      </form>
       <Button
         size="large"
         disabled={mutation.isPending}

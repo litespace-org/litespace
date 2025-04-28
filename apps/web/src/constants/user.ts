@@ -48,3 +48,8 @@ export const governorates: Record<IUser.City, LocalId> = {
   [IUser.City.Helwan]: "global.governorates.helwan",
   [IUser.City.GizaCity]: "global.governorates.gizacity",
 };
+
+export const genders: Record<IUser.Gender, LocalId> = {
+  [IUser.Gender.Male]: "global.genders.male",
+  [IUser.Gender.Female]: "global.genders.female",
+};

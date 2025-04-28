@@ -157,8 +157,8 @@ async function main(): Promise<void> {
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
             city: city(),
             image: "/image.png",
-            verifiedEmail: true,
-            verifiedPhone: true,
+            verifiedEmail: sample([true, false]),
+            verifiedPhone: sample([true, false]),
           },
           tx
         );
@@ -166,9 +166,9 @@ async function main(): Promise<void> {
         await tutors.update(
           tutor.id,
           {
-            about: faker.lorem.paragraphs(),
-            bio: faker.lorem.words(9),
-            activated: true,
+            about: sample([faker.lorem.paragraphs(), null]),
+            bio: sample([faker.lorem.words(9), null]),
+            activated: sample([true, false]),
             activatedBy: admin.id,
           },
           tx

@@ -20,9 +20,5 @@ export {
   useRequired,
   useValidatePassword,
   useValidateEmail,
-  useValidatePlanAlias,
-  useValidatePlanWeeklyMinutes,
-  useValidatePrice,
-  useValidateDiscount,
   useValidateBio,
 } from "@/hooks/validation";

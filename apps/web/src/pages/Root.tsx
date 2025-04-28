@@ -16,6 +16,8 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useSaveLogs } from "@/hooks/logger";
+import { isProfileComplete } from "@litespace/utils/tutor";
+import { useFindTutorMeta } from "@litespace/headless/tutor";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -30,7 +32,13 @@ const publicRoutes: Web[] = [
 const Root: React.FC = () => {
   const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const { user, error, logout } = useUserContext();
+  const { user, meta, error, logout, set } = useUserContext();
+
+  const tutorQuery = useFindTutorMeta(user?.id);
+  useEffect(() => {
+    set({ meta: tutorQuery.query.data || undefined });
+  }, [tutorQuery, set]);
+
   /**
    * `nav` is a url param used to hide the page navigation. It is mainlly used
    * in the lesson page.
@@ -55,10 +63,19 @@ const Root: React.FC = () => {
     const root = location.pathname === Web.Root;
     if (!user && !publicRoute) return navigate(Web.Login);
     if (!user || !root) return;
+
     const { tutor, student, tutorManager } = destructureRole(user.role);
-    if (tutor || tutorManager) return navigate(Web.TutorDashboard);
+
+    if ((tutor || tutorManager) && !!meta) {
+      return navigate(
+        isProfileComplete({ ...user, ...meta })
+          ? Web.TutorDashboard
+          : Web.CompleteTutorProfile
+      );
+    }
+
     if (student) return navigate(Web.StudentDashboard);
-  }, [navigate, location.pathname, user, publicRoute]);
+  }, [navigate, location.pathname, user, publicRoute, meta]);
 
   const showNavigation = useMemo(() => {
     if (params.get("nav") === "false") return false;
@@ -71,6 +88,7 @@ const Root: React.FC = () => {
       Web.VerifyEmail,
       Web.CardAdded,
       Web.Checkout,
+      Web.CompleteTutorProfile,
     ];
     const match = routes.some((route) =>
       router.isMatch.web(route, location.pathname)
@@ -81,7 +99,7 @@ const Root: React.FC = () => {
   const fullScreenPage = useMemo(() => {
     const routes: Web[] = [
       Web.Lesson,
-      // Web.Chat, // TODO: chat page should be aded.
+      // Web.Chat, // TODO: chat page should be added.
     ];
     return routes.some((route) => router.isMatch.web(route, location.pathname));
   }, [location.pathname]);

@@ -205,7 +205,6 @@ const Payment: React.FC<{
               onValueChange={({ value }) => form.set("cvv", value)}
               autoComplete="off"
             />
-
             <PatternInput
               id="phone"
               mask=" "

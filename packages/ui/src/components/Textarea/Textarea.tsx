@@ -54,18 +54,18 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           className={cn(
             // base
             "w-full pb-[6px] overflow-hidden",
-            "rounded-[6px] border",
+            "rounded-md border",
             "flex flex-col gap-1 bg-natural-50",
-            // Focused
-            "focus-within:ring-1 focus-within:ring-brand-700 focus-within:border-brand-700",
+            // focused
+            "focus-within:ring-2 focus-within:ring-secondary-600 focus-within:border-transparent",
             {
-              // Default || Filled
+              // default or filled
               "border-natural-300": !state && !disabled,
-              // Error
+              // error
               "border-destructive-600": state === "error",
-              // Success
+              // success
               "border-brand-600": state === "success",
-              // Disabled
+              // disabled
               "bg-natural-100 border-natural-200": disabled,
             }
           )}
@@ -75,7 +75,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             value={value}
             disabled={disabled}
             className={cn(
-              "pt-3 grow bg-inherit w-full resize-none focus-within:outline-none font-medium text-[0.875rem] leading-[150%] h-full px-3",
+              "pt-3 px-3 grow bg-inherit w-full resize-none focus-within:outline-none font-medium text-caption h-full",
+              "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50 rounded-md",
               // Placeholder
               "placeholder:text-natural-600",
               {
@@ -93,7 +94,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           {maxAllowedCharacters ? (
             <div dir="ltr" className="flex flex-col gap-1 px-3">
               <hr
-                className={cn("group-focus-within:border-brand-700", {
+                className={cn("group-focus-within:border-secondary-700", {
                   "border-natural-200": disabled,
                   "border-natural-300": !state,
                   "border-success-600": state === "success",
@@ -124,19 +125,16 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             <Helper>
               <Typography
                 tag="span"
-                className={cn(
-                  "group-focus-within:text-natural-600 text-tiny font-semibold",
-                  {
-                    // Default || Filled
-                    "text-natural-600": !state && !disabled,
-                    // Success
-                    "text-success-600": state === "success",
-                    // Error
-                    "text-destructive-600": state === "error",
-                    // Disabled
-                    "text-natural-500": disabled,
-                  }
-                )}
+                className={cn("text-tiny font-semibold", {
+                  // default or filled
+                  "text-natural-600": !state && !disabled,
+                  // success
+                  "text-success-600": state === "success",
+                  // error
+                  "text-destructive-600": state === "error",
+                  // disabled
+                  "text-natural-500": disabled,
+                })}
               >
                 {helper}
               </Typography>

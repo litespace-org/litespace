@@ -2,11 +2,6 @@ import { useCreatePlan, useUpdatePlan } from "@litespace/headless/plans";
 import { formatCurrency } from "@litespace/ui/utils";
 import { Button } from "@litespace/ui/Button";
 import { Controller, Field, Form, Label } from "@litespace/ui/Form";
-import {
-  useValidateDiscount,
-  useValidatePlanWeeklyMinutes,
-  useValidatePrice,
-} from "@litespace/ui/hooks/validation";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { Dialog } from "@litespace/ui/Dialog";
@@ -86,9 +81,6 @@ const PlanForm: React.FC<{
 
   const createPlan = useCreatePlan({ onSuccess, onError });
   const updatePlan = useUpdatePlan({ onSuccess, onError });
-  const weeklyMinutesRules = useValidatePlanWeeklyMinutes();
-  const priceRules = useValidatePrice();
-  const discountRules = useValidateDiscount();
 
   const onSubmit = useCallback(
     (data: IForm) => {
@@ -130,7 +122,6 @@ const PlanForm: React.FC<{
                 control={form.control}
                 name="weeklyMinutes"
                 value={form.watch("weeklyMinutes")}
-                rules={weeklyMinutesRules}
               />
             }
           />
@@ -146,7 +137,6 @@ const PlanForm: React.FC<{
                   decimalScale={2}
                   prefix="EGP "
                   thousandSeparator=","
-                  rules={priceRules}
                 />
               }
             />
@@ -163,7 +153,6 @@ const PlanForm: React.FC<{
                     form.watch("monthDiscount"),
                     form.watch("monthDiscount")
                   )}) % `}
-                  rules={discountRules}
                 />
               }
             />
@@ -181,7 +170,6 @@ const PlanForm: React.FC<{
                   form.watch("quarterDiscount"),
                   form.watch("quarterDiscount")
                 )}) % `}
-                rules={discountRules}
               />
             }
           />
@@ -201,7 +189,6 @@ const PlanForm: React.FC<{
                 )}) % `}
                 max={100}
                 decimalScale={2}
-                rules={discountRules}
               />
             }
           />

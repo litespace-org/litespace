@@ -145,10 +145,7 @@ export default function PersonalDetailsForm({
       <UploadPhoto id={id} name={name} image={image} />
       <div className="flex gap-10 mt-6">
         <div className="w-[400px] flex-shrink-0">
-          <form
-            onSubmit={form.onFormSubmit}
-            className="w-full flex flex-col gap-4"
-          >
+          <form onSubmit={form.onSubmit} className="w-full flex flex-col gap-4">
             <Input
               id="name"
               name="name"

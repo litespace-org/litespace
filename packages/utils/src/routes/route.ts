@@ -27,6 +27,7 @@ export enum Web {
   Lesson = "/lesson/:id",
   Session = "/session",
   CardAdded = "/card-added",
+  CompleteTutorProfile = "/t/complete-profile",
 }
 
 export enum Landing {
