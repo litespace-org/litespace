@@ -16,6 +16,8 @@ export type ExtraInputProps = {
   state?: "error" | "success";
   label?: string;
   helper?: string;
+  preInput?: React.ReactNode;
+  postInput?: React.ReactNode;
 };
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
@@ -35,6 +37,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       icon,
       endAction,
       className,
+      preInput,
+      postInput,
       ...props
     },
     ref
@@ -60,76 +64,81 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {label}
           </Typography>
         ) : null}
-        <div
-          data-disabled={disabled}
-          onClick={() => {
-            inputInternalRef.current?.focus();
-          }}
-          className={cn(
-            // base
-            "w-full px-3",
-            "rounded-[6px] border",
-            "flex gap-2 items-center",
-            {
-              "h-7": inputSize === "small",
-              "h-8": inputSize === "medium",
-              "h-10": inputSize === "large",
-            },
-            // Focused
-            "[&:has(input:focus)]:ring-1 [&:has(input:focus)]:ring-secondary-700 [&:has(input:focus)]:border-secondary-700",
-            {
-              // default or filled
-              "border-natural-300 bg-natural-50": !state && !disabled,
-              // error
-              "border-destructive-600 bg-natural-50": state === "error",
-              // success
-              "border-brand-600 bg-natural-50": state === "success",
-              // disabled
-              "bg-natural-100 border-natural-200": disabled,
-            }
-          )}
-        >
-          {icon ? (
-            <div
-              className={cn(
-                // Default
-                "w-4 h-4 cursor-default [&_*]:stroke-natural-600 group-focus-within:[&_*]:stroke-natural-950",
-                // Filled
-                value && !disabled && "[&_*]:stroke-natural-950",
-                // Disabled
-                disabled &&
-                  "[&_*]:stroke-natural-500 cursor-not-allowed pointer-events-none"
-              )}
-            >
-              {icon}
-            </div>
-          ) : null}
 
-          <input
-            dir={!value ? idleDir : "auto"}
-            type={type}
-            value={value}
-            disabled={disabled}
-            className={cn(
-              "grow bg-inherit focus-within:outline-none font-medium text-[0.875rem] leading-[150%] h-full",
-              // Placeholder
-              "placeholder:text-natural-600 placeholder:font-cairo",
-              {
-                // Filled
-                "text-natural-950": !disabled && value,
-                // Disabled
-                "text-natural-500 placeholder:text-natural-500 cursor-not-allowed":
-                  disabled,
-              },
-              className
-            )}
-            ref={(input) => {
-              if (typeof ref === "function") ref(input);
-              inputInternalRef.current = input;
+        <div className="flex flex-row items-center">
+          {preInput}
+          <div
+            data-disabled={disabled}
+            onClick={() => {
+              inputInternalRef.current?.focus();
             }}
-            {...props}
-          />
-          <Action disabled={disabled} action={endAction} filled={!!value} />
+            className={cn(
+              // base
+              "w-full px-3",
+              "rounded-[6px] border",
+              "flex gap-2 items-center",
+              {
+                "h-7": inputSize === "small",
+                "h-8": inputSize === "medium",
+                "h-10": inputSize === "large",
+              },
+              // Focused
+              "[&:has(input:focus)]:ring-1 [&:has(input:focus)]:ring-secondary-700 [&:has(input:focus)]:border-secondary-700",
+              {
+                // default or filled
+                "border-natural-300 bg-natural-50": !state && !disabled,
+                // error
+                "border-destructive-600 bg-natural-50": state === "error",
+                // success
+                "border-brand-600 bg-natural-50": state === "success",
+                // disabled
+                "bg-natural-100 border-natural-200": disabled,
+              }
+            )}
+          >
+            {icon ? (
+              <div
+                className={cn(
+                  // Default
+                  "w-4 h-4 cursor-default [&_*]:stroke-natural-600 group-focus-within:[&_*]:stroke-natural-950",
+                  // Filled
+                  value && !disabled && "[&_*]:stroke-natural-950",
+                  // Disabled
+                  disabled &&
+                    "[&_*]:stroke-natural-500 cursor-not-allowed pointer-events-none"
+                )}
+              >
+                {icon}
+              </div>
+            ) : null}
+
+            <input
+              dir={!value ? idleDir : "auto"}
+              type={type}
+              value={value}
+              disabled={disabled}
+              className={cn(
+                "grow bg-inherit focus-within:outline-none font-medium text-[0.875rem] leading-[150%] h-full",
+                // Placeholder
+                "placeholder:text-natural-600 placeholder:font-cairo",
+                {
+                  // Filled
+                  "text-natural-950": !disabled && value,
+                  // Disabled
+                  "text-natural-500 placeholder:text-natural-500 cursor-not-allowed":
+                    disabled,
+                },
+                className
+              )}
+              ref={(input) => {
+                if (typeof ref === "function") ref(input);
+                inputInternalRef.current = input;
+              }}
+              {...props}
+            />
+            <Action disabled={disabled} action={endAction} filled={!!value} />
+          </div>
+          {postInput}
         </div>
 
         <AnimatePresence mode="wait" initial={false}>

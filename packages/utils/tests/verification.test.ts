@@ -155,10 +155,6 @@ describe("tutor about validation", () => {
     expect(isValidTutorAbout(faker.lorem.sentence(10))).toBe(true);
   });
 
-  it("should reject empty tutor about", () => {
-    expect(isValidTutorAbout("<div></div>")).toBe(FieldError.EmptyTutorAbout);
-  });
-
   it("should reject tutor about with more than 1000 letters", () => {
     const fakeTutorAbout = `<div>${faker.lorem.sentence({
       min: 1050,

@@ -63,7 +63,9 @@ const Root: React.FC = () => {
     const root = location.pathname === Web.Root;
     if (!user && !publicRoute) return navigate(Web.Login);
     if (!user || !root) return;
+
     const { tutor, student, tutorManager } = destructureRole(user.role);
+
     if ((tutor || tutorManager) && !!meta) {
       return navigate(
         isProfileComplete({ ...user, ...meta })
@@ -71,6 +73,7 @@ const Root: React.FC = () => {
           : Web.CompleteTutorProfile
       );
     }
+
     if (student) return navigate(Web.StudentDashboard);
   }, [navigate, location.pathname, user, publicRoute, meta]);
 

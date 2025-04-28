@@ -69,7 +69,7 @@ export function useForm<T extends object>(config: Config<T>) {
     setErrors({});
   }, []);
 
-  const onFormSubmit = useCallback(
+  const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       submit();
@@ -84,6 +84,6 @@ export function useForm<T extends object>(config: Config<T>) {
     set,
     submit,
     reset,
-    onFormSubmit,
+    onSubmit,
   };
 }

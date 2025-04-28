@@ -64,7 +64,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [FieldError.LongBio]: "error.field.long-bio",
   [FieldError.ShortBio]: "error.field.short-bio",
   [FieldError.InvalidBio]: "error.field.invalid-bio",
-  [FieldError.EmptyTutorAbout]: "error.field.empty-tutor-about",
+  [FieldError.ShortTutorAbout]: "error.field.short-tutor-about",
   [FieldError.LongTutorAbout]: "error.field.long-tutor-about",
   [FieldError.MaxNoticeExceeded]: "error.field.max-notice-exceeded",
   [FieldError.InvalidNotice]: "error.field.invalid-notice",

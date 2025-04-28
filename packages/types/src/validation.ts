@@ -12,7 +12,7 @@ export enum FieldError {
   LongBio = "long-bio",
   ShortBio = "short-bio",
   InvalidBio = "invalid-bio",
-  EmptyTutorAbout = "empty-tutor-about",
+  ShortTutorAbout = "short-tutor-about",
   LongTutorAbout = "long-tutor-about",
   MaxNoticeExceeded = "max-notice-exceeded",
   InvalidNotice = "invalid-notice",

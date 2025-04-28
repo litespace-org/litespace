@@ -6,6 +6,9 @@ import {
   isValidUserName as isValidUserNameBase,
   isValidEmail as isValidEmailBase,
   isValidPassword as isValidPasswordBase,
+  isValidUserBirthYear as isValidUserBirthYearBase,
+  isValidTutorAbout as isValidTutorAboutBase,
+  isValidTutorBio as isValidTutorBioBase,
 } from "@litespace/utils/validation";
 
 export function validateText({
@@ -57,4 +60,26 @@ export function isValidPassword(password: string): LocalId | null {
   if (valid === FieldError.ShortPassword) return "error.password.short";
   if (valid === FieldError.LongPassword) return "error.password.long";
   return "error.password.invalid";
+}
+
+export function isValidUserBirthYear(year: number): LocalId | null {
+  const valid = isValidUserBirthYearBase(year);
+  if (valid === true) return null;
+  return "error.birth-year-out-of-range";
+}
+
+export function isValidTutorAbout(about: string): LocalId | null {
+  const valid = isValidTutorAboutBase(about);
+  if (valid === true) return null;
+  if (valid === FieldError.ShortTutorAbout) return "error.text.short";
+  return "error.text.long";
+}
+
+export function isValidTutorBio(about: string): LocalId | null {
+  const valid = isValidTutorBioBase(about);
+  if (valid === true) return null;
+  if (valid === FieldError.EmptyBio) return "error.bio.empty";
+  if (valid === FieldError.ShortBio) return "error.text.short";
+  if (valid === FieldError.LongBio) return "error.text.long";
+  return "error.bio.invalid";
 }

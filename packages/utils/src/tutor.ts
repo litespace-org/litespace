@@ -52,13 +52,26 @@ export function isProfileComplete({
   birthYear,
   bio,
   about,
-}: Partial<
-  Pick<
-    ITutor.FullTutor,
-    "name" | "phone" | "city" | "gender" | "birthYear" | "bio" | "about"
-  >
+  verifiedPhone,
+}: Pick<
+  ITutor.FullTutor,
+  | "name"
+  | "phone"
+  | "city"
+  | "gender"
+  | "birthYear"
+  | "bio"
+  | "about"
+  | "verifiedPhone"
 >): boolean {
   return (
-    !!name && !!phone && !!city && !!gender && !!birthYear && !!bio && !!about
+    !!name &&
+    !!phone &&
+    !!city &&
+    !!gender &&
+    !!birthYear &&
+    !!bio &&
+    !!about &&
+    !!verifiedPhone
   );
 }

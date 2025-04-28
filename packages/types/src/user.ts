@@ -15,16 +15,6 @@ export enum Gender {
   Female = "female",
 }
 
-export const NumberGenderMap: Record<number, Gender> = {
-  1: Gender.Male,
-  2: Gender.Female,
-};
-
-export const GenderNumberMap: Record<Gender, number> = {
-  [Gender.Male]: 1,
-  [Gender.Female]: 2,
-};
-
 export enum City {
   Cairo = 1,
   Alexandria = 2,
