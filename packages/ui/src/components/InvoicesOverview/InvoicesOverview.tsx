@@ -53,7 +53,7 @@ export const InvoicesOverview: React.FC<{
           <ChartSquare className="[&>*]:stroke-natural-50 w-3 h-3 md:w-4 md:h-4" />
         }
         title="tutor-invoices.overview.total-revenue"
-        value={intl("global.currency.egp", {
+        value={intl("labels.currency.egp", {
           value: formatNumber(totalRevenue),
         })}
         color="brand"
@@ -63,7 +63,7 @@ export const InvoicesOverview: React.FC<{
       <Card
         icon={<Money className="[&>*]:stroke-natural-50 h-3 md:w-4 md:h-4" />}
         title="tutor-invoices.overview.available-revenue"
-        value={intl("global.currency.egp", {
+        value={intl("labels.currency.egp", {
           value: formatNumber(availableRevenue),
         })}
         color="secondary"
@@ -84,7 +84,7 @@ export const InvoicesOverview: React.FC<{
         icon={
           <EmptyWalletTime className="[&>*]:stroke-natural-50 h-3 md:w-4 md:h-4" />
         }
-        value={intl("global.currency.egp", {
+        value={intl("labels.currency.egp", {
           value: formatNumber(futureRevenue),
         })}
         title="tutor-invoices.overview.future-revenue"

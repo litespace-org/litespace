@@ -10,7 +10,7 @@ const Price: React.FC<{
     const unscaled = price.unscale(value);
     const main = Math.floor(unscaled);
     const decimal = unscaled - main;
-    const currency = intl("global.currency.egp");
+    const currency = intl("labels.currency.egp");
     const formatted = new Intl.NumberFormat().format(main);
     return [formatted, decimal.toFixed(2).split(".")[1], currency];
   }, [intl, value]);

@@ -37,6 +37,7 @@ export default {
       },
       zIndex: {
         "select-item": "1",
+        "radio-button": "1",
         "chat-avatar": "1",
         "calendar-hour": "1",
         "landing-ellipse": "1",
@@ -344,6 +345,7 @@ export default {
       "tutor-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       slot: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
       "session-movable-stream": "0px 4px 20px 0px rgba(0, 0, 0, 0.10)",
+      "plan-card-v2": "0px 4px 20px 0px rgba(0, 0,0, .03)",
     },
   },
   plugins: [
