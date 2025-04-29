@@ -253,35 +253,37 @@ export type CreateCardTokenResponse = Base & {
   };
 };
 
-export type ListCardTokens = Base & {
-  cards: Array<{
-    isDefault: boolean;
-    /**
-     * The saved card token for your requested client ID.
-     */
-    token: string;
-    /**
-     * Timestamp of the token creation date.
-     */
-    creationDate: number;
-    /**
-     * The last four digits of the card
-     */
-    lastFourDigits: number;
-    /**
-     * The first six digits of the card
-     */
-    firstSixDigits: number;
-    /**
-     * The card issuer brand name
-     */
-    brand: string;
-    cardHolderName: string;
-    accountTypeCode: string;
-  }>;
-};
+export type ListCardTokens =
+  | (SuccessResponse & {
+      cards: Array<{
+        isDefault: boolean;
+        /**
+         * The saved card token for your requested client ID.
+         */
+        token: string;
+        /**
+         * Timestamp of the token creation date.
+         */
+        creationDate: number;
+        /**
+         * The last four digits of the card
+         */
+        lastFourDigits: number;
+        /**
+         * The first six digits of the card
+         */
+        firstSixDigits: number;
+        /**
+         * The card issuer brand name
+         */
+        brand: string;
+        cardHolderName: string;
+        accountTypeCode: string;
+      }>;
+    })
+  | ErrorResponse;
 
-export type DeleteCardTokenResponse = Base & {};
+export type DeleteCardTokenResponse = SuccessResponse | ErrorResponse;
 
 export type CancelUnpaidOrderResponse = {
   code: number;

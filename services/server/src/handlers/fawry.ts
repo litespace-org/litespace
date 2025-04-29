@@ -12,13 +12,7 @@ import {
 import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
 
 import { fawry } from "@/fawry/api";
-import {
-  bad,
-  fawryPaymentError,
-  forbidden,
-  notfound,
-  unexpected,
-} from "@/lib/error";
+import { bad, fawryError, forbidden, notfound, unexpected } from "@/lib/error";
 import { forgeFawryPayload } from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
 import { fawryConfig } from "@/constants";
@@ -179,7 +173,7 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
   });
 
   if (result.statusCode !== 200)
-    return next(fawryPaymentError(result.statusDescription));
+    return next(fawryError(result.statusDescription));
 
   const response: IFawry.PayWithCardResponse = {
     transactionId: transaction.id,
@@ -467,15 +461,11 @@ async function findCardTokens(req: Request, res: Response, next: NextFunction) {
   const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { cards, statusCode, statusDescription } = await fawry.listCardTokens(
-    user.id
-  );
+  const result = await fawry.findCardTokens(user.id);
+  if (result.statusCode !== 200)
+    return next(fawryError(result.statusDescription));
 
-  const response: IFawry.FindCardTokensResponse = {
-    cards,
-    statusCode,
-    statusDescription,
-  };
+  const response: IFawry.FindCardTokensResponse = { cards: result.cards };
 
   res.json(response);
 }
@@ -492,8 +482,11 @@ async function deleteCardToken(
   const { cardToken } = deleteCardTokenPayload.parse(req.body);
   const customerProfileId = user.id;
 
-  const { cards } = await fawry.listCardTokens(user.id);
-  const exist = cards.find((card) => card.token === cardToken);
+  const result = await fawry.findCardTokens(user.id);
+  if (result.statusCode !== 200)
+    return next(fawryError(result.statusDescription));
+
+  const exist = result.cards.find((card) => card.token === cardToken);
   if (!exist) return next(notfound.base());
 
   const { statusCode, statusDescription } = await fawry.deleteCardToken({
@@ -501,12 +494,9 @@ async function deleteCardToken(
     cardToken,
   });
 
-  const response: IFawry.DeleteCardTokenResponse = {
-    statusCode,
-    statusDescription,
-  };
+  if (statusCode !== 200) return next(fawryError(statusDescription));
 
-  res.status(200).json(response);
+  res.sendStatus(200);
 }
 
 async function getPaymentStatus(

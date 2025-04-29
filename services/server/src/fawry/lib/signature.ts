@@ -196,7 +196,7 @@ export function forRefundRequest(
  * The SHA-256 digested for the following concatenated string merchantCode +
  * customerProfileId + secureKey
  */
-export function forListCardTokensRequest(customerProfileId: number): string {
+export function forFindCardTokensRequest(customerProfileId: number): string {
   return generateSignature(
     fawryConfig.merchantCode,
     customerProfileId,
