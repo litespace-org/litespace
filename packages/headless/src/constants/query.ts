@@ -38,4 +38,5 @@ export enum QueryKey {
   FindStudioTutors = "find-studio-tutors",
   GetAddCardTokenUrl = "get-add-card-token-url",
   FindCardTokens = "find-card-tokens",
+  FindCurrentSubscription = "find-current-subscription",
 }

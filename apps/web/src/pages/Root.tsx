@@ -7,6 +7,7 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Landing, Web } from "@litespace/utils/routes";
 import { isForbidden } from "@litespace/utils";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
+import { useSubscription } from "@litespace/headless/context/subscription";
 import cn from "classnames";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -38,6 +39,12 @@ const Root: React.FC = () => {
   useEffect(() => {
     set({ meta: tutorQuery.query.data || undefined });
   }, [tutorQuery, set]);
+
+  // TODO: this has been added just for experiment, remove it
+  const sub = useSubscription();
+  useEffect(() => {
+    console.log(sub);
+  }, [sub.fetching, sub]);
 
   /**
    * `nav` is a url param used to hide the page navigation. It is mainlly used

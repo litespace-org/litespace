@@ -23,6 +23,7 @@ import App from "@/App";
 import "@/lib/ga";
 import "@/lib/window";
 import "@litespace/ui/tailwind.css";
+import { SubscriptionProvider } from "@litespace/headless/context/subscription";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,13 +48,15 @@ createRoot(document.getElementById("root")!).render(
                 <ApiProvider>
                   <SocketProvider>
                     <UserProvider>
-                      <EchoProvider>
-                        <MediaQueryProvider>
-                          <ToastProvider>
-                            <App />
-                          </ToastProvider>
-                        </MediaQueryProvider>
-                      </EchoProvider>
+                      <SubscriptionProvider>
+                        <EchoProvider>
+                          <MediaQueryProvider>
+                            <ToastProvider>
+                              <App />
+                            </ToastProvider>
+                          </MediaQueryProvider>
+                        </EchoProvider>
+                      </SubscriptionProvider>
                     </UserProvider>
                   </SocketProvider>
                 </ApiProvider>

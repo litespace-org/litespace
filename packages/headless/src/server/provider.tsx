@@ -67,6 +67,7 @@ export const ServerProvider: React.FC<{
       token,
       tokenPayload,
       tokenExpired,
+      canPerformPrivateRequests: !!token && !tokenExpired,
     };
   }, [removeToken, server, setAuthToken, setBearerToken, token]);
 

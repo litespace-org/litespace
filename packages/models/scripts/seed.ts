@@ -11,11 +11,15 @@ import {
   hashPassword,
   topics,
   availabilitySlots,
+  subscriptions,
+  transactions,
 } from "@litespace/models";
 import {
   IAvailabilitySlot,
   IInterview,
   ILesson,
+  IPlan,
+  ITransaction,
   IUser,
 } from "@litespace/types";
 import dayjs from "dayjs";
@@ -431,7 +435,7 @@ async function main(): Promise<void> {
     });
   }
 
-  await Promise.all([
+  const seededPlans = await Promise.all([
     plans.create({
       weeklyMinutes: 2.5 * 60,
       forInvitesOnly: false,
@@ -458,6 +462,29 @@ async function main(): Promise<void> {
       quarterDiscount: percentage.scale(25),
       yearDiscount: percentage.scale(30),
       active: true,
+    }),
+  ]);
+
+  const seededTXs = await Promise.all([
+    transactions.create({
+      userId: student.id,
+      planId: seededPlans[0].id,
+      planPeriod: IPlan.Period.Year,
+      amount: 2500,
+      paymentMethod: ITransaction.PaymentMethod.Card,
+      providerRefNum: null,
+    }),
+  ]);
+
+  await Promise.all([
+    subscriptions.create({
+      planId: seededPlans[0].id,
+      userId: student.id,
+      txId: seededTXs[0].id,
+      period: IPlan.Period.Year,
+      weeklyMinutes: 300,
+      start: dayjs.utc().toISOString(),
+      end: dayjs.utc().add(1, "year").toISOString(),
     }),
   ]);
 

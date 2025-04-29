@@ -14,6 +14,7 @@ export type Context = {
     exp: number;
   };
   tokenExpired?: boolean;
+  canPerformPrivateRequests?: boolean;
   setAuthToken(token: AuthToken, remember?: boolean): void;
   setBearerToken(token: string, remember?: boolean): void;
   removeToken: Void;
