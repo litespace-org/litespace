@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Typography } from "@/components/Typography";
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { optional } from "@litespace/utils/utils";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
@@ -19,11 +19,7 @@ const ProfileInfo: React.FC<{
   return (
     <div className="flex gap-2">
       <div className="w-6 h-6 md:w-[40px] md:h-[40px] rounded-full overflow-hidden">
-        <Avatar
-          src={optional(imageUrl)}
-          alt={optional(name)}
-          seed={id.toString()}
-        />
+        <AvatarV2 src={optional(imageUrl)} alt={optional(name)} id={id} />
       </div>
       {md ? (
         <div className="flex flex-col text-start gap-[1px]">

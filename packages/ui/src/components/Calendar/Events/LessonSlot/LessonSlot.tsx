@@ -18,8 +18,7 @@ import CalendarRemove from "@litespace/assets/CalendarRemove";
 import More from "@litespace/assets/More";
 import Video from "@litespace/assets/Video";
 import { useFormatMessage } from "@/hooks";
-import { Avatar } from "@/components/Avatar";
-import { optional } from "@litespace/utils/utils";
+import { AvatarV2 } from "@/components/Avatar";
 import Clock from "@litespace/assets/Clock";
 
 type Props = Partial<LessonActions> & {
@@ -59,7 +58,7 @@ const SingleLesson: React.FC<LessonProps & Partial<LessonActions>> = ({
             <MemberAvatar
               src={otherMember.image}
               alt={otherMember.name}
-              seed={otherMember.id.toString()}
+              id={otherMember.id}
             />
           </div>
           <Typography
@@ -149,7 +148,7 @@ const MultipleLessons: React.FC<
                   <MemberAvatar
                     src={lesson.otherMember.image}
                     alt={lesson.otherMember.name}
-                    seed={lesson.otherMember.id.toString()}
+                    id={lesson.otherMember.id}
                   />
                 </motion.button>
                 <AnimatePresence>
@@ -261,10 +260,10 @@ const EventGroupItem: React.FC<
       <div className="absolute top-0 left-0">{OptionsMenu}</div>
       <div className="px-1 py-1 mb-1 flex flex-row gap-2 items-center justify-start">
         <div className="w-6 h-6 overflow-hidden rounded-full border border-natural-400 shrink-0">
-          <Avatar
-            src={optional(otherMember.image)}
-            alt={optional(otherMember.name)}
-            seed={otherMember.id.toString()}
+          <AvatarV2
+            src={otherMember.image}
+            alt={otherMember.name}
+            id={otherMember.id}
           />
         </div>
 

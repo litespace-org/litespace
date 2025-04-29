@@ -8,7 +8,7 @@ import { Void } from "@litespace/types";
 import cn from "classnames";
 import React from "react";
 import { Link } from "react-router-dom";
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { dayjs } from "@litespace/utils";
 import { Tooltip } from "@/components/Tooltip";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
@@ -109,10 +109,10 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
               className="flex gap-2 items-center p-1"
             >
               <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
-                <Avatar
+                <AvatarV2
                   alt={lesson.name}
                   src={lesson.imageUrl}
-                  seed={lesson.userId}
+                  id={lesson.userId}
                   object="cover"
                 />
               </div>

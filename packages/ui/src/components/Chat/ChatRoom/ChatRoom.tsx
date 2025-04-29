@@ -9,7 +9,7 @@ import Edit from "@litespace/assets/Edit";
 import Muted from "@litespace/assets/Muted";
 import SingleCheck from "@litespace/assets/SingleCheck";
 import DoubleCheck from "@litespace/assets/DoubleCheck";
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { IMessage, Void } from "@litespace/types";
 import { Menu, type MenuAction } from "@/components/Menu";
 
@@ -97,7 +97,7 @@ export const ChatRoom: React.FC<Props> = ({
       <div className="flex gap-4 flex-1 py-2 ps-2">
         <div className="w-14 h-14 relative rounded-full shrink-0">
           <div className="overflow-hidden rounded-full relative w-full h-full">
-            <Avatar src={imageUrl} alt={name} seed={userId.toString()} />
+            <AvatarV2 src={imageUrl} alt={name} id={userId} />
           </div>
           {online && !active ? (
             <div className="absolute bottom-0 right-1 z-online-indicator w-3 h-3 rounded-full bg-brand-500 border-[.5px] border-natural-50 " />

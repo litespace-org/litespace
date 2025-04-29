@@ -87,7 +87,7 @@ export const SlotsList: React.FC<{
                         <MemberAvatar
                           src={member.image}
                           alt={member.name}
-                          seed={member.id.toString()}
+                          id={member.id}
                         />
                       </div>
                     ))}

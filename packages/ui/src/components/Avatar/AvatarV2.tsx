@@ -9,9 +9,9 @@ type Status = "loading" | "loaded" | "error";
 
 const COLOR_STYLES = [
   // green
-  "[&>[data-id=colored]]:fill-[oklch(0.86_0.2739_144.75)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.81_0.2728_144.75)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.79_0.2871_148.23)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.57_0.2311_144.75)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.62_0.2467_144.75)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.65_0.2742_144.75)]",
   "[&>[data-id=colored]]:fill-[oklch(0.69_0.2491_148.23)]",
   // blue
   "[&>[data-id=colored]]:fill-[oklch(0.56_0.2509_257.98)]",
@@ -19,20 +19,20 @@ const COLOR_STYLES = [
   "[&>[data-id=colored]]:fill-[oklch(0.51_0.2171_257.98)]",
   "[&>[data-id=colored]]:fill-[oklch(0.48_0.2871_268.94)]",
   // pink
-  "[&>[data-id=colored]]:fill-[oklch(0.74_0.2937_335.64)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.7_0.3332_335.64)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.65_0.3069_335.64)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.68_0.3003_335.64)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.55_0.2687_335.64)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.59_0.2837_335.64)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.63_0.3009_335.64)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.64_0.3145_335.64)]",
   // redish
-  "[&>[data-id=colored]]:fill-[oklch(0.71_0.2311_36.85)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.68_0.2311_36.85)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.68_0.2487_36.85)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.54_0.1998_36.85)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.6_0.2252_36.85)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.63_0.2383_36.85)]",
   "[&>[data-id=colored]]:fill-[oklch(0.65_0.241_36.85)]",
-  // orange
-  "[&>[data-id=colored]]:fill-[oklch(0.79_0.2002_65.65)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.74_0.1893_65.65)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.82_0.1969_77.29)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.77_0.1861_63.53)]",
+  // violate
+  "[&>[data-id=colored]]:fill-[oklch(0.49_0.2541_308.19)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.55_0.2938_308.19)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.58_0.3112_308.19)]",
+  "[&>[data-id=colored]]:fill-[oklch(0.6_0.3009_308.19)]",
 ];
 
 export const AvatarV2: React.FC<{

@@ -1,13 +1,12 @@
 import React, { useMemo } from "react";
 import cn from "classnames";
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { Typography } from "@/components/Typography";
 import { Button } from "@/components/Button";
 import Star from "@litespace/assets/Star";
 import { useFormatMessage } from "@/hooks";
 import { formatNumber } from "@/components/utils";
 import { Link } from "react-router-dom";
-import { optional } from "@litespace/utils/utils";
 import { Tooltip } from "@/components/Tooltip";
 import { CardProps } from "@/components/TutorCard/types";
 import { isEmpty } from "lodash";
@@ -57,12 +56,7 @@ export const TutorCard: React.FC<CardProps> = ({
     >
       <div className="flex flex-row gap-2 mb-2">
         <div className="rounded-lg overflow-hidden shrink-0 w-[58px] h-[58px]">
-          <Avatar
-            src={optional(imageUrl)}
-            alt={optional(name)}
-            seed={id.toString()}
-            object="cover"
-          />
+          <AvatarV2 src={imageUrl} alt={name} id={id} object="cover" />
         </div>
         <div>
           <Typography

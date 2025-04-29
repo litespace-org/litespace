@@ -1,10 +1,9 @@
 import { RatingStars } from "@/components/RatingStars";
 import { TutorRatingCardGroupProps } from "@/components/TutorFeedback/types";
 import Quote from "@litespace/assets/Quote";
-import { optional } from "@litespace/utils/utils";
 import cn from "classnames";
 import React, { useMemo } from "react";
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import { countBy, first } from "lodash";
@@ -80,10 +79,10 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
                 style={{ zIndex: idx }}
               >
                 {idx < 4 || isLast ? (
-                  <Avatar
-                    alt={optional(rating.name)}
-                    seed={rating.userId.toString()}
-                    src={idx <= 4 ? optional(rating.imageUrl) : undefined}
+                  <AvatarV2
+                    alt={rating.name}
+                    id={rating.userId}
+                    src={idx <= 4 ? rating.imageUrl : undefined}
                   />
                 ) : (
                   <Typography

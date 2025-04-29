@@ -1,10 +1,9 @@
 import Star from "@litespace/assets/Star";
-import { optional } from "@litespace/utils/utils";
 import cn from "classnames";
 import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
 import { useFormatMessage } from "@/hooks/intl";
-import { Avatar } from "@litespace/ui/Avatar";
+import { AvatarV2 } from "@litespace/ui/Avatar";
 import { Typography } from "@litespace/ui/Typography";
 import { formatNumber } from "@litespace/ui/utils";
 import { Tooltip } from "@litespace/ui/Tooltip";
@@ -62,17 +61,12 @@ export const TutorCard: React.FC<{
       )}
     >
       <div className="hidden md:block rounded-lg overflow-hidden shrink-0 w-[200px]">
-        <Avatar src={imageUrl} alt={name} seed={id.toString()} />
+        <AvatarV2 src={imageUrl} alt={name} id={id} />
       </div>
       <div className="flex flex-col">
         <div className="flex gap-2">
           <div className="block md:hidden w-[58px] h-[58px] rounded-lg overflow-hidden shrink-0">
-            <Avatar
-              src={optional(imageUrl)}
-              alt={optional(name)}
-              seed={id.toString()}
-              object="fill"
-            />
+            <AvatarV2 src={imageUrl} alt={name} id={id} object="fill" />
           </div>
           <Typography
             tag="h3"

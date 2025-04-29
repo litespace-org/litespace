@@ -1,4 +1,4 @@
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { Loader, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
@@ -153,10 +153,10 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                 )}
               >
                 <div className="w-10 h-10 rounded-lg overflow-hidden">
-                  <Avatar
+                  <AvatarV2
                     src={lesson.otherMember.imageUrl}
                     alt={lesson.otherMember.name}
-                    seed={lesson.otherMember.id}
+                    id={lesson.otherMember.id}
                     object="cover"
                   />
                 </div>

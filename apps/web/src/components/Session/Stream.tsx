@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import cn from "classnames";
-import { Avatar } from "@litespace/ui/Avatar";
+import { AvatarV2 } from "@litespace/ui/Avatar";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Lottie from "react-lottie";
 import audioWave from "@/components/Session/audioWave.json";
@@ -118,7 +118,7 @@ const Stream: React.FC<{
             "w-16 h-16": size == "sm",
           })}
         >
-          <Avatar src={userImage} alt={userName} seed={userId} />
+          <AvatarV2 src={userImage} alt={userName} id={userId} />
         </div>
 
         {userName ? (

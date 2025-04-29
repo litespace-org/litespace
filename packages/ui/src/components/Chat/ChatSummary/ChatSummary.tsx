@@ -1,4 +1,4 @@
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { Loader, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
@@ -101,9 +101,9 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                       className="group w-full flex gap-2 p-1"
                     >
                       <div className="min-w-[43px] min-h-[43px] w-[43px] h-[43px] rounded-lg overflow-hidden">
-                        <Avatar
+                        <AvatarV2
                           src={room.otherMember.image}
-                          seed={room.otherMember.id.toString()}
+                          id={room.otherMember.id}
                           alt={room.otherMember.name}
                           object="cover"
                         />

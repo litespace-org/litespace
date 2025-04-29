@@ -1,7 +1,6 @@
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
-import { optional } from "@litespace/utils/utils";
 import { IUser } from "@litespace/types";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
@@ -57,11 +56,7 @@ export const UserTyping: React.FC<{
         className="flex flex-row items-center gap-2"
       >
         <div className="w-7 h-7 rounded-full overflow-hidden">
-          <Avatar
-            src={optional(imageUrl)}
-            alt={optional(name)}
-            seed={id.toString()}
-          />
+          <AvatarV2 src={imageUrl} alt={name} id={id} />
         </div>
         <div>
           {name ? (

@@ -83,7 +83,7 @@ export const AvailabilitySlot: React.FC<Props> = ({
                       <MemberAvatar
                         src={member.image}
                         alt={member.name}
-                        seed={member.id.toString()}
+                        id={member.id}
                       />
                     ) : members.length > VISIBLE_AVATAR_COUNT ? (
                       <div className="flex items-center justify-center bg-natural-500 text-natural-50 shrink-0 w-9 h-9 rounded-full overflow-hidden">

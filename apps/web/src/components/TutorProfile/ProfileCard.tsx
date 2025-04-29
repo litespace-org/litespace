@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
-import { optional } from "@litespace/utils/utils";
 import Star from "@litespace/assets/Star";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
-import { Avatar } from "@litespace/ui/Avatar";
+import { AvatarV2 } from "@litespace/ui/Avatar";
 import { Typography } from "@litespace/ui/Typography";
 import { formatNumber } from "@litespace/ui/utils";
 import { Button } from "@litespace/ui/Button";
@@ -90,12 +89,7 @@ export const ProfileCard: React.FC<{
             "w-[90px] h-[90px] md:w-[242px] md:h-[242px]"
           )}
         >
-          <Avatar
-            src={optional(image)}
-            alt={optional(name)}
-            seed={id.toString()}
-            object="cover"
-          />
+          <AvatarV2 src={image} alt={name} id={id} object="cover" />
         </div>
 
         <div className="sm:flex sm:flex-col w-full sm:gap-5 min-w-max">
