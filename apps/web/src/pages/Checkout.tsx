@@ -2,8 +2,6 @@ import React, { useEffect, useMemo } from "react";
 import { Typography } from "@litespace/ui/Typography";
 import Logo from "@litespace/assets/Logo";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import Payment from "@/components/Checkout/Payment";
-import Plan from "@/components/Checkout/Plan";
 import { UrlParamsOf, Web } from "@litespace/utils/routes";
 import { Replace } from "@litespace/types";
 import { useNavigate, useParams } from "react-router-dom";
@@ -11,6 +9,7 @@ import { isInteger } from "lodash";
 import { useLogger } from "@litespace/headless/logger";
 import { isValidPlanPeriodLiteral } from "@litespace/utils";
 import { useUserContext } from "@litespace/headless/context/user";
+import Tabs from "@/components/Checkout/Tabs";
 
 type Params = Replace<UrlParamsOf<Web.Checkout>, "planId" | "period", string>;
 
@@ -42,7 +41,7 @@ const Checkout: React.FC = () => {
   if (!planId || !period || !user) return null;
 
   return (
-    <div className="h-full gap-6 flex flex-col items-center mt-[15vh]">
+    <div className="h-full gap-8 flex flex-col items-center mt-[15vh]">
       <div
         dir="ltr"
         className="flex flex-row gap-4 items-center justify-center"
@@ -52,15 +51,7 @@ const Checkout: React.FC = () => {
           {intl("labels.litespace")}
         </Typography>
       </div>
-
-      <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-10 w-full px-10">
-        <div className="w-full md:flex-1 flex flex-col max-w-[464px]">
-          <Payment planId={planId} period={period} phone={user.phone} />
-        </div>
-        <div className="w-full md:flex-1 flex flex-col max-w-[530px]">
-          <Plan />
-        </div>
-      </div>
+      <Tabs planId={planId} period={period} phone={user.phone} />
     </div>
   );
 };
