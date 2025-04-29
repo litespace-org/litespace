@@ -1,4 +1,4 @@
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
@@ -11,7 +11,6 @@ import { Menu, type MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import CheckCircle from "@litespace/assets/CheckCircle";
-import { optional } from "@litespace/utils";
 
 export type Props = {
   start: string;
@@ -231,11 +230,7 @@ export const LessonCard: React.FC<Props> = ({
       <div className="flex flex-col gap-6">
         <div className="flex gap-2">
           <div className="w-[65px] h-[65px] rounded-full overflow-hidden">
-            <Avatar
-              src={optional(member.image)}
-              alt={optional(member.name)}
-              seed={member.id.toString()}
-            />
+            <AvatarV2 src={member.image} alt={member.name} id={member.id} />
           </div>
           <div className="flex flex-col gap-1">
             <Typography

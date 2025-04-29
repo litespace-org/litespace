@@ -6,7 +6,7 @@ import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
-import { Avatar } from "@litespace/ui/Avatar";
+import { AvatarV2 } from "@litespace/ui/Avatar";
 
 import { Dashboard } from "@litespace/utils/routes";
 import { router } from "@/lib/route";
@@ -26,7 +26,7 @@ const TutorCard: React.FC<Props> = ({ image, name, email, createdAt, id }) => {
   return (
     <div className="relative flex flex-col p-4 gap-1 bg-natural-50 border border-natural-200 rounded">
       <div key={image} className="w-10 h-10 rounded-full overflow-hidden">
-        <Avatar src={image} alt={name || email} seed={id.toString()} />
+        <AvatarV2 src={image} alt={name || email} id={id} />
       </div>
 
       <Typography tag="h2" className="text-body font-bold">

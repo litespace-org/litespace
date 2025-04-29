@@ -1,4 +1,4 @@
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { Menu } from "@/components/Menu";
 import { RatingCardProps } from "@/components/TutorFeedback/types";
 import { Typography } from "@/components/Typography";
@@ -8,7 +8,6 @@ import Quote from "@litespace/assets/Quote";
 import EditMessage from "@litespace/assets/EditMessage";
 import Trash from "@litespace/assets/Trash";
 import { RatingStars } from "@/components/RatingStars/RatingStars";
-import { optional } from "@litespace/utils/utils";
 import cn from "classnames";
 import React from "react";
 
@@ -68,11 +67,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
           )}
         >
           <div className="overflow-hidden w-full h-full rounded-full">
-            <Avatar
-              src={optional(imageUrl)}
-              alt={optional(studentName)}
-              seed={studentId.toString()}
-            />
+            <AvatarV2 src={imageUrl} alt={studentName} id={studentId} />
           </div>
           <div
             className={cn(

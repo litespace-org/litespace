@@ -3,11 +3,10 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import { first } from "lodash";
-import { Avatar } from "@litespace/ui/Avatar";
+import { AvatarV2 } from "@litespace/ui/Avatar";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
 import { useUserContext } from "@litespace/headless/context/user";
-import { optional } from "@litespace/utils";
 import { useUploadUserImage } from "@litespace/headless/user";
 
 const UploadPhoto: React.FC<{
@@ -46,11 +45,7 @@ const UploadPhoto: React.FC<{
         }}
       />
       <div className="min-w-[84px] min-h-[84px] lg:w-[102px] lg:h-[102px] rounded-full overflow-hidden">
-        <Avatar
-          src={optional(photoUrl)}
-          alt={optional(user?.name)}
-          seed={id.toString()}
-        />
+        <AvatarV2 src={photoUrl} alt={user?.name} id={id} />
       </div>
       <div className="grow md:grow-0 flex flex-col sm:flex-col-reverse justify-between lg:flex-col gap-2 lg:gap-4">
         <Typography

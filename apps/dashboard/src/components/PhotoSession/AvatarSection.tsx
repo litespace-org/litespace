@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { Avatar } from "@litespace/ui/Avatar";
+import { AvatarV2 } from "@litespace/ui/Avatar";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
@@ -58,11 +58,11 @@ export const AvatarSection: React.FC<{
       />
 
       <div className="w-[174px] h-[174px] rounded-full overflow-hidden">
-        <Avatar
+        <AvatarV2
           key={tutor?.image}
           src={tutor?.image}
           alt={tutor?.name}
-          seed={tutor?.id}
+          id={tutor?.id}
         />
       </div>
 

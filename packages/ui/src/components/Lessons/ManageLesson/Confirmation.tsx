@@ -1,4 +1,4 @@
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { Typography } from "@/components/Typography";
 import { formatMinutes } from "@/components/utils";
@@ -8,7 +8,6 @@ import Calendar from "@litespace/assets/Calendar";
 import Clock from "@litespace/assets/Clock";
 import Timer from "@litespace/assets/Timer";
 import { Void } from "@litespace/types";
-import { optional } from "@litespace/utils/utils";
 import React from "react";
 
 export const Confirmation: React.FC<{
@@ -35,11 +34,7 @@ export const Confirmation: React.FC<{
     <div className="flex flex-col gap-10 md:gap-6 mt-[34px] md:mt-6">
       <div className="flex flex-row gap-4 md:gap-6">
         <div className="w-[73px] h-[73px] md:w-[120px] md:h-[120px] overflow-hidden rounded-full">
-          <Avatar
-            src={optional(imageUrl)}
-            alt={optional(name)}
-            seed={tutorId.toString()}
-          />
+          <AvatarV2 src={imageUrl} alt={name} id={tutorId} />
         </div>
         <div className="flex flex-col gap-2 md:gap-4">
           <Typography

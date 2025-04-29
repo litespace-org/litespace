@@ -1,10 +1,9 @@
 import React from "react";
 import cn from "classnames";
-import { Avatar } from "@/components/Avatar";
+import { AvatarV2 } from "@/components/Avatar";
 import { Typography } from "@/components/Typography";
 import { ChatMessage } from "@/components/Chat/ChatMessage";
 import { motion } from "framer-motion";
-import { optional } from "@litespace/utils/utils";
 import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@/hooks";
 import { DisplayMessage } from "@/lib/chat";
@@ -71,11 +70,7 @@ export const ChatMessageGroup: React.FC<{
           inSession ? "w-8 h-8" : "w-14 h-14"
         )}
       >
-        <Avatar
-          alt={optional(name)}
-          src={optional(image)}
-          seed={userId.toString()}
-        />
+        <AvatarV2 alt={name} src={image} id={userId} />
       </div>
       <div>
         <div

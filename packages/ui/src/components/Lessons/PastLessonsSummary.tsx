@@ -14,8 +14,7 @@ import EmptyLessons from "@litespace/assets/EmptyLessons";
 import AddCalendarSVG from "@litespace/assets/CalendarAdd";
 import SendSVG from "@litespace/assets/Send2";
 import { Void } from "@litespace/types";
-import { Avatar } from "@/components/Avatar";
-import { optional } from "@litespace/utils";
+import { AvatarV2 } from "@/components/Avatar";
 import { Tooltip } from "@/components/Tooltip";
 import { BasePastLessonProps } from "@/components/Lessons/types";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
@@ -202,11 +201,7 @@ export const Row: React.FC<RowProps> = ({
       })}
     >
       <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
-        <Avatar
-          alt={optional(name)}
-          src={optional(imageUrl)}
-          seed={userId?.toString()}
-        />
+        <AvatarV2 alt={name} src={imageUrl} id={userId} />
       </div>
       <div className="flex flex-col justify-between self-stretch">
         <Typography
