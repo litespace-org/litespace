@@ -127,7 +127,7 @@ export type RefundPayload = {
 
 export type RefundResponse = BaseResponse & {};
 
-export type FindCardTokensResponse = BaseResponse & {
+export type FindCardTokensResponse = {
   cards: Array<{
     /**
      * The saved card token for your requested client ID.
@@ -152,7 +152,7 @@ export type DeleteCardTokenPayload = {
   cardToken: string;
 };
 
-export type DeleteCardTokenResponse = BaseResponse;
+export type DeleteCardTokenResponse = void;
 
 export type GetPaymentStatusResponse = unknown;
 

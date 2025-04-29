@@ -228,13 +228,13 @@ class Api extends Base {
     });
   }
 
-  async listCardTokens(
+  async findCardTokens(
     customerProfileId: number
   ): Promise<Responses.ListCardTokens> {
     const payload: Requests.ListCardTokensPayload = {
       customerProfileId,
       merchantCode: fawryConfig.merchantCode,
-      signature: genSignature.forListCardTokensRequest(customerProfileId),
+      signature: genSignature.forFindCardTokensRequest(customerProfileId),
     };
 
     return await this.get({
