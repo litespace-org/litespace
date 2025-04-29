@@ -50,6 +50,11 @@ export function VerifyCode({
                 {phoneNumber}
               </Typography>
             ),
+            method: intl(
+              activeMethod === "whatsapp"
+                ? "notification-method.whatsapp"
+                : "notification-method.telegram"
+            ),
           })}
         </Typography>
         <ConfirmationCode

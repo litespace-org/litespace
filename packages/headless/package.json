@@ -40,7 +40,8 @@
     "./recorder": "./dist/recorder.js",
     "./contactRequest": "./dist/contactRequest.js",
     "./fawry": "./dist/fawry.js",
-    "./transaction": "./dist/transaction.js"
+    "./transaction": "./dist/transaction.js",
+    "./confirmationCode": "./dist/confirmationCode.js"
   },
   "react-native": {
     "./auth": "./dist/auth.js",

@@ -8,7 +8,7 @@ import { VerifyCode } from "@/components/VerifyNotificationMethodDialog/VerifyCo
 import { EnterPhoneNumber } from "@/components/VerifyNotificationMethodDialog/EnterPhoneNumber";
 import { Typography } from "@litespace/ui/Typography";
 
-type VerifyNotificationMethodDialogProps = {
+type Props = {
   close: Void;
   method: IUser.NotificationMethodLiteral | null;
   phone: string | null;
@@ -28,7 +28,7 @@ export function VerifyNotificationMethodDialog({
   sendCode,
   verifyCode,
   verifing,
-}: VerifyNotificationMethodDialogProps) {
+}: Props) {
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>();
   const [activeMethod, setActiveMethod] =
@@ -48,7 +48,6 @@ export function VerifyNotificationMethodDialog({
 
   const sendVerificationCode = useCallback(() => {
     if (!activeMethod || !phoneNumber) return;
-    console.log({ activeMethod, phoneNumber });
 
     sendCode({
       method: activeMethod,
