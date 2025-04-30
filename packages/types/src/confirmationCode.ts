@@ -47,3 +47,22 @@ export type VerifyPhoneCodePayload = {
   code: number;
   method: IUser.NotificationMethodLiteral;
 };
+
+export type SendForgetPasswordEmailPayload = {
+  email: string;
+};
+
+export type SendVerifyEmailPayload = {
+  email: string;
+};
+
+export type ConfirmForgetPasswordCodePayload = {
+  password: string;
+  code: number;
+};
+
+export type ConfirmPasswordCodeApiResponse = void;
+
+export type VerifyEmailPayload = {
+  code: number;
+};

@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import s3 from "@/lib/s3";
-import { isValidPhone } from "@litespace/utils/validation";
+import { isValidPhone } from "@litespace/utils";
 
 export function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -52,7 +52,7 @@ export async function withImageUrls<
   return await Promise.all(users.map((user) => withImageUrl(user)));
 }
 
-export function withPhone(
+export function selectPhone(
   userPhone: string | null,
   backupPhone?: string
 ): { valid: boolean; phone?: string; update: boolean } {

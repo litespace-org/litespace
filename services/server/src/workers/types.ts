@@ -10,6 +10,15 @@ export type WorkerMessage =
       };
     }
   | {
+      type:
+        | "send-user-verification-code-email"
+        | "send-forget-password-code-email";
+      payload: {
+        email: string;
+        code: number;
+      };
+    }
+  | {
       type: "update-tutor-cache";
       payload: { tutorId: number };
     }

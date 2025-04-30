@@ -3,7 +3,7 @@ import { EmailTemplate } from "@litespace/emails";
 import { IToken } from "@litespace/types";
 import jwt from "jsonwebtoken";
 import { tokensExpireTime, jwtSecret } from "@/constants";
-import { safe } from "@litespace/utils/error";
+import { safe, safePromise } from "@litespace/utils/error";
 import { nameof } from "@litespace/utils/utils";
 import { WorkerMessageOf, WorkerMessagePayloadOf } from "@/workers/types";
 import { sessionEvents, tutors } from "@litespace/models";
@@ -44,6 +44,44 @@ export async function sendAuthTokenEmail({
   });
 
   if (error instanceof Error) console.error(nameof(sendAuthTokenEmail), error);
+}
+
+export async function sendForgetPasswordCodeEmail({
+  email,
+  code,
+}: {
+  email: string;
+  code: number;
+}) {
+  const result = await safePromise(
+    emailer.send({
+      to: email,
+      template: EmailTemplate.ForgetPasswordV2,
+      props: { code },
+    })
+  );
+
+  if (result instanceof Error)
+    console.error(nameof(sendForgetPasswordCodeEmail), result);
+}
+
+export async function sendUserVerificationCodeEmail({
+  email,
+  code,
+}: {
+  email: string;
+  code: number;
+}) {
+  const error = await safePromise(
+    emailer.send({
+      to: email,
+      template: EmailTemplate.VerifyEmailV2,
+      props: { code },
+    })
+  );
+
+  if (error instanceof Error)
+    console.error(nameof(sendUserVerificationCodeEmail), error);
 }
 
 /**
