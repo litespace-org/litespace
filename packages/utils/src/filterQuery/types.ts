@@ -56,6 +56,18 @@ export type Query = Record<
   Value | Partial<Record<Operator, Value>> | undefined
 >;
 
+export type JsonNullableString = {
+  type: ["string", "null"];
+  default?: string | null;
+  description?: string;
+};
+
+export type JsonNullableNumber = {
+  type: ["number", "null"];
+  default?: string | null;
+  description?: string;
+};
+
 export type JsonBoolean = {
   type: "boolean";
   default?: boolean;
@@ -115,6 +127,8 @@ export type JsonObject = {
       | JsonNumber
       | JsonInteger
       | JsonBoolean
+      | JsonNullableNumber
+      | JsonNullableString
       | JsonArray
       | JsonComparable;
   };

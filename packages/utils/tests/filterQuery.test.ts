@@ -220,23 +220,36 @@ describe(nameof(AutoComplete), () => {
         .array()
         .optional()
         .describe("list of plan periods"),
-      weeklyMinutes: zod.union([
-        zod.number().min(0).max(10).describe("filter by weekly minutes"),
-        zod.object({
-          gte: zod.number().optional(),
-          lte: zod.number().optional(),
-          gt: zod.number().optional(),
-          lt: zod.number().optional(),
-        }),
-      ]),
+      weeklyMinutes: zod
+        .union([
+          zod.number().min(0).max(10).describe("filter by weekly minutes"),
+          zod.object({
+            gte: zod.number().optional(),
+            lte: zod.number().optional(),
+            gt: zod.number().optional(),
+            lt: zod.number().optional(),
+          }),
+        ])
+        .optional(),
       page: zod.number().int().positive().optional().default(1),
       size: zod.number().int().negative().optional().default(10),
       seed: zod.number().default(1).describe("random seed number"),
       name: zod.string().optional().describe("search by user name"),
+      // nullable string
+      bio: zod
+        .union([zod.string().describe("desc"), zod.null()])
+        .describe("search by tutor bio")
+        .default(null),
+      // nullable number
+      notice: zod
+        .union([zod.number(), zod.null()])
+        .describe("search by tutor notice"),
+      // string search
       email: zod
         .string()
         .default("test@litespace.org")
         .describe("search by user email"),
+      // union fields
       env: zod
         .union([
           zod.literal("local"),
@@ -244,6 +257,7 @@ describe(nameof(AutoComplete), () => {
           zod.literal("production"),
         ])
         .describe("target environment"),
+      // boolean fields
       active: zod.boolean().optional().default(false),
     });
 
@@ -256,6 +270,8 @@ describe(nameof(AutoComplete), () => {
       "size (integer) — (default=10) (max=0)",
       "seed (number) — random seed number (default=1)",
       "name (string) — search by user name",
+      "bio (string or null) — search by tutor bio",
+      "notice (number or null) — search by tutor notice",
       "email (string) — search by user email",
       "env (string) — target environment (local, staging, production)",
       "active (boolean) — (default=false)",
