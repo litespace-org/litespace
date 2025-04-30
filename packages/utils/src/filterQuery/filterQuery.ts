@@ -1,99 +1,27 @@
-import { first } from "lodash";
 import {
   Boolean,
   Key,
   List,
   Operator,
   Program,
+  Query,
   Statement,
   Statements,
-  Token,
   TokenType,
   Value,
-} from "@/searchSchema/types";
+} from "@/filterQuery/types";
+import { Tokenizer } from "@/filterQuery/tokenizer";
+import { BaseParser } from "@/filterQuery/parser";
+import { isUndefined } from "lodash";
 
-const TOKEN_SPEC: Array<[RegExp, TokenType]> = [
-  [/^\s+/, "whitespace"],
-  [/^:/, "colon"],
-  [/(^-?\d+\.\d+)|(^-?\.\d+)|(^-?\d+)/, "number"],
-  [/^'/, "single-quote"],
-  [/^"/, "douple-quote"],
-  [/^!/, "bang"],
-  [/^=/, "eq"],
-  [/^>/, "gt"],
-  [/^</, "lt"],
-  [/^null/, "null"],
-  [/^,/, "coma"],
-  [/^\[/, "open-square-bracket"],
-  [/^\]/, "close-square-bracket"],
-  [/^\{/, "open-curly-bracket"],
-  [/^\}/, "close-curly-bracket"],
-  [/^\(/, "open-round-bracket"],
-  [/^\)/, "close-round-bracket"],
-  [/^[^\s:\d=><"'!,[\]{}()]/, "char"],
-];
-
-class Tokenizer {
-  private cursor: number;
-  private src: string;
-  private buffer: Token[];
-
-  constructor(src: string = "") {
-    this.src = src;
-    this.cursor = 0;
-    this.buffer = [];
-  }
-
-  hasMoreTokens(): boolean {
-    return this.cursor < this.src.length;
-  }
-
-  isEof() {
-    return this.cursor === this.src.length;
-  }
-
-  next(): Token | null {
-    if (!this.hasMoreTokens()) return null;
-    const src = this.src.slice(this.cursor);
-
-    for (const [expr, type] of TOKEN_SPEC) {
-      const matched = expr.exec(src);
-      if (matched === null) continue;
-      const value = first(matched);
-      if (typeof value === "undefined")
-        throw new Error("missing expression value; should never happen");
-
-      // advance the cursor
-      this.cursor += value.length;
-      const token = { type, value };
-      this.buffer.push(token);
-      return token;
-    }
-
-    throw new Error(`unexpected token at index=${this.cursor} src=${src}`);
-  }
-
-  undo() {
-    const token = this.buffer.pop();
-    if (!token) return;
-    this.src = token.value + this.src;
-    this.cursor -= token.value.length;
-  }
-}
-
-class Parser {
-  private src: string;
-  private tokenizer: Tokenizer | null;
-  private lookahead: Token | null;
-
+export class FilterQueryParser extends BaseParser {
   constructor() {
-    this.src = "";
+    super();
     this.tokenizer = null;
     this.lookahead = null;
   }
 
   parse(src: string) {
-    this.src = src;
     this.tokenizer = new Tokenizer(src);
     this.lookahead = this.tokenizer.next();
     return this.program();
@@ -128,11 +56,12 @@ class Parser {
   /**
    * statement
    *    : is ':' boolean
-   *    : key operator value
+   *    : key ?operator ?value
    *    ;
    */
   statement(): Statement {
     const key = this.key();
+    if (this.isEof()) return { key, operator: undefined, value: undefined };
 
     if (key === "is") {
       this.eat("colon");
@@ -147,6 +76,8 @@ class Parser {
     }
 
     const operator = this.operator();
+    if (this.isEof()) return { key, operator, value: undefined };
+
     const value = this.value();
     this.eatop("whitespace");
 
@@ -344,7 +275,7 @@ class Parser {
     }
 
     // consume the closing parenthesis
-    this.eat(end);
+    this.eatop(end);
 
     return list;
   }
@@ -363,48 +294,42 @@ class Parser {
     if (type === "open-round-bracket") return "close-round-bracket";
     throw new Error(`unexpected list token: ${type}`);
   }
+}
 
-  private eat(type?: TokenType): Token {
-    const token = this.lookahead;
-    if (!token)
-      throw new Error(
-        `unexpected end of input, expected token of type ${type}`
-      );
+function asQuery(program: Program) {
+  const output: Query = {};
 
-    if (type && token.type !== type)
-      throw new Error(`unexpected token: ${token.type}, expected: ${type}`);
+  for (const { key, operator, value } of program.value) {
+    if (isUndefined(key) || isUndefined(operator) || isUndefined(value))
+      continue;
 
-    if (!this.tokenizer)
-      throw new Error("tokenizer is not initialized, should never happen.");
+    const current = output[key];
 
-    this.lookahead = this.tokenizer.next();
+    if (!current && operator === "eq") {
+      output[key] = value;
+      continue;
+    }
 
-    return token;
+    const otherOperators =
+      typeof current === "object" || typeof current === "undefined"
+        ? current
+        : { eq: current };
+
+    output[key] = {
+      ...otherOperators,
+      [operator]: value,
+    };
   }
 
-  /**
-   * eat then return the value
-   */
-  private eatr<T>(type: TokenType, value: T) {
-    this.eat(type);
-    return value;
-  }
-
-  /**
-   * Optional eat token if exist.
-   */
-  private eatop(type: TokenType): Token | null {
-    if (this.isNext(type)) return this.eat(type);
-    return null;
-  }
-
-  private isNext(...types: TokenType[]) {
-    return types.some((type) => this.lookahead?.type === type);
-  }
+  return output;
 }
 
 function parse(src: string) {
-  return new Parser().parse(src);
+  return asQuery(new FilterQueryParser().parse(src));
 }
 
-export const searchSchema = { parse };
+function program(src: string) {
+  return new FilterQueryParser().parse(src);
+}
+
+export const filterQuery = { parse, program };
