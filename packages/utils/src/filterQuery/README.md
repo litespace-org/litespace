@@ -7,20 +7,21 @@
 ```ts
 {
     [key: string]?: number | {
-        gt?: number, 
-        gte?: number, 
-        lt?: number, 
-        lte?: number, 
+        gt?: number,
+        gte?: number,
+        lt?: number,
+        lte?: number,
         noeq?: number
     }
 }
 ```
 
-#### Example 
+#### Example
 
 ```ts
 const query = zod.object({
-  weeklyMinutes: zod.number()
+  weeklyMinutes: zod
+    .number()
     .min(0)
     .optional()
     .or(
@@ -33,19 +34,18 @@ const query = zod.object({
         })
         .optional()
     ),
-})
+});
 ```
-
 
 ### Date
 
 ```ts
 {
     [key: string]?: string | {
-        gt?: string, 
-        gte?: string, 
-        lt?: string, 
-        lte?: string, 
+        gt?: string,
+        gte?: string,
+        lt?: string,
+        lte?: string,
         noeq?: string
     }
 }
@@ -55,7 +55,8 @@ const query = zod.object({
 
 ```ts
 const query = zod.object({
-  start: zod.string()
+  start: zod
+    .string()
     .min(0)
     .optional()
     .or(
@@ -68,7 +69,7 @@ const query = zod.object({
         })
         .optional()
     ),
-})
+});
 ```
 
 # Incomparable fields
@@ -88,5 +89,5 @@ const query = zod.object({
   page: zod.number().optional().default(1),
   size: zod.number().optional().default(10),
   name: zod.string().optional(),
-})
+});
 ```
