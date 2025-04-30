@@ -18,4 +18,12 @@ export function getToken(): string | null {
   return load(CacheKey.AuthToken);
 }
 
+export function saveQr(qr: string) {
+  return save(CacheKey.WalletQR, qr);
+}
+
+export function getQr(): string | null {
+  return load(CacheKey.WalletQR);
+}
+
 export const cache = { save, load };

@@ -1,4 +1,11 @@
-import { EmptyObject, IMessage, ISession, ITutor, Server } from "@/index";
+import {
+  EmptyObject,
+  IMessage,
+  ISession,
+  ITransaction,
+  ITutor,
+  Server,
+} from "@/index";
 import { SessionDescription } from "@/webrtc";
 
 /**
@@ -228,7 +235,10 @@ export type ServerEventsMap = {
   }>;
   [ServerEvent.AnnounceIncomingOffer]: EventCallback<EmptyObject>;
   [ServerEvent.PeerReadyToReceiveOffer]: EventCallback<EmptyObject>;
-  [ServerEvent.PaymentStatusUpdate]: EventCallback<EmptyObject>;
+  [ServerEvent.PaymentStatusUpdate]: EventCallback<{
+    id: number;
+    status: ITransaction.Status;
+  }>;
 };
 
 // Generic types to extract the payload of the events

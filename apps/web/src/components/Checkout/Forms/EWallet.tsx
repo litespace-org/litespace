@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
@@ -6,6 +6,11 @@ import { Typography } from "@litespace/ui/Typography";
 import { useForm } from "@litespace/headless/form";
 import { isValidPhone } from "@litespace/ui/lib/validate";
 import { PatternInput } from "@litespace/ui/PatternInput";
+import { useOnError } from "@/hooks/error";
+import { usePayWithEWallet } from "@litespace/headless/fawry";
+import { IPlan } from "@litespace/types";
+import { saveQr } from "@/lib/cache";
+import { useToast } from "@litespace/ui/Toast";
 
 type Form = {
   phone: string;
@@ -13,9 +18,38 @@ type Form = {
 };
 
 const Payment: React.FC<{
+  planId: number;
+  period: IPlan.PeriodLiteral;
   phone: string | null;
-}> = ({ phone }) => {
+  onStateChange: (pending: boolean) => void;
+}> = ({ phone, planId, period, onStateChange }) => {
   const intl = useFormatMessage();
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+  const toast = useToast();
+
+  // ==================== pay with ewallet ====================
+  const onError = useOnError({
+    type: "mutation",
+    handler(error) {
+      setSubmitDisabled(false);
+      toast.error({ title: intl(error.messageId) });
+    },
+  });
+
+  const payWithEWallet = usePayWithEWallet({
+    onError,
+    onSuccess(response) {
+      saveQr(response.walletQr);
+      window.location.reload();
+    },
+  });
+
+  const disabled = useMemo(
+    () => payWithEWallet.isPending || submitDisabled,
+    [payWithEWallet.isPending, submitDisabled]
+  );
+
+  useEffect(() => onStateChange(disabled), [disabled, onStateChange]);
 
   // ==================== form ====================
   const validators = useMakeValidators<Form>({
@@ -35,8 +69,14 @@ const Payment: React.FC<{
       wphone: "",
     },
     validators,
-    onSubmit(_) {
-      alert("not implemeted yet!")
+    onSubmit(data) {
+      setSubmitDisabled(true);
+      payWithEWallet.mutate({
+        planId,
+        period,
+        wallet: data.wphone,
+        phone: data.phone,
+      });
     },
   });
 
@@ -62,7 +102,9 @@ const Payment: React.FC<{
             name="wallet-phone"
             format="### #### ####"
             label={intl("checkout.payment.wallet-phone-number")}
-            placeholder={intl("checkout.payment.wallet-phone-number-placeholder")}
+            placeholder={intl(
+              "checkout.payment.wallet-phone-number-placeholder"
+            )}
             state={form.errors.wphone ? "error" : undefined}
             helper={form.errors.wphone}
             value={form.state.wphone}
@@ -93,8 +135,8 @@ const Payment: React.FC<{
           size="large"
           htmlType="submit"
           className="w-full"
-          disabled={false}
-          loading={false}
+          disabled={disabled}
+          loading={payWithEWallet.isPending}
         >
           {intl("checkout.payment.confirm-button")}
         </Button>

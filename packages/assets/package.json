@@ -70,6 +70,7 @@
     "./Clock": "./dist/Clock.tsx",
     "./Close": "./dist/Close.tsx",
     "./Close2": "./dist/Close2.tsx",
+    "./Copy": "./dist/Copy.tsx",
     "./CurvedDashedLine": "./dist/CurvedDashedLine.tsx",
     "./Devices": "./dist/Devices.tsx",
     "./DoubleCheck": "./dist/DoubleCheck.tsx",

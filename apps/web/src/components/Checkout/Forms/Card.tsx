@@ -32,7 +32,8 @@ const Payment: React.FC<{
   planId: number;
   period: IPlan.PeriodLiteral;
   phone: string | null;
-}> = ({ planId, period, phone }) => {
+  onStateChange: (pending: boolean) => void;
+}> = ({ planId, period, phone, onStateChange }) => {
   const intl = useFormatMessage();
   const [showAddCardTokenDialog, setShowAddCardTokenDialog] =
     useState<boolean>(false);
@@ -51,6 +52,10 @@ const Payment: React.FC<{
       console.log(response);
     },
   });
+
+  useEffect(() => {
+    onStateChange(payWithCard.isPending);
+  }, [payWithCard.isPending, onStateChange]);
 
   // ==================== form ====================
   const validators = useMakeValidators<Form>({

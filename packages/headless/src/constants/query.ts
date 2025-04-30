@@ -40,4 +40,6 @@ export enum QueryKey {
   FindCardTokens = "find-card-tokens",
   FindCurrentSubscription = "find-current-subscription",
   FindPlans = "find-plans",
+  FindPendingTransaction = "find-pending-transaction",
+  GetPaymentStatus = "get-payment-status",
 }

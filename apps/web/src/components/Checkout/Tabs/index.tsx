@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { IPlan } from "@litespace/types";
 import { Tabs } from "@litespace/ui/Tabs";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -13,6 +13,7 @@ const TapsContainer: React.FC<{
   phone: string | null;
 }> = ({ planId, period, phone }) => {
   const intl = useFormatMessage();
+  const [disabled, setDisabled] = useState(false);
   return (
     <Tabs
       className="gap-10"
@@ -21,19 +22,41 @@ const TapsContainer: React.FC<{
         {
           id: "1",
           label: intl("checkout.tabs.paywithcard"),
-          view: <PayWithCardTab planId={planId} period={period} phone={phone} />,
+          view: (
+            <PayWithCardTab
+              phone={phone}
+              period={period}
+              planId={planId}
+              onStateChange={(pending) => setDisabled(pending)}
+            />
+          ),
         },
         {
           id: "2",
           label: intl("checkout.tabs.ewallet"),
-          view: <PayWithEWalletTab phone={phone} />,
+          view: (
+            <PayWithEWalletTab
+              phone={phone}
+              period={period}
+              planId={planId}
+              onStateChange={(pending) => setDisabled(pending)}
+            />
+          ),
         },
         {
           id: "3",
           label: intl("checkout.tabs.fawry"),
-          view: <PayWithFawryTab phone={phone} />,
+          view: (
+            <PayWithFawryTab
+              phone={phone}
+              period={period}
+              planId={planId}
+              onStateChange={(pending) => setDisabled(pending)}
+            />
+          ),
         },
       ]}
+      disabled={disabled}
     />
   );
 };

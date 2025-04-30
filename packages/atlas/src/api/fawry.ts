@@ -60,4 +60,19 @@ export class Fawry extends Base {
   public async getAddCardTokenUrl(): Promise<IFawry.GetAddCardTokenUrlResponse> {
     return this.get({ route: "/api/v1/fawry/card-token/url" });
   }
+
+  public async getPaymentStatus(
+    params: IFawry.GetPaymentStatusPayload
+  ): Promise<IFawry.GetPaymentStatusResponse> {
+    return this.get({ route: "/api/v1/fawry/payment-status", params });
+  }
+
+  public async syncPaymentStatus(
+    payload: IFawry.SyncPaymentStatusPayload
+  ): Promise<IFawry.SyncPaymentStatusResponse> {
+    return await this.post({
+      route: "/api/v1/fawry/payment-status/sync",
+      payload,
+    });
+  }
 }

@@ -11,4 +11,8 @@ export class Transaction extends Base {
   ): Promise<ITransaction.FindApiResponse> {
     return this.get({ route: `/api/v1/tx/list`, payload: payload });
   }
+
+  async findPending(): Promise<ITransaction.Self> {
+    return this.get({ route: `/api/v1/tx/pending` });
+  }
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
@@ -6,15 +6,47 @@ import { Typography } from "@litespace/ui/Typography";
 import { useForm } from "@litespace/headless/form";
 import { isValidPhone } from "@litespace/ui/lib/validate";
 import { PatternInput } from "@litespace/ui/PatternInput";
+import { IPlan } from "@litespace/types";
+import { useOnError } from "@/hooks/error";
+import { usePayWithFawry } from "@litespace/headless/fawry";
+import { useToast } from "@litespace/ui/Toast";
 
 type Form = {
   phone: string;
 };
 
 const Payment: React.FC<{
+  planId: number;
+  period: IPlan.PeriodLiteral;
   phone: string | null;
-}> = ({ phone }) => {
+  onStateChange: (pending: boolean) => void;
+}> = ({ phone, planId, period, onStateChange }) => {
   const intl = useFormatMessage();
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+  const toast = useToast();
+
+  // ==================== pay with fawry ====================
+  const onError = useOnError({
+    type: "mutation",
+    handler(error) {
+      setSubmitDisabled(false);
+      toast.error({ title: intl(error.messageId) });
+    },
+  });
+
+  const payWithFawry = usePayWithFawry({
+    onError,
+    onSuccess() {
+      window.location.reload();
+    },
+  });
+
+  const disabled = useMemo(
+    () => payWithFawry.isPending || submitDisabled,
+    [payWithFawry.isPending, submitDisabled]
+  );
+
+  useEffect(() => onStateChange(disabled), [disabled, onStateChange]);
 
   // ==================== form ====================
   const validators = useMakeValidators<Form>({
@@ -29,8 +61,13 @@ const Payment: React.FC<{
       phone: phone || "",
     },
     validators,
-    onSubmit(_) {
-      alert("not implemeted yet!")
+    onSubmit(data) {
+      setSubmitDisabled(true);
+      payWithFawry.mutate({
+        phone: data.phone,
+        planId,
+        period,
+      });
     },
   });
 
@@ -71,8 +108,8 @@ const Payment: React.FC<{
           size="large"
           htmlType="submit"
           className="w-full"
-          disabled={false}
-          loading={false}
+          disabled={disabled}
+          loading={payWithFawry.isPending}
         >
           {intl("checkout.payment.confirm-button")}
         </Button>

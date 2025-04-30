@@ -191,7 +191,7 @@ export type CancelPaymentErrorCode =
   | 9901
   | 9946;
 
-export const CancelPaymentErrorCode: Record<
+export const CancelPaymentErrorMap: Record<
   CancelPaymentErrorCode,
   CancelPaymentErrorEnum
 > = Object.freeze({
