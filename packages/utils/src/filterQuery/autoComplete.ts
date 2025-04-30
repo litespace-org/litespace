@@ -4,6 +4,8 @@ import {
   JsonComparable,
   JsonComparisonOperators,
   JsonInteger,
+  JsonNullableNumber,
+  JsonNullableString,
   JsonNumber,
   JsonObject,
   JsonString,
@@ -109,6 +111,22 @@ export class AutoComplete {
       if ("type" in value && value.type === "array")
         help.push(this.array(value, key));
 
+      if (
+        "type" in value &&
+        typeof value.type === "object" &&
+        value.type[0] === "string" &&
+        value.type[1] === "null"
+      )
+        help.push(this.nullableString(value as JsonNullableString, key));
+
+      if (
+        "type" in value &&
+        typeof value.type === "object" &&
+        value.type[0] === "number" &&
+        value.type[1] === "null"
+      )
+        help.push(this.nullableNumber(value as JsonNullableNumber, key));
+
       if ("anyOf" in value) help.push(this.comperable(value, key));
     }
 
@@ -121,6 +139,22 @@ export class AutoComplete {
     if (value.description) help += ` ${value.description}`;
 
     if (value.enum) help += ` (${value.enum.join(", ")})`;
+
+    return help.trim();
+  }
+
+  private nullableString(value: JsonNullableString, key?: string): string {
+    let help = key ? `${key} (string or null) —` : "";
+
+    if (value.description) help += ` ${value.description}`;
+
+    return help.trim();
+  }
+
+  private nullableNumber(value: JsonNullableNumber, key?: string): string {
+    let help = key ? `${key} (number or null) —` : "";
+
+    if (value.description) help += ` ${value.description}`;
 
     return help.trim();
   }

@@ -8,7 +8,6 @@ import {
   pageNumber,
   pageSize,
   withNamedId,
-  number,
   string,
 } from "@/validation/utils";
 import { isAdmin, isStudent } from "@litespace/utils/user";
@@ -22,19 +21,17 @@ const findQuery = zod.object({
   users: id.array().optional(),
   plans: id.array().optional(),
   periods: zod.nativeEnum(IPlan.Period).array().optional(),
-  weeklyMinutes: number
-    .min(0)
-    .optional()
-    .or(
-      zod
-        .object({
-          gte: number.optional(),
-          lte: number.optional(),
-          gt: number.optional(),
-          lt: number.optional(),
-        })
-        .optional()
-    ),
+  weeklyMinutes: zod
+    .union([
+      zod.coerce.number().min(0).optional(),
+      zod.object({
+        gte: zod.number().optional(),
+        lte: zod.coerce.number().optional(),
+        gt: zod.coerce.number().optional(),
+        lt: zod.coerce.number().optional(),
+      }),
+    ])
+    .optional(),
   start: zod
     .object({
       after: string.optional(),
