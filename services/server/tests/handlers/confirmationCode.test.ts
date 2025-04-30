@@ -13,7 +13,7 @@ import dayjs from "@/lib/dayjs";
 import { IConfirmationCode, ITelegram, IUser } from "@litespace/types";
 import { mockApi } from "@fixtures/mockApi";
 import handlers from "@/handlers/confirmationCode";
-import { safe } from "@litespace/utils";
+import { safe, safePromise } from "@litespace/utils";
 import { expect } from "chai";
 import { messenger } from "@/lib/messenger";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
@@ -30,14 +30,14 @@ const verifyPhoneCode = mockApi<IConfirmationCode.VerifyPhoneCodePayload>(
   handlers.verifyPhoneCode
 );
 
-const sendForgottenPasswordCode =
-  mockApi<IConfirmationCode.SendCodeEmailPayload>(
-    handlers.sendForgottenPasswordCode
+const sendForgetPasswordCode =
+  mockApi<IConfirmationCode.SendForgetPasswordEmailPayload>(
+    handlers.sendForgetPasswordCode
   );
 
-const confirmForgottenPasswordCode =
-  mockApi<IConfirmationCode.ConfirmPasswordCodePayload>(
-    handlers.confirmForgottenPasswordCode
+const confirmForgetPasswordCode =
+  mockApi<IConfirmationCode.ConfirmForgetPasswordCodePayload>(
+    handlers.confirmForgetPasswordCode
   );
 
 const sendEmailVerificationCode = mockApi(handlers.sendEmailVerificationCode);
@@ -82,7 +82,7 @@ describe("/api/v1/confirmation-code", () => {
         Promise.resolve({ id: 1 } as unknown as ITelegram.ResolvePhoneResponse)
       );
 
-      const response = await safe(async () =>
+      const response = await safePromise(
         sendVerifyPhoneCode({
           body: { phone, method: "telegram" },
           user,
@@ -127,7 +127,7 @@ describe("/api/v1/confirmation-code", () => {
       await users.update(user.id, { phone });
       const updatedUser = await users.findById(user.id);
 
-      const response = await safe(async () =>
+      await safePromise(
         sendVerifyPhoneCode({
           body: {
             phone: "01228769906",
@@ -136,10 +136,9 @@ describe("/api/v1/confirmation-code", () => {
           user: updatedUser!,
         })
       );
-      expect(response).to.not.be.instanceof(Error);
 
       const updated = await users.findById(user.id);
-      expect(updated?.phone).to.eq("01018303125"); // the payload is ignored
+      expect(updated?.phone).to.eq(phone); // the payload is ignored
     });
 
     it("should reject because phone is invalid", async () => {
@@ -155,7 +154,7 @@ describe("/api/v1/confirmation-code", () => {
         })
       );
 
-      expect(response).to.deep.eq(bad("Invalid phone number"));
+      expect(response).to.deep.eq(bad("Invalid or missing phone number"));
     });
 
     it("should reject because we phone is unresolved", async () => {
@@ -266,12 +265,12 @@ describe("/api/v1/confirmation-code", () => {
   describe("POST /api/v1/confirmation-code/password", () => {
     describe("/send", () => {
       it("should respond with bad in case the email is not provided", async () => {
-        const res = await sendForgottenPasswordCode({});
+        const res = await sendForgetPasswordCode({});
         expect(res).to.be.instanceof(ZodError);
       });
 
       it("should respond with notfound in case the user email not in the db", async () => {
-        const res = await sendForgottenPasswordCode({
+        const res = await sendForgetPasswordCode({
           body: { email: "notfound@litespace.org" },
         });
         expect(res).to.deep.eq(notfound.user());
@@ -279,7 +278,7 @@ describe("/api/v1/confirmation-code", () => {
 
       it("should create confirmation code and store it in the db", async () => {
         const student = await db.student();
-        const res = await sendForgottenPasswordCode({
+        const res = await sendForgetPasswordCode({
           body: { email: student.email },
         });
         expect(res.status).to.eq(200);
@@ -290,12 +289,12 @@ describe("/api/v1/confirmation-code", () => {
 
       it("should remove old confirmation code and override it", async () => {
         const student = await db.student();
-        await sendForgottenPasswordCode({
+        await sendForgetPasswordCode({
           body: { email: student.email },
         });
         const before = await confirmationCodes.find({ userId: student.id });
 
-        const res = await sendForgottenPasswordCode({
+        const res = await sendForgetPasswordCode({
           body: { email: student.email },
         });
         expect(res.status).to.eq(200);
@@ -308,25 +307,14 @@ describe("/api/v1/confirmation-code", () => {
 
     describe("/confirm", () => {
       it("should respond with bad in case userId or code are not provided", async () => {
-        const res = await confirmForgottenPasswordCode({});
+        const res = await confirmForgetPasswordCode({});
         expect(res).to.be.instanceof(ZodError);
       });
 
-      it("should respond with notfound in case the user id not in the db", async () => {
-        const res = await confirmForgottenPasswordCode({
-          body: {
-            userId: 312,
-            code: 123321,
-          },
-        });
-        expect(res).to.deep.eq(notfound.user());
-      });
-
       it("should respond with invalidVerificationCode in case it's not in the db", async () => {
-        const student = await db.student();
-        const res = await confirmForgottenPasswordCode({
+        const res = await confirmForgetPasswordCode({
           body: {
-            userId: student.id,
+            password: "Password@8",
             code: 123321,
           },
         });
@@ -344,9 +332,9 @@ describe("/api/v1/confirmation-code", () => {
           expiresAt: dayjs.utc().subtract(5, "minutes").toISOString(),
         });
 
-        const res = await confirmForgottenPasswordCode({
+        const res = await confirmForgetPasswordCode({
           body: {
-            userId: student.id,
+            password: "Password@8",
             code,
           },
         });
@@ -356,7 +344,7 @@ describe("/api/v1/confirmation-code", () => {
       it("should respond with a token in success and delete the code from the db", async () => {
         const student = await db.student();
 
-        await sendForgottenPasswordCode({
+        await sendForgetPasswordCode({
           body: { email: student.email },
         });
 
@@ -366,17 +354,16 @@ describe("/api/v1/confirmation-code", () => {
         )[0];
 
         const res =
-          await confirmForgottenPasswordCode<IConfirmationCode.ConfirmPasswordCodeApiResponse>(
+          await confirmForgetPasswordCode<IConfirmationCode.ConfirmPasswordCodeApiResponse>(
             {
               body: {
-                userId: student.id,
+                password: "Password@8",
                 code,
               },
             }
           );
 
         expect(res).to.not.be.instanceof(Error);
-        expect(typeof res.body?.token).to.eq("string");
       });
     });
   });

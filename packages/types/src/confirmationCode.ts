@@ -48,18 +48,20 @@ export type VerifyPhoneCodePayload = {
   method: IUser.NotificationMethodLiteral;
 };
 
-export type SendCodeEmailPayload = {
+export type SendForgetPasswordEmailPayload = {
   email: string;
 };
 
-export type ConfirmPasswordCodePayload = {
-  userId: number;
+export type SendVerifyEmailPayload = {
+  email: string;
+};
+
+export type ConfirmForgetPasswordCodePayload = {
+  password: string;
   code: number;
 };
 
-export type ConfirmPasswordCodeApiResponse = {
-  token: string;
-};
+export type ConfirmPasswordCodeApiResponse = void;
 
 export type VerifyEmailPayload = {
   code: number;

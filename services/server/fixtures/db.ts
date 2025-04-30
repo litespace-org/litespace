@@ -66,55 +66,6 @@ export async function flush() {
   });
 }
 
-export function gender(): IUser.Gender {
-  return sample([IUser.Gender.Male, IUser.Gender.Female])!;
-}
-
-export function duration(): number {
-  return sample([15, 30])!;
-}
-
-export function time() {
-  const times = range(0, 24).map((hour) =>
-    [hour.toString().padStart(2, "0"), "00"].join(":")
-  );
-  return Time.from(sample(times)!).utc().format();
-}
-
-export async function user(payload?: Partial<IUser.CreatePayload>) {
-  return await users.create({
-    email: payload?.email || faker.internet.email(),
-    gender: payload?.gender || gender(),
-    name: payload?.name || faker.internet.username(),
-    password: hashPassword(payload?.password || "Password@8"),
-    birthYear: payload?.birthYear || faker.number.int({ min: 2000, max: 2024 }),
-    role:
-      payload?.role ||
-      (sample(
-        Object.values(IUser.Role).filter((i) => typeof i === "number")
-      ) as IUser.Role),
-    verifiedEmail: payload?.verifiedEmail || false,
-  });
-}
-
-export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
-  const start = dayjs.utc(payload?.start || faker.date.future());
-  const end = payload?.end
-    ? dayjs.utc(payload.end)
-    : start.add(faker.number.int(8), "hours");
-
-  const newSlots = await availabilitySlots.create([
-    {
-      userId: payload?.userId || 1,
-      start: start.toISOString(),
-      end: end.toISOString(),
-    },
-  ]);
-  const res = first(newSlots);
-  if (!res) throw Error("error: couldn't insert new slot.");
-  return res;
-}
-
 const or = {
   async tutorId(id?: number): Promise<number> {
     if (!id) return await tutor().then((tutor) => tutor.id);
@@ -148,6 +99,19 @@ const or = {
     if (!id) return await transaction({ userId }).then((tx) => tx.id);
     return id;
   },
+  role(role?: IUser.Role) {
+    if (!role)
+      return sample([
+        IUser.Role.Student,
+        IUser.Role.Tutor,
+        IUser.Role.TutorManager,
+        IUser.Role.SuperAdmin,
+        IUser.Role.RegularAdmin,
+        IUser.Role.Studio,
+      ]);
+
+    return role;
+  },
   boolean(cond?: boolean) {
     if (cond === undefined) return sample([false, true]);
     return cond;
@@ -166,6 +130,51 @@ const or = {
     return period;
   },
 } as const;
+
+export function gender(): IUser.Gender {
+  return sample([IUser.Gender.Male, IUser.Gender.Female])!;
+}
+
+export function duration(): number {
+  return sample([15, 30])!;
+}
+
+export function time() {
+  const times = range(0, 24).map((hour) =>
+    [hour.toString().padStart(2, "0"), "00"].join(":")
+  );
+  return Time.from(sample(times)!).utc().format();
+}
+
+export async function user(payload?: Partial<IUser.CreatePayload>) {
+  return await users.create({
+    email: payload?.email || faker.internet.email(),
+    gender: payload?.gender || gender(),
+    name: payload?.name || faker.internet.username(),
+    password: hashPassword(payload?.password || "Password@8"),
+    birthYear: payload?.birthYear || faker.number.int({ min: 2000, max: 2024 }),
+    role: or.role(payload?.role),
+    verifiedEmail: payload?.verifiedEmail || false,
+  });
+}
+
+export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
+  const start = dayjs.utc(payload?.start || faker.date.future());
+  const end = payload?.end
+    ? dayjs.utc(payload.end)
+    : start.add(faker.number.int(8), "hours");
+
+  const newSlots = await availabilitySlots.create([
+    {
+      userId: payload?.userId || 1,
+      start: start.toISOString(),
+      end: end.toISOString(),
+    },
+  ]);
+  const res = first(newSlots);
+  if (!res) throw Error("error: couldn't insert new slot.");
+  return res;
+}
 
 type LessonReturn = {
   lesson: ILesson.Self;

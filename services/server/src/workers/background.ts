@@ -4,7 +4,8 @@ import { IToken } from "@litespace/types";
 import {
   createSessionEvent,
   sendAuthTokenEmail,
-  sendCodeEmail,
+  sendForgetPasswordCodeEmail,
+  sendUserVerificationCodeEmail,
   sendMessage,
   updateTutorCache,
 } from "@/workers/handlers";
@@ -29,18 +30,16 @@ parentPort?.on("message", async ({ type, payload }: WorkerMessage) => {
           : IToken.Type.ForgetPassword,
     });
   }
-
-  if (
-    type === "send-user-verification-code-email" ||
-    type === "send-forget-password-code-email"
-  ) {
-    return await sendCodeEmail({
+  if (type === "send-user-verification-code-email")
+    return await sendUserVerificationCodeEmail({
       code: payload.code,
       email: payload.email,
-      type:
-        type === "send-user-verification-code-email"
-          ? IToken.Type.VerifyEmail
-          : IToken.Type.ForgetPassword,
+    });
+
+  if (type === "send-forget-password-code-email") {
+    return await sendForgetPasswordCodeEmail({
+      code: payload.code,
+      email: payload.email,
     });
   }
 

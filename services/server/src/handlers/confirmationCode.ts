@@ -1,4 +1,5 @@
 import {
+  bad,
   emailAlreadyVerified,
   expiredVerificationCode,
   forbidden,
@@ -20,13 +21,12 @@ import zod from "zod";
 import dayjs from "@/lib/dayjs";
 import safeRequest from "express-async-handler";
 import { first } from "lodash";
-import { generateConfirmationCode, selectPhone } from "@/lib/confirmationCodes";
+import { generateConfirmationCode } from "@/lib/confirmationCodes";
 import { messenger } from "@/lib/messenger";
 import { producer } from "@/lib/kafka";
-import { id, unionOfLiterals, email } from "@/validation/utils";
+import { unionOfLiterals, email, password } from "@/validation/utils";
 import { sendBackgroundMessage } from "@/workers";
-import { jwtSecret } from "@/constants";
-import { encodeAuthJwt } from "@litespace/auth";
+import { selectPhone } from "@/lib/user";
 
 const method = unionOfLiterals<IUser.NotificationMethodLiteral>([
   "whatsapp",
@@ -46,7 +46,7 @@ const verifyNotificationMethodCodePayload = zod.object({
 const sendCodePayload = zod.object({ email });
 
 const confirmPasswordCodePayload = zod.object({
-  userId: id,
+  password,
   code: zod.number(),
 });
 
@@ -66,9 +66,10 @@ async function sendVerifyPhoneCode(
   const payload: IConfirmationCode.SendVerifyPhoneCodePayload =
     sendVerifyNotificationMethodCodePayload.parse(req.body);
 
-  const phone = selectPhone(user.phone, payload.phone);
-  if (phone instanceof Error) return next(phone);
-  if (!user.phone) await users.update(user.id, { phone });
+  const { update, valid, phone } = selectPhone(user.phone, payload.phone);
+  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
+  // update user phone if needed.
+  if (update) await users.update(user.id, { phone });
 
   const purpose = NOTIFICATION_METHOD_LITERAL_TO_PURPOSE[payload.method];
 
@@ -164,21 +165,21 @@ async function verifyPhoneCode(
 }
 
 /**
- * This handler generates a random code, sets it in the database
- * and sends it to the user by mail.
+ * @description generates a random code, sets it in the database and sends it to
+ * the user by email.
  */
-async function sendForgottenPasswordCode(
+async function sendForgetPasswordCode(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const { email }: IConfirmationCode.SendCodeEmailPayload =
+  const { email }: IConfirmationCode.SendForgetPasswordEmailPayload =
     sendCodePayload.parse(req.body);
 
   const user = await users.findByEmail(email);
   if (!user) return next(notfound.user());
 
-  // Remove any confirmation code that belongs to the current user
+  // remove any confirmation code that belongs to the current user
   // under the same purpose
   await confirmationCodes.delete({
     users: [user.id],
@@ -196,59 +197,50 @@ async function sendForgottenPasswordCode(
       .toISOString(),
   });
 
-  if (user) {
-    sendBackgroundMessage({
-      type: "send-forget-password-code-email",
-      payload: { email: user.email, code },
-    });
-  }
+  sendBackgroundMessage({
+    type: "send-forget-password-code-email",
+    payload: { email: user.email, code },
+  });
 
   res.status(200).send();
 }
 
-/**
- * This handler gets a userId and code from users, verify the validity of the code
- * and generates, then send, a token, to the user, in order to be able to reset
- * the password.
- */
-async function confirmForgottenPasswordCode(
+async function confirmForgetPasswordCode(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const { userId, code }: IConfirmationCode.ConfirmPasswordCodePayload =
+  const { password, code }: IConfirmationCode.ConfirmForgetPasswordCodePayload =
     confirmPasswordCodePayload.parse(req.body);
 
-  const user = await users.findById(userId);
-  if (!user) return next(notfound.user());
+  const list = await confirmationCodes.find({
+    code,
+    purpose: IConfirmationCode.Purpose.ResetPassword,
+  });
 
-  // Check if the code is valid (exists in the db)
-  const found = (
-    await confirmationCodes.find({
-      userId: user.id,
-      purpose: IConfirmationCode.Purpose.ResetPassword,
-    })
-  )[0];
+  const confirmationCode = first(list);
+  if (!confirmationCode || !confirmationCode.userId)
+    return next(invalidVerificationCode());
 
-  // TODO: count the number of tries, then block using this handler for while
-  // for this specific userId, after a specific number of tries.
-  if (!found || found.code !== code) return next(invalidVerificationCode());
+  const now = dayjs.utc();
+  const isExpired = dayjs.utc(confirmationCode.expiresAt).isBefore(now);
 
-  // Ensure the code is not expired
-  if (dayjs.utc(found.expiresAt).isBefore(dayjs.utc())) {
-    await confirmationCodes.deleteById({ id: found.id });
+  if (isExpired) {
+    await confirmationCodes.deleteById({ id: confirmationCode.id });
     return next(expiredVerificationCode());
   }
 
-  // This token should be used by frontend reset password page
-  // in order to be able to change the password
-  const token = encodeAuthJwt(userId, jwtSecret);
+  await knex.transaction(async (tx) => {
+    if (!confirmationCode.userId)
+      throw new Error(
+        "Missing confirmation code user id, should never happen."
+      );
 
-  // Remove the confirmation code for more data integridy and security
-  await confirmationCodes.deleteById({ id: found.id });
+    await users.update(confirmationCode.userId, { password });
+    await confirmationCodes.deleteById({ id: confirmationCode.id, tx });
+  });
 
-  const response: IConfirmationCode.ConfirmPasswordCodeApiResponse = { token };
-  res.status(200).json(response);
+  res.sendStatus(200);
 }
 
 async function sendEmailVerificationCode(
@@ -295,43 +287,41 @@ async function confirmEmailVerificationCode(
   const user = req.user;
   const allowed = isUser(user);
   if (!allowed) return next(forbidden());
-
   if (user.verifiedEmail) return next(emailAlreadyVerified());
 
   // get the code from the payload and verify it
   const { code }: IConfirmationCode.VerifyEmailPayload =
     verifyEmailPayload.parse(req.body);
 
-  const found = (
-    await confirmationCodes.find({
-      userId: user.id,
-      purpose: IConfirmationCode.Purpose.VerifyEmail,
-    })
-  )[0];
+  const list = await confirmationCodes.find({
+    userId: user.id,
+    purpose: IConfirmationCode.Purpose.VerifyEmail,
+    code,
+  });
 
-  // TODO: count the number of tries, then block using this handler for while
-  // for this specific userId, after a specific number of tries.
-  if (!found || found.code !== code) return next(invalidVerificationCode());
+  const confirmationCode = first(list);
+  if (!confirmationCode || !confirmationCode.userId)
+    return next(invalidVerificationCode());
 
-  // Ensure the code is not expired
-  if (dayjs.utc(found.expiresAt).isBefore(dayjs.utc())) {
-    await confirmationCodes.deleteById({ id: found.id });
+  const now = dayjs.utc();
+  const isExpired = dayjs.utc(confirmationCode.expiresAt).isBefore(now);
+
+  if (isExpired) {
+    await confirmationCodes.deleteById({ id: confirmationCode.id });
     return next(expiredVerificationCode());
   }
 
   // update the database to mark the email as verified
   await users.update(user.id, { verifiedEmail: true });
 
-  res.status(200).send();
+  res.sendStatus(200);
 }
 
 export default {
   sendVerifyPhoneCode: safeRequest(sendVerifyPhoneCode),
   verifyPhoneCode: safeRequest(verifyPhoneCode),
-
-  sendForgottenPasswordCode: safeRequest(sendForgottenPasswordCode),
-  confirmForgottenPasswordCode: safeRequest(confirmForgottenPasswordCode),
-
+  sendForgetPasswordCode: safeRequest(sendForgetPasswordCode),
+  confirmForgetPasswordCode: safeRequest(confirmForgetPasswordCode),
   sendEmailVerificationCode: safeRequest(sendEmailVerificationCode),
   confirmEmailVerificationCode: safeRequest(confirmEmailVerificationCode),
 };

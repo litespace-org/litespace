@@ -2,15 +2,14 @@
 
 - [Filter Query Specifications](#filter-query-specifications)
 - [Comparable fields](#comparable-fields)
-    - [Numeric](#numeric)
-    - [Date](#date)
-    - [Nullable string fileds](#nullable-string-fileds)
-    - [Nullable numeric fields](#nullable-numeric-fields)
-    - [Union-base fileds](#union-base-fileds)
-    - [Boolean fileds](#boolean-fileds)
-    - [Regular numeric fileds](#regular-numeric-fileds)
-    - [Enum-based fileds](#enum-based-fileds)
-
+  - [Numeric](#numeric)
+  - [Date](#date)
+  - [Nullable string fileds](#nullable-string-fileds)
+  - [Nullable numeric fields](#nullable-numeric-fields)
+  - [Union-base fileds](#union-base-fileds)
+  - [Boolean fileds](#boolean-fileds)
+  - [Regular numeric fileds](#regular-numeric-fileds)
+  - [Enum-based fileds](#enum-based-fileds)
 
 # Comparable fields
 
@@ -39,7 +38,7 @@ const query = zod.object({
       lte: zod.number().optional(),
       gt: zod.number().optional(),
       lt: zod.number().optional(),
-      noeq: zod.number().optional()
+      noeq: zod.number().optional(),
     }),
   ]),
 });
@@ -70,7 +69,7 @@ const query = zod.object({
       lte: zod.string().optional(),
       gt: zod.string().optional(),
       lt: zod.string().optional(),
-      noeq: zod.string().optional()
+      noeq: zod.string().optional(),
     }),
   ]),
 });
@@ -83,9 +82,7 @@ Nullable string query should be defined like this
 > You cann default value as well using `.default()`
 
 ```ts
-bio: zod
-  .union([zod.string(), zod.null()])
-  .describe("search by tutor bio")
+bio: zod.union([zod.string(), zod.null()]).describe("search by tutor bio");
 ```
 
 ### Nullable numeric fields
@@ -99,6 +96,7 @@ notice: zod
   .union([zod.number(), zod.null()])
   .describe("search by tutor notice"),
 ```
+
 ### Union-base fileds
 
 Union-based fileds should be defined similar to the example below.
@@ -121,7 +119,7 @@ Boolean fileds should be defined similar to the example below:
 active: zod.boolean().optional().default(false),
 ```
 
-### Regular numeric fileds 
+### Regular numeric fileds
 
 Regular numeric fileds should be defined similar to the example below:
 
