@@ -147,6 +147,109 @@ const findStudioTutorsQuery = zod.object({
   search: zod.optional(string),
 });
 
+const findFullTutorsQueryFilter = zod.object({
+  bio: zod
+    .union([zod.string(), zod.null()])
+    .describe("search by tutor bio")
+    .optional(),
+  about: zod
+    .union([zod.string(), zod.null()])
+    .optional()
+    .describe("search by tutor about"),
+  name: zod
+    .union([zod.string(), zod.null()])
+    .optional()
+    .describe("search by tutor name"),
+  phone: zod
+    .union([zod.string(), zod.null()])
+    .optional()
+    .describe("search by tutor phone number"),
+  email: zod.string().optional().describe("search by tutor email"),
+  video: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor having video or not"),
+  thumbnail: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor having thumbnail or not"),
+  image: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor having image or not"),
+  activated: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either activated or not"),
+  verifiedEmail: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either verified their email or not"),
+  verifiedPhone: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either verified their phone or not"),
+  verifiedWhatsapp: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either verified their whatsapp or not"),
+  verifiedTelegram: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either verified their telegram or not"),
+  password: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either having password or not"),
+  notice: zod
+    .union([
+      zod.coerce.number().min(0).optional(),
+      zod.object({
+        gte: zod.number().optional(),
+        lte: zod.coerce.number().optional(),
+        gt: zod.coerce.number().optional(),
+        lt: zod.coerce.number().optional(),
+      }),
+    ])
+    .optional(),
+  birthYear: zod
+    .union([
+      zod.coerce.number().min(1950).optional(),
+      zod.object({
+        gte: zod.number().optional(),
+        lte: zod.coerce.number().optional(),
+        gt: zod.coerce.number().optional(),
+        lt: zod.coerce.number().optional(),
+      }),
+    ])
+    .optional(),
+  notificationMethod: zod
+    .nativeEnum(IUser.NotificationMethod)
+    .array()
+    .optional()
+    .describe("list of available notification methods"),
+  city: zod
+    .nativeEnum(IUser.City)
+    .array()
+    .optional()
+    .describe("list of available cities"),
+  gender: zod
+    .nativeEnum(IUser.Gender)
+    .array()
+    .optional()
+    .describe("list of available cities"),
+  createdAt: zod.union([
+    zod.string().optional(),
+    zod.object({
+      gte: zod.string().optional(),
+      lte: zod.string().optional(),
+      gt: zod.string().optional(),
+      lt: zod.string().optional(),
+      noeq: zod.string().optional(),
+    }),
+  ]),
+});
+
 export async function create(req: Request, res: Response, next: NextFunction) {
   const payload = createUserPayload.parse(req.body);
   const creator = req.user;
@@ -1050,6 +1153,20 @@ async function uploadTutorAssets(
   res.sendStatus(200);
 }
 
+async function findFullTutors(req: Request, res: Response, next: NextFunction) {
+  const { user } = req;
+
+  if (!isAdmin(user)) return next(forbidden());
+
+  const query: ITutor.FindFullTutorsApiQuery = findFullTutorsQueryFilter.parse(
+    req.query
+  );
+
+  const result = await tutors.find({ ...query });
+
+  res.status(200).json(result);
+}
+
 export default {
   update,
   create: safeRequest(create),
@@ -1069,6 +1186,7 @@ export default {
   findUncontactedTutors: safeRequest(findUncontactedTutors),
   findStudentStats: safeRequest(findStudentStats),
   findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),
+  findFullTutors: safeRequest(findFullTutors),
   uploadUserImage: safeRequest(uploadUserImage),
   uploadTutorAssets: safeRequest(uploadTutorAssets),
 };

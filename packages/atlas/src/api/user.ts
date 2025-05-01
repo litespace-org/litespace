@@ -166,4 +166,13 @@ export class User extends Base {
       params: pagination,
     });
   }
+
+  async findFullTutors(
+    query: ITutor.FindFullTutorsApiQuery
+  ): Promise<ITutor.FindFullTutorsApiResponse> {
+    return await this.get({
+      route: `/api/v1/user/tutor/fullTutors`,
+      params: query,
+    });
+  }
 }

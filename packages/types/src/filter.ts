@@ -36,3 +36,23 @@ export enum OrderDirection {
   Ascending = "asc",
   Descending = "desc",
 }
+
+export type NumericalFilter =
+  | number
+  | {
+      gte?: number | undefined;
+      lte?: number | undefined;
+      gt?: number | undefined;
+      lt?: number | undefined;
+    };
+
+export type DateFilter =
+  | Date
+  | string
+  | {
+      gte?: string | undefined;
+      lte?: string | undefined;
+      gt?: string | undefined;
+      lt?: string | undefined;
+      noeq?: string | undefined;
+    };

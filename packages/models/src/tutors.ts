@@ -158,18 +158,169 @@ export class Tutors {
 
   async find({
     tx,
+    about,
+    bio,
+    name,
+    phone,
+    email,
+    activated,
+    password,
+    image,
+    thumbnail,
+    video,
+    verifiedEmail,
+    verifiedPhone,
+    verifiedTelegram,
+    verifiedWhatsapp,
+    birthYear,
+    notice,
+    createdAt,
+    city,
+    gender,
+    notificationMethod,
     ...pagination
-  }: WithOptionalTx<IFilter.SkippablePagination>): Promise<
+  }: WithOptionalTx<ITutor.FindFullTutorsApiQuery>): Promise<
     Paginated<ITutor.FullTutor>
   > {
-    const base = this.builder(tx)
+    const builder = this.builder(tx)
       .from<IUser.Row>(users.table)
       .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"));
-    const total = await countRows(base.clone(), { distinct: true });
-    const query = base.select<ITutor.FullTutorRow[]>(fullTutorFields);
+
+    // ============== Nullable String Filtering ========
+    if (typeof bio !== "undefined")
+      this.withNullableStringFilter(builder, this.column("bio"), bio);
+
+    if (typeof about !== "undefined")
+      this.withNullableStringFilter(builder, this.column("about"), about);
+
+    if (typeof name !== "undefined")
+      this.withNullableStringFilter(builder, users.column("name"), name);
+
+    if (typeof phone !== "undefined")
+      this.withNullableStringFilter(builder, users.column("phone"), phone);
+
+    // ============== Non-Nullable String Filtering ========
+    if (typeof email !== "undefined")
+      builder.whereILike(users.column("email"), `%${email}%`);
+
+    // ============== Nullable Boolean Filtering: activated tutors ========
+    if (typeof activated !== "undefined" && activated)
+      builder.where(this.column("activated"), true);
+
+    if (typeof activated !== "undefined" && !activated)
+      builder.where(
+        this.column("activated_by"),
+        activated ? "IS NOT" : "IS",
+        null
+      );
+
+    // ============== Nullable Boolean Filtering: tutors with passowrd ========
+    if (typeof password !== "undefined")
+      builder.where(users.column("password"), password ? "IS NOT" : "IS", null);
+
+    // ============== Non-Nullable Boolean Filtering ========
+
+    if (typeof verifiedEmail !== "undefined")
+      builder.where(users.column("verified_email"), verifiedEmail);
+
+    if (typeof verifiedPhone !== "undefined")
+      builder.where(users.column("verified_phone"), verifiedPhone);
+
+    if (typeof verifiedTelegram !== "undefined")
+      builder.where(users.column("verified_telegram"), verifiedTelegram);
+
+    if (typeof verifiedWhatsapp !== "undefined")
+      builder.where(users.column("verified_whatsapp"), verifiedWhatsapp);
+
+    // ============== Null Filtering ========
+    if (typeof video !== "undefined")
+      builder.where(this.column("video"), video ? "IS NOT" : "IS", null);
+
+    if (typeof image !== "undefined")
+      builder.where(users.column("image"), image ? "IS NOT" : "IS", null);
+
+    if (typeof thumbnail !== "undefined")
+      builder.where(
+        this.column("thumbnail"),
+        thumbnail ? "IS NOT" : "IS",
+        null
+      );
+
+    // ============== Numerical Filtering ========
+    this.withNumericalFilter(builder, users.column("birth_year"), birthYear);
+
+    this.withNumericalFilter(builder, this.column("notice"), notice);
+
+    // ============== Date Filtering ========
+    this.withDateFilter(builder, users.column("created_at"), createdAt);
+
+    // ============== Enum Filtering ========
+    if (city && !isEmpty(city)) builder.whereIn(users.column("city"), city);
+
+    if (notificationMethod && !isEmpty(notificationMethod))
+      builder.whereIn(users.column("notification_method"), notificationMethod);
+
+    if (gender && !isEmpty(gender))
+      builder.whereIn(users.column("gender"), gender);
+
+    const total = await countRows(builder.clone(), { distinct: true });
+    const query = builder.select<ITutor.FullTutorRow[]>(fullTutorFields);
     const rows = await withSkippablePagination(query, pagination);
     const list = rows.map((row) => this.asFullTutor(row));
+
     return { list, total };
+  }
+
+  withNullableStringFilter<R extends object, T>(
+    builder: Knex.QueryBuilder<R, T>,
+    column: string,
+    value: string | null
+  ) {
+    if (value === null) builder.whereNull(column);
+    if (value !== null) builder.whereILike(column, `%${value}%`);
+  }
+
+  withNumericalFilter<R extends object, T>(
+    builder: Knex.QueryBuilder<R, T>,
+    column: string,
+    value: IFilter.NumericalFilter | undefined
+  ) {
+    if (typeof value === "number") {
+      builder.where(column, value);
+      return;
+    }
+
+    if (typeof value === "object") {
+      builder.where((qb) => {
+        if (value.gt) qb.orWhere(column, ">", value.gt);
+        if (value.gte) qb.orWhere(column, ">=", value.gte);
+        if (value.lt) qb.orWhere(column, "<", value.lt);
+        if (value.lte) qb.orWhere(column, "<=", value.lte);
+      });
+    }
+  }
+
+  withDateFilter<R extends object, T>(
+    builder: Knex.QueryBuilder<R, T>,
+    column: string,
+    value: IFilter.DateFilter | undefined
+  ) {
+    const exactMatch = value instanceof Date || typeof value === "string";
+
+    if (exactMatch) {
+      builder.where(column, value);
+      return;
+    }
+
+    if (value && !exactMatch) {
+      builder.where((qb) => {
+        if (value.gt) qb.orWhere(column, ">", value.gt);
+        if (value.gte) qb.orWhere(column, ">=", value.gte);
+        if (value.lt) qb.orWhere(column, "<", value.lt);
+        if (value.lte) qb.orWhere(column, "<=", value.lte);
+        if (value.noeq) qb.orWhere(column, "!=", value.noeq);
+      });
+    }
   }
 
   /**
@@ -476,7 +627,7 @@ export class Tutors {
     return tx ? tx<ITutor.Row>(this.table) : knex<ITutor.Row>(this.table);
   }
 
-  column(key: keyof ITutor.Row): string {
+  column(key: keyof ITutor.Row) {
     return tutorColumn(key);
   }
 }

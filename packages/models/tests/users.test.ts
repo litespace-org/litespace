@@ -143,10 +143,13 @@ describe("Users", () => {
   describe(nameof(users.findUserPasswordHash), () => {
     it("should return hash of the user", async () => {
       const password = "pass";
-      const created = await fixtures.user({
-        role: IUser.Role.TutorManager,
-        password,
-      });
+      const created = await fixtures.user(
+        {
+          role: IUser.Role.TutorManager,
+          password,
+        },
+        true
+      );
       const hash = await users.findUserPasswordHash(created.id);
       expect(hash).to.be.eq(hashPassword(password));
     });

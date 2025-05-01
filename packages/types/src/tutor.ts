@@ -198,3 +198,28 @@ export type FindPersonalizedTutorStatsApiResponse = {
 export type FindUncontactedTutors = Paginated<UncontactedTutorInfo>;
 export type FindFullUncontactedTutorsApiResponse =
   Paginated<FullUncontactedTutorInfo>;
+
+export type FindFullTutorsApiQuery = IFilter.SkippablePagination & {
+  bio?: string | null;
+  about?: string | null;
+  name?: string | null;
+  phone?: string | null;
+  email?: string;
+  video?: boolean;
+  image?: boolean;
+  thumbnail?: boolean;
+  activated?: boolean;
+  verifiedEmail?: boolean;
+  verifiedPhone?: boolean;
+  verifiedTelegram?: boolean;
+  verifiedWhatsapp?: boolean;
+  password?: boolean;
+  notice?: IFilter.NumericalFilter;
+  birthYear?: IFilter.NumericalFilter;
+  createdAt?: IFilter.DateFilter;
+  notificationMethod?: IUser.NotificationMethod[];
+  city?: IUser.City[];
+  gender?: IUser.Gender[];
+};
+
+export type FindFullTutorsApiResponse = Paginated<FullTutor>;

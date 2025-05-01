@@ -81,13 +81,16 @@ export function time() {
 export async function user(
   payload: Omit<Partial<IUser.Self>, "password"> & {
     password?: string;
-  }
+  },
+  withPassword?: boolean
 ) {
   return await users.create({
     email: payload.email || faker.internet.email(),
     gender: payload.gender || gender(),
     name: payload.name || faker.internet.username(),
-    password: hashPassword(payload.password || faker.internet.password()),
+    password: withPassword
+      ? hashPassword(payload.password || faker.internet.password())
+      : undefined,
     birthYear: payload.birthYear || faker.number.int({ min: 2000, max: 2024 }),
     role: payload.role || IUser.Role.Tutor,
   });
@@ -219,9 +222,10 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
 
 async function tutor(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
-  userPayload?: Partial<IUser.UpdatePayloadModel>
+  userPayload?: Partial<IUser.UpdatePayloadModel>,
+  withPassword?: boolean
 ) {
-  const info = await user({ role: IUser.Role.Tutor });
+  const info = await user({ role: IUser.Role.Tutor }, withPassword);
   const tutor = await tutors.create(info.id);
   await tutors.update(tutor.id, tutorPayload || {});
   await users.update(tutor.id, userPayload || {});
