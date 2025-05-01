@@ -9,15 +9,24 @@ import {
 } from "@/emails";
 import { EMAIL_SUBJECT } from "@/lib/subject";
 
-function makeTransporter(user: string, pass: string): nodemailer.Transporter {
+function makeTransporter({
+  user,
+  pass,
+  logger,
+  debug,
+}: {
+  user: string;
+  pass: string;
+  logger: boolean;
+  debug: boolean;
+}): nodemailer.Transporter {
   return nodemailer.createTransport({
     host: "mail.privateemail.com",
     port: 465,
     secure: true,
     auth: { user, pass },
-    tls: {
-      rejectUnauthorized: false,
-    },
+    logger,
+    debug,
   });
 }
 
@@ -35,9 +44,24 @@ export class Emailer {
   public readonly email: string;
   private readonly transporter: nodemailer.Transporter;
 
-  constructor(email: string, password: string) {
+  constructor({
+    email,
+    password,
+    logger,
+    debug,
+  }: {
+    email: string;
+    password: string;
+    logger: boolean;
+    debug: boolean;
+  }) {
     this.email = email;
-    this.transporter = makeTransporter(email, password);
+    this.transporter = makeTransporter({
+      user: email,
+      pass: password,
+      logger,
+      debug,
+    });
   }
 
   async send({ to, ...email }: { to: string } & SendEmail) {

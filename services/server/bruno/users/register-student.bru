@@ -1,0 +1,20 @@
+meta {
+  name: register-student
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api}}/api/v1/user
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "role": 4,
+    "email": "me@ahmedibrahim.dev",
+    "password": "Password@8",
+    "callbackUrl": "https://app.staging.litespace.org/login"
+  }
+}
