@@ -187,6 +187,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     return user;
   });
 
+  // todo: generate a confirmation code.
   sendBackgroundMessage({
     type: "send-user-verification-email",
     payload: {
