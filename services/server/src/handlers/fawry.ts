@@ -8,6 +8,7 @@ import {
   isStudent,
   PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD,
   PLAN_PERIOD_TO_MONTH_COUNT,
+  safePromise,
 } from "@litespace/utils";
 import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
 
@@ -122,6 +123,7 @@ const setPaymentStatusPayload = zod.object({
     "CARD",
     "MWALLET",
     "PAYATFAWRY",
+    "Mobile Wallet",
   ]),
   paymentTime: zod.number().optional(),
   paymentRefrenceNumber: zod.string().optional(),
@@ -292,10 +294,10 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
   const response: IFawry.PayWithEWalletResponse = {
     transactionId: transaction.id,
     referenceNumber: payment.referenceNumber,
-    walletQr: payment.walletQr,
+    walletQr: payment.walletQr || null,
   };
 
-  res.json(response);
+  res.status(200).json(response);
 }
 
 async function payWithBankInstallments(
@@ -329,6 +331,7 @@ async function payWithBankInstallments(
       customerProfileId: user.id,
       installmentPlanId: 1,
     }),
+    description: "Pay LiteSpace subscription",
   });
   if (forgedPayload instanceof Error) return next(bad());
 
@@ -384,6 +387,9 @@ async function cancelUnpaidOrder(
   if (isStudent(user) && transaction.userId !== user.id)
     return next(forbidden());
 
+  if (transaction.status !== ITransaction.Status.New)
+    return next(bad("transaction already canceled"));
+
   const merchantRefNumber = encodeMerchantRefNumber({
     transactionId: transaction.id,
     createdAt: transaction.createdAt,
@@ -391,17 +397,15 @@ async function cancelUnpaidOrder(
 
   const { fawryRefNumber } = await fawry.getPaymentStatus(merchantRefNumber);
 
-  // todo: code, description, and reason are undefined for success status.
-  const { code, description, reason } =
-    await fawry.cancelUnpaidOrder(fawryRefNumber);
+  const result = await safePromise(fawry.cancelUnpaidOrder(fawryRefNumber));
+  if (result instanceof Error)
+    return next(fawryError("Failed to cancel order"));
 
-  const response: IFawry.CancelUnpaidOrderResponse = {
-    statusCode: code,
-    statusDescription: description,
-    reason,
-  };
+  await transactions.update(transaction.id, {
+    status: ITransaction.Status.Canceled,
+  });
 
-  res.json(response);
+  res.sendStatus(200);
 }
 
 async function refund(req: Request, res: Response, next: NextFunction) {
@@ -559,14 +563,14 @@ function setPaymentStatus(context: ApiContext) {
     if (!transaction)
       return next(
         bad(
-          "Transaction not found; invalid or missing merchant reference number; should never happen"
+          "transaction not found; invalid or missing merchant reference number; should never happen"
         )
       );
 
     if (transaction.userId !== userId)
       return next(
         bad(
-          "User id mismatch; invalid customer merchant id; should never happen"
+          "user id mismatch; invalid customer merchant id; should never happen"
         )
       );
 
@@ -575,7 +579,7 @@ function setPaymentStatus(context: ApiContext) {
       TRANSACTION_PAYMENT_METHOD_TO_FAWRY_PAYMENT_METHOD[paylaod.paymentMethod];
 
     if (method !== transaction.paymentMethod)
-      return next(bad("Payment method mismatch; should never happen"));
+      return next(bad("payment method mismatch; should never happen"));
 
     const plan = await plans.findById(transaction.planId);
     if (!plan) throw new Error("Plan not found; should never happen");
@@ -651,7 +655,7 @@ async function syncPaymentStatus(
   }
 
   const plan = await plans.findById(transaction.planId);
-  if (!plan) throw new Error("Plan not found; should never happen");
+  if (!plan) throw new Error("plan not found; should never happen");
 
   const monthCount = PLAN_PERIOD_TO_MONTH_COUNT[transaction.planPeriod];
   const subscription = await subscriptions.findByTxId(transaction.id);
