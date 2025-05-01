@@ -75,7 +75,7 @@ export type PayWithEWallet =
        * Base 64 encoded PNG QR code image.
        * Example: "data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgA....=="
        */
-      walletQr: string;
+      walletQr?: string;
     })
   | ErrorResponse;
 

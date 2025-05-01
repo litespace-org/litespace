@@ -6,7 +6,7 @@ export function forgeFawryPayload({
   merchantRefNum,
   paymentMethod,
   chargeItems = [],
-  description = "",
+  description,
   signature,
   amount,
   customer,
@@ -14,7 +14,7 @@ export function forgeFawryPayload({
   chargeItems?: BaseRequestPayload["chargeItems"];
   paymentMethod: PaymentMethod;
   merchantRefNum: number;
-  description?: string;
+  description: string;
   signature: string;
   customer: Customer;
   amount: number;

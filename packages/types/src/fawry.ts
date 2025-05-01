@@ -62,7 +62,7 @@ export type PayWithEWalletResponse = {
    * Base 64 encoded PNG QR code image.
    * Example: "data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgA....=="
    */
-  walletQr: string;
+  walletQr: string | null;
 };
 
 export type PayWithBankInstallmentsPayload = {
@@ -106,9 +106,7 @@ export type CancelUnpaidOrderPayload = {
   orderRefNum: string;
 };
 
-export type CancelUnpaidOrderResponse = BaseResponse & {
-  reason: string;
-};
+export type CancelUnpaidOrderResponse = void;
 
 export type RefundPayload = {
   /**

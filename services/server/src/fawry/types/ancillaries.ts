@@ -2,7 +2,7 @@ import { FawryStatusCode } from "@/fawry/types/errors";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { forPaymentDetails } from "@/fawry/lib/signature";
 
-export type PaymentMethod = "PAYATFAWRY" | "MWALLET" | "CARD";
+export type PaymentMethod = "PAYATFAWRY" | "MWALLET" | "CARD" | "Mobile Wallet";
 
 export type CurrencyCode = "EGP";
 
@@ -10,6 +10,7 @@ export type Language = "ar-eg";
 
 export type OrderStatus =
   | "NEW"
+  | "UNPAID"
   | "PAID"
   | "CANCELED"
   | "REFUNDED"

@@ -125,6 +125,15 @@ class Api extends Base {
         amount,
       }),
       customer,
+      chargeItems: [
+        {
+          itemId: merchantRefNum.toString(),
+          description: "LiteSpace subscription",
+          price: amount,
+          quantity: 1,
+        },
+      ],
+      description: "Pay LiteSpace subscription",
     });
 
     const payload: Requests.PayWithEWalletPayload = {
