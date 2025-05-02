@@ -1,29 +1,26 @@
 import Selector from "@/components/PlansV2/Selector";
-import { IPlan } from "@litespace/types";
+import { IPlan, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import { Typography } from "@litespace/ui/Typography";
-import { UseQueryResult } from "@tanstack/react-query";
 import { isEmpty } from "lodash";
 import React from "react";
 
 export const Content: React.FC<{
-  plans: UseQueryResult<IPlan.FindPlansApiResponse, Error>;
-}> = ({ plans }) => {
+  loading: boolean;
+  error: boolean;
+  list: IPlan.Self[];
+  refetch: Void;
+}> = ({ loading, error, list, refetch }) => {
   const intl = useFormatMessage();
 
-  if (plans.isLoading)
-    return <Loader size="large" text={intl("plans.loading")} />;
+  if (loading) return <Loader size="large" text={intl("plans.loading")} />;
 
-  if (plans.isError || isEmpty(plans.data?.list))
-    return (
-      <LoadingError error={intl("plans.error")} retry={() => plans.refetch()} />
-    );
-
-  if (!plans.data) return null;
+  if (error || isEmpty(list))
+    return <LoadingError error={intl("plans.error")} retry={refetch} />;
 
   return (
-    <div>
+    <div className="mt-4 md:mt-6">
       <Typography
         tag="h3"
         className="text-caption md:text-subtitle-1 lg:text-h3 font-semibold text-natural-950 mb-2 md:mb-4 text-center"
@@ -36,7 +33,7 @@ export const Content: React.FC<{
       >
         {intl("plans.header.description")}
       </Typography>
-      <Selector plans={plans.data.list} />
+      <Selector plans={list} />
     </div>
   );
 };

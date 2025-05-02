@@ -21,7 +21,7 @@ const Row: React.FC<{
   children: React.ReactNode;
 }> = ({ label, children }) => {
   return (
-    <div className={"flex justify-between items-center"}>
+    <div className="flex justify-between items-center">
       <Typography
         tag="h6"
         className="text-tiny lg:text-caption font-normal text-natural-950"

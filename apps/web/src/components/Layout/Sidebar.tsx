@@ -148,9 +148,9 @@ const Sidebar: React.FC<{
 
     const subscribtions = {
       label: intl("sidebar.subscriptions"),
-      route: Web.Subscription,
+      route: Web.Plans,
       Icon: Tag,
-      isActive: match(Web.Subscription),
+      isActive: match(Web.Plans),
     };
 
     const invoices = {
@@ -309,7 +309,7 @@ const Sidebar: React.FC<{
 
       {user &&
       user.role === IUser.Role.Student &&
-      location.pathname !== Web.Subscription &&
+      location.pathname !== Web.Plans &&
       (lg || !md) ? (
         <div className="bg-brand-100 lg:rounded-lg mt-10 -mx-4 lg:mx-0 py-4 lg:pb-0 flex flex-col items-center">
           <div className="mx-2 lg:mx-0 px-4 mb-3">
@@ -326,8 +326,8 @@ const Sidebar: React.FC<{
               {intl("sidebar.account-promotion.description")}
             </Typography>
           </div>
-          <Link to={Web.Subscription}>
-            <Button size={"small"} htmlType="button">
+          <Link to={Web.Plans}>
+            <Button size="small" htmlType="button">
               <Typography
                 tag="span"
                 className="text-natural-50 text-caption font-semibold"

@@ -12,7 +12,7 @@ import Fawry from "@litespace/assets/Fawry";
 export const PaymentMethods: React.FC = () => {
   const intl = useFormatMessage();
   return (
-    <div className="flex-1 flex flex-col gap-4 min-w-[224px] lg:min-w-[276px]">
+    <div className="flex flex-col gap-4 w-fit flex-shrink-0">
       <Typography
         tag="h4"
         className="text-subtitle-2 font-bold text-natural-950"

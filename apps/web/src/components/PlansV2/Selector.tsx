@@ -18,7 +18,6 @@ import { Link } from "react-router-dom";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { Button } from "@litespace/ui/Button";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Plan = Pick<
   IPlan.Self,
@@ -37,7 +36,7 @@ const PlansPanel: React.FC<{
 }> = ({ plans, planId, setPlanId }) => {
   const intl = useFormatMessage();
   return (
-    <div className="min-w-[164px] lg:min-w-[276px] flex-1 flex flex-col gap-4">
+    <div className="w-full md:w-fit lg:w-[276px] flex flex-col gap-4">
       {plans.map((plan) => (
         <div
           key={plan.id}
@@ -77,7 +76,6 @@ export const Selector: React.FC<{
   plans: IPlan.FindPlansApiResponse["list"];
 }> = ({ plans }) => {
   const intl = useFormatMessage();
-  const { sm } = useMediaQuery();
 
   const ordered = useMemo(() => {
     return orderBy(plans, (plan) => plan.weeklyMinutes, "asc");
@@ -98,18 +96,21 @@ export const Selector: React.FC<{
   if (!plan) return null;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
+    <div className="flex flex-col md:flex-row gap-4 max-w-screen-xl mx-auto">
       <PlansPanel
         plans={ordered}
         planId={planId}
         setPlanId={(planId) => setPlanId(planId)}
       />
-      {!sm ? (
-        <Typography tag="h5" className="text-body font-bold text-natural-950">
-          {intl("plan.period.select")}
-        </Typography>
-      ) : null}
-      <div className="flex-auto">
+
+      <Typography
+        tag="h5"
+        className="text-body font-bold text-natural-950 sm:hidden"
+      >
+        {intl("plan.period.select")}
+      </Typography>
+
+      <div className="flex-1">
         <div className="flex flex-col gap-4">
           <PlanPeriod
             period="month"
@@ -136,12 +137,17 @@ export const Selector: React.FC<{
             weeklyMinutes={plan.weeklyMinutes}
           />
         </div>
-        <Link to={router.web({ route: Web.Checkout, period, planId })}>
+
+        <Link
+          to={router.web({ route: Web.Checkout, period, planId })}
+          tabIndex={-1}
+        >
           <Button htmlType="button" size="large" className="mt-4 w-full">
             <Typography tag="span">{intl("plan.subscribe-now")}</Typography>
           </Button>
         </Link>
       </div>
+
       <PaymentMethods />
     </div>
   );

@@ -70,7 +70,7 @@ const PlanInfo: React.FC = () => {
       </div>
 
       <Link
-        to={Web.Subscription}
+        to={Web.Plans}
         className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 rounded-lg "
       >
         <Button

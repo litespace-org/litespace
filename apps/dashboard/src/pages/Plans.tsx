@@ -10,7 +10,7 @@ import cn from "classnames";
 export const Plans: React.FC = () => {
   const form = useRender();
   const intl = useFormatMessage();
-  const plans = usePlans();
+  const { query: plans } = usePlans();
 
   return (
     <div className={cn("w-full flex flex-col max-w-screen-2xl mx-auto p-6")}>

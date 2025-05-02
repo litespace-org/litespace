@@ -1,15 +1,20 @@
 import { useApi } from "@/api/context";
 import { IPlan, Void } from "@litespace/types";
-import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { QueryKey } from "@/constants";
 
-export function usePlans(): UseQueryResult<IPlan.FindPlansApiResponse, Error> {
+const FIND_PLANS_QUERY_KEY = [QueryKey.FindPlans];
+
+export function usePlans() {
   const api = useApi();
   const findPlans = useCallback(() => api.plan.find(), [api.plan]);
-  return useQuery({
+  const query = useQuery({
     queryFn: findPlans,
-    queryKey: ["find-all-plans"],
+    queryKey: FIND_PLANS_QUERY_KEY,
   });
+
+  return { query, keys: FIND_PLANS_QUERY_KEY };
 }
 
 export function useCreatePlan({
