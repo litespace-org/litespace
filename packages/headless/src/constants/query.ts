@@ -39,4 +39,5 @@ export enum QueryKey {
   GetAddCardTokenUrl = "get-add-card-token-url",
   FindCardTokens = "find-card-tokens",
   FindCurrentSubscription = "find-current-subscription",
+  FindPlans = "find-plans",
 }

@@ -12,7 +12,7 @@ import Fawry from "@litespace/assets/Fawry";
 export const PaymentMethods: React.FC = () => {
   const intl = useFormatMessage();
   return (
-    <div className="flex-1 shrink-0 flex flex-col gap-4 min-w-[276px]">
+    <div className="flex flex-col gap-4 w-fit flex-shrink-0">
       <Typography
         tag="h4"
         className="text-subtitle-2 font-bold text-natural-950"
@@ -26,7 +26,7 @@ export const PaymentMethods: React.FC = () => {
         >
           {intl("payment.methods.wallet")}
         </Typography>
-        <div className="flex gap-[10px]">
+        <div className="flex gap-[10px] items-center">
           <VodafoneCash />
           <EtisalatCash />
           <WeCash />
@@ -39,10 +39,10 @@ export const PaymentMethods: React.FC = () => {
         >
           {intl("payment.methods.cards")}
         </Typography>
-        <div className="flex gap-[10px]">
-          <Visa />
-          <Meeza />
-          <MasterCard />
+        <div className="flex gap-[10px] items-center">
+          <Visa className="h-[27px] w-[83px] lg:h-[30px] lg:w-[91px] shrink-0" />
+          <Meeza className="h-[31px] w-[64px] lg:h-[34px] lg:w-[71px] shrink-0" />
+          <MasterCard className="h-[32px] w-[53px] lg:h-[36px] lg:w-[58px] shrink-0" />
         </div>
       </div>
       <div className="flex flex-col gap-2">

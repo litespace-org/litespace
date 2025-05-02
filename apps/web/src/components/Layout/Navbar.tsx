@@ -28,9 +28,9 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
         })}
       >
         {user?.role === IUser.Role.Student &&
-        location.pathname !== Web.Subscription &&
+        location.pathname !== Web.Plans &&
         lg ? (
-          <Link to={Web.Subscription}>
+          <Link to={Web.Plans}>
             <Button
               size="large"
               htmlType="button"

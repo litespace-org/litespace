@@ -21,10 +21,10 @@ const Row: React.FC<{
   children: React.ReactNode;
 }> = ({ label, children }) => {
   return (
-    <div className={"flex justify-between items-center py-2"}>
+    <div className="flex justify-between items-center">
       <Typography
         tag="h6"
-        className="text-caption font-normal text-natural-950"
+        className="text-tiny lg:text-caption font-normal text-natural-950"
       >
         {label}
       </Typography>
@@ -34,7 +34,7 @@ const Row: React.FC<{
 };
 
 const Divider: React.FC = () => {
-  return <div className="w-full border-b border-natural-100" />;
+  return <div className="w-full border-b border-natural-100 my-2" />;
 };
 
 const PlanDetails: React.FC<{
@@ -54,13 +54,19 @@ const PlanDetails: React.FC<{
   return (
     <div>
       <Row label={intl("plan.total-hours")}>
-        <Typography tag="p" className="text-caption text-natural-950">
+        <Typography
+          tag="p"
+          className="text-tiny lg:text-caption text-natural-950 font-normal"
+        >
           {intl(getHoursLabel(totalHours), { value: formatNumber(totalHours) })}
         </Typography>
       </Row>
       <Divider />
       <Row label={intl("plan.monthly-price")}>
-        <Typography tag="p" className="text-caption text-natural-950">
+        <Typography
+          tag="p"
+          className="text-tiny lg:text-caption text-natural-950 font-normal"
+        >
           {intl("labels.currency.egp", { value: formatNumber(monthlyPrice) })}
         </Typography>
       </Row>
@@ -69,7 +75,7 @@ const PlanDetails: React.FC<{
         <div className="flex flex-row items-center">
           <Typography
             tag="p"
-            className="text-caption text-natural-950 font-bold"
+            className="text-tiny lg:text-caption text-natural-950 font-bold"
           >
             {intl("labels.currency.egp", {
               value: formatNumber(totalPriceAfterDiscount, {
@@ -143,17 +149,18 @@ const PlanPeriod: React.FC<{
     >
       <div
         className={cn("flex flex-col gap-1", {
-          "pb-2 border-b border-natural-100": open,
+          "pb-2 mb-2 border-b border-natural-100": open,
         })}
       >
         <div
           className={cn("flex w-full", {
-            "flex-row gap-6 items-center": open,
+            "flex-col lg:flex-row gap-2 lg:gap-6 items-start lg:items-center":
+              open,
             "flex-col gap-[10px]":
               (!open && period !== "month") || (!open && discount),
           })}
         >
-          <div className="flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-1">
             <RadioButton name="plan-period" onChange={select} checked={open} />
             <Typography
               tag="h6"

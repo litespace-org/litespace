@@ -10,14 +10,14 @@ import cn from "classnames";
 export const Plans: React.FC = () => {
   const form = useRender();
   const intl = useFormatMessage();
-  const plans = usePlans();
+  const { query: plans } = usePlans();
 
   return (
     <div className={cn("w-full flex flex-col max-w-screen-2xl mx-auto p-6")}>
       <header className="flex items-center justify-between mb-3">
         <PageTitle
           title={intl("dashboard.plans.title")}
-          count={plans.data?.length}
+          count={plans.data?.list.length}
           fetching={plans.isFetching && !plans.isLoading}
         />
 

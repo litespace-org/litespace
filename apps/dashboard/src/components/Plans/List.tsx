@@ -17,7 +17,7 @@ import Error from "@/components/Common/Error";
 import { useDeletePlan } from "@litespace/headless/plans";
 
 const List: React.FC<{
-  query: UseQueryResult<IPlan.Self[], Error>;
+  query: UseQueryResult<IPlan.FindPlansApiResponse, Error>;
   refresh: Void;
 }> = ({ query, refresh }) => {
   const intl = useFormatMessage();
@@ -161,7 +161,7 @@ const List: React.FC<{
     <div>
       <Table
         columns={columns}
-        data={query.data}
+        data={query.data.list}
         goto={() => {}}
         prev={() => {}}
         next={() => {}}

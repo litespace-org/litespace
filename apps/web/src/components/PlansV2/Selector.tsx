@@ -4,7 +4,6 @@ import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { formatDuration } from "@litespace/ui/utils";
-import { Button } from "@litespace/ui/Button";
 import {
   MILLISECONDS_IN_SECOND,
   percentage,
@@ -15,6 +14,10 @@ import { PaymentMethods } from "@/components/PlansV2/PaymentMethods";
 import { IPlan } from "@litespace/types";
 import PlanPeriod from "@/components/PlansV2/PlanPeriod";
 import { first, orderBy } from "lodash";
+import { Link } from "react-router-dom";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
+import { Button } from "@litespace/ui/Button";
 
 type Plan = Pick<
   IPlan.Self,
@@ -33,13 +36,13 @@ const PlansPanel: React.FC<{
 }> = ({ plans, planId, setPlanId }) => {
   const intl = useFormatMessage();
   return (
-    <div className="min-w-[276px] flex-1 flex flex-col gap-4">
+    <div className="w-full md:w-fit lg:w-[276px] flex flex-col gap-4">
       {plans.map((plan) => (
         <div
           key={plan.id}
           className={cn(
             "bg-natural-50 border border-natural-100 rounded-2xl shadow-plan-card-v2 p-4",
-            "flex flex-row gap-2 items-center cursor-pointer"
+            "flex flex-row gap-1 lg:gap-2 items-center cursor-pointer"
           )}
           onClick={() => setPlanId(plan.id)}
         >
@@ -53,7 +56,7 @@ const PlansPanel: React.FC<{
 
           <Typography
             tag="label"
-            className="text-caption font-bold text-natural-950 cursor-pointer"
+            className="text-tiny lg:text-caption font-bold text-natural-950 cursor-pointer"
             htmlFor={plan.id.toString()}
           >
             {intl("plan.labels.per-week", {
@@ -70,9 +73,8 @@ const PlansPanel: React.FC<{
 };
 
 export const Selector: React.FC<{
-  plans: Plan[];
-  select: (payload: { planId: number; period: IPlan.PeriodLiteral }) => void;
-}> = ({ plans, select }) => {
+  plans: IPlan.FindPlansApiResponse["list"];
+}> = ({ plans }) => {
   const intl = useFormatMessage();
 
   const ordered = useMemo(() => {
@@ -94,13 +96,21 @@ export const Selector: React.FC<{
   if (!plan) return null;
 
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col md:flex-row gap-4 max-w-screen-xl mx-auto">
       <PlansPanel
         plans={ordered}
         planId={planId}
         setPlanId={(planId) => setPlanId(planId)}
       />
-      <div className="flex-auto">
+
+      <Typography
+        tag="h5"
+        className="text-body font-bold text-natural-950 sm:hidden"
+      >
+        {intl("plan.period.select")}
+      </Typography>
+
+      <div className="flex-1">
         <div className="flex flex-col gap-4">
           <PlanPeriod
             period="month"
@@ -127,14 +137,17 @@ export const Selector: React.FC<{
             weeklyMinutes={plan.weeklyMinutes}
           />
         </div>
-        <Button
-          size="large"
-          onClick={() => select({ planId, period })}
-          className="mt-4 w-full"
+
+        <Link
+          to={router.web({ route: Web.Checkout, period, planId })}
+          tabIndex={-1}
         >
-          <Typography tag="span">{intl("plan.subscribe-now")}</Typography>
-        </Button>
+          <Button htmlType="button" size="large" className="mt-4 w-full">
+            <Typography tag="span">{intl("plan.subscribe-now")}</Typography>
+          </Button>
+        </Link>
       </div>
+
       <PaymentMethods />
     </div>
   );
