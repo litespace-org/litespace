@@ -50,7 +50,7 @@ const confirmPasswordCodePayload = zod.object({
   code: zod.number(),
 });
 
-const verifyEmailPayload = zod.object({
+const confirmEmailByCodePayload = zod.object({
   code: zod.number(),
 });
 
@@ -243,7 +243,7 @@ async function confirmForgetPasswordCode(
   res.sendStatus(200);
 }
 
-async function sendEmailVerificationCode(
+async function sendEmailConfirmationCode(
   req: Request,
   res: Response,
   next: NextFunction
@@ -279,7 +279,7 @@ async function sendEmailVerificationCode(
 /**
  * Despite the name, this function verify the email in the db as well
  */
-async function confirmEmailVerificationCode(
+async function confirmEmailByCode(
   req: Request,
   res: Response,
   next: NextFunction
@@ -290,8 +290,8 @@ async function confirmEmailVerificationCode(
   if (user.verifiedEmail) return next(emailAlreadyVerified());
 
   // get the code from the payload and verify it
-  const { code }: IConfirmationCode.VerifyEmailPayload =
-    verifyEmailPayload.parse(req.body);
+  const { code }: IConfirmationCode.ConfirmEmailByCodePayload =
+    confirmEmailByCodePayload.parse(req.body);
 
   const list = await confirmationCodes.find({
     userId: user.id,
@@ -322,6 +322,6 @@ export default {
   verifyPhoneCode: safeRequest(verifyPhoneCode),
   sendForgetPasswordCode: safeRequest(sendForgetPasswordCode),
   confirmForgetPasswordCode: safeRequest(confirmForgetPasswordCode),
-  sendEmailVerificationCode: safeRequest(sendEmailVerificationCode),
-  confirmEmailVerificationCode: safeRequest(confirmEmailVerificationCode),
+  sendEmailConfirmationCode: safeRequest(sendEmailConfirmationCode),
+  confirmEmailByCode: safeRequest(confirmEmailByCode),
 };

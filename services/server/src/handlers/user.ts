@@ -1,5 +1,11 @@
-import { tutors, users, knex, lessons } from "@litespace/models";
-import { ILesson, ITutor, IUser } from "@litespace/types";
+import {
+  tutors,
+  users,
+  knex,
+  lessons,
+  confirmationCodes,
+} from "@litespace/models";
+import { IConfirmationCode, ILesson, ITutor, IUser } from "@litespace/types";
 import {
   apierror,
   bad,
@@ -64,6 +70,8 @@ import { getRequestFile, upload } from "@/lib/assets";
 import bytes from "bytes";
 import s3 from "@/lib/s3";
 import { isOnboard } from "@litespace/utils/tutor";
+import { CONFIRMATION_CODE_VALIDITY_MINUTES } from "@litespace/utils";
+import { generateConfirmationCode } from "@/lib/confirmationCodes";
 
 const createUserPayload = zod.object({
   role,
@@ -187,13 +195,22 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     return user;
   });
 
-  // todo: generate a confirmation code.
+  // Generate and store the new code in the db
+  const { code } = await confirmationCodes.create({
+    userId: user.id,
+    purpose: IConfirmationCode.Purpose.VerifyEmail,
+    code: generateConfirmationCode(),
+    expiresAt: dayjs
+      .utc()
+      .add(CONFIRMATION_CODE_VALIDITY_MINUTES, "minutes")
+      .toISOString(),
+  });
+
   sendBackgroundMessage({
-    type: "send-user-verification-email",
+    type: "send-user-verification-code-email",
     payload: {
-      callbackUrl: payload.callbackUrl,
       email: user.email,
-      user: user.id,
+      code: code,
     },
   });
 

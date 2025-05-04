@@ -52,10 +52,6 @@ export type SendForgetPasswordEmailPayload = {
   email: string;
 };
 
-export type SendVerifyEmailPayload = {
-  email: string;
-};
-
 export type ConfirmForgetPasswordCodePayload = {
   password: string;
   code: number;
@@ -63,6 +59,14 @@ export type ConfirmForgetPasswordCodePayload = {
 
 export type ConfirmPasswordCodeApiResponse = void;
 
-export type VerifyEmailPayload = {
+export type SendEmailConfirmationCodePayload = {
+  email: string;
+};
+
+export type SendEmailConfirmationCodeResponse = void;
+
+export type ConfirmEmailByCodePayload = {
   code: number;
 };
+
+export type ConfirmEmailByCodeResponse = void;

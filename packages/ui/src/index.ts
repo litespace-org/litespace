@@ -22,6 +22,7 @@ export {
   type GridDay,
 } from "@/components/ActivityGrid";
 export { ConfirmationCode } from "@/components/ConfirmationCode";
+export { CodeConfirmationDialog } from "@/components/CodeConfirmationDialog";
 export { Dialog } from "@/components/Dialog";
 export { DeleteSlotDialog } from "@/components/DeleteSlotDialog";
 export { Drawer } from "@/components/Drawer";

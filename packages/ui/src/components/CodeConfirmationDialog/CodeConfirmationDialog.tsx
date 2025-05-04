@@ -1,0 +1,160 @@
+import {
+  Root,
+  Trigger,
+  Close,
+  Overlay,
+  Content,
+  Portal,
+  Title,
+} from "@radix-ui/react-dialog";
+import cn from "classnames";
+import React, { useState } from "react";
+import { DialogType } from "@/components/ConfirmationDialog/types";
+import X from "@litespace/assets/X";
+import { Button } from "@/components/Button";
+import { Void } from "@litespace/types";
+import { Typography } from "@/components/Typography";
+import { ConfirmationCode } from "@/components/ConfirmationCode";
+
+export const CodeConfirmationDialog: React.FC<{
+  trigger?: React.ReactNode;
+  title: string;
+  description?: string;
+  open?: boolean;
+  actions: {
+    primary: {
+      label: string;
+      onClick: (code: number) => void;
+      loading?: boolean;
+      disabled?: boolean;
+    };
+    secondary?: {
+      label: string;
+      onClick?: Void;
+      loading?: boolean;
+      disabled?: boolean;
+    };
+  };
+  close?: Void;
+  closable?: boolean;
+  type?: DialogType;
+  icon: React.ReactNode;
+}> = ({
+  type = "main",
+  description,
+  trigger,
+  title,
+  open,
+  icon,
+  actions,
+  close,
+  closable = true,
+}) => {
+  const [code, setCode] = useState<number | null>(null);
+
+  return (
+    <Root open={open}>
+      {trigger ? <Trigger>{trigger}</Trigger> : null}
+      <Portal>
+        <Overlay
+          onClick={closable ? close : undefined}
+          className="fixed inset-0 backdrop-blur-[15px] bg-overlay-dialog z-dialog-overlay"
+        />
+        <Title className="hidden">{title}</Title>
+        <Content
+          dir="rtl"
+          className={cn(
+            "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-natural-50",
+            "border border-border-strong rounded-xl w-[328px] lg:w-[400px] shadow-lg z-[98]",
+            "shadow-dialog-confirm p-6"
+          )}
+        >
+          <div className="flex items-center justify-between mb-4 lg:mb-6">
+            <div
+              className={cn(
+                "w-12 h-12 border-8 rounded-full flex items-center justify-center",
+                {
+                  "bg-brand-100 border-brand-50": type === "main",
+                  "bg-success-100 border-success-50": type === "success",
+                  "bg-warning-100 border-warning-50": type === "warning",
+                  "bg-destructive-100 border-destructive-50": type === "error",
+                },
+                {
+                  "[&_svg>*]:stroke-brand-700": type === "main",
+                  "[&_svg>*]:stroke-success-600": type === "success",
+                  "[&_svg>*]:stroke-warning-600": type === "warning",
+                  "[&_svg>*]:stroke-destructive-700": type === "error",
+                }
+              )}
+            >
+              <div className="w-6 h-6">{icon}</div>
+            </div>
+            <Close
+              onClick={close}
+              disabled={!closable}
+              className={cn(
+                "rounded-full h-11 w-11 flex items-center justify-center",
+                { "cursor-not-allowed opacity-50": !closable }
+              )}
+            >
+              <X className="text-natural-600 w-4 h-4 lg:w-6 lg:h-6" />
+            </Close>
+          </div>
+          <Title>
+            <Typography
+              tag="span"
+              className="text-natural-950 mb-1 font-semibold text-body"
+            >
+              {title}
+            </Typography>
+          </Title>
+          <div className="flex gap-1 flex-col mb-4 lg:mb-6">
+            {description ? (
+              <Typography
+                tag="p"
+                className="text-natural-700 text-caption font-normal"
+              >
+                {description}
+              </Typography>
+            ) : null}
+
+            <div className="py-2">
+              <ConfirmationCode
+                disabled={false}
+                setCode={(code: number) => setCode(code)}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-3">
+            <Button
+              type={type}
+              size="large"
+              variant="primary"
+              className="w-full"
+              onClick={() => actions.primary.onClick(code || 0)}
+              loading={actions.primary.loading}
+              disabled={actions.primary.disabled || code === null}
+            >
+              {actions.primary.label}
+            </Button>
+
+            {actions.secondary ? (
+              <Button
+                size="large"
+                type={type}
+                variant="secondary"
+                className="w-full"
+                onClick={actions.secondary.onClick}
+                loading={actions.secondary.loading}
+                disabled={actions.secondary.disabled || actions.primary.loading}
+              >
+                {actions.secondary.label}
+              </Button>
+            ) : null}
+          </div>
+        </Content>
+      </Portal>
+    </Root>
+  );
+};
