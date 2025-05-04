@@ -19,4 +19,19 @@ export class ConfirmationCode extends Base {
       payload,
     });
   }
+
+  async confirmVerificationEmailCode(
+    payload: IConfirmationCode.VerifyEmailPayload
+  ): Promise<void> {
+    await this.post({
+      route: "/api/v1/confirmation-code/email/confirm",
+      payload,
+    });
+  }
+
+  async sendVerificationEmailCode(): Promise<void> {
+    await this.post({
+      route: "/api/v1/confirmation-code/email/send",
+    });
+  }
 }

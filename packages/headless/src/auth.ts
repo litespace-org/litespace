@@ -102,6 +102,49 @@ export function useSendVerifyEmail({
   });
 }
 
+export function useConfirmVerificationEmailCode({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess<void>;
+  onError: OnError;
+}) {
+  const api = useApi();
+  const verifyEmail = useCallback(
+    (code: number) => {
+      return api.confirmationCode.confirmVerificationEmailCode({ code });
+    },
+    [api.confirmationCode]
+  );
+
+  return useMutation({
+    onSuccess,
+    onError,
+    mutationFn: verifyEmail,
+    mutationKey: [MutationKey.VerifyEmail],
+  });
+}
+
+export function useSendVerificationEmailCode({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess<void>;
+  onError: OnError;
+}) {
+  const api = useApi();
+  const sendVerifyEmail = useCallback(() => {
+    return api.confirmationCode.sendVerificationEmailCode();
+  }, [api.confirmationCode]);
+
+  return useMutation({
+    onSuccess,
+    onError,
+    mutationFn: sendVerifyEmail,
+    mutationKey: [MutationKey.ReVerifyEmail],
+  });
+}
+
 export function useRefreshAuthToken({
   onSuccess,
 }: {
