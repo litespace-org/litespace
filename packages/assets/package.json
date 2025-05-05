@@ -163,6 +163,7 @@
     "./StudentMaleLight": "./dist/StudentMaleLight.tsx",
     "./Success": "./dist/Success.tsx",
     "./Tag": "./dist/Tag.tsx",
+    "./TelegramCircle": "./dist/TelegramCircle.tsx",
     "./Telegram": "./dist/Telegram.tsx",
     "./ThemeSwitchLight": "./dist/ThemeSwitchLight.tsx",
     "./TimerIndicator": "./dist/TimerIndicator.tsx",

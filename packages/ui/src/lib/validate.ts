@@ -9,6 +9,7 @@ import {
   isValidUserBirthYear as isValidUserBirthYearBase,
   isValidTutorAbout as isValidTutorAboutBase,
   isValidTutorBio as isValidTutorBioBase,
+  isValidConfirmationCode as isValidConfirmationCodeBase,
 } from "@litespace/utils/validation";
 
 export function validateText({
@@ -82,4 +83,10 @@ export function isValidTutorBio(about: string): LocalId | null {
   if (valid === FieldError.ShortBio) return "error.text.short";
   if (valid === FieldError.LongBio) return "error.text.long";
   return "error.bio.invalid";
+}
+
+export function isValidConfirmationCode(code: number): LocalId | null {
+  const valid = isValidConfirmationCodeBase(code);
+  if (valid === true) return null;
+  return "error.confirmation-code.invalid";
 }

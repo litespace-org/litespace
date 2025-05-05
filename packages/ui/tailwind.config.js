@@ -79,6 +79,10 @@ export default {
           "radial-gradient(50% 50% at 50% 50%, rgba(240, 66, 72, 0.13) 0%, rgba(240, 66, 72, 0) 100%)",
         loader:
           "conic-gradient(from 180deg at 50% 50%, #1D7C4E 0deg, rgba(17,173,207,0) 360deg)",
+        "whatsapp-background":
+          "radial-gradient(rgba(97, 253, 125, 1), rgba(37, 207, 67, 1))",
+        "telegram-background":
+          "radial-gradient(rgba(42, 171, 238, 1), rgba(34, 158, 217, 1))",
       },
       colors: {
         dash: {

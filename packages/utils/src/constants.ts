@@ -69,6 +69,7 @@ export const MIN_CONTACT_REQUEST_MESSAGE_LENGTH = 10;
 export const MAX_CONTACT_REQUEST_MESSAGE_LENGTH = 1000;
 export const MIN_LESSON_DURATION = 15;
 export const MAX_LESSON_DURATION = 30;
+export const TELEGRAM_NUMBER = "010-2001-7777";
 
 // All users except tutors and tutor-managers can have their names in either Arabic or English or both.
 // https://regex101.com/r/ER7McY/1
