@@ -32,6 +32,8 @@ import {
   jsonBoolean,
   orderDirection,
   id,
+  numericFilter,
+  dateFilter,
 } from "@/validation/utils";
 import { jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, groupBy, sample } from "lodash";
@@ -145,6 +147,80 @@ const findStudioTutorsQuery = zod.object({
   studioId: zod.optional(id),
   pagination: zod.optional(pagination),
   search: zod.optional(string),
+});
+
+const findFullTutorsQueryFilter = zod.object({
+  bio: zod
+    .union([zod.string(), zod.null()])
+    .describe("search by tutor bio")
+    .optional(),
+  about: zod
+    .union([zod.string(), zod.null()])
+    .optional()
+    .describe("search by tutor about"),
+  name: zod
+    .union([zod.string(), zod.null()])
+    .optional()
+    .describe("search by tutor name"),
+  phone: zod
+    .union([zod.string(), zod.null()])
+    .optional()
+    .describe("search by tutor phone number"),
+  email: zod.string().optional().describe("search by tutor email"),
+  video: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor having video or not"),
+  thumbnail: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor having thumbnail or not"),
+  image: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor having image or not"),
+  activated: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either activated or not"),
+  verifiedEmail: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either verified their email or not"),
+  verifiedPhone: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either verified their phone or not"),
+  verifiedWhatsapp: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either verified their whatsapp or not"),
+  verifiedTelegram: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either verified their telegram or not"),
+  password: zod
+    .boolean()
+    .optional()
+    .describe("filter by tutor either having password or not"),
+  notice: numericFilter.optional().describe("filter by tutors notice period"),
+  birthYear: numericFilter.describe("filter by tutor birth year").optional(),
+  notificationMethod: zod
+    .nativeEnum(IUser.NotificationMethod)
+    .array()
+    .optional()
+    .describe("filter by a list of available notification methods"),
+  city: zod
+    .nativeEnum(IUser.City)
+    .array()
+    .optional()
+    .describe("filter by a list of available cities"),
+  gender: zod
+    .nativeEnum(IUser.Gender)
+    .array()
+    .optional()
+    .describe("filter by a list of available cities"),
+  createdAt: dateFilter.optional().describe("filter by tutors created at date"),
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
@@ -1050,6 +1126,20 @@ async function uploadTutorAssets(
   res.sendStatus(200);
 }
 
+async function findFullTutors(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const query: ITutor.FindFullTutorsApiQuery = findFullTutorsQueryFilter.parse(
+    req.query
+  );
+
+  const result = await tutors.find(query);
+  const response: ITutor.FindFullTutorsApiResponse = result;
+  res.status(200).json(response);
+}
+
 export default {
   update,
   create: safeRequest(create),
@@ -1069,6 +1159,7 @@ export default {
   findUncontactedTutors: safeRequest(findUncontactedTutors),
   findStudentStats: safeRequest(findStudentStats),
   findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),
+  findFullTutors: safeRequest(findFullTutors),
   uploadUserImage: safeRequest(uploadUserImage),
   uploadTutorAssets: safeRequest(uploadTutorAssets),
 };

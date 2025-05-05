@@ -1,4 +1,4 @@
-import { IUser, Paginated, IFilter } from "@/index";
+import { IUser, Paginated, IFilter, OmitProp } from "@/index";
 import { Pagination } from "@/filter";
 
 export type Self = {
@@ -8,7 +8,7 @@ export type Self = {
   video: string | null;
   studioId: number | null;
   thumbnail: string | null;
-  activated: boolean | null;
+  activated: boolean;
   activatedBy: number | null;
   /**
    * The period that be available before booking any lesson with the tutor.
@@ -18,8 +18,21 @@ export type Self = {
   updatedAt: string;
 };
 
-export type FullTutor = IUser.Self & Self & { metaUpdatedAt: string };
-export type FullTutorRow = FullTutor;
+export type Full = IUser.Self &
+  OmitProp<Self, "createdAt" | "updatedAt"> & {
+    meta: {
+      updatedAt: string;
+      createdAt: string;
+    };
+  };
+
+export type FullRow = OmitProp<IUser.Row, "created_at" | "updated_at"> &
+  OmitProp<Row, "created_at" | "updated_at"> & {
+    tutor_created_at: Date;
+    tutor_updated_at: Date;
+    user_created_at: Date;
+    user_updated_at: Date;
+  };
 
 export type Cache = {
   id: number;
@@ -43,7 +56,7 @@ export type Row = {
   bio: string | null;
   about: string | null;
   video: string | null;
-  activated: boolean | null;
+  activated: boolean;
   activated_by: number | null;
   studio_id: number | null;
   thumbnail: string | null;
@@ -198,3 +211,30 @@ export type FindPersonalizedTutorStatsApiResponse = {
 export type FindUncontactedTutors = Paginated<UncontactedTutorInfo>;
 export type FindFullUncontactedTutorsApiResponse =
   Paginated<FullUncontactedTutorInfo>;
+
+export type FindQueryModel = IFilter.SkippablePagination & {
+  bio?: string | null;
+  about?: string | null;
+  name?: string | null;
+  phone?: string | null;
+  email?: string;
+  video?: boolean;
+  image?: boolean;
+  thumbnail?: boolean;
+  activated?: boolean;
+  verifiedEmail?: boolean;
+  verifiedPhone?: boolean;
+  verifiedTelegram?: boolean;
+  verifiedWhatsapp?: boolean;
+  password?: boolean;
+  notice?: IFilter.Numeric;
+  birthYear?: IFilter.Numeric;
+  createdAt?: IFilter.Date;
+  notificationMethod?: IUser.NotificationMethod[];
+  city?: IUser.City[];
+  gender?: IUser.Gender[];
+};
+
+export type FindFullTutorsApiQuery = FindQueryModel;
+
+export type FindFullTutorsApiResponse = Paginated<Full>;

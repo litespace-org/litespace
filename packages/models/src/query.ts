@@ -2,6 +2,8 @@ import { Pool } from "pg";
 import { IFilter, NumericString } from "@litespace/types";
 import init, { Knex } from "knex";
 import zod from "zod";
+import { isEmpty } from "lodash";
+import dayjs from "@/lib/dayjs";
 
 export type WithOptionalTx<T> = T & { tx?: Knex.Transaction };
 export type WithTx<T> = T & { tx: Knex.Transaction };
@@ -118,6 +120,88 @@ export function withSkippablePagination<Row extends object, Result = Row[]>(
 ) {
   if (pagination.full) return builder;
   return withPagination(builder, pagination);
+}
+
+export function withDateFilter<R extends object, T>(
+  builder: Knex.QueryBuilder<R, T>,
+  column: string,
+  value?: IFilter.Date
+): Knex.QueryBuilder<R, T> {
+  const exact = typeof value === "string";
+
+  if (exact) builder.where(column, "=", dayjs.utc(value).toDate());
+
+  if (!exact && value?.gt)
+    builder.where(column, ">", dayjs.utc(value.gt).toDate());
+
+  if (!exact && value?.gte)
+    builder.where(column, ">=", dayjs.utc(value.gte).toDate());
+
+  if (!exact && value?.lt)
+    builder.where(column, "<", dayjs.utc(value.lt).toDate());
+
+  if (!exact && value?.lte)
+    builder.where(column, "<=", dayjs.utc(value.lte).toDate());
+
+  if (!exact && value?.noeq)
+    builder.where(column, "!=", dayjs.utc(value.noeq).toDate());
+
+  return builder;
+}
+
+export function withNumericFilter<R extends object, T>(
+  builder: Knex.QueryBuilder<R, T>,
+  column: string,
+  value?: IFilter.Numeric
+): Knex.QueryBuilder<R, T> {
+  const exact = typeof value === "number";
+
+  if (exact) builder.where(column, "=", value);
+  if (!exact && value?.gt) builder.where(column, ">", value.gt);
+  if (!exact && value?.gte) builder.where(column, ">=", value.gte);
+  if (!exact && value?.lt) builder.where(column, "<", value.lt);
+  if (!exact && value?.lte) builder.where(column, "<=", value.lte);
+  if (!exact && value?.noeq) builder.where(column, "!=", value.noeq);
+
+  return builder;
+}
+
+export function withStringFilter<R extends object, T>(
+  builder: Knex.QueryBuilder<R, T>,
+  column: string,
+  value?: string | null
+): Knex.QueryBuilder<R, T> {
+  if (typeof value === "undefined") return builder;
+  if (value === null) builder.whereNull(column);
+  if (value !== null) builder.whereILike(column, `%${value}%`);
+  return builder;
+}
+
+export function withBooleanFilter<R extends object, T>(
+  builder: Knex.QueryBuilder<R, T>,
+  column: string,
+  value?: boolean
+): Knex.QueryBuilder<R, T> {
+  if (typeof value === "undefined") return builder;
+  return builder.where(column, value);
+}
+
+export function withNullableFilter<R extends object, T>(
+  builder: Knex.QueryBuilder<R, T>,
+  column: string,
+  value?: boolean
+): Knex.QueryBuilder<R, T> {
+  if (typeof value === "undefined") return builder;
+  return builder.where(column, value ? "IS NOT" : "IS", null);
+}
+
+export function withListFilter<R extends object, T, V extends string | number>(
+  builder: Knex.QueryBuilder<R, T>,
+  column: string,
+  values?: V[]
+): Knex.QueryBuilder<R, T> {
+  if (!values || isEmpty(values)) return builder;
+  return builder.whereIn(column, values);
 }
 
 export async function count(table: string): Promise<number> {

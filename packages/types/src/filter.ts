@@ -36,3 +36,23 @@ export enum OrderDirection {
   Ascending = "asc",
   Descending = "desc",
 }
+
+export type Numeric =
+  | number
+  | {
+      gte?: number;
+      lte?: number;
+      gt?: number;
+      lt?: number;
+      noeq?: number;
+    };
+
+export type Date =
+  | string
+  | {
+      gte?: string;
+      lte?: string;
+      gt?: string;
+      lt?: string;
+      noeq?: string;
+    };

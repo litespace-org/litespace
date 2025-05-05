@@ -208,7 +208,7 @@ export type ServerEventsMap = {
     tutor: number;
     lesson: number;
   }>;
-  [ServerEvent.TutorUpdated]: EventCallback<ITutor.FullTutor>;
+  [ServerEvent.TutorUpdated]: EventCallback<ITutor.Full>;
   [ServerEvent.ServerStats]: EventCallback<Server.Stats>;
   [ServerEvent.UserTyping]: EventCallback<{ roomId: number; userId: number }>;
   [ServerEvent.SessionOffer]: EventCallback<{

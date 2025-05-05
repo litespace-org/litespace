@@ -2,20 +2,24 @@ import {
   column,
   countRows,
   knex,
-  withFilter,
+  withNumericFilter,
+  withDateFilter,
+  withStringFilter,
   WithOptionalTx,
   withPagination,
   withSkippablePagination,
+  withBooleanFilter,
+  withNullableFilter,
+  withListFilter,
 } from "@/query";
-import { first, isEmpty, merge, omit } from "lodash";
+import { first, isEmpty } from "lodash";
 import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
 import zod from "zod";
 
-type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
-type FullTutorFields = ITutor.FullTutorRow;
+type FullTutorFields = ITutor.FullRow;
 type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
 
 const tutorColumn = (key: keyof ITutor.Row) => column(key, "tutors");
@@ -28,62 +32,56 @@ const fullTutorFields: FullTutorFieldsMap = {
   address: users.column("address"),
   role: users.column("role"),
   password: users.column("password"),
-  birthYear: users.column("birth_year"),
+  birth_year: users.column("birth_year"),
   gender: users.column("gender"),
-  verifiedEmail: users.column("verified_email"),
-  verifiedPhone: users.column("verified_phone"),
-  verifiedWhatsApp: users.column("verified_whatsapp"),
-  verifiedTelegram: users.column("verified_telegram"),
-  creditScore: users.column("credit_score"),
+  verified_email: users.column("verified_email"),
+  verified_phone: users.column("verified_phone"),
+  verified_whatsapp: users.column("verified_whatsapp"),
+  verified_telegram: users.column("verified_telegram"),
+  credit_score: users.column("credit_score"),
   city: users.column("city"),
   phone: users.column("phone"),
-  notificationMethod: users.column("notification_method"),
-  createdAt: users.column("created_at"),
-  updatedAt: users.column("updated_at"),
-  metaUpdatedAt: tutorColumn("updated_at"),
+  notification_method: users.column("notification_method"),
+  user_created_at: users.column("created_at"),
+  user_updated_at: users.column("updated_at"),
+  tutor_created_at: tutorColumn("created_at"),
+  tutor_updated_at: tutorColumn("updated_at"),
   bio: tutorColumn("bio"),
   about: tutorColumn("about"),
   video: tutorColumn("video"),
-  studioId: tutorColumn("studio_id"),
+  studio_id: tutorColumn("studio_id"),
   thumbnail: tutorColumn("thumbnail"),
   notice: tutorColumn("notice"),
   activated: tutorColumn("activated"),
-  activatedBy: tutorColumn("activated_by"),
-} as const;
-
-const tutorMediaFields: TutorMediaFieldsMap = {
-  id: users.column("id"),
-  email: users.column("email"),
-  name: users.column("name"),
-  image: users.column("image"),
-  video: tutorColumn("video"),
+  activated_by: tutorColumn("activated_by"),
 } as const;
 
 export class Tutors {
   table = "tutors";
-  columns: {
-    fullTutorFields: {
-      map: FullTutorFieldsMap;
-      filterable: Array<keyof FullTutorFieldsMap>;
-    };
-    tutorMediaFields: {
-      map: TutorMediaFieldsMap;
-      filterable: Array<keyof TutorMediaFieldsMap>;
-    };
-  } = {
-    fullTutorFields: {
-      map: fullTutorFields,
-      filterable: Object.values(omit(fullTutorFields, "password")) as Array<
-        keyof FullTutorFields
-      >,
-    },
-    tutorMediaFields: {
-      map: tutorMediaFields,
-      filterable: Object.values(tutorMediaFields) as Array<
-        keyof TutorMediaFieldsMap
-      >,
-    },
-  };
+  // todo: remove
+  // columns: {
+  //   fullTutorFields: {
+  //     map: FullTutorFieldsMap;
+  //     filterable: Array<keyof FullTutorFieldsMap>;
+  //   };
+  //   tutorMediaFields: {
+  //     map: TutorMediaFieldsMap;
+  //     filterable: Array<keyof TutorMediaFieldsMap>;
+  //   };
+  // } = {
+  //   fullTutorFields: {
+  //     map: fullTutorFields,
+  //     filterable: Object.values(omit(fullTutorFields, "password")) as Array<
+  //       keyof FullTutorFields
+  //     >,
+  //   },
+  //   tutorMediaFields: {
+  //     map: tutorMediaFields,
+  //     filterable: Object.values(tutorMediaFields) as Array<
+  //       keyof TutorMediaFieldsMap
+  //     >,
+  //   },
+  // };
 
   async create(id: number, tx?: Knex.Transaction): Promise<ITutor.Self> {
     const now = dayjs.utc().toDate();
@@ -137,18 +135,18 @@ export class Tutors {
     await knex<ITutor.Row>("tutors").where("id", id).del();
   }
 
-  async findByEmail(email: string): Promise<ITutor.FullTutor | null> {
+  async findByEmail(email: string): Promise<ITutor.Full | null> {
     const tutors = await this.fullTutorQuery().where("email", email).limit(1);
     const tutor = first(tutors);
     if (!tutor) return null;
-    return this.asFullTutor(tutor);
+    return this.asFull(tutor);
   }
 
-  async findById(id: number): Promise<ITutor.FullTutor | null> {
+  async findById(id: number): Promise<ITutor.Full | null> {
     const tutors = await this.fullTutorQuery().where("tutors.id", id).limit(1);
     const tutor = first(tutors);
     if (!tutor) return null;
-    return this.asFullTutor(tutor);
+    return this.asFull(tutor);
   }
 
   async exists(id: number): Promise<boolean> {
@@ -158,17 +156,80 @@ export class Tutors {
 
   async find({
     tx,
+    about,
+    bio,
+    name,
+    phone,
+    email,
+    activated,
+    password,
+    image,
+    thumbnail,
+    video,
+    verifiedEmail,
+    verifiedPhone,
+    verifiedTelegram,
+    verifiedWhatsapp,
+    birthYear,
+    notice,
+    createdAt,
+    city,
+    gender,
+    notificationMethod,
     ...pagination
-  }: WithOptionalTx<IFilter.SkippablePagination>): Promise<
-    Paginated<ITutor.FullTutor>
-  > {
-    const base = this.builder(tx)
+  }: WithOptionalTx<ITutor.FindQueryModel>): Promise<Paginated<ITutor.Full>> {
+    const builder = this.builder(tx)
       .from<IUser.Row>(users.table)
       .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"));
-    const total = await countRows(base.clone(), { distinct: true });
-    const query = base.select<ITutor.FullTutorRow[]>(fullTutorFields);
+
+    // ============== string fields ========
+    withStringFilter(builder, this.column("bio"), bio);
+    withStringFilter(builder, this.column("about"), about);
+    withStringFilter(builder, users.column("name"), name);
+    withStringFilter(builder, users.column("phone"), phone);
+    withStringFilter(builder, users.column("email"), email);
+
+    // ============== boolean fields ========
+    withBooleanFilter(builder, this.column("activated"), activated);
+    withBooleanFilter(builder, users.column("verified_email"), verifiedEmail);
+    withBooleanFilter(builder, users.column("verified_phone"), verifiedPhone);
+    withBooleanFilter(
+      builder,
+      users.column("verified_telegram"),
+      verifiedTelegram
+    );
+    withBooleanFilter(
+      builder,
+      users.column("verified_whatsapp"),
+      verifiedWhatsapp
+    );
+
+    // ============== nullable fields ========
+    withNullableFilter(builder, this.column("video"), video);
+    withNullableFilter(builder, users.column("image"), image);
+    withNullableFilter(builder, this.column("thumbnail"), thumbnail);
+    withNullableFilter(builder, users.column("password"), password);
+
+    // ============== numerical fileds ========
+    withNumericFilter(builder, users.column("birth_year"), birthYear);
+    withNumericFilter(builder, this.column("notice"), notice);
+    // ============== date fields ========
+    withDateFilter(builder, users.column("created_at"), createdAt);
+
+    // ==============  list-based fileds ========
+    withListFilter(builder, users.column("city"), city);
+    withListFilter(
+      builder,
+      users.column("notification_method"),
+      notificationMethod
+    );
+    withListFilter(builder, users.column("gender"), gender);
+
+    const total = await countRows(builder.clone(), { distinct: true });
+    const query = builder.select<ITutor.FullRow[]>(fullTutorFields);
     const rows = await withSkippablePagination(query, pagination);
-    const list = rows.map((row) => this.asFullTutor(row));
+    const list = rows.map((row) => this.asFull(row));
+
     return { list, total };
   }
 
@@ -284,35 +345,7 @@ export class Tutors {
     return this.from(row);
   }
 
-  async findTutorsMedia(filter?: IFilter.Self): Promise<ITutor.TutorMedia[]> {
-    const builder = knex<IUser.Row>(users.table)
-      .select<ITutor.TutorMedia[]>(this.columns.tutorMediaFields.map)
-      .innerJoin(this.table, users.column("id"), this.column("id"));
-
-    const rows = await withFilter({
-      builder,
-      filter,
-      defaults: {
-        search: { columns: this.columns.tutorMediaFields.filterable },
-      },
-    });
-
-    return rows;
-  }
-
-  async findTutorMediaById(id: number): Promise<ITutor.TutorMedia | null> {
-    const row = await knex<IUser.Row>(users.table)
-      .select<ITutor.TutorMedia[]>(this.columns.tutorMediaFields.map)
-      .innerJoin(this.table, users.column("id"), this.column("id"))
-      .where(users.column("id"), id)
-      .first();
-
-    return row || null;
-  }
-
-  async findOnboardedTutors(
-    tx?: Knex.Transaction
-  ): Promise<ITutor.FullTutor[]> {
+  async findOnboardedTutors(tx?: Knex.Transaction): Promise<ITutor.Full[]> {
     const rows = await this.fullTutorQuery(tx)
       .where(this.column("activated"), true)
       .andWhereNot(this.column("video"), null)
@@ -323,7 +356,7 @@ export class Tutors {
       .andWhereNot(users.column("name"), null)
       .andWhereNot(users.column("gender"), null)
       .andWhere(users.column("verified_email"), true);
-    return rows.map((row) => this.asFullTutor(row));
+    return rows.map((row) => this.asFull(row));
   }
 
   async findUncontactedTutorsForStudent({
@@ -444,7 +477,7 @@ export class Tutors {
 
   fullTutorQuery(tx?: Knex.Transaction) {
     return this.builder(tx)
-      .select<ITutor.FullTutorRow[]>(this.columns.fullTutorFields.map)
+      .select<ITutor.FullRow[]>(fullTutorFields)
       .from<IUser.Row>(users.table)
       .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"))
       .clone();
@@ -466,17 +499,50 @@ export class Tutors {
     };
   }
 
-  asFullTutor(row: ITutor.FullTutorRow): ITutor.FullTutor {
-    return merge(omit(row), {
-      password: row.password !== null,
-    });
+  asFull(row: ITutor.FullRow): ITutor.Full {
+    return {
+      ...users.from({
+        id: row.id,
+        email: row.email,
+        password: row.password,
+        name: row.name,
+        image: row.image,
+        address: row.address,
+        birth_year: row.birth_year,
+        gender: row.gender,
+        role: row.role,
+        verified_email: row.verified_email,
+        verified_phone: row.verified_phone,
+        verified_whatsapp: row.verified_whatsapp,
+        verified_telegram: row.verified_telegram,
+        credit_score: row.credit_score,
+        phone: row.phone,
+        city: row.city,
+        notification_method: row.notification_method,
+        created_at: row.user_created_at,
+        updated_at: row.user_updated_at,
+      }),
+      id: row.id,
+      bio: row.bio,
+      about: row.about,
+      video: row.video,
+      thumbnail: row.thumbnail,
+      studioId: row.studio_id,
+      notice: row.notice,
+      activated: row.activated,
+      activatedBy: row.activated_by,
+      meta: {
+        createdAt: row.tutor_created_at.toISOString(),
+        updatedAt: row.tutor_updated_at.toISOString(),
+      },
+    };
   }
 
   builder(tx?: Knex.Transaction) {
     return tx ? tx<ITutor.Row>(this.table) : knex<ITutor.Row>(this.table);
   }
 
-  column(key: keyof ITutor.Row): string {
+  column(key: keyof ITutor.Row) {
     return tutorColumn(key);
   }
 }

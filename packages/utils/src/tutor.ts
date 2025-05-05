@@ -19,7 +19,7 @@ export function isOnboard({
   role,
   city,
   studioId,
-}: ITutor.FullTutor): boolean {
+}: ITutor.Full): boolean {
   const base =
     !!verifiedEmail &&
     !!image &&
@@ -38,7 +38,6 @@ export function isOnboard({
     !!activatedBy &&
     !!video &&
     !!thumbnail &&
-    // TODO: Collect this info from Other tutors
     !!birthYear &&
     !!studioId
   );
@@ -54,7 +53,7 @@ export function isProfileComplete({
   about,
   verifiedPhone,
 }: Pick<
-  ITutor.FullTutor,
+  ITutor.Full,
   | "name"
   | "phone"
   | "city"

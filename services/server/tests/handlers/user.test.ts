@@ -13,16 +13,32 @@ import { first, range } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
 import handlers from "@/handlers/user";
 
-const createUser = mockApi<IUser.CreateApiPayload>(handlers.create);
-const findPersonalizedStudentStats = mockApi(
-  handlers.findPersonalizedStudentStats
-);
+const createUser = mockApi<
+  IUser.CreateApiPayload,
+  void,
+  void,
+  IUser.LoginApiResponse
+>(handlers.create);
+
+const findPersonalizedStudentStats = mockApi<
+  void,
+  void,
+  void,
+  IUser.FindPersonalizedStudentStatsApiResponse
+>(handlers.findPersonalizedStudentStats);
 
 const findStudios = mockApi(handlers.findStudios);
 
 const findStudioTutor = mockApi(handlers.findStudioTutor);
 
 const findStudioTutors = mockApi(handlers.findStudioTutors);
+
+const findFullTutors = mockApi<
+  void,
+  void,
+  ITutor.FindFullTutorsApiQuery,
+  ITutor.FindFullTutorsApiResponse
+>(handlers.findFullTutors);
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
@@ -33,7 +49,7 @@ describe("/api/v1/user/", () => {
     it("should create a student", async () => {
       const email = "student@example.com";
       const password = "StudentExample101%^&";
-      const { body } = await createUser<IUser.LoginApiResponse>({
+      const { body } = await createUser({
         body: {
           role: IUser.Role.Student,
           email,
@@ -515,13 +531,7 @@ describe("/api/v1/user/", () => {
         canceled: true,
       });
 
-      const { body } =
-        await findPersonalizedStudentStats<IUser.FindPersonalizedStudentStatsApiResponse>(
-          {
-            user: student,
-          }
-        );
-
+      const { body } = await findPersonalizedStudentStats({ user: student });
       expect(body?.tutorCount).to.eq(2);
       expect(body?.totalLearningTime).to.eq(lesson1.lesson.duration);
       expect(body?.completedLessonCount).to.eq(1);
@@ -754,6 +764,122 @@ describe("/api/v1/user/", () => {
       expect(sample.name).to.not.be.undefined;
       expect(sample.address).to.not.be.undefined;
       expect(sample.image).to.not.be.undefined;
+    });
+  });
+
+  describe("GET /api/v1/user/tutor/fullTutors", () => {
+    it("should retrieve all tutors", async () => {
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+
+      await Promise.all([
+        db.tutor(),
+        db.tutor(),
+        db.tutor(),
+        db.tutor(),
+        db.tutor(),
+      ]);
+
+      const res = await findFullTutors({
+        query: {},
+        user: admin,
+      });
+
+      expect(res).to.not.be.instanceof(Error);
+
+      const resBody = res.body as ITutor.FindFullTutorsApiResponse;
+      expect(resBody.list.length).to.be.eq(5);
+    });
+
+    it("should filter tutors succussfully based on string", async () => {
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+
+      await Promise.all([
+        db.tutor(),
+        db.tutor({}, { bio: "Hello!" }),
+        db.tutor(),
+        db.tutor(),
+        db.tutor(),
+      ]);
+
+      const res = await findFullTutors({
+        query: {
+          bio: "Hello",
+        },
+        user: admin,
+      });
+
+      expect(res).to.not.be.instanceof(Error);
+
+      const resBody = res.body as ITutor.FindFullTutorsApiResponse;
+      expect(resBody.list.length).to.be.eq(1);
+    });
+
+    it("should filter tutors succussfully based on numerical filtering", async () => {
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+
+      await Promise.all([
+        db.tutor({}, { notice: 30 }),
+        db.tutor({}, { notice: 20 }),
+        db.tutor({}, { notice: 15 }),
+        db.tutor({}, { notice: 10 }),
+      ]);
+
+      const res1 = await findFullTutors({
+        query: { notice: 20 },
+        user: admin,
+      });
+
+      const resBody1 = res1.body;
+      expect(resBody1?.list.length).to.be.eq(1);
+
+      // get values larger and lower than certain limits
+      const res2 = await findFullTutors({
+        query: {
+          notice: {
+            gte: 15,
+            lte: 20,
+          },
+        },
+        user: admin,
+      });
+
+      expect(res2).to.not.be.instanceof(Error);
+
+      const resBody2 = res2.body;
+      expect(resBody2?.list.length).to.be.eq(2);
+
+      // get values larger and lower than certain limits
+      const res3 = await findFullTutors({
+        query: {
+          notice: {
+            gt: 20,
+          },
+        },
+        user: admin,
+      });
+
+      expect(res3).to.not.be.instanceof(Error);
+
+      const resBody3 = res3.body as ITutor.FindFullTutorsApiResponse;
+
+      expect(resBody3.list.length).to.be.eq(1);
+    });
+
+    it("should give error due to no admin previlage", async () => {
+      await Promise.all([
+        db.tutor(),
+        db.tutor(),
+        db.tutor(),
+        db.tutor(),
+        db.tutor(),
+      ]);
+
+      const res = await findFullTutors({
+        query: {},
+      });
+
+      expect(res).to.be.instanceof(Error);
+      expect(res).to.deep.eq(forbidden());
     });
   });
 });
