@@ -4,7 +4,7 @@ import {
   AvailabilitySlotProps,
   SlotActions,
 } from "@/components/Calendar/types";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
@@ -28,7 +28,7 @@ export const SlotsList: React.FC<{
   if (loading)
     return (
       <div className="mt-[15vh]">
-        <Loader
+        <Loading
           size="medium"
           text={intl("manage-schedule.manage-dialog.loading.message")}
         />

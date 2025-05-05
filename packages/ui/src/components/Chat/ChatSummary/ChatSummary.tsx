@@ -1,6 +1,6 @@
 import { AvatarV2 } from "@/components/Avatar";
 import { Button } from "@/components/Button";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
@@ -81,7 +81,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
 
       {loading ? (
         <div className="w-full h-96 flex justify-center items-center">
-          <Loader
+          <Loading
             size={mq.md ? "medium" : "small"}
             text={intl("student-dashboard.chat-summary.loading")}
           />

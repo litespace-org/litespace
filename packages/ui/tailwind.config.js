@@ -12,6 +12,20 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
+      width: {
+        "spinner-x": "24px",
+        "spinner-2x": "32px",
+        "spinner-3x": "40px",
+        "spinner-4x": "64px",
+        "spinner-5x": "80px",
+      },
+      hight: {
+        "spinner-x": "24px",
+        "spinner-2x": "32px",
+        "spinner-3x": "40px",
+        "spinner-4x": "64px",
+        "spinner-5x": "80px",
+      },
       aspectRatio: {
         desktop: "16 / 9",
         mobile: "9 / 16",

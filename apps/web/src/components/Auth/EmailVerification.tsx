@@ -1,7 +1,7 @@
 import React from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-import { Loader } from "@litespace/ui/Loading";
+import { Loading } from "@litespace/ui/Loading";
 import { Void } from "@litespace/types";
 import CheckEmail from "@/components/Auth/CheckEmail";
 import { Button } from "@litespace/ui/Button";
@@ -65,7 +65,7 @@ const EmailVerification: React.FC<{
       <AnimatePresence initial={false} mode="wait">
         {state === "verifying" ? (
           <Animate key="loading">
-            <Loader
+            <Loading
               size={mq.sm ? "large" : "small"}
               text={intl("verify-email.loading")}
             />

@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useUserContext } from "@litespace/headless/context/user";
 import { ProfileForm } from "@/components/StudentSettings/ProfileForm";
 import { redirect } from "react-router-dom";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { Web } from "@litespace/utils/routes";
 
 const Settings: React.FC = () => {
@@ -27,7 +27,7 @@ const Settings: React.FC = () => {
         <div>
           {loading ? (
             <div className="w-full mt-[12.5%] flex justify-center">
-              <Loader size="large" text={intl("student-settings.loading")} />
+              <Loading size="large" text={intl("student-settings.loading")} />
             </div>
           ) : null}
 

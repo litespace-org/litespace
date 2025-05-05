@@ -4,7 +4,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useEffect } from "react";
 import { useUserContext } from "@litespace/headless/context/user";
 import { redirect } from "react-router-dom";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import Settings from "@/components/TutorSettings";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { Web } from "@litespace/utils/routes";
@@ -32,7 +32,7 @@ const TutorSettings: React.FC = () => {
 
         {loading || tutorInfo.isPending ? (
           <div className="mt-[15vh]">
-            <Loader
+            <Loading
               size="large"
               text={intl("tutor-settings.profile.loading")}
             />

@@ -23,7 +23,7 @@ import {
 } from "@litespace/headless/chat";
 import { asMessageGroups } from "@litespace/ui/chat";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import NoSelection from "@/components/Chat/NoSelection";
 import dayjs from "dayjs";
 import { entries, groupBy, isEmpty } from "lodash";
@@ -324,7 +324,7 @@ const Messages: React.FC<{
           >
             {loading ? (
               <div className="w-full flex justify-center items-center">
-                <Loader size="large" text={intl("chat.message.loading")} />
+                <Loading size="large" text={intl("chat.message.loading")} />
               </div>
             ) : (
               <ul
@@ -347,7 +347,7 @@ const Messages: React.FC<{
                 ) : null}
                 {fetching ? (
                   <div className="w-full my-4">
-                    <Loader size="small" />
+                    <Loading size="small" />
                   </div>
                 ) : null}
 

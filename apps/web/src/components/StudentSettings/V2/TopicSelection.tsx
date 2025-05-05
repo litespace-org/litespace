@@ -7,7 +7,7 @@ import { Animate } from "@/components/Common/Animate";
 import { isEmpty } from "lodash";
 import { Button } from "@litespace/ui/Button";
 import AddCircle from "@litespace/assets/AddCircle";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { useTopics, useUserTopics } from "@litespace/headless/topic";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
@@ -100,7 +100,7 @@ const TopicSelection: React.FC = () => {
         userTopicsQuery={userTopicsQuery}
         userTopicIds={userTopicIds}
       >
-        <Loader
+        <Loading
           size="small"
           text={intl("student-settings.topics.selection-dialog.loading")}
         />

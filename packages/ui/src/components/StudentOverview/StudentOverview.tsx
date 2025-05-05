@@ -9,7 +9,7 @@ import cn from "classnames";
 import { LocalId } from "@/locales";
 import { formatNumber } from "@/components/utils";
 import { Void } from "@litespace/types";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
@@ -56,7 +56,7 @@ export const StudentOverview: React.FC<Props> = ({
   if (loading)
     return (
       <div className="flex items-center justify-center w-full h-40">
-        <Loader
+        <Loading
           size={mq.sm ? "medium" : "small"}
           text={intl("student-dashboard.overview.loading")}
         />

@@ -1,5 +1,5 @@
 import { Button } from "@/components/Button";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 
 import dayjs from "@/lib/dayjs";
@@ -69,7 +69,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
 
       {loading && !error ? (
         <div className="mb-[135px] mt-[112px]">
-          <Loader
+          <Loading
             size={md ? "medium" : "small"}
             text={
               isTutor

@@ -8,7 +8,7 @@ import UploadImage from "@litespace/assets/UploadImage";
 import { ConfirmDialog } from "@/components/PhotoSession/ConfirmDialog";
 import VideoClip from "@litespace/assets/VideoClip";
 import { Void } from "@litespace/types";
-import { Loader } from "@litespace/ui/Loading";
+import { Loading } from "@litespace/ui/Loading";
 import cn from "classnames";
 
 export const ThumbnailSection: React.FC<{
@@ -102,7 +102,7 @@ export const ThumbnailSection: React.FC<{
       {thumbnail ? (
         <div className="bg-natural-100 rounded-xl overflow-hidden flex items-center justify-center py-3">
           <div className={cn("py-6", loading ? "opacity-100" : "opacity-0")}>
-            <Loader />
+            <Loading />
           </div>
 
           <img

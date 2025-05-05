@@ -41,7 +41,7 @@ export const LoadingError: React.FC<{
         className={cn(
           "flex items-center justify-center bg-destructive-200 rounded-full",
           {
-            "p-[3.33px] w-10 h-10": size === "small",
+            "p-[3.33px] w-8 h-8": size === "small",
             "p-[5.33px] w-16 h-16": size === "medium",
             "p-[6.67px] w-20 h-20": size === "large",
           }

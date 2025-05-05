@@ -10,7 +10,7 @@ import {
 import cn from "classnames";
 import { WeekTable } from "@/components/Calendar/WeekTable";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import { useFormatMessage } from "@/hooks";
 import { Void } from "@litespace/types";
 
@@ -41,7 +41,7 @@ export const Calendar: React.FC<Props> = ({
   if (loading)
     return (
       <div className="mt-[15vh]">
-        <Loader
+        <Loading
           size="medium"
           text={intl("manage-schedule.manage-dialog.loading.message")}
         />

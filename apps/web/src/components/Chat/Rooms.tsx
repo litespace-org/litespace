@@ -4,7 +4,7 @@ import {
   SelectRoom,
   UncontactedTutorRoomId,
 } from "@litespace/ui/hooks/chat";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { Typography } from "@litespace/ui/Typography";
 import { IMessage, IRoom, ITutor, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -192,7 +192,7 @@ const Rooms: React.FC<{
 
       {pending || fetching ? (
         <div className="mt-6">
-          <Loader size="small" />
+          <Loading size="small" />
         </div>
       ) : null}
 
