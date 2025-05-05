@@ -77,3 +77,5 @@ export type CreateApiPayload = CreatePayload;
 export type UpdateApiPayload = UpdatePayload;
 
 export type FindPlansApiResponse = Paginated<Self>;
+
+export type FindByIdApiResponse = Self;

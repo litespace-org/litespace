@@ -13,7 +13,7 @@ import {
 import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
 
 import { fawry } from "@/fawry/api";
-import { bad, fawryError, forbidden, notfound, unexpected } from "@/lib/error";
+import { bad, fawryError, forbidden, notfound } from "@/lib/error";
 import { forgeFawryPayload } from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
 import { fawryConfig } from "@/constants";
@@ -175,8 +175,12 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
     cvv: payload.cvv,
   });
 
-  if (result.statusCode !== 200)
+  if (result.statusCode !== 200) {
+    await transactions.update(transaction.id, {
+      status: ITransaction.Status.Failed,
+    });
     return next(fawryError(result.statusDescription));
+  }
 
   const response: IFawry.PayWithCardResponse = {
     transactionId: transaction.id,
@@ -232,8 +236,16 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
       merchantRefNum: merchantRefNumber,
     });
 
-  if (statusCode !== 200 || !referenceNumber)
-    return next(unexpected(statusDescription));
+  if (statusCode !== 200 || !referenceNumber) {
+    await transactions.update(transaction.id, {
+      status: ITransaction.Status.Failed,
+    });
+    return next(fawryError(statusDescription));
+  }
+
+  await transactions.update(transaction.id, {
+    providerRefNum: Number(referenceNumber),
+  });
 
   const response: IFawry.PayWithRefNumResponse = {
     transactionId: transaction.id,
@@ -288,8 +300,12 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
     },
   });
 
-  if (payment.statusCode !== 200)
-    return next(unexpected(payment.statusDescription));
+  if (payment.statusCode !== 200) {
+    await transactions.update(transaction.id, {
+      status: ITransaction.Status.Failed,
+    });
+    return next(fawryError(payment.statusDescription));
+  }
 
   const response: IFawry.PayWithEWalletResponse = {
     transactionId: transaction.id,
@@ -384,11 +400,14 @@ async function cancelUnpaidOrder(
   const transaction = await transactions.findById(payload.transactionId);
 
   if (!transaction) return next(notfound.transaction());
+
   if (isStudent(user) && transaction.userId !== user.id)
     return next(forbidden());
 
   if (transaction.status !== ITransaction.Status.New)
-    return next(bad("transaction already canceled"));
+    return next(
+      bad("invalid transaction state, transaction cannot be canceled")
+    );
 
   const merchantRefNumber = encodeMerchantRefNumber({
     transactionId: transaction.id,
@@ -513,7 +532,7 @@ async function getPaymentStatus(
   const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { transactionId } = getPaymentStatusPayload.parse(req.body);
+  const { transactionId } = getPaymentStatusPayload.parse(req.query);
   const transaction = await transactions.findById(transactionId);
   if (!transaction) return next(notfound.transaction());
   if (isStudent(user) && transaction.userId !== user.id)
@@ -524,10 +543,15 @@ async function getPaymentStatus(
     createdAt: transaction.createdAt,
   });
 
-  const result = await fawry.getPaymentStatus(merchantRefNumber);
+  const result = await safePromise(fawry.getPaymentStatus(merchantRefNumber));
+  if (result instanceof Error) return next(result);
 
-  // todo: add response type
-  const response = result;
+  const response: IFawry.GetPaymentStatusResponse = {
+    orderStatus: ORDER_STATUS_TO_TRANSACTION_STATUS[result.orderStatus],
+    orderRefNum: result.fawryRefNumber,
+    paymentMethod:
+      TRANSACTION_PAYMENT_METHOD_TO_FAWRY_PAYMENT_METHOD[result.paymentMethod],
+  };
 
   res.status(200).json(response);
 }
@@ -618,10 +642,13 @@ function setPaymentStatus(context: ApiContext) {
       });
     });
 
-    // Notify user that his payment status got updated
+    // notify user that his transaction status got updated
     context.io
       .to(asUserRoomId(userId))
-      .emit(Wss.ServerEvent.PaymentStatusUpdate, {});
+      .emit(Wss.ServerEvent.TransactionStatusUpdate, {
+        transactionId,
+        status,
+      });
 
     // Terminate request with fawry.
     res.sendStatus(200);
@@ -647,6 +674,7 @@ async function syncPaymentStatus(
   });
 
   const payment = await fawry.getPaymentStatus(merchantRefNumber);
+
   const status = ORDER_STATUS_TO_TRANSACTION_STATUS[payment.orderStatus];
 
   if (status === transaction.status) {
@@ -655,7 +683,7 @@ async function syncPaymentStatus(
   }
 
   const plan = await plans.findById(transaction.planId);
-  if (!plan) throw new Error("plan not found; should never happen");
+  if (!plan) throw new Error("plan not found, should never happen");
 
   const monthCount = PLAN_PERIOD_TO_MONTH_COUNT[transaction.planPeriod];
   const subscription = await subscriptions.findByTxId(transaction.id);

@@ -45,9 +45,11 @@ export const Select = <T extends string | number>({
   size = "large",
   state,
   helper,
-  onChange,
   className,
   asButton,
+  pre,
+  post,
+  onChange,
   onTriggerClick,
   onOpenChange,
 }: SelectProps<T>) => {
@@ -96,62 +98,66 @@ export const Select = <T extends string | number>({
           </Typography>
         ) : null}
 
-        <Trigger
-          id={id}
-          data-open={open}
-          disabled={disabled}
-          onClick={onTriggerClick}
-          role="button"
-          className={cn(
-            "group flex flex-row justify-between items-center",
-            "w-full rounded-lg p-2",
-            "bg-natural-50 transition-colors duration-200",
-            "transition-colors duration-200",
-            "disabled:cursor-not-allowed disabled:bg-natural-100 disabled:border-natural-200",
-            "focus-visible:outline-none focus-visible:ring-2 focus:ring-secondary-600",
-            "border",
-            {
-              // default or filled
-              "border-natural-300": !state && !disabled,
-              // error
-              "border-destructive-600": state === "error",
-              // success
-              "border-brand-600": state === "success",
-            },
-            {
-              "h-7": size === "small",
-              "h-8": size === "medium",
-              "h-10": size === "large",
-            }
-          )}
-        >
-          <Typography
-            tag="span"
-            className={cn("font-medium text-caption", {
-              // filled
-              "text-natural-950": !disabled && value,
-              // placeholder
-              "text-natural-600": !value && !disabled,
-              // disabled
-              "text-natural-500": disabled,
-            })}
+        <div className="flex flex-row items-center">
+          {pre}
+          <Trigger
+            id={id}
+            data-open={open}
+            disabled={disabled}
+            onClick={onTriggerClick}
+            role="button"
+            className={cn(
+              "group flex flex-row justify-between items-center",
+              "w-full rounded-lg p-2",
+              "bg-natural-50 transition-colors duration-200",
+              "transition-colors duration-200",
+              "disabled:cursor-not-allowed disabled:bg-natural-100 disabled:border-natural-200",
+              "focus-visible:outline-none focus-visible:ring-2 focus:ring-secondary-600",
+              "border",
+              {
+                // default or filled
+                "border-natural-300": !state && !disabled,
+                // error
+                "border-destructive-600": state === "error",
+                // success
+                "border-brand-600": state === "success",
+              },
+              {
+                "h-7": size === "small",
+                "h-8": size === "medium",
+                "h-10": size === "large",
+              }
+            )}
           >
-            {text || placeholder}
-          </Typography>
+            <Typography
+              tag="span"
+              className={cn("font-medium text-caption", {
+                // filled
+                "text-natural-950": !disabled && value,
+                // placeholder
+                "text-natural-600": !value && !disabled,
+                // disabled
+                "text-natural-500": disabled,
+              })}
+            >
+              {text || placeholder}
+            </Typography>
 
-          {showDropdownIcon ? (
-            <Icon className="arrow-down">
-              <ArrowDown
-                data-open={open}
-                className={cn(
-                  "w-4 h-4",
-                  "justify-self-end",
-                  "data-[open=true]:rotate-180 transition-all duration-300"
-                )}
-              />
-            </Icon>
-          ) : null}
-        </Trigger>
+            {showDropdownIcon ? (
+              <Icon className="arrow-down">
+                <ArrowDown
+                  data-open={open}
+                  className={cn(
+                    "w-4 h-4",
+                    "justify-self-end",
+                    "data-[open=true]:rotate-180 transition-all duration-300"
+                  )}
+                />
+              </Icon>
+            ) : null}
+          </Trigger>
+          {post}
+        </div>
 
         <AnimatePresence mode="wait" initial={false}>
           {helper ? (

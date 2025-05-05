@@ -1,7 +1,7 @@
 import { useApi } from "@/api/context";
 import { IPlan, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { QueryKey } from "@/constants";
 
 const FIND_PLANS_QUERY_KEY = [QueryKey.FindPlans];
@@ -78,4 +78,17 @@ export function useDeletePlan({
     onSuccess,
     onError,
   });
+}
+
+export function useFindPlanById(id: number) {
+  const api = useApi();
+  const keys = useMemo(() => [QueryKey.FindPlanById, id], [id]);
+  const findById = useCallback(() => api.plan.findById(id), [api.plan, id]);
+
+  const query = useQuery({
+    queryFn: findById,
+    queryKey: keys,
+  });
+
+  return { query, keys };
 }

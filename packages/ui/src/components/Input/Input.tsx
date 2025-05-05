@@ -16,8 +16,8 @@ export type ExtraInputProps = {
   state?: "error" | "success";
   label?: string;
   helper?: string;
-  preInput?: React.ReactNode;
-  postInput?: React.ReactNode;
+  pre?: React.ReactNode;
+  post?: React.ReactNode;
 };
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
@@ -37,8 +37,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       icon,
       endAction,
       className,
-      preInput,
-      postInput,
+      pre,
+      post,
       ...props
     },
     ref
@@ -66,7 +66,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ) : null}
 
         <div className="flex flex-row items-center">
-          {preInput}
+          {pre}
           <div
             data-disabled={disabled}
             onClick={() => {
@@ -138,7 +138,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             />
             <Action disabled={disabled} action={endAction} filled={!!value} />
           </div>
-          {postInput}
+          {post}
         </div>
 
         <AnimatePresence mode="wait" initial={false}>

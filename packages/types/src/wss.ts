@@ -1,4 +1,11 @@
-import { EmptyObject, IMessage, ISession, ITutor, Server } from "@/index";
+import {
+  EmptyObject,
+  IMessage,
+  ISession,
+  ITransaction,
+  ITutor,
+  Server,
+} from "@/index";
 import { SessionDescription } from "@/webrtc";
 
 /**
@@ -70,7 +77,7 @@ export enum ServerEvent {
   InvoiceUpdated = "InvoiceUpdated",
   InvoiceDeleted = "InvoiceDeleted",
   ServerStats = "ServerStats",
-  PaymentStatusUpdate = "PaymentStatusUpdate",
+  TransactionStatusUpdate = "TransactionStatusUpdate",
 }
 
 export enum Room {
@@ -228,7 +235,10 @@ export type ServerEventsMap = {
   }>;
   [ServerEvent.AnnounceIncomingOffer]: EventCallback<EmptyObject>;
   [ServerEvent.PeerReadyToReceiveOffer]: EventCallback<EmptyObject>;
-  [ServerEvent.PaymentStatusUpdate]: EventCallback<EmptyObject>;
+  [ServerEvent.TransactionStatusUpdate]: EventCallback<{
+    transactionId: number;
+    status: ITransaction.Status;
+  }>;
 };
 
 // Generic types to extract the payload of the events

@@ -173,7 +173,7 @@ export const FawryStatusMap: Record<FawryStatusCode, FawryStatusEnum> =
     21004: FawryStatusEnum.InvalidAmount,
   });
 
-export enum CancelPaymentErrorEnum {
+export enum CancelPaymentError {
   Unauthorized,
   OrderNotFound,
   OrderAlreadyPaid,
@@ -191,17 +191,17 @@ export type CancelPaymentErrorCode =
   | 9901
   | 9946;
 
-export const CancelPaymentErrorCode: Record<
+export const CancelPaymentErrorMap: Record<
   CancelPaymentErrorCode,
-  CancelPaymentErrorEnum
+  CancelPaymentError
 > = Object.freeze({
-  401: CancelPaymentErrorEnum.Unauthorized,
-  404: CancelPaymentErrorEnum.OrderNotFound,
-  9938: CancelPaymentErrorEnum.OrderNotFound,
+  401: CancelPaymentError.Unauthorized,
+  404: CancelPaymentError.OrderNotFound,
+  9938: CancelPaymentError.OrderNotFound,
   400:
-    CancelPaymentErrorEnum.OrderAlreadyPaid |
-    CancelPaymentErrorEnum.OrderAlreadyCancelled,
-  9984: CancelPaymentErrorEnum.OrderAlreadyCancelled,
-  9901: CancelPaymentErrorEnum.InvalidMerchantCode,
-  9946: CancelPaymentErrorEnum.InvalidSignature,
+    CancelPaymentError.OrderAlreadyPaid |
+    CancelPaymentError.OrderAlreadyCancelled,
+  9984: CancelPaymentError.OrderAlreadyCancelled,
+  9901: CancelPaymentError.InvalidMerchantCode,
+  9946: CancelPaymentError.InvalidSignature,
 });

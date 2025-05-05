@@ -3,7 +3,7 @@ import {
   PaymentMethod,
   PaymentDetails,
 } from "@/fawry/types/ancillaries";
-import { FawryStatusCode } from "@/fawry/types/errors";
+import { CancelPaymentErrorCode, FawryStatusCode } from "@/fawry/types/errors";
 
 type Base = {
   /**
@@ -286,7 +286,7 @@ export type ListCardTokens =
 export type DeleteCardTokenResponse = SuccessResponse | ErrorResponse;
 
 export type CancelUnpaidOrderResponse = {
-  code: number;
+  code: CancelPaymentErrorCode;
   description: string;
   reason: string;
 };

@@ -22,6 +22,7 @@ import { ContactRequest } from "@/api/contactRequest";
 import { Fawry } from "@/api/fawry";
 import { ConfirmationCode } from "@/api/confirmationCode";
 import { Subscription } from "@/api/subscription";
+import { Transaction } from "@/api/transaction";
 
 export class Api {
   public readonly user: User;
@@ -46,6 +47,7 @@ export class Api {
   public readonly fawry: Fawry;
   public readonly confirmationCode: ConfirmationCode;
   public readonly subscription: Subscription;
+  public readonly transaction: Transaction;
 
   constructor(server: Env.Server, token: AuthToken | null) {
     const client = createClient("api", server, token);
@@ -71,5 +73,6 @@ export class Api {
     this.fawry = new Fawry(client);
     this.confirmationCode = new ConfirmationCode(client);
     this.subscription = new Subscription(client);
+    this.transaction = new Transaction(client);
   }
 }

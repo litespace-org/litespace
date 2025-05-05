@@ -29,5 +29,9 @@ export enum MutationKey {
   CreateContactRequest = "create-contact-request",
   RefreshAuthToken = "refresh-auth-token",
   PayWithCard = "pay-with-card",
+  PayWithEWallet = "pay-with-ewallet",
+  PayWithFawry = "pay-with-fawry",
   DeleteCardToken = "delete-card-token",
+  CancelUnpaidOrder = "cancel-unpaid-order",
+  SyncPaymentStatus = "sync-payment-status",
 }

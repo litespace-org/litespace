@@ -1,4 +1,4 @@
-import { IPlan } from "@/index";
+import { IPlan, ITransaction } from "@/index";
 
 type BaseResponse = {
   /**
@@ -100,10 +100,7 @@ export type PayWithBankInstallmentsResponse = BaseResponse & {
 };
 
 export type CancelUnpaidOrderPayload = {
-  /**
-   * The customer order reference number.
-   */
-  orderRefNum: string;
+  transactionId: number;
 };
 
 export type CancelUnpaidOrderResponse = void;
@@ -152,7 +149,21 @@ export type DeleteCardTokenPayload = {
 
 export type DeleteCardTokenResponse = void;
 
-export type GetPaymentStatusResponse = unknown;
+export type GetPaymentStatusPayload = {
+  transactionId: number;
+};
+
+export type GetPaymentStatusResponse = {
+  orderRefNum: string;
+  orderStatus: ITransaction.Status;
+  paymentMethod: ITransaction.PaymentMethod;
+};
+
+export type SyncPaymentStatusPayload = {
+  transactionId: number;
+};
+
+export type SyncPaymentStatusResponse = void;
 
 export type GetAddCardTokenUrlResponse = {
   url: string;

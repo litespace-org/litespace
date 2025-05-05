@@ -1,15 +1,10 @@
 import { forbidden, notfound } from "@/lib/error";
 import { plans } from "@litespace/models";
-import {
-  boolean,
-  identityObject,
-  pagination,
-  withNamedId,
-} from "@/validation/utils";
+import { boolean, pagination, withNamedId } from "@/validation/utils";
 import { IPlan } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { isSuperAdmin } from "@litespace/utils/user";
+import { isRegularUser, isSuperAdmin, isUser } from "@litespace/utils/user";
 import zod from "zod";
 
 const number = zod.number().int().positive().gt(0);
@@ -100,11 +95,19 @@ async function deletePlan(req: Request, res: Response, next: NextFunction) {
 }
 
 async function findById(req: Request, res: Response, next: NextFunction) {
-  const { id } = identityObject.parse(req.params);
+  const user = req.user;
+  const allowed = isUser(user);
+  if (!allowed) return next(forbidden());
+
+  const { id } = withNamedId("id").parse(req.params);
   const plan = await plans.findById(id);
-  // todo: only return public plans
   if (!plan) return next(notfound.plan());
-  res.status(200).json(plan);
+
+  const publicPlan = plan.active && !plan.forInvitesOnly;
+  if (isRegularUser(user) && !publicPlan) return next(forbidden());
+
+  const response: IPlan.FindByIdApiResponse = plan;
+  res.status(200).json(response);
 }
 
 async function find(req: Request, res: Response) {

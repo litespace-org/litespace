@@ -9,6 +9,7 @@ import { useServer } from "@/server";
 import dayjs from "@/lib/dayjs";
 import { useRefreshAuthToken } from "@/auth";
 import { TokenType } from "@litespace/atlas";
+import { isTutor } from "@litespace/utils";
 
 type Data = {
   user: IUser.Self | null;
@@ -80,23 +81,19 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [removeToken]);
 
   //=================== User data (and tutor's metadata) =====================
-  const { query } = useCurrentUser(!tokenExpired && !!token);
+  const { query: user } = useCurrentUser(!tokenExpired && !!token);
 
   const tutorId = useMemo(() => {
-    if (!userData.user?.role) return;
-    const tutor = [IUser.Role.Tutor, IUser.Role.TutorManager].includes(
-      userData.user.role
-    );
-    if (!tutor) return;
+    if (!isTutor(userData.user)) return;
     return userData.user.id;
-  }, [userData.user?.id, userData.user?.role]);
+  }, [userData.user]);
 
   const { query: meta } = useFindTutorMeta(tutorId);
 
   useEffect(() => {
-    if (!query.data || query.isLoading || query.isFetching) return;
-    setData({ user: query.data });
-  }, [query.data, query.isFetching, query.isLoading, setBearerToken, setData]);
+    if (!user.data || user.isLoading || user.isFetching) return;
+    setData({ user: user.data });
+  }, [user.data, user.isFetching, user.isLoading, setBearerToken, setData]);
 
   useEffect(() => {
     if (!meta.data || meta.isLoading || meta.isFetching) return;
@@ -107,24 +104,26 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     return {
       user: userData.user,
       meta: userData.meta,
-      loading: query.isLoading || meta.isLoading,
-      fetching: query.isFetching || meta.isFetching,
-      isError: query.isError,
-      refetch: { user: query.refetch, meta: meta.refetch },
+      loading: user.isLoading || meta.isLoading,
+      fetching: user.isFetching || meta.isFetching,
+      isError: user.isError || meta.isError,
+      error: user.error || meta.error,
+      refetch: { user: user.refetch, meta: meta.refetch },
       set: setData,
-      error: query.error,
       logout,
     };
   }, [
     userData.user,
     userData.meta,
-    query.isLoading,
-    query.isFetching,
-    query.isError,
-    query.refetch,
-    query.error,
+    user.isLoading,
+    user.isFetching,
+    user.isError,
+    user.error,
+    user.refetch,
     meta.isLoading,
     meta.isFetching,
+    meta.isError,
+    meta.error,
     meta.refetch,
     setData,
     logout,

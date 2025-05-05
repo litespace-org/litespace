@@ -205,7 +205,7 @@ const Content: React.FC<{
                 value={form.state.phone}
                 autoComplete="off"
                 onValueChange={({ value }) => form.set("phone", value)}
-                postInput={
+                post={
                   verifiedPhone ? (
                     <div className="h-10 flex items-center justify-center ms-2">
                       <Check className="w-6 [&>*]:stroke-brand-700" />

@@ -346,6 +346,7 @@ export default {
       slot: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
       "session-movable-stream": "0px 4px 20px 0px rgba(0, 0, 0, 0.10)",
       "plan-card-v2": "0px 4px 20px 0px rgba(0, 0,0, .03)",
+      "checkout-ref-num": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
     },
   },
   plugins: [

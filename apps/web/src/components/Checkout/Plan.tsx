@@ -69,10 +69,7 @@ const PlanInfo: React.FC = () => {
         </Typography>
       </div>
 
-      <Link
-        to={Web.Plans}
-        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 rounded-lg "
-      >
+      <Link to={Web.PlansV2} tabIndex={-1}>
         <Button
           type="main"
           size="large"
@@ -80,7 +77,6 @@ const PlanInfo: React.FC = () => {
           className="w-full"
           disabled={false}
           loading={false}
-          tabIndex={-1}
         >
           {intl("checkout.plan.change-plan")}
         </Button>

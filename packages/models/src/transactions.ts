@@ -23,7 +23,7 @@ export class Transactions {
         plan_id: payload.planId,
         plan_period: payload.planPeriod,
         amount: payload.amount,
-        status: ITransaction.Status.New,
+        status: payload.status || ITransaction.Status.New,
         payment_method: payload.paymentMethod,
         provider_ref_num: payload.providerRefNum,
         created_at: now,
@@ -119,7 +119,7 @@ export class Transactions {
     if (typeof amount === "number")
       builder.where(this.column("amount"), amount);
 
-    if (!isEmpty(statuses)) builder.where(this.column("status"), statuses);
+    if (!isEmpty(statuses)) builder.whereIn(this.column("status"), statuses);
 
     if (!isEmpty(paymentMethods))
       builder.whereIn(this.column("payment_method"), paymentMethods);

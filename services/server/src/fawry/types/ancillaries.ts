@@ -12,6 +12,7 @@ export type OrderStatus =
   | "NEW"
   | "UNPAID"
   | "PAID"
+  | "UNPAID"
   | "CANCELED"
   | "REFUNDED"
   | "EXPIRED"

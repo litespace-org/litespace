@@ -55,8 +55,6 @@ export const AvatarV2: React.FC<{
     return Math.floor((id || 0) % (COLOR_STYLES.length + 1));
   }, [id]);
 
-  console.log({ status });
-
   return (
     <div data-mod={mod} className="relative w-full h-full overflow-hidden">
       <img

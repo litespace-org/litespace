@@ -15,7 +15,7 @@ export const Tabs = <T extends string>({
   setTab: (id: T) => void;
 }) => {
   return (
-    <div className="border border-natural-200 rounded-xl flex items-center">
+    <div className="border border-natural-200 rounded-xl flex items-center w-fit">
       {tabs.map(({ id, label, important }) => (
         <button
           key={id}
