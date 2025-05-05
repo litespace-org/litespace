@@ -35,10 +35,12 @@ const sendForgetPasswordCode =
     handlers.sendForgetPasswordCode
   );
 
-const confirmForgetPasswordCode =
-  mockApi<IConfirmationCode.ConfirmForgetPasswordCodePayload>(
-    handlers.confirmForgetPasswordCode
-  );
+const confirmForgetPasswordCode = mockApi<
+  IConfirmationCode.ConfirmForgetPasswordCodePayload,
+  void,
+  void,
+  IConfirmationCode.ConfirmPasswordCodeApiResponse
+>(handlers.confirmForgetPasswordCode);
 
 const sendEmailVerificationCode = mockApi(handlers.sendEmailVerificationCode);
 
@@ -353,15 +355,12 @@ describe("/api/v1/confirmation-code", () => {
           await confirmationCodes.find({ userId: student.id })
         )[0];
 
-        const res =
-          await confirmForgetPasswordCode<IConfirmationCode.ConfirmPasswordCodeApiResponse>(
-            {
-              body: {
-                password: "Password@8",
-                code,
-              },
-            }
-          );
+        const res = await confirmForgetPasswordCode({
+          body: {
+            password: "Password@8",
+            code,
+          },
+        });
 
         expect(res).to.not.be.instanceof(Error);
       });

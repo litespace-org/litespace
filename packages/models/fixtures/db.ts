@@ -81,14 +81,14 @@ export function time() {
 export async function user(
   payload: Omit<Partial<IUser.Self>, "password"> & {
     password?: string;
-  },
-  withPassword?: boolean
+    withPassword?: boolean;
+  }
 ) {
   return await users.create({
     email: payload.email || faker.internet.email(),
     gender: payload.gender || gender(),
     name: payload.name || faker.internet.username(),
-    password: withPassword
+    password: payload.withPassword
       ? hashPassword(payload.password || faker.internet.password())
       : undefined,
     birthYear: payload.birthYear || faker.number.int({ min: 2000, max: 2024 }),
@@ -225,11 +225,13 @@ async function tutor(
   userPayload?: Partial<IUser.UpdatePayloadModel>,
   withPassword?: boolean
 ) {
-  const info = await user({ role: IUser.Role.Tutor }, withPassword);
+  const info = await user({ role: IUser.Role.Tutor, withPassword });
   const tutor = await tutors.create(info.id);
   await tutors.update(tutor.id, tutorPayload || {});
   await users.update(tutor.id, userPayload || {});
-  return (await tutors.findById(tutor.id))!;
+  const data = await tutors.findById(tutor.id);
+  if (!data) throw new Error("tutor not found");
+  return data;
 }
 
 function student() {
@@ -244,7 +246,9 @@ async function tutorManager(
   const tutor = await tutors.create(info.id);
   await tutors.update(tutor.id, tutorPayload || {});
   await users.update(tutor.id, userPayload || {});
-  return (await tutors.findById(tutor.id))!;
+  const data = await tutors.findById(tutor.id);
+  if (!data) throw new Error("tutor not found");
+  return data;
 }
 
 async function students(count: number) {

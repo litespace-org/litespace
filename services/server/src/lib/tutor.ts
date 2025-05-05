@@ -74,8 +74,8 @@ export async function cacheTutors(): Promise<TutorsCache> {
  *  @deprecated should be removed in favor of {@link isOnboard}
  */
 export function isPublicTutor(
-  tutor?: ITutor.FullTutor | null
-): tutor is ITutor.FullTutor {
+  tutor?: ITutor.Full | null
+): tutor is ITutor.Full {
   return (
     !!tutor &&
     !!tutor.activated &&
@@ -139,7 +139,7 @@ async function findTutorCacheMeta(tutorId: number) {
 }
 
 export async function joinTutorCache(
-  tutor: ITutor.FullTutor,
+  tutor: ITutor.Full,
   cacheData: ITutor.Cache | null
 ): Promise<ITutor.Cache> {
   const meta = cacheData

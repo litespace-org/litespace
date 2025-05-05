@@ -12,12 +12,15 @@ import { Link, useLocation } from "react-router-dom";
 function asFullTutor(
   user: IUser.Self | null,
   metaData: ITutor.Self | null
-): ITutor.FullTutor | null {
+): ITutor.Full | null {
   if (!user || !metaData) return null;
   return {
     ...user,
     ...metaData,
-    metaUpdatedAt: metaData.updatedAt,
+    meta: {
+      createdAt: metaData.createdAt,
+      updatedAt: metaData.updatedAt,
+    },
   };
 }
 

@@ -32,6 +32,8 @@ import {
   jsonBoolean,
   orderDirection,
   id,
+  numericFilter,
+  dateFilter,
 } from "@/validation/utils";
 import { jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, groupBy, sample } from "lodash";
@@ -201,53 +203,24 @@ const findFullTutorsQueryFilter = zod.object({
     .boolean()
     .optional()
     .describe("filter by tutor either having password or not"),
-  notice: zod
-    .union([
-      zod.coerce.number().min(0).optional(),
-      zod.object({
-        gte: zod.number().optional(),
-        lte: zod.coerce.number().optional(),
-        gt: zod.coerce.number().optional(),
-        lt: zod.coerce.number().optional(),
-      }),
-    ])
-    .optional(),
-  birthYear: zod
-    .union([
-      zod.coerce.number().min(1950).optional(),
-      zod.object({
-        gte: zod.number().optional(),
-        lte: zod.coerce.number().optional(),
-        gt: zod.coerce.number().optional(),
-        lt: zod.coerce.number().optional(),
-      }),
-    ])
-    .optional(),
+  notice: numericFilter.optional().describe("filter by tutors notice period"),
+  birthYear: numericFilter.describe("filter by tutor birth year").optional(),
   notificationMethod: zod
     .nativeEnum(IUser.NotificationMethod)
     .array()
     .optional()
-    .describe("list of available notification methods"),
+    .describe("filter by a list of available notification methods"),
   city: zod
     .nativeEnum(IUser.City)
     .array()
     .optional()
-    .describe("list of available cities"),
+    .describe("filter by a list of available cities"),
   gender: zod
     .nativeEnum(IUser.Gender)
     .array()
     .optional()
-    .describe("list of available cities"),
-  createdAt: zod.union([
-    zod.string().optional(),
-    zod.object({
-      gte: zod.string().optional(),
-      lte: zod.string().optional(),
-      gt: zod.string().optional(),
-      lt: zod.string().optional(),
-      noeq: zod.string().optional(),
-    }),
-  ]),
+    .describe("filter by a list of available cities"),
+  createdAt: dateFilter.optional().describe("filter by tutors created at date"),
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
@@ -1154,17 +1127,17 @@ async function uploadTutorAssets(
 }
 
 async function findFullTutors(req: Request, res: Response, next: NextFunction) {
-  const { user } = req;
-
-  if (!isAdmin(user)) return next(forbidden());
+  const user = req.user;
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
 
   const query: ITutor.FindFullTutorsApiQuery = findFullTutorsQueryFilter.parse(
     req.query
   );
 
-  const result = await tutors.find({ ...query });
-
-  res.status(200).json(result);
+  const result = await tutors.find(query);
+  const response: ITutor.FindFullTutorsApiResponse = result;
+  res.status(200).json(response);
 }
 
 export default {

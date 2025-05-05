@@ -133,3 +133,23 @@ export function unionOfLiterals<T extends string | number>(
   ];
   return zod.union(literals);
 }
+
+export const numericFilter = zod.union([
+  zod.coerce.number(),
+  zod.object({
+    gte: zod.number().optional(),
+    lte: zod.coerce.number().optional(),
+    gt: zod.coerce.number().optional(),
+    lt: zod.coerce.number().optional(),
+  }),
+]);
+
+export const dateFilter = zod.union([
+  zod.string(),
+  zod.object({
+    gte: zod.string().optional(),
+    lte: zod.string().optional(),
+    gt: zod.string().optional(),
+    lt: zod.string().optional(),
+  }),
+]);

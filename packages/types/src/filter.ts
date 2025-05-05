@@ -37,22 +37,22 @@ export enum OrderDirection {
   Descending = "desc",
 }
 
-export type NumericalFilter =
+export type Numeric =
   | number
   | {
-      gte?: number | undefined;
-      lte?: number | undefined;
-      gt?: number | undefined;
-      lt?: number | undefined;
+      gte?: number;
+      lte?: number;
+      gt?: number;
+      lt?: number;
+      noeq?: number;
     };
 
-export type DateFilter =
-  | Date
+export type Date =
   | string
   | {
-      gte?: string | undefined;
-      lte?: string | undefined;
-      gt?: string | undefined;
-      lt?: string | undefined;
-      noeq?: string | undefined;
+      gte?: string;
+      lte?: string;
+      gt?: string;
+      lt?: string;
+      noeq?: string;
     };

@@ -171,7 +171,7 @@ export class User extends Base {
     query: ITutor.FindFullTutorsApiQuery
   ): Promise<ITutor.FindFullTutorsApiResponse> {
     return await this.get({
-      route: `/api/v1/user/tutor/fullTutors`,
+      route: `/api/v1/user/tutor/full-tutors`,
       params: query,
     });
   }
