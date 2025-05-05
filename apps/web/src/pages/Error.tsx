@@ -1,18 +1,15 @@
-import { useSaveLogs } from "@/hooks/logger";
-import { useLogger } from "@litespace/headless/logger";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Web } from "@litespace/utils/routes";
 import React, { useMemo } from "react";
 import { Link, useRouteError } from "react-router-dom";
+import NotFound from "@litespace/assets/404";
+import { Typography } from "@litespace/ui/Typography";
+import { LoadingError } from "@litespace/ui/Loading";
 
 const ErrorPage: React.FC = () => {
   const intl = useFormatMessage();
   const error = useRouteError();
-  const logger = useLogger();
-  logger.error(error);
-  const { save } = useSaveLogs();
-  console.log(error);
 
   const status = useMemo(() => {
     if (
@@ -25,30 +22,39 @@ const ErrorPage: React.FC = () => {
     return 404;
   }, [error]);
 
+  if (status == 404) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center min-h-screen bg-dash-sidebar text-foreground font-cairo"
+        id="error-page"
+      >
+        <NotFound />
+
+        <Typography
+          tag="span"
+          className="text-subtitle-2 font-normal mt-6 text-secondary-900 text-center max-w-[405px]"
+        >
+          {intl("error-page.notfound-title")}
+        </Typography>
+
+        <Link to={Web.Root} className="mt-10">
+          <Button size={"large"}>{intl("error-page.back")}</Button>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div
-      className="relative flex items-center justify-center min-h-screen bg-dash-sidebar text-foreground font-cairo"
       id="error-page"
+      className="flex items-start justify-center min-h-screen bg-dash-sidebar text-foreground font-cairo"
     >
-      <div className="select-none opacity-[5%] filter transition duration-200 blur-sm">
-        <h1 className="text-[28rem]">{status}</h1>
-      </div>
-      <div className="absolute flex flex-col items-center justify-center">
-        <div className="flex flex-col items-center justify-center space-y-3">
-          <h1 className="text-2xl">{intl("error-page.title")}</h1>
-          <p className="text-xl text-foreground-light">
-            {intl("error-page.subtitle")}
-          </p>
-        </div>
-        <div className="flex flex-row gap-5 mt-4">
-          <Link to={Web.Root}>
-            <Button size={"large"}>{intl("error-page.back")}</Button>
-          </Link>
-          <Button size={"large"} variant="secondary" onClick={save}>
-            {intl("error-page.expor-logs")}
-          </Button>
-        </div>
-      </div>
+      <LoadingError
+        className="w-[352px] mt-[20.5vh]"
+        size="large"
+        retry={() => window.location.reload()}
+        error={intl("error-page.unexpected")}
+      />
     </div>
   );
 };

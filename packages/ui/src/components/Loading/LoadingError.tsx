@@ -14,7 +14,8 @@ export const LoadingError: React.FC<{
   retry: Void;
   error: string;
   size?: "small" | "medium" | "large";
-}> = ({ retry, error, size = "small" }) => {
+  className?: string;
+}> = ({ retry, error, size = "small", className }) => {
   const intl = useFormatMessage();
   const logger = useLogger();
   const toast = useToast();
@@ -36,7 +37,12 @@ export const LoadingError: React.FC<{
   }, [intl, logger, toast, user?.id]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-[226px]">
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center w-[226px]",
+        className
+      )}
+    >
       <div
         className={cn(
           "flex items-center justify-center bg-destructive-200 rounded-full",

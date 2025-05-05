@@ -24,6 +24,7 @@
       "require": "./dist/index.cjs.js",
       "types": "./dist/index.d.ts"
     },
+    "./404": "./dist/404.tsx",
     "./AstroStudent1": "./dist/AstroStudent1.tsx",
     "./AstroStudent2": "./dist/AstroStudent2.tsx",
     "./AstroStudent3": "./dist/AstroStudent3.tsx",
