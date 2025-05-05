@@ -39,7 +39,8 @@
     "./storage": "./dist/storage/index.js",
     "./recorder": "./dist/recorder.js",
     "./contactRequest": "./dist/contactRequest.js",
-    "./fawry": "./dist/fawry.js"
+    "./fawry": "./dist/fawry.js",
+    "./confirmationCode": "./dist/confirmationCode.js"
   },
   "react-native": {
     "./auth": "./dist/auth.js",
@@ -62,7 +63,8 @@
     "./tutor": "./dist/tutor.js",
     "./user": "./dist/user.js",
     "./contactRequest": "./dist/contactRequest.js",
-    "./storage": "./dist/storage/index.js"
+    "./storage": "./dist/storage/index.js",
+    "./confirmationCode": "./dist/confirmationCode.js"
   },
   "scripts": {
     "build": "tsc",

@@ -42,11 +42,11 @@ const confirmForgetPasswordCode = mockApi<
   IConfirmationCode.ConfirmPasswordCodeApiResponse
 >(handlers.confirmForgetPasswordCode);
 
-const sendEmailVerificationCode = mockApi(handlers.sendEmailVerificationCode);
+const sendEmailVerificationCode = mockApi(handlers.sendEmailConfirmationCode);
 
 const confirmEmailVerificationCode =
-  mockApi<IConfirmationCode.VerifyEmailPayload>(
-    handlers.confirmEmailVerificationCode
+  mockApi<IConfirmationCode.ConfirmEmailByCodePayload>(
+    handlers.confirmEmailByCode
   );
 
 describe("/api/v1/confirmation-code", () => {

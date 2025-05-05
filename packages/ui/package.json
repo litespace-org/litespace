@@ -18,6 +18,7 @@
     "./Checkbox": "./dist/components/Checkbox/index.js",
     "./ConfirmationCode": "./dist/components/ConfirmationCode/index.js",
     "./ConfirmationDialog": "./dist/components/ConfirmationDialog/index.js",
+    "./CodeConfirmationDialog": "./dist/components/CodeConfirmationDialog/index.js",
     "./DateInput": "./dist/components/DateInput/index.js",
     "./DatePicker": "./dist/components/DatePicker/index.js",
     "./Dialog": "./dist/components/Dialog/index.js",

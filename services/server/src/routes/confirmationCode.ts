@@ -9,7 +9,7 @@ router.post("/phone/verify", messenger.verifyPhoneCode);
 router.post("/password/send", messenger.sendForgetPasswordCode);
 router.post("/password/confirm", messenger.confirmForgetPasswordCode);
 
-router.post("/email/send", messenger.sendEmailVerificationCode);
-router.post("/email/confirm", messenger.confirmEmailVerificationCode);
+router.post("/email/send", messenger.sendEmailConfirmationCode);
+router.post("/email/confirm", messenger.confirmEmailByCode);
 
 export default router;

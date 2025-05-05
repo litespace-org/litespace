@@ -30,4 +30,6 @@ export enum MutationKey {
   RefreshAuthToken = "refresh-auth-token",
   PayWithCard = "pay-with-card",
   DeleteCardToken = "delete-card-token",
+  SendVerifyEmail = "send-verify-email",
+  ConfirmEmail = "confirm-email",
 }
