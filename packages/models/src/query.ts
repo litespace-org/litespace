@@ -26,7 +26,7 @@ const connection = {
     .parse(process.env.PG_DATABASE),
 } as const;
 
-export const pool = new Pool(connection);
+export const pool: InstanceType<typeof Pool> = new Pool(connection);
 export const knex = init({ client: "pg", connection });
 
 function asSqlString<T extends { toString(): string }>(value: T): string {
