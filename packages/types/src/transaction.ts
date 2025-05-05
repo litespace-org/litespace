@@ -75,6 +75,10 @@ export type FindQueryApi = FindQueryModel;
 
 export type FindApiResponse = Paginated<Self>;
 
+export type FindPendingApiResponse = Self | null;
+
+export type FindByIdApiResponse = Self;
+
 export type CreatePayload = {
   userId: number;
   planId: number;
@@ -86,6 +90,7 @@ export type CreatePayload = {
    * from third party services. e.g. fawry orderRefNum.
    */
   providerRefNum: number | null;
+  status?: Status;
 };
 
 export type UpdatePayload = {

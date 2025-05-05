@@ -8,13 +8,13 @@ import {
   isStudent,
   PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD,
   PLAN_PERIOD_TO_MONTH_COUNT,
-  safe,
+  safePromise,
 } from "@litespace/utils";
 import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
 
 import { fawry } from "@/fawry/api";
 import { bad, fawryError, forbidden, notfound } from "@/lib/error";
-import { forgeFawryPayload, syncFawryStatus } from "@/lib/fawry";
+import { forgeFawryPayload } from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
 import { fawryConfig } from "@/constants";
 import { id, unionOfLiterals } from "@/validation/utils";
@@ -43,10 +43,6 @@ import {
 } from "@/fawry/lib/ids";
 import { calculatePlanPrice } from "@/lib/plan";
 import { selectPhone } from "@/lib/user";
-import {
-  CancelPaymentErrorEnum,
-  CancelPaymentErrorMap,
-} from "@/fawry/types/errors";
 
 const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "month",
@@ -404,20 +400,14 @@ async function cancelUnpaidOrder(
   const transaction = await transactions.findById(payload.transactionId);
 
   if (!transaction) return next(notfound.transaction());
+
   if (isStudent(user) && transaction.userId !== user.id)
     return next(forbidden());
 
-  // check if it's already canceled in the local db
-  if (transaction.status === ITransaction.Status.Canceled) {
-    res.json({
-      code: 200,
-      statusDescription: "Transaction already canceled",
-      reason: "",
-    });
-    return;
-  }
-
-  if (transaction.status !== ITransaction.Status.New) return next(forbidden());
+  if (transaction.status !== ITransaction.Status.New)
+    return next(
+      bad("invalid transaction state, transaction cannot be canceled")
+    );
 
   const merchantRefNumber = encodeMerchantRefNumber({
     transactionId: transaction.id,
@@ -426,28 +416,15 @@ async function cancelUnpaidOrder(
 
   const { fawryRefNumber } = await fawry.getPaymentStatus(merchantRefNumber);
 
-  // NOTE: the return res from fawry is an empty object in case there is no error
-  const { code, description, reason } =
-    await fawry.cancelUnpaidOrder(fawryRefNumber);
+  const result = await safePromise(fawry.cancelUnpaidOrder(fawryRefNumber));
+  if (result instanceof Error)
+    return next(fawryError("Failed to cancel order"));
 
-  // check if it's already canceled in fawry db
-  if (
-    CancelPaymentErrorMap[code] ===
-      CancelPaymentErrorEnum.OrderAlreadyCancelled ||
-    code === undefined // NOTE: this means success "Ok" as noted above
-  ) {
-    await transactions.update(transaction.id, {
-      status: ITransaction.Status.Canceled,
-    });
-  }
+  await transactions.update(transaction.id, {
+    status: ITransaction.Status.Canceled,
+  });
 
-  const response: IFawry.CancelUnpaidOrderResponse = {
-    statusCode: code || 200,
-    statusDescription: description || "Order has been canceled",
-    reason: reason || "",
-  };
-
-  res.json(response).status(code === undefined ? 200 : 503);
+  res.sendStatus(200);
 }
 
 async function refund(req: Request, res: Response, next: NextFunction) {
@@ -566,7 +543,7 @@ async function getPaymentStatus(
     createdAt: transaction.createdAt,
   });
 
-  const result = await safe(() => fawry.getPaymentStatus(merchantRefNumber));
+  const result = await safePromise(fawry.getPaymentStatus(merchantRefNumber));
   if (result instanceof Error) return next(result);
 
   const response: IFawry.GetPaymentStatusResponse = {
@@ -665,11 +642,11 @@ function setPaymentStatus(context: ApiContext) {
       });
     });
 
-    // Notify user that his payment status got updated
+    // notify user that his transaction status got updated
     context.io
       .to(asUserRoomId(userId))
-      .emit(Wss.ServerEvent.PaymentStatusUpdate, {
-        id: transactionId,
+      .emit(Wss.ServerEvent.TransactionStatusUpdate, {
+        transactionId,
         status,
       });
 
@@ -698,12 +675,53 @@ async function syncPaymentStatus(
 
   const payment = await fawry.getPaymentStatus(merchantRefNumber);
 
-  const done = await syncFawryStatus({ payment, transaction });
+  const status = ORDER_STATUS_TO_TRANSACTION_STATUS[payment.orderStatus];
 
-  if (!done) {
+  if (status === transaction.status) {
     res.status(304);
     return;
   }
+
+  const plan = await plans.findById(transaction.planId);
+  if (!plan) throw new Error("plan not found, should never happen");
+
+  const monthCount = PLAN_PERIOD_TO_MONTH_COUNT[transaction.planPeriod];
+  const subscription = await subscriptions.findByTxId(transaction.id);
+
+  await knex.transaction(async (tx) => {
+    await transactions.update(
+      transaction.id,
+      {
+        status,
+        providerRefNum: Number(payment.fawryRefNumber),
+      },
+      tx
+    );
+
+    const paid = status === ITransaction.Status.Paid;
+
+    // terminate subscription in case the tx was canceled, refunded, or failed.
+    if (subscription && !paid)
+      return await subscriptions.update(subscription.id, {
+        terminatedAt: dayjs.utc().toISOString(),
+      });
+
+    if (paid && !subscription) {
+      // Default to now in case the payment time is missing.
+      const start = dayjs.utc(payment.paymentTime) || dayjs.utc();
+      const end = start.add(monthCount, "month");
+      return subscriptions.create({
+        tx,
+        txId: transaction.id,
+        period: transaction.planPeriod,
+        planId: transaction.planId,
+        weeklyMinutes: plan.weeklyMinutes,
+        userId: transaction.userId,
+        start: start.toISOString(),
+        end: end.toISOString(),
+      });
+    }
+  });
 
   res.sendStatus(200);
 }

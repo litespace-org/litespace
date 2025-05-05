@@ -20,7 +20,6 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { env } from "@/lib/env";
 import { useOnError } from "@/hooks/error";
 import { IPlan } from "@litespace/types";
-import cn from "classnames";
 
 type Form = {
   card: string;
@@ -32,8 +31,7 @@ const Payment: React.FC<{
   planId: number;
   period: IPlan.PeriodLiteral;
   phone: string | null;
-  onStateChange: (pending: boolean) => void;
-}> = ({ planId, period, phone, onStateChange }) => {
+}> = ({ planId, period, phone }) => {
   const intl = useFormatMessage();
   const [showAddCardTokenDialog, setShowAddCardTokenDialog] =
     useState<boolean>(false);
@@ -48,14 +46,7 @@ const Payment: React.FC<{
 
   const payWithCard = usePayWithCard({
     onError,
-    onSuccess(response) {
-      console.log(response);
-    },
   });
-
-  useEffect(() => {
-    onStateChange(payWithCard.isPending);
-  }, [payWithCard.isPending, onStateChange]);
 
   // ==================== form ====================
   const validators = useMakeValidators<Form>({
@@ -157,43 +148,41 @@ const Payment: React.FC<{
             {intl("checkout.payment.description")}
           </Typography>
 
-          <div className="flex flex-row items-end gap-4">
-            <Select
-              id="card"
-              label={intl("checkout.payment.card-number")}
-              className="flex-1"
-              value={form.state.card}
-              options={cardOptions}
-              placeholder={intl("checkout.payment.card-number-placeholder")}
-              onChange={(value) => form.set("card", value)}
-              state={form.errors.card ? "error" : undefined}
-              helper={form.errors.card}
-              asButton={isEmpty(cardOptions)}
-              onTriggerClick={() => {
-                if (isEmpty(cardOptions)) setShowAddCardTokenDialog(true);
-              }}
-              onOpenChange={(open) => {
-                if (open && isEmpty(cardOptions))
-                  setShowAddCardTokenDialog(true);
-              }}
-            />
-
-            <Button
-              type="main"
-              variant="tertiary"
-              size="large"
-              htmlType="button"
-              startIcon={<AddCard className="icon" />}
-              disabled={false}
-              loading={false}
-              onClick={() => setShowAddCardTokenDialog(true)}
-              className={cn(form.errors.card && "mb-[22px]")}
-            >
-              <Typography tag="span" className="text-body font-medium">
-                {intl("checkout.payment.add-card")}
-              </Typography>
-            </Button>
-          </div>
+          <Select
+            id="card"
+            label={intl("checkout.payment.card.card-number")}
+            className="flex-1"
+            value={form.state.card}
+            options={cardOptions}
+            placeholder={intl("checkout.payment.card.card-number-placeholder")}
+            onChange={(value) => form.set("card", value)}
+            state={form.errors.card ? "error" : undefined}
+            helper={form.errors.card}
+            asButton={isEmpty(cardOptions)}
+            onTriggerClick={() => {
+              if (isEmpty(cardOptions)) setShowAddCardTokenDialog(true);
+            }}
+            onOpenChange={(open) => {
+              if (open && isEmpty(cardOptions)) setShowAddCardTokenDialog(true);
+            }}
+            post={
+              <Button
+                type="main"
+                variant="tertiary"
+                size="large"
+                htmlType="button"
+                startIcon={<AddCard className="icon" />}
+                disabled={false}
+                loading={false}
+                onClick={() => setShowAddCardTokenDialog(true)}
+                className="ms-4 flex-shrink-0"
+              >
+                <Typography tag="span" className="text-body font-medium">
+                  {intl("checkout.payment.card.add-card")}
+                </Typography>
+              </Button>
+            }
+          />
 
           <div className="flex flex-col sm:flex-row gap-4">
             <PatternInput
@@ -203,8 +192,8 @@ const Payment: React.FC<{
               format="###"
               idleDir="rtl"
               inputSize="large"
-              label={intl("checkout.payment.cvv-label")}
-              placeholder={intl("checkout.payment.cvv")}
+              label={intl("checkout.payment.card.cvv")}
+              placeholder={intl("checkout.payment.card.cvv-placeholder")}
               state={form.errors.cvv ? "error" : undefined}
               helper={form.errors.cvv}
               onValueChange={({ value }) => form.set("cvv", value)}
@@ -213,12 +202,12 @@ const Payment: React.FC<{
             <PatternInput
               id="phone"
               mask=" "
-              idleDir="rtl"
+              idleDir="ltr"
               inputSize="large"
               name="phone"
               format="### #### ####"
-              label={intl("checkout.payment.phone-number")}
-              placeholder={intl("checkout.payment.phone-number-placeholder")}
+              label={intl("checkout.payment.card.phone")}
+              placeholder={intl("checkout.payment.card.phone-placeholder")}
               state={form.errors.phone ? "error" : undefined}
               helper={form.errors.phone}
               value={form.state.phone}
@@ -237,11 +226,11 @@ const Payment: React.FC<{
           disabled={payWithCard.isPending}
           loading={payWithCard.isPending}
         >
-          {intl("checkout.payment.confirm-button")}
+          {intl("checkout.payment.confirm")}
         </Button>
 
         <Typography tag="p" className="text-tiny font-normal">
-          {intl("checkout.payment.confirmation-code-note")}
+          {intl("checkout.payment.card.confirmation-code-note")}
         </Typography>
       </form>
 

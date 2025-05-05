@@ -19,6 +19,8 @@ export type SelectProps<T extends string | number> = {
   disabled?: boolean;
   state?: "error" | "success";
   helper?: string;
+  pre?: React.ReactNode;
+  post?: React.ReactNode;
   onChange?: (value: T) => void;
   onOpenChange?: (open: boolean) => void;
   onTriggerClick?: Void;

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
@@ -6,7 +6,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { useForm } from "@litespace/headless/form";
 import { isValidPhone } from "@litespace/ui/lib/validate";
 import { PatternInput } from "@litespace/ui/PatternInput";
-import { IPlan } from "@litespace/types";
+import { IPlan, Void } from "@litespace/types";
 import { useOnError } from "@/hooks/error";
 import { usePayWithFawry } from "@litespace/headless/fawry";
 import { useToast } from "@litespace/ui/Toast";
@@ -19,17 +19,16 @@ const Payment: React.FC<{
   planId: number;
   period: IPlan.PeriodLiteral;
   phone: string | null;
-  onStateChange: (pending: boolean) => void;
-}> = ({ phone, planId, period, onStateChange }) => {
+  syncing: boolean;
+  sync: Void;
+}> = ({ phone, planId, period, syncing, sync }) => {
   const intl = useFormatMessage();
-  const [submitDisabled, setSubmitDisabled] = useState(false);
   const toast = useToast();
 
   // ==================== pay with fawry ====================
   const onError = useOnError({
     type: "mutation",
     handler(error) {
-      setSubmitDisabled(false);
       toast.error({ title: intl(error.messageId) });
     },
   });
@@ -37,16 +36,9 @@ const Payment: React.FC<{
   const payWithFawry = usePayWithFawry({
     onError,
     onSuccess() {
-      window.location.reload();
+      sync();
     },
   });
-
-  const disabled = useMemo(
-    () => payWithFawry.isPending || submitDisabled,
-    [payWithFawry.isPending, submitDisabled]
-  );
-
-  useEffect(() => onStateChange(disabled), [disabled, onStateChange]);
 
   // ==================== form ====================
   const validators = useMakeValidators<Form>({
@@ -62,7 +54,6 @@ const Payment: React.FC<{
     },
     validators,
     onSubmit(data) {
-      setSubmitDisabled(true);
       payWithFawry.mutate({
         phone: data.phone,
         planId,
@@ -73,13 +64,7 @@ const Payment: React.FC<{
 
   return (
     <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          form.submit();
-        }}
-        className="flex flex-col gap-6"
-      >
+      <form onSubmit={form.onSubmit} className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">
           <Typography tag="p" className="text-body font-medium">
             {intl("checkout.payment.description")}
@@ -92,13 +77,13 @@ const Payment: React.FC<{
             inputSize="large"
             name="phone"
             format="### #### ####"
-            label={intl("checkout.payment.phone-number")}
-            placeholder={intl("checkout.payment.phone-number-placeholder")}
+            label={intl("checkout.payment.fawry.phone")}
+            placeholder={intl("checkout.payment.fawry.phone-placeholder")}
             state={form.errors.phone ? "error" : undefined}
             helper={form.errors.phone}
             value={form.state.phone}
             autoComplete="off"
-            disabled={!!phone}
+            disabled={!!phone || payWithFawry.isPending || syncing}
             onValueChange={({ value }) => form.set("phone", value)}
           />
         </div>
@@ -108,10 +93,10 @@ const Payment: React.FC<{
           size="large"
           htmlType="submit"
           className="w-full"
-          disabled={disabled}
+          disabled={payWithFawry.isPending || syncing}
           loading={payWithFawry.isPending}
         >
-          {intl("checkout.payment.confirm-button")}
+          {intl("checkout.payment.confirm")}
         </Button>
       </form>
     </div>

@@ -24,25 +24,22 @@ export function usePendingTransaction(config?: { enabled?: boolean }) {
 }
 
 type TransactionStatusUpdate = {
-  id: number;
+  transactionId: number;
   status: ITransaction.Status;
 };
 
-/**
- * This hook listens to transactions status updates
- */
 export function useTransactionStatus(txId?: number) {
   const socket = useSocket();
   const [updates, setUpdates] = useState<TransactionStatusUpdate[]>([]);
 
   useEffect(() => {
     if (!socket) return;
-    socket.on(Wss.ServerEvent.PaymentStatusUpdate, (update) => {
-      if (txId && update.id !== txId) return;
+    socket.on(Wss.ServerEvent.TransactionStatusUpdate, (update) => {
+      if (txId && update.transactionId !== txId) return;
       setUpdates((prev) => [...prev, update]);
     });
     return () => {
-      socket.off(Wss.ServerEvent.PaymentStatusUpdate);
+      socket.off(Wss.ServerEvent.TransactionStatusUpdate);
     };
   }, [socket, setUpdates, txId]);
 

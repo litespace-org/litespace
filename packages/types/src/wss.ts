@@ -77,7 +77,7 @@ export enum ServerEvent {
   InvoiceUpdated = "InvoiceUpdated",
   InvoiceDeleted = "InvoiceDeleted",
   ServerStats = "ServerStats",
-  PaymentStatusUpdate = "PaymentStatusUpdate",
+  TransactionStatusUpdate = "TransactionStatusUpdate",
 }
 
 export enum Room {
@@ -235,8 +235,8 @@ export type ServerEventsMap = {
   }>;
   [ServerEvent.AnnounceIncomingOffer]: EventCallback<EmptyObject>;
   [ServerEvent.PeerReadyToReceiveOffer]: EventCallback<EmptyObject>;
-  [ServerEvent.PaymentStatusUpdate]: EventCallback<{
-    id: number;
+  [ServerEvent.TransactionStatusUpdate]: EventCallback<{
+    transactionId: number;
     status: ITransaction.Status;
   }>;
 };

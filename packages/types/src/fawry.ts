@@ -103,11 +103,7 @@ export type CancelUnpaidOrderPayload = {
   transactionId: number;
 };
 
-export type CancelUnpaidOrderResponse = {
-  statusCode: number;
-  statusDescription: string;
-  reason: string;
-};
+export type CancelUnpaidOrderResponse = void;
 
 export type RefundPayload = {
   /**

@@ -32,6 +32,6 @@ export enum MutationKey {
   PayWithEWallet = "pay-with-ewallet",
   PayWithFawry = "pay-with-fawry",
   DeleteCardToken = "delete-card-token",
-  CancelUnpaidOrder = "cancel-upaid-order",
+  CancelUnpaidOrder = "cancel-unpaid-order",
   SyncPaymentStatus = "sync-payment-status",
 }

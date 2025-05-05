@@ -7,7 +7,6 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Landing, Web } from "@litespace/utils/routes";
 import { isForbidden } from "@litespace/utils";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
-import { useSubscription } from "@litespace/headless/context/subscription";
 import cn from "classnames";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -18,7 +17,6 @@ import {
 } from "react-router-dom";
 import { useSaveLogs } from "@/hooks/logger";
 import { isProfileComplete } from "@litespace/utils/tutor";
-import { useFindTutorMeta } from "@litespace/headless/tutor";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -33,18 +31,7 @@ const publicRoutes: Web[] = [
 const Root: React.FC = () => {
   const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const { user, meta, error, logout, set } = useUserContext();
-
-  const tutorQuery = useFindTutorMeta(user?.id);
-  useEffect(() => {
-    set({ meta: tutorQuery.query.data || undefined });
-  }, [tutorQuery, set]);
-
-  // TODO: this has been added just for experiment, remove it
-  const sub = useSubscription();
-  useEffect(() => {
-    console.log(sub);
-  }, [sub.fetching, sub]);
+  const { user, meta, error, logout } = useUserContext();
 
   /**
    * `nav` is a url param used to hide the page navigation. It is mainlly used

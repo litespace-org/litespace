@@ -6,8 +6,6 @@ import { genSignature } from "@/fawry/lib";
 import { forgeFawryPayload } from "@/lib/fawry";
 import axios, { AxiosInstance } from "axios";
 import https from "node:https";
-import { safe } from "@litespace/utils";
-import { AxiosError } from "axios";
 
 export function createClient(): AxiosInstance {
   return axios.create({
@@ -207,19 +205,10 @@ class Api extends Base {
       lang,
     };
 
-    const res = await safe(() =>
-      this.post<unknown, Responses.CancelUnpaidOrderResponse>({
-        route: FAWRY_ROUTES.CANCEL_UNPAID_ORDER,
-        payload,
-      })
-    );
-
-    if (res instanceof Error) {
-      return (res as AxiosError).response
-        ?.data as Responses.CancelUnpaidOrderResponse;
-    }
-
-    return res;
+    return await this.post({
+      route: FAWRY_ROUTES.CANCEL_UNPAID_ORDER,
+      payload,
+    });
   }
 
   async refund(

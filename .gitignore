@@ -28,3 +28,6 @@ __telegram__
 services/studio/build
 services/studio/out
 services/studio/session.json
+
+# models
+packages/models/coverage/

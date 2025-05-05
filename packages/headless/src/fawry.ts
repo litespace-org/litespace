@@ -1,6 +1,6 @@
 import { useApi } from "@/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { MutationKey, QueryKey } from "@/constants";
 import { OnError, OnSuccess } from "@/types/query";
 import { IFawry } from "@litespace/types";
@@ -157,7 +157,10 @@ export function useCancelUnpaidOrder({
 export function useGetPaymentStatus(transactionId: number) {
   const api = useApi();
 
-  const keys = [QueryKey.GetPaymentStatus, transactionId];
+  const keys = useMemo(
+    () => [QueryKey.GetPaymentStatus, transactionId],
+    [transactionId]
+  );
 
   const getPaymentStatus = useCallback(
     () => api.fawry.getPaymentStatus({ transactionId }),

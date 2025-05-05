@@ -29,7 +29,7 @@ const PayWithCardStatus: React.FC<{
   return (
     <div className="flex flex-col items-center justify-center gap-6 max-w-[435px]">
       <Typography tag="h1" className="text-subtitle-2 font-bold">
-        On-going Card Payment
+        On-going Card Payment (todo)
       </Typography>
 
       <Button
@@ -41,7 +41,7 @@ const PayWithCardStatus: React.FC<{
         loading={cancel.isPending}
         onClick={() => cancel.mutate({ transactionId })}
       >
-        {intl("labels.close-and-retry")}
+        {intl("checkout.payment.cancel-and-retry")}
       </Button>
     </div>
   );

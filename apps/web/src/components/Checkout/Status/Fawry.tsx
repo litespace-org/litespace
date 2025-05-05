@@ -1,37 +1,38 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Button } from "@litespace/ui/Button";
 import Copy from "@litespace/assets/Copy";
-import { useToast } from "@litespace/ui/Toast";
-import { useCancelUnpaidOrder } from "@litespace/headless/fawry";
-import { useOnError } from "@/hooks/error";
+import CopyCheck from "@litespace/assets/CopyCheck";
+import { Void } from "@litespace/types";
+import cn from "classnames";
+
+/**
+ * Split the oreder ref number into 3 parts for readability.
+ *
+ * @note the oreder ref number is made of 9 digits.
+ */
+function asParts(orderRefNum: number) {
+  const ref = orderRefNum.toString();
+  return [ref.substring(0, 3), ref.substring(3, 6), ref.substring(6)];
+}
 
 const PayWithFawryStatus: React.FC<{
-  orderRefNum: string;
-  transactionId: number;
-}> = ({ orderRefNum: refNum, transactionId }) => {
+  orderRefNum: number;
+  cancel: Void;
+  canceling: boolean;
+  syncing: boolean;
+}> = ({ orderRefNum, cancel, canceling, syncing }) => {
   const intl = useFormatMessage();
-  const toast = useToast();
+  const [copied, setCopied] = useState<boolean>(false);
 
-  const copyRefNum = useCallback(() => {
-    navigator.clipboard.writeText(refNum);
-    toast.success({ title: intl("labels.copied-successfully") });
-  }, [toast, refNum, intl]);
+  const copy = useCallback(async () => {
+    await navigator.clipboard.writeText(orderRefNum.toString());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1_500);
+  }, [orderRefNum]);
 
-  const onError = useOnError({
-    type: "mutation",
-    handler(payload) {
-      toast.error({ title: intl(payload.messageId) });
-    },
-  });
-
-  const cancel = useCancelUnpaidOrder({
-    onSuccess() {
-      window.location.reload();
-    },
-    onError,
-  });
+  const parts = useMemo(() => asParts(orderRefNum), [orderRefNum]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-6 max-w-[435px]">
@@ -44,24 +45,28 @@ const PayWithFawryStatus: React.FC<{
       </Typography>
 
       <button
-        className="flex items-center p-3 gap-2.5 bg-natural-50 rounded-xl shadow-checkout-ref-num"
-        onClick={copyRefNum}
+        className={cn(
+          "flex items-center p-3 gap-2.5 bg-natural-50 rounded-xl shadow-checkout-ref-num",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600"
+        )}
+        onClick={copy}
       >
-        <Copy width={24} height={24} />
+        {copied ? (
+          <CopyCheck className="w-6 h-6 [&>*]:stroke-natural-700" />
+        ) : (
+          <Copy className="w-6 h-6 [&>*]:stroke-natural-700" />
+        )}
 
         <div className="flex flex-row-reverse gap-2">
-          <Typography tag="span" className="text-subtitle-2 font-semibold">
-            {refNum.substring(0, Math.floor(refNum.length / 3))}
-          </Typography>
-          <Typography tag="span" className="text-subtitle-2 font-semibold">
-            {refNum.substring(
-              Math.floor(refNum.length / 3),
-              2 * Math.floor(refNum.length / 3)
-            )}
-          </Typography>
-          <Typography tag="span" className="text-subtitle-2 font-semibold">
-            {refNum.substring(2 * Math.floor(refNum.length / 3))}
-          </Typography>
+          {parts.map((part, index) => (
+            <Typography
+              key={index}
+              tag="span"
+              className="text-subtitle-2 font-semibold"
+            >
+              {part}
+            </Typography>
+          ))}
         </div>
       </button>
 
@@ -73,12 +78,11 @@ const PayWithFawryStatus: React.FC<{
         type="main"
         size="large"
         htmlType="submit"
-        className="w-full"
-        disabled={cancel.isPending}
-        loading={cancel.isPending}
-        onClick={() => cancel.mutate({ transactionId })}
+        disabled={canceling || syncing}
+        loading={canceling}
+        onClick={cancel}
       >
-        {intl("labels.close-and-retry")}
+        {intl("checkout.payment.cancel-and-retry")}
       </Button>
     </div>
   );

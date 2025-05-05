@@ -1,35 +1,67 @@
-import React, { useEffect } from "react";
-import { ITransaction } from "@litespace/types";
+import React, { useCallback } from "react";
+import { ITransaction, Void } from "@litespace/types";
 import PayWithCardStatus from "@/components/Checkout/Status/Card";
 import PayWithEWalletStatus from "@/components/Checkout/Status/EWallet";
 import PayWithFawryStatus from "@/components/Checkout/Status/Fawry";
-import { useSyncPaymentStatus } from "@litespace/headless/fawry";
-import { env } from "@/lib/env";
+import { useOnError } from "@/hooks/error";
+import { useToast } from "@litespace/ui/Toast";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useCancelUnpaidOrder } from "@litespace/headless/fawry";
 
 const StatusContainer: React.FC<{
-  tx: ITransaction.Self;
-}> = ({ tx }) => {
-  const syncMutate = useSyncPaymentStatus({});
+  transactionId: number;
+  paymentMethod: ITransaction.PaymentMethod;
+  providerRefNum: number | null;
+  syncing: boolean;
+  sync: Void;
+}> = ({ paymentMethod, transactionId, providerRefNum, syncing, sync }) => {
+  const intl = useFormatMessage();
+  const toast = useToast();
 
-  useEffect(() => {
-    if (env.server === "local") {
-      syncMutate.mutate({ transactionId: tx.id });
-    }
-  }, [syncMutate, tx.id]);
+  const onError = useOnError({
+    type: "mutation",
+    handler(payload) {
+      toast.error({
+        id: "cancel-ewallet-payment",
+        title: intl("checkout.payment.cancel-error"),
+        description: intl(payload.messageId),
+      });
+    },
+  });
 
-  if (tx.paymentMethod === ITransaction.PaymentMethod.Card)
-    return <PayWithCardStatus transactionId={tx.id} />;
+  const cancelUnpaidOrder = useCancelUnpaidOrder({
+    onError,
+    onSuccess() {
+      sync();
+    },
+  });
 
-  if (tx.paymentMethod === ITransaction.PaymentMethod.EWallet)
-    return <PayWithEWalletStatus transactionId={tx.id} />;
+  const cancel = useCallback(() => {
+    cancelUnpaidOrder.mutate({ transactionId });
+  }, [cancelUnpaidOrder, transactionId]);
 
-  if (tx.paymentMethod === ITransaction.PaymentMethod.Fawry)
+  if (paymentMethod === ITransaction.PaymentMethod.Card)
+    return <PayWithCardStatus transactionId={transactionId} />;
+
+  if (paymentMethod === ITransaction.PaymentMethod.EWallet)
     return (
-      <PayWithFawryStatus
-        orderRefNum={tx.providerRefNum?.toString() || ""}
-        transactionId={tx.id}
+      <PayWithEWalletStatus
+        canceling={cancelUnpaidOrder.isPending}
+        cancel={cancel}
       />
     );
+
+  if (paymentMethod === ITransaction.PaymentMethod.Fawry && providerRefNum)
+    return (
+      <PayWithFawryStatus
+        orderRefNum={providerRefNum}
+        canceling={cancelUnpaidOrder.isPending}
+        cancel={cancel}
+        syncing={syncing}
+      />
+    );
+
+  throw new Error("unsupported or invalid payment method, should never happen");
 };
 
 export default StatusContainer;

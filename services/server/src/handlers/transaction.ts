@@ -6,6 +6,7 @@ import { forbidden, notfound } from "@/lib/error";
 import { id, pageNumber, pageSize, withNamedId } from "@/validation/utils";
 import { isAdmin, isStudent } from "@litespace/utils/user";
 import { transactions } from "@litespace/models";
+import { first } from "lodash";
 
 const findPayload = zod.object({
   ids: id.array().optional(),
@@ -16,8 +17,8 @@ const findPayload = zod.object({
   providerRefNums: zod.number().array().optional(),
   after: zod.string().datetime().optional(),
   before: zod.string().datetime().optional(),
-  page: zod.optional(pageNumber).default(1),
-  size: zod.optional(pageSize).default(10),
+  page: pageNumber.optional().default(1),
+  size: pageSize.optional().default(10),
 });
 
 async function find(req: Request, res: Response, next: NextFunction) {
@@ -47,7 +48,7 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   if (isStudent(user) && user.id != transaction.userId)
     return next(forbidden());
 
-  const response: ITransaction.Self = transaction;
+  const response: ITransaction.FindByIdApiResponse = transaction;
 
   res.status(200).json(response);
 }
@@ -57,13 +58,14 @@ async function findPending(req: Request, res: Response, next: NextFunction) {
   const allowed = isStudent(user);
   if (!allowed) return next(forbidden());
 
-  const txs = await transactions.find({
+  const { list } = await transactions.find({
     users: [user.id],
     statuses: [ITransaction.Status.New],
   });
 
-  if (txs.total === 0) return next(notfound.transaction());
-  const response: ITransaction.Self = txs.list[0];
+  const transaction = first(list) || null;
+
+  const response: ITransaction.FindPendingApiResponse = transaction;
 
   res.status(200).json(response);
 }

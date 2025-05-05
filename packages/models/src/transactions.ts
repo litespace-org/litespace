@@ -23,7 +23,7 @@ export class Transactions {
         plan_id: payload.planId,
         plan_period: payload.planPeriod,
         amount: payload.amount,
-        status: ITransaction.Status.New,
+        status: payload.status || ITransaction.Status.New,
         payment_method: payload.paymentMethod,
         provider_ref_num: payload.providerRefNum,
         created_at: now,

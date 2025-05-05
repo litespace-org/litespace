@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
@@ -8,8 +8,8 @@ import { isValidPhone } from "@litespace/ui/lib/validate";
 import { PatternInput } from "@litespace/ui/PatternInput";
 import { useOnError } from "@/hooks/error";
 import { usePayWithEWallet } from "@litespace/headless/fawry";
-import { IPlan } from "@litespace/types";
-import { saveQr } from "@/lib/cache";
+import { IPlan, Void } from "@litespace/types";
+import { walletPaymentQrCode } from "@/lib/cache";
 import { useToast } from "@litespace/ui/Toast";
 
 type Form = {
@@ -21,35 +21,31 @@ const Payment: React.FC<{
   planId: number;
   period: IPlan.PeriodLiteral;
   phone: string | null;
-  onStateChange: (pending: boolean) => void;
-}> = ({ phone, planId, period, onStateChange }) => {
+  syncing: boolean;
+  sync: Void;
+}> = ({ phone, planId, period, syncing, sync }) => {
   const intl = useFormatMessage();
-  const [submitDisabled, setSubmitDisabled] = useState(false);
   const toast = useToast();
 
   // ==================== pay with ewallet ====================
   const onError = useOnError({
     type: "mutation",
-    handler(error) {
-      setSubmitDisabled(false);
-      toast.error({ title: intl(error.messageId) });
+    handler({ messageId }) {
+      toast.error({
+        id: "pay-with-ewallet",
+        title: intl("checkout.payment.pay-error"),
+        description: intl(messageId),
+      });
     },
   });
 
   const payWithEWallet = usePayWithEWallet({
     onError,
     onSuccess(response) {
-      saveQr(response.walletQr);
-      window.location.reload();
+      if (response.walletQr) walletPaymentQrCode.save(response.walletQr);
+      sync();
     },
   });
-
-  const disabled = useMemo(
-    () => payWithEWallet.isPending || submitDisabled,
-    [payWithEWallet.isPending, submitDisabled]
-  );
-
-  useEffect(() => onStateChange(disabled), [disabled, onStateChange]);
 
   // ==================== form ====================
   const validators = useMakeValidators<Form>({
@@ -70,7 +66,6 @@ const Payment: React.FC<{
     },
     validators,
     onSubmit(data) {
-      setSubmitDisabled(true);
       payWithEWallet.mutate({
         planId,
         period,
@@ -97,35 +92,38 @@ const Payment: React.FC<{
           <PatternInput
             id="wallet-phone"
             mask=" "
-            idleDir="rtl"
+            idleDir="ltr"
             inputSize="large"
             name="wallet-phone"
             format="### #### ####"
-            label={intl("checkout.payment.wallet-phone-number")}
+            label={intl("checkout.payment.ewallet.wallet-phone-number")}
             placeholder={intl(
-              "checkout.payment.wallet-phone-number-placeholder"
+              "checkout.payment.ewallet.wallet-phone-number-placeholder"
             )}
             state={form.errors.wphone ? "error" : undefined}
             helper={form.errors.wphone}
             value={form.state.wphone}
             autoComplete="off"
             onValueChange={({ value }) => form.set("wphone", value)}
+            disabled={syncing || payWithEWallet.isPending}
           />
 
           <PatternInput
             id="phone"
             mask=" "
-            idleDir="rtl"
+            idleDir="ltr"
             inputSize="large"
             name="phone"
             format="### #### ####"
-            label={intl("checkout.payment.phone-number")}
-            placeholder={intl("checkout.payment.phone-number-placeholder")}
+            label={intl("checkout.payment.ewallet.personal-phone")}
+            placeholder={intl(
+              "checkout.payment.ewallet.personal-phone-placeholder"
+            )}
             state={form.errors.phone ? "error" : undefined}
             helper={form.errors.phone}
             value={form.state.phone}
             autoComplete="off"
-            disabled={!!phone}
+            disabled={!!phone || syncing || payWithEWallet.isPending}
             onValueChange={({ value }) => form.set("phone", value)}
           />
         </div>
@@ -135,10 +133,10 @@ const Payment: React.FC<{
           size="large"
           htmlType="submit"
           className="w-full"
-          disabled={disabled}
+          disabled={payWithEWallet.isPending || syncing}
           loading={payWithEWallet.isPending}
         >
-          {intl("checkout.payment.confirm-button")}
+          {intl("checkout.payment.confirm")}
         </Button>
       </form>
     </div>
