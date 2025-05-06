@@ -5,8 +5,8 @@ import {
   useValidateEmail,
   useValidatePassword,
 } from "@/hooks";
-import { Void } from "@litespace/types";
-import React, { useCallback, useMemo } from "react";
+import { IConfirmationCode, Void } from "@litespace/types";
+import React, { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/Button";
 import { ConfirmationCode } from "@/components/ConfirmationCode";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
@@ -25,17 +25,13 @@ type Step = "email" | "code" | "password";
 export const ForgetPasswordDialog: React.FC<{
   open: boolean;
   close: Void;
-  sendCode: (email: string) => void;
-  resetSentCode: Void;
+  sendCode: (payload: IConfirmationCode.SendForgetPasswordEmailPayload) => void;
   sendingCode: boolean;
-  sentCode: boolean;
   resetPassword: (payload: { code: number; password: string }) => void;
   resettingPassword: boolean;
 }> = ({
   open,
   sendCode,
-  resetSentCode,
-  sentCode,
   sendingCode,
   resetPassword,
   resettingPassword,
@@ -46,12 +42,20 @@ export const ForgetPasswordDialog: React.FC<{
   const validateEmail = useValidateEmail(true);
   const validatePassword = useValidatePassword(true);
 
+  const [step, setStep] = useState<Step>("email");
+
   const forgetPasswordForm = useForm<{ email: string }>({
     defaults: { email: "" },
     validators: { email: validateEmail },
-    onSubmit(data) {
+    onSubmit: async (data) => {
       if (!isValidEmail(data.email)) return;
-      sendCode(data.email);
+      try {
+        await sendCode({ email: data.email });
+        setStep("code");
+      } catch (err) {
+        console.log(err);
+        setStep("email");
+      }
     },
   });
 
@@ -63,12 +67,6 @@ export const ForgetPasswordDialog: React.FC<{
       return resetPassword(data);
     },
   });
-
-  const step = useMemo((): Step => {
-    if (!sentCode) return "email";
-    if (sentCode && !resetPasswordForm.state.code) return "code";
-    return "password";
-  }, [resetPasswordForm.state.code, sentCode]);
 
   const onSubmit = useCallback(() => {
     if (step === "email") forgetPasswordForm.submit();
@@ -137,7 +135,7 @@ export const ForgetPasswordDialog: React.FC<{
           />
         ) : null}
 
-        {sentCode && !resetPasswordForm.state.code ? (
+        {step === "code" ? (
           <div className="text-center flex flex-col items-center gap-6">
             <Typography
               tag="span"
@@ -157,7 +155,10 @@ export const ForgetPasswordDialog: React.FC<{
 
             <ConfirmationCode
               disabled={sendingCode || resettingPassword}
-              setCode={(code) => resetPasswordForm.set("code", code)}
+              setCode={(code) => {
+                resetPasswordForm.set("code", code);
+                setStep("password");
+              }}
               autoFocus
             />
 
@@ -165,7 +166,7 @@ export const ForgetPasswordDialog: React.FC<{
               onClick={() => {
                 resetPasswordForm.reset();
                 forgetPasswordForm.reset();
-                resetSentCode();
+                setStep("email");
               }}
               variant="tertiary"
               size="medium"

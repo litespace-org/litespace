@@ -1,106 +1,62 @@
-import { Button } from "@litespace/ui/Button";
-import { Form, Controller } from "@litespace/ui/Form";
-import { Dialog } from "@litespace/ui/Dialog";
-import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Void } from "@litespace/types";
-import { useCallback, useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { useForgetPassword } from "@litespace/headless/auth";
-import { Web } from "@litespace/utils/routes";
+import { useCallback } from "react";
 import { useOnError } from "@/hooks/error";
+import {
+  useResetPasswordByCode,
+  useSendForgetPasswordCode,
+} from "@litespace/headless/auth";
+import { Void } from "@litespace/types";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useToast } from "@litespace/ui/Toast";
+import { ForgetPasswordDialog } from "@litespace/ui/ForgetPasswordDialog";
 
-type ForgetPasswordProps = {
-  open: boolean;
-  close: Void;
-};
-
-interface IForm {
-  email: string;
-}
-const origin = location.origin;
-const callbackUrl = origin.concat(Web.ResetPassword);
-
-const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
-  const intl = useFormatMessage();
+export function ForgetPassword({ close }: { close: Void }) {
   const toast = useToast();
+  const intl = useFormatMessage();
 
-  const { control, watch, formState, handleSubmit, reset } = useForm<IForm>({
-    mode: "onSubmit",
-    defaultValues: {
-      email: "",
-    },
-  });
-  const errors = formState.errors;
-
-  const email = watch("email");
-
-  const onSuccess = useCallback(() => {
-    toast.success({ title: intl("page.login.forget.password.success") });
-    reset();
-    close();
-  }, [close, intl, reset, toast]);
-
-  const onError = useOnError({
+  const onSendError = useOnError({
     type: "mutation",
     handler: ({ messageId }) => {
       toast.error({
-        title: intl("forget-password.error"),
+        title: intl("send-forget-password.email.error"),
         description: intl(messageId),
       });
     },
   });
 
-  const mutation = useForgetPassword({
-    onSuccess,
-    onError,
+  const sendMutation = useSendForgetPasswordCode({
+    onError: onSendError,
   });
 
-  const onSubmit = useMemo(
-    () =>
-      handleSubmit((data: IForm) => {
-        mutation.mutate({ email: data.email, callbackUrl });
-      }),
-    [handleSubmit, mutation]
-  );
+  const onResetSuccess = useCallback(() => {
+    close();
+    toast.success({
+      title: intl("reset-password-dialog.success"),
+    });
+  }, [close, toast, intl]);
+
+  const onResetError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
+      toast.error({
+        title: intl("reset-password-dialog.error"),
+        description: intl(messageId),
+      });
+    },
+  });
+
+  const resetMutation = useResetPasswordByCode({
+    onSuccess: onResetSuccess,
+    onError: onResetError,
+  });
 
   return (
-    <Dialog
-      className="sm:w-1/3"
-      title={intl("page.login.forget.password.title")}
-      open={open}
+    <ForgetPasswordDialog
+      resetPassword={resetMutation.mutate}
+      resettingPassword={resetMutation.isPending}
+      sendCode={sendMutation.mutateAsync}
+      sendingCode={sendMutation.isPending}
       close={close}
-    >
-      <Form
-        onSubmit={onSubmit}
-        className="flex flex-col items-center justify-center gap-4"
-      >
-        <Controller.Input
-          required={true}
-          value={email}
-          id="email-forgotten"
-          control={control}
-          placeholder={intl("labels.email.placeholder")}
-          autoComplete="off"
-          state={errors.email ? "error" : "success"}
-          helper={errors.email?.message}
-          label={intl("labels.email")}
-          disabled={mutation.isPending}
-          name="email"
-        />
-
-        <Button
-          type={"main"}
-          variant={"primary"}
-          size={"medium"}
-          disabled={mutation.isPending}
-          loading={mutation.isPending}
-        >
-          {intl("page.login.forget.password.button.submit")}
-        </Button>
-      </Form>
-    </Dialog>
+      open
+    />
   );
-};
-
-export default ForgetPassword;
+}

@@ -34,4 +34,22 @@ export class ConfirmationCode extends Base {
       route: "/api/v1/confirmation-code/email/send",
     });
   }
+
+  async resetPassword(
+    payload: IConfirmationCode.ConfirmForgetPasswordCodePayload
+  ): Promise<IConfirmationCode.ConfirmPasswordCodeApiResponse> {
+    await this.post({
+      route: "/api/v1/confirmation-code/password/confirm",
+      payload,
+    });
+  }
+
+  async sendForgetPasswordCode(
+    payload: IConfirmationCode.SendForgetPasswordEmailPayload
+  ): Promise<void> {
+    await this.post({
+      route: "/api/v1/confirmation-code/password/send",
+      payload,
+    });
+  }
 }

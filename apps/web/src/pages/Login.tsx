@@ -1,5 +1,6 @@
 import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
+import { ForgetPassword } from "@/components/Common/ForgetPassword";
 import { isDev } from "@/constants/env";
 import { useOnError } from "@/hooks/error";
 import { useGoogle } from "@/hooks/google";
@@ -22,7 +23,7 @@ import {
 import { isRegularUser } from "@litespace/utils";
 import { isValidRoute, Landing, Web } from "@litespace/utils/routes";
 import { omit } from "lodash";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -37,6 +38,9 @@ const Login: React.FC = () => {
   const toast = useToast();
   const user = useUserContext();
   const mq = useMediaQuery();
+  const [showForgetPasswordDialog, setShowForgetPasswordDialog] =
+    useState(false);
+
   const [searchParams] = useSearchParams();
   const validateEmail = useValidateEmail(true);
   const validatePassword = useValidatePassword(true);
@@ -147,14 +151,17 @@ const Login: React.FC = () => {
                 />
 
                 <div className="mt-2 sm:mt-0">
-                  <Link to={Web.ForgetPassword}>
+                  <button
+                    type="button"
+                    onClick={() => setShowForgetPasswordDialog(true)}
+                  >
                     <Typography
                       tag="span"
                       className="text-brand-700 text-caption font-medium"
                     >
                       {intl("login.forget-password")}
                     </Typography>
-                  </Link>
+                  </button>
                 </div>
               </div>
 
@@ -210,7 +217,9 @@ const Login: React.FC = () => {
           </Form>
         </div>
       </main>
-
+      {showForgetPasswordDialog ? (
+        <ForgetPassword close={() => setShowForgetPasswordDialog(false)} />
+      ) : null}
       {mq.lg ? <Aside /> : null}
     </div>
   );

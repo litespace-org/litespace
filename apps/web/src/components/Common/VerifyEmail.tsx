@@ -1,8 +1,8 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useOnError } from "@/hooks/error";
 import {
-  useConfirmVerificationEmailCode,
-  useSendVerificationEmailCode,
+  useConfirmVerifyEmailByCode,
+  useSendVerifyEmailCode,
 } from "@litespace/headless/auth";
 import { Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -18,14 +18,6 @@ export function VerifyEmail({ close }: { close: Void }) {
 
   const { user, refetch } = useUserContext();
 
-  const onSendSuccess = useCallback(() => {
-    hasSentRef.current = true;
-    toast.success({
-      title: intl("send-verification-email.success.title"),
-      description: intl("send-verification-email.success.description"),
-    });
-  }, [toast, intl]);
-
   const onSendError = useOnError({
     type: "mutation",
     handler: ({ messageId }) => {
@@ -36,8 +28,7 @@ export function VerifyEmail({ close }: { close: Void }) {
     },
   });
 
-  const sendMutation = useSendVerificationEmailCode({
-    onSuccess: onSendSuccess,
+  const sendMutation = useSendVerifyEmailCode({
     onError: onSendError,
   });
 
@@ -45,7 +36,7 @@ export function VerifyEmail({ close }: { close: Void }) {
     if (hasSentRef.current) return;
     sendMutation.mutate();
     hasSentRef.current = true;
-  }, [sendMutation]); // Empty dependency array = run once per mount
+  }, [sendMutation]);
 
   const onVerifySuccess = useCallback(() => {
     close();
@@ -65,7 +56,7 @@ export function VerifyEmail({ close }: { close: Void }) {
     },
   });
 
-  const verifyMutation = useConfirmVerificationEmailCode({
+  const verifyMutation = useConfirmVerifyEmailByCode({
     onSuccess: onVerifySuccess,
     onError: onVerifyError,
   });
