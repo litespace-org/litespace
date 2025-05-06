@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import Logo from "@litespace/assets/Logo";
 import { Typography } from "@litespace/ui/Typography";
 import { usePendingTransaction } from "@litespace/headless/transaction";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useOnError } from "@/hooks/error";
 import StatusContainer from "@/components/Checkout/Status";
@@ -103,7 +103,7 @@ const Body: React.FC<{
     };
   }, [onTransactionStatusUpdate, socket]);
 
-  if (plan.loading || transaction.loading) return <Loader size="small" />;
+  if (plan.loading || transaction.loading) return <Loading size="small" />;
 
   if (plan.error || transaction.error || !plan.data)
     return (

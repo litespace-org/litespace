@@ -44,7 +44,7 @@ const Fallback: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     fallback={
       <div className="h-screen w-full">
         <div className="mt-[20vh]">
-          <Loading size="medium" />
+          <Loading size="large" />
         </div>
       </div>
     }

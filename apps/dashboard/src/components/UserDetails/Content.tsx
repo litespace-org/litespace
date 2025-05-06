@@ -26,7 +26,7 @@ const Content: React.FC<{
   // TODO: use a hook to get the online status form the server cache
   const [onlineStatus] = useState(false);
 
-  if (loading) return <Loading className="h-[40vh]" />;
+  if (loading) return <Loading />;
   if (error)
     return (
       <ErrorElement

@@ -35,7 +35,7 @@ const Content: React.FC<{ stats: Server.Stats[] }> = ({ stats }) => {
     [stats]
   );
 
-  if (isEmpty(stats)) return <Loading className="h-[30vh]" />;
+  if (isEmpty(stats)) return <Loading />;
 
   return (
     <div>

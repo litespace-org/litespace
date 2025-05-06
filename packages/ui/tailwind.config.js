@@ -13,18 +13,18 @@ export default {
     },
     extend: {
       width: {
-        "spinner-x": "24px",
-        "spinner-2x": "32px",
-        "spinner-3x": "40px",
-        "spinner-4x": "64px",
-        "spinner-5x": "80px",
+        "spinner-x": "1.5rem",
+        "spinner-2x": "2rem",
+        "spinner-3x": "2.5rem",
+        "spinner-4x": "4rem",
+        "spinner-5x": "5rem",
       },
-      hight: {
-        "spinner-x": "24px",
-        "spinner-2x": "32px",
-        "spinner-3x": "40px",
-        "spinner-4x": "64px",
-        "spinner-5x": "80px",
+      height: {
+        "spinner-x": "1.5rem",
+        "spinner-2x": "2rem",
+        "spinner-3x": "2.5rem",
+        "spinner-4x": "4rem",
+        "spinner-5x": "5rem",
       },
       aspectRatio: {
         desktop: "16 / 9",

@@ -96,6 +96,28 @@ export const Loading: StoryObj<typeof ConfirmationDialog> = {
   },
 };
 
+export const Pending: StoryObj<typeof ConfirmationDialog> = {
+  args: {
+    open: true,
+    loading: true,
+    title: faker.lorem.words(5),
+    description: faker.lorem.words(20),
+    type: "main",
+    icon: <CheckCircle className="w-6 h-6" />,
+  },
+};
+
+export const PendingWithLongTitle: StoryObj<typeof ConfirmationDialog> = {
+  args: {
+    open: true,
+    loading: true,
+    title: faker.lorem.words(10),
+    description: faker.lorem.words(20),
+    type: "main",
+    icon: <CheckCircle className="w-6 h-6" />,
+  },
+};
+
 export const ProgressMain: StoryObj<typeof ConfirmationDialog> = {
   args: {
     open: true,

@@ -163,7 +163,7 @@ const List: React.FC<{
     [columnHelper, intl, user]
   );
 
-  if (query.query.isLoading) return <Loading className="h-1/4" />;
+  if (query.query.isLoading) return <Loading />;
 
   if (query.query.error)
     return (

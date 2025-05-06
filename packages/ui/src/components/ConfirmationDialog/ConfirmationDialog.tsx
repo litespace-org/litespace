@@ -9,7 +9,7 @@ import {
 } from "@radix-ui/react-dialog";
 import cn from "classnames";
 import React from "react";
-import { DialogType } from "@/components/ConfirmationDialog/types";
+import { Action, DialogType } from "@/components/ConfirmationDialog/types";
 import X from "@litespace/assets/X";
 import { Button } from "@/components/Button";
 import { Void } from "@litespace/types";
@@ -51,6 +51,42 @@ const Progress: React.FC<{
   );
 };
 
+const Actions: React.FC<{
+  type: DialogType;
+  primary: Action;
+  secondary?: Action;
+}> = ({ type, primary, secondary }) => {
+  return (
+    <div className="flex items-center justify-center gap-3 mt-4 lg:mt-6">
+      <Button
+        type={type}
+        size="large"
+        variant="primary"
+        className="w-full"
+        onClick={primary.onClick}
+        loading={primary.loading}
+        disabled={primary.disabled}
+      >
+        {primary.label}
+      </Button>
+
+      {secondary ? (
+        <Button
+          size="large"
+          type={type}
+          variant="secondary"
+          className="w-full"
+          onClick={secondary.onClick}
+          loading={secondary.loading}
+          disabled={secondary.disabled}
+        >
+          {secondary.label}
+        </Button>
+      ) : null}
+    </div>
+  );
+};
+
 export const ConfirmationDialog: React.FC<{
   trigger?: React.ReactNode;
   title: string;
@@ -81,6 +117,7 @@ export const ConfirmationDialog: React.FC<{
   closable?: boolean;
   type?: DialogType;
   icon: React.ReactNode;
+  loading?: boolean;
 }> = ({
   type = "main",
   description,
@@ -92,6 +129,7 @@ export const ConfirmationDialog: React.FC<{
   progress,
   close,
   closable = true,
+  loading,
 }) => {
   return (
     <Root open={open}>
@@ -142,19 +180,17 @@ export const ConfirmationDialog: React.FC<{
             </Close>
           </div>
 
-          <div className="flex gap-4">
-            <Title>
-              <Typography
-                tag="span"
-                className="text-natural-950 font-semibold text-body"
-              >
-                {title}
-              </Typography>
-            </Title>
-            {actions?.primary.loading || actions?.secondary?.loading ? (
-              <Spinner className="w-spinner-x" />
-            ) : null}
-          </div>
+          <Title>
+            <Typography
+              tag="span"
+              className="text-natural-950 font-semibold text-body"
+            >
+              {title}
+              {loading ? (
+                <Spinner className="w-spinner-x flex-shrink-0 inline-block ms-2" />
+              ) : null}
+            </Typography>
+          </Title>
 
           {description || progress ? (
             <div className="flex gap-1 flex-col mt-1">
@@ -178,31 +214,11 @@ export const ConfirmationDialog: React.FC<{
           ) : null}
 
           {actions ? (
-            <div className="flex items-center justify-center gap-3 mt-4 lg:mt-6">
-              <Button
-                type={type}
-                size="large"
-                variant="primary"
-                className="w-full"
-                onClick={actions.primary.onClick}
-                disabled={actions.primary.disabled}
-              >
-                {actions.primary.label}
-              </Button>
-
-              {actions.secondary ? (
-                <Button
-                  size="large"
-                  type={type}
-                  variant="secondary"
-                  className="w-full"
-                  onClick={actions.secondary.onClick}
-                  disabled={actions.secondary.disabled}
-                >
-                  {actions.secondary.label}
-                </Button>
-              ) : null}
-            </div>
+            <Actions
+              type={type}
+              primary={actions.primary}
+              secondary={actions.secondary}
+            />
           ) : null}
         </Content>
       </Portal>

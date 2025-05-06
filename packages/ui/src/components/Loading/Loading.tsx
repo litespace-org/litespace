@@ -6,20 +6,15 @@ import Spinner from "@litespace/assets/Spinner";
 export const Loading: React.FC<{
   text?: string;
   size?: "small" | "medium" | "large";
-  className?: string;
-}> = ({ text, size = "small", className }) => {
+}> = ({ text, size = "small" }) => {
   return (
-    <div
-      className={cn(
-        "flex flex-col justify-center items-center gap-4",
-        className
-      )}
-    >
+    <div className="flex flex-col justify-center items-center gap-4">
       <Spinner
-        className={cn("fill-natural-700", {
-          "w-8 h-8": size === "small",
-          "w-14 h-14": size === "medium",
-          "w-[72px] h-[72px]": size === "large", // TODO: update the size of the loading to the new dimensions 72px
+        className={cn("stroke-natural-600", {
+          "w-spinner-2x h-spinner-2x [&_circle]:stroke-[2]": size === "small",
+          "w-spinner-3x h-spinner-3x [&_circle]:stroke-[1.5]":
+            size === "medium",
+          "w-spinner-4x h-spinner-4x [&_circle]:stroke-[1]": size === "large",
         })}
       />
 
