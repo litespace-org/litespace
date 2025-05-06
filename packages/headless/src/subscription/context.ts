@@ -3,7 +3,7 @@ import { createContext, useContext } from "react";
 
 export type Context = {
   info: ISubscription.Self | null;
-  remainingMinutes: number;
+  remainingWeeklyMinutes: number;
   loading: boolean;
   isError: boolean;
   error: unknown | null;

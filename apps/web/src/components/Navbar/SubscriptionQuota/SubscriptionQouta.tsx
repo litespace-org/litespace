@@ -1,20 +1,19 @@
-import { Typography } from "@/components/Typography";
-import { formatMinutes, formatPercentage } from "@/components/utils";
-import { useFormatMessage } from "@/hooks";
-import cn from "classnames";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Typography } from "@litespace/ui/Typography";
+import { formatMinutes, formatPercentage } from "@litespace/ui/utils";
 import React, { useMemo } from "react";
 
 const SubscriptionQouta: React.FC<{
-  totalMinutes: number;
+  weeklyMinutes: number;
   remainingMinutes: number;
-}> = ({ totalMinutes, remainingMinutes }) => {
+}> = ({ weeklyMinutes, remainingMinutes }) => {
   const intl = useFormatMessage();
 
   const progress = useMemo(() => {
-    const percentage = (remainingMinutes / totalMinutes) * 100;
+    const percentage = (remainingMinutes / weeklyMinutes) * 100;
     if (percentage >= 100) return 100;
     return percentage;
-  }, [remainingMinutes, totalMinutes]);
+  }, [remainingMinutes, weeklyMinutes]);
 
   return (
     <div className="flex flex-col gap-1">
@@ -25,6 +24,7 @@ const SubscriptionQouta: React.FC<{
         >
           {intl("navbar.personal-quota")}
         </Typography>
+
         <Typography
           tag="span"
           className="text-natural-950 text-caption font-normal"
@@ -34,19 +34,17 @@ const SubscriptionQouta: React.FC<{
           })}
         </Typography>
       </div>
-      <div
-        className={cn("relative w-[340px] h-2 bg-[#d9d9d9] rounded-[100px]")}
-      >
+
+      <div className="relative w-[340px] h-2 bg-[#d9d9d9] rounded-[100px]">
         <div
           style={{ width: `${progress}%` }}
-          className={cn(
-            "absolute h-full top-0 right-0 bg-brand-600 rounded-[100px]"
-          )}
+          className="absolute h-full top-0 right-0 bg-brand-600 rounded-[100px]"
         />
       </div>
+
       <Typography
         tag="span"
-        className="text-natural-950 text-tiny font-semibold"
+        className="text-natural-950 text-tiny font-semibold text-right"
       >
         {intl("navbar.rest-of-quota", {
           value: formatMinutes(remainingMinutes),
