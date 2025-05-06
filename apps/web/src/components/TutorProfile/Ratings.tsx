@@ -16,7 +16,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import NewTutor from "@litespace/assets/NewTutor";
 import { isEmpty } from "lodash";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { useToast } from "@litespace/ui/Toast";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
@@ -137,7 +137,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   if (ratingsQuery.isLoading || ratingsQuery.isPending)
     return (
       <div className="h-96 flex justify-center items-center">
-        <Loader size="medium" text={intl("tutor.profile.loading")} />
+        <Loading size="medium" text={intl("tutor.profile.loading")} />
       </div>
     );
 

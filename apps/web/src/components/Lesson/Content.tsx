@@ -3,7 +3,7 @@ import { useFindLesson } from "@litespace/headless/lessons";
 import { useLogger } from "@litespace/headless/logger";
 import { IUser } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import React, { useMemo } from "react";
 import Session from "@/components/Session";
 import { asRateLessonQuery } from "@/lib/query";
@@ -45,7 +45,7 @@ const Content: React.FC<{ lessonId: number; self: IUser.Self }> = ({
   if (lesson.isPending || lesson.isLoading)
     return (
       <div className="mt-[15vh]">
-        <Loader size="small" text={intl("lesson.loading")} />
+        <Loading size="small" text={intl("lesson.loading")} />
       </div>
     );
 

@@ -11,7 +11,7 @@ import { useFormatMessage } from "@/hooks";
 import { AudioController } from "@/components/VideoPlayer/V2/AudioController";
 import { VideoProgressbar } from "@/components/VideoPlayer/V2/VideoProgressbar";
 import { PlayButton } from "@/components/VideoPlayer/V2/PlayButton";
-import { Loader } from "@/components/Loading";
+import { Loading } from "@/components/Loading";
 
 export const VideoPlayer: React.FC<{ src?: string; thumbnail?: string }> = ({
   src,
@@ -110,7 +110,7 @@ export const VideoPlayer: React.FC<{ src?: string; thumbnail?: string }> = ({
             "absolute z-[8] transition-opacity  duration-300 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           )}
         >
-          <Loader size="medium" />
+          <Loading size="medium" />
         </span>
       ) : null}
       {status === "error" ? (

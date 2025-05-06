@@ -8,7 +8,7 @@ import { asOtherMember, isOnline, isTyping } from "@/lib/room";
 import { useUserContext } from "@litespace/headless/context/user";
 import StartMessaging from "@litespace/assets/StartMessaging";
 import { Typography } from "@litespace/ui/Typography";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { ITutor, IUser } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
@@ -83,7 +83,7 @@ const Chat: React.FC = () => {
               retry={retry}
             />
           ) : (
-            <Loader size="large" text={intl("chat.loading")} />
+            <Loading size="large" text={intl("chat.loading")} />
           )}
         </div>
       </div>

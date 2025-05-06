@@ -1,6 +1,6 @@
 import { AvatarV2 } from "@/components/Avatar";
 import { Button } from "@/components/Button";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { formatMinutes } from "@/components/utils";
 import { useFormatMessage } from "@/hooks";
@@ -43,7 +43,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
   if (loading)
     return (
       <div className="flex items-center justify-center w-full h-40">
-        <Loader
+        <Loading
           size="medium"
           text={
             isTutor

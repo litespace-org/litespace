@@ -2,7 +2,7 @@ import { OverviewCard as Card } from "@/components/OverviewCard";
 import { useFormatMessage } from "@/hooks";
 import { Void } from "@litespace/types";
 import React from "react";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import ChartSquare from "@litespace/assets/ChartSquare";
 import Money from "@litespace/assets/Money";
 import TransactionMinus from "@litespace/assets/TransactionMinus";
@@ -31,7 +31,7 @@ export const InvoicesOverview: React.FC<{
   if (loading)
     return (
       <div className="flex items-center justify-center w-full h-40">
-        <Loader size="medium" text={intl("tutor-invoices.overview.loading")} />
+        <Loading size="medium" text={intl("tutor-invoices.overview.loading")} />
       </div>
     );
 

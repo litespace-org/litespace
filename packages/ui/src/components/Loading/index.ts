@@ -1,3 +1,2 @@
-export { default as Loading } from "@/components/Loading/Loading";
-export { Loader } from "@/components/Loading/Loader";
+export { Loading } from "@/components/Loading/Loading";
 export { LoadingError } from "@/components/Loading/LoadingError";

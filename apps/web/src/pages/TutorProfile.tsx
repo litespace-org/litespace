@@ -1,4 +1,4 @@
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Link,
@@ -68,7 +68,7 @@ const TutorProfile: React.FC = () => {
 
       {tutor.isLoading ? (
         <div className="mt-[15vh]">
-          <Loader
+          <Loading
             size={lg ? "medium" : "small"}
             text={intl("tutor-profile.loading")}
           />

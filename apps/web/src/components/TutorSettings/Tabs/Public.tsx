@@ -22,7 +22,7 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isEmpty } from "lodash";
 import { Button } from "@litespace/ui/Button";
 import AddCircle from "@litespace/assets/AddCircle";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 
 const Topics: React.FC<{
   edit: Void;
@@ -58,7 +58,10 @@ const Topics: React.FC<{
       <div className="flex gap-2 lg:gap-4 flex-wrap mt-4 lg:mt-6">
         {loading ? (
           <div className="w-full flex justify-center md:mt-8 lg:mt-2 lg:mb-8">
-            <Loader size="small" text={intl("tutor-settings.topics.loading")} />
+            <Loading
+              size="small"
+              text={intl("tutor-settings.topics.loading")}
+            />
           </div>
         ) : null}
         {error ? (

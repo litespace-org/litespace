@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Loader } from "@/components/Loading/Loader";
+import { Loading } from "@/components/Loading/Loading";
 import React from "react";
 import { Direction } from "@/components/Direction";
 import { faker } from "@faker-js/faker/locale/ar";
 
-type Component = typeof Loader;
+type Component = typeof Loading;
 
 const meta: Meta<Component> = {
-  title: "Loader",
-  component: Loader,
+  title: "Loading",
+  component: Loading,
   parameters: { layout: "centered" },
   decorators: [
     (Story: React.FC) => {

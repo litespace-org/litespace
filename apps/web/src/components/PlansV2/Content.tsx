@@ -1,7 +1,7 @@
 import Selector from "@/components/PlansV2/Selector";
 import { IPlan, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { Typography } from "@litespace/ui/Typography";
 import { isEmpty } from "lodash";
 import React from "react";
@@ -14,7 +14,7 @@ export const Content: React.FC<{
 }> = ({ loading, error, list, refetch }) => {
   const intl = useFormatMessage();
 
-  if (loading) return <Loader size="large" text={intl("plans.loading")} />;
+  if (loading) return <Loading size="large" text={intl("plans.loading")} />;
 
   if (error || isEmpty(list))
     return <LoadingError error={intl("plans.error")} retry={refetch} />;

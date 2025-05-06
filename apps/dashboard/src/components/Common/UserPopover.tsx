@@ -17,7 +17,7 @@ const UserPopover: React.FC<{ id: number }> = ({ id }) => {
     <HoverCard
       content={
         <div className="flex w-72 min-h-16">
-          {user.isLoading ? <Loading className="flex-1" /> : null}
+          {user.isLoading ? <Loading /> : null}
 
           {user.error ? (
             <div className="flex items-center justify-center w-full">

@@ -7,7 +7,7 @@ import {
 
 import { Web } from "@litespace/utils/routes";
 import * as Sentry from "@sentry/react";
-import { Loader } from "@litespace/ui/Loading";
+import { Loading } from "@litespace/ui/Loading";
 
 const Root = lazy(() => import("@/pages/Root"));
 const Login = lazy(() => import("@/pages/Login"));
@@ -44,7 +44,7 @@ const Fallback: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     fallback={
       <div className="h-screen w-full">
         <div className="mt-[20vh]">
-          <Loader size="medium" />
+          <Loading size="large" />
         </div>
       </div>
     }

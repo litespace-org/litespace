@@ -1,6 +1,6 @@
 import { Button } from "@/components/Button";
 import { Dialog } from "@/components/Dialog";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import DaySlots from "@/components/ManageSchedule/DaySlots";
 import { Slot } from "@/components/ManageSchedule/types";
 import { Typography } from "@/components/Typography";
@@ -281,7 +281,7 @@ export const ManageSchedule: React.FC<Props> = ({
           {loading ? (
             <Animate key="loading">
               <div className="md:w-[304px] lg:w-[517px] mt-[42px] mb-[72px] flex justify-center items-center">
-                <Loader
+                <Loading
                   size="medium"
                   text={intl("manage-schedule.manage-dialog.loading.message")}
                 />

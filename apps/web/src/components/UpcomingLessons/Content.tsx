@@ -1,4 +1,4 @@
-import { Loader, Loading, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { LessonCard, EmptyLessons, CancelLesson } from "@litespace/ui/Lessons";
 import { ILesson, IUser, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
@@ -84,7 +84,7 @@ export const Content: React.FC<{
   if (loading)
     return (
       <div className="mt-[15vh]">
-        <Loader
+        <Loading
           size={lg ? "large" : "small"}
           text={intl("upcoming-lessons.loading")}
         />

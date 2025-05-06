@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { Loader } from "@litespace/ui/Loading";
+import { Loading } from "@litespace/ui/Loading";
 
 const Page: React.FC<{ page: React.ReactNode }> = ({ page }) => {
   return (
@@ -7,7 +7,7 @@ const Page: React.FC<{ page: React.ReactNode }> = ({ page }) => {
       fallback={
         <div className="h-screen w-full">
           <div className="mt-[20vh]">
-            <Loader size="medium" />
+            <Loading size="medium" />
           </div>
         </div>
       }

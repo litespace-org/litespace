@@ -1,5 +1,5 @@
 import ManageLesson from "@/components/Lessons/ManageLesson";
-import { Loading, Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { TutorCardV1, TutorCard } from "@litespace/ui/TutorCard";
 import { Element, ITutor, Void } from "@litespace/types";
 import { motion } from "framer-motion";
@@ -38,7 +38,7 @@ const Content: React.FC<{
   if (loading)
     return (
       <div className="mt-[15vh]">
-        <Loader
+        <Loading
           size={mq.lg ? "large" : "small"}
           text={intl("tutors.loading")}
         />
@@ -114,7 +114,11 @@ const Content: React.FC<{
         />
       ) : null}
 
-      {fetching ? <Loading className="mt-6 text-natural-950" /> : null}
+      {fetching ? (
+        <div className="mt-6">
+          <Loading />
+        </div>
+      ) : null}
 
       {!fetching ? (
         <InView

@@ -3,7 +3,7 @@ import Star from "@litespace/assets/Star";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { AvatarV2 } from "@litespace/ui/Avatar";
 import { Typography } from "@litespace/ui/Typography";
 import { formatNumber } from "@litespace/ui/utils";
@@ -38,7 +38,7 @@ export const ProfileCard: React.FC<{
   if (loading)
     return (
       <div className="h-full flex mt-[54px] justify-center items-center">
-        <Loader size="medium" text={intl("tutor.profile.loading")} />
+        <Loading size="medium" text={intl("tutor.profile.loading")} />
       </div>
     );
 

@@ -1,5 +1,5 @@
 import { Button } from "@/components/Button";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import EmptyUpcomingLessons from "@litespace/assets/EmptyUpcomingLessons";
@@ -93,7 +93,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
 
       {loading ? (
         <div className="w-full h-96 flex justify-center items-center">
-          <Loader
+          <Loading
             size={mq.md ? "medium" : "small"}
             text={intl("student-dashboard.upcoming-lessons-summary.loading")}
           />

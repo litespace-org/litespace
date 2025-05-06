@@ -77,7 +77,7 @@ const StatsContent: React.FC<{
     ];
   }, [data, intl]);
 
-  if (loading) return <Loading className="h-64" />;
+  if (loading) return <Loading />;
 
   if (error)
     return (

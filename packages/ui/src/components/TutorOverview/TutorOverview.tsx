@@ -1,4 +1,4 @@
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import { formatNumber } from "@/components/utils";
 import { useFormatMessage } from "@/hooks";
 import Check from "@litespace/assets/Check16X16";
@@ -53,7 +53,7 @@ export const TutorOverview: React.FC<Props> = ({
   if (loading)
     return (
       <div className="flex items-center justify-center w-full h-40">
-        <Loader
+        <Loading
           size={md ? "medium" : "small"}
           text={intl("tutor-dashboard.overview.loading")}
         />

@@ -5,7 +5,7 @@ import { useFormatMessage } from "@/hooks";
 import { Void } from "@litespace/types";
 import { Dialog } from "@/components/Dialog";
 import { Button } from "@/components/Button";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import { concat, uniq } from "lodash";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
 import { Animate } from "@/components/Animate";
@@ -115,7 +115,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
               key="loading"
               className="flex justify-center items-center my-20"
             >
-              <Loader
+              <Loading
                 size="medium"
                 text={intl("tutor-settings.topics.selection-dialog.loading")}
               />

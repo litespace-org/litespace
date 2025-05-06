@@ -18,7 +18,7 @@ import { Dayjs } from "dayjs";
 import { concat, isEmpty } from "lodash";
 import cn from "classnames";
 import CalendarEmpty from "@litespace/assets/CalendarEmpty";
-import { Loader, LoadingError } from "@/components/Loading";
+import { Loading, LoadingError } from "@/components/Loading";
 import {
   getSubSlotsBatch as getSubSlots,
   orderSlots,
@@ -27,7 +27,7 @@ import {
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Block } from "@/components/Lessons/ManageLesson/Block";
 
-const Loading: React.FC<{
+const LoadingWrapper: React.FC<{
   tutorName: string | null;
 }> = ({ tutorName }) => {
   const intl = useFormatMessage();
@@ -35,7 +35,7 @@ const Loading: React.FC<{
 
   return (
     <div className="md:w-[580px] flex flex-col justify-center items-center gap-8 md:mt-[81px] md:mb-[106px]">
-      <Loader
+      <Loading
         size={md ? "medium" : "small"}
         text={
           tutorName
@@ -309,7 +309,7 @@ export const ManageLessonDialog: React.FC<{
         <AnimatePresence initial={false} mode="wait">
           {loading ? (
             <Animation key="loading" id="loading">
-              <Loading tutorName={name} />
+              <LoadingWrapper tutorName={name} />
             </Animation>
           ) : null}
 
