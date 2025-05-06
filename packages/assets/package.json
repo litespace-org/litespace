@@ -24,7 +24,6 @@
       "require": "./dist/index.cjs.js",
       "types": "./dist/index.d.ts"
     },
-    "./404": "./dist/404.tsx",
     "./AstroStudent1": "./dist/AstroStudent1.tsx",
     "./AstroStudent2": "./dist/AstroStudent2.tsx",
     "./AstroStudent3": "./dist/AstroStudent3.tsx",
@@ -123,7 +122,7 @@
     "./More": "./dist/More.tsx",
     "./Muted": "./dist/Muted.tsx",
     "./NewTutor": "./dist/NewTutor.tsx",
-    "./NotFound404": "./dist/NotFound404.tsx",
+    "./NotFound": "./dist/NotFound.tsx",
     "./Notification2": "./dist/Notification2.tsx",
     "./Notification": "./dist/Notification.tsx",
     "./PaperMessage1": "./dist/PaperMessage1.tsx",

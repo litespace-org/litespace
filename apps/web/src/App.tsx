@@ -1,5 +1,9 @@
 import React, { lazy, Suspense } from "react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  RouteObject,
+  RouterProvider,
+  createBrowserRouter,
+} from "react-router-dom";
 
 import { Web } from "@litespace/utils/routes";
 import * as Sentry from "@sentry/react";
@@ -8,7 +12,7 @@ import { Loader } from "@litespace/ui/Loading";
 const Root = lazy(() => import("@/pages/Root"));
 const Login = lazy(() => import("@/pages/Login"));
 const Register = lazy(() => import("@/pages/Register"));
-const ErrorPage = lazy(() => import("@/pages/Error"));
+const Crash = lazy(() => import("@/pages/Crash"));
 const TutorProfile = lazy(() => import("@/pages/TutorProfile"));
 const CompleteProfile = lazy(() => import("@/pages/CompleteProfile"));
 const StudentDashboard = lazy(() => import("@/pages/StudentDashboard"));
@@ -49,12 +53,22 @@ const Fallback: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </Suspense>
 );
 
+function withCrash(routes: RouteObject[]): RouteObject[] {
+  return routes.map((route) => ({
+    ...route,
+    errorElement: <Fallback children={<Crash />} />,
+  }));
+}
+
 const router = createRouter([
   {
     path: Web.Root,
     element: <Fallback children={<Root />} />,
-    children: [
-      { path: Web.Chat, element: <Fallback children={<Chat />} /> },
+    children: withCrash([
+      {
+        path: Web.Chat,
+        element: <Fallback children={<Chat />} />,
+      },
       { path: Web.Invoices, element: <Fallback children={<Invoices />} /> },
       {
         path: Web.CompleteProfile,
@@ -127,8 +141,8 @@ const router = createRouter([
         path: Web.CompleteTutorProfile,
         element: <Fallback children={<CompleteTutorProfile />} />,
       },
-    ],
-    errorElement: <Fallback children={<ErrorPage />} />,
+    ]),
+    errorElement: <Fallback children={<Crash screen />} />,
   },
 ]);
 
