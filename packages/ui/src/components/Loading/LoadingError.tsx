@@ -52,8 +52,8 @@ export const LoadingError: React.FC<{
       <Typography
         tag="span"
         className={cn("text-natural-950 text-center mt-6 sm:mt-4 mb-4", {
-          "text-tiny font-semibold": size === "small",
-          "text-caption font-normal": size !== "small",
+          "text-tiny font-normal": size === "small",
+          "text-caption font-semibold": size !== "small",
         })}
       >
         {error}
