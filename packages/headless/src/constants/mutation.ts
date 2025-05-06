@@ -34,4 +34,6 @@ export enum MutationKey {
   DeleteCardToken = "delete-card-token",
   CancelUnpaidOrder = "cancel-unpaid-order",
   SyncPaymentStatus = "sync-payment-status",
+  SendForgetPasswordCode = "send-forget-password-code",
+  ResetPasswordByCode = "reset-password-by-code",
 }
