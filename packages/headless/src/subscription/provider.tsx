@@ -28,8 +28,8 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const context = useMemo((): Context => {
     return {
-      subscription: data.info,
-      remainingMinutes: data.remainingWeeklyMinutes,
+      info: data.info,
+      remainingWeeklyMinutes: data.remainingWeeklyMinutes,
       loading: query.isLoading,
       isError: query.isError,
       error: query.error,
