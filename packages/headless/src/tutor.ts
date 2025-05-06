@@ -11,6 +11,7 @@ import { MutationKey, QueryKey } from "@/constants";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useInfinitePaginationQuery } from "@/query";
+import { usePaginate } from "@/pagination";
 
 dayjs.extend(utc);
 
@@ -224,4 +225,18 @@ export function useFindTutorInfo(id: number | null) {
   });
 
   return { query, keys };
+}
+
+export function useFindFullTutors() {
+  const api = useApi();
+
+  const findFullTutors = useCallback(async () => {
+    return await api.user.findFullTutors({ full: true });
+  }, [api.user]);
+
+  const key: QueryKey[] = [QueryKey.FindFullTutors];
+
+  const query = usePaginate(findFullTutors, key);
+
+  return { query, key };
 }

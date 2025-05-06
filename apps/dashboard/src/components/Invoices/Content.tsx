@@ -338,7 +338,8 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
       <div className="w-full">
         {query.isLoading ? (
           <Loading className="h-screen" show={query.isLoading} />
-        ) : query.data ? (
+        ) : null}
+        {query.data ? (
           <List data={query.data} query={query} {...pagination} />
         ) : null}
       </div>

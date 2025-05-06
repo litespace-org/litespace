@@ -1,6 +1,7 @@
 export enum QueryKey {
   FindTutorRating = "find-tutor-rating",
   FindTutors = "find-onboarded-tutors",
+  FindFullTutors = "find-full-tutors",
   FindTutorById = "find-tutor",
   FindTutorStats = "find-tutor-stats",
   FindTutorActivity = "find-tutor-acivity",
