@@ -25,7 +25,12 @@ export const ChatHeader: React.FC<{
   const intl = useFormatMessage();
 
   return (
-    <div className="flex justify-between px-6 py-4 shadow-chat-header">
+    <div
+      className={cn(
+        "flex justify-between rounded-t-2xl",
+        inSession ? "p-4" : "shadow-chat-header px-6 py-4 "
+      )}
+    >
       <div className="flex grow gap-2 lg:gap-4 items-center">
         <button
           type="button"
