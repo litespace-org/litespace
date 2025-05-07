@@ -161,7 +161,13 @@ export const PLAN_PERIOD_LITERAL_TO_WEEK_COUNT: Record<
   IPlan.PeriodLiteral,
   number
 > = {
-  month: WEEKS_IN_MONTH,
-  quarter: WEEKS_IN_MONTH * 3,
-  year: WEEKS_IN_MONTH * 12,
+  month: 4,
+  quarter: 12,
+  year: 52,
+};
+
+export const PLAN_PERIOD_TO_WEEK_COUNT: Record<IPlan.Period, number> = {
+  [IPlan.Period.Month]: 4,
+  [IPlan.Period.Quarter]: 12,
+  [IPlan.Period.Year]: 52,
 };

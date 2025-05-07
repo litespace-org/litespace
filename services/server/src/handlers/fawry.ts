@@ -8,6 +8,7 @@ import {
   isStudent,
   PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD,
   PLAN_PERIOD_TO_MONTH_COUNT,
+  PLAN_PERIOD_TO_WEEK_COUNT,
   safePromise,
 } from "@litespace/utils";
 import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
@@ -609,7 +610,7 @@ function setPaymentStatus(context: ApiContext) {
     if (!plan) throw new Error("Plan not found; should never happen");
 
     const subscription = await subscriptions.findByTxId(transaction.id);
-    const monthCount = PLAN_PERIOD_TO_MONTH_COUNT[transaction.planPeriod];
+    const monthCount = PLAN_PERIOD_TO_WEEK_COUNT[transaction.planPeriod];
     const now = dayjs.utc();
     const end = now.add(monthCount, "month");
     const paid = status === ITransaction.Status.Paid;
@@ -685,7 +686,7 @@ async function syncPaymentStatus(
   const plan = await plans.findById(transaction.planId);
   if (!plan) throw new Error("plan not found, should never happen");
 
-  const monthCount = PLAN_PERIOD_TO_MONTH_COUNT[transaction.planPeriod];
+  const weekCount = PLAN_PERIOD_TO_MONTH_COUNT[transaction.planPeriod];
   const subscription = await subscriptions.findByTxId(transaction.id);
 
   await knex.transaction(async (tx) => {
@@ -708,8 +709,10 @@ async function syncPaymentStatus(
 
     if (paid && !subscription) {
       // Default to now in case the payment time is missing.
-      const start = dayjs.utc(payment.paymentTime) || dayjs.utc();
-      const end = start.add(monthCount, "month");
+      const start =
+        dayjs.utc(payment.paymentTime).startOf("day") ||
+        dayjs.utc().startOf("day");
+      const end = start.add(weekCount, "week");
       return subscriptions.create({
         tx,
         txId: transaction.id,
