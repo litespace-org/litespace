@@ -12,10 +12,13 @@ type OtherMember = {
   gender: IUser.Gender | null;
 };
 
-export function asOtherMember(
-  currentUserId?: number,
-  roomMembers?: IRoom.PopulatedMemberWithStatus[]
-): OtherMember | null {
+export function asOtherMember({
+  currentUserId,
+  roomMembers,
+}: {
+  currentUserId?: number;
+  roomMembers?: IRoom.PopulatedMemberWithStatus[];
+}): OtherMember | null {
   if (!roomMembers) return null;
   const otherMember = roomMembers.find((member) => member.id !== currentUserId);
   if (!otherMember) return null;
