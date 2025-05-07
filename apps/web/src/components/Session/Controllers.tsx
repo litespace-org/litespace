@@ -93,8 +93,12 @@ const Controllers: React.FC<{
   audio: Controller;
   video: Controller;
   blur?: Controller;
+  chat?: {
+    toggle: Void;
+    enabled: boolean;
+  };
   leave?: Void;
-}> = ({ audio, video, blur, leave }) => {
+}> = ({ audio, video, blur, leave, chat }) => {
   return (
     <div dir="ltr" className="flex items-center justify-center gap-6">
       <Toggle
@@ -114,6 +118,10 @@ const Controllers: React.FC<{
         disabled={video.disabled}
         icon="camera"
       />
+
+      {chat ? (
+        <Toggle toggle={chat.toggle} enabled={chat.enabled} icon="chat" />
+      ) : null}
 
       {blur ? (
         <Toggle

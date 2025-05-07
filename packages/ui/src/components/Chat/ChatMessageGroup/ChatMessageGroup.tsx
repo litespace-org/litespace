@@ -74,14 +74,21 @@ export const ChatMessageGroup: React.FC<{
       </div>
       <div>
         <div
-          className={cn("hidden lg:flex gap-6 items-center", {
-            "flex-row-reverse": !owner,
-            "flex-row": owner,
-          })}
+          className={cn(
+            "hidden lg:flex items-center",
+            inSession ? "gap-4" : "gap-6",
+            {
+              "flex-row-reverse": !owner,
+              "flex-row": owner,
+            }
+          )}
         >
           <Typography
             tag="h6"
-            className="font-semibold text-body text-natural-950 dark:text-natural-50"
+            className={cn(
+              "font-semibold text-natural-950 dark:text-natural-50",
+              inSession ? "text-caption" : "text-body"
+            )}
           >
             {owner ? intl("chat.message.title.you") : name}
           </Typography>
@@ -93,10 +100,14 @@ export const ChatMessageGroup: React.FC<{
           </Typography>
         </div>
         <div
-          className={cn("flex flex-col lg:mt-2 gap-y-2", {
-            "items-end": !owner,
-            "items-start": owner,
-          })}
+          className={cn(
+            "flex flex-col lg:mt-2 gap-y-2",
+            inSession ? "mt-1" : "lg:mt-2",
+            {
+              "items-end": !owner,
+              "items-start": owner,
+            }
+          )}
         >
           {messages.map((message, index) => {
             const retry = () => {
@@ -144,6 +155,7 @@ export const ChatMessageGroup: React.FC<{
                     messageState={message.messageState}
                     firstMessage={index === 0}
                     message={message}
+                    inSession={inSession}
                     pending={message.messageState === "pending"}
                     error={message.messageState === "error"}
                     owner={owner}
