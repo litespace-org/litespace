@@ -5,7 +5,7 @@ import {
   useTracks,
 } from "@livekit/components-react";
 import { ConnectionState, Track } from "livekit-client";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   LocalMember,
   RemoteMember,
@@ -24,6 +24,14 @@ import {
   useBlurController,
   useVideoController,
 } from "@/components/Session/room";
+import {
+  useChatStatus,
+  useFindRoomByMembers,
+  useFindRoomMembers,
+} from "@litespace/headless/chat";
+import { asOtherMember, isOnline, isTyping } from "@/lib/room";
+import Messages from "@/components/Chat/Messages";
+import cn from "classnames";
 
 const Session: React.FC<{
   localMember: LocalMember;
@@ -31,6 +39,41 @@ const Session: React.FC<{
   leave: Void;
 }> = ({ localMember, remoteMember, leave }) => {
   const mq = useMediaQuery();
+
+  // ======================= Chat ======================
+  const [chat, setChat] = useState(false);
+  const roomQuery = useFindRoomByMembers([localMember.id, remoteMember.id]);
+
+  const roomId = roomQuery.query.data?.room || null;
+  const roomMembers = useFindRoomMembers(roomId || null);
+  const otherMember = asOtherMember({
+    currentUserId: localMember.id,
+    roomMembers: roomMembers.query.data,
+  });
+
+  const { typingMap, onlineUsersMap } = useChatStatus();
+
+  const isCurrentRoomTyping = useMemo(() => {
+    return otherMember
+      ? isTyping({
+          map: typingMap,
+          roomId,
+          otherMemberId: otherMember.id,
+        })
+      : false;
+  }, [roomId, otherMember, typingMap]);
+
+  const isOtherMemberOnline = useMemo(() => {
+    return otherMember
+      ? isOnline({
+          map: onlineUsersMap,
+          roomId: roomId,
+          otherMemberStatus: otherMember.online,
+          otherMemberId: otherMember.id,
+        })
+      : false;
+  }, [roomId, otherMember, onlineUsersMap]);
+  // ======================= Session ======================
   const videoTracks = useTracks([Track.Source.Camera]);
   const localParticipant = useLocalParticipant();
   const remoteParticipant = useRemoteParticipant(remoteMember.id.toString());
@@ -87,9 +130,34 @@ const Session: React.FC<{
         />
 
         <AudioStreams />
+        <div
+          className={cn(
+            "h-full md:absolute top-0 left-0 !w-full lg:w-auto lg:static z-[99999]"
+          )}
+        >
+          <div
+            className={cn(
+              "lg:w-[344px] border border-natural-100 overflow-hidden  rounded-2xl h-full w-full lg:max-h-[calc(100vh-96px)] lg:h-[calc(100vh-96px)]",
+              chat ? "block" : "hidden"
+            )}
+          >
+            <Messages
+              room={roomId}
+              inSession
+              isOnline={isOtherMemberOnline}
+              isTyping={isCurrentRoomTyping}
+              otherMember={otherMember}
+              close={() => setChat((prev) => !prev)}
+            />
+          </div>
+        </div>
       </div>
 
       <Controllers
+        chat={{
+          enabled: chat,
+          toggle: () => setChat((prev) => !prev),
+        }}
         leave={leave}
         audio={audioController}
         video={videoController}

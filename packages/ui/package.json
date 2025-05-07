@@ -8,6 +8,7 @@
     "./ActionsMenu": "./dist/components/ActionsMenu/index.js",
     "./ActivityGrid": "./dist/components/ActivityGrid/index.js",
     "./Alert": "./dist/components/Alert/index.js",
+    "./Animate": "./dist/components/Animate/index.js",
     "./Avatar": "./dist/components/Avatar/index.js",
     "./Button": "./dist/components/Button/index.js",
     "./Calendar": "./dist/components/Calendar/index.js",

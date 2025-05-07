@@ -41,6 +41,7 @@ export const ChatMessage: React.FC<{
    * A flag that indicates current message is being sent to the other user
    */
   pending?: boolean;
+  inSession?: boolean;
   /**
    * content of the message
    * @param id message id
@@ -63,6 +64,7 @@ export const ChatMessage: React.FC<{
   deleteMessage?: Void;
 }> = ({
   message,
+  inSession,
   owner,
   viewOnly,
   pending,
@@ -187,7 +189,8 @@ export const ChatMessage: React.FC<{
             lineBreak: "anywhere",
           }}
           className={cn(
-            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] text-caption font-normal",
+            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] font-normal",
+            inSession && !owner ? "text-tiny" : "text-caption",
             {
               "text-natural-950": !error,
               "text-natural-50": error && !pending,
