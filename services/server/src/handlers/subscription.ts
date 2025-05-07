@@ -95,8 +95,9 @@ async function findCurrent(req: Request, res: Response, next: NextFunction) {
 
   const remainingWeeklyMinutes = subscription
     ? await calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription({
-        subscription,
-        time: now.toISOString(),
+        start: subscription.start,
+        userId: subscription.userId,
+        weeklyMinutes: subscription.weeklyMinutes,
       })
     : 0;
 

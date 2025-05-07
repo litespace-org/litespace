@@ -108,6 +108,10 @@
     "./routes": {
       "import": "./dist/esm/routes/index.js",
       "require": "./dist/cjs/routes/index.js"
+    },
+    "./subscription": {
+      "import": "./dist/esm/subscription.js",
+      "require": "./dist/cjs/subscription.js"
     }
   },
   "react-native": {
