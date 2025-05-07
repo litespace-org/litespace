@@ -3,7 +3,6 @@ import Detail from "@/components/Common/Detail";
 import DateField from "@/components/Common/DateField";
 import BinaryField from "@/components/Common/BinaryField";
 import GenderField from "@/components/Common/GenderField";
-import UserPopover from "@/components/Common/UserPopover";
 import cn from "classnames";
 import React, { useState } from "react";
 import { Duration } from "@litespace/utils/duration";
@@ -103,12 +102,6 @@ const Content: React.FC<{
         {tutor ? (
           <Detail label={intl("dashboard.tutor.activated")}>
             <BinaryField yes={tutor.activated} />
-          </Detail>
-        ) : null}
-
-        {tutor ? (
-          <Detail label={intl("dashboard.tutor.activatedBy")}>
-            {tutor.activated ? <UserPopover id={tutor.id} /> : "-"}
           </Detail>
         ) : null}
 

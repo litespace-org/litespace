@@ -9,7 +9,6 @@ export type Self = {
   studioId: number | null;
   thumbnail: string | null;
   activated: boolean;
-  activatedBy: number | null;
   /**
    * The period that be available before booking any lesson with the tutor.
    */
@@ -57,7 +56,6 @@ export type Row = {
   about: string | null;
   video: string | null;
   activated: boolean;
-  activated_by: number | null;
   studio_id: number | null;
   thumbnail: string | null;
   created_at: Date;
@@ -80,7 +78,6 @@ export type UpdatePayload = {
   studioId?: number | null;
   notice?: number;
   activated?: boolean;
-  activatedBy?: number;
 };
 
 export type Assets = {

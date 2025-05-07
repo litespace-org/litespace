@@ -149,6 +149,7 @@ export type UpdateApiPayload = {
   phone?: string | null;
   city?: City | null;
   notificationMethod?: NotificationMethod | null;
+  activated?: boolean;
 };
 
 export enum NotificationMethod {
@@ -285,3 +286,5 @@ export type PublicStudioDetails = {
 };
 
 export type FindStudiosApiResponse = Paginated<PublicStudioDetails>;
+
+export type UpdateUserApiResponse = Self;

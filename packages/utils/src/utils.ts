@@ -1,5 +1,6 @@
 import { sanitizeMessage } from "@/chat";
 import { HTML_TAGS_REGEX } from "@/constants";
+import { isEmpty } from "lodash";
 
 export function optional<T>(value: T): NonNullable<T> | undefined {
   return value || undefined;
@@ -41,4 +42,15 @@ export function getOptionalFieldUpdatedValue<T>(
   // User entered a new value and it is the same as his one.
   if (future === current) return undefined;
   return undefined;
+}
+
+/**
+ * @description check if an object is empty.
+ * @note undefiend properties will be dropped.
+ * @note this function is designed to ignore/drop undefined props. if you want
+ * to consider undefined props as other props, use `isEmpty` from lodash.
+ */
+export function isEmptyObject<T extends object>(value: T): boolean {
+  // convert `value` to json and then to js object will drop all undefined props.
+  return isEmpty(JSON.parse(JSON.stringify(value)));
 }

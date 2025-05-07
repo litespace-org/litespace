@@ -46,7 +46,6 @@ describe(nameof(Tutors), () => {
 
   describe(nameof(tutors.findUncontactedTutorsForStudent), () => {
     it("should retrieve tutors that a specific student hasn't opened a chat room with yet", async () => {
-      const admin = await fixtures.user({ role: Role.SuperAdmin });
       const studio = await fixtures.user({ role: Role.Studio });
       const student = await fixtures.user({ role: Role.Student });
 
@@ -60,7 +59,6 @@ describe(nameof(Tutors), () => {
               thumbnail: "./image.jpg",
               studioId: studio.id,
               activated: true,
-              activatedBy: admin.id,
             },
             {
               image: "./photo.jpg",
@@ -308,10 +306,9 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on activated", async () => {
-      const admin = await fixtures.user({ role: IUser.Role.RegularAdmin });
       await fixtures.tutor({ activated: false });
-      await fixtures.tutor({ activated: true, activatedBy: admin.id });
-      await fixtures.tutor({ activated: true, activatedBy: admin.id });
+      await fixtures.tutor({ activated: true });
+      await fixtures.tutor({ activated: true });
       await fixtures.tutor({ activated: false });
       await fixtures.tutor({ activated: false });
 

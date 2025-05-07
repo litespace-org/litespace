@@ -8,7 +8,6 @@ import { cacheTutors } from "@/lib/tutor";
 import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
-import { Role } from "@litespace/types/dist/esm/user";
 import { first, range } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
 import handlers from "@/handlers/user";
@@ -117,7 +116,6 @@ describe("/api/v1/user/", () => {
       it("should successfully load onboard tutors from db to cache", async () => {
         expect(await cache.tutors.exists()).to.eql(false);
 
-        const newUser = await db.user({ role: Role.SuperAdmin });
         const newTutor = await db.tutor();
 
         await users.update(newTutor.id, {
@@ -126,11 +124,11 @@ describe("/api/v1/user/", () => {
           image: "/image.jpg",
           phone: "01012345678",
         });
+
         await tutors.update(newTutor.id, {
           about: faker.lorem.paragraphs(),
           bio: faker.person.bio(),
           activated: true,
-          activatedBy: newUser.id,
           video: "/video.mp4",
           thumbnail: "/thumbnail.jpg",
           notice: 10,
@@ -156,14 +154,12 @@ describe("/api/v1/user/", () => {
       });
 
       it("should retrieve onboard tutors data from the cache with HTTP request", async () => {
-        const newUser = await db.user({ role: Role.SuperAdmin });
         const newTutor = await db.tutor();
 
         const mockData = {
           about: faker.lorem.paragraphs(),
           bio: faker.person.bio(),
           activated: true,
-          activatedBy: newUser.id,
           video: "/video.mp4",
           thumbnail: "/thumbnail.jpg",
           notice: 10,
@@ -184,14 +180,12 @@ describe("/api/v1/user/", () => {
       });
 
       it("should load onboard tutors data from db to cache on first HTTP request", async () => {
-        const newUser = await db.user({ role: Role.SuperAdmin });
         const newTutor = await db.tutor();
 
         const mockData = {
           about: faker.lorem.paragraphs(),
           bio: faker.person.bio(),
           activated: true,
-          activatedBy: newUser.id,
           video: "/video.mp4",
           thumbnail: "/thumbnail.jpg",
           notice: 10,
@@ -216,15 +210,12 @@ describe("/api/v1/user/", () => {
       });
 
       it("should retrieve onboard tutors data ordered/searched by name and topic", async () => {
-        const newUser = await db.user({ role: Role.SuperAdmin });
-
         const mockData = [
           {
             name: "Mohamed",
             about: faker.lorem.paragraphs(),
             bio: faker.person.bio(),
             activated: true,
-            activatedBy: newUser.id,
             video: "/video1.mp4",
             thumbnail: "/thumbnail.jpg",
             notice: 7,
@@ -234,7 +225,6 @@ describe("/api/v1/user/", () => {
             about: faker.lorem.paragraphs(),
             bio: faker.person.bio(),
             activated: true,
-            activatedBy: newUser.id,
             video: "/video2.mp4",
             thumbnail: "/thumbnail.jpg",
             notice: 12,
@@ -244,7 +234,6 @@ describe("/api/v1/user/", () => {
             about: faker.lorem.paragraphs(),
             bio: faker.person.bio(),
             activated: true,
-            activatedBy: newUser.id,
             video: "/video3.mp4",
             thumbnail: "/thumbnail.jpg",
             notice: 14,
@@ -254,7 +243,6 @@ describe("/api/v1/user/", () => {
             about: faker.lorem.paragraphs(),
             bio: faker.person.bio(),
             activated: true,
-            activatedBy: newUser.id,
             video: "/video4.mp4",
             thumbnail: "/thumbnail.jpg",
             notice: 7,
@@ -335,14 +323,12 @@ describe("/api/v1/user/", () => {
     });
 
     it("should retrieve tutor info successfully", async () => {
-      const newUser = await db.user({ role: Role.SuperAdmin });
       const newTutor = await db.tutor();
 
       const mockData = {
         about: faker.lorem.paragraphs(),
         bio: faker.person.bio(),
         activated: true,
-        activatedBy: newUser.id,
         video: "/video.mp4",
         thumbnail: "/thumbnail.jpg",
         notice: 10,
@@ -366,14 +352,12 @@ describe("/api/v1/user/", () => {
     it("should retrieve tutor info from db, in case it's not in the cache, and then save it in the cache.", async () => {
       expect(await cache.tutors.exists()).to.eq(false);
 
-      const newUser = await db.user({ role: Role.SuperAdmin });
       const newTutor = await db.tutor();
 
       const mockData = {
         about: faker.lorem.paragraphs(),
         bio: faker.person.bio(),
         activated: true,
-        activatedBy: newUser.id,
         video: "/video.mp4",
         thumbnail: "/thumbnail.jpg",
         notice: 10,
@@ -423,7 +407,6 @@ describe("/api/v1/user/", () => {
         about: faker.lorem.paragraphs(),
         bio: faker.person.bio(),
         activated: true,
-        activatedBy: tutor.id,
         video: "/video.mp4",
         thumbnail: "/thumbnail.jpg",
         notice: 10,

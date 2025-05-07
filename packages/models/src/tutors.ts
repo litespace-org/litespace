@@ -53,35 +53,10 @@ const fullTutorFields: FullTutorFieldsMap = {
   thumbnail: tutorColumn("thumbnail"),
   notice: tutorColumn("notice"),
   activated: tutorColumn("activated"),
-  activated_by: tutorColumn("activated_by"),
 } as const;
 
 export class Tutors {
   table = "tutors";
-  // todo: remove
-  // columns: {
-  //   fullTutorFields: {
-  //     map: FullTutorFieldsMap;
-  //     filterable: Array<keyof FullTutorFieldsMap>;
-  //   };
-  //   tutorMediaFields: {
-  //     map: TutorMediaFieldsMap;
-  //     filterable: Array<keyof TutorMediaFieldsMap>;
-  //   };
-  // } = {
-  //   fullTutorFields: {
-  //     map: fullTutorFields,
-  //     filterable: Object.values(omit(fullTutorFields, "password")) as Array<
-  //       keyof FullTutorFields
-  //     >,
-  //   },
-  //   tutorMediaFields: {
-  //     map: tutorMediaFields,
-  //     filterable: Object.values(tutorMediaFields) as Array<
-  //       keyof TutorMediaFieldsMap
-  //     >,
-  //   },
-  // };
 
   async create(id: number, tx?: Knex.Transaction): Promise<ITutor.Self> {
     const now = dayjs.utc().toDate();
@@ -111,7 +86,6 @@ export class Tutors {
         notice: payload.notice,
         thumbnail: payload.thumbnail,
         activated: payload.activated,
-        activated_by: payload.activatedBy,
         studio_id: payload.studioId,
         updated_at: now,
       })
@@ -381,7 +355,6 @@ export class Tutors {
             tutors.video AS video,
             tutors.thumbnail AS thumbnail,
             tutors.studio_id AS studio_id,
-            tutors.activated_by AS activated_by
           FROM room_members rm1
           JOIN room_members rm2 ON rm1.room_id = rm2.room_id
           RIGHT JOIN tutors ON tutors.id = rm2.user_id
@@ -402,7 +375,6 @@ export class Tutors {
             thumbnail IS NOT null AND
             studio_id IS NOT null AND
             activated = true AND
-            activated_by IS NOT null AND
             users.birth_year IS NOT null 
           ))
       );
@@ -426,7 +398,6 @@ export class Tutors {
       .select("tutors.video AS video")
       .select("tutors.thumbnail AS thumbnail")
       .select("tutors.studio_id AS studio_id")
-      .select("tutors.activated_by AS activated_by")
       .from("room_members AS rm1")
       .join("room_members AS rm2", "rm1.room_id", "rm2.room_id")
       .rightJoin(this.table, this.column("id"), "rm2.user_id")
@@ -454,7 +425,6 @@ export class Tutors {
             q2.whereNotNull("s1.video");
             q2.whereNotNull("s1.thumbnail");
             q2.whereNotNull("s1.studio_id");
-            q2.whereNotNull("s1.activated_by");
           }
         );
       });
@@ -493,7 +463,6 @@ export class Tutors {
       studioId: row.studio_id,
       notice: row.notice,
       activated: row.activated,
-      activatedBy: row.activated_by,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
@@ -530,7 +499,6 @@ export class Tutors {
       studioId: row.studio_id,
       notice: row.notice,
       activated: row.activated,
-      activatedBy: row.activated_by,
       meta: {
         createdAt: row.tutor_created_at.toISOString(),
         updatedAt: row.tutor_updated_at.toISOString(),
