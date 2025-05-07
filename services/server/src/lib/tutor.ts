@@ -76,13 +76,7 @@ export async function cacheTutors(): Promise<TutorsCache> {
 export function isPublicTutor(
   tutor?: ITutor.Full | null
 ): tutor is ITutor.Full {
-  return (
-    !!tutor &&
-    !!tutor.activated &&
-    !!tutor.activatedBy &&
-    !!tutor.image &&
-    !!tutor.video
-  );
+  return !!tutor && !!tutor.activated && !!tutor.image && !!tutor.video;
 }
 
 /*

@@ -247,7 +247,6 @@ async function tutor(
 }
 
 async function onboardedTutor() {
-  const admin = await user({ role: IUser.Role.SuperAdmin });
   const newTutor = await tutor();
 
   await users.update(newTutor.id, {
@@ -261,7 +260,6 @@ async function onboardedTutor() {
     about: faker.lorem.paragraphs(),
     bio: faker.person.bio(),
     activated: true,
-    activatedBy: admin.id,
     video: "/video.mp4",
     notice: 10,
   });

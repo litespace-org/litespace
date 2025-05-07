@@ -5,7 +5,6 @@ import { ITutor, IUser } from "@litespace/types";
  */
 export function isOnboard({
   activated,
-  activatedBy,
   verifiedEmail,
   verifiedPhone,
   video,
@@ -35,7 +34,6 @@ export function isOnboard({
     base &&
     !!verifiedPhone &&
     !!activated &&
-    !!activatedBy &&
     !!video &&
     !!thumbnail &&
     !!birthYear &&

@@ -169,7 +169,6 @@ async function main(): Promise<void> {
             about: sample([faker.lorem.paragraphs(), null]),
             bio: sample([faker.lorem.words(9), null]),
             activated: sample([true, false]),
-            activatedBy: admin.id,
           },
           tx
         );
@@ -227,7 +226,6 @@ async function main(): Promise<void> {
               about: faker.lorem.paragraphs(),
               bio: faker.lorem.words(9),
               activated: true,
-              activatedBy: admin.id,
             },
             tx
           );

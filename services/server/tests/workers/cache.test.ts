@@ -2,7 +2,6 @@ import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
 import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
-import { Role } from "@litespace/types/dist/esm/user";
 import { nameof } from "@litespace/utils";
 import { updateTutorCache } from "@/workers/handlers";
 import { sendBackgroundMessage } from "@/workers";
@@ -31,7 +30,6 @@ describe("updating the cache with background workers", () => {
     it("should update the cache data when onboard tutor data is updated", async () => {
       expect(await cache.tutors.exists()).to.eql(false);
 
-      const newUser = await db.user({ role: Role.SuperAdmin });
       const newTutor = await db.tutor();
 
       await users.update(newTutor.id, {
@@ -44,7 +42,6 @@ describe("updating the cache with background workers", () => {
         about: faker.lorem.paragraphs(),
         bio: faker.person.bio(),
         activated: true,
-        activatedBy: newUser.id,
         video: "/video.mp4",
         thumbnail: "/thumbnail.jpg",
         notice: 10,
