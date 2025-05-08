@@ -33,3 +33,26 @@ func Recover(c *fiber.Ctx) error {
 	}
 	return nil
 }
+
+func Filter[T interface{}](list []T, callback func(item T) bool) []T {
+	result := []T{}
+
+	for _, item := range list {
+		if callback(item) {
+			result = append(result, item)
+		}
+	}
+
+	return result
+}
+
+func Find[T interface{}](list []T, callback func(item T) bool) *T {
+
+	for _, item := range list {
+		if callback(item) {
+			return &item
+		}
+	}
+
+	return nil
+}
