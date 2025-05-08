@@ -15,9 +15,10 @@ import (
 type MessageKind string
 
 const (
-	MessageKindOffer     MessageKind = "offer"
-	MessageKindAnswer    MessageKind = "answer"
-	MessageKindCandidate MessageKind = "candidate"
+	MessageKindOffer      MessageKind = "offer"
+	MessageKindAnswer     MessageKind = "answer"
+	MessageKindCandidate  MessageKind = "candidate"
+	MessageKindMemberLeft MessageKind = "member-left"
 )
 
 type Message struct {
@@ -95,22 +96,36 @@ func NewSocketConn(appstate *statev2.State) fiber.Handler {
 						currentMember = utils.Must(statev2.NewMember(mid, socket))
 					}
 
-					// ===================== share current member stream with the other member ===================
 					utils.IncreaseThread()
 					defer utils.DecreaseThread()
 					go func() {
 						for {
-							track := <-currentMember.TracksChannel
+							select {
+							// ===================== share current member stream with the other member ===================
+							case track := <-currentMember.TracksChannel:
 
-							members := appstate.GetSessionMembers(sid)
+								members := appstate.GetSessionMembers(sid)
 
-							for _, member := range members {
-								// skip current member
-								if member.Id == mid {
-									continue
+								for _, member := range members {
+									// skip current member
+									if member.Id == mid {
+										continue
+									}
+
+									member.SendTrack(track)
 								}
 
-								member.SendTrack(track)
+							case cs := <-currentMember.PeerConnectionState:
+								if cs == webrtc.PeerConnectionStateClosed || cs == webrtc.PeerConnectionStateDisconnected || cs == webrtc.PeerConnectionStateFailed {
+									appstate.RemoveSessionMember(sid, mid)
+									memberLeftMessage := NewMessage(MessageKindMemberLeft, nil)
+									log.Println("emit member left event")
+									members := appstate.GetSessionMembers(sid)
+
+									for _, member := range members {
+										member.Socket.WriteMessage(websocket.TextMessage, memberLeftMessage.bytes())
+									}
+								}
 							}
 
 						}
@@ -118,6 +133,12 @@ func NewSocketConn(appstate *statev2.State) fiber.Handler {
 
 					currentMember.Conn.OnNegotiationNeeded(func() {
 						log.Println("Negotiation needed")
+						currentMember.Conn.AddTransceiverFromKind(webrtc.RTPCodecTypeAudio, webrtc.RTPTransceiverInit{
+							Direction: webrtc.RTPTransceiverDirectionRecvonly,
+						})
+						currentMember.Conn.AddTransceiverFromKind(webrtc.RTPCodecTypeVideo, webrtc.RTPTransceiverInit{
+							Direction: webrtc.RTPTransceiverDirectionRecvonly,
+						})
 						localSdp := utils.Must(currentMember.Conn.CreateOffer(nil))
 						utils.Unwrap(currentMember.Conn.SetLocalDescription(localSdp))
 						offerMessage := NewMessage(MessageKindOffer, localSdp)

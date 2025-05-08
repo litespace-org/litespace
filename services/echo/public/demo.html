@@ -37,10 +37,16 @@
           class="px-2 py-1 bg-gray-100 rounded-sm border"
         />
         <button
-          onclick="start()"
+          onclick="getUserMedia()"
           class="bg-blue-500 hover:bg-blue-400 text-white px-2 py-1 rounded-sm"
         >
-          Start
+          Access Mic/Camera
+        </button>
+        <button
+          onclick="connect()"
+          class="bg-blue-500 hover:bg-blue-400 text-white px-2 py-1 rounded-sm"
+        >
+          Connect
         </button>
       </div>
 
@@ -135,7 +141,7 @@
         JSON.stringify(sdp);
     }
 
-    async function start() {
+    async function connect() {
       if (!window["WebSocket"])
         return console.error("Your browser does not support WebSockets.");
 
@@ -149,13 +155,6 @@
           resolve();
         };
       });
-
-      await navigator.mediaDevices
-        .getUserMedia({ video: cam, audio: mic })
-        .then((stream) => {
-          localStream = stream;
-          document.getElementById("src-video").srcObject = stream;
-        });
 
       ws.onclose = () => console.log("ws disconnected.");
       ws.onmessage = async (event) => {
@@ -184,6 +183,10 @@
             })
           );
         }
+
+        if (data.kind === "member-left") {
+          document.getElementById("received-video").srcObject = null;
+        }
       };
 
       pc = new RTCPeerConnection({
@@ -201,10 +204,14 @@
         ],
       });
 
+      const audioTransceiver = pc.addTransceiver("audio");
+      const videoTransceiver = pc.addTransceiver("video");
+
       pc.oniceconnectionstatechange = (e) => {
         log(pc.iceConnectionState);
         connected = pc.iceConnectionState === "connected";
       };
+
       pc.onicecandidate = (event) => {
         // if (event.candidate === null) {
         //   sdp = pc.localDescription;
@@ -221,9 +228,6 @@
 
       pc.onnegotiationneeded = async () => {
         console.log("negotiation needed");
-        localStream
-          .getTracks()
-          .forEach((track) => pc.addTrack(track, localStream));
         await pc.setLocalDescription(await pc.createOffer());
         sdp = pc.localDescription;
         renderLocalSdp(sdp);
@@ -235,26 +239,8 @@
         );
       };
 
-      const dataChannel = pc.createDataChannel("main");
-      dataChannel.addEventListener("open", (event) => {
-        console.log("data channel openned");
-      });
-      dataChannel.addEventListener("close", (event) => {
-        console.log("data channel closed");
-      });
-      dataChannel.addEventListener("message", async (event) => {
-        const msg = JSON.parse(await event.data.text());
-        while (recievedCandidates.length > 0) {
-          pc.addIceCandidate(JSON.parse(recievedCandidates.pop()));
-        }
-        if (msg.newIceCandidate !== "") {
-          pc.addIceCandidate(JSON.parse(msg.newIceCandidate));
-          console.log("new ice-candidate has been received.");
-        }
-      });
-
       pc.ontrack = function (event) {
-        console.log(event.streams);
+        const track = event.track;
         const el = document.getElementById("received-video");
 
         el.autoplay = true;
@@ -262,76 +248,46 @@
         el.volume = 0.75;
 
         if (!el.srcObject) {
-          el.srcObject = event.streams[0];
+          el.srcObject = new MediaStream([track]);
           return;
         }
 
-        for (const track of event.streams[0].getTracks()) {
-          el.srcObject.addTrack(track);
+        if (track.kind === "audio") {
+          el.srcObject = new MediaStream([
+            ...el.srcObject.getVideoTracks(),
+            track,
+          ]);
+          return;
+        }
+
+        if (track.kind === "video") {
+          el.srcObject = new MediaStream([
+            ...el.srcObject.getAudioTracks(),
+            track,
+          ]);
+          return;
         }
       };
-
-      pc.ondatachannel = () => {
-        console.log("ASDAJSKLD");
-      };
     }
 
-    function produce() {
-      const peerId = document.getElementById("peer-id").value;
-      if (peerId === "") return alert("enter a peer id");
+    async function getUserMedia() {
+      if (!pc) return alert("connect first");
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: cam,
+        audio: mic,
+      });
 
-      ws.send(
-        JSON.stringify({
-          kind: "offer",
-          value: JSON.stringify(sdp),
-        })
-      );
+      document.getElementById("src-video").srcObject = stream;
+      const [audioTrack] = stream.getAudioTracks();
+      const [videoTrack] = stream.getVideoTracks();
 
-      // fetch("/produce", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     peerId: Number(peerId),
-      //     sessionDescription: sdp,
-      //   }),
-      // })
-      //   .then((res) => res.json())
-      //   .then((res) => {
-      //     pc.setRemoteDescription(res);
-      //     document.getElementById("remoteSessionDescription").value =
-      //       JSON.stringify(res);
-      //   })
-      //   .catch(log);
-    }
+      for (const transceiver of pc.getTransceivers()) {
+        if (transceiver.mid === "0" && audioTrack)
+          transceiver.sender.replaceTrack(audioTrack);
 
-    function consume() {
-      const peerId = document.getElementById("peer-id").value;
-      if (peerId === "") return alert("choose a peer id value");
-
-      const producerPeerId = document.getElementById("producer-peer-id").value;
-      if (producerPeerId === "")
-        return alert("choose a producer peer id value");
-
-      fetch("/consume", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          peerId: Number(peerId),
-          producerPeerId: Number(producerPeerId),
-          sessionDescription: sdp,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          pc.setRemoteDescription(res);
-          document.getElementById("remoteSessionDescription").value =
-            JSON.stringify(res);
-        })
-        .catch(log);
+        if (transceiver.mid === "1" && videoTrack)
+          transceiver.sender.replaceTrack(videoTrack);
+      }
     }
   </script>
 </html>
