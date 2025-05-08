@@ -18,11 +18,12 @@ import (
 type MemberId = int
 
 type Member struct {
-	Id            MemberId
-	Conn          *webrtc.PeerConnection
-	Tracks        []*webrtc.TrackLocalStaticRTP
-	Socket        *websocket.Conn
-	TracksChannel chan *webrtc.TrackLocalStaticRTP
+	Id                  MemberId
+	Conn                *webrtc.PeerConnection
+	Tracks              []*webrtc.TrackLocalStaticRTP
+	Socket              *websocket.Conn
+	TracksChannel       chan *webrtc.TrackLocalStaticRTP
+	PeerConnectionState chan webrtc.PeerConnectionState
 }
 
 func initPeerConnection() (*webrtc.PeerConnection, error) {
@@ -87,11 +88,12 @@ func NewMember(mid MemberId, socket *websocket.Conn) (*Member, error) {
 	}
 
 	member := Member{
-		Id:            mid,
-		Conn:          conn,
-		Tracks:        []*webrtc.TrackLocalStaticRTP{},
-		Socket:        socket,
-		TracksChannel: make(chan *webrtc.TrackLocalStaticRTP),
+		Id:                  mid,
+		Conn:                conn,
+		Tracks:              []*webrtc.TrackLocalStaticRTP{},
+		Socket:              socket,
+		TracksChannel:       make(chan *webrtc.TrackLocalStaticRTP),
+		PeerConnectionState: make(chan webrtc.PeerConnectionState),
 	}
 
 	conn.OnTrack(member.onTrack)
@@ -174,6 +176,7 @@ func (m *Member) onICECandidate(candidate *webrtc.ICECandidate) {
 
 func (m *Member) onConnectionStateChange(cs webrtc.PeerConnectionState) {
 	log.Printf("Connection state: %s", cs.String())
+	m.PeerConnectionState <- cs
 }
 
 func (m *Member) onICEConnectionStateChange(is webrtc.ICEConnectionState) {
