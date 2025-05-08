@@ -3,6 +3,7 @@ package main
 import (
 	"echo/handlers"
 	"echo/lib/state"
+	"echo/lib/statev2"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -11,6 +12,7 @@ import (
 func main() {
 	app := fiber.New()
 	appstate := state.New()
+	appstatev2 := statev2.New()
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:3000, https://app.staging.litespace.org, https://app.litespace.org, https://echo.staging.litespace.org",
@@ -25,8 +27,8 @@ func main() {
 	app.Post("/consume", handlers.Consume(&appstate))
 	app.Post("/produce", handlers.Produce(&appstate))
 
-	app.Use("/ws", handlers.UpgradeWS)
-	app.Get("/ws/:id", handlers.NewSocketConn(&appstate))
+	app.Use("/ws", handlers.UpgradeWs)
+	app.Get("/ws/:sid/:mid", handlers.NewSocketConn(&appstatev2))
 
 	app.Listen(":4004")
 }

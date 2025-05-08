@@ -1,81 +1,98 @@
 <!doctype html>
 <html>
-  <body style="max-width: 480px">
-    My Video<br />
-    <video
-      id="outvideo"
-      style="border: solid 2px black; border-radius: 20px; margin: 8px"
-      autoplay
-      muted
-    ></video>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="p-6">
+    <div class="max-w-screen-lg mx-auto">
+      <session id="streams" class="flex flex-row items-start gap-2 mb-6">
+        <div class="flex flex-col gap-2 w-full h-full">
+          <h1 class="text-2xl font-bold">My video</h1>
+          <video
+            id="src-video"
+            class="border-2 border-gray-900 rounded-sm"
+            autoplay
+            muted
+          ></video>
+        </div>
 
-    <br />
-    Recieved Video
-    <br />
-    <video
-      id="invideo"
-      style="border: solid 2px black; border-radius: 20px; margin: 8px"
-      autoplay
-      muted
-    ></video>
+        <div class="flex flex-col gap-2 w-full h-full">
+          <h1 class="text-2xl font-bold">Recieved video</h1>
+          <video
+            id="received-video"
+            class="border-2 border-gray-900 rounded-sm"
+            autoplay
+            muted
+          ></video>
+        </div>
+      </session>
 
-    <br />
-
-    <div
-      style="
-        height: 100%;
-        padding: 25px;
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-      "
-    >
-      <button onclick="start()">Start</button>
-
-      <div>
-        <label for="peer-id">Peer Id</label>
-        <input id="peer-id" type="number" />
+      <div class="flex flex-row items-center gap-2 mb-6">
+        <input
+          id="peer-id"
+          type="number"
+          placeholder="peer id"
+          class="px-2 py-1 bg-gray-100 rounded-sm border"
+        />
+        <button
+          onclick="start()"
+          class="bg-blue-500 hover:bg-blue-400 text-white px-2 py-1 rounded-sm"
+        >
+          Start
+        </button>
       </div>
 
-      <button onclick="produce()">Publish a Broadcast</button>
-
-      <div>
-        <label for="producer-peer-id">Producer Peer Id</label>
-        <input id="producer-peer-id" type="number" />
+      <div class="flex flex-col gap-2">
+        <div>
+          <button
+            onclick="toggleCam()"
+            class="bg-blue-500 hover:bg-blue-400 text-white px-2 py-1 rounded-sm"
+          >
+            Toggle Cam
+          </button>
+          <span id="cam-status">true</span>
+        </div>
+        <div>
+          <button
+            onclick="toggleMic()"
+            class="bg-blue-500 hover:bg-blue-400 text-white px-2 py-1 rounded-sm"
+          >
+            Toggle Mic
+          </button>
+          <span id="mic-status">true</span>
+        </div>
       </div>
-      <button onclick="consume()">Join a Broadcast</button><br />
+
+      <div class="mt-6">
+        <h1 class="text-2xl font-bold">Logs</h1>
+        <div
+          id="logs"
+          class="font-mono min-h-[200px] bg-gray-50 p-1 rounded-sm border"
+        ></div>
+      </div>
+
+      <section class="mt-6 flex flex-row gap-2 items-start">
+        <div class="w-full">
+          <h1 class="text-2xl font-bold">Local Session Description</h1>
+          <textarea
+            id="local-session-description"
+            readonly="true"
+            class="font-mono bg-gray-50 p-1 rounded-sm w-full border min-h-[200px]"
+          ></textarea>
+        </div>
+
+        <div class="w-full">
+          <h1 class="text-2xl font-bold">Remote Session Description</h1>
+          <textarea
+            id="remote-session-description"
+            readonly="true"
+            class="font-mono bg-gray-50 p-1 rounded-sm w-full border min-h-[200px]"
+          ></textarea>
+        </div>
+      </section>
     </div>
-
-    <div style="margin: 20px 0px">
-      <button onclick="toggleCam()">Toggle Cam</button>
-      <span id="cam-status">true</span>
-      <button onclick="toggleMic()">Toggle Mic</button>
-      <span id="mic-status">true</span>
-    </div>
-
-    <label> Logs </label>
-    <br />
-    <div id="logs" style="font-family: monospace"></div>
-
-    <br />
-
-    <label>Local Session Description</label>
-    <br />
-    <textarea
-      id="localSessionDescription"
-      readonly="true"
-      style="width: 400px; height: 400px"
-    ></textarea>
-    <br />
-
-    <label> Remote Session Description </label>
-    <br />
-    <textarea
-      id="remoteSessionDescription"
-      readonly="true"
-      style="width: 400px; height: 400px"
-    ></textarea>
-    <br />
   </body>
 
   <script>
@@ -94,45 +111,79 @@
   </script>
 
   <script>
-    var sdp = "";
+    var sdp = null;
     var pc = null; // peer connection
     var ws = null; // web socket
+    var localStream = null;
 
     const candidates = [];
     const recievedCandidates = [];
 
     let connected = false;
 
-    setInterval(() => {
-      if (!ws || ws.readyState !== 1) return;
-      while (candidates.length > 0) {
-        ws.send(JSON.stringify(candidates.pop()));
-        console.log("new ice-candidate has been sent.");
-      }
-    }, 1000);
-
     const log = (msg) => {
       document.getElementById("logs").innerHTML += msg + "<br>";
     };
 
-    function start() {
+    function renderLocalSdp(sdp) {
+      document.getElementById("local-session-description").value =
+        JSON.stringify(sdp);
+    }
+
+    function renderRemoteSdp(sdp) {
+      document.getElementById("remote-session-description").value =
+        JSON.stringify(sdp);
+    }
+
+    async function start() {
       if (!window["WebSocket"])
         return console.error("Your browser does not support WebSockets.");
 
       const peerId = document.getElementById("peer-id").value;
-      ws = new WebSocket("ws://" + document.location.host + "/ws/" + peerId);
-      ws.onopen = () => console.log("ws connected.");
+      ws = new WebSocket(
+        "ws://" + document.location.host + "/ws/main/" + peerId
+      );
+      await new Promise((resolve, reject) => {
+        ws.onopen = () => {
+          console.log("ws connected.");
+          resolve();
+        };
+      });
+
+      await navigator.mediaDevices
+        .getUserMedia({ video: cam, audio: mic })
+        .then((stream) => {
+          localStream = stream;
+          document.getElementById("src-video").srcObject = stream;
+        });
+
       ws.onclose = () => console.log("ws disconnected.");
-      ws.onmessage = (event) => {
-        console.log("new ice-candidate has been received.");
-        if (!connected) {
-          recievedCandidates.push(event.data);
-          return;
+      ws.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.kind === "answer") {
+          const sdp = JSON.parse(data.value);
+          pc.setRemoteDescription(sdp);
+          renderRemoteSdp(sdp);
         }
-        while (recievedCandidates.length > 0) {
-          pc.addIceCandidate(JSON.parse(recievedCandidates.pop()));
+
+        if (data.kind === "candiate")
+          pc.addIceCandidate(JSON.parse(data.value));
+
+        if (data.kind === "offer") {
+          const remoteSdp = JSON.parse(data.value);
+          renderRemoteSdp(remoteSdp);
+          pc.setRemoteDescription(remoteSdp);
+          await pc.setLocalDescription(await pc.createAnswer());
+          sdp = pc.localDescription;
+          renderLocalSdp(sdp);
+          ws.send(
+            JSON.stringify({
+              kind: "answer",
+              value: JSON.stringify(pc.localDescription),
+            })
+          );
         }
-        pc.addIceCandidate(JSON.parse(event.data));
       };
 
       pc = new RTCPeerConnection({
@@ -155,17 +206,33 @@
         connected = pc.iceConnectionState === "connected";
       };
       pc.onicecandidate = (event) => {
-        if (event.candidate === null) {
-          sdp = pc.localDescription;
-          document.getElementById("localSessionDescription").value =
-            JSON.stringify(sdp);
-          return;
-        }
-        candidates.push({
-          candidate: event.candidate.candidate,
-          sdpMid: event.candidate.sdpMid,
-          sdpMLineIndex: event.candidate.sdpMLineIndex,
-        });
+        // if (event.candidate === null) {
+        //   sdp = pc.localDescription;
+        //   document.getElementById("localSessionDescription").value =
+        //     JSON.stringify(sdp);
+        //   return
+        // }
+        // candidates.push({
+        //   candidate: event.candidate.candidate,
+        //   sdpMid: event.candidate.sdpMid,
+        //   sdpMLineIndex: event.candidate.sdpMLineIndex,
+        // });
+      };
+
+      pc.onnegotiationneeded = async () => {
+        console.log("negotiation needed");
+        localStream
+          .getTracks()
+          .forEach((track) => pc.addTrack(track, localStream));
+        await pc.setLocalDescription(await pc.createOffer());
+        sdp = pc.localDescription;
+        renderLocalSdp(sdp);
+        ws.send(
+          JSON.stringify({
+            kind: "offer",
+            value: JSON.stringify(sdp),
+          })
+        );
       };
 
       const dataChannel = pc.createDataChannel("main");
@@ -186,20 +253,9 @@
         }
       });
 
-      navigator.mediaDevices
-        .getUserMedia({ video: cam, audio: mic })
-        .then((stream) => {
-          stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-          document.getElementById("outvideo").srcObject = stream;
-          pc.createOffer()
-            .then((d) => pc.setLocalDescription(d))
-            .catch(log);
-        })
-        .catch(log);
-
       pc.ontrack = function (event) {
         console.log(event.streams);
-        const el = document.getElementById("invideo");
+        const el = document.getElementById("received-video");
 
         el.autoplay = true;
         el.controls = true;
@@ -222,25 +278,32 @@
 
     function produce() {
       const peerId = document.getElementById("peer-id").value;
-      if (peerId === "") return alert("choose a peer id value");
+      if (peerId === "") return alert("enter a peer id");
 
-      fetch("/produce", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          peerId: Number(peerId),
-          sessionDescription: sdp,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          pc.setRemoteDescription(res);
-          document.getElementById("remoteSessionDescription").value =
-            JSON.stringify(res);
+      ws.send(
+        JSON.stringify({
+          kind: "offer",
+          value: JSON.stringify(sdp),
         })
-        .catch(log);
+      );
+
+      // fetch("/produce", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     peerId: Number(peerId),
+      //     sessionDescription: sdp,
+      //   }),
+      // })
+      //   .then((res) => res.json())
+      //   .then((res) => {
+      //     pc.setRemoteDescription(res);
+      //     document.getElementById("remoteSessionDescription").value =
+      //       JSON.stringify(res);
+      //   })
+      //   .catch(log);
     }
 
     function consume() {
