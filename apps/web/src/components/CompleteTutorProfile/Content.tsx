@@ -12,11 +12,12 @@ import React, { useCallback, useMemo } from "react";
 import { useForm } from "@litespace/headless/form";
 import { useNavigate } from "react-router-dom";
 import Check from "@litespace/assets/Check16X16";
-import Logo from "@litespace/assets/Logo";
+import Logo from "@litespace/assets/LogoV3";
 import { Button } from "@litespace/ui/Button";
 import { Textarea } from "@litespace/ui/Textarea";
 import { Select } from "@litespace/ui/Select";
 import {
+  isValidEmail,
   isValidPhone,
   isValidTutorAbout,
   isValidTutorBio,
@@ -29,6 +30,7 @@ import { MAX_TUTOR_ABOUT_TEXT_LENGTH, optional } from "@litespace/utils";
 type Form = {
   name: string;
   phone: string;
+  email: string;
   city: IUser.City | null;
   gender: IUser.Gender | null;
   birthYear: number;
@@ -46,23 +48,27 @@ const Content: React.FC<{
   tutorId: number;
   name: string | null;
   phone: string | null;
+  email: string;
   city: IUser.City | null;
   gender: IUser.Gender | null;
   birthYear: number | null;
   about: string | null;
   bio: string | null;
   verifiedPhone: boolean;
+  verifiedEmail: boolean;
 }> = ({
   refetch,
   tutorId,
   name,
   phone,
+  email,
   city,
   gender,
   birthYear,
   about,
   bio,
   verifiedPhone,
+  verifiedEmail,
 }) => {
   // ==================== states & hooks ====================
   const intl = useFormatMessage();
@@ -111,6 +117,15 @@ const Content: React.FC<{
         return null;
       },
     },
+    email: {
+      required: true,
+      validate: (email) => {
+        const messageId = isValidEmail(email);
+        if (messageId !== null) return messageId;
+        if (!verifiedEmail) return "complete-tutor-profile.email.not-verified";
+        return null;
+      },
+    },
     city: { required: true },
     gender: { required: true },
     birthYear: { required: true, validate: isValidUserBirthYear },
@@ -122,11 +137,12 @@ const Content: React.FC<{
     defaults: {
       name: name || "",
       phone: phone || "",
-      city,
-      gender,
       birthYear: birthYear || 0,
       about: about || "",
       bio: bio || "",
+      email,
+      city,
+      gender,
     },
     validators,
     onSubmit(data) {
@@ -146,7 +162,9 @@ const Content: React.FC<{
   });
 
   // ==================== callbacks ====================
+  // @NOTE: it should update email/phone in the database after confirmation in case it's different
   const confirmPhone = useCallback(() => alert("not implemented yet!"), []);
+  const confirmEmail = useCallback(() => alert("not implemented yet!"), []);
 
   return (
     <div className="gap-10 flex flex-col items-center justify-center self-center h-full">
@@ -154,8 +172,8 @@ const Content: React.FC<{
         dir="ltr"
         className="flex flex-row gap-4 mb-1 items-center justify-center"
       >
-        <Logo className="w-14 h-14" />
-        <Typography tag="p" className="text-h4 text-brand-700 font-bold">
+        <Logo className="w-14 h-14 fill-brand-500" />
+        <Typography tag="span" className="text-h4 text-brand-700 font-bold">
           {intl("labels.litespace")}
         </Typography>
       </div>
@@ -205,6 +223,7 @@ const Content: React.FC<{
                 value={form.state.phone}
                 autoComplete="off"
                 onValueChange={({ value }) => form.set("phone", value)}
+                disabled={update.isPending || verifiedPhone}
                 post={
                   verifiedPhone ? (
                     <div className="h-10 flex items-center justify-center ms-2">
@@ -223,6 +242,45 @@ const Content: React.FC<{
                     >
                       <Typography tag="span" className="text-body font-medium">
                         {intl("labels.phone.confirm")}
+                      </Typography>
+                    </Button>
+                  )
+                }
+              />
+            </div>
+
+            <div className="flex items-end w-full gap-2">
+              <Input
+                id="email"
+                name="email"
+                idleDir="rtl"
+                value={form.state.email}
+                inputSize="large"
+                autoComplete="off"
+                helper={form.errors.email}
+                label={intl("labels.email")}
+                state={form.errors.email ? "error" : undefined}
+                onChange={({ target }) => form.set("email", target.value)}
+                placeholder={intl("labels.email.placeholder")}
+                disabled={update.isPending || verifiedEmail}
+                post={
+                  verifiedEmail ? (
+                    <div className="h-10 flex items-center justify-center ms-2">
+                      <Check className="w-6 [&>*]:stroke-brand-700" />
+                    </div>
+                  ) : (
+                    <Button
+                      className="flex-shrink-0 ms-2"
+                      type="main"
+                      variant="tertiary"
+                      size="large"
+                      htmlType="button"
+                      onClick={confirmEmail}
+                      loading={false}
+                      disabled={update.isPending}
+                    >
+                      <Typography tag="span" className="text-body font-medium">
+                        {intl("labels.email.confirm")}
                       </Typography>
                     </Button>
                   )
