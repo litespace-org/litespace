@@ -353,10 +353,14 @@ function update(_: ApiContext) {
           phone,
           image,
           email,
-          // Reset user verification status incase his email updated.
+          // reset user verification status incase his email or phone got updated.
           verifiedEmail: email ? false : undefined,
+          verifiedPhone: phone ? false : undefined,
+          verifiedTelegram: phone ? false : undefined,
+          verifiedWhatsApp: phone ? false : undefined,
           password: password ? hashPassword(password.new) : undefined,
-          notificationMethod,
+          // reset notification method incase the user phone got updated
+          notificationMethod: phone ? null : notificationMethod,
         };
 
         const updated = await users.update(id, updateUserPayload, tx);

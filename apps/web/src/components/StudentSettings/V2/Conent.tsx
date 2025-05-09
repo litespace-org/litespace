@@ -83,6 +83,7 @@ const Conent: React.FC<{
       {tab === "notifications" ? (
         <NotificationSettings
           notificationMethod={user.notificationMethod}
+          phone={user.phone}
           id={user.id}
           verifiedWhatsApp={user.verifiedWhatsApp}
           verifiedTelegram={user.verifiedTelegram}

@@ -164,6 +164,7 @@
     "./Success": "./dist/Success.tsx",
     "./Tag": "./dist/Tag.tsx",
     "./Telegram": "./dist/Telegram.tsx",
+    "./Telegram1": "./dist/Telegram1.tsx",
     "./ThemeSwitchLight": "./dist/ThemeSwitchLight.tsx",
     "./TimerIndicator": "./dist/TimerIndicator.tsx",
     "./Timer": "./dist/Timer.tsx",
