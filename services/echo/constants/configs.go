@@ -1,6 +1,10 @@
 package constants
 
-import "github.com/pion/webrtc/v4"
+import (
+	"os"
+
+	"github.com/pion/webrtc/v4"
+)
 
 var Config = webrtc.Configuration{
 	ICEServers: []webrtc.ICEServer{
@@ -19,4 +23,10 @@ var Config = webrtc.Configuration{
 			Credential: "litespace",
 		},
 	},
+}
+
+var Features = struct {
+	EnableRecording bool
+}{
+	EnableRecording: os.Getenv("ENABLE_RECORDING") == "true",
 }

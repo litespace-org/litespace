@@ -1,15 +1,176 @@
-// this defines and manages the global state of the server
 package state
 
+import (
+	"echo/lib/utils"
+	"sync"
+
+	"github.com/pion/webrtc/v4"
+)
+
+type SessionId = string
+
+type Session struct {
+	Id      SessionId
+	Members []*Member
+}
+
+func (s *Session) IsEmpty() bool {
+	return len(s.Members) == 0
+}
+
 type State struct {
-	Peers *PeersStorage
+	mu       sync.Mutex
+	Sessions map[SessionId]*Session
 }
 
 func New() State {
 	return State{
-		Peers: &PeersStorage{
-			PeerMap: make(map[int]*PeerContainer),
-			ChanMap: make(map[int]chan *PeerContainer),
-		},
+		Sessions: make(map[SessionId]*Session),
 	}
+}
+
+func (s *State) IsSessionExist(sid SessionId) bool {
+	return s.Sessions[sid] != nil
+}
+
+func (s *State) NewSession(sid SessionId) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.Sessions[sid] = &Session{
+		Id:      sid,
+		Members: []*Member{},
+	}
+}
+
+func (s *State) GetSession(sid SessionId) *Session {
+	return s.Sessions[sid]
+}
+
+func (s *State) RemoveSession(sid SessionId) {
+	delete(s.Sessions, sid)
+}
+
+func (s *State) IsSessionEmpty(sid SessionId) bool {
+	session := s.GetSession(sid)
+	if session == nil {
+		return true
+	}
+
+	return len(session.Members) == 0
+}
+
+func (s *State) IsMemberExist(sid SessionId, mid MemberId) bool {
+	member := s.GetSessionMember(sid, mid)
+	return member != nil
+}
+
+func (s *State) AddSessionMember(
+	sid SessionId,
+	member *Member,
+) {
+	if !s.IsSessionExist(sid) {
+		s.NewSession(sid)
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	session := s.GetSession(sid)
+	session.Members = append(session.Members, member)
+	s.react(sid, member)
+}
+
+func (s *State) react(sid SessionId, member *Member) {
+	current := member
+	mid := member.Id
+
+	utils.IncreaseThread()
+	defer utils.DecreaseThread()
+	go func() {
+		for {
+			select {
+			// ===================== share current member stream with the other member ===================
+			case track := <-member.TracksChannel:
+
+				members := s.GetSessionMembers(sid)
+
+				for _, member := range members {
+					// skip current member
+					if member.Id == mid {
+						continue
+					}
+
+					member.SendTrack(track)
+				}
+
+			case cs := <-current.PeerConnectionState:
+				if cs == webrtc.PeerConnectionStateClosed || cs == webrtc.PeerConnectionStateDisconnected || cs == webrtc.PeerConnectionStateFailed {
+					s.RemoveSessionMember(sid, mid)
+					members := s.GetSessionMembers(sid)
+					for _, member := range members {
+						member.Socket.SendMemberLeftMessage()
+					}
+				}
+			}
+		}
+	}()
+}
+
+func (s *State) RemoveSessionMember(
+	sid SessionId,
+	mid MemberId,
+) {
+	if !s.IsSessionExist(sid) {
+		return
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	session := s.GetSession(sid)
+	session.Members = utils.Filter(session.Members, func(member *Member) bool {
+		return member.Id != mid
+	})
+
+	if session.IsEmpty() {
+		s.RemoveSession(sid)
+	}
+}
+
+func (s *State) GetSessionMembers(sid SessionId) []*Member {
+	if !s.IsSessionExist(sid) {
+		return []*Member{}
+	}
+
+	return s.GetSession(sid).Members
+}
+
+func (s *State) GetSessionMember(sid SessionId, mid MemberId) *Member {
+	if !s.IsSessionExist(sid) {
+		return nil
+	}
+
+	session := s.GetSession(sid)
+
+	member := utils.Find(session.Members, func(member *Member) bool {
+		return member.Id == mid
+	})
+
+	if member == nil {
+		return nil
+	}
+
+	return *member
+}
+
+func (s *State) CountMembers() int {
+	count := 0
+
+	for _, session := range s.Sessions {
+		count += len(session.Members)
+	}
+
+	return count
+}
+
+func (s *State) CountSessions() int {
+	return len(s.Sessions)
 }

@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"echo/lib/statev2"
+	"echo/lib/state"
 	"echo/lib/utils"
+	"echo/lib/wss"
 	"encoding/json"
 	"log"
 	"strconv"
@@ -11,31 +12,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/pion/webrtc/v4"
 )
-
-type MessageKind string
-
-const (
-	MessageKindOffer      MessageKind = "offer"
-	MessageKindAnswer     MessageKind = "answer"
-	MessageKindCandidate  MessageKind = "candidate"
-	MessageKindMemberLeft MessageKind = "member-left"
-)
-
-type Message struct {
-	Kind  MessageKind `json:"kind"`
-	Value string      `json:"value"`
-}
-
-func NewMessage(kind MessageKind, value interface{}) Message {
-	return Message{
-		Kind:  kind,
-		Value: string(utils.Must(json.Marshal(value))),
-	}
-}
-
-func (m *Message) bytes() []byte {
-	return utils.Must(json.Marshal(m))
-}
 
 func UpgradeWs(c *fiber.Ctx) error {
 	// IsWebSocketUpgrade returns true if the client
@@ -46,142 +22,92 @@ func UpgradeWs(c *fiber.Ctx) error {
 	return fiber.ErrUpgradeRequired
 }
 
-// Returns a fiber connection by using the websocket module. It handles the socket
-// connection by adding a PeerContainer with the associated id (if it doesn't exist)
-// and then attach the socket connection to it in order to be able to send candidates
-// to the other peer, and finally handle recieving ice candidates from the other peer.
-//
-// NOTE: the socket connection is automatically closed after a certain amount of seconds.
-// it's used only to establish connection. exchanging data shall be proceeded by using
-// webrtc data channels.
-func NewSocketConn(appstate *statev2.State) fiber.Handler {
-	return websocket.New(func(socket *websocket.Conn) {
+func NewSocketConn(s *state.State) fiber.Handler {
+	return websocket.New(func(conn *websocket.Conn) {
+		socket := wss.New(conn)
 
 		sid := socket.Params("sid")
 		mid, _ := strconv.Atoi(socket.Params("mid"))
 
-		log.Println(sid, mid)
-
 		utils.IncreaseThread()
 		defer utils.DecreaseThread()
 		for {
-			wssMessageType, wssMessage, err := socket.ReadMessage()
+			messageType, message, err := socket.ReadMessage()
+
 			if err != nil {
 				log.Println("[NewSocketConn]", err)
 				break
 			}
 
-			if wssMessageType == websocket.TextMessage {
-				var message Message
+			if messageType != websocket.BinaryMessage {
+				log.Println("ignore non-binary socket messages")
+				continue
+			}
 
-				if err := json.Unmarshal(wssMessage, &message); err != nil {
-					log.Println("[NewSocketConn]", err)
+			// message is made of header and body. first byte of the message
+			// represents the message type (aka kind) rest of the bytes
+			// repersents the message itself (the body). The header will
+			// determine how the body will be parsed/interpreted
+			header := message[0]
+			body := message[1:]
+			kind := socket.GetMessageKind(header)
+			log.Println("message kind:", kind)
+
+			if kind == wss.MessageKindOffer {
+				// parse message body
+				var sessionDescription webrtc.SessionDescription
+				if err := json.Unmarshal(body, &sessionDescription); err != nil {
+					log.Println("failed to parse session offer message body")
 					continue
 				}
 
-				log.Println("message kind:", message.Kind)
+				// add or reiterative the member for the state
+				current := s.GetSessionMember(sid, mid)
+				if current == nil {
+					current = utils.Must(state.NewMember(mid, &socket))
+				}
 
-				if message.Kind == MessageKindOffer || message.Kind == MessageKindAnswer {
-					var sessionDescription webrtc.SessionDescription
+				utils.Unwrap(current.Conn.SetRemoteDescription(sessionDescription))
+				localSdp := utils.Must(current.Conn.CreateAnswer(nil))
+				utils.Unwrap(current.Conn.SetLocalDescription(localSdp))
+				socket.SendAnswerMessage(&localSdp)
 
-					if err := json.Unmarshal([]byte(message.Value), &sessionDescription); err != nil {
-						log.Println("[NewSocketConn]", err)
+				// add member to session
+				if !s.IsMemberExist(sid, mid) {
+					s.AddSessionMember(sid, current)
+				}
+
+				// share other members tracks with the current member
+				members := s.GetSessionMembers(sid)
+
+				for _, member := range members {
+					// skip current member
+					if member.Id == mid {
 						continue
-
 					}
 
-					currentMember := appstate.GetSessionMember(sid, mid)
-
-					if currentMember == nil {
-						currentMember = utils.Must(statev2.NewMember(mid, socket))
-					}
-
-					utils.IncreaseThread()
-					defer utils.DecreaseThread()
-					go func() {
-						for {
-							select {
-							// ===================== share current member stream with the other member ===================
-							case track := <-currentMember.TracksChannel:
-
-								members := appstate.GetSessionMembers(sid)
-
-								for _, member := range members {
-									// skip current member
-									if member.Id == mid {
-										continue
-									}
-
-									member.SendTrack(track)
-								}
-
-							case cs := <-currentMember.PeerConnectionState:
-								if cs == webrtc.PeerConnectionStateClosed || cs == webrtc.PeerConnectionStateDisconnected || cs == webrtc.PeerConnectionStateFailed {
-									appstate.RemoveSessionMember(sid, mid)
-									memberLeftMessage := NewMessage(MessageKindMemberLeft, nil)
-									log.Println("emit member left event")
-									members := appstate.GetSessionMembers(sid)
-
-									for _, member := range members {
-										member.Socket.WriteMessage(websocket.TextMessage, memberLeftMessage.bytes())
-									}
-								}
-							}
-
-						}
-					}()
-
-					currentMember.Conn.OnNegotiationNeeded(func() {
-						log.Println("Negotiation needed")
-						currentMember.Conn.AddTransceiverFromKind(webrtc.RTPCodecTypeAudio, webrtc.RTPTransceiverInit{
-							Direction: webrtc.RTPTransceiverDirectionRecvonly,
-						})
-						currentMember.Conn.AddTransceiverFromKind(webrtc.RTPCodecTypeVideo, webrtc.RTPTransceiverInit{
-							Direction: webrtc.RTPTransceiverDirectionRecvonly,
-						})
-						localSdp := utils.Must(currentMember.Conn.CreateOffer(nil))
-						utils.Unwrap(currentMember.Conn.SetLocalDescription(localSdp))
-						offerMessage := NewMessage(MessageKindOffer, localSdp)
-						socket.WriteMessage(websocket.TextMessage, offerMessage.bytes())
-					})
-
-					if message.Kind == MessageKindOffer {
-						utils.Unwrap(currentMember.Conn.SetRemoteDescription(sessionDescription))
-						localSDB := utils.Must(currentMember.Conn.CreateAnswer(nil))
-						utils.Unwrap(currentMember.Conn.SetLocalDescription(localSDB))
-						answerMessage := NewMessage(MessageKindAnswer, localSDB)
-						socket.WriteMessage(websocket.TextMessage, answerMessage.bytes())
-					}
-
-					if message.Kind == MessageKindAnswer {
-						utils.Unwrap(currentMember.Conn.SetRemoteDescription(sessionDescription))
-					}
-
-					// add member to session
-					if !appstate.IsMemberExist(sid, mid) {
-						appstate.AddSessionMember(sid, currentMember)
-					}
-
-					// ===================== share the other member streams with the current member ===================
-					if message.Kind == MessageKindOffer {
-						members := appstate.GetSessionMembers(sid)
-
-						for _, member := range members {
-							// skip current member
-							if member.Id == mid {
-								continue
-							}
-
-							for _, track := range member.Tracks {
-								log.Printf("[NewSocketConn] sending %s track (id=%s) from %d to %d", track.Kind().String(), track.ID(), member.Id, mid)
-								currentMember.SendTrack(track)
-							}
-
-						}
+					for _, track := range member.Tracks {
+						log.Printf("sending %s track (id=%s) from %d to %d", track.Kind().String(), track.ID(), member.Id, mid)
+						current.SendTrack(track)
 					}
 
 				}
+			}
 
+			if kind == wss.MessageKindAnswer {
+				// parse message body
+				var sessionDescription webrtc.SessionDescription
+				if err := json.Unmarshal(body, &sessionDescription); err != nil {
+					log.Println("failed to parse session answer message body")
+					continue
+				}
+
+				member := s.GetSessionMember(sid, mid)
+				if member == nil {
+					continue
+				}
+
+				utils.Unwrap(member.Conn.SetRemoteDescription(sessionDescription))
 			}
 		}
 	})
