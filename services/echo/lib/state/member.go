@@ -1,15 +1,13 @@
-package statev2
+package state
 
 import (
 	"echo/constants"
-	"echo/lib/record"
 	"echo/lib/utils"
-	"encoding/json"
+	"echo/lib/wss"
 	"errors"
 	"io"
 	"log"
 
-	"github.com/gofiber/contrib/websocket"
 	"github.com/pion/interceptor"
 	"github.com/pion/interceptor/pkg/intervalpli"
 	"github.com/pion/webrtc/v4"
@@ -21,7 +19,7 @@ type Member struct {
 	Id                  MemberId
 	Conn                *webrtc.PeerConnection
 	Tracks              []*webrtc.TrackLocalStaticRTP
-	Socket              *websocket.Conn
+	Socket              *wss.Socket
 	TracksChannel       chan *webrtc.TrackLocalStaticRTP
 	PeerConnectionState chan webrtc.PeerConnectionState
 }
@@ -81,7 +79,7 @@ func initPeerConnection() (*webrtc.PeerConnection, error) {
 	return conn, err
 }
 
-func NewMember(mid MemberId, socket *websocket.Conn) (*Member, error) {
+func NewMember(mid MemberId, socket *wss.Socket) (*Member, error) {
 	conn, err := initPeerConnection()
 	if err != nil {
 		return nil, err
@@ -101,6 +99,7 @@ func NewMember(mid MemberId, socket *websocket.Conn) (*Member, error) {
 	conn.OnConnectionStateChange(member.onConnectionStateChange)
 	conn.OnICEConnectionStateChange(member.onICEConnectionStateChange)
 	conn.OnICEGatheringStateChange(member.onICEGatheringStateChange)
+	conn.OnNegotiationNeeded(member.onNegotiationNeeded)
 
 	return &member, nil
 }
@@ -123,8 +122,8 @@ func (m *Member) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPReceiver)
 	m.TracksChannel <- localTrack
 
 	// write the buffer from the remote track in the local track simultaneously
-	codec := remoteTrack.Codec()
-	writer := record.GetWriter(codec)
+	// codec := remoteTrack.Codec()
+	// writer := record.GetWriter(codec)
 
 	go func() {
 		utils.IncreaseThread()
@@ -136,7 +135,7 @@ func (m *Member) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPReceiver)
 				break
 			}
 
-			record.SavePacketToDisk(writer, packet)
+			// record.SavePacketToDisk(writer, packet)
 			// ErrClosedPipe means we don't have any subscribers, this is ok if no peers have connected yet
 			if err := localTrack.WriteRTP(packet); err != nil && !errors.Is(err, io.ErrClosedPipe) {
 				log.Println("[onTrack]", err)
@@ -147,31 +146,13 @@ func (m *Member) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPReceiver)
 }
 
 func (m *Member) onICECandidate(candidate *webrtc.ICECandidate) {
-	if candidate != nil {
-		log.Printf("Ice candiate: %s/%s", candidate.Typ.String(), candidate.Protocol.String())
-	}
-
 	if candidate == nil {
 		log.Printf("Got a null candiate; Ice gathering done.")
 		return
 	}
 
-	ice, err := json.Marshal(candidate.ToJSON())
-
-	if err != nil {
-		log.Println("[onICECandidate]", err)
-		return
-	}
-
-	m.Socket.WriteMessage(websocket.TextMessage, utils.Must(json.Marshal(
-		struct {
-			Kind  string `json:"kind"`
-			Value string `json:"value"`
-		}{
-			Kind:  "candiate",
-			Value: string(ice),
-		},
-	)))
+	ice := candidate.ToJSON()
+	m.Socket.SendIceCandidateMessage(&ice)
 }
 
 func (m *Member) onConnectionStateChange(cs webrtc.PeerConnectionState) {
@@ -185,6 +166,28 @@ func (m *Member) onICEConnectionStateChange(is webrtc.ICEConnectionState) {
 
 func (m *Member) onICEGatheringStateChange(is webrtc.ICEGatheringState) {
 	log.Printf("Ice gathering state: %s", is.String())
+}
+
+func (m *Member) onNegotiationNeeded() {
+	log.Println("negotiation needed")
+
+	transceivers := m.Conn.GetTransceivers()
+	// only add transceivers incase they are not added yet.
+	if len(transceivers) != 0 {
+		// add receive only audio transceiver (must be first, will have mid=0)
+		m.Conn.AddTransceiverFromKind(webrtc.RTPCodecTypeAudio, webrtc.RTPTransceiverInit{
+			Direction: webrtc.RTPTransceiverDirectionRecvonly,
+		})
+		// add receive only video transceiver (must be the second, will have mid=1)
+		m.Conn.AddTransceiverFromKind(webrtc.RTPCodecTypeVideo, webrtc.RTPTransceiverInit{
+			Direction: webrtc.RTPTransceiverDirectionRecvonly,
+		})
+	}
+
+	localSdp := utils.Must(m.Conn.CreateOffer(nil))
+	utils.Unwrap(m.Conn.SetLocalDescription(localSdp))
+
+	m.Socket.SendOfferMessage(&localSdp)
 }
 
 func (m *Member) SendTrack(track *webrtc.TrackLocalStaticRTP) error {

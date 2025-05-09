@@ -117,6 +117,11 @@
   </script>
 
   <script>
+    const MESSAGE_KIND_OFFER = 1;
+    const MESSAGE_KIND_ANSWER = 2;
+    const MESSAGE_KIND_CANDIDATE = 3;
+    const MESSAGE_KIND_MEMBER_LEFT = 4;
+
     var sdp = null;
     var pc = null; // peer connection
     var ws = null; // web socket
@@ -141,6 +146,13 @@
         JSON.stringify(sdp);
     }
 
+    function sendMessage(kind, message) {
+      const body = new TextEncoder().encode(JSON.stringify(message));
+      const header = kind;
+      const data = new Uint8Array([header, ...body]);
+      ws.send(data);
+    }
+
     async function connect() {
       if (!window["WebSocket"])
         return console.error("Your browser does not support WebSockets.");
@@ -160,31 +172,26 @@
       ws.onmessage = async (event) => {
         const data = JSON.parse(event.data);
 
-        if (data.kind === "answer") {
-          const sdp = JSON.parse(data.value);
-          pc.setRemoteDescription(sdp);
-          renderRemoteSdp(sdp);
+        if (data.kind === MESSAGE_KIND_ANSWER) {
+          pc.setRemoteDescription(data.value);
+          renderRemoteSdp(data.value);
         }
 
-        if (data.kind === "candiate")
-          pc.addIceCandidate(JSON.parse(data.value));
+        if (data.kind === MESSAGE_KIND_CANDIDATE)
+          pc.addIceCandidate(data.value);
 
-        if (data.kind === "offer") {
-          const remoteSdp = JSON.parse(data.value);
+        if (data.kind === MESSAGE_KIND_OFFER) {
+          const remoteSdp = data.value;
           renderRemoteSdp(remoteSdp);
           pc.setRemoteDescription(remoteSdp);
           await pc.setLocalDescription(await pc.createAnswer());
           sdp = pc.localDescription;
           renderLocalSdp(sdp);
-          ws.send(
-            JSON.stringify({
-              kind: "answer",
-              value: JSON.stringify(pc.localDescription),
-            })
-          );
+          sendMessage(MESSAGE_KIND_ANSWER, pc.localDescription);
         }
 
-        if (data.kind === "member-left") {
+        if (data.kind === MESSAGE_KIND_MEMBER_LEFT) {
+          console.log("member left");
           document.getElementById("received-video").srcObject = null;
         }
       };
@@ -231,12 +238,7 @@
         await pc.setLocalDescription(await pc.createOffer());
         sdp = pc.localDescription;
         renderLocalSdp(sdp);
-        ws.send(
-          JSON.stringify({
-            kind: "offer",
-            value: JSON.stringify(sdp),
-          })
-        );
+        sendMessage(MESSAGE_KIND_OFFER, pc.localDescription);
       };
 
       pc.ontrack = function (event) {

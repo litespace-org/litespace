@@ -14,20 +14,23 @@ import (
 
 func GetWriter(codec webrtc.RTPCodecParameters) media.Writer {
 	if strings.EqualFold(codec.MimeType, webrtc.MimeTypeOpus) {
-		log.Println("Got Opus track, saving to disk as output.opus (48 kHz, 2 channels)")
+		log.Println("got Opus track, saving to disk as output.opus (48 kHz, 2 channels)")
 		ogg, err := NewOggWritter()
 		if err != nil {
 			log.Println("ogg record error:", err)
 		}
 		return ogg
-	} else if strings.EqualFold(codec.MimeType, webrtc.MimeTypeVP8) {
-		log.Println("Got VP8 track, saving to disk as output.ivf")
+	}
+
+	if strings.EqualFold(codec.MimeType, webrtc.MimeTypeVP8) {
+		log.Println("got VP8 track, saving to disk as output.ivf")
 		ivf, err := NewIvfWritter()
 		if err != nil {
 			log.Println("ivf record error:", err)
 		}
 		return ivf
 	}
+
 	return nil
 }
 

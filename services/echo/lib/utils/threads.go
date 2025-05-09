@@ -1,15 +1,15 @@
 package utils
 
-var no_threads int
+var threads_count int
 
 func CountThreads() int {
-	return no_threads
+	return threads_count
 }
 
 func IncreaseThread() {
-	no_threads += 1
+	threads_count += 1
 }
 
 func DecreaseThread() {
-	no_threads -= 1
+	threads_count -= 1
 }
