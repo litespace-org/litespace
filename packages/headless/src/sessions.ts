@@ -16,6 +16,7 @@ import { useEcho } from "@/echo";
 import { isAxiosError } from "axios";
 import { sleep } from "@litespace/utils";
 import { useLogger } from "@/logger";
+import dayjs from "@/lib/dayjs";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -1761,6 +1762,47 @@ const defaultPeer = createPeer();
 const AUDIO_TRANSCEIVERS_MID = "0";
 const VIDEO_TRANSCEIVERS_MID = "1";
 
+type NetworkMetrics = {
+  /**
+   * The current upload speed (in Mbps) measured over the most recent interval.
+   */
+  currentUploadSpeed: number;
+  /**
+   * The current download speed (in Mbps) measured over the most recent interval.
+   */
+  currentDownloadSpeed: number;
+  /**
+   * The cumulative average upload speed (in Mbps) since the session began
+   * It will be used to analyze overall network quality and trends.
+   */
+  averageUploadSpeed: number;
+  /**
+   * The cumulative average download speed (in Mbps) since the session began.
+   * It will be used to evaluate sustained network capabilities over time.
+   */
+  averageDownloadSpeed: number;
+  /**
+   * The round-trip time (RTT) in milliseconds, representing the time it takes for data to travel between peers and back.
+   * Indicates the delay in communication.
+   */
+  latency: number;
+  /**
+   * The variability in packet arrival times, measured in seconds.
+   * Low Jitter Indicates network consistency.
+   */
+  jitter: number;
+  /**
+   * The percentage of packets lost during upload transmission.
+   * Indicates upload reliability.
+   */
+  uploadPacketLoss: number;
+  /**
+   * Download Packet Loss: The percentage of packets lost during download transmission.
+   * Indicates download reliability.
+   */
+  downloadPacketLoss: number;
+};
+
 function usePeer({
   sessionId,
   onConnectionStateChange,
@@ -1785,6 +1827,16 @@ function usePeer({
   const [iceConnectionState, setIceConnectionState] =
     useState<RTCIceConnectionState>("new");
   const [reconnecting, setReconnecting] = useState<boolean>(false);
+  const [speeds, setSpeeds] = useState<NetworkMetrics>({
+    currentUploadSpeed: 0,
+    currentDownloadSpeed: 0,
+    averageUploadSpeed: 0,
+    averageDownloadSpeed: 0,
+    latency: 0,
+    jitter: 0,
+    uploadPacketLoss: 0,
+    downloadPacketLoss: 0,
+  });
 
   const onConnectionStateChangeRef = useRef(onConnectionStateChange);
 
@@ -1828,6 +1880,30 @@ function usePeer({
 
     setActivePeer(peer);
   }, [activePeer, logger, sessionId, socket]);
+
+  // ==================== InternetSpeed ====================
+  useEffect(() => {
+    // Function to fetch and update speeds periodically
+    const measureSpeeds = async () => {
+      try {
+        setSpeeds(
+          await getInternetSpeed({
+            peer: activePeer,
+          })
+        );
+      } catch (error) {
+        console.error("Error measuring internet speed:", error);
+      }
+    };
+
+    // Start the interval
+    const intervalId = setInterval(measureSpeeds, 5_000); // Measure every 1 seconds
+
+    // Cleanup function to clear the interval
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [activePeer]);
 
   // ==================== Errors ====================
 
@@ -2227,6 +2303,7 @@ function usePeer({
     connectionState,
     iceGatheringState,
     iceConnectionState,
+    speeds,
     createOffer,
     replaceStream,
     close,
@@ -2243,6 +2320,190 @@ type SessionV5Payload = {
   onMemberJoin?(userId: number): void;
   onMemberLeave?(userId: number): void;
 };
+
+type StatsData = {
+  bytesSent: number;
+  bytesReceived: number;
+  timestampSent: number;
+  timestampReceived: number;
+};
+
+type RTCStatsReportType = "outbound-rtp" | "inbound-rtp" | "candidate-pair";
+
+/**
+ * Base interface for all WebRTC stats reports.
+ */
+interface RTCStatsReportBase {
+  id: string;
+  timestamp: number;
+  type: RTCStatsReportType;
+}
+
+interface RTCOutboundRtpStreamStats extends RTCStatsReportBase {
+  type: "outbound-rtp";
+  kind: "audio" | "video";
+  packetsSent: number;
+  bytesSent: number;
+  packetsLost?: number;
+  roundTripTime?: number;
+}
+
+interface RTCInboundRtpStreamStats extends RTCStatsReportBase {
+  type: "inbound-rtp";
+  kind: "audio" | "video";
+  packetsReceived: number;
+  bytesReceived: number;
+  packetsLost?: number;
+  jitter: number;
+}
+
+interface RTCIceCandidatePairStats extends RTCStatsReportBase {
+  type: "candidate-pair";
+  state: "succeeded" | "failed" | "in-progress";
+  currentRoundTripTime?: number;
+}
+
+type RTCStatsReport =
+  | RTCOutboundRtpStreamStats
+  | RTCInboundRtpStreamStats
+  | RTCIceCandidatePairStats;
+
+let lastStats: StatsData | null = null;
+let totalBytesSent = 0;
+let totalBytesReceived = 0;
+let initialTimestamp = 0;
+
+async function getInternetSpeed({
+  peer,
+}: {
+  peer: RTCPeerConnection;
+}): Promise<NetworkMetrics> {
+  const stats = await peer.getStats();
+  const currentStats: StatsData = {
+    bytesSent: 0,
+    bytesReceived: 0,
+    timestampSent: 0,
+    timestampReceived: 0,
+  };
+
+  let latency = 0;
+  let jitter = 0;
+  let uploadPacketLoss = 0;
+  let downloadPacketLoss = 0;
+
+  stats.forEach((report: RTCStatsReport) => {
+    if (report.type === "outbound-rtp") {
+      // Accumulate bytesSent for all outbound RTP streams (audio + video)
+      currentStats.bytesSent += report.bytesSent || 0;
+      currentStats.timestampSent = Math.max(
+        currentStats.timestampSent,
+        report.timestamp || 0
+      );
+
+      const packetsSent = report.packetsSent || 0;
+      const packetsLost = report.packetsLost || 0;
+      uploadPacketLoss =
+        packetsSent > 0 ? (packetsLost / packetsSent) * 100 : 0;
+    }
+
+    if (report.type === "inbound-rtp") {
+      // Accumulate bytesReceived for all inbound RTP streams (audio + video)
+      currentStats.bytesReceived += report.bytesReceived || 0;
+      currentStats.timestampReceived = Math.max(
+        currentStats.timestampReceived,
+        report.timestamp || 0
+      );
+
+      const packetsReceived = report.packetsReceived || 0;
+      const packetsLost = report.packetsLost || 0;
+      downloadPacketLoss =
+        packetsReceived > 0 ? (packetsLost / packetsReceived) * 100 : 0;
+
+      jitter = report.jitter || 0;
+    }
+
+    if (report.type === "candidate-pair" && report.state === "succeeded") {
+      latency = (report.currentRoundTripTime || 0) * 1000;
+    }
+  });
+
+  if (!initialTimestamp) {
+    initialTimestamp = currentStats.timestampSent || dayjs().unix();
+  }
+
+  if (!lastStats) {
+    // Initialize lastStats for the first call
+    lastStats = currentStats;
+
+    // Return initial stats (no speed calculation on the first call)
+    return {
+      currentUploadSpeed: 0,
+      currentDownloadSpeed: 0,
+      averageUploadSpeed: 0,
+      averageDownloadSpeed: 0,
+      latency: 0,
+      jitter: 0,
+      uploadPacketLoss: 0,
+      downloadPacketLoss: 0,
+    };
+  }
+
+  // Calculate time differences (in seconds)
+  const currentTimeDiffSent =
+    (currentStats.timestampSent - lastStats.timestampSent) / 1000 || 1;
+  const currentTimeDiffReceived =
+    (currentStats.timestampReceived - lastStats.timestampReceived) / 1000 || 1;
+
+  const totalTimeDiffSent =
+    (currentStats.timestampSent - initialTimestamp) / 1000 || 1;
+  const totalTimeDiffReceived =
+    (currentStats.timestampReceived - initialTimestamp) / 1000 || 1;
+
+  // Calculate current speeds (Mbps)
+  const currentUploadSpeed =
+    ((currentStats.bytesSent - lastStats.bytesSent) * 8) /
+    currentTimeDiffSent /
+    1e6;
+  const currentDownloadSpeed =
+    ((currentStats.bytesReceived - lastStats.bytesReceived) * 8) /
+    currentTimeDiffReceived /
+    1e6;
+
+  // Update total bytes transferred
+  totalBytesSent += currentStats.bytesSent - lastStats.bytesSent;
+  totalBytesReceived += currentStats.bytesReceived - lastStats.bytesReceived;
+
+  // Calculate average speeds (Mbps)
+  const averageUploadSpeed = (totalBytesSent * 8) / totalTimeDiffSent / 1e6;
+  const averageDownloadSpeed =
+    (totalBytesReceived * 8) / totalTimeDiffReceived / 1e6;
+
+  console.log(`Current Upload Speed: ${currentUploadSpeed.toFixed(2)} Mbps`);
+  console.log(
+    `Current Download Speed: ${currentDownloadSpeed.toFixed(2)} Mbps`
+  );
+  console.log(`Average Upload Speed: ${averageUploadSpeed.toFixed(2)} Mbps`);
+  console.log(
+    `Average Download Speed: ${averageDownloadSpeed.toFixed(2)} Mbps`
+  );
+  console.log(`Latency (RTT): ${latency.toFixed(2)} ms`);
+  console.log(`Jitter: ${jitter.toFixed(2)} seconds`);
+  console.log(`Upload Packet Loss: ${uploadPacketLoss.toFixed(2)}%`);
+  console.log(`Download Packet Loss: ${downloadPacketLoss.toFixed(2)}%`);
+
+  lastStats = currentStats;
+
+  return {
+    currentUploadSpeed,
+    currentDownloadSpeed,
+    averageUploadSpeed,
+    averageDownloadSpeed,
+    latency,
+    jitter,
+    uploadPacketLoss,
+    downloadPacketLoss,
+  };
+}
 
 /**
  * @ref
