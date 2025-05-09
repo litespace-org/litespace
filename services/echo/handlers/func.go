@@ -13,13 +13,15 @@ func Stats(appstate *state.State) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		return c.JSON(
 			struct {
-				Peers   int
-				Sockets int
-				Threads int
+				Peers    int
+				Sockets  int
+				Threads  int
+				Handlers int
 			}{
-				Peers:   appstate.Peers.CountPeers(),
-				Sockets: appstate.Peers.CountSockets(),
-				Threads: utils.CountThreads(),
+				Peers:    appstate.Peers.CountPeers(),
+				Sockets:  appstate.Peers.CountSockets(),
+				Handlers: appstate.Peers.CountHandlers(),
+				Threads:  utils.CountThreads(),
 			},
 		)
 	}
@@ -38,20 +40,17 @@ func Consume(appstate *state.State) func(*fiber.Ctx) error {
 			return c.SendStatus(fiber.StatusBadRequest)
 		}
 
-		peer := utils.Must(appstate.Peers.Add(body.PeerId))
+		peer := utils.Must(appstate.Peers.AddOrGet(body.PeerId))
 
 		// TODO: handle multiple requests (perhaps we can use set data structure for OutTracks)
 		// TODO: handle consume request for a producer in advance
 
 		// add the tracks of the producer to the consumer peer connection
-		producerPeer := appstate.Peers.Get(body.ProducerPeerId)
+		producerPeer := appstate.Peers.AddEmptyOrGet(body.ProducerPeerId)
 		if producerPeer == nil {
 			return c.SendStatus(fiber.StatusNotFound)
 		}
-
-		for _, track := range producerPeer.Tracks {
-			peer.SendTrack(track)
-		}
+		peer.Consume(producerPeer)
 
 		// decode the remote sdp and set it in the peer connection
 		utils.Unwrap(peer.Conn.SetRemoteDescription(body.SessionDescription))
@@ -77,7 +76,7 @@ func Produce(appstate *state.State) func(*fiber.Ctx) error {
 			return c.SendStatus(fiber.StatusBadRequest)
 		}
 
-		peer := utils.Must(appstate.Peers.Add(body.PeerId))
+		peer := utils.Must(appstate.Peers.AddOrGet(body.PeerId))
 
 		utils.Unwrap(peer.Conn.SetRemoteDescription(body.SessionDescription))
 

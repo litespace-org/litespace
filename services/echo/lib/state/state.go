@@ -9,7 +9,6 @@ func New() State {
 	return State{
 		Peers: &PeersStorage{
 			PeerMap: make(map[int]*PeerContainer),
-			ChanMap: make(map[int]chan *PeerContainer),
 		},
 	}
 }

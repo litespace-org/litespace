@@ -32,6 +32,9 @@ func GetWriter(codec webrtc.RTPCodecParameters) media.Writer {
 }
 
 func SavePacketToDisk(writer media.Writer, packet *rtp.Packet) {
+	if packet == nil {
+		return
+	}
 	if writer == nil {
 		log.Println("record: writer is nil!")
 		return
@@ -43,6 +46,10 @@ func SavePacketToDisk(writer media.Writer, packet *rtp.Packet) {
 }
 
 func SaveToDisk(writer media.Writer, track *webrtc.TrackRemote) {
+	if track == nil {
+		return
+	}
+
 	defer func() {
 		if err := writer.Close(); err != nil {
 			log.Println("remote error:", err)

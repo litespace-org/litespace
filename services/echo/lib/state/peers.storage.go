@@ -2,12 +2,10 @@ package state
 
 import (
 	"github.com/gofiber/contrib/websocket"
-	"github.com/pion/webrtc/v4"
 )
 
 type PeersStorage struct {
 	PeerMap map[int]*PeerContainer
-	ChanMap map[int]chan *PeerContainer
 }
 
 // Get a specific peer container, returns nil if not found
@@ -31,75 +29,71 @@ func (ps *PeersStorage) CountSockets() int {
 	return count
 }
 
-// Get a specific peer container, just like Get, but hangs the flow of control
-// until it's initialized, in case the value is currently nil
-func (ps *PeersStorage) Wait(id int) *PeerContainer {
-	if ps.PeerMap[id] != nil {
-		return ps.PeerMap[id]
+// Return the number of handlers and callback stored in memory
+func (ps *PeersStorage) CountHandlers() int {
+	var count int
+	for _, container := range ps.PeerMap {
+		count += container.CountHandlers()
 	}
-	if ps.ChanMap[id] == nil {
-		ps.ChanMap[id] = make(chan *PeerContainer)
-	}
-	defer delete(ps.ChanMap, id)
-	return <-ps.ChanMap[id]
+	return count
 }
 
-// Add a new peer container, with the socker property defined. If a socket connection
+// Add a new peer container, with the socket property defined. If a socket connection
 // already exists, it's being closed and replaced by the new one.
 func (ps *PeersStorage) AddWithSocket(id int, socket *websocket.Conn) (*PeerContainer, error) {
 	if ps.PeerMap[id] != nil {
-		err := ps.PeerMap[id].Socket.Close()
-		if err != nil {
-			return nil, err
-		}
+		ps.PeerMap[id].destroySocket()
 		ps.PeerMap[id].Socket = socket
 		return ps.PeerMap[id], nil
 	}
 
-	container := PeerContainer{
-		Id:            id,
-		Conn:          nil,
-		Tracks:        []*webrtc.TrackLocalStaticRTP{},
-		Socket:        socket,
-		iceCandidates: []string{},
-		onDestroy:     func() { ps.Remove(id) },
-	}
-
+	container := NewPeerContainer(id, nil, socket, func(self *PeerContainer) {
+		if len(self.consumers) == 0 {
+			ps.Remove(id)
+		}
+	})
 	ps.PeerMap[id] = &container
-	if ps.ChanMap[id] != nil {
-		ps.ChanMap[id] <- &container
-	}
 
 	return ps.PeerMap[id], nil
 }
 
 // Add a new peer container, with a new peer connection configured. It returns error
 // in case there's a peer connection already.
-func (ps *PeersStorage) Add(id int) (*PeerContainer, error) {
+func (ps *PeersStorage) AddOrGet(id int) (*PeerContainer, error) {
 	if ps.PeerMap[id] != nil {
-		_, err := ps.PeerMap[id].InitConn()
-		return ps.PeerMap[id], err
+		ps.PeerMap[id].InitConn()
+		return ps.PeerMap[id], nil
 	}
 
-	container := PeerContainer{
-		Id:            id,
-		Conn:          nil,
-		Tracks:        []*webrtc.TrackLocalStaticRTP{},
-		Socket:        nil,
-		iceCandidates: []string{},
-		onDestroy:     func() { ps.Remove(id) },
-	}
+	container := NewPeerContainer(id, nil, nil, func(self *PeerContainer) {
+		if len(self.consumers) == 0 {
+			ps.Remove(id)
+		}
+	})
+
 	_, err := container.InitConn()
 	if err != nil {
 		return nil, err
 	}
-
 	ps.PeerMap[id] = &container
-	if ps.ChanMap[id] != nil {
-		ps.ChanMap[id] <- &container
-	}
 
 	return ps.PeerMap[id], err
+}
+
+// Add an empty peer container, it return it if found.
+func (ps *PeersStorage) AddEmptyOrGet(id int) *PeerContainer {
+	if ps.PeerMap[id] != nil {
+		return ps.PeerMap[id]
+	}
+
+	container := NewPeerContainer(id, nil, nil, func(self *PeerContainer) {
+		if len(self.consumers) == 0 {
+			ps.Remove(id)
+		}
+	})
+	ps.PeerMap[id] = &container
+
+	return &container
 }
 
 // Remove the peer container from the map and invoke the destroy method within as well
@@ -111,6 +105,5 @@ func (ps *PeersStorage) Remove(id int) {
 	if !container.Destroyed {
 		container.Destroy()
 	}
-
 	delete(ps.PeerMap, id)
 }

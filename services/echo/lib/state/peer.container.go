@@ -16,7 +16,8 @@ import (
 	"github.com/pion/webrtc/v4"
 )
 
-// this describes a peer connection between the client (producer/consumer) and the server.
+// this describes a (current, or inadvance) peer connection between the client
+// (producer/consumer) and the server.
 type PeerContainer struct {
 	Id   int
 	Conn *webrtc.PeerConnection
@@ -30,11 +31,41 @@ type PeerContainer struct {
 	// the associated data channel container
 	DataChannel *DataChannelContainer
 
-	Destroyed bool
-	onDestroy func()
-
 	// recieved (by websocket) ice-candidates are stored here when connection is not established yet
 	iceCandidates []string
+
+	onDestroy  map[int]func(*PeerContainer)
+	onNewTrack map[int]func(*webrtc.TrackLocalStaticRTP)
+
+	// indicates whether the Destroy method has invoked or not; this avoid segmentation errors
+	Destroyed bool
+
+	// list of peer containers that consumes from this one
+	consumers map[int]*PeerContainer
+}
+
+func NewPeerContainer(
+	id int,
+	conn *webrtc.PeerConnection,
+	socket *websocket.Conn,
+	onDestroy func(*PeerContainer),
+) PeerContainer {
+	onDestroyMap := make(map[int]func(*PeerContainer))
+	onDestroyMap[0] = onDestroy
+	return PeerContainer{
+		Id:            id,
+		Conn:          conn,
+		Socket:        socket,
+		Tracks:        []*webrtc.TrackLocalStaticRTP{},
+		iceCandidates: []string{},
+		consumers:     make(map[int]*PeerContainer),
+		onDestroy:     onDestroyMap,
+		onNewTrack:    make(map[int]func(*webrtc.TrackLocalStaticRTP)),
+	}
+}
+
+func (pc *PeerContainer) CountHandlers() int {
+	return len(pc.onDestroy) + len(pc.onNewTrack)
 }
 
 /*
@@ -46,8 +77,8 @@ Note: it returns the peer connection with the associated id if it's already
 established before, by retrieving it from the state package.
 */
 func (pc *PeerContainer) InitConn() (*webrtc.PeerConnection, error) {
-	if pc.Destroyed {
-		return nil, errors.New("cannot initialize a connection on a destroyed peer container")
+	if pc.Destroyed == true {
+		pc.Destroyed = false
 	}
 
 	if pc.Conn != nil {
@@ -57,14 +88,16 @@ func (pc *PeerContainer) InitConn() (*webrtc.PeerConnection, error) {
 	mediaEngine := &webrtc.MediaEngine{}
 
 	// Register video (vp8) codec
-	if err := mediaEngine.RegisterCodec(
+	err := mediaEngine.RegisterCodec(
 		webrtc.RTPCodecParameters{
 			RTPCodecCapability: webrtc.RTPCodecCapability{
 				MimeType: webrtc.MimeTypeVP8, ClockRate: 90000, Channels: 0, SDPFmtpLine: "", RTCPFeedback: nil,
 			},
 			PayloadType: 96,
 		}, webrtc.RTPCodecTypeVideo,
-	); err != nil {
+	)
+
+	if err != nil {
 		panic(err)
 	}
 
@@ -107,9 +140,7 @@ func (pc *PeerContainer) InitConn() (*webrtc.PeerConnection, error) {
 	conn.OnTrack(pc.onTrack)
 	conn.OnICECandidate(pc.onICECandidate)
 	conn.OnConnectionStateChange(pc.onConnectionStateChange)
-	// conn.OnConnectionStateChange(func(pcs webrtc.PeerConnectionState) {
-	// 	log.Printf("Peer connection state: %s", pcs.String())
-	// })
+
 	conn.OnICEConnectionStateChange(func(is webrtc.ICEConnectionState) {
 		log.Printf("Ice connection state: %s", is.String())
 	})
@@ -156,7 +187,7 @@ func (pc *PeerContainer) AddICECandidate(candidate string) {
 This function should be used in the consume handler in order to send producer
 tracks to consumers (this peer container) by using webrtc.RTPSender.
 */
-func (pc *PeerContainer) SendTrack(track *webrtc.TrackLocalStaticRTP) error {
+func (pc *PeerContainer) SendTrack(track *webrtc.TrackLocalStaticRTP) (*webrtc.RTPSender, error) {
 	rtpSender, err := pc.Conn.AddTrack(track)
 	if err != nil {
 		log.Printf(
@@ -164,15 +195,16 @@ func (pc *PeerContainer) SendTrack(track *webrtc.TrackLocalStaticRTP) error {
 			pc.Id,
 			err,
 		)
-		return err
+		return nil, err
 	}
 	// Read incoming RTCP packets
-	// Before these packets are returned they are processed by interceptors. For things
-	// like NACK this needs to be called.
+	// Before these packets are returned they are processed by interceptors.
+	// For things like NACK this needs to be called.
 	go func() {
 		rtcpBuf := make([]byte, 1500)
 		utils.IncreaseThread()
 		defer utils.DecreaseThread()
+		defer pc.Conn.RemoveTrack(rtpSender)
 		for {
 			if _, _, rtcpErr := rtpSender.Read(rtcpBuf); rtcpErr != nil {
 				log.Printf(
@@ -180,11 +212,50 @@ func (pc *PeerContainer) SendTrack(track *webrtc.TrackLocalStaticRTP) error {
 					pc.Id,
 					rtcpErr,
 				)
-				return
+				break
 			}
 		}
 	}()
+	return rtpSender, nil
+}
 
+/*
+Get tracks from some peer container and cosume or send them to the owner
+of the current peer container
+*/
+func (pc *PeerContainer) Consume(producer *PeerContainer) error {
+	if producer.consumers[pc.Id] != nil {
+		return nil
+	}
+
+	rtpSenders := []*webrtc.RTPSender{}
+	for _, track := range producer.Tracks {
+		sender, err := pc.SendTrack(track)
+		if err != nil {
+			return err
+		}
+		rtpSenders = append(rtpSenders, sender)
+	}
+
+	producer.AddConsumer(pc)
+
+	producer.AddOnNewTrackHandler(pc.Id, func(track *webrtc.TrackLocalStaticRTP) {
+		sender, _ := pc.SendTrack(track)
+		rtpSenders = append(rtpSenders, sender)
+	})
+
+	producer.AddOnDestroyHandler(pc.Id, func(self *PeerContainer) {
+		for _, rtpSender := range rtpSenders {
+			rtpSender.Stop()
+		}
+	})
+
+	pc.AddOnDestroyHandler(pc.Id, func(pc *PeerContainer) {
+		for _, rtpSender := range rtpSenders {
+			rtpSender.Stop()
+		}
+		producer.RmvConsumer(pc.Id)
+	})
 	return nil
 }
 
@@ -196,7 +267,10 @@ func (pc *PeerContainer) Destroy() {
 	pc.destroyPeer()
 	pc.destroySocket()
 	pc.Destroyed = true
-	pc.onDestroy()
+	for _, fn := range pc.onDestroy {
+		fn(pc)
+	}
+	delete(pc.onDestroy, pc.Id)
 }
 
 func (pc *PeerContainer) destroyPeer() {
@@ -240,6 +314,9 @@ func (pc *PeerContainer) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPR
 	}
 
 	pc.Tracks = append(pc.Tracks, localTrack)
+	for _, fn := range pc.onNewTrack {
+		fn(localTrack)
+	}
 
 	// write the buffer from the remote track in the local track simultaneously
 	codec := remoteTrack.Codec()
@@ -315,4 +392,22 @@ func (pc *PeerContainer) onConnectionStateChange(state webrtc.PeerConnectionStat
 		pc.Destroy()
 		log.Println("peer", pc.Id, "disconnected")
 	}
+}
+
+func (pc *PeerContainer) AddConsumer(peer *PeerContainer) {
+	pc.consumers[peer.Id] = peer
+}
+
+func (pc *PeerContainer) RmvConsumer(id int) {
+	delete(pc.consumers, id)
+	delete(pc.onNewTrack, id)
+	delete(pc.onDestroy, id)
+}
+
+func (pc *PeerContainer) AddOnDestroyHandler(id int, fn func(*PeerContainer)) {
+	pc.onDestroy[id] = fn
+}
+
+func (pc *PeerContainer) AddOnNewTrackHandler(id int, fn func(*webrtc.TrackLocalStaticRTP)) {
+	pc.onNewTrack[id] = fn
 }

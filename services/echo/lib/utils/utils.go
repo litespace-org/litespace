@@ -9,7 +9,7 @@ import (
 // ancillary function used to clean the code in handlers;
 // by wrapping db methods and return the result if no error
 // is found, or panic otherwise.
-func Must[V interface{}](res V, err error) V {
+func Must[V any](res V, err error) V {
 	if err != nil {
 		panic(err)
 	}
