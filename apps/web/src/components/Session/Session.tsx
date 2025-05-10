@@ -105,7 +105,7 @@ const Session: React.FC<{
   }, [layout, selfStream]);
 
   return (
-    <div className="h-full flex flex-col relative gap-4">
+    <div className="h-full flex flex-col gap-4">
       <div className="flex-1 flex gap-6">
         <div
           className="flex-1 relative flex flex-col items-center justify-center gap-4"
@@ -162,15 +162,16 @@ const Session: React.FC<{
           ) : null}
         </div>
         <AnimatePresence mode="wait">
+          (
           <AnimateWidth
             className={cn(
-              "h-full md:absolute top-0 left-0 !w-full lg:w-auto lg:static z-[99999]"
+              "h-full absolute top-0 left-0 lg:!w-[344px] !w-full lg:static z-stream-chat",
+              chat ? "block" : "hidden"
             )}
           >
             <div
               className={cn(
-                "lg:w-[344px] border border-natural-100 overflow-hidden  rounded-2xl h-full w-full lg:max-h-[calc(100vh-96px)] lg:h-[calc(100vh-96px)]",
-                chat ? "block" : "hidden"
+                " h-full lg:max-h-[calc(100vh-96px)] lg:h-[calc(100vh-96px)] lg:border border-natural-100 overflow-hidden lg:rounded-2xl"
               )}
             >
               <Messages
@@ -183,6 +184,7 @@ const Session: React.FC<{
               />
             </div>
           </AnimateWidth>
+          )
         </AnimatePresence>
       </div>
 
