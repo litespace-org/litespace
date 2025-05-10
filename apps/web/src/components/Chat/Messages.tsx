@@ -416,7 +416,7 @@ const Messages: React.FC<{
           </div>
           <div id="messages-footer" className="flex flex-col gap-2 mt-auto">
             {isTyping && otherMember ? (
-              <div className="px-6 mt-6 lg:mt-9">
+              <div className="mt-4 lg:mt-9">
                 <UserTyping
                   id={otherMember.id}
                   name={otherMember.name}

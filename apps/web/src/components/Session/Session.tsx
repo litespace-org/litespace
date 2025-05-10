@@ -6,16 +6,7 @@ import { Movable } from "@litespace/ui/Movable";
 import { useSearchParams } from "react-router-dom";
 import { first } from "lodash";
 import { Layout, layoutAspectRatio } from "@litespace/headless/sessions";
-import Messages from "@/components/Chat/Messages";
-import {
-  useChatStatus,
-  useFindRoomByMembers,
-  useFindRoomMembers,
-} from "@litespace/headless/chat";
-import { asOtherMember, isOnline, isTyping } from "@/lib/room";
-import { AnimatePresence } from "framer-motion";
-import { AnimateWidth } from "@litespace/ui/Animate";
-import cn from "classnames";
+import { SessionChat } from "@/components/Session/SessionChat";
 
 const Session: React.FC<{
   selfStream: MediaStream;
@@ -62,34 +53,6 @@ const Session: React.FC<{
   const ref = useRef<HTMLDivElement>(null);
   const [params, setParams] = useSearchParams();
   const [chat, setChat] = useState(false);
-  const roomQuery = useFindRoomByMembers([memberId, selfId]);
-
-  const roomId = roomQuery.query.data?.room || null;
-  const roomMembers = useFindRoomMembers(roomId || null);
-  const otherMember = asOtherMember(selfId, roomMembers.query.data);
-
-  const { typingMap, onlineUsersMap } = useChatStatus();
-
-  const isCurrentRoomTyping = useMemo(() => {
-    return otherMember
-      ? isTyping({
-          map: typingMap,
-          roomId,
-          otherMemberId: otherMember.id,
-        })
-      : false;
-  }, [roomId, otherMember, typingMap]);
-
-  const isOtherMemberOnline = useMemo(() => {
-    return otherMember
-      ? isOnline({
-          map: onlineUsersMap,
-          roomId: roomId,
-          otherMemberStatus: otherMember.online,
-          otherMemberId: otherMember.id,
-        })
-      : false;
-  }, [roomId, otherMember, onlineUsersMap]);
 
   /**
    * Based on the desing, the session should not have any navigation.
@@ -105,7 +68,7 @@ const Session: React.FC<{
   }, [layout, selfStream]);
 
   return (
-    <div className="h-full flex flex-col relative gap-4">
+    <div className="h-full flex flex-col gap-4">
       <div className="flex-1 flex gap-6">
         <div
           className="flex-1 relative flex flex-col items-center justify-center gap-4"
@@ -161,29 +124,12 @@ const Session: React.FC<{
             </Movable>
           ) : null}
         </div>
-        <AnimatePresence mode="wait">
-          <AnimateWidth
-            className={cn(
-              "h-full md:absolute top-0 left-0 !w-full lg:w-auto lg:static z-[99999]"
-            )}
-          >
-            <div
-              className={cn(
-                "lg:w-[344px] border border-natural-100 overflow-hidden  rounded-2xl h-full w-full lg:max-h-[calc(100vh-96px)] lg:h-[calc(100vh-96px)]",
-                chat ? "block" : "hidden"
-              )}
-            >
-              <Messages
-                room={roomId}
-                inSession
-                isOnline={isOtherMemberOnline}
-                isTyping={isCurrentRoomTyping}
-                otherMember={otherMember}
-                close={() => setChat((prev) => !prev)}
-              />
-            </div>
-          </AnimateWidth>
-        </AnimatePresence>
+        <SessionChat
+          close={() => setChat(false)}
+          enabled={chat}
+          selfId={selfId}
+          memberId={memberId}
+        />
       </div>
 
       <Controllers

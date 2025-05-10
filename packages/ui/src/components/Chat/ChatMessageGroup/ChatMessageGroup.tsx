@@ -66,8 +66,8 @@ export const ChatMessageGroup: React.FC<{
     >
       <div
         className={cn(
-          "hidden lg:block overflow-hidden rounded-full flex-shrink-0",
-          inSession ? "w-8 h-8" : "w-14 h-14"
+          "hidden md:block overflow-hidden rounded-full flex-shrink-0",
+          inSession ? "md:w-14 md:h-14 lg:w-8 lg:h-8" : "w-14 h-14"
         )}
       >
         <AvatarV2 alt={name} src={image} id={userId} />
@@ -75,8 +75,8 @@ export const ChatMessageGroup: React.FC<{
       <div>
         <div
           className={cn(
-            "hidden lg:flex items-center",
-            inSession ? "gap-4" : "gap-6",
+            "hidden md:flex items-center",
+            inSession ? "gap-6 lg:gap-4" : "gap-6",
             {
               "flex-row-reverse": !owner,
               "flex-row": owner,
@@ -87,7 +87,7 @@ export const ChatMessageGroup: React.FC<{
             tag="h6"
             className={cn(
               "font-semibold text-natural-950 dark:text-natural-50",
-              inSession ? "text-caption" : "text-body"
+              inSession ? "text-body lg:text-caption" : "text-body"
             )}
           >
             {owner ? intl("chat.message.title.you") : name}
@@ -100,14 +100,10 @@ export const ChatMessageGroup: React.FC<{
           </Typography>
         </div>
         <div
-          className={cn(
-            "flex flex-col lg:mt-2 gap-y-2",
-            inSession ? "mt-1" : "lg:mt-2",
-            {
-              "items-end": !owner,
-              "items-start": owner,
-            }
-          )}
+          className={cn("flex flex-col mt-2 gap-y-2", {
+            "items-end": !owner,
+            "items-start": owner,
+          })}
         >
           {messages.map((message, index) => {
             const retry = () => {
