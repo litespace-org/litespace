@@ -5,12 +5,11 @@ import (
 )
 
 type ApiConsumePayload struct {
-	PeerId             int
-	SessionDescription webrtc.SessionDescription
-	ProducerPeerId     int
+	PeerId         int
+	ProducerPeerId int
 }
 
-type ApiProducePayload struct {
+type ApiConnectPayload struct {
 	PeerId             int
 	SessionDescription webrtc.SessionDescription
 }
