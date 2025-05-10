@@ -110,21 +110,22 @@ export const ChatMessage: React.FC<{
 
   return (
     <div
-      className={cn("group flex w-fit", "gap-4 items-center", {
-        "flex-row-reverse": owner,
-        "flex-row": !owner,
-      })}
+      className={cn(
+        "group flex w-fit gap-4 items-center",
+        owner ? "flex-row-reverse" : "flex-row"
+      )}
       onMouseEnter={() => setShowMenu(true)}
       onMouseLeave={() => {
         if (openMenu) return;
         setShowMenu(false);
       }}
+      onTouchStart={() => setShowMenu((prev) => !prev)}
     >
       {!pending && owner ? (
         <div
           data-show={showMenu || !!error}
           className={cn(
-            "lg:opacity-0 data-[show=true]:opacity-100 transition-opacity duration-200",
+            "opacity-0 data-[show=true]:opacity-100 transition-opacity duration-200",
             viewOnly && "hidden"
           )}
         >
@@ -135,6 +136,7 @@ export const ChatMessage: React.FC<{
               if (!open) setShowMenu(false);
               setOpenMenu(open);
             }}
+            className="z-stream-chat"
           >
             <div className="w-4 h-6 flex justify-center items-center">
               <More className="[&>*]:fill-natural-800 dark:[&>*]:fill-natural-50 w-4 h-1" />
@@ -152,8 +154,6 @@ export const ChatMessage: React.FC<{
             "bg-natural-100 dark:bg-brand-100 ": !owner,
             "bg-brand-100 dark:bg-brand-400": owner,
             "bg-destructive-700": error && !pending,
-          },
-          {
             "rounded-tl-none": !owner && firstMessage,
             "rounded-tr-none": owner && firstMessage,
           }
@@ -180,7 +180,13 @@ export const ChatMessage: React.FC<{
           </div>
         ) : null}
         {owner && !error && !pending ? (
-          <div className="w-4 h-4 shrink-0">{ReadIcon}</div>
+          <div
+            className={cn("shrink-0 w-4 h-4", {
+              "lg:w-3 lg:h-3": inSession,
+            })}
+          >
+            {ReadIcon}
+          </div>
         ) : null}
         <Typography
           dir="auto"
@@ -189,9 +195,9 @@ export const ChatMessage: React.FC<{
             lineBreak: "anywhere",
           }}
           className={cn(
-            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] font-normal",
-            inSession && !owner ? "text-tiny" : "text-caption",
+            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] font-normal text-caption",
             {
+              "lg:text-tiny": inSession && !owner,
               "text-natural-950": !error,
               "text-natural-50": error && !pending,
             }

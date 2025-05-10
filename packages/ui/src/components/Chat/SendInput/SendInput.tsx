@@ -10,6 +10,7 @@ import Send from "@litespace/assets/Send";
 import { Input } from "@/components/Input";
 import { Void } from "@litespace/types";
 import { throttle } from "lodash";
+import cn from "classnames";
 
 type InitialMessage = { id: number; text: string };
 
@@ -60,7 +61,13 @@ export const SendInput: React.FC<{
       disabled={disabled}
       endAction={{
         id: 1,
-        icon: <Send className="w-4 h-4" />,
+        icon: (
+          <Send
+            className={cn("w-4 h-4 stroke-0", {
+              "[&>*]:fill-brand-700": !!value,
+            })}
+          />
+        ),
         onClick: handleSubmit,
       }}
       onChange={handleChange}
