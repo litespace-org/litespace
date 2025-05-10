@@ -358,7 +358,14 @@ const Messages: React.FC<{
                         key={index}
                         className="w-full flex flex-col gap-4 lg:gap-[14px]"
                       >
-                        <div className="bg-natural-50 rounded-2xl p-3 mx-auto w-fit shadow-chat-date">
+                        <div
+                          className={cn(
+                            "bg-natural-50 rounded-2xl p-3 mx-auto w-fit",
+                            {
+                              "shadow-chat-date": inSession,
+                            }
+                          )}
+                        >
                           <Typography
                             tag="span"
                             className="text-natural-950 text-caption"
@@ -416,7 +423,7 @@ const Messages: React.FC<{
           </div>
           <div id="messages-footer" className="flex flex-col gap-2 mt-auto">
             {isTyping && otherMember ? (
-              <div className="px-6 mt-6 lg:mt-9">
+              <div className="mt-4 lg:mt-9">
                 <UserTyping
                   id={otherMember.id}
                   name={otherMember.name}

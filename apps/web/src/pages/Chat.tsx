@@ -35,7 +35,11 @@ const Chat: React.FC = () => {
   });
 
   const otherMember = useMemo(
-    () => asOtherMember(user?.id, roomMembers.data),
+    () =>
+      asOtherMember({
+        currentUserId: user?.id,
+        roomMembers: roomMembers.data,
+      }),
     [user?.id, roomMembers.data]
   );
 
