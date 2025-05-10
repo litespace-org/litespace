@@ -1,10 +1,16 @@
-import { Echo } from "@litespace/atlas";
 import { createContext, useContext } from "react";
+import { Socket } from "@/echo/socket";
 
-export const EchoContext = createContext<Echo | null>(null);
+export type Context = {
+  socket: Socket | null;
+  connecting: boolean;
+  connected: boolean;
+};
 
-export function useEcho() {
-  const echo = useContext(EchoContext);
-  if (!echo) throw new Error("useEcho must be used within its provider.");
-  return echo;
+export const EchoSocketContext = createContext<Context | null>(null);
+
+export function useEchoSocket(): Context {
+  const ctx = useContext(EchoSocketContext);
+  if (!ctx) throw new Error("useEchoSocket must be used within its provider.");
+  return ctx;
 }

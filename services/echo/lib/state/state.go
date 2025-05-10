@@ -2,6 +2,8 @@ package state
 
 import (
 	"echo/lib/utils"
+	"errors"
+	"log"
 	"sync"
 
 	"github.com/pion/webrtc/v4"
@@ -16,6 +18,60 @@ type Session struct {
 
 func (s *Session) IsEmpty() bool {
 	return len(s.Members) == 0
+}
+
+func (s *Session) Broadcast(from MemberId, callback func(member *Member)) {
+	for _, member := range s.Members {
+		if member.Id == from {
+			continue
+		}
+		callback(member)
+	}
+}
+
+func (s *Session) GetMember(mid MemberId) *Member {
+	member := utils.Find(s.Members, func(member *Member) bool {
+		return member.Id == mid
+	})
+
+	if member == nil {
+		return nil
+	}
+
+	return *member
+}
+
+func (s *Session) SetMemberVideo(mid MemberId, video bool) error {
+	member := s.GetMember(mid)
+
+	if member == nil {
+		return errors.New("member not found")
+	}
+
+	member.SetVideo(video)
+
+	s.Broadcast(mid, func(member *Member) {
+		member.Socket.SendToggleVideoMessage(mid, video)
+	})
+
+	return nil
+}
+
+func (s *Session) SetMemberAudio(mid MemberId, audio bool) error {
+	member := s.GetMember(mid)
+
+	if member == nil {
+		return errors.New("member not found")
+	}
+
+	member.SetAudio(audio)
+
+	s.Broadcast(mid, func(member *Member) {
+		log.Println("broadcast")
+		member.Socket.SendToggleAudioMessage(mid, audio)
+	})
+
+	return nil
 }
 
 type State struct {
@@ -83,9 +139,9 @@ func (s *State) react(sid SessionId, member *Member) {
 	current := member
 	mid := member.Id
 
-	utils.IncreaseThread()
-	defer utils.DecreaseThread()
 	go func() {
+		utils.IncreaseThread()
+		defer utils.DecreaseThread()
 		for {
 			select {
 			// ===================== share current member stream with the other member ===================
@@ -99,6 +155,7 @@ func (s *State) react(sid SessionId, member *Member) {
 						continue
 					}
 
+					log.Printf("sending %s track from %d to %d", track.Kind().String(), member.Id, mid)
 					member.SendTrack(track)
 				}
 
@@ -107,8 +164,9 @@ func (s *State) react(sid SessionId, member *Member) {
 					s.RemoveSessionMember(sid, mid)
 					members := s.GetSessionMembers(sid)
 					for _, member := range members {
-						member.Socket.SendMemberLeftMessage()
+						member.Socket.SendMemberLeftMessage(mid)
 					}
+					return
 				}
 			}
 		}

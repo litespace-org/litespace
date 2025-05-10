@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"log"
+	"sync"
 
 	"github.com/pion/interceptor"
 	"github.com/pion/interceptor/pkg/intervalpli"
@@ -16,12 +17,15 @@ import (
 type MemberId = int
 
 type Member struct {
+	mu                  sync.Mutex
 	Id                  MemberId
 	Conn                *webrtc.PeerConnection
 	Tracks              []*webrtc.TrackLocalStaticRTP
 	Socket              *wss.Socket
 	TracksChannel       chan *webrtc.TrackLocalStaticRTP
 	PeerConnectionState chan webrtc.PeerConnectionState
+	Audio               bool
+	Video               bool
 }
 
 func initPeerConnection() (*webrtc.PeerConnection, error) {
@@ -92,6 +96,8 @@ func NewMember(mid MemberId, socket *wss.Socket) (*Member, error) {
 		Socket:              socket,
 		TracksChannel:       make(chan *webrtc.TrackLocalStaticRTP),
 		PeerConnectionState: make(chan webrtc.PeerConnectionState),
+		Audio:               false,
+		Video:               false,
 	}
 
 	conn.OnTrack(member.onTrack)
@@ -105,6 +111,9 @@ func NewMember(mid MemberId, socket *wss.Socket) (*Member, error) {
 }
 
 func (m *Member) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPReceiver) {
+
+	log.Printf("received a remote %s track", remoteTrack.Kind().String())
+
 	// create a local track with the remote track capabilities
 	localTrack, err := webrtc.NewTrackLocalStaticRTP(
 		remoteTrack.Codec().RTPCodecCapability,
@@ -113,7 +122,7 @@ func (m *Member) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPReceiver)
 	)
 
 	if err != nil {
-		log.Println("[onTrack]", err)
+		log.Println("error creating a local track:", err)
 		return
 	}
 
@@ -221,4 +230,16 @@ func (m *Member) SendTrack(track *webrtc.TrackLocalStaticRTP) error {
 	}()
 
 	return nil
+}
+
+func (m *Member) SetAudio(audio bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.Audio = audio
+}
+
+func (m *Member) SetVideo(video bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.Video = video
 }

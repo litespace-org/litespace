@@ -159,12 +159,19 @@ export class RoutesManager {
       // Ref: https://regex101.com/r/8Y2LKA/1
       if (base === Web.Register)
         return /^\/register\/(tutor|student)\/?$/.test(target);
+
       // Ref: https://regex101.com/r/a1B4Dw/1
       if (base === Web.TutorProfile) return /\/?t\/([^/]+)\/?$/.test(target);
+
       // Ref: https://regex101.com/r/f36T16/1
       if (base === Web.Lesson) return /^\/?lesson\/([^/]+)\/?$/.test(target);
+
+      if (base === Web.LessonV2)
+        return /^\/?lesson-v2\/([^/]+)\/?$/.test(target);
+
       if (base === Web.Checkout)
         return /^\/?checkout\/([^/]+)\/([^/]+)\/?$/.test(target);
+
       return isStrictMatch(base, target);
     },
     landing(base: Landing, target: string): boolean {

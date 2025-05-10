@@ -117,10 +117,19 @@
   </script>
 
   <script>
-    const MESSAGE_KIND_OFFER = 1;
-    const MESSAGE_KIND_ANSWER = 2;
-    const MESSAGE_KIND_CANDIDATE = 3;
-    const MESSAGE_KIND_MEMBER_LEFT = 4;
+    const CLIENT_MESSAGE_TYPE = {
+      OFFER: 1,
+      ANSWER: 2,
+      CANDIDATE: 3,
+      MEMBER_LEFT: 4,
+    };
+
+    const SERVER_MESSAGE_TYPE = {
+      OFFER: 1,
+      ANSWER: 2,
+      CANDIDATE: 3,
+      MEMBER_LEFT: 4,
+    };
 
     var sdp = null;
     var pc = null; // peer connection
@@ -146,9 +155,9 @@
         JSON.stringify(sdp);
     }
 
-    function sendMessage(kind, message) {
+    function sendMessage(type, message) {
       const body = new TextEncoder().encode(JSON.stringify(message));
-      const header = kind;
+      const header = type;
       const data = new Uint8Array([header, ...body]);
       ws.send(data);
     }
@@ -172,25 +181,25 @@
       ws.onmessage = async (event) => {
         const data = JSON.parse(event.data);
 
-        if (data.kind === MESSAGE_KIND_ANSWER) {
+        if (data.type === SERVER_MESSAGE_TYPE.ANSWER) {
           pc.setRemoteDescription(data.value);
           renderRemoteSdp(data.value);
         }
 
-        if (data.kind === MESSAGE_KIND_CANDIDATE)
+        if (data.type === CLIENT_MESSAGE_TYPE.CANDIDATE)
           pc.addIceCandidate(data.value);
 
-        if (data.kind === MESSAGE_KIND_OFFER) {
+        if (data.type === SERVER_MESSAGE_TYPE.OFFER) {
           const remoteSdp = data.value;
           renderRemoteSdp(remoteSdp);
           pc.setRemoteDescription(remoteSdp);
           await pc.setLocalDescription(await pc.createAnswer());
           sdp = pc.localDescription;
           renderLocalSdp(sdp);
-          sendMessage(MESSAGE_KIND_ANSWER, pc.localDescription);
+          sendMessage(CLIENT_MESSAGE_TYPE.ANSWER, pc.localDescription);
         }
 
-        if (data.kind === MESSAGE_KIND_MEMBER_LEFT) {
+        if (data.type === SERVER_MESSAGE_TYPE.MEMBER_LEFT) {
           console.log("member left");
           document.getElementById("received-video").srcObject = null;
         }
@@ -238,7 +247,7 @@
         await pc.setLocalDescription(await pc.createOffer());
         sdp = pc.localDescription;
         renderLocalSdp(sdp);
-        sendMessage(MESSAGE_KIND_OFFER, pc.localDescription);
+        sendMessage(CLIENT_MESSAGE_TYPE.OFFER, pc.localDescription);
       };
 
       pc.ontrack = function (event) {

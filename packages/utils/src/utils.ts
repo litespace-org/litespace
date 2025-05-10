@@ -54,3 +54,7 @@ export function isEmptyObject<T extends object>(value: T): boolean {
   // convert `value` to json and then to js object will drop all undefined props.
   return isEmpty(JSON.parse(JSON.stringify(value)));
 }
+
+export function joinUrl(base: string, route: string) {
+  return new URL(route, base).href;
+}
