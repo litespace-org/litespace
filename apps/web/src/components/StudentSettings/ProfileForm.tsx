@@ -1,19 +1,17 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
-import cn from "classnames";
-import { isEqual } from "lodash";
-import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
-import TopicSelection from "@/components/StudentSettings/TopicSelection";
-import { governorates } from "@/constants/user";
 import NotificationSettings from "@/components/Common/NotificationSettings";
+import TopicSelection from "@/components/StudentSettings/TopicSelection";
+import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
+import { governorates } from "@/constants/user";
+import { useOnError } from "@/hooks/error";
+import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
+import { useSendVerifyEmail } from "@litespace/headless/auth";
+import { QueryKey } from "@litespace/headless/constants";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { useInvalidateQuery } from "@litespace/headless/query";
+import { useUpdateUser } from "@litespace/headless/user";
 import { IUser } from "@litespace/types";
-import {
-  getNullableFiledUpdatedValue,
-  getOptionalFieldUpdatedValue,
-} from "@litespace/utils/utils";
-import { Controller, Form } from "@litespace/ui/Form";
-import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
+import { Controller, Form } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import {
   useRequired,
@@ -23,13 +21,15 @@ import {
   useValidateUserName,
 } from "@litespace/ui/hooks/validation";
 import { useToast } from "@litespace/ui/Toast";
-import { useInvalidateQuery } from "@litespace/headless/query";
-import { QueryKey } from "@litespace/headless/constants";
-import { useUpdateUser } from "@litespace/headless/user";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { useSendVerifyEmail } from "@litespace/headless/auth";
-import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
-import { useOnError } from "@/hooks/error";
+import { Typography } from "@litespace/ui/Typography";
+import {
+  getNullableFiledUpdatedValue,
+  getOptionalFieldUpdatedValue,
+} from "@litespace/utils/utils";
+import cn from "classnames";
+import { isEqual } from "lodash";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
 
 type IForm = {
   name: string;

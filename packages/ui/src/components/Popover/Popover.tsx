@@ -12,7 +12,11 @@ export const Popover: React.FC<{
   const hide = useCallback(() => setOpen(false), []);
 
   return (
-    <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
+    <div
+      className="relative inline-block"
+      onMouseEnter={show}
+      onMouseLeave={hide}
+    >
       <div
         data-open={open}
         className={cn(
@@ -26,7 +30,7 @@ export const Popover: React.FC<{
       >
         {content}
       </div>
-      <div>{children}</div>
+      <div className="inline-block">{children}</div>
     </div>
   );
 };

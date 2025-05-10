@@ -92,6 +92,18 @@
   "forget-password.re-send-email": "اعادة ارسال البريد؟",
   "forget-password.error": "حدثت مشكلة أثناء ارسال البريد الالكتروني",
   "forget-password.password-remembered": "تذكرت كلمة المرور؟",
+  "verify-phone-dialog.title": " تأكيد رقم الهاتف",
+  "verify-phone-dialog.empty-phone.description": "يبدو انك لم تدخل اي رقم هاتف خاص بك حتي الان، ادخل رقم هاتفك في الاسفل .",
+  "verify-phone-dialog.phone.placeholder": "أدخل رقم الهاتف هنا",
+  "verify-phone-dialog.method.description": "اين تريد استقبال كود التأكيد لأتمام عملية تأكيد رقم الهاتف الخاص بك.",
+  "verify-phone-dialog.telegram.privacy-issue.description-1": "بسبب إعدادات الخصوصية في تيليجرام، لا يمكننا إرسال رسالة التأكيد مباشرة إلى رقمك. لإتمام التأكيد، يُرجى اتباع أحد الخيارات التالية:-",
+  "verify-phone-dialog.telegram.privacy-issue.description-2": " 1- تعديل إعدادات الخصوصية في تيليجرام اذهب إلى: الإعدادات > الخصوصية والأمان > من يمكنه إرسال رسائل إليّ واجعلها 'الكل' مؤقتًا ثم اضغط اعادة المحاولة.",
+  "verify-phone-dialog.telegram.privacy-issue.description-3": "2- ارسل لنا رسالة عبر تيليجرام من هنا {value}  او علي هذا الرقم ({phone}) و سنستطيع ان نرسل لك كود التأكيد.",
+  "verify-phone-dialog.confirm-code.description": " سيتم إرسال كود مكون من 5 أرقام إلى رقم الهاتف المسجل لدينا عبر واتساب برجاء إدخال الكود المرسل لتأكيد رقم الهاتف الخاص بك.",
+  "verify-phone-dialog.phone": "ادخل رمز التحقق المؤقت المرسل الي {phone}",
+  "verify-phone-dialog.resend": "لم تستقبل الرمز؟ إعادة الإرسال",
+  "verify-phone-dialog.whatsapp": "واتساب",
+  "verify-phone-dialog.telegram": "تليجرام",
   "reset-password.title": "انشاء كلمة مرور جديدة",
   "reset-password.description": "قم بإنشاء كلمه مرور جديدة لحسابك",
   "reset-password.error": " عذرًا، حدث خطأ أثناء تأكيد كلمة المرور الجديدة. برجاء المحاولة مرة أخرى",
@@ -832,6 +844,7 @@
   "global.labels.id": "الرقم التعريفي",
   "global.labels.yes": "نعم",
   "global.labels.no": "لا",
+  "global.labels.next": "التالي",
   "global.genders.male": "ذكر",
   "global.genders.female": "أنثى",
   "global.governorates.cairo": "القاهرة",
@@ -1033,5 +1046,6 @@
   "error.field.long-contact-request-title": "العنوان طويل جدا، برجاء اختيار عنوان أقصر.",
   "error.field.short-contact-request-message": "الرسالة قصيرة جدا!",
   "error.field.long-contact-request-message": "عذرا، الرسالة طويلة جدا.",
-  "error.field.invalid-type": "عذرا، القيمة التي تحاول إدخالها غير صحيحة."
+  "error.field.invalid-type": "عذرا، القيمة التي تحاول إدخالها غير صحيحة.",
+  "error.confirmation-code.invalid": "رقم تأكيد غير صحيح"
 }
