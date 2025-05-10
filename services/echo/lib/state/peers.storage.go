@@ -80,7 +80,7 @@ func (ps *PeersStorage) AddOrGet(id int) (*PeerContainer, error) {
 	return ps.PeerMap[id], err
 }
 
-// Add an empty peer container, it return it if found.
+// Add an empty peer container, or return it if one found.
 func (ps *PeersStorage) AddEmptyOrGet(id int) *PeerContainer {
 	if ps.PeerMap[id] != nil {
 		return ps.PeerMap[id]

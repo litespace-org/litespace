@@ -16,6 +16,12 @@ import (
 	"github.com/pion/webrtc/v4"
 )
 
+type Slot struct {
+	peerId int
+	audio  *webrtc.RTPTransceiver
+	video  *webrtc.RTPTransceiver
+}
+
 // this describes a (current, or inadvance) peer connection between the client
 // (producer/consumer) and the server.
 type PeerContainer struct {
@@ -42,6 +48,9 @@ type PeerContainer struct {
 
 	// list of peer containers that consumes from this one
 	consumers map[int]*PeerContainer
+
+	// list of slots that are available for this container to fill with producers
+	slots []Slot
 }
 
 func NewPeerContainer(
@@ -61,6 +70,7 @@ func NewPeerContainer(
 		consumers:     make(map[int]*PeerContainer),
 		onDestroy:     onDestroyMap,
 		onNewTrack:    make(map[int]func(*webrtc.TrackLocalStaticRTP)),
+		slots:         []Slot{},
 	}
 }
 
@@ -137,6 +147,11 @@ func (pc *PeerContainer) InitConn() (*webrtc.PeerConnection, error) {
 		webrtc.WithInterceptorRegistry(interceptorRegistry),
 	).NewPeerConnection(constants.Config)
 
+	for range constants.MAX_MEMBERS_NUM {
+		conn.AddTransceiverFromKind(webrtc.RTPCodecTypeAudio)
+		conn.AddTransceiverFromKind(webrtc.RTPCodecTypeVideo)
+	}
+
 	conn.OnTrack(pc.onTrack)
 	conn.OnICECandidate(pc.onICECandidate)
 	conn.OnConnectionStateChange(pc.onConnectionStateChange)
@@ -184,39 +199,77 @@ func (pc *PeerContainer) AddICECandidate(candidate string) {
 }
 
 /*
+initialize this list of slots of this container. It should be used after the connectio is established.
+*/
+func (pc *PeerContainer) initSlots() error {
+	if len(pc.slots) > 0 {
+		return errors.New("slots already initialized.")
+	}
+	if pc.Conn == nil {
+		return errors.New("no connection established.")
+	}
+	// assuming its a bunch of consicutive audio-video transceivers
+	// where eachone is supposed to represent a `Slot`.
+	transceivers := pc.Conn.GetTransceivers()
+	for i := range len(transceivers) {
+		if i%2 != 0 {
+			continue
+		}
+		pc.slots = append(pc.slots, Slot{
+			peerId: 0,
+			audio:  transceivers[i],
+			video:  transceivers[i+1],
+		})
+	}
+	pc.slots[0].peerId = pc.Id
+	return nil
+}
+
+// returns an empty slot for a peer container (producer), or the associated slot if found
+func (pc *PeerContainer) getSlotFor(peerId int) *Slot {
+	if len(pc.slots) == 0 {
+		return nil
+	}
+	var emptySlotIndex int
+	for i, slot := range pc.slots {
+		if slot.peerId == peerId {
+			return &slot
+		}
+		if slot.peerId == 0 && emptySlotIndex == 0 {
+			emptySlotIndex = i
+		}
+	}
+	pc.slots[emptySlotIndex].peerId = peerId
+	return &pc.slots[emptySlotIndex]
+}
+
+/*
 This function should be used in the consume handler in order to send producer
 tracks to consumers (this peer container) by using webrtc.RTPSender.
 */
-func (pc *PeerContainer) SendTrack(track *webrtc.TrackLocalStaticRTP) (*webrtc.RTPSender, error) {
-	rtpSender, err := pc.Conn.AddTrack(track)
-	if err != nil {
-		log.Printf(
-			"Unable to add track to the peer (%d) connection: %s",
-			pc.Id,
-			err,
-		)
-		return nil, err
+func (pc *PeerContainer) consumeTrack(peerId int, track *webrtc.TrackLocalStaticRTP) error {
+	if r := recover(); r != nil {
+		return errors.New("PANIC error occured in consumeTrack method!")
 	}
-	// Read incoming RTCP packets
-	// Before these packets are returned they are processed by interceptors.
-	// For things like NACK this needs to be called.
-	go func() {
-		rtcpBuf := make([]byte, 1500)
-		utils.IncreaseThread()
-		defer utils.DecreaseThread()
-		defer pc.Conn.RemoveTrack(rtpSender)
-		for {
-			if _, _, rtcpErr := rtpSender.Read(rtcpBuf); rtcpErr != nil {
-				log.Printf(
-					"Unable to read rtcp for peer %d: %s",
-					pc.Id,
-					rtcpErr,
-				)
-				break
-			}
-		}
-	}()
-	return rtpSender, nil
+	var err error = nil
+	pc.initSlots()
+
+	slot := pc.getSlotFor(peerId)
+	log.Println("FOR", peerId, slot)
+	if slot == nil {
+		return errors.New("no available slot")
+	}
+
+	// replace track
+	if track.Kind() == webrtc.RTPCodecTypeAudio {
+		slot.audio.Sender().ReplaceTrack(track)
+	} else if track.Kind() == webrtc.RTPCodecTypeVideo {
+		slot.video.Sender().ReplaceTrack(track)
+	} else {
+		return errors.New("invalid track codec type.")
+	}
+
+	return err
 }
 
 /*
@@ -228,32 +281,31 @@ func (pc *PeerContainer) Consume(producer *PeerContainer) error {
 		return nil
 	}
 
-	rtpSenders := []*webrtc.RTPSender{}
 	for _, track := range producer.Tracks {
-		sender, err := pc.SendTrack(track)
+		err := pc.consumeTrack(producer.Id, track)
 		if err != nil {
+			log.Println("consume error:", err)
 			return err
 		}
-		rtpSenders = append(rtpSenders, sender)
 	}
 
 	producer.AddConsumer(pc)
 
 	producer.AddOnNewTrackHandler(pc.Id, func(track *webrtc.TrackLocalStaticRTP) {
-		sender, _ := pc.SendTrack(track)
-		rtpSenders = append(rtpSenders, sender)
+		err := pc.consumeTrack(producer.Id, track)
+		if err != nil {
+			log.Println("consume error:", err)
+		}
 	})
 
 	producer.AddOnDestroyHandler(pc.Id, func(self *PeerContainer) {
-		for _, rtpSender := range rtpSenders {
-			rtpSender.Stop()
+		slot := pc.getSlotFor(producer.Id)
+		if slot != nil {
+			slot.peerId = 0
 		}
 	})
 
 	pc.AddOnDestroyHandler(pc.Id, func(pc *PeerContainer) {
-		for _, rtpSender := range rtpSenders {
-			rtpSender.Stop()
-		}
 		producer.RmvConsumer(pc.Id)
 	})
 	return nil
@@ -271,6 +323,11 @@ func (pc *PeerContainer) Destroy() {
 		fn(pc)
 	}
 	delete(pc.onDestroy, pc.Id)
+	for _, slot := range pc.slots {
+		slot.audio.Stop()
+		slot.video.Stop()
+	}
+	pc.slots = []Slot{}
 }
 
 func (pc *PeerContainer) destroyPeer() {
@@ -315,7 +372,7 @@ func (pc *PeerContainer) onTrack(remoteTrack *webrtc.TrackRemote, _ *webrtc.RTPR
 
 	pc.Tracks = append(pc.Tracks, localTrack)
 	for _, fn := range pc.onNewTrack {
-		fn(localTrack)
+		go fn(localTrack)
 	}
 
 	// write the buffer from the remote track in the local track simultaneously

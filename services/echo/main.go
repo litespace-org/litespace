@@ -22,8 +22,8 @@ func main() {
 
 	app.Get("/stats", handlers.Stats(&appstate))
 
+	app.Post("/connect", handlers.Connect(&appstate))
 	app.Post("/consume", handlers.Consume(&appstate))
-	app.Post("/produce", handlers.Produce(&appstate))
 
 	app.Use("/ws", handlers.UpgradeWS)
 	app.Get("/ws/:id", handlers.NewSocketConn(&appstate))

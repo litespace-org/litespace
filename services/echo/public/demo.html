@@ -1,5 +1,8 @@
 <!doctype html>
 <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
   <body style="max-width: 480px">
     My Video<br />
     <video
@@ -7,17 +10,13 @@
       style="border: solid 2px black; border-radius: 20px; margin: 8px"
       autoplay
       muted
+      preload="metadata"
     ></video>
 
     <br />
-    Recieved Video
+    Recieved Videos
     <br />
-    <video
-      id="invideo"
-      style="border: solid 2px black; border-radius: 20px; margin: 8px"
-      autoplay
-      muted
-    ></video>
+    <div id="members"></div>
 
     <br />
 
@@ -30,20 +29,17 @@
         gap: 5px;
       "
     >
-      <button onclick="start()">Start</button>
-
       <div>
         <label for="peer-id">Peer Id</label>
         <input id="peer-id" type="number" />
       </div>
-
-      <button onclick="produce()">Publish a Broadcast</button>
+      <button onclick="start()">Start</button>
 
       <div>
         <label for="producer-peer-id">Producer Peer Id</label>
         <input id="producer-peer-id" type="number" />
       </div>
-      <button onclick="consume()">Join a Broadcast</button><br />
+      <button onclick="consume()">Add Member</button><br />
     </div>
 
     <div style="margin: 20px 0px">
@@ -94,14 +90,16 @@
   </script>
 
   <script>
-    var sdp = "";
-    var pc = null; // peer connection
-    var ws = null; // web socket
+    let sdp = "";
+    let pc = null; // peer connection
+    let ws = null; // web socket
+    let dc = null; // data channel
 
     const candidates = [];
     const recievedCandidates = [];
 
     let connected = false;
+    const addedMembers = [];
 
     setInterval(() => {
       if (!ws || ws.readyState !== 1) return;
@@ -116,10 +114,14 @@
     };
 
     function start() {
+      if (pc) return connect();
+
       if (!window["WebSocket"])
         return console.error("Your browser does not support WebSockets.");
 
       const peerId = document.getElementById("peer-id").value;
+      if (peerId === "") return alert("choose a peer id value");
+
       ws = new WebSocket("ws://" + document.location.host + "/ws/" + peerId);
       ws.onopen = () => console.log("ws connected.");
       ws.onclose = () => console.log("ws disconnected.");
@@ -168,14 +170,14 @@
         });
       };
 
-      const dataChannel = pc.createDataChannel("main");
-      dataChannel.addEventListener("open", (event) => {
+      dc = pc.createDataChannel("main");
+      dc.addEventListener("open", (event) => {
         console.log("data channel openned");
       });
-      dataChannel.addEventListener("close", (event) => {
+      dc.addEventListener("close", (event) => {
         console.log("data channel closed");
       });
-      dataChannel.addEventListener("message", async (event) => {
+      dc.addEventListener("message", async (event) => {
         const msg = JSON.parse(await event.data.text());
         while (recievedCandidates.length > 0) {
           pc.addIceCandidate(JSON.parse(recievedCandidates.pop()));
@@ -186,45 +188,39 @@
         }
       });
 
+      // create two transceiver for each member.
+      // @NOTE: assuming max number of members is ten.
+      // @NOTE: assuming the first two transceivers are the one used by
+      // this client to send tracks. And others are recievers.
+      for (i = 0; i < 3; i++) {
+        pc.addTransceiver("audio");
+        pc.addTransceiver("video");
+      }
+
+      pc.ontrack = function (event) {
+        console.log(event.streams);
+      };
+
       navigator.mediaDevices
         .getUserMedia({ video: cam, audio: mic })
         .then((stream) => {
           stream.getTracks().forEach((track) => pc.addTrack(track, stream));
           document.getElementById("outvideo").srcObject = stream;
           pc.createOffer()
-            .then((d) => pc.setLocalDescription(d))
+            .then((d) => {
+              pc.setLocalDescription(d);
+              setTimeout(() => connect(), 3000);
+            })
             .catch(log);
         })
         .catch(log);
-
-      pc.ontrack = function (event) {
-        console.log(event.streams);
-        const el = document.getElementById("invideo");
-
-        el.autoplay = true;
-        el.controls = true;
-        el.volume = 0.75;
-
-        if (!el.srcObject) {
-          el.srcObject = event.streams[0];
-          return;
-        }
-
-        for (const track of event.streams[0].getTracks()) {
-          el.srcObject.addTrack(track);
-        }
-      };
-
-      pc.ondatachannel = () => {
-        console.log("ASDAJSKLD");
-      };
     }
 
-    function produce() {
+    function connect() {
       const peerId = document.getElementById("peer-id").value;
       if (peerId === "") return alert("choose a peer id value");
 
-      fetch("/produce", {
+      fetch("/connect", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -244,6 +240,7 @@
     }
 
     function consume() {
+      if (!connected) return alert("not connected yet!");
       const peerId = document.getElementById("peer-id").value;
       if (peerId === "") return alert("choose a peer id value");
 
@@ -259,16 +256,76 @@
         body: JSON.stringify({
           peerId: Number(peerId),
           producerPeerId: Number(producerPeerId),
-          sessionDescription: sdp,
         }),
       })
-        .then((res) => res.json())
-        .then((res) => {
-          pc.setRemoteDescription(res);
-          document.getElementById("remoteSessionDescription").value =
-            JSON.stringify(res);
+        .then(() => {
+          log(`consuming from ${producerPeerId}`);
+          addMember();
         })
         .catch(log);
+    }
+
+    function addMember() {
+      const peerId = document.getElementById("producer-peer-id").value;
+      if (peerId === "") return alert("choose a peer id value");
+      if (addedMembers.includes(peerId)) return alert("member already exists!");
+
+      addVideo(getSlot());
+
+      addedMembers.push(peerId);
+    }
+
+    function addVideo(tracks) {
+      const membersDiv = document.getElementById("members");
+      if (!membersDiv) return alert("members div not found!");
+
+      const video = document.createElement("video");
+      video.setAttribute(
+        "style",
+        "border: solid 2px black; border-radius: 20px; margin: 8px"
+      );
+      video.autoplay = true;
+      video.preload = "metadata";
+
+      const stream = new MediaStream();
+      const [t1, t2] = tracks;
+
+      t1.onunmute = () => {
+        video.srcObject = null;
+        video.srcObject = new MediaStream([t1, t2]);
+      };
+
+      t2.onunmute = () => {
+        video.srcObject = null;
+        video.srcObject = new MediaStream([t1, t2]);
+      };
+
+      stream.addTrack(t1);
+      stream.addTrack(t2);
+
+      video.srcObject = null;
+      video.srcObject = stream;
+
+      membersDiv.appendChild(video);
+
+      video.onloadedmetadata = () => {
+        console.log("video metadata loaded");
+        video.pause();
+        video.play().catch((e) => console.error(e));
+      };
+
+      return video;
+    }
+
+    function getSlot() {
+      const trs = pc.getTransceivers();
+      let i = 2; // skip the sending transceiver
+      for (; i < trs.length; i += 2) {
+        if (trs[i].receiver.track.onunmute === null) {
+          return [trs[i].receiver.track, trs[i + 1].receiver.track];
+        }
+      }
+      return [];
     }
   </script>
 </html>
