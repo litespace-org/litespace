@@ -14,7 +14,6 @@ import { Direction } from "@litespace/ui/Direction";
 import { AppConfigProvider } from "@litespace/headless/config";
 import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
 import { LocalStorage } from "@litespace/headless/storage";
-import { EchoProvider } from "@litespace/headless/echo";
 import { LoggerProvider } from "@litespace/headless/logger";
 import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
@@ -49,13 +48,11 @@ createRoot(document.getElementById("root")!).render(
                   <SocketProvider>
                     <UserProvider>
                       <SubscriptionProvider>
-                        <EchoProvider>
-                          <MediaQueryProvider>
-                            <ToastProvider>
-                              <App />
-                            </ToastProvider>
-                          </MediaQueryProvider>
-                        </EchoProvider>
+                        <MediaQueryProvider>
+                          <ToastProvider>
+                            <App />
+                          </ToastProvider>
+                        </MediaQueryProvider>
                       </SubscriptionProvider>
                     </UserProvider>
                   </SocketProvider>

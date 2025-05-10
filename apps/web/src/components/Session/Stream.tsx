@@ -6,7 +6,7 @@ import Lottie from "react-lottie";
 import audioWave from "@/components/Session/audioWave.json";
 import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import Spinner from "@litespace/assets/Spinner";
+import { Loading } from "@litespace/ui/Loading";
 
 const Stream: React.FC<{
   stream: MediaStream | null;
@@ -64,7 +64,7 @@ const Stream: React.FC<{
           loading ? "visible" : "invisible"
         )}
       >
-        <Spinner className="w-8 h-8 fill-natural-700" />
+        <Loading size="medium" />
       </div>
 
       <div

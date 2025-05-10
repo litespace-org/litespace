@@ -29,13 +29,16 @@ func NewSocketConn(s *state.State) fiber.Handler {
 		sid := socket.Params("sid")
 		mid, _ := strconv.Atoi(socket.Params("mid"))
 
+		log.Printf("socket: session=%s user=%d", sid, mid)
+
 		utils.IncreaseThread()
 		defer utils.DecreaseThread()
 		for {
 			messageType, message, err := socket.ReadMessage()
 
 			if err != nil {
-				log.Println("[NewSocketConn]", err)
+				log.Println("readding socket message error", err)
+				s.RemoveSessionMember(sid, mid)
 				break
 			}
 
@@ -51,9 +54,10 @@ func NewSocketConn(s *state.State) fiber.Handler {
 			header := message[0]
 			body := message[1:]
 			kind := socket.GetMessageKind(header)
-			log.Println("message kind:", kind)
+			session := s.GetSession(sid)
+			log.Printf("message kind: %s", kind.String())
 
-			if kind == wss.MessageKindOffer {
+			if kind == wss.ClientMessageTypeOffer {
 				// parse message body
 				var sessionDescription webrtc.SessionDescription
 				if err := json.Unmarshal(body, &sessionDescription); err != nil {
@@ -87,14 +91,13 @@ func NewSocketConn(s *state.State) fiber.Handler {
 					}
 
 					for _, track := range member.Tracks {
-						log.Printf("sending %s track (id=%s) from %d to %d", track.Kind().String(), track.ID(), member.Id, mid)
+						log.Printf("sending %s track from %d to %d", track.Kind().String(), member.Id, mid)
 						current.SendTrack(track)
 					}
-
 				}
 			}
 
-			if kind == wss.MessageKindAnswer {
+			if kind == wss.ClientMessageTypeAnswer {
 				// parse message body
 				var sessionDescription webrtc.SessionDescription
 				if err := json.Unmarshal(body, &sessionDescription); err != nil {
@@ -109,6 +112,29 @@ func NewSocketConn(s *state.State) fiber.Handler {
 
 				utils.Unwrap(member.Conn.SetRemoteDescription(sessionDescription))
 			}
+
+			if kind == wss.ClientMessageTypeToggleVideo && session != nil {
+				// parse message body
+				var video bool
+				if err := json.Unmarshal(body, &video); err != nil {
+					log.Println("failed to parse toggle video message body")
+					continue
+				}
+
+				session.SetMemberVideo(mid, video)
+			}
+
+			if kind == wss.ClientMessageTypeToggleAudio && session != nil {
+				// parse message body
+				var audio bool
+				if err := json.Unmarshal(body, &audio); err != nil {
+					log.Println("failed to parse toggle video message body")
+					continue
+				}
+
+				session.SetMemberAudio(mid, audio)
+			}
+
 		}
 	})
 }

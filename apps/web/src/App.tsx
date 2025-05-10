@@ -27,6 +27,7 @@ const UpcomingLessons = lazy(() => import("@/pages/UpcomingLessons"));
 const Plans = lazy(() => import("@/pages/Plans"));
 const PlansV2 = lazy(() => import("@/pages/PlansV2"));
 const Lesson = lazy(() => import("@/pages/Lesson"));
+const LessonV2 = lazy(() => import("@/pages/LessonV2"));
 const TutorSettings = lazy(() => import("@/pages/TutorSettings"));
 const ScheduleManagement = lazy(() => import("@/pages/ScheduleManagement"));
 const ForgetPassword = lazy(() => import("@/pages/ForgetPassword"));
@@ -117,6 +118,7 @@ const router = createRouter([
         element: <Fallback children={<UpcomingLessons />} />,
       },
       { path: Web.Lesson, element: <Fallback children={<Lesson />} /> },
+      { path: Web.LessonV2, element: <Fallback children={<LessonV2 />} /> },
       {
         path: Web.VerifyEmail,
         element: <Fallback children={<VerifyEmail />} />,
