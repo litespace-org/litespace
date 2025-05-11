@@ -121,6 +121,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 "grow bg-inherit focus-within:outline-none font-medium text-[0.875rem] leading-[150%] h-full",
                 // Placeholder
                 "placeholder:text-natural-600 placeholder:font-cairo",
+                "placeholder:text-right",
                 {
                   // Filled
                   "text-natural-950": !disabled && value,

@@ -1,26 +1,24 @@
 import { Animate } from "@/components/Common/Animate";
 import { Typography } from "@litespace/ui/Typography";
 import { MethodButton } from "@/components/VerifyNotificationMethodDialog/MethodButton";
-import Telegram1 from "@litespace/assets/Telegram1";
-import Whatsapp from "@litespace/assets/WhatsApp";
+import Telegram from "@litespace/assets/TelegramWithoutCircle";
+import WhatsApp from "@litespace/assets/WhatsApp";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
+import React, { useState } from "react";
 
-type SelectMethodProps = {
-  activeMethod: IUser.NotificationMethodLiteral | null;
-  changeMethod: (method: IUser.NotificationMethodLiteral) => void;
-  select: Void;
+type Props = {
+  selected: IUser.NotificationMethodLiteral | null;
+  select: (method: IUser.NotificationMethodLiteral) => void;
   close: Void;
 };
 
-export function SelectMethod({
-  activeMethod,
-  select,
-  changeMethod,
-  close,
-}: SelectMethodProps) {
+export const SelectMethod: React.FC<Props> = ({ selected, select, close }) => {
   const intl = useFormatMessage();
+  const [method, setMethod] = useState<IUser.NotificationMethodLiteral | null>(
+    selected
+  );
 
   return (
     <Animate>
@@ -33,25 +31,28 @@ export function SelectMethod({
       <div className="flex gap-6 mt-6 w-full h-[152px]">
         <MethodButton
           activeColor="bg-notification-telegram hover:bg-notification-telegram"
-          icon={<Telegram1 className="w-[60px] h-[60px]" />}
-          method={"telegram"}
-          isActive={activeMethod === "telegram"}
-          onClick={() => changeMethod("telegram")}
+          icon={<Telegram className="w-[32px] h-[32px]" />}
+          isActive={method === "telegram"}
+          onClick={() => setMethod("telegram")}
+          method="telegram"
         />
         <MethodButton
+          method="whatsapp"
           activeColor="bg-notification-whatsapp hover:bg-notification-whatsapp"
           icon={
-            <Whatsapp className="w-[60px] h-[60px] [&>*]:fill-natural-50" />
+            <WhatsApp className="w-[32px] h-[32px] [&>*]:fill-natural-50" />
           }
-          method={"whatsapp"}
-          isActive={activeMethod === "whatsapp"}
-          onClick={() => changeMethod("whatsapp")}
+          isActive={method === "whatsapp"}
+          onClick={() => setMethod("whatsapp")}
         />
       </div>
-      <div className="flex gap-6 mt-6 w-full">
+      <div className="flex flex-row items-center gap-6 mt-6 w-full">
         <Button
-          onClick={select}
-          disabled={!activeMethod}
+          onClick={() => {
+            if (!method) return;
+            select(method);
+          }}
+          disabled={!method}
           size="large"
           className="grow"
         >
@@ -60,12 +61,12 @@ export function SelectMethod({
         <Button
           onClick={close}
           variant="secondary"
-          size="large"
           className="grow"
+          size="large"
         >
           {intl("labels.cancel")}
         </Button>
       </div>
     </Animate>
   );
-}
+};

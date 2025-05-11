@@ -4,36 +4,41 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Button } from "@litespace/ui/Button";
 import { Void } from "@litespace/types";
 import { useForm } from "@litespace/headless/form";
-import { useValidatePhone } from "@litespace/ui/hooks/validation";
+import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { PatternInput } from "@litespace/ui/PatternInput";
+import { isValidPhone } from "@litespace/ui/lib/validate";
 
-type EnterPhoneNumberProps = {
-  phoneNumber: string | null;
-  setPhoneNumber: (phone: string) => void;
-  sendVerificationCode: Void;
-  sending: boolean;
+type Props = {
+  phone: string | null;
+  setPhone: (phone: string) => void;
+  loading: boolean;
   close: Void;
 };
 
-export function EnterPhoneNumber({
-  close,
-  phoneNumber,
-  sendVerificationCode,
-  sending,
-  setPhoneNumber,
-}: EnterPhoneNumberProps) {
-  const intl = useFormatMessage();
-  const validatePhone = useValidatePhone();
-  const form = useForm<{ phoneNumber: string | null }>({
-    defaults: {
-      phoneNumber: phoneNumber,
-    },
-    validate: { phoneNumber: validatePhone },
-    onSubmit: (data) => {
-      console.log({ phoneNumber });
-      if (!data.phoneNumber || !validatePhone(data.phoneNumber)) return;
+type Form = { phone: string };
 
-      sendVerificationCode();
+export const EnterPhoneNumber: React.FC<Props> = ({
+  close,
+  phone,
+  loading,
+  setPhone,
+}) => {
+  const intl = useFormatMessage();
+
+  const validators = useMakeValidators<Form>({
+    phone: {
+      required: true,
+      validate: isValidPhone,
+    },
+  });
+
+  const form = useForm<Form>({
+    defaults: {
+      phone: phone || "",
+    },
+    validators,
+    onSubmit: (data) => {
+      setPhone(data.phone);
     },
   });
 
@@ -47,35 +52,35 @@ export function EnterPhoneNumber({
       </Typography>
       <div className="mt-6 mb-12">
         <PatternInput
+          id="phone"
           mask=" "
           format="### #### ####"
-          idleDir="rtl"
-          label={intl("labels.phone")}
-          state={form.errors.phoneNumber ? "error" : undefined}
-          helper={form.errors.phoneNumber}
-          onChange={(e) => {
-            const value = e.target.value.replace(/\s/g, "");
-            setPhoneNumber(value);
-            form.set("phoneNumber", value);
+          idleDir="ltr"
+          label={intl("notification-method.dialog.phone.input-label")}
+          state={form.errors.phone ? "error" : undefined}
+          helper={form.errors.phone}
+          autoComplete="off"
+          onValueChange={({ value }) => {
+            form.set("phone", value);
           }}
-          value={form.state.phoneNumber}
+          value={form.state.phone}
           placeholder={intl(
-            "notification-method.dialog.phone.input.placeholder"
+            "notification-method.dialog.phone.input-placeholder"
           )}
         />
       </div>
       <div className="flex gap-6 mt-6 w-full">
         <Button
           onClick={form.submit}
-          disabled={sending || !phoneNumber}
-          loading={sending}
+          disabled={loading}
+          loading={loading}
           size="large"
           className="grow"
         >
           {intl("notification-method.dialog.phone.send-code")}
         </Button>
         <Button
-          disabled={sending}
+          disabled={loading}
           onClick={close}
           variant="secondary"
           size="large"
@@ -86,4 +91,4 @@ export function EnterPhoneNumber({
       </div>
     </Animate>
   );
-}
+};

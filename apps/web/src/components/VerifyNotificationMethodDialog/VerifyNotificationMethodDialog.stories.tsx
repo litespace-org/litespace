@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { VerifyNotificationMethodDialog } from "@/components/VerifyNotificationMethodDialog/VerifyNotificationMethodDialog";
-import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof VerifyNotificationMethodDialog;
 type Story = StoryObj<Component>;
@@ -17,19 +16,21 @@ export const Primary: Story = {
     method: null,
     phone: null,
     sendCode: () => {},
-    sending: false,
+    sendingCode: false,
+    sentCode: false,
     verifyCode: () => {},
     verifing: false,
   },
 };
 
-export const OnPhone: Story = {
+export const WithMethod: Story = {
   args: {
     close: () => {},
     method: "telegram",
     phone: null,
     sendCode: () => {},
-    sending: false,
+    sendingCode: false,
+    sentCode: false,
     verifyCode: () => {},
     verifing: false,
   },
@@ -39,21 +40,23 @@ export const SendingCode: Story = {
   args: {
     close: () => {},
     method: "telegram",
-    phone: null,
+    phone: "01012345678",
     sendCode: () => {},
-    sending: true,
+    sendingCode: true,
+    sentCode: false,
     verifyCode: () => {},
     verifing: false,
   },
 };
 
-export const OnCode: Story = {
+export const WithPhone: Story = {
   args: {
     close: () => {},
     method: "telegram",
-    phone: faker.phone.number(),
+    phone: "01012345678",
     sendCode: () => {},
-    sending: false,
+    sendingCode: false,
+    sentCode: false,
     verifyCode: () => {},
     verifing: false,
   },
@@ -63,11 +66,25 @@ export const VerifyingCode: Story = {
   args: {
     close: () => {},
     method: "telegram",
-    phone: faker.phone.number(),
+    phone: "01012345678",
     sendCode: () => {},
-    sending: false,
+    sendingCode: false,
+    sentCode: true,
     verifyCode: () => {},
     verifing: true,
+  },
+};
+
+export const ResendingCode: Story = {
+  args: {
+    close: () => {},
+    method: "telegram",
+    phone: "01012345678",
+    sendCode: () => {},
+    sendingCode: true,
+    sentCode: true,
+    verifyCode: () => {},
+    verifing: false,
   },
 };
 

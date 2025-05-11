@@ -2,7 +2,7 @@ import { IConfirmationCode, IUser, Void } from "@litespace/types";
 import { Dialog } from "@litespace/ui/Dialog";
 import { AnimatePresence } from "framer-motion";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { SelectMethod } from "@/components/VerifyNotificationMethodDialog/SelectMethod";
 import { VerifyCode } from "@/components/VerifyNotificationMethodDialog/VerifyCode";
 import { EnterPhoneNumber } from "@/components/VerifyNotificationMethodDialog/EnterPhoneNumber";
@@ -13,73 +13,27 @@ type Props = {
   method: IUser.NotificationMethodLiteral | null;
   phone: string | null;
   sendCode: (payload: IConfirmationCode.SendVerifyPhoneCodePayload) => void;
-  sending: boolean;
+  sendingCode: boolean;
+  sentCode: boolean;
   verifyCode: (payload: IConfirmationCode.VerifyPhoneCodePayload) => void;
   verifing: boolean;
 };
 
-type Step = "method" | "phone" | "code";
-
-export function VerifyNotificationMethodDialog({
+export const VerifyNotificationMethodDialog: React.FC<Props> = ({
   close,
-  method,
-  phone,
-  sending,
+  method: defaultMethod,
+  phone: defaultPhone,
+  sendingCode,
+  sentCode,
   sendCode,
   verifyCode,
   verifing,
-}: Props) {
+}) => {
   const intl = useFormatMessage();
-  const [step, setStep] = useState<Step>();
-  const [activeMethod, setActiveMethod] =
-    useState<IUser.NotificationMethodLiteral | null>(method);
-  const [phoneNumber, setPhoneNumber] = useState<string | null>(phone);
-
-  const changeMethod = useCallback(
-    (method: IUser.NotificationMethodLiteral) => {
-      setActiveMethod(method);
-    },
-    []
+  const [method, setMethod] = useState<IUser.NotificationMethodLiteral | null>(
+    defaultMethod
   );
-
-  const changeStep = useCallback((step: Step) => {
-    setStep(step);
-  }, []);
-
-  const sendVerificationCode = useCallback(() => {
-    if (!activeMethod || !phoneNumber) return;
-
-    sendCode({
-      method: activeMethod,
-      phone: phoneNumber,
-    });
-    changeStep("code");
-  }, [phoneNumber, activeMethod, changeStep, sendCode]);
-
-  const verifyConfirmationCode = useCallback(
-    (code: number) => {
-      if (!activeMethod) return;
-      verifyCode({ code, method: activeMethod });
-    },
-    [verifyCode, activeMethod]
-  );
-
-  // To auto detect the step
-  useEffect(() => {
-    if (step !== undefined) return;
-
-    if (phone && method) {
-      sendVerificationCode();
-      return;
-    }
-
-    if (method && !phone) {
-      setStep("phone");
-      return;
-    }
-
-    setStep("method");
-  }, [method, phone, sendVerificationCode, step]);
+  const [phone, setPhone] = useState<string | null>(defaultPhone);
 
   return (
     <Dialog
@@ -91,36 +45,38 @@ export function VerifyNotificationMethodDialog({
           {intl("notification-method.dialog.title")}
         </Typography>
       }
-      className="w-[512px] font-cairo"
+      className="w-[512px]"
       open
       close={close}
     >
       <AnimatePresence mode="wait">
-        {step === "method" ? (
+        {method === null ? (
           <SelectMethod
-            activeMethod={activeMethod}
-            changeMethod={changeMethod}
-            select={() => changeStep("phone")}
+            selected={method}
+            select={(method) => setMethod(method)}
             close={close}
           />
         ) : null}
 
-        {step === "phone" ? (
+        {method !== null && !sentCode ? (
           <EnterPhoneNumber
             close={close}
-            phoneNumber={phoneNumber}
-            sendVerificationCode={sendVerificationCode}
-            sending={sending}
-            setPhoneNumber={setPhoneNumber}
+            phone={phone}
+            loading={sendingCode}
+            setPhone={(phone) => {
+              setPhone(phone);
+              if (!phone || !method) return;
+              sendCode({ method, phone });
+            }}
           />
         ) : null}
 
-        {step === "code" ? (
+        {sentCode && phone && method ? (
           <VerifyCode
-            activeMethod={activeMethod}
-            phoneNumber={phoneNumber}
-            sendVerificationCode={sendVerificationCode}
-            verifyCode={verifyConfirmationCode}
+            phone={phone}
+            resend={() => sendCode({ method, phone })}
+            resending={sendingCode}
+            verifyCode={(code: number) => verifyCode({ code, method })}
             verifing={verifing}
             close={close}
           />
@@ -128,4 +84,4 @@ export function VerifyNotificationMethodDialog({
       </AnimatePresence>
     </Dialog>
   );
-}
+};

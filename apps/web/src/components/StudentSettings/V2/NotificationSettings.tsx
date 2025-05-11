@@ -19,18 +19,22 @@ import {
   useVerifyPhoneCode,
 } from "@litespace/headless/confirmationCode";
 
+type Form = {
+  notificationMethod: IUser.Self["notificationMethod"];
+};
+
 /**
  * There are 3 scenarios in this form component:
  * 1. The user has a phone number and has verified method -> user can select the method directly and
- * submit changes -> update the user directly using `useUpdateUser`
+ * submit changes -> update the user directly using `useUpdateUser`.
  *
  * 2. The user has phone and doesn't have verified method -> user can select a method which opens the dialog
- * and it will send automatically the code to the select method -> user enters the code sent to him
- * this will verify the method and update it automatically
+ * and it will send automatically the code to the selected method -> user enters the code sent to him
+ * this will verify the method and update it automatically.
  *
  * 3. The user doesn't have a phone number nor a verified method -> user will need to select the method ->
  * opens the dialog automatically and he needs to enter the number -> this will save his number then he needs
- * to enter the code sent to him
+ * to enter the code sent to him.
  */
 export function NotificationSettings({
   id,
@@ -47,6 +51,7 @@ export function NotificationSettings({
 }) {
   const intl = useFormatMessage();
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [sentCode, setSentCode] = useState<boolean>(false);
 
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
@@ -65,7 +70,12 @@ export function NotificationSettings({
     [intl]
   );
 
-  const onSuccess = useCallback(() => {
+  const onUpdateUserSuccess = useCallback(() => {
+    invalidateQuery([QueryKey.FindCurrentUser]);
+  }, [invalidateQuery]);
+
+  const onSendCodeSuccess = useCallback(() => {
+    setSentCode(true);
     invalidateQuery([QueryKey.FindCurrentUser]);
   }, [invalidateQuery]);
 
@@ -92,6 +102,7 @@ export function NotificationSettings({
   const onVerifySuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
     setShowDialog(false);
+    setSentCode(false);
     toast.success({
       title: intl("shared-settings.verify-code.success"),
     });
@@ -108,12 +119,12 @@ export function NotificationSettings({
   });
 
   const updateUserMutation = useUpdateUser({
-    onSuccess,
+    onSuccess: onUpdateUserSuccess,
     onError: onUpdateUserError,
   });
 
   const sendPhoneCodeMutation = useSendPhoneCode({
-    onSuccess,
+    onSuccess: onSendCodeSuccess,
     onError: onSendCodeError,
   });
   const verifyPhoneCodeMutation = useVerifyPhoneCode({
@@ -121,12 +132,8 @@ export function NotificationSettings({
     onError: onVerifyCodeError,
   });
 
-  const form = useForm<{
-    notificationMethod: IUser.Self["notificationMethod"];
-  }>({
-    defaults: {
-      notificationMethod: notificationMethod,
-    },
+  const form = useForm<Form>({
+    defaults: { notificationMethod },
     onSubmit: (data) => {
       updateUserMutation.mutate({
         id,
@@ -148,17 +155,19 @@ export function NotificationSettings({
     (value: IUser.NotificationMethod) => {
       form.set("notificationMethod", value);
 
-      if (!phone) return setShowDialog(true);
-
-      const needsVerification =
+      const verificationNeeded =
         (value === IUser.NotificationMethod.Whatsapp && !verifiedWhatsApp) ||
         (value === IUser.NotificationMethod.Telegram && !verifiedTelegram);
 
-      if (needsVerification) {
-        setShowDialog(true);
-      }
+      if (verificationNeeded) setShowDialog(true);
+
+      if (phone && verificationNeeded)
+        sendPhoneCodeMutation.mutate({
+          method: NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[value],
+          phone,
+        });
     },
-    [form, phone, verifiedTelegram, verifiedWhatsApp]
+    [form, phone, sendPhoneCodeMutation, verifiedTelegram, verifiedWhatsApp]
   );
 
   return (
@@ -169,7 +178,8 @@ export function NotificationSettings({
           close={() => setShowDialog(false)}
           phone={phone}
           sendCode={sendPhoneCodeMutation.mutate}
-          sending={sendPhoneCodeMutation.isPending}
+          sendingCode={sendPhoneCodeMutation.isPending}
+          sentCode={sentCode}
           verifyCode={verifyPhoneCodeMutation.mutate}
           verifing={verifyPhoneCodeMutation.isPending}
         />

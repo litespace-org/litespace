@@ -3,36 +3,28 @@ import { Animate } from "@/components/Common/Animate";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { ConfirmationCode } from "@litespace/ui/ConfirmationCode";
 import { Button } from "@litespace/ui/Button";
-import { IUser, Void } from "@litespace/types";
-import { useCallback, useState } from "react";
+import { Void } from "@litespace/types";
+import React, { useState } from "react";
 
-type VerifyCodeProps = {
-  phoneNumber: string | null;
-  sendVerificationCode: Void;
+type Props = {
+  phone: string;
+  resend: Void;
+  resending: boolean;
   verifing: boolean;
   verifyCode: (code: number) => void;
-  activeMethod: IUser.NotificationMethodLiteral | null;
   close: Void;
 };
 
-export function VerifyCode({
-  phoneNumber,
-  activeMethod,
-  sendVerificationCode,
+export const VerifyCode: React.FC<Props> = ({
+  phone,
+  resend,
+  resending,
   verifing,
   close,
   verifyCode,
-}: VerifyCodeProps) {
+}) => {
   const intl = useFormatMessage();
-  const [code, setCode] = useState<number>();
-  const verifyConfirmationCode = useCallback(
-    (code: number | undefined) => {
-      if (!activeMethod || !code) return;
-
-      verifyCode(code);
-    },
-    [activeMethod, verifyCode]
-  );
+  const [code, setCode] = useState<number | null>(null);
 
   return (
     <Animate>
@@ -43,51 +35,47 @@ export function VerifyCode({
         {intl("notification-method.dialog.code.description")}
       </Typography>
       <div className="mt-6 mb-12 flex flex-col items-center gap-6">
-        <Typography className="text-natural-600 font-semibold" tag="p">
+        <Typography tag="p" className="text-natural-600 font-semibold">
           {intl.rich("notification-method.dialog.code.enter-code", {
             phone: (
               <Typography tag="span" className="text-natural-950">
-                {phoneNumber}
+                {phone}
               </Typography>
-            ),
-            method: intl(
-              activeMethod === "whatsapp"
-                ? "notification-method.whatsapp"
-                : "notification-method.telegram"
             ),
           })}
         </Typography>
+
         <ConfirmationCode
           setCode={(code) => {
             setCode(code);
-            verifyConfirmationCode(code);
+            verifyCode(code);
           }}
           autoFocus={true}
           disabled={verifing}
         />
 
         <div className="flex justify-center text-natural-700 items-center">
-          <Typography tag="p" className="flex font-medium">
-            {intl.rich("notification-method.dialog.code.never-recieved", {
-              resend: (
-                <Button
-                  onClick={sendVerificationCode}
-                  disabled={verifing}
-                  className="font-medium"
-                  variant="tertiary"
-                  size="small"
-                >
-                  {intl("notification-method.dialog.code.resend")}
-                </Button>
-              ),
-            })}
-          </Typography>
+          <Button
+            onClick={resend}
+            disabled={verifing || resending}
+            loading={resending}
+            className="font-medium"
+            variant="tertiary"
+            size="small"
+          >
+            <Typography tag="p" className="flex font-medium">
+              {intl("notification-method.dialog.code.never-recieved")}
+            </Typography>
+          </Button>
         </div>
       </div>
 
       <div className="flex gap-6 mt-6 w-full">
         <Button
-          onClick={() => verifyConfirmationCode(code)}
+          onClick={() => {
+            if (!code) return;
+            verifyCode(code);
+          }}
           disabled={verifing || !code}
           loading={verifing}
           size="large"
@@ -107,4 +95,4 @@ export function VerifyCode({
       </div>
     </Animate>
   );
-}
+};
