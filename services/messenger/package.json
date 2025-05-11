@@ -7,6 +7,8 @@
     "start": "env-cmd node dist/index.js",
     "start:whatsapp": "env-cmd node dist/whatsapp.js",
     "start:telegram": "env-cmd node dist/telegram.js",
+    "clean:whatsapp": "rm -rf __whatsapp__",
+    "clean:telegram": "rm -rf __telegram__",
     "produce": "vite-node scripts/produce.ts",
     "prepare": "ts-patch install -s"
   },

@@ -116,6 +116,14 @@ export const NOTIFICATION_METHOD_TO_KAFKA_TOPIC: Record<
   [IUser.NotificationMethod.Telegram]: "telegram",
 };
 
+export const NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL: Record<
+  IUser.NotificationMethod,
+  IUser.NotificationMethodLiteral
+> = {
+  [IUser.NotificationMethod.Whatsapp]: "whatsapp",
+  [IUser.NotificationMethod.Telegram]: "telegram",
+};
+
 export const NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC: Record<
   IUser.NotificationMethodLiteral,
   IKafka.TopicType

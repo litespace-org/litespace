@@ -4,7 +4,7 @@ import React from "react";
 import cn from "classnames";
 import WhatsApp from "@litespace/assets/WhatsApp";
 import Mail from "@litespace/assets/Mail";
-import Telegram from "@litespace/assets/Telegram";
+import Telegram from "@litespace/assets/TelegramWithCircle";
 import PaperMessage1 from "@litespace/assets/PaperMessage1";
 import PaperMessage2 from "@litespace/assets/PaperMessage2";
 import ContactRequestForm from "@/components/ContactRequestForm";
