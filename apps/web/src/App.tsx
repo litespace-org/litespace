@@ -1,13 +1,12 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy } from "react";
 import {
   RouteObject,
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
-
 import { Web } from "@litespace/utils/routes";
 import * as Sentry from "@sentry/react";
-import { Loading } from "@litespace/ui/Loading";
+import Splash from "@/pages/Splash";
 
 const Root = lazy(() => import("@/pages/Root"));
 const Login = lazy(() => import("@/pages/Login"));
@@ -40,111 +39,47 @@ const CompleteTutorProfile = lazy(() => import("@/pages/CompleteTutorProfile"));
 
 const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
-const Fallback: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <Suspense
-    fallback={
-      <div className="h-screen w-full">
-        <div className="mt-[20vh]">
-          <Loading size="large" />
-        </div>
-      </div>
-    }
-  >
-    {children}
-  </Suspense>
-);
-
 function withCrash(routes: RouteObject[]): RouteObject[] {
   return routes.map((route) => ({
     ...route,
-    errorElement: <Fallback children={<Crash />} />,
+    element: <Splash children={route.element} />,
+    errorElement: <Splash children={<Crash />} />,
   }));
 }
 
 const router = createRouter([
   {
     path: Web.Root,
-    element: <Fallback children={<Root />} />,
+    element: <Splash children={<Root />} />,
     children: withCrash([
-      {
-        path: Web.Chat,
-        element: <Fallback children={<Chat />} />,
-      },
-      { path: Web.Invoices, element: <Fallback children={<Invoices />} /> },
-      {
-        path: Web.CompleteProfile,
-        element: <Fallback children={<CompleteProfile />} />,
-      },
-      { path: Web.Login, element: <Fallback children={<Login />} /> },
-      { path: Web.Payments, element: <Fallback children={<Payments />} /> },
-      { path: Web.Register, element: <Fallback children={<Register />} /> },
-      {
-        path: Web.ResetPassword,
-        element: <Fallback children={<ResetPassword />} />,
-      },
-      {
-        path: Web.StudentDashboard,
-        element: <Fallback children={<StudentDashboard />} />,
-      },
-      {
-        path: Web.StudentSettings,
-        element: <Fallback children={<StudentSettings />} />,
-      },
-      {
-        path: Web.TutorDashboard,
-        element: <Fallback children={<TutorDashboard />} />,
-      },
-      {
-        path: Web.TutorSettings,
-        element: <Fallback children={<TutorSettings />} />,
-      },
-      {
-        path: Web.LessonsSchedule,
-        element: <Fallback children={<LessonsSchedule />} />,
-      },
-      {
-        path: Web.ScheduleManagement,
-        element: <Fallback children={<ScheduleManagement />} />,
-      },
-      { path: Web.Plans, element: <Fallback children={<Plans />} /> },
-      { path: Web.PlansV2, element: <Fallback children={<PlansV2 />} /> },
-      {
-        path: Web.TutorProfile,
-        element: <Fallback children={<TutorProfile />} />,
-      },
-      { path: Web.Tutors, element: <Fallback children={<Tutors />} /> },
-      {
-        path: Web.UpcomingLessons,
-        element: <Fallback children={<UpcomingLessons />} />,
-      },
-      { path: Web.Lesson, element: <Fallback children={<Lesson />} /> },
-      { path: Web.LessonV2, element: <Fallback children={<LessonV2 />} /> },
-      {
-        path: Web.VerifyEmail,
-        element: <Fallback children={<VerifyEmail />} />,
-      },
-      {
-        path: Web.ForgetPassword,
-        element: <Fallback children={<ForgetPassword />} />,
-      },
-      {
-        path: Web.CardAdded,
-        element: <Fallback children={<CardAdded />} />,
-      },
-      {
-        path: Web.Checkout,
-        element: <Fallback children={<Checkout />} />,
-      },
-      {
-        path: Web.StudentSettingsV2,
-        element: <Fallback children={<StudentSettingsV2 />} />,
-      },
-      {
-        path: Web.CompleteTutorProfile,
-        element: <Fallback children={<CompleteTutorProfile />} />,
-      },
+      { path: Web.Chat, element: <Chat /> },
+      { path: Web.Invoices, element: <Invoices /> },
+      { path: Web.CompleteProfile, element: <CompleteProfile /> },
+      { path: Web.Login, element: <Login /> },
+      { path: Web.Payments, element: <Payments /> },
+      { path: Web.Register, element: <Register /> },
+      { path: Web.ResetPassword, element: <ResetPassword /> },
+      { path: Web.StudentDashboard, element: <StudentDashboard /> },
+      { path: Web.StudentSettings, element: <StudentSettings /> },
+      { path: Web.TutorDashboard, element: <TutorDashboard /> },
+      { path: Web.TutorSettings, element: <TutorSettings /> },
+      { path: Web.LessonsSchedule, element: <LessonsSchedule /> },
+      { path: Web.ScheduleManagement, element: <ScheduleManagement /> },
+      { path: Web.Plans, element: <Plans /> },
+      { path: Web.PlansV2, element: <PlansV2 /> },
+      { path: Web.TutorProfile, element: <TutorProfile /> },
+      { path: Web.Tutors, element: <Tutors /> },
+      { path: Web.UpcomingLessons, element: <UpcomingLessons /> },
+      { path: Web.Lesson, element: <Lesson /> },
+      { path: Web.LessonV2, element: <LessonV2 /> },
+      { path: Web.VerifyEmail, element: <VerifyEmail /> },
+      { path: Web.ForgetPassword, element: <ForgetPassword /> },
+      { path: Web.CardAdded, element: <CardAdded /> },
+      { path: Web.Checkout, element: <Checkout /> },
+      { path: Web.StudentSettingsV2, element: <StudentSettingsV2 /> },
+      { path: Web.CompleteTutorProfile, element: <CompleteTutorProfile /> },
     ]),
-    errorElement: <Fallback children={<Crash screen />} />,
+    errorElement: <Splash children={<Crash screen />} />,
   },
 ]);
 
