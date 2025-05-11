@@ -89,7 +89,6 @@ export default defineConfig({
     },
     dedupe: ["react", "react-dom", "react-router-dom"],
   },
-  assetsInclude: ["src/markdown/**/*.md"],
   esbuild: {
     exclude: ["@litespace/ui/*"],
   },
