@@ -4,6 +4,7 @@ import (
 	"echo/lib/utils"
 	"errors"
 	"log"
+	"slices"
 	"sync"
 
 	"github.com/pion/webrtc/v4"
@@ -20,6 +21,7 @@ func (s *Session) IsEmpty() bool {
 	return len(s.Members) == 0
 }
 
+// invokes the callback function with each member, as its parameter, except the `from` member
 func (s *Session) Broadcast(from MemberId, callback func(member *Member)) {
 	for _, member := range s.Members {
 		if member.Id == from {
@@ -41,6 +43,23 @@ func (s *Session) GetMember(mid MemberId) *Member {
 	return *member
 }
 
+func (s *Session) AddMember(m *Member) error {
+	if s.GetMember(m.Id) != nil {
+		return errors.New("Member already exists")
+	}
+	s.Members = append(s.Members, m)
+	return nil
+}
+
+func (s *Session) RmvMember(mid MemberId) {
+	s.Members = slices.DeleteFunc(s.Members, func(m *Member) bool {
+		return m.Id == mid
+	})
+}
+
+// turns on/off video for a specific member. this function broadcasts
+// (by WebSocket) to all members in the associated session that this
+// specfic user has turned on/off his cam.
 func (s *Session) SetMemberVideo(mid MemberId, video bool) error {
 	member := s.GetMember(mid)
 
@@ -57,6 +76,9 @@ func (s *Session) SetMemberVideo(mid MemberId, video bool) error {
 	return nil
 }
 
+// turns on/off audio for a specific member. this function broadcasts
+// (by WebSocket) to all members in the associated session that this
+// specfic user has turned on/off his mic.
 func (s *Session) SetMemberAudio(mid MemberId, audio bool) error {
 	member := s.GetMember(mid)
 
@@ -67,7 +89,6 @@ func (s *Session) SetMemberAudio(mid MemberId, audio bool) error {
 	member.SetAudio(audio)
 
 	s.Broadcast(mid, func(member *Member) {
-		log.Println("broadcast")
 		member.Socket.SendToggleAudioMessage(mid, audio)
 	})
 
@@ -89,13 +110,12 @@ func (s *State) IsSessionExist(sid SessionId) bool {
 	return s.Sessions[sid] != nil
 }
 
-func (s *State) NewSession(sid SessionId) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+func (s *State) NewSession(sid SessionId) *Session {
 	s.Sessions[sid] = &Session{
 		Id:      sid,
 		Members: []*Member{},
 	}
+	return s.Sessions[sid]
 }
 
 func (s *State) GetSession(sid SessionId) *Session {
@@ -107,12 +127,8 @@ func (s *State) RemoveSession(sid SessionId) {
 }
 
 func (s *State) IsSessionEmpty(sid SessionId) bool {
-	session := s.GetSession(sid)
-	if session == nil {
-		return true
-	}
-
-	return len(session.Members) == 0
+	session := s.Sessions[sid]
+	return session == nil || len(session.Members) == 0
 }
 
 func (s *State) IsMemberExist(sid SessionId, mid MemberId) bool {
@@ -120,73 +136,72 @@ func (s *State) IsMemberExist(sid SessionId, mid MemberId) bool {
 	return member != nil
 }
 
-func (s *State) AddSessionMember(
-	sid SessionId,
-	member *Member,
-) {
-	if !s.IsSessionExist(sid) {
-		s.NewSession(sid)
-	}
+func (s *State) AddSessionMember(sid SessionId, member *Member) {
+	utils.Recover()
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	session := s.GetSession(sid)
-	session.Members = append(session.Members, member)
+
+	session := s.Sessions[sid]
+	if session == nil {
+		session = s.NewSession(sid)
+	}
+
+	utils.Unwrap(session.AddMember(member))
 	s.react(sid, member)
 }
 
-func (s *State) react(sid SessionId, member *Member) {
-	current := member
-	mid := member.Id
-
+// receive tracks from the curMember and send them to all other members in the session.
+// and remove member from session (notify other members as well) when the webrtc connection is closed.
+// @NOTE: this function must be called for each new member in the session.
+func (s *State) react(sid SessionId, curMember *Member) {
 	go func() {
 		utils.IncreaseThread()
 		defer utils.DecreaseThread()
 		for {
 			select {
-			// ===================== share current member stream with the other member ===================
-			case track := <-member.TracksChannel:
+			// share current member stream with the other member
+			case track := <-curMember.TracksChannel:
 
 				members := s.GetSessionMembers(sid)
 
-				for _, member := range members {
+				for _, m := range members {
 					// skip current member
-					if member.Id == mid {
+					if m.Id == curMember.Id {
 						continue
 					}
 
-					log.Printf("sending %s track from %d to %d", track.Kind().String(), member.Id, mid)
-					member.SendTrack(track)
+					log.Printf("sending %s track from %d to %d", track.Kind().String(), curMember.Id, m.Id)
+					m.SendTrack(track)
 				}
 
-			case cs := <-current.PeerConnectionState:
-				if cs == webrtc.PeerConnectionStateClosed || cs == webrtc.PeerConnectionStateDisconnected || cs == webrtc.PeerConnectionStateFailed {
-					s.RemoveSessionMember(sid, mid)
+			case cs := <-curMember.PeerConnectionState:
+				if cs == webrtc.PeerConnectionStateClosed ||
+					cs == webrtc.PeerConnectionStateDisconnected ||
+					cs == webrtc.PeerConnectionStateFailed {
+
+					s.RemoveSessionMember(sid, curMember.Id)
 					members := s.GetSessionMembers(sid)
 					for _, member := range members {
-						member.Socket.SendMemberLeftMessage(mid)
+						member.Socket.SendMemberLeftMessage(curMember.Id)
 					}
 					return
+
 				}
 			}
 		}
 	}()
 }
 
-func (s *State) RemoveSessionMember(
-	sid SessionId,
-	mid MemberId,
-) {
-	if !s.IsSessionExist(sid) {
+func (s *State) RemoveSessionMember(sid SessionId, mid MemberId) {
+	session := s.Sessions[sid]
+	if session == nil {
 		return
 	}
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	session := s.GetSession(sid)
-	session.Members = utils.Filter(session.Members, func(member *Member) bool {
-		return member.Id != mid
-	})
+	session.RmvMember(mid)
 
 	if session.IsEmpty() {
 		s.RemoveSession(sid)
@@ -194,24 +209,22 @@ func (s *State) RemoveSessionMember(
 }
 
 func (s *State) GetSessionMembers(sid SessionId) []*Member {
-	if !s.IsSessionExist(sid) {
+	session := s.Sessions[sid]
+	if session == nil {
 		return []*Member{}
 	}
-
-	return s.GetSession(sid).Members
+	return session.Members[:]
 }
 
 func (s *State) GetSessionMember(sid SessionId, mid MemberId) *Member {
-	if !s.IsSessionExist(sid) {
+	session := s.Sessions[sid]
+	if session == nil {
 		return nil
 	}
-
-	session := s.GetSession(sid)
 
 	member := utils.Find(session.Members, func(member *Member) bool {
 		return member.Id == mid
 	})
-
 	if member == nil {
 		return nil
 	}
