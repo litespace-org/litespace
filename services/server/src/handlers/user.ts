@@ -223,6 +223,8 @@ const findFullTutorsQueryFilter = zod.object({
     .optional()
     .describe("filter by a list of available cities"),
   createdAt: dateFilter.optional().describe("filter by tutors created at date"),
+  page: zod.optional(pageNumber).default(paginationDefaults.page),
+  size: zod.optional(pageSize).default(paginationDefaults.size),
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {

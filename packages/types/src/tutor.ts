@@ -232,6 +232,6 @@ export type FindQueryModel = IFilter.SkippablePagination & {
   gender?: IUser.Gender[];
 };
 
-export type FindFullTutorsApiQuery = FindQueryModel;
+export type FindFullTutorsApiQuery = FindQueryModel & Pagination;
 
 export type FindFullTutorsApiResponse = Paginated<Full>;
