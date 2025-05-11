@@ -79,11 +79,7 @@ export default {
       screens: {
         "3xl": "1600px",
       },
-      containers: {
-        "2xs": "16rem",
-        "3xs": "12rem",
-        "4xs": "9rem",
-      },
+      containers: {},
       backgroundImage: {
         "toast-success":
           "radial-gradient(50% 50% at 50% 50%, rgba(0, 237, 81, 0.12) 0%, rgba(0, 237, 123, 0) 100%)",
@@ -93,10 +89,8 @@ export default {
           "radial-gradient(50% 50% at 50% 50%, rgba(240, 66, 72, 0.13) 0%, rgba(240, 66, 72, 0) 100%)",
         loader:
           "conic-gradient(from 180deg at 50% 50%, #1D7C4E 0deg, rgba(17,173,207,0) 360deg)",
-        "notification-telegram":
-          "linear-gradient(180deg, #2AABEE 0%, #229ED9 100%)",
-        "notification-whatsapp":
-          "linear-gradient(248.7deg, #61FD7D -70.28%, #25CF43 96.43%)",
+        telegram: "linear-gradient(180deg, #2AABEE 0%, #229ED9 100%)",
+        whatsapp: "linear-gradient(248.7deg, #61FD7D -70.28%, #25CF43 96.43%)",
       },
       colors: {
         dash: {

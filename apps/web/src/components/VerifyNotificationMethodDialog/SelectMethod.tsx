@@ -30,7 +30,7 @@ export const SelectMethod: React.FC<Props> = ({ selected, select, close }) => {
       </Typography>
       <div className="flex gap-6 mt-6 w-full h-[152px]">
         <MethodButton
-          activeColor="bg-notification-telegram hover:bg-notification-telegram"
+          activeColor="bg-telegram hover:bg-telegram"
           icon={<Telegram className="w-[32px] h-[32px]" />}
           isActive={method === "telegram"}
           onClick={() => setMethod("telegram")}
@@ -38,7 +38,7 @@ export const SelectMethod: React.FC<Props> = ({ selected, select, close }) => {
         />
         <MethodButton
           method="whatsapp"
-          activeColor="bg-notification-whatsapp hover:bg-notification-whatsapp"
+          activeColor="bg-whatsapp hover:bg-whatsapp"
           icon={
             <WhatsApp className="w-[32px] h-[32px] [&>*]:fill-natural-50" />
           }
