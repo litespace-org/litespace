@@ -42,3 +42,24 @@ export function formatDuration(ms: number, options: Options = {}): string {
     ...options,
   });
 }
+
+const WEEKS_AR_VARIANTS = {
+  one: {
+    v1: "أسبوع",
+    v2: "أسبوعًا",
+  },
+  two: {
+    v1: "أسبوعان",
+    v2: "أسبوعين",
+  },
+  many: "أسابيع",
+};
+
+export function formatWeeks(count: number): string {
+  if (count === 1) return WEEKS_AR_VARIANTS.one.v1;
+  if (count === 2) return WEEKS_AR_VARIANTS.two.v2;
+  if (count > 2 && count < 11) return count + " " + WEEKS_AR_VARIANTS.many;
+  if (count > 10 && count < 100) return count + " " + WEEKS_AR_VARIANTS.one.v2;
+  if (count > 99) return count + " " + WEEKS_AR_VARIANTS.one.v1;
+  return "";
+}

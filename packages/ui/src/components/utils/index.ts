@@ -14,4 +14,5 @@ export {
   formatCurrency,
   formatMinutes,
   formatDuration,
+  formatWeeks,
 } from "@/components/utils/format";

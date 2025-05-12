@@ -14,12 +14,12 @@ function isValidTab(tab: string): tab is Tab {
 }
 
 const TapsContainer: React.FC<{
-  planId: number;
+  plan: IPlan.Self;
   period: IPlan.PeriodLiteral;
   phone: string | null;
   sync: Void;
   syncing: boolean;
-}> = ({ planId, period, phone, syncing, sync }) => {
+}> = ({ plan, period, phone, syncing, sync }) => {
   const intl = useFormatMessage();
   const [params, setParams] = useSearchParams({});
 
@@ -53,14 +53,14 @@ const TapsContainer: React.FC<{
       </div>
 
       {tab === "card" ? (
-        <PayWithCardTab phone={phone} period={period} planId={planId} />
+        <PayWithCardTab plan={plan} phone={phone} period={period} />
       ) : null}
 
       {tab === "ewallet" ? (
         <PayWithEWalletTab
+          plan={plan}
           phone={phone}
           period={period}
-          planId={planId}
           syncing={syncing}
           sync={sync}
         />
@@ -68,9 +68,9 @@ const TapsContainer: React.FC<{
 
       {tab === "fawry" ? (
         <PayWithFawryTab
+          plan={plan}
           phone={phone}
           period={period}
-          planId={planId}
           syncing={syncing}
           sync={sync}
         />
