@@ -179,22 +179,12 @@ To create a new package, follow these steps:
 | Redis                | System             | 6379 |
 | Kafka                | System             | 9092 |
 
-## WebRTC Browser Compatibility (P2P)
-
-1. ✅ : Compatible
-2. ⛔ : Not compatible
-3. ❔ : Not tested
-
-|               | Chrome | Firefox/Zen | Safari | Chrome Mobile | Brave |
-| ------------- | ------ | ----------- | ------ | ------------- | ----- |
-| Chrome        | ✅     | ✅          | ✅     | ❔            | ✅    |
-| Firefox       | ✅     | ✅          | ✅     | ❔            | ✅    |
-| Safari        | ❔     | ❔          | ✅     | ❔            | ❔    |
-| Chrome Mobile | ❔     | ❔          | ❔     | ✅            | ❔    |
-| Brave         | ❔     | ❔          | ❔     | ❔            | ❔    |
-
 ## Payment
 
 - [Fawry docs](https://developer.fawrystaging.com/docs-home)
 - [Fawry POS emulator](https://developer.fawrystaging.com/public/pay-order/index.php)
 - [Fawry staging login](https://atfawry.fawrystaging.com/be-login/auth/login)
+
+## LiveKit
+
+We are using [livekit](https://livekit.io/) as our real-time media server. Make sure to install [likevit-server](https://docs.livekit.io/home/self-hosting/local/) and the [livekit-cli ](https://docs.livekit.io/home/cli/cli-setup/).

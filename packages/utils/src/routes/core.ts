@@ -169,6 +169,9 @@ export class RoutesManager {
       if (base === Web.LessonV2)
         return /^\/?lesson-v2\/([^/]+)\/?$/.test(target);
 
+      if (base === Web.LessonV3)
+        return /^\/?lesson-v3\/([^/]+)\/?$/.test(target);
+
       if (base === Web.Checkout)
         return /^\/?checkout\/([^/]+)\/([^/]+)\/?$/.test(target);
 

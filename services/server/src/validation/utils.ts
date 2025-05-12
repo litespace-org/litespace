@@ -1,4 +1,4 @@
-import { PASSWORD_REGEX } from "@litespace/utils";
+import { isSessionId, PASSWORD_REGEX } from "@litespace/utils";
 import {
   IUser,
   IDate,
@@ -19,9 +19,7 @@ export const id = zod.coerce.number({ message: "Invalid id" }).positive();
 export const ids = zod.array(id);
 
 export const sessionId = zod.custom<ISession.Id>(
-  (value) =>
-    typeof value === "string" &&
-    (value.startsWith("lesson:") || value.startsWith("interview:"))
+  (value) => typeof value === "string" && isSessionId(value)
 );
 
 export const password = zod

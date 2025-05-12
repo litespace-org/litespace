@@ -2432,3 +2432,25 @@ export function useSessionV6() {
     toggleVideo,
   };
 }
+
+export function useGetSessionToken(sessionId?: ISession.Id) {
+  const api = useApi();
+
+  const getSessionToken = useCallback(() => {
+    if (!sessionId) return null;
+    return api.session.getToken({ sessionId });
+  }, [api.session, sessionId]);
+
+  const keys = useMemo(
+    () => [QueryKey.GetSessionToken, sessionId],
+    [sessionId]
+  );
+
+  const query = useQuery({
+    queryFn: getSessionToken,
+    queryKey: keys,
+    enabled: !!sessionId,
+  });
+
+  return { query, keys };
+}

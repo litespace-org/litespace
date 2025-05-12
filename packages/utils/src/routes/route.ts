@@ -27,6 +27,7 @@ export enum Web {
   ForgetPassword = "/forget-password",
   Lesson = "/lesson/:id",
   LessonV2 = "/lesson-v2/:id",
+  LessonV3 = "/lesson-v3/:id",
   Session = "/session",
   CardAdded = "/card-added",
   CompleteTutorProfile = "/t/complete-profile",

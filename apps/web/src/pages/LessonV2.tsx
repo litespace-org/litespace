@@ -8,7 +8,7 @@ import Content from "@/components/LessonV2/Content";
 import { useUserContext } from "@litespace/headless/context/user";
 import cn from "classnames";
 
-type Params = Replace<UrlParamsOf<Web.Lesson>, "id", string>;
+type Params = Replace<UrlParamsOf<Web.LessonV2>, "id", string>;
 
 const LessonV2: React.FC = () => {
   const params = useParams<Params>();

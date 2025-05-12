@@ -15,7 +15,10 @@ export type AuthToken =
   | { type: TokenType.Bearer; value: string }
   | { type: TokenType.Basic; username: string; password: string };
 
-export const sockets: Record<"main" | "echo", Record<Env.Server, string>> = {
+export const sockets: Record<
+  "main" | "echo" | "livekit",
+  Record<Env.Server, string>
+> = {
   main: {
     local: `ws://localhost:4000`,
     staging: "wss://api.staging.litespace.org",
@@ -25,6 +28,11 @@ export const sockets: Record<"main" | "echo", Record<Env.Server, string>> = {
     local: `ws://localhost:4004`,
     staging: "wss://echo.staging.litespace.org",
     production: "wss://echo.litespace.org",
+  },
+  livekit: {
+    local: `ws://localhost:7880`,
+    staging: "wss://livekit.staging.litespace.org",
+    production: "wss://livekit.litespace.org",
   },
 } as const;
 

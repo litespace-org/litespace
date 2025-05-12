@@ -43,4 +43,5 @@ export enum QueryKey {
   FindPlanById = "find-plan-by-id",
   FindPendingTransaction = "find-pending-transaction",
   GetPaymentStatus = "get-payment-status",
+  GetSessionToken = "get-session-token",
 }
