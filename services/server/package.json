@@ -44,7 +44,7 @@
     "@types/lodash": "^4.17.1",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.12.12",
-    "@types/pg": "^8.11.6",
+    "@types/pg": "^8.15.1",
     "@types/pg-format": "^1.0.5",
     "@types/pidusage": "^2.0.5",
     "@types/prompts": "^2.4.9",
