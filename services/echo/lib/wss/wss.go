@@ -56,7 +56,7 @@ const (
 
 type ServerMessage struct {
 	Type  ServerMessageType `json:"type"`
-	Value interface{}       `json:"value"`
+	Value any               `json:"value"`
 }
 
 type MemberLeftMessage struct {
@@ -117,7 +117,7 @@ func (s *Socket) WriteMessage(messageType int, data []byte) error {
 	return s.conn.WriteMessage(messageType, data)
 }
 
-func (s *Socket) SendTextMessage(t ServerMessageType, v interface{}) error {
+func (s *Socket) SendTextMessage(t ServerMessageType, v any) error {
 	data := utils.Must(json.Marshal(ServerMessage{
 		Type:  t,
 		Value: v,

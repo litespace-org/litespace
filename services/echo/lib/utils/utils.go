@@ -9,7 +9,7 @@ import (
 // ancillary function used to clean the code in handlers;
 // by wrapping db methods and return the result if no error
 // is found, or panic otherwise.
-func Must[V interface{}](res V, err error) V {
+func Must[V any](res V, err error) V {
 	if err != nil {
 		panic(err)
 	}
@@ -23,8 +23,17 @@ func Unwrap(err error) {
 }
 
 // ancillary function that shall be used (deferred) in the
+// beginning of any function that uses utils.Must.
+func Recover() error {
+	if r := recover(); r != nil {
+		log.Println(r)
+	}
+	return nil
+}
+
+// ancillary function that shall be used (deferred) in the
 // beginning of fiber handlers where anc.Must is used within.
-func Recover(c *fiber.Ctx) error {
+func FiberRecover(c *fiber.Ctx) error {
 	if r := recover(); r != nil {
 		log.Println(r)
 		return c.SendStatus(
@@ -34,7 +43,7 @@ func Recover(c *fiber.Ctx) error {
 	return nil
 }
 
-func Filter[T interface{}](list []T, callback func(item T) bool) []T {
+func Filter[T any](list []T, callback func(item T) bool) []T {
 	result := []T{}
 
 	for _, item := range list {
@@ -46,7 +55,7 @@ func Filter[T interface{}](list []T, callback func(item T) bool) []T {
 	return result
 }
 
-func Find[T interface{}](list []T, callback func(item T) bool) *T {
+func Find[T any](list []T, callback func(item T) bool) *T {
 
 	for _, item := range list {
 		if callback(item) {

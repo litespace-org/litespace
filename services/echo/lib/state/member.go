@@ -26,6 +26,7 @@ type Member struct {
 	PeerConnectionState chan webrtc.PeerConnectionState
 	Audio               bool
 	Video               bool
+	rtpSenders          []*webrtc.RTPSender
 }
 
 func initPeerConnection() (*webrtc.PeerConnection, error) {
@@ -83,6 +84,7 @@ func initPeerConnection() (*webrtc.PeerConnection, error) {
 	return conn, err
 }
 
+// Initialize a peer connection and create a new member struct associated to the connection
 func NewMember(mid MemberId, socket *wss.Socket) (*Member, error) {
 	conn, err := initPeerConnection()
 	if err != nil {
@@ -166,7 +168,16 @@ func (m *Member) onICECandidate(candidate *webrtc.ICECandidate) {
 
 func (m *Member) onConnectionStateChange(cs webrtc.PeerConnectionState) {
 	log.Printf("Connection state: %s", cs.String())
+	if cs == webrtc.PeerConnectionStateClosed {
+		m.cleanup()
+	}
 	m.PeerConnectionState <- cs
+}
+
+func (m *Member) cleanup() {
+	for _, sender := range m.rtpSenders {
+		sender.Stop()
+	}
 }
 
 func (m *Member) onICEConnectionStateChange(is webrtc.ICEConnectionState) {
@@ -182,7 +193,7 @@ func (m *Member) onNegotiationNeeded() {
 
 	transceivers := m.Conn.GetTransceivers()
 	// only add transceivers incase they are not added yet.
-	if len(transceivers) != 0 {
+	if len(transceivers) == 0 {
 		// add receive only audio transceiver (must be first, will have mid=0)
 		m.Conn.AddTransceiverFromKind(webrtc.RTPCodecTypeAudio, webrtc.RTPTransceiverInit{
 			Direction: webrtc.RTPTransceiverDirectionRecvonly,
@@ -209,6 +220,7 @@ func (m *Member) SendTrack(track *webrtc.TrackLocalStaticRTP) error {
 		)
 		return err
 	}
+	m.rtpSenders = append(m.rtpSenders, rtpSender)
 
 	// Read incoming RTCP packets
 	// Before these packets are returned they are processed by interceptors. For things
@@ -233,13 +245,9 @@ func (m *Member) SendTrack(track *webrtc.TrackLocalStaticRTP) error {
 }
 
 func (m *Member) SetAudio(audio bool) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
 	m.Audio = audio
 }
 
 func (m *Member) SetVideo(video bool) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
 	m.Video = video
 }
