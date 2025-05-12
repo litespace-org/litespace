@@ -7,4 +7,13 @@ export class Session extends Base {
   ): Promise<ISession.FindSessionMembersApiResponse> {
     return await this.get({ route: `/api/v1/session/${sessionId}` });
   }
+
+  async getToken(
+    params: ISession.GetSessionTokenApiQuery
+  ): Promise<ISession.GetSessionTokenApiResponse> {
+    return await this.get({
+      route: "/api/v1/session/token",
+      params,
+    });
+  }
 }

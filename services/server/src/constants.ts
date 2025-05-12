@@ -160,3 +160,14 @@ export const messengerConfig = {
     .trim()
     .parse(process.env.MESSENGER_PASSWORD),
 };
+
+export const livekitConfig = {
+  apiKey: zod
+    .string({ message: "missing or invalid livekit api key" })
+    .trim()
+    .parse(process.env.LIVEKIT_API_KEY),
+  apiSecret: zod
+    .string({ message: "missing or invalid livekit api secret" })
+    .trim()
+    .parse(process.env.LIVEKIT_API_SECRET),
+};
