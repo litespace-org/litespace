@@ -97,6 +97,22 @@
   "send-forget-password.email.error": "حدث خطأ أثناء ارسال رمز إعادة تعيين كلمة السر إلى بريدك الإلكتروني، برجاء المحاولة مرة أخرى",
   "reset-password-dialog.success": "تم إعادة تعيين كلمة المرور بنجاح",
   "reset-password-dialog.error": "حدثت خطأ أثناء إعادة تعيين كلمة المرور، برجاء المحاولة مرة أخرى!",
+  "verify-phone-dialog.title": " تأكيد رقم الهاتف",
+  "verify-phone-dialog.empty-phone.description": "يبدو انك لم تدخل اي رقم هاتف خاص بك حتي الان، ادخل رقم هاتفك في الاسفل .",
+  "verify-phone-dialog.phone.placeholder": "أدخل رقم الهاتف هنا",
+  "verify-phone-dialog.method.description": "اين تريد استقبال كود التأكيد لأتمام عملية تأكيد رقم الهاتف الخاص بك؟",
+  "verify-phone-dialog.telegram.privacy-issue.description-1": "بسبب إعدادات الخصوصية في تيليجرام، لا يمكننا إرسال رسالة التأكيد مباشرة إلى رقمك. لإتمام التأكيد، يُرجى اتباع أحد الخيارات التالية:-",
+  "verify-phone-dialog.telegram.privacy-issue.description-2": " 1- تعديل إعدادات الخصوصية في تيليجرام عن طريق الذهاب إلى: الإعدادات > الخصوصية والأمان > من يمكنه إرسال رسائل إليّ واجعلها 'الكل' مؤقتًا ثم اضغط على اعادة المحاولة.",
+  "verify-phone-dialog.telegram.privacy-issue.description-3": "2- ارسل لنا رسالة عبر تيليجرام من هنا {value}  او علي هذا الرقم ({phone}) ثم أعد المحاولة مرة أخرى.",
+  "verify-phone-dialog.telegram.privacy-issue.click-to-copy": "اضغط لنسخ الرقم",
+  "verify-phone-dialog.telegram.privacy-issue.copied": "تم نسخ الرقم بنجاح",
+  "verify-phone-dialog.confirm-code.description": " سيتم إرسال كود مكون من 5 أرقام إلى رقم الهاتف المسجل لدينا عبر {method} برجاء إدخال الكود المرسل لتأكيد رقم الهاتف الخاص بك.",
+  "verify-phone-dialog.phone": "ادخل رمز التحقق المؤقت المرسل الي {phone}",
+  "verify-phone-dialog.send-code": "إرسال الكود",
+  "verify-phone-dialog.resend": "لم تستقبل الرمز؟ إعادة الإرسال",
+  "verify-phone-dialog.resending": "يتم الآن إعادة إرسال الكود...",
+  "verify-phone-dialog.whatsapp": "واتساب",
+  "verify-phone-dialog.telegram": "تليجرام",
   "reset-password.title": "انشاء كلمة مرور جديدة",
   "reset-password.description": "قم بإنشاء كلمه مرور جديدة لحسابك",
   "reset-password.error": " عذرًا، حدث خطأ أثناء تأكيد كلمة المرور الجديدة. برجاء المحاولة مرة أخرى",
@@ -657,7 +673,6 @@
   "notification-method.dialog.title": "كيف تفضل استقبال الإشعارات؟",
   "notification-method.dialog.method.description": "حتى نضمن وصول التنبيهات المهمة لك (مثل المواعيد، التحديثات، والتنبيهات الشخصية)، اختر الطريقة الأنسب لك.",
   "notification-method.dialog.phone.description": " ادخل رقم الهاتف الخاص بك و سنرسل لك كود مكون من 5 أرقام .",
-  "notification-method.dialog.phone.input-label": "رقم الهاتف",
   "notification-method.dialog.phone.input-placeholder": "010 1234 5678",
   "notification-method.dialog.phone.send-code": "ارسال الكود",
   "notification-method.dialog.code.description": "برجاء ادخال الكود المرسل المكون من 5 أرقام .",
@@ -1058,5 +1073,6 @@
   "error.field.long-contact-request-title": "العنوان طويل جدا، برجاء اختيار عنوان أقصر.",
   "error.field.short-contact-request-message": "الرسالة قصيرة جدا!",
   "error.field.long-contact-request-message": "عذرا، الرسالة طويلة جدا.",
-  "error.field.invalid-type": "عذرا، القيمة التي تحاول إدخالها غير صحيحة."
+  "error.field.invalid-type": "عذرا، القيمة التي تحاول إدخالها غير صحيحة.",
+  "error.confirmation-code.invalid": "رقم تأكيد غير صحيح"
 }
