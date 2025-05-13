@@ -8,11 +8,11 @@ import { PatternInput } from "@litespace/ui/PatternInput";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { Web } from "@litespace/utils/routes";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useForm } from "@litespace/headless/form";
 import { useNavigate } from "react-router-dom";
 import Check from "@litespace/assets/Check16X16";
-import Logo from "@litespace/assets/LogoV3";
+import Logo from "@litespace/assets/Logo";
 import { Button } from "@litespace/ui/Button";
 import { Textarea } from "@litespace/ui/Textarea";
 import { Select } from "@litespace/ui/Select";
@@ -26,6 +26,8 @@ import {
 } from "@litespace/ui/lib/validate";
 import { LocalId } from "@litespace/ui/locales";
 import { MAX_TUTOR_ABOUT_TEXT_LENGTH, optional } from "@litespace/utils";
+import { useOnError } from "@/hooks/error";
+import { VerifyEmail } from "@/components/Common/VerifyEmail";
 
 type Form = {
   name: string;
@@ -71,20 +73,28 @@ const Content: React.FC<{
   verifiedEmail,
 }) => {
   // ==================== states & hooks ====================
+  const [showVerifyEmailDialog, setShowVerifyEmailDialog] =
+    useState<boolean>(false);
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
+
+  const onError = useOnError({
+    type: "mutation",
+    handler({ messageId }) {
+      toast.error({
+        title: intl("complete-tutor-profile.update-error"),
+        description: intl(messageId),
+      });
+    },
+  });
 
   const update = useUpdateUser({
     onSuccess: () => {
       refetch();
       navigate(Web.Root);
     },
-    onError: () =>
-      toast.error({
-        title: intl("error.api.unexpected"),
-        description: intl("error.unexpected"),
-      }),
+    onError,
   });
 
   const cityOptions = useMemo(
@@ -161,10 +171,7 @@ const Content: React.FC<{
     },
   });
 
-  // ==================== callbacks ====================
-  // @NOTE: it should update email/phone in the database after confirmation in case it's different
   const confirmPhone = useCallback(() => alert("not implemented yet!"), []);
-  const confirmEmail = useCallback(() => alert("not implemented yet!"), []);
 
   return (
     <div className="gap-10 flex flex-col items-center justify-center self-center h-full">
@@ -212,7 +219,7 @@ const Content: React.FC<{
               <PatternInput
                 id="phone"
                 mask=" "
-                idleDir="rtl"
+                idleDir="ltr"
                 inputSize="large"
                 name="phone"
                 label={intl("labels.phone")}
@@ -262,7 +269,7 @@ const Content: React.FC<{
                 state={form.errors.email ? "error" : undefined}
                 onChange={({ target }) => form.set("email", target.value)}
                 placeholder={intl("labels.email.placeholder")}
-                disabled={update.isPending || verifiedEmail}
+                disabled
                 post={
                   verifiedEmail ? (
                     <div className="h-10 flex items-center justify-center ms-2">
@@ -275,7 +282,7 @@ const Content: React.FC<{
                       variant="tertiary"
                       size="large"
                       htmlType="button"
-                      onClick={confirmEmail}
+                      onClick={() => setShowVerifyEmailDialog(true)}
                       loading={false}
                       disabled={update.isPending}
                     >
@@ -379,6 +386,10 @@ const Content: React.FC<{
           </Typography>
         </Button>
       </form>
+
+      {showVerifyEmailDialog ? (
+        <VerifyEmail close={() => setShowVerifyEmailDialog(false)} />
+      ) : null}
     </div>
   );
 };

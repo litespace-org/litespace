@@ -100,7 +100,6 @@
     "./LoginDark": "./dist/LoginDark.tsx",
     "./LoginLight": "./dist/LoginLight.tsx",
     "./LogoAvatar": "./dist/LogoAvatar.tsx",
-    "./LogoV3": "./dist/LogoV3.tsx",
     "./Logo": "./dist/Logo.tsx",
     "./Logout": "./dist/Logout.tsx",
     "./Mail": "./dist/Mail.tsx",

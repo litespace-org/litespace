@@ -1,6 +1,6 @@
 "use client";
 
-import Logo from "@litespace/assets/LogoV2";
+import Logo from "@litespace/assets/LogoAvatar";
 import React, { useMemo, useCallback, useState } from "react";
 import cn from "classnames";
 import { optional } from "@litespace/utils";
