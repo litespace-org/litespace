@@ -25,6 +25,7 @@ import {
   isValidPhone,
   isValidUserName,
 } from "@litespace/ui/lib/validate";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Form = {
   name: string;
@@ -60,6 +61,7 @@ export const PersonalDetails: React.FC<Props> = ({
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
+  const mq = useMediaQuery();
 
   const validators = useMakeValidators<Form>({
     name: { required: !!name, validate: isValidUserName },
