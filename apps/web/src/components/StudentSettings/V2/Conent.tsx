@@ -7,6 +7,8 @@ import PersonalDetails from "@/components/StudentSettings/V2/PersonalDetails";
 import TopicSelection from "@/components/StudentSettings/V2/TopicSelection";
 import { IUser } from "@litespace/types";
 import { Tab, TabId } from "@/components/StudentSettings/V2/types";
+import UploadPhoto from "@/components/StudentSettings/V2/UploadPhoto";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Conent: React.FC<{
   tab: TabId;
@@ -14,6 +16,8 @@ const Conent: React.FC<{
   user: IUser.Self;
 }> = ({ tab, setTab, user }) => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
+
   const tabs: Tab[] = useMemo(
     () => [
       {
@@ -61,8 +65,14 @@ const Conent: React.FC<{
   );
 
   return (
-    <div>
-      <div className="max-w-[538px] mb-10">
+    <div className="h-full flex flex-col">
+      {!mq.md ? (
+        <div className="mb-6">
+          <UploadPhoto id={user.id} name={user.name} image={user.image} />
+        </div>
+      ) : null}
+
+      <div className="max-w-[538px] mb-6 lg:mb-10">
         <Tabs tabs={tabs} tab={tab} setTab={setTab} />
       </div>
 
@@ -91,7 +101,7 @@ const Conent: React.FC<{
       ) : null}
 
       {tab === "topics" ? (
-        <div className="max-w-[531px]">
+        <div className="max-w-[531px] grow flex">
           <TopicSelection />
         </div>
       ) : null}

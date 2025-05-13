@@ -15,13 +15,13 @@ export const Tabs = <T extends string>({
   setTab: (id: T) => void;
 }) => {
   return (
-    <div className="border border-natural-200 rounded-xl flex items-center w-fit">
+    <div className="border border-natural-200 rounded-xl flex items-center md:w-fit md:max-w-full overflow-x-auto">
       {tabs.map(({ id, label, important }) => (
         <button
           key={id}
           type="button"
           className={cn(
-            "relative px-5 py-4 group rounded-xl",
+            "relative px-[5.5px] md:px-5 py-3 md:py-4 group rounded-xl",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-offset-0 focus-visible:ring-secondary-600"
           )}
           onClick={() => setTab(id)}
@@ -29,7 +29,7 @@ export const Tabs = <T extends string>({
           <Typography
             tag="h6"
             className={cn(
-              "font-normal text-body whitespace-nowrap",
+              "font-normal text-tiny md:text-body whitespace-nowrap",
               id === tab
                 ? "text-brand-700"
                 : "text-natural-500 group-hover:text-brand-500 group-active:text-brand-700"
@@ -38,7 +38,7 @@ export const Tabs = <T extends string>({
             {label}
           </Typography>
           {important ? (
-            <div className="absolute top-2 right-5 bg-destructive-500 w-2 h-2 rounded-full" />
+            <div className="absolute top-2 right-1 md:right-5 bg-destructive-600 w-1 h-1 md:w-2 md:h-2 rounded-full" />
           ) : null}
         </button>
       ))}
