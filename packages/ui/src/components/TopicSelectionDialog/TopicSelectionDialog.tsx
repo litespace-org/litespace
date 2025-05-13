@@ -104,7 +104,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
       <div className="flex flex-col items-center justify-center mt-4 md:mt-2">
         <Typography
           tag="p"
-          className="text-natural-950 mt-2 font-semibold text-tiny md:text-caption sm:text-caption"
+          className="text-natural-700 mt-2 font-semibold text-tiny md:text-caption sm:text-caption"
         >
           {description}
         </Typography>

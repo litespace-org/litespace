@@ -171,7 +171,7 @@ export function NotificationSettings({
   );
 
   return (
-    <div>
+    <div className="md:max-w-[344px] lg:max-w-[400px] grow md:grow-0 h-full flex flex-col">
       {showDialog ? (
         <VerifyNotificationMethodDialog
           method={selectedMethod}
@@ -184,7 +184,10 @@ export function NotificationSettings({
           verifing={verifyPhoneCodeMutation.isPending}
         />
       ) : null}
-      <form onSubmit={form.onSubmit} className="max-w-[400px]">
+      <form
+        onSubmit={form.onSubmit}
+        className="grow flex justify-between flex-col md:justify-start"
+      >
         <Select
           onChange={onChange}
           id="notification-method"
@@ -200,7 +203,7 @@ export function NotificationSettings({
             form.state.notificationMethod === notificationMethod
           }
           onClick={form.submit}
-          className="mt-10"
+          className="md:mt-10 mb-4 md:mb-0 mr-auto md:mr-0"
         >
           {intl("shared-settings.save")}
         </Button>

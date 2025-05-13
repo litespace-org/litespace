@@ -1,4 +1,4 @@
-import UploadPhoto from "@/components/StudentSettings/V2/UploadPhoto";
+import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import { Input } from "@litespace/ui/Input";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Select } from "@litespace/ui/Select";
@@ -19,7 +19,7 @@ import { useOnError } from "@/hooks/error";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { PatternInput } from "@litespace/ui/PatternInput";
-import { ConfirmContactMethod } from "@/components/StudentSettings/V2/ConfirmContactMethod";
+import { ConfirmContactMethod } from "@/components/StudentSettings/ConfirmContactMethod";
 import {
   isValidEmail,
   isValidPhone,
@@ -148,10 +148,15 @@ export const PersonalDetails: React.FC<Props> = ({
 
   return (
     <div>
-      <UploadPhoto id={id} name={name} image={image} />
-      <div className="flex gap-10 mt-6">
-        <div className="w-[400px] flex-shrink-0">
-          <form onSubmit={form.onSubmit} className="w-full flex flex-col gap-4">
+      <div className="hidden md:block">
+        <UploadPhoto id={id} name={name} image={image} />{" "}
+      </div>
+      <div className="flex flex-wrap md:flex-nowrap gap-6 md:gap-10 md:mt-6">
+        <div className="w-full md:w-[320px] lg:w-[400px] flex-shrink-0">
+          <form
+            onSubmit={form.onSubmit}
+            className="w-full flex flex-col gap-2 md:gap-4"
+          >
             <Input
               id="name"
               name="name"
@@ -216,19 +221,28 @@ export const PersonalDetails: React.FC<Props> = ({
             disabled={mutation.isPending || unchanged}
             loading={mutation.isPending}
             onClick={form.submit}
-            className="mt-10"
+            className="mt-10 hidden md:block"
           >
             {intl("shared-settings.save")}
           </Button>
         </div>
 
-        <div className="max-w-[640px]">
+        <div className="max-w-[320px] lg:max-w-[640px]">
           <ConfirmContactMethod
             verifiedEmail={verifiedEmail}
             verifiedPhone={verifiedPhone}
           />
         </div>
       </div>
+      <Button
+        size="large"
+        disabled={mutation.isPending || unchanged}
+        loading={mutation.isPending}
+        onClick={form.submit}
+        className="mt-6 md:hidden mr-auto"
+      >
+        {intl("shared-settings.save")}
+      </Button>
     </div>
   );
 };

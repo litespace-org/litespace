@@ -1,19 +1,21 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useMemo } from "react";
 import { Tabs } from "@litespace/ui/Tabs";
-import { NotificationSettings } from "@/components/StudentSettings/V2/NotificationSettings";
-import { UpdatePassword } from "@/components/StudentSettings/V2/UpdatePassword";
-import { PersonalDetails } from "@/components/StudentSettings/V2/PersonalDetails";
-import TopicSelection from "@/components/StudentSettings/V2/TopicSelection";
+import { NotificationSettings } from "@/components/StudentSettings/NotificationSettings";
+import { UpdatePassword } from "@/components/StudentSettings/UpdatePassword";
+import { PersonalDetails } from "@/components/StudentSettings/PersonalDetails";
+import TopicSelection from "@/components/StudentSettings/TopicSelection";
 import { IUser } from "@litespace/types";
-import { Tab, TabId } from "@/components/StudentSettings/V2/types";
+import { Tab, TabId } from "@/components/StudentSettings/types";
+import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 
-const Conent: React.FC<{
+const Content: React.FC<{
   tab: TabId;
   setTab: (tab: TabId) => void;
   user: IUser.Self;
 }> = ({ tab, setTab, user }) => {
   const intl = useFormatMessage();
+
   const tabs: Tab[] = useMemo(
     () => [
       {
@@ -61,8 +63,12 @@ const Conent: React.FC<{
   );
 
   return (
-    <div>
-      <div className="max-w-[538px] mb-10">
+    <div className="grow flex flex-col">
+      <div className="mb-6 md:hidden">
+        <UploadPhoto id={user.id} name={user.name} image={user.image} />
+      </div>
+
+      <div className="max-w-fit mb-6 lg:mb-10">
         <Tabs tabs={tabs} tab={tab} setTab={setTab} />
       </div>
 
@@ -93,7 +99,7 @@ const Conent: React.FC<{
       ) : null}
 
       {tab === "topics" ? (
-        <div className="max-w-[531px]">
+        <div className="max-w-[531px] grow flex">
           <TopicSelection />
         </div>
       ) : null}
@@ -101,4 +107,4 @@ const Conent: React.FC<{
   );
 };
 
-export default Conent;
+export default Content;
