@@ -167,7 +167,7 @@
     "@types/color": "^4.2.0",
     "@types/mersenne-twister": "^1.1.7",
     "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
+    "@types/react-dom": "^19.1.4",
     "@types/react-lottie": "^1.2.10",
     "@types/sanitize-html": "^2",
     "@vitejs/plugin-react": "^4.2.1",
