@@ -30,11 +30,10 @@ const Payment: React.FC<{
   // ==================== pay with ewallet ====================
   const onError = useOnError({
     type: "mutation",
-    handler({ messageId }) {
+    handler() {
       toast.error({
-        id: "pay-with-ewallet",
-        title: intl("checkout.payment.pay-error"),
-        description: intl(messageId),
+        title: intl("checkout.payment.failed.title"),
+        description: intl("checkout.payment.failed.description"),
       });
     },
   });

@@ -6,7 +6,6 @@ import { forbidden, notfound } from "@/lib/error";
 import { id, pageNumber, pageSize, withNamedId } from "@/validation/utils";
 import { isAdmin, isStudent } from "@litespace/utils/user";
 import { transactions } from "@litespace/models";
-import { first } from "lodash";
 
 const findPayload = zod.object({
   ids: id.array().optional(),
@@ -53,25 +52,19 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-async function findPending(req: Request, res: Response, next: NextFunction) {
+async function findLast(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user);
   if (!allowed) return next(forbidden());
 
-  const { list } = await transactions.find({
-    users: [user.id],
-    statuses: [ITransaction.Status.New],
-  });
-
-  const transaction = first(list) || null;
-
-  const response: ITransaction.FindPendingApiResponse = transaction;
+  const tx = await transactions.findLast({ userId: user.id });
+  const response: ITransaction.FindLastApiResponse = tx;
 
   res.status(200).json(response);
 }
 
 export default {
-  findPending: safeRequest(findPending),
   find: safeRequest(find),
   findById: safeRequest(findById),
+  findLast: safeRequest(findLast),
 };

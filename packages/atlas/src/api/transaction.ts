@@ -12,7 +12,7 @@ export class Transaction extends Base {
     return this.get({ route: `/api/v1/tx/list`, payload: payload });
   }
 
-  async findPending(): Promise<ITransaction.FindPendingApiResponse> {
-    return this.get({ route: `/api/v1/tx/pending` });
+  async findLast(): Promise<ITransaction.FindLastApiResponse> {
+    return this.get({ route: `/api/v1/tx/last` });
   }
 }

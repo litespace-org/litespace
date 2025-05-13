@@ -77,6 +77,21 @@ export class Transactions {
     return { list: rows.map((row) => this.from(row)), total };
   }
 
+  /**
+   * retrieve the last transaction of a specific user
+   */
+  async findLast({
+    tx,
+    userId,
+  }: WithOptionalTx<{ userId: number }>): Promise<ITransaction.Self | null> {
+    const rows = await this.builder(tx)
+      .where(this.column("user_id"), userId)
+      .orderBy(this.column("created_at"), "desc")
+      .select();
+    const row = first(rows);
+    return row ? this.from(row) : null;
+  }
+
   from(row: ITransaction.Row): ITransaction.Self {
     return {
       id: row.id,
