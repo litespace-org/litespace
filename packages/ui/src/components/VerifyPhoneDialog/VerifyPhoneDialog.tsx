@@ -14,9 +14,8 @@ type Payload = {
   phone: string;
 };
 
-type VerifyPhoneDialog = {
-  open: boolean;
-  onClose: Void;
+type Props = {
+  close: Void;
   phone: string | null;
   sendCode(payload: Payload): void;
   sendingCode: boolean;
@@ -24,16 +23,13 @@ type VerifyPhoneDialog = {
   unresolvedPhone: boolean;
   verifyCode(code: number): void;
   verifyingCode: boolean;
-  resending: boolean;
 };
 
-export const VerifyPhoneDialog: React.FC<VerifyPhoneDialog> = ({
-  open,
-  onClose,
+export const VerifyPhoneDialog: React.FC<Props> = ({
+  close,
   phone: defaultPhone,
   sendCode,
   sendingCode,
-  resending,
   sentCode,
   unresolvedPhone,
   verifyCode,
@@ -46,8 +42,8 @@ export const VerifyPhoneDialog: React.FC<VerifyPhoneDialog> = ({
 
   return (
     <Dialog
-      open={open}
-      close={onClose}
+      open
+      close={close}
       title={
         <Typography
           tag="span"
@@ -58,25 +54,25 @@ export const VerifyPhoneDialog: React.FC<VerifyPhoneDialog> = ({
       }
     >
       {/* ================= phone ================= */}
-      {!phone ? <EnterPhoneNumber close={onClose} setPhone={setPhone} /> : null}
+      {!phone ? <EnterPhoneNumber close={close} setPhone={setPhone} /> : null}
 
       {/* ================= method ================= */}
       {phone && !sentCode && !unresolvedPhone ? (
         <SelectMethod
-          close={onClose}
+          close={close}
           sendCode={(method) => {
             setMethod(method);
             sendCode({ phone, method });
           }}
-          loading={sendingCode}
+          sending={sendingCode}
         />
       ) : null}
 
       {/* ================= unresolved phone ================= */}
-      {unresolvedPhone ? (
+      {unresolvedPhone && phone ? (
         <UnresolvedPhone
           resend={() => {
-            if (!phone || !method) return;
+            if (!method) return;
             sendCode({ phone, method });
           }}
           sendingCode={sendingCode}
@@ -84,16 +80,13 @@ export const VerifyPhoneDialog: React.FC<VerifyPhoneDialog> = ({
       ) : null}
 
       {/* ================= confirmation code ================= */}
-      {phone && sentCode && !unresolvedPhone ? (
+      {phone && sentCode && method && !unresolvedPhone ? (
         <VerifyCode
-          byWhatsapp={method === "whatsapp"}
-          close={onClose}
+          method={method}
+          close={close}
           phone={phone}
-          resend={() => {
-            if (!method) return;
-            sendCode({ phone, method });
-          }}
-          resending={resending}
+          resend={() => sendCode({ phone, method })}
+          resending={sendingCode}
           verifing={verifyingCode}
           verifyCode={verifyCode}
         />

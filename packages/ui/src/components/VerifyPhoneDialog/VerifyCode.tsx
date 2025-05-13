@@ -2,15 +2,16 @@ import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { ConfirmationCode } from "@litespace/ui/ConfirmationCode";
 import { Button } from "@litespace/ui/Button";
-import { Void } from "@litespace/types";
+import { IUser, Void } from "@litespace/types";
 import React, { useState } from "react";
+import { PHONE_METHOD_TO_INTL_MSG_ID } from "@/components/VerifyPhoneDialog/utils";
 
 type Props = {
   phone: string;
   resend: Void;
   resending: boolean;
   verifing: boolean;
-  byWhatsapp: boolean;
+  method: IUser.NotificationMethodLiteral;
   verifyCode: (code: number) => void;
   close: Void;
 };
@@ -20,7 +21,7 @@ export const VerifyCode: React.FC<Props> = ({
   resend,
   resending,
   verifing,
-  byWhatsapp,
+  method,
   close,
   verifyCode,
 }) => {
@@ -36,9 +37,7 @@ export const VerifyCode: React.FC<Props> = ({
         {intl.rich("verify-phone-dialog.confirm-code.description", {
           method: (
             <Typography tag="span">
-              {byWhatsapp
-                ? intl("verify-phone-dialog.whatsapp")
-                : intl("verify-phone-dialog.telegram")}
+              {intl(PHONE_METHOD_TO_INTL_MSG_ID[method])}
             </Typography>
           ),
         })}

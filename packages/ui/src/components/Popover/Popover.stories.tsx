@@ -3,6 +3,7 @@ import { Popover } from "@/components/Popover";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { Button } from "@/components/Button";
 import ar from "@/locales/ar-eg.json";
+import React from "react";
 
 type Component = typeof Popover;
 

@@ -46,7 +46,11 @@ export const UnresolvedPhone: React.FC<{
             <Popover
               content={
                 <Typography tag="span">
-                  {copied ? "copied" : "click to copy"}
+                  {intl(
+                    copied
+                      ? "verify-phone-dialog.telegram.privacy-issue.copied"
+                      : "verify-phone-dialog.telegram.privacy-issue.click-to-copy"
+                  )}
                 </Typography>
               }
             >
@@ -84,7 +88,7 @@ export const UnresolvedPhone: React.FC<{
           size="large"
           className="grow"
         >
-          {intl("labels.next")}
+          {intl("labels.try-again")}
         </Button>
         <Button
           onClick={close}

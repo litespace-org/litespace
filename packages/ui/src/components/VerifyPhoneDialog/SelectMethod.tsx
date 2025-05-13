@@ -1,22 +1,22 @@
 import { MethodButton } from "@/components/VerifyPhoneDialog/MethodButton";
 import Telegram from "@litespace/assets/TelegramWithoutCircle";
 import WhatsApp from "@litespace/assets/WhatsApp";
-import { Void } from "@litespace/types";
+import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useState } from "react";
-import { Method } from "@/components/VerifyPhoneDialog/utils";
 
 type Props = {
   close: Void;
-  loading: boolean;
-  sendCode: (method: Method) => void;
+  sending: boolean;
+  sendCode: (method: IUser.NotificationMethodLiteral) => void;
 };
-
-export const SelectMethod: React.FC<Props> = ({ close, sendCode, loading }) => {
+export const SelectMethod: React.FC<Props> = ({ close, sendCode, sending }) => {
   const intl = useFormatMessage();
-  const [method, setMethod] = useState<Method | null>(null);
+  const [method, setMethod] = useState<IUser.NotificationMethodLiteral | null>(
+    null
+  );
 
   return (
     <div>
@@ -34,12 +34,14 @@ export const SelectMethod: React.FC<Props> = ({ close, sendCode, loading }) => {
             <WhatsApp className="w-[32px] h-[32px] [&>*]:fill-natural-50 icon" />
           }
           isActive={method === "whatsapp"}
+          disabled={sending}
           onClick={() => setMethod("whatsapp")}
         />
         <MethodButton
           activeColor="bg-telegram hover:bg-telegram"
           icon={<Telegram className="w-[32px] h-[32px] icon" />}
           isActive={method === "telegram"}
+          disabled={sending}
           onClick={() => setMethod("telegram")}
           method="telegram"
         />
@@ -50,21 +52,19 @@ export const SelectMethod: React.FC<Props> = ({ close, sendCode, loading }) => {
             if (!method) return;
             sendCode(method);
           }}
-          disabled={!method || loading}
-          loading={loading}
+          disabled={!method || sending}
+          loading={sending}
           size="large"
-          className="grow flex-1"
+          className="grow flex-1 font-medium"
         >
-          <Typography tag="span" className="font-medium text-natural-50">
-            {intl("verify-phone-dialog.send-code")}
-          </Typography>
+          {intl("verify-phone-dialog.send-code")}
         </Button>
         <Button
           onClick={close}
           variant="secondary"
-          className="grow flex-1"
+          className="grow flex-1 font-medium"
           size="large"
-          disabled={loading}
+          disabled={sending}
         >
           {intl("labels.cancel")}
         </Button>

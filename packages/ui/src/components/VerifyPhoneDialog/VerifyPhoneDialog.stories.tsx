@@ -1,6 +1,6 @@
 import { VerifyPhoneDialog } from "@/components/VerifyPhoneDialog";
 import { Meta, StoryObj } from "@storybook/react";
-import React from "react";
+import React, { useState } from "react";
 
 type Component = typeof VerifyPhoneDialog;
 
@@ -22,24 +22,29 @@ type Story = StoryObj<Component>;
 
 export const WithoutPhoneNumber: Story = {
   args: {
-    onClose: () => alert("closing"),
-    open: true,
-    resending: false,
-    sendCode: () => {},
+    close: () => alert("closing"),
     sendingCode: false,
-    sentCode: false,
     unresolvedPhone: false,
     verifyCode: (val) => alert(val),
     verifyingCode: false,
+  },
+  render: (props) => {
+    const [sentCode, setSentCode] = useState(false);
+
+    return (
+      <VerifyPhoneDialog
+        {...props}
+        sendCode={() => setSentCode(true)}
+        sentCode={sentCode}
+      />
+    );
   },
 };
 
 export const SendingCode: Story = {
   args: {
-    phone: "0111111111",
-    open: true,
-    onClose: () => alert("closing"),
-    resending: false,
+    phone: "01234567890",
+    close: () => alert("closing"),
     sendCode: (payload) => alert(payload),
     sendingCode: true,
     sentCode: false,
@@ -51,29 +56,12 @@ export const SendingCode: Story = {
 
 export const UnresolvedPhone: Story = {
   args: {
-    phone: "0111111111",
-    open: true,
-    onClose: () => alert("closing"),
-    resending: false,
+    phone: "01234567890",
+    close: () => alert("closing"),
     sendCode: () => {},
     sendingCode: false,
     sentCode: false,
     unresolvedPhone: true,
-    verifyCode: (val) => alert(val),
-    verifyingCode: false,
-  },
-};
-
-export const ConfirmationCode: Story = {
-  args: {
-    phone: "01111111111",
-    onClose: () => alert("closing"),
-    open: true,
-    resending: false,
-    sendCode: () => {},
-    sendingCode: false,
-    sentCode: true,
-    unresolvedPhone: false,
     verifyCode: (val) => alert(val),
     verifyingCode: false,
   },

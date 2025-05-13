@@ -7,6 +7,7 @@ import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { PatternInput } from "@litespace/ui/PatternInput";
 import { isValidPhone } from "@litespace/ui/lib/validate";
 import React from "react";
+import { Form } from "@/components/Form";
 
 type Props = {
   setPhone: (phone: string) => void;
@@ -43,41 +44,39 @@ export const EnterPhoneNumber: React.FC<Props> = ({ close, setPhone }) => {
       >
         {intl("verify-phone-dialog.empty-phone.description")}
       </Typography>
-      <PatternInput
-        id="phone"
-        mask=" "
-        format="### #### ####"
-        idleDir="ltr"
-        label={intl("labels.phone")}
-        state={form.errors.phone ? "error" : undefined}
-        helper={form.errors.phone}
-        autoComplete="true"
-        onValueChange={({ value }) => {
-          form.set("phone", value);
-        }}
-        value={form.state.phone}
-        placeholder={intl("verify-phone-dialog.phone.placeholder")}
-      />
+      <Form onSubmit={form.onSubmit}>
+        <PatternInput
+          id="phone"
+          mask=" "
+          format="### #### ####"
+          idleDir="ltr"
+          label={intl("labels.phone")}
+          state={form.errors.phone ? "error" : undefined}
+          helper={form.errors.phone}
+          autoComplete="true"
+          onValueChange={({ value }) => {
+            form.set("phone", value);
+          }}
+          value={form.state.phone}
+          placeholder={intl("verify-phone-dialog.phone.placeholder")}
+        />
+      </Form>
       <div className="flex gap-6 w-full">
         <Button
           onClick={form.submit}
           disabled={!form.state.phone}
           size="large"
-          className="flex-1"
+          className="flex-1 font-medium"
         >
-          <Typography tag="span" className="font-medium text-natural-50">
-            {intl("labels.next")}
-          </Typography>
+          {intl("labels.next")}
         </Button>
         <Button
           onClick={close}
           variant="secondary"
           size="large"
-          className="flex-1"
+          className="flex-1 font-medium"
         >
-          <Typography tag="span" className="font-medium text-brand-700">
-            {intl("labels.cancel")}
-          </Typography>
+          {intl("labels.cancel")}
         </Button>
       </div>
     </div>
