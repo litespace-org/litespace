@@ -23,17 +23,19 @@ const CompleteTutorProfile: React.FC = () => {
   if (!user || !meta) return null;
 
   return (
-    <div className="w-full p-4 md:p6 max-w-screen-lg mx-auto min-h-screen">
+    <div className="w-full h-full p-4 md:p6 max-w-screen-lg mx-auto min-h-screen">
       <Content
         tutorId={user.id}
         name={user.name}
         phone={user.phone}
+        email={user.email}
         city={user.city}
         gender={user.gender}
         about={meta.about}
         bio={meta.bio}
         birthYear={user.birthYear}
         verifiedPhone={user.verifiedPhone}
+        verifiedEmail={user.verifiedEmail}
         refetch={() => {
           refetch.user();
           refetch.meta();

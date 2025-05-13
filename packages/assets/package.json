@@ -99,7 +99,7 @@
     "./Linkedin": "./dist/Linkedin.tsx",
     "./LoginDark": "./dist/LoginDark.tsx",
     "./LoginLight": "./dist/LoginLight.tsx",
-    "./LogoV2": "./dist/LogoV2.tsx",
+    "./LogoAvatar": "./dist/LogoAvatar.tsx",
     "./Logo": "./dist/Logo.tsx",
     "./Logout": "./dist/Logout.tsx",
     "./Mail": "./dist/Mail.tsx",

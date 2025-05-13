@@ -8,7 +8,7 @@ import { PatternInput } from "@litespace/ui/PatternInput";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { Web } from "@litespace/utils/routes";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useForm } from "@litespace/headless/form";
 import { useNavigate } from "react-router-dom";
 import Check from "@litespace/assets/Check16X16";
@@ -17,6 +17,7 @@ import { Button } from "@litespace/ui/Button";
 import { Textarea } from "@litespace/ui/Textarea";
 import { Select } from "@litespace/ui/Select";
 import {
+  isValidEmail,
   isValidPhone,
   isValidTutorAbout,
   isValidTutorBio,
@@ -25,10 +26,13 @@ import {
 } from "@litespace/ui/lib/validate";
 import { LocalId } from "@litespace/ui/locales";
 import { MAX_TUTOR_ABOUT_TEXT_LENGTH, optional } from "@litespace/utils";
+import { useOnError } from "@/hooks/error";
+import { VerifyEmail } from "@/components/Common/VerifyEmail";
 
 type Form = {
   name: string;
   phone: string;
+  email: string;
   city: IUser.City | null;
   gender: IUser.Gender | null;
   birthYear: number;
@@ -46,39 +50,51 @@ const Content: React.FC<{
   tutorId: number;
   name: string | null;
   phone: string | null;
+  email: string;
   city: IUser.City | null;
   gender: IUser.Gender | null;
   birthYear: number | null;
   about: string | null;
   bio: string | null;
   verifiedPhone: boolean;
+  verifiedEmail: boolean;
 }> = ({
   refetch,
   tutorId,
   name,
   phone,
+  email,
   city,
   gender,
   birthYear,
   about,
   bio,
   verifiedPhone,
+  verifiedEmail,
 }) => {
   // ==================== states & hooks ====================
+  const [showVerifyEmailDialog, setShowVerifyEmailDialog] =
+    useState<boolean>(false);
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
+
+  const onError = useOnError({
+    type: "mutation",
+    handler({ messageId }) {
+      toast.error({
+        title: intl("complete-tutor-profile.update-error"),
+        description: intl(messageId),
+      });
+    },
+  });
 
   const update = useUpdateUser({
     onSuccess: () => {
       refetch();
       navigate(Web.Root);
     },
-    onError: () =>
-      toast.error({
-        title: intl("error.api.unexpected"),
-        description: intl("error.unexpected"),
-      }),
+    onError,
   });
 
   const cityOptions = useMemo(
@@ -111,6 +127,15 @@ const Content: React.FC<{
         return null;
       },
     },
+    email: {
+      required: true,
+      validate: (email) => {
+        const messageId = isValidEmail(email);
+        if (messageId !== null) return messageId;
+        if (!verifiedEmail) return "complete-tutor-profile.email.not-verified";
+        return null;
+      },
+    },
     city: { required: true },
     gender: { required: true },
     birthYear: { required: true, validate: isValidUserBirthYear },
@@ -122,11 +147,12 @@ const Content: React.FC<{
     defaults: {
       name: name || "",
       phone: phone || "",
-      city,
-      gender,
       birthYear: birthYear || 0,
       about: about || "",
       bio: bio || "",
+      email,
+      city,
+      gender,
     },
     validators,
     onSubmit(data) {
@@ -145,7 +171,6 @@ const Content: React.FC<{
     },
   });
 
-  // ==================== callbacks ====================
   const confirmPhone = useCallback(() => alert("not implemented yet!"), []);
 
   return (
@@ -154,8 +179,8 @@ const Content: React.FC<{
         dir="ltr"
         className="flex flex-row gap-4 mb-1 items-center justify-center"
       >
-        <Logo className="w-14 h-14" />
-        <Typography tag="p" className="text-h4 text-brand-700 font-bold">
+        <Logo className="w-14 h-14 fill-brand-500" />
+        <Typography tag="span" className="text-h4 text-brand-700 font-bold">
           {intl("labels.litespace")}
         </Typography>
       </div>
@@ -194,7 +219,7 @@ const Content: React.FC<{
               <PatternInput
                 id="phone"
                 mask=" "
-                idleDir="rtl"
+                idleDir="ltr"
                 inputSize="large"
                 name="phone"
                 label={intl("labels.phone")}
@@ -205,6 +230,7 @@ const Content: React.FC<{
                 value={form.state.phone}
                 autoComplete="off"
                 onValueChange={({ value }) => form.set("phone", value)}
+                disabled={update.isPending || verifiedPhone}
                 post={
                   verifiedPhone ? (
                     <div className="h-10 flex items-center justify-center ms-2">
@@ -223,6 +249,45 @@ const Content: React.FC<{
                     >
                       <Typography tag="span" className="text-body font-medium">
                         {intl("labels.phone.confirm")}
+                      </Typography>
+                    </Button>
+                  )
+                }
+              />
+            </div>
+
+            <div className="flex items-end w-full gap-2">
+              <Input
+                id="email"
+                name="email"
+                idleDir="rtl"
+                value={form.state.email}
+                inputSize="large"
+                autoComplete="off"
+                helper={form.errors.email}
+                label={intl("labels.email")}
+                state={form.errors.email ? "error" : undefined}
+                onChange={({ target }) => form.set("email", target.value)}
+                placeholder={intl("labels.email.placeholder")}
+                disabled
+                post={
+                  verifiedEmail ? (
+                    <div className="h-10 flex items-center justify-center ms-2">
+                      <Check className="w-6 [&>*]:stroke-brand-700" />
+                    </div>
+                  ) : (
+                    <Button
+                      className="flex-shrink-0 ms-2"
+                      type="main"
+                      variant="tertiary"
+                      size="large"
+                      htmlType="button"
+                      onClick={() => setShowVerifyEmailDialog(true)}
+                      loading={false}
+                      disabled={update.isPending}
+                    >
+                      <Typography tag="span" className="text-body font-medium">
+                        {intl("labels.email.confirm")}
                       </Typography>
                     </Button>
                   )
@@ -321,6 +386,10 @@ const Content: React.FC<{
           </Typography>
         </Button>
       </form>
+
+      {showVerifyEmailDialog ? (
+        <VerifyEmail close={() => setShowVerifyEmailDialog(false)} />
+      ) : null}
     </div>
   );
 };
