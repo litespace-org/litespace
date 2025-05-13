@@ -1,27 +1,33 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useRef } from "react";
 import logo from "@/animations/animated-logo.json";
-import Lottie from "react-lottie";
+import Lottie, { LottieRefCurrentProps } from "lottie-react";
+import cn from "classnames";
 
-const Fallback: React.FC = () => {
+type Position = "center" | "top";
+
+const Fallback: React.FC<{ position: Position }> = ({ position }) => {
+  const ref = useRef<LottieRefCurrentProps>(null);
   return (
-    <div className="bg-natural-50 w-full h-screen flex items-center justify-center">
-      <div className="w-96 h-96">
-        <Lottie
-          options={{
-            loop: true,
-            autoplay: true,
-            animationData: logo,
-          }}
-          isClickToPauseDisabled={true}
-          style={{ cursor: "default" }}
-        />
+    <div
+      className={cn("bg-natural-50 w-full  flex items-center justify-center", {
+        "h-screen": position === "center",
+        "mt-[15vh]": position === "top",
+      })}
+    >
+      <div className="w-48 h-40">
+        <Lottie animationData={logo} autoplay loop lottieRef={ref} />
       </div>
     </div>
   );
 };
 
-const Splash: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  return <Suspense fallback={<Fallback />}>{children}</Suspense>;
+const Splash: React.FC<{
+  children?: React.ReactNode;
+  position?: Position;
+}> = ({ children, position = "center" }) => {
+  return (
+    <Suspense fallback={<Fallback position={position} />}>{children}</Suspense>
+  );
 };
 
 export default Splash;

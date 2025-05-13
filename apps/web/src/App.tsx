@@ -43,8 +43,8 @@ const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 function withCrash(routes: RouteObject[]): RouteObject[] {
   return routes.map((route) => ({
     ...route,
-    element: <Splash children={route.element} />,
-    errorElement: <Splash children={<Crash />} />,
+    element: <Splash children={route.element} position="top" />,
+    errorElement: <Splash children={<Crash />} position="top" />,
   }));
 }
 
