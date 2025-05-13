@@ -35,7 +35,7 @@ export class ConfirmationCode extends Base {
     });
   }
 
-  async resetPassword(
+  async confirmForgetPasswordCode(
     payload: IConfirmationCode.ConfirmForgetPasswordCodePayload
   ): Promise<IConfirmationCode.ConfirmPasswordCodeApiResponse> {
     await this.post({

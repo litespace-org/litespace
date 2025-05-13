@@ -5,7 +5,7 @@ import {
   useFindLessons,
   useUpdateLesson,
 } from "@litespace/headless/lessons";
-import { useMemo, useCallback, useState } from "react";
+import React, { useMemo, useCallback, useState, useRef } from "react";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { QueryKey } from "@litespace/headless/constants";
@@ -39,29 +39,22 @@ export type ManageLessonPayload =
 type Props = Base & ManageLessonPayload;
 
 /**
- * This is wrapper component for the dialog component where users can either
+ * A wrapper for the book lesson dialog where users can either
  * book new lessons or edit existing lesson
  */
-const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
+const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   const { user } = useUserContext();
   const toast = useToast();
   const intl = useFormatMessage();
   const invalidate = useInvalidateQuery();
-  const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+  const now = useRef(dayjs());
 
-  const availabilitySlotsQuery = useMemo(
-    () => ({
-      userId: tutorId,
-      after: dayjs.utc().toISOString(),
-      before: dayjs.utc().add(2, "week").toISOString(),
-    }),
-    [tutorId]
-  );
+  const [showVerifyEmailDialog, setShowVerifyEmailDialog] = useState(false);
 
   const lessons = useFindLessons({
     canceled: false,
     users: user ? [user?.id] : [],
-    after: dayjs().toISOString(),
+    after: now.current.toISOString(),
     userOnly: true,
     size: 1,
   });
@@ -70,12 +63,14 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     return !!lessons.query.data && !!lessons.query.data.list.length;
   }, [lessons]);
 
-  const { query: tutorAvailabilitySlots } = useFindAvailabilitySlots(
-    availabilitySlotsQuery
-  );
+  const { query: tutorAvailabilitySlots } = useFindAvailabilitySlots({
+    userId: tutorId,
+    after: now.current.utc().toISOString(),
+    before: now.current.utc().add(2, "week").toISOString(),
+  });
   const { query: tutor } = useFindTutorInfo(tutorId);
 
-  // Create Lesson
+  // book lesson
   const onCreateSuccess = useCallback(() => {
     if (tutor.data?.name)
       toast.success({
@@ -103,7 +98,7 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
     onError: onCreateError,
   });
 
-  //Update Lesson
+  // update lesson
   const onUpdateSuccess = useCallback(() => {
     if (tutor.data?.name)
       toast.success({
@@ -125,9 +120,6 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
       });
     },
   });
-  const sendVerifyEmail = useCallback(() => {
-    setShowVerifyDialog(true);
-  }, []);
 
   const updateLessonMutation = useUpdateLesson({
     onSuccess: onUpdateSuccess,
@@ -176,8 +168,9 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
 
   return (
     <>
-      {showVerifyDialog ? null : (
+      {!showVerifyEmailDialog ? (
         <ManageLessonDialog
+          open
           type={payload.type}
           slotId={payload.type === "update" ? payload.slotId : undefined}
           start={payload.type === "update" ? payload.start : undefined}
@@ -192,13 +185,14 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
             tutor.isPending ||
             lessons.query.isPending
           }
-          sendVerifyEmail={sendVerifyEmail}
+          sendVerifyEmail={() => {
+            setShowVerifyEmailDialog(true);
+          }}
           bookedSlots={bookedSlots}
           slots={tutorAvailabilitySlots.data?.slots.list || []}
           onSubmit={onSubmit}
           isVerified={user?.verifiedEmail}
           hasBookedLessons={hasBookedLessons}
-          open
           retry={tutorAvailabilitySlots.refetch}
           error={
             tutorAvailabilitySlots.isError ||
@@ -206,11 +200,12 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
             tutor.isError
           }
         />
-      )}
-      {showVerifyDialog ? (
+      ) : null}
+
+      {showVerifyEmailDialog ? (
         <VerifyEmail
           close={() => {
-            setShowVerifyDialog(false);
+            setShowVerifyEmailDialog(false);
           }}
         />
       ) : null}

@@ -1,15 +1,19 @@
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { useOnError } from "@/hooks/error";
 import {
-  useResetPasswordByCode,
+  useConfirmForgetPasswordCode,
   useSendForgetPasswordCode,
-} from "@litespace/headless/auth";
+} from "@litespace/headless/confirmationCode";
 import { Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { ForgetPasswordDialog } from "@litespace/ui/ForgetPasswordDialog";
 
-export function ForgetPassword({ close }: { close: Void }) {
+type Props = {
+  close: Void;
+};
+
+export const ForgetPassword: React.FC<Props> = ({ close }) => {
   const toast = useToast();
   const intl = useFormatMessage();
 
@@ -44,7 +48,7 @@ export function ForgetPassword({ close }: { close: Void }) {
     },
   });
 
-  const resetMutation = useResetPasswordByCode({
+  const resetMutation = useConfirmForgetPasswordCode({
     onSuccess: onResetSuccess,
     onError: onResetError,
   });
@@ -53,10 +57,12 @@ export function ForgetPassword({ close }: { close: Void }) {
     <ForgetPasswordDialog
       resetPassword={resetMutation.mutate}
       resettingPassword={resetMutation.isPending}
-      sendCode={sendMutation.mutateAsync}
+      sendCode={(email) => sendMutation.mutate({ email })}
       sendingCode={sendMutation.isPending}
+      sentCode={sendMutation.isSuccess}
+      resetSendCode={() => sendMutation.reset()}
       close={close}
       open
     />
   );
-}
+};

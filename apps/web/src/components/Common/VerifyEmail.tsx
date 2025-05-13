@@ -1,21 +1,23 @@
-import { useRef, useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useOnError } from "@/hooks/error";
 import {
-  useConfirmVerifyEmailByCode,
-  useSendVerifyEmailCode,
-} from "@litespace/headless/auth";
+  useConfirmVerificationEmailCode,
+  useSendVerificationEmailCode,
+} from "@litespace/headless/confirmationCode";
 import { Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { VerifyEmailDialog } from "@litespace/ui/VerifyEmailDialog";
 import { useUserContext } from "@litespace/headless/context/user";
 
-export function VerifyEmail({ close }: { close: Void }) {
-  const hasSentRef = useRef(false);
+type Props = {
+  close: Void;
+};
 
+export const VerifyEmail: React.FC<Props> = ({ close }) => {
+  const [sent, setSent] = useState(false);
   const toast = useToast();
   const intl = useFormatMessage();
-
   const { user, refetch } = useUserContext();
 
   const onSendError = useOnError({
@@ -28,15 +30,15 @@ export function VerifyEmail({ close }: { close: Void }) {
     },
   });
 
-  const sendMutation = useSendVerifyEmailCode({
+  const sendMutation = useSendVerificationEmailCode({
     onError: onSendError,
   });
 
   useEffect(() => {
-    if (hasSentRef.current) return;
+    if (sent) return;
     sendMutation.mutate();
-    hasSentRef.current = true;
-  }, [sendMutation]);
+    setSent(true);
+  }, [sendMutation, sent]);
 
   const onVerifySuccess = useCallback(() => {
     close();
@@ -56,7 +58,7 @@ export function VerifyEmail({ close }: { close: Void }) {
     },
   });
 
-  const verifyMutation = useConfirmVerifyEmailByCode({
+  const verifyMutation = useConfirmVerificationEmailCode({
     onSuccess: onVerifySuccess,
     onError: onVerifyError,
   });
@@ -65,16 +67,16 @@ export function VerifyEmail({ close }: { close: Void }) {
 
   return (
     <VerifyEmailDialog
-      email={user.email}
-      close={close}
       open
+      close={close}
+      email={user.email}
       sending={sendMutation.isPending}
       verifiying={verifyMutation.isPending}
       verify={verifyMutation.mutate}
       resend={() => {
         sendMutation.mutate();
-        hasSentRef.current = true;
+        setSent(true);
       }}
     />
   );
-}
+};

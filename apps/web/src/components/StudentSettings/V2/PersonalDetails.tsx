@@ -3,7 +3,7 @@ import { Input } from "@litespace/ui/Input";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Select } from "@litespace/ui/Select";
 import { governorates } from "@/constants/user";
-import { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Button } from "@litespace/ui/Button";
 import { IUser } from "@litespace/types";
 import { useForm } from "@litespace/headless/form";
@@ -34,15 +34,7 @@ type Form = {
   gender: IUser.Gender | null;
 };
 
-export default function PersonalDetailsForm({
-  id,
-  name,
-  email,
-  image,
-  phone,
-  city,
-  gender,
-}: {
+type Props = {
   id: number;
   name: string | null;
   email: string;
@@ -50,7 +42,21 @@ export default function PersonalDetailsForm({
   phone: string | null;
   city: IUser.City | null;
   gender: IUser.Gender | null;
-}) {
+  verifiedEmail: boolean;
+  verifiedPhone: boolean;
+};
+
+export const PersonalDetails: React.FC<Props> = ({
+  id,
+  name,
+  email,
+  image,
+  phone,
+  city,
+  gender,
+  verifiedEmail,
+  verifiedPhone,
+}) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
@@ -217,9 +223,12 @@ export default function PersonalDetailsForm({
         </div>
 
         <div className="max-w-[640px]">
-          <ConfirmContactMethod />
+          <ConfirmContactMethod
+            verifiedEmail={verifiedEmail}
+            verifiedPhone={verifiedPhone}
+          />
         </div>
       </div>
     </div>
   );
-}
+};

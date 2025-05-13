@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { Tabs } from "@litespace/ui/Tabs";
 import { NotificationSettings } from "@/components/StudentSettings/V2/NotificationSettings";
 import { UpdatePassword } from "@/components/StudentSettings/V2/UpdatePassword";
-import PersonalDetails from "@/components/StudentSettings/V2/PersonalDetails";
+import { PersonalDetails } from "@/components/StudentSettings/V2/PersonalDetails";
 import TopicSelection from "@/components/StudentSettings/V2/TopicSelection";
 import { IUser } from "@litespace/types";
 import { Tab, TabId } from "@/components/StudentSettings/V2/types";
@@ -75,6 +75,8 @@ const Conent: React.FC<{
           city={user.city}
           gender={user.gender}
           phone={user.phone}
+          verifiedEmail={user.verifiedEmail}
+          verifiedPhone={user.verifiedPhone}
         />
       ) : null}
 

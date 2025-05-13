@@ -8,7 +8,7 @@ import Footer from "@/components/Layout/Footer";
 
 export function VerifyEmailV2({ code }: { code: number }) {
   return (
-    <Template preview={translate.string("verify-email.title")}>
+    <Template preview={translate.string("verify-email.preview")}>
       <Header />
 
       <Section className="max-w-[312px] mt-[46px] text-center">
@@ -19,7 +19,7 @@ export function VerifyEmailV2({ code }: { code: number }) {
 
       <Section className="max-w-[456px] mt-[24px] text-center">
         <Typography element="body" text="natural-700">
-          {translate.string("verify-email.desc")}
+          {translate.string("verify-email.desc.v2")}
         </Typography>
       </Section>
 

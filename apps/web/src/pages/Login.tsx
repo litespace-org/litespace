@@ -217,9 +217,11 @@ const Login: React.FC = () => {
           </Form>
         </div>
       </main>
+
       {showForgetPasswordDialog ? (
         <ForgetPassword close={() => setShowForgetPasswordDialog(false)} />
       ) : null}
+
       {mq.lg ? <Aside /> : null}
     </div>
   );

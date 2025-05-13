@@ -9,7 +9,7 @@ import Link from "@/components/Common/Link";
 
 export function ForgetPasswordV2({ code }: { code: number }) {
   return (
-    <Template preview={translate.string("forget-password-email.title")}>
+    <Template preview={translate.string("forget-password-email.preview")}>
       <Header />
 
       <Section className="mt-[46px] text-center">
@@ -20,7 +20,7 @@ export function ForgetPasswordV2({ code }: { code: number }) {
 
       <Section className="max-w-[456px] mt-[24px] text-center">
         <Typography element="body" text="natural-700">
-          {translate("forget-password-email.desc", {
+          {translate("forget-password-email.desc.v2", {
             link: (
               <Link href="https://litespace.org/" key="link">
                 {translate.string("labels.litespace")}

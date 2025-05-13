@@ -226,7 +226,7 @@ const RegisterForm: React.FC = () => {
         <VerifyEmail
           close={() => {
             setShowVerifyDialog(false);
-            navigate(Web.Root);
+            navigate(Web.CompleteProfile);
           }}
         />
       ) : null}
