@@ -7,7 +7,7 @@ export function ConfirmContactMethod() {
 
   return (
     <div className="w-full flex flex-col gap-6">
-      <div className="flex gap-[57px] items-end">
+      <div className="flex flex-wrap lg:flex-nowrap lg:gap-[57px] items-end">
         <div>
           <Typography
             className="text-subtitle-2 font-bold text-natural-950"
@@ -19,11 +19,15 @@ export function ConfirmContactMethod() {
             {intl("student-settings.verify-email.description")}
           </Typography>
         </div>
-        <Button size="large" className="min-w-fit" variant="secondary">
+        <Button
+          size="large"
+          className="min-w-fit mt-4 lg:mt-0 w-[173px]"
+          variant="secondary"
+        >
           {intl("student-settings.verify-email.title")}
         </Button>
       </div>
-      <div className="flex gap-[57px] items-end">
+      <div className="flex flex-wrap lg:flex-nowrap lg:gap-[57px] items-end">
         <div>
           <Typography
             className="text-subtitle-2 font-bold text-natural-950"
@@ -35,7 +39,11 @@ export function ConfirmContactMethod() {
             {intl("student-settings.verify-phone.description")}
           </Typography>
         </div>
-        <Button size="large" className="min-w-fit" variant="secondary">
+        <Button
+          size="large"
+          className="min-w-fit mt-4 lg:mt-0 w-[173px]"
+          variant="secondary"
+        >
           {intl("student-settings.verify-phone.title")}
         </Button>
       </div>

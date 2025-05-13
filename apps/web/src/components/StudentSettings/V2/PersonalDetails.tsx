@@ -25,6 +25,7 @@ import {
   isValidPhone,
   isValidUserName,
 } from "@litespace/ui/lib/validate";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Form = {
   name: string;
@@ -54,6 +55,7 @@ export default function PersonalDetailsForm({
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
+  const mq = useMediaQuery();
 
   const validators = useMakeValidators<Form>({
     name: { required: !!name, validate: isValidUserName },
@@ -142,10 +144,13 @@ export default function PersonalDetailsForm({
 
   return (
     <div>
-      <UploadPhoto id={id} name={name} image={image} />
-      <div className="flex gap-10 mt-6">
-        <div className="w-[400px] flex-shrink-0">
-          <form onSubmit={form.onSubmit} className="w-full flex flex-col gap-4">
+      {mq.md ? <UploadPhoto id={id} name={name} image={image} /> : null}
+      <div className="flex flex-wrap md:flex-nowrap gap-6 md:gap-10 md:mt-6">
+        <div className="w-full md:w-[320px] lg:w-[400px] flex-shrink-0">
+          <form
+            onSubmit={form.onSubmit}
+            className="w-full flex flex-col gap-2 md:gap-4"
+          >
             <Input
               id="name"
               name="name"
@@ -210,16 +215,25 @@ export default function PersonalDetailsForm({
             disabled={mutation.isPending || unchanged}
             loading={mutation.isPending}
             onClick={form.submit}
-            className="mt-10"
+            className="mt-10 hidden md:block"
           >
             {intl("shared-settings.save")}
           </Button>
         </div>
 
-        <div className="max-w-[640px]">
+        <div className="max-w-[320px] lg:max-w-[640px]">
           <ConfirmContactMethod />
         </div>
       </div>
+      <Button
+        size="large"
+        disabled={mutation.isPending || unchanged}
+        loading={mutation.isPending}
+        onClick={form.submit}
+        className="mt-6 md:hidden mr-auto"
+      >
+        {intl("shared-settings.save")}
+      </Button>
     </div>
   );
 }

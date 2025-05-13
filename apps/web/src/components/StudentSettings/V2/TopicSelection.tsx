@@ -169,17 +169,17 @@ const TopicSelection: React.FC = () => {
       userTopicsQuery={userTopicsQuery}
       userTopicIds={userTopicIds}
     >
-      <div>
-        <div className="flex flex-row flex-wrap w-full gap-2 gap-y-4">
+      <div className="grow md:grow-0 flex flex-col justify-between md:justify-start">
+        <div className="flex flex-row flex-wrap w-full gap-2 md:gap-y-4">
           {selectedTopics.map((topic) => (
             <Animate key={topic.id}>
               <Typography
                 tag="span"
-                className="bg-brand-200 border border-brand-700 items-center flex text-brand-700 px-3 py-2 rounded-[24px] text-caption font-normal"
+                className="bg-brand-200 border border-brand-700 items-center flex text-brand-700 p-3 md:px-3 md:py-2 rounded-[24px] text-caption font-normal"
               >
                 <button
                   onClick={() => onRemoveTopic(topic.id)}
-                  className="cursor-pointer"
+                  className="cursor-pointer hidden md:block"
                 >
                   <Close2 className="w-6 h-6 ml-[2px] [&>*]:fill-brand-700" />
                 </button>
@@ -192,7 +192,7 @@ const TopicSelection: React.FC = () => {
           size="large"
           disabled={updateTopics.isPending || !dataChanged}
           onClick={() => confirm(selectedTopics.map((s) => s.id))}
-          className="mt-10"
+          className="md:mt-10 mr-auto md:mr-0"
         >
           {intl("shared-settings.save")}
         </Button>
@@ -230,7 +230,7 @@ const TopicSelectionTemplate = ({
   }, [allTopicsQuery]);
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 grow">
       <div className="flex items-center justify-between">
         <Typography
           tag="h2"

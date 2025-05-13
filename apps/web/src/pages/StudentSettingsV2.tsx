@@ -21,10 +21,10 @@ export default function StudentSettingsV2() {
   if (!user) return null;
 
   return (
-    <div className="p-6 max-w-screen-3xl mx-auto w-full">
+    <div className="p-4 lg:p-6 max-w-screen-3xl mx-auto w-full md:max-h-max h-[calc(100vh-100px)]">
       <PageTitle
         title={intl("student-settings.profile.title")}
-        className="mb-4 md:mb-6"
+        className="mb-4 lg:mb-6"
         fetching={fetching}
       />
 
