@@ -26,7 +26,7 @@ import { messenger } from "@/lib/messenger";
 import { producer } from "@/lib/kafka";
 import { unionOfLiterals, email, password } from "@/validation/utils";
 import { sendBackgroundMessage } from "@/workers";
-import { selectPhone } from "@/lib/user";
+import { hashPassword, selectPhone } from "@/lib/user";
 
 const method = unionOfLiterals<IUser.NotificationMethodLiteral>([
   "whatsapp",
@@ -186,7 +186,7 @@ async function sendForgetPasswordCode(
     purposes: [IConfirmationCode.Purpose.ResetPassword],
   });
 
-  // Generate and store the new code in the db
+  // generate and store the new code in the db
   const { code } = await confirmationCodes.create({
     userId: user.id,
     purpose: IConfirmationCode.Purpose.ResetPassword,
@@ -236,7 +236,11 @@ async function confirmForgetPasswordCode(
         "Missing confirmation code user id, should never happen."
       );
 
-    await users.update(confirmationCode.userId, { password });
+    await users.update(
+      confirmationCode.userId,
+      { password: hashPassword(password) },
+      tx
+    );
     await confirmationCodes.deleteById({ id: confirmationCode.id, tx });
   });
 
@@ -254,7 +258,7 @@ async function sendEmailVerificationCode(
 
   if (user.verifiedEmail) return next(emailAlreadyVerified());
 
-  // Generate and store the new code in the db
+  // generate and store the new code in the db
   const { code } = await confirmationCodes.create({
     userId: user.id,
     purpose: IConfirmationCode.Purpose.VerifyEmail,
@@ -273,11 +277,11 @@ async function sendEmailVerificationCode(
     },
   });
 
-  res.status(200).send();
+  res.sendStatus(200);
 }
 
 /**
- * Despite the name, this function verify the email in the db as well
+ * @note verify email confirmation code and mark email as verified.
  */
 async function confirmEmailVerificationCode(
   req: Request,

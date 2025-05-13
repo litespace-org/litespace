@@ -24,7 +24,7 @@ export const Primary: Story = {
     sendingCode: false,
     sentCode: false,
     resetPassword: (payload) => alert(JSON.stringify(payload)),
-    resetSentCode: () => console.log("reset"),
+    resetSendCode: () => {},
     resettingPassword: false,
   },
   render(props) {
@@ -41,11 +41,11 @@ export const Primary: Story = {
             setSentCode(true);
           }, 500);
         }}
-        resetSentCode={() => {
+        sentCode={sentCode}
+        resetSendCode={() => {
           setSentCode(false);
           setSendingCode(false);
         }}
-        sentCode={sentCode}
         sendingCode={sendingCode}
       />
     );
@@ -57,9 +57,8 @@ export const SendingCode: Story = {
     open: true,
     sendCode: (email) => console.log(email),
     sendingCode: true,
-    sentCode: false,
     resetPassword: (payload) => alert(JSON.stringify(payload)),
-    resetSentCode: () => console.log("reset"),
+    resetSendCode: () => {},
     resettingPassword: false,
   },
 };
@@ -71,7 +70,7 @@ export const SentCode: Story = {
     sendingCode: false,
     sentCode: true,
     resetPassword: (payload) => console.log(payload),
-    resetSentCode: () => console.log("reset"),
+    resetSendCode: () => {},
     resettingPassword: false,
   },
   render(props) {
@@ -81,6 +80,7 @@ export const SentCode: Story = {
         {...props}
         sendCode={() => setSentCode(true)}
         sentCode={sentCode}
+        resetSendCode={() => setSentCode(false)}
       />
     );
   },

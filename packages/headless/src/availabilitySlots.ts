@@ -1,6 +1,6 @@
 import { IAvailabilitySlot } from "@litespace/types";
 import { useApi } from "@/api";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { MutationKey, QueryKey } from "@/constants";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { OnError, OnSuccess } from "@/types/query";
@@ -16,10 +16,7 @@ export function useFindAvailabilitySlots(
     [api.availabilitySlot, apiQuery]
   );
 
-  const keys = useMemo(
-    () => [QueryKey.FindAvailabilitySlots, apiQuery],
-    [apiQuery]
-  );
+  const keys = [QueryKey.FindAvailabilitySlots, apiQuery];
 
   const query = useQuery({
     queryFn: findSlots,

@@ -26,17 +26,17 @@ export const ForgetPasswordDialog: React.FC<{
   open: boolean;
   close: Void;
   sendCode: (email: string) => void;
-  resetSentCode: Void;
   sendingCode: boolean;
   sentCode: boolean;
+  resetSendCode: Void;
   resetPassword: (payload: { code: number; password: string }) => void;
   resettingPassword: boolean;
 }> = ({
   open,
   sendCode,
-  resetSentCode,
   sentCode,
   sendingCode,
+  resetSendCode,
   resetPassword,
   resettingPassword,
   close,
@@ -49,7 +49,7 @@ export const ForgetPasswordDialog: React.FC<{
   const forgetPasswordForm = useForm<{ email: string }>({
     defaults: { email: "" },
     validators: { email: validateEmail },
-    onSubmit(data) {
+    onSubmit: (data) => {
       if (!isValidEmail(data.email)) return;
       sendCode(data.email);
     },
@@ -71,8 +71,8 @@ export const ForgetPasswordDialog: React.FC<{
   }, [resetPasswordForm.state.code, sentCode]);
 
   const onSubmit = useCallback(() => {
-    if (step === "email") forgetPasswordForm.submit();
-    if (step === "password") resetPasswordForm.submit();
+    if (step === "email") return forgetPasswordForm.submit();
+    if (step === "password") return resetPasswordForm.submit();
   }, [forgetPasswordForm, resetPasswordForm, step]);
 
   const isEmpty = useMemo(
@@ -165,7 +165,7 @@ export const ForgetPasswordDialog: React.FC<{
               onClick={() => {
                 resetPasswordForm.reset();
                 forgetPasswordForm.reset();
-                resetSentCode();
+                resetSendCode();
               }}
               variant="tertiary"
               size="medium"
@@ -198,9 +198,9 @@ export const ForgetPasswordDialog: React.FC<{
 
         <div className="flex gap-4 md:gap-6 mt-8 md:mt-12">
           <Button
-            onClick={onSubmit}
             size="large"
             className="flex-1"
+            htmlType="submit"
             loading={sendingCode || resettingPassword}
             disabled={sendingCode || resettingPassword || isEmpty}
           >

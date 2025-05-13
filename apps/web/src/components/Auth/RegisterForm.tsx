@@ -2,7 +2,7 @@ import { Form, Controller } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { IUser } from "@litespace/types";
@@ -18,6 +18,7 @@ import Google from "@litespace/assets/Google";
 import { Landing, Web } from "@litespace/utils/routes";
 import { router, VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
 import { useOnError } from "@/hooks/error";
+import { VerifyEmail } from "@/components/Common/VerifyEmail";
 
 interface IForm {
   email: string;
@@ -33,6 +34,9 @@ const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const params = useParams<{ role: Role }>();
+
+  const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false);
+
   const { watch, handleSubmit, control, formState } = useForm<IForm>({
     defaultValues: {
       email: "",
@@ -63,9 +67,9 @@ const RegisterForm: React.FC = () => {
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
       user.set({ user: info, token });
-      navigate(Web.Root);
+      setShowVerifyDialog(true);
     },
-    [user, navigate]
+    [user]
   );
 
   const onError = useOnError({
@@ -218,6 +222,14 @@ const RegisterForm: React.FC = () => {
           </Typography>
         </div>
       </div>
+      {showVerifyDialog ? (
+        <VerifyEmail
+          close={() => {
+            setShowVerifyDialog(false);
+            navigate(Web.CompleteProfile);
+          }}
+        />
+      ) : null}
     </Form>
   );
 };

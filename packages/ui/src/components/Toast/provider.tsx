@@ -38,6 +38,7 @@ export const ToastProvider: React.FC<{
 
         {toasts.map((toast) => (
           <Toast
+            open
             type={toast.type}
             key={toast.id}
             toastId={toast.id}
@@ -46,7 +47,6 @@ export const ToastProvider: React.FC<{
             onOpenChange={(open: boolean) => {
               if (!open) remove(toast.id);
             }}
-            open
             actions={toast.actions}
           />
         ))}

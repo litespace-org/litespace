@@ -36,4 +36,7 @@ export enum MutationKey {
   SyncPaymentStatus = "sync-payment-status",
   SendPhoneCode = "send-phone-code",
   VerifyPhoneCode = "verify-phone-code",
+  SendForgetPasswordCode = "send-forget-password-code",
+  ResetPasswordByCode = "reset-password-by-code",
+  SendVerifyEmailCode = "send-verify-email-code",
 }
