@@ -128,6 +128,7 @@ export const Table = <T extends object>({
             onClick={() => goto(1)}
             disabled={page <= 1 || loading || fetching}
             startIcon={<ChevronDoubleRight className="icon" />}
+            className="flex justify-center items-center"
           />
           <Button
             size="large"
@@ -136,6 +137,7 @@ export const Table = <T extends object>({
             onClick={prev}
             disabled={page <= 1 || loading || fetching}
             startIcon={<ArrowRight className="icon" />}
+            className="flex justify-center items-center"
           />
           <Button
             size="large"
@@ -144,6 +146,7 @@ export const Table = <T extends object>({
             onClick={next}
             disabled={page >= totalPages || loading || fetching}
             startIcon={<ArrowLeft className="icon" />}
+            className="flex justify-center items-center"
           />
           <Button
             size="large"
@@ -152,6 +155,7 @@ export const Table = <T extends object>({
             onClick={() => goto(totalPages)}
             disabled={page >= totalPages || loading || fetching}
             startIcon={<ChevronDoubleLeft className="icon" />}
+            className="flex justify-center items-center"
           />
         </footer>
       ) : null}
