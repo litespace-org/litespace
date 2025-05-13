@@ -22,6 +22,7 @@ export const Button: React.FC<{
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   tabIndex?: number;
+  autoFocus?: boolean;
 }> = ({
   children,
   variant = "primary",
@@ -35,6 +36,7 @@ export const Button: React.FC<{
   startIcon,
   endIcon,
   tabIndex,
+  autoFocus,
 }) => {
   const is = useMemo(
     () => ({
@@ -137,6 +139,7 @@ export const Button: React.FC<{
         className
       )}
       onClick={onClick}
+      autoFocus={autoFocus}
     >
       <span
         className={cn(
