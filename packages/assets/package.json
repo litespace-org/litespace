@@ -162,6 +162,7 @@
     "./StudentMaleDark": "./dist/StudentMaleDark.tsx",
     "./StudentMaleLight": "./dist/StudentMaleLight.tsx",
     "./Success": "./dist/Success.tsx",
+    "./Switch": "./dist/Switch.tsx",
     "./Tag": "./dist/Tag.tsx",
     "./TelegramWithCircle": "./dist/TelegramWithCircle.tsx",
     "./TelegramWithoutCircle": "./dist/TelegramWithoutCircle.tsx",
@@ -187,7 +188,6 @@
     "./WarningInfo": "./dist/WarningInfo.tsx",
     "./We": "./dist/We.tsx",
     "./WhatsApp": "./dist/WhatsApp.tsx",
-    "./WebrtcCheck": "./dist/WebrtcCheck.tsx",
     "./XErroredFill": "./dist/XErroredFill.tsx",
     "./X": "./dist/X.tsx",
     "./Youtube": "./dist/Youtube.tsx"

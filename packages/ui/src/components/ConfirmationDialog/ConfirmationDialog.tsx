@@ -66,6 +66,7 @@ const Actions: React.FC<{
         onClick={primary.onClick}
         loading={primary.loading}
         disabled={primary.disabled}
+        autoFocus
       >
         {primary.label}
       </Button>
