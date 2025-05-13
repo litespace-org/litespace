@@ -239,7 +239,7 @@ export const PersonalDetails: React.FC<Props> = ({
         disabled={mutation.isPending || unchanged}
         loading={mutation.isPending}
         onClick={form.submit}
-        className="mt-6 md:hidden"
+        className="mt-6 md:hidden mr-auto"
       >
         {intl("shared-settings.save")}
       </Button>

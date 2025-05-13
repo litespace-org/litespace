@@ -124,7 +124,12 @@ export const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
           helper={form.errors?.confirm}
         />
       </form>
-      <Button size="large" disabled={mutation.isPending} onClick={form.submit}>
+      <Button
+        size="large"
+        disabled={mutation.isPending}
+        onClick={form.submit}
+        className="md:mt-10 mr-auto md:mr-0"
+      >
         {intl("shared-settings.save")}
       </Button>
     </div>

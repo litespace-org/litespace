@@ -204,6 +204,14 @@ export function NotificationSettings({
           {intl("shared-settings.save")}
         </Button>
       </form>
+      <Button
+        size="large"
+        disabled={updateUserMutation.isPending}
+        onClick={form.submit}
+        className="mt-auto md:mt-10 mr-auto md:mr-0"
+      >
+        {intl("shared-settings.save")}
+      </Button>
     </div>
   );
 }
