@@ -23,6 +23,7 @@ type Props = {
   retry: Void;
   confirm: (topicIds: number[]) => void;
   opened: boolean;
+  forTutor: boolean;
   initialTopics?: number[];
   confirming?: boolean;
   loading?: boolean;
@@ -32,6 +33,7 @@ type Props = {
 export const TopicSelectionDialog: React.FC<Props> = ({
   title,
   description,
+  forTutor,
   topics,
   initialTopics,
   close,
@@ -96,7 +98,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           {title}
         </Typography>
       }
-      className={mq.md ? "w-[512px]" : "w-full"}
+      className={forTutor ? "w-screen md:w-[512px]" : "w-screen md:w-[744px]"}
       close={confirming ? undefined : onClose}
       open={opened}
       position={mq.sm ? "center" : "bottom"}

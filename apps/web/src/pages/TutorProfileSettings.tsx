@@ -1,11 +1,10 @@
-import PageContent from "@/components/Common/PageContent";
 import PageTitle from "@/components/Common/PageTitle";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useEffect } from "react";
 import { useUser } from "@litespace/headless/context/user";
 import { redirect } from "react-router-dom";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
-import Settings from "@/components/TutorSettings";
+import ProfileSettings from "@/components/TutorSettings/ProfileSettings";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { Web } from "@litespace/utils/routes";
 
@@ -23,7 +22,7 @@ const TutorSettings: React.FC = () => {
   return (
     <div className="max-w-screen-3xl mx-auto w-full h-full p-4 lg:p-6">
       <div className="w-full h-full">
-        <div className="mb-4 md:mb-6">
+        <div className="mb-4 md:mb-10">
           <PageTitle
             title={intl("tutor-settings.profile.title")}
             fetching={fetching && !loading}
@@ -54,16 +53,11 @@ const TutorSettings: React.FC = () => {
         ) : null}
 
         {tutorInfo.data && !error && !loading ? (
-          <PageContent>
-            <Settings
-              info={{
-                ...tutorInfo.data,
-                city: user.city,
-                phone: user.phone,
-                email: user.email,
-              }}
-            />
-          </PageContent>
+          <ProfileSettings
+            info={{
+              ...tutorInfo.data,
+            }}
+          />
         ) : null}
       </div>
     </div>

@@ -52,7 +52,7 @@ export const Dialog: React.FC<{
             className
           )}
         >
-          <div className="flex justify-between items-center w-full">
+          <div className="flex justify-between items-start w-full">
             <Title>{title}</Title>
             {close ? (
               <Close className="w-6 h-6 cursor-pointer" onClick={close}>

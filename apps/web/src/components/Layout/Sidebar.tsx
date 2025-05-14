@@ -28,6 +28,7 @@ import {
 import { Icon } from "@/types/common";
 import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
+import { isStudent, isTutor } from "@litespace/utils";
 
 const SidebarItem = ({
   to,
@@ -258,25 +259,31 @@ const Sidebar: React.FC<{
           {intl("sidebar.settings")}
         </Typography>
         <ul className="flex flex-col gap-1.5">
-          {user ? (
+          {isTutor(user) ? (
+            <>
+              <SidebarItem
+                to={Web.TutorProfileSettings}
+                Icon={ProfileAvatar}
+                label={intl("sidebar.profile")}
+                active={location.pathname === Web.TutorProfileSettings}
+                hide={hide}
+              />
+              <SidebarItem
+                to={Web.TutorAccountSettings}
+                Icon={Settings}
+                label={intl("sidebar.settings")}
+                active={location.pathname === Web.TutorAccountSettings}
+                hide={hide}
+              />
+            </>
+          ) : null}
+
+          {isStudent(user) ? (
             <SidebarItem
-              to={
-                user?.role === IUser.Role.Student
-                  ? Web.StudentSettings
-                  : Web.TutorSettings
-              }
-              Icon={
-                user?.role === IUser.Role.Student ? Settings : ProfileAvatar
-              }
-              label={
-                user?.role === IUser.Role.Student
-                  ? intl("sidebar.settings")
-                  : intl("sidebar.profile")
-              }
-              active={
-                location.pathname === Web.TutorSettings ||
-                location.pathname === Web.StudentSettings
-              }
+              to={Web.StudentSettings}
+              Icon={Settings}
+              label={intl("sidebar.settings")}
+              active={location.pathname === Web.StudentSettings}
               hide={hide}
             />
           ) : null}

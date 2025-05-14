@@ -94,7 +94,6 @@ const updateUserPayload = zod.object({
     .optional(),
   name: zod.union([zod.null(), string]).optional(),
   gender: gender.nullable().optional(),
-  notice: zod.number().positive().int().optional(),
   birthYear: zod.number().positive().optional(),
   image: zod.null().optional(),
   thumbnail: zod.null().optional(),
@@ -108,6 +107,8 @@ const updateUserPayload = zod.object({
     .optional(),
   phone: zod.union([zod.string().max(15).trim(), zod.null()]).optional(),
   activated: zod.boolean().optional(),
+  notice: zod.number().positive().int().optional(),
+  studioId: id.optional(),
 });
 
 const orderByOptions = ["created_at", "updated_at"] as const satisfies Array<
@@ -303,6 +304,7 @@ function update(_: ApiContext) {
         bio,
         about,
         notice,
+        studioId,
         phone,
         city,
         notificationMethod,
@@ -379,6 +381,7 @@ function update(_: ApiContext) {
           bio,
           about,
           notice,
+          studioId,
           video,
           thumbnail,
           activated,
@@ -562,7 +565,8 @@ async function findOnboardedTutors(req: Request, res: Response) {
 
 async function findStudios(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  if (!isUser(user)) return next(forbidden());
+  const allowed = isTutor(user) || isAdmin(user);
+  if (!allowed) return next(forbidden());
 
   const { size, page } = findStudiosQuery.parse(req.query);
 

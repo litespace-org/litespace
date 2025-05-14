@@ -7,7 +7,7 @@ import { TabId } from "@/components/StudentSettings/types";
 import { isValidTab } from "@/components/StudentSettings/utils";
 import { useUser } from "@litespace/headless/context/user";
 
-export default function StudentSettingsV2() {
+const StudentSettings: React.FC = () => {
   const intl = useFormatMessage();
   const [params, setParams] = useSearchParams();
   const { user, fetching } = useUser();
@@ -30,4 +30,6 @@ export default function StudentSettingsV2() {
       <Content tab={tab} user={user} setTab={(tab) => setParams({ tab })} />
     </div>
   );
-}
+};
+
+export default StudentSettings;

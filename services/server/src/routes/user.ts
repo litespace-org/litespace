@@ -25,8 +25,6 @@ export default function router(context: ApiContext) {
     ]),
     user.uploadTutorAssets
   );
-  router.get("/:id", user.findById);
-  router.put("/:id", user.update(context));
   router.get("/tutor/meta/:tutorId", user.findTutorMeta);
   router.get("/tutor/info/:tutorId", user.findTutorInfo);
   router.get("/tutor/list/onboarded", user.findOnboardedTutors);
@@ -39,7 +37,10 @@ export default function router(context: ApiContext) {
   router.get("/tutor/full-tutors", user.findFullTutors);
   router.get("/student/stats/personalized", user.findPersonalizedStudentStats);
   router.get("/student/stats/:student", user.findStudentStats);
-  router.get("/studios", user.findStudios);
+  router.get("/studio/list", user.findStudios);
+
+  router.get("/:id", user.findById);
+  router.put("/:id", user.update(context));
 
   return router;
 }

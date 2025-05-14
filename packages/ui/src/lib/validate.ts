@@ -8,6 +8,7 @@ import {
   isValidPassword as isValidPasswordBase,
   isValidUserBirthYear as isValidUserBirthYearBase,
   isValidTutorAbout as isValidTutorAboutBase,
+  isValidTutorNotice as isValidTutorNoticeBase,
   isValidTutorBio as isValidTutorBioBase,
   isValidConfirmationCode as isValidConfirmationCodeBase,
   validatePlanWeeklyMinutes as validatePlanWeeklyMinutesBase,
@@ -112,4 +113,13 @@ export function validatePlanDiscount(discount: number): LocalId | null {
   const error = validatePlanDiscountBase(discount);
   if (!error) return null;
   return "error.field.invalid-plan-discount";
+}
+
+export function isValidNotice(notice: number): LocalId | null {
+  const valid = isValidTutorNoticeBase(notice);
+  if (valid === true) return null;
+
+  if (valid === FieldError.MaxNoticeExceeded)
+    return "error.field.max-notice-exceeded";
+  return "error.field.invalid-notice";
 }

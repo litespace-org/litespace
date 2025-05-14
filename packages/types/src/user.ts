@@ -148,6 +148,7 @@ export type UpdateApiPayload = {
   about?: string | null;
   phone?: string | null;
   city?: City | null;
+  studioId?: number | null;
   notificationMethod?: NotificationMethod | null;
   activated?: boolean;
 };

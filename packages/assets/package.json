@@ -159,6 +159,7 @@
     "./SoundSmall": "./dist/SoundSmall.tsx",
     "./Sound": "./dist/Sound.tsx",
     "./Spinner": "./dist/Spinner.tsx",
+    "./Spinner2": "./dist/Spinner2.tsx",
     "./Star": "./dist/Star.tsx",
     "./StartMessaging": "./dist/StartMessaging.tsx",
     "./StartNewMessage": "./dist/StartNewMessage.tsx",
