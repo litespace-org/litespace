@@ -19,13 +19,14 @@ import { useOnError } from "@/hooks/error";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { PatternInput } from "@litespace/ui/PatternInput";
-import { ConfirmContactMethod } from "@/components/StudentSettings/ConfirmContactMethod";
+
+import { ConfirmContactMethod } from "@/components/Settings/ConfirmContactMethod";
 import {
   isValidEmail,
   isValidPhone,
   isValidUserName,
 } from "@litespace/ui/lib/validate";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { Typography } from "@litespace/ui/Typography";
 
 type Form = {
   name: string;
@@ -37,6 +38,7 @@ type Form = {
 
 type Props = {
   id: number;
+  forStudent: boolean;
   name: string | null;
   email: string;
   image: string | null;
@@ -47,7 +49,7 @@ type Props = {
   verifiedPhone: boolean;
 };
 
-export const PersonalDetails: React.FC<Props> = ({
+const PersonalDetails: React.FC<Props> = ({
   id,
   name,
   email,
@@ -57,11 +59,11 @@ export const PersonalDetails: React.FC<Props> = ({
   gender,
   verifiedEmail,
   verifiedPhone,
+  forStudent,
 }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
-  const mq = useMediaQuery();
 
   const validators = useMakeValidators<Form>({
     name: { required: !!name, validate: isValidUserName },
@@ -139,13 +141,22 @@ export const PersonalDetails: React.FC<Props> = ({
 
   const genderOptions = useMemo(
     () => [
-      { label: intl("labels.gender.male-student"), value: IUser.Gender.Male },
       {
-        label: intl("labels.gender.female-student"),
+        label: intl(
+          forStudent ? "labels.gender.male-student" : "labels.gender.male-tutor"
+        ),
+        value: IUser.Gender.Male,
+      },
+      {
+        label: intl(
+          forStudent
+            ? "labels.gender.female-student"
+            : "labels.gender.female-tutor"
+        ),
         value: IUser.Gender.Female,
       },
     ],
-    [intl]
+    [intl, forStudent]
   );
 
   return (
@@ -153,23 +164,33 @@ export const PersonalDetails: React.FC<Props> = ({
       <div className="hidden md:block">
         <UploadPhoto id={id} name={name} image={image} />{" "}
       </div>
+      {!forStudent ? (
+        <Typography
+          tag="h2"
+          className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
+        >
+          {intl("tutor-settings.tabs.personal-settings")}
+        </Typography>
+      ) : null}{" "}
       <div className="flex flex-wrap md:flex-nowrap gap-6 md:gap-10 md:mt-6">
         <div className="w-full md:w-[320px] lg:w-[400px] flex-shrink-0">
           <form
             onSubmit={form.onSubmit}
             className="w-full flex flex-col gap-2 md:gap-4"
           >
-            <Input
-              id="name"
-              name="name"
-              value={form.state.name}
-              onChange={(e) => form.set("name", e.target.value)}
-              label={intl("labels.name")}
-              placeholder={intl("labels.name.placeholder")}
-              state={form.errors?.name ? "error" : undefined}
-              helper={form.errors?.name}
-              autoComplete="off"
-            />
+            {forStudent ? (
+              <Input
+                id="name"
+                name="name"
+                value={form.state.name}
+                onChange={(e) => form.set("name", e.target.value)}
+                label={intl("labels.name")}
+                placeholder={intl("labels.name.placeholder")}
+                state={form.errors?.name ? "error" : undefined}
+                helper={form.errors?.name}
+                autoComplete="off"
+              />
+            ) : null}
 
             <Input
               id="email"
@@ -248,3 +269,5 @@ export const PersonalDetails: React.FC<Props> = ({
     </div>
   );
 };
+
+export default PersonalDetails;
