@@ -2,8 +2,8 @@ import { ISubscription } from "@litespace/types";
 import { createContext, useContext } from "react";
 
 export type Context = {
-  subscription: ISubscription.Self | null;
-  remainingMinutes: number;
+  info: ISubscription.Self | null;
+  remainingWeeklyMinutes: number;
   loading: boolean;
   isError: boolean;
   error: unknown | null;
