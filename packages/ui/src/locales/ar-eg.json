@@ -102,7 +102,7 @@
   "verify-phone-dialog.phone.placeholder": "أدخل رقم الهاتف هنا",
   "verify-phone-dialog.method.description": "اين تريد استقبال كود التأكيد لأتمام عملية تأكيد رقم الهاتف الخاص بك؟",
   "verify-phone-dialog.telegram.privacy-issue.description-1": "بسبب إعدادات الخصوصية في تيليجرام، لا يمكننا إرسال رسالة التأكيد مباشرة إلى رقمك. لإتمام التأكيد، يُرجى اتباع أحد الخيارات التالية:-",
-  "verify-phone-dialog.telegram.privacy-issue.description-2": " 1- تعديل إعدادات الخصوصية في تيليجرام عن طريق الذهاب إلى: الإعدادات > الخصوصية والأمان > من يمكنه إرسال رسائل إليّ واجعلها 'الكل' مؤقتًا ثم اضغط على اعادة المحاولة.",
+  "verify-phone-dialog.telegram.privacy-issue.description-2": "1- تعديل إعدادات الخصوصية في تيليجرام عن طريق الذهاب إلى: الإعدادات > الخصوصية والأمان > من يمكنه إرسال رسائل إليّ واجعلها 'الكل' مؤقتًا ثم اضغط على اعادة المحاولة.",
   "verify-phone-dialog.telegram.privacy-issue.description-3": "2- ارسل لنا رسالة عبر تيليجرام من هنا {value}  او علي هذا الرقم ({phone}) ثم أعد المحاولة مرة أخرى.",
   "verify-phone-dialog.telegram.privacy-issue.click-to-copy": "اضغط لنسخ الرقم",
   "verify-phone-dialog.telegram.privacy-issue.copied": "تم نسخ الرقم بنجاح",
