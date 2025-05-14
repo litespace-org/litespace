@@ -19,7 +19,9 @@ import Close2 from "@litespace/assets/Close2";
 import { ITopic } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 
-const TopicSelection: React.FC = () => {
+const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
+  forTutor = false,
+}) => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
   const { query: userTopicsQuery } = useUserTopics();
@@ -136,6 +138,7 @@ const TopicSelection: React.FC = () => {
         isUpdating={updateTopics.isPending}
         setShowDialog={setShowDialog}
         showDialog={showDialog}
+        forTutor={forTutor}
         userTopicsQuery={userTopicsQuery}
         userTopicIds={userTopicIds}
       >
@@ -163,6 +166,7 @@ const TopicSelection: React.FC = () => {
   return (
     <TopicSelectionTemplate
       confirm={confirm}
+      forTutor={forTutor}
       isUpdating={updateTopics.isPending}
       setShowDialog={setShowDialog}
       showDialog={showDialog}
@@ -208,7 +212,7 @@ const TopicSelectionTemplate = ({
   confirm,
   userTopicsQuery,
   isUpdating,
-
+  forTutor = false,
   children,
 }: {
   userTopicIds: number[];
@@ -218,6 +222,7 @@ const TopicSelectionTemplate = ({
   userTopicsQuery: UseQueryResult<ITopic.FindUserTopicsApiResponse, Error>;
   isUpdating: boolean;
   children: React.ReactNode;
+  forTutor?: boolean;
 }) => {
   const intl = useFormatMessage();
   const allTopicsQuery = useTopics({});
@@ -256,6 +261,7 @@ const TopicSelectionTemplate = ({
 
       {showDialog ? (
         <TopicSelectionDialog
+          forTutor={forTutor}
           title={intl("student-settings.topics.selection-dialog.title")}
           description={intl(
             "student-settings.topics.selection-dialog.description"

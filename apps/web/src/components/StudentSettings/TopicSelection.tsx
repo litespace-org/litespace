@@ -173,6 +173,7 @@ const TopicSelection: React.FC = () => {
       </div>
 
       <TopicSelectionDialog
+        forTutor={false}
         title={intl("student-settings.topics.selection-dialog.title")}
         description={intl(
           "student-settings.topics.selection-dialog.description"
