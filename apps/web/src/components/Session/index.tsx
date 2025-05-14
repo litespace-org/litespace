@@ -14,7 +14,7 @@ import {
   PermissionsDialog,
   Props as PermissionsDialogProps,
 } from "@/components/Session/PermissionsDialog";
-import { getEmailUserName, safePromise } from "@litespace/utils";
+import { getEmailUserName, isTutor, safePromise } from "@litespace/utils";
 import PreSession from "@/components/Session/PreSession";
 import Session from "@/components/Session/Session";
 import { Controller } from "@/components/Session/Controllers";
@@ -23,6 +23,8 @@ import { capture } from "@/lib/sentry";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { simulateMobile } from "@/lib/window";
+import { useUserContext } from "@litespace/headless/context/user";
+import { Dialogs, DialogTypes } from "@/components/Session/Dialogs";
 
 const Main: React.FC<{
   resourceId: number;
@@ -41,13 +43,18 @@ const Main: React.FC<{
   onLeave: Void;
 }> = ({ self, member, sessionId, start, duration, onLeave }) => {
   const intl = useFormatMessage();
+  const { user } = useUserContext();
   const toast = useToast();
   const logger = useLogger();
+  const mq = useMediaQuery();
+
   const [reRequestPermission, setReRequestPermission] =
     useState<boolean>(false);
-  const mq = useMediaQuery();
+  const [dialog, setDialog] = useState<DialogTypes | null>(null);
   const [permission, setPermission] =
     useState<PermissionsDialogProps["loading"]>();
+  const [joined, setJoined] = useState<boolean>(false);
+
   const devices = useDevices();
   const session = useSessionV5({
     selfId: self.id,
@@ -56,10 +63,12 @@ const Main: React.FC<{
     onMemberJoin() {
       const audio = new Audio("/join-session.mp3");
       audio.play();
+      setJoined(true);
     },
     onMemberLeave() {
       const audio = new Audio("/leave-session.mp3");
       audio.play();
+      setJoined(false);
     },
   });
 
@@ -72,8 +81,12 @@ const Main: React.FC<{
 
   const onVideoToggle = useCallback(() => {
     if (!session.userMedia.hasVideoTracks) return setReRequestPermission(true);
+    if (isTutor(user) && session.userMedia.video && !joined) {
+      setDialog("discourage-dialog");
+      return;
+    }
     return session.userMedia.toggleCamera();
-  }, [session.userMedia]);
+  }, [session.userMedia, user, joined]);
 
   const onToggleAudio = useCallback(() => {
     if (!session.userMedia.hasAudioTracks) return setReRequestPermission(true);
@@ -214,8 +227,58 @@ const Main: React.FC<{
     ]
   );
 
+  const permissionChangeHandler = useCallback(
+    async (permission: PermissionsDialogProps["loading"]) => {
+      const video = permission === "mic-and-camera";
+      const result = await safePromise(
+        session.userMedia.capture({ video, layout })
+      );
+      const error = result instanceof Error;
+      if (result instanceof Error) onUserMediaError(result, permission);
+
+      /**
+       * Replacing streams is important during the session else the other
+       * member will never get the updated stream (e.g., user enable camera
+       * duing the session)
+       */
+      if (!error) session.peer.replaceStream(result);
+
+      /**
+       * Once we captured the meida stream, the devices permissions state
+       * needs to be updated.
+       */
+      devices.recheck();
+      setPermission(undefined);
+      if (reRequestPermission) setReRequestPermission(error);
+    },
+    [
+      devices,
+      layout,
+      onUserMediaError,
+      reRequestPermission,
+      session.peer,
+      session.userMedia,
+    ]
+  );
+
   return (
     <div className="h-full">
+      <Dialogs
+        type={dialog}
+        setPermission={(perm) => {
+          setPermission(perm);
+          permissionChangeHandler(perm);
+        }}
+        turnCamOff={() => {
+          if (session.userMedia.camera) session.userMedia.toggleCamera();
+        }}
+        close={() => {
+          setDialog(null);
+          // to ensure that PermissionsDialog is closed as well
+          setReRequestPermission(false);
+        }}
+      />
+
       <PermissionsDialog
         onSubmit={async (permission) => {
           /**
@@ -223,27 +286,15 @@ const Main: React.FC<{
            * @note User cannot enable video without microphone.
            */
           setPermission(permission);
-          const video = permission === "mic-and-camera";
-          const result = await safePromise(
-            session.userMedia.capture({ video, layout })
-          );
-          const error = result instanceof Error;
-          if (result instanceof Error) onUserMediaError(result, permission);
 
-          /**
-           * Replacing streams is important during the session else the other
-           * member will never get the updated stream (e.g., user enable camera
-           * duing the session)
-           */
-          if (!error) session.peer.replaceStream(result);
+          // return and show the encourage dialog: that encourages
+          // tutors to turn on the cam
+          if (isTutor(user) && permission === "mic-only") {
+            setDialog("encourage-dialog");
+            return;
+          }
 
-          /**
-           * Once we captured the meida stream, the devices permissions state
-           * needs to be updated.
-           */
-          devices.recheck();
-          setPermission(undefined);
-          if (reRequestPermission) setReRequestPermission(error);
+          permissionChangeHandler(permission);
         }}
         loading={session.userMedia.loading ? permission : undefined}
         /**
