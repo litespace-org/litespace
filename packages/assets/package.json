@@ -69,6 +69,7 @@
     "./ChevronDoubleLeft": "./dist/ChevronDoubleLeft.tsx",
     "./ChevronDoubleRight": "./dist/ChevronDoubleRight.tsx",
     "./Clock": "./dist/Clock.tsx",
+    "./CloseCircle": "./dist/CloseCircle.tsx",
     "./Close": "./dist/Close.tsx",
     "./Close2": "./dist/Close2.tsx",
     "./CopyCheck": "./dist/CopyCheck.tsx",

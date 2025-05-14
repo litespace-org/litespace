@@ -21,6 +21,8 @@ import { env } from "@/lib/env";
 import { useOnError } from "@/hooks/error";
 import { IPlan } from "@litespace/types";
 import { useToast } from "@litespace/ui/Toast";
+import { IFrameMessage } from "@/constants/iframe";
+import { useLogger } from "@litespace/headless/logger";
 
 type Form = {
   card: string;
@@ -35,6 +37,7 @@ const Payment: React.FC<{
 }> = ({ planId, period, phone }) => {
   const intl = useFormatMessage();
   const toast = useToast();
+  const logger = useLogger();
   const [showAddCardTokenDialog, setShowAddCardTokenDialog] =
     useState<boolean>(false);
 
@@ -104,11 +107,22 @@ const Payment: React.FC<{
   // ==================== iframe messages ====================
 
   const onWindowMessage = useCallback(
-    (event: MessageEvent<string>) => {
-      if (event.data === "card-added") setShowAddCardTokenDialog(false);
+    (event: MessageEvent<IFrameMessage>) => {
+      if (event.data.action === "close") setShowAddCardTokenDialog(false);
+
+      if (event.data.action === "try-again") payWithCard.reset();
+
+      if (event.data.action === "report") {
+        logger.error({
+          fawryErrorCode: event.data.fawryErrorCode,
+          fawryErrorDescription: event.data.fawryErrorDescription,
+        });
+        setShowAddCardTokenDialog(false);
+      }
+
       findCardTokensQuery.refetch();
     },
-    [findCardTokensQuery]
+    [findCardTokensQuery, logger, payWithCard]
   );
 
   useEffect(() => {
