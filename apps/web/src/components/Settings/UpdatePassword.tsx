@@ -9,6 +9,7 @@ import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { Password } from "@litespace/ui/Input";
 import { isValidPassword } from "@litespace/ui/lib/validate";
 import { useToast } from "@litespace/ui/Toast";
+import { Typography } from "@litespace/ui/Typography";
 import React, { useCallback } from "react";
 
 type Form = {
@@ -17,7 +18,7 @@ type Form = {
   confirm: string;
 };
 
-export const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
+const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
@@ -84,7 +85,13 @@ export const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
   const mutation = useUpdateUser({ onSuccess, onError });
 
   return (
-    <div className="max-w-[400px] grow md:grow-0 flex flex-col gap-6">
+    <div className="max-w-[400px] grow md:grow-0 flex flex-col">
+      <Typography
+        tag="h2"
+        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
+      >
+        {intl("student-settings.password.title")}
+      </Typography>
       <form onSubmit={form.onSubmit} className="w-full flex flex-col gap-4">
         <Password
           required
@@ -135,3 +142,5 @@ export const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
     </div>
   );
 };
+
+export default UpdatePassword;

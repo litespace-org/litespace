@@ -1,36 +1,34 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { ITutor, IUser } from "@litespace/types";
 import React, { useMemo } from "react";
+import { Tab, TabId } from "@/components/TutorSettings/types";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Tabs } from "@litespace/ui/Tabs";
-
-import NotificationSettings from "@/components/Settings/NotificationSettings";
+import PersonalDetailsForm from "@/components/Settings/PersonalDetails";
 import UpdatePassword from "@/components/Settings/UpdatePassword";
-import PersonalDetails from "@/components/Settings/PersonalDetails";
-import TopicSelection from "@/components/Settings/TopicSelection";
-import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
-import { IUser } from "@litespace/types";
-import { Tab, TabId } from "@/components/StudentSettings/types";
+import NotificationSettings from "@/components/Settings/NotificationSettings";
 
-const Content: React.FC<{
+type Props = {
+  user: IUser.Self & ITutor.FindTutorMetaApiResponse;
   tab: TabId;
   setTab: (tab: TabId) => void;
-  user: IUser.Self;
-}> = ({ tab, setTab, user }) => {
-  const intl = useFormatMessage();
+};
 
+const AccountSettings: React.FC<Props> = ({ user, setTab, tab }) => {
+  const intl = useFormatMessage();
   const tabs: Tab[] = useMemo(
     () => [
       {
         id: "personal",
-        label: intl("shared-settings.personal.title"),
+        label: intl("tutor-settings.personal.title"),
         important:
-          !user.name ||
           !user.email ||
           !user.phone ||
           !user.city ||
           !user.gender ||
-          !user.image ||
           !user.verifiedEmail ||
-          !user.verifiedPhone,
+          !user.verifiedPhone ||
+          !user.notice ||
+          !user.studioId,
       },
       {
         id: "password",
@@ -42,47 +40,40 @@ const Content: React.FC<{
         label: intl("shared-settings.notification.title"),
         important: !user.notificationMethod,
       },
-      {
-        id: "topics",
-        label: intl("student-settings.topics.title"),
-        important: false,
-      },
     ],
     [
       intl,
       user.city,
       user.email,
       user.gender,
-      user.image,
-      user.name,
       user.notificationMethod,
       user.password,
       user.phone,
       user.verifiedEmail,
       user.verifiedPhone,
+      user.notice,
+      user.studioId,
     ]
   );
 
   return (
-    <div className="grow flex flex-col">
-      <div className="mb-6 md:hidden">
-        <UploadPhoto id={user.id} name={user.name} image={user.image} />
-      </div>
-
-      <div className="md:max-w-fit mb-6 lg:mb-10">
+    <div>
+      <div className="max-w-[538px] mb-10">
         <Tabs tabs={tabs} tab={tab} setTab={setTab} />
       </div>
 
       {tab === "personal" ? (
-        <PersonalDetails
-          forStudent
-          id={user.id}
+        <PersonalDetailsForm
+          forStudent={false}
           image={user.image}
-          email={user.email}
           name={user.name}
+          id={user.id}
+          email={user.email}
           city={user.city}
           gender={user.gender}
           phone={user.phone}
+          notice={user.notice}
+          studio={user.studioId}
           verifiedEmail={user.verifiedEmail}
           verifiedPhone={user.verifiedPhone}
         />
@@ -99,14 +90,8 @@ const Content: React.FC<{
           notificationMethod={user.notificationMethod}
         />
       ) : null}
-
-      {tab === "topics" ? (
-        <div className="max-w-[530px] grow flex">
-          <TopicSelection forTutor={false} />
-        </div>
-      ) : null}
     </div>
   );
 };
 
-export default Content;
+export default AccountSettings;

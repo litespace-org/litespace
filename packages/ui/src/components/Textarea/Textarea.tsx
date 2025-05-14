@@ -13,6 +13,12 @@ export interface TextareaProps
   label?: string;
   helper?: string | null;
   maxAllowedCharacters?: number;
+  endActions?: {
+    id: number;
+    icon: React.ReactNode;
+    onClick?: () => void;
+    className?: string;
+  };
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
@@ -24,6 +30,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       disabled,
       helper,
       maxAllowedCharacters,
+      endActions,
       idleDir = "rtl",
       className,
       ...props
@@ -70,27 +77,34 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             }
           )}
         >
-          <textarea
-            dir={!value ? idleDir : "auto"}
-            value={value}
-            disabled={disabled}
+          <div
             className={cn(
-              "pt-3 px-3 grow bg-inherit w-full resize-none focus-within:outline-none font-medium text-caption h-full",
-              "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50 rounded-md",
-              // Placeholder
-              "placeholder:text-natural-600",
-              {
-                // Filled
-                "text-natural-950": !disabled && value,
-                // Disabled
-                "text-natural-500 placeholder:text-natural-500 cursor-not-allowed":
-                  disabled,
-              },
-              className
+              "pt-3 px-3 grow bg-inherit w-full flex resize-none focus-within:outline-none font-medium text-caption h-full"
             )}
-            ref={ref}
-            {...props}
-          />
+          >
+            <textarea
+              dir={!value ? idleDir : "auto"}
+              value={value}
+              disabled={disabled}
+              className={cn(
+                "grow bg-inherit w-full resize-none focus-within:outline-none font-medium text-caption h-full",
+                "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50 rounded-md",
+                // Placeholder
+                "placeholder:text-natural-600",
+                {
+                  // Filled
+                  "text-natural-950": !disabled && value,
+                  // Disabled
+                  "text-natural-500 placeholder:text-natural-500 cursor-not-allowed":
+                    disabled,
+                },
+                className
+              )}
+              ref={ref}
+              {...props}
+            />
+            <Action action={endActions} disabled={disabled} filled={!!value} />
+          </div>
           {maxAllowedCharacters ? (
             <div dir="ltr" className="flex flex-col gap-1 px-3">
               <hr
@@ -160,5 +174,35 @@ export const Helper: React.FC<{ children: React.ReactNode }> = ({
     <motion.span {...framer} className="flex">
       {children}
     </motion.span>
+  );
+};
+
+const Action: React.FC<{
+  action: TextareaProps["endActions"] | undefined;
+  disabled?: boolean;
+  filled?: boolean;
+}> = ({ action, disabled, filled }) => {
+  if (!action) return null;
+  return (
+    <button
+      key={action.id}
+      onClick={action.onClick}
+      disabled={disabled}
+      type="button"
+      className={cn(
+        // Default
+        "flex items-center justify-center",
+        "w-5 h-5 -mx-1 [&_*]:stroke-natural-600 group-focus-within:[&_*]:stroke-natural-950",
+        "outline-none focus:ring-2 ring-brand-700 rounded-sm",
+        // Filled
+        filled && !disabled && "[&_*]:stroke-natural-950",
+        // Disabled
+        disabled &&
+          "[&_*]:stroke-natural-500 cursor-not-allowed pointer-events-none",
+        action.className
+      )}
+    >
+      {action.icon}
+    </button>
   );
 };
