@@ -41,6 +41,7 @@ export const ChatMessage: React.FC<{
    * A flag that indicates current message is being sent to the other user
    */
   pending?: boolean;
+  inSession?: boolean;
   /**
    * content of the message
    * @param id message id
@@ -63,6 +64,7 @@ export const ChatMessage: React.FC<{
   deleteMessage?: Void;
 }> = ({
   message,
+  inSession,
   owner,
   viewOnly,
   pending,
@@ -108,7 +110,7 @@ export const ChatMessage: React.FC<{
 
   return (
     <div
-      className={cn("group flex w-fit", "gap-4 items-center", {
+      className={cn("group flex w-fit gap-4 items-center", {
         "flex-row-reverse": owner,
         "flex-row": !owner,
       })}
@@ -134,7 +136,12 @@ export const ChatMessage: React.FC<{
               setOpenMenu(open);
             }}
           >
-            <div className="w-4 h-6 flex justify-center items-center">
+            <div
+              className={cn(
+                inSession ? "w-4 h-4" : "w-4 h-6",
+                "flex justify-center items-center"
+              )}
+            >
               <More className="[&>*]:fill-natural-800 dark:[&>*]:fill-natural-50" />
             </div>
           </Menu>
@@ -178,7 +185,14 @@ export const ChatMessage: React.FC<{
           </div>
         ) : null}
         {owner && !error && !pending ? (
-          <div className="w-4 h-4 shrink-0">{ReadIcon}</div>
+          <div
+            className={cn(
+              inSession ? "w-4 h-4 lg:w-3 lg:h-3" : "w-4 h-4",
+              "shrink-0"
+            )}
+          >
+            {ReadIcon}
+          </div>
         ) : null}
         <Typography
           dir="auto"
@@ -187,7 +201,8 @@ export const ChatMessage: React.FC<{
             lineBreak: "anywhere",
           }}
           className={cn(
-            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] text-caption font-normal",
+            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] font-normal",
+            inSession && !owner ? "text-caption lg:text-tiny" : "text-caption",
             {
               "text-natural-950": !error,
               "text-natural-50": error && !pending,
