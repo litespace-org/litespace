@@ -989,7 +989,6 @@
   "error.api.interview-not-found": "المقابلة غير موجودة، برجاء التحقق من البيانات.",
   "error.api.topic-not-found": "الموضوع غير موجود، برجاء التحقق من البيانات.",
   "error.api.interview-already-signed": "تم توقيع المقابلة بالفعل، لا يمكن تعديلها.",
-  "error.api.report-reply-not-found": "التعليق علي التقرير غير موجود، برجاء التحقق من بيانات التقرير.",
   "error.api.withdraw-method-not-found": "طريقة السحب غير موجودة، برجاء المحاولة مرة أخرى.",
   "error.api.subscription-not-found": "الاشتراك غير موجود، برجاء التحقق من البيانات.",
   "error.api.email-already-verified": "تم التحقق من البريد الإلكتروني بالفعل، يمكنك الاستمتاع بالمنصة الان.",

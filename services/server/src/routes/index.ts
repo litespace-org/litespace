@@ -19,6 +19,7 @@ import fawry from "@/routes/fawry";
 import transaction from "@/routes/transaction";
 import subscription from "@/routes/subscription";
 import confirmationCode from "@/routes/confirmationCode";
+import report from "@/routes/report";
 
 export default {
   user,
@@ -42,4 +43,5 @@ export default {
   transaction,
   subscription,
   confirmationCode,
+  report,
 };
