@@ -20,7 +20,6 @@ const StudentSettings = lazy(() => import("@/pages/StudentSettings"));
 const Payments = lazy(() => import("@/pages/Payments"));
 const Tutors = lazy(() => import("@/pages/Tutors"));
 const Chat = lazy(() => import("@/pages/Chat"));
-const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
 const UpcomingLessons = lazy(() => import("@/pages/UpcomingLessons"));
 const Plans = lazy(() => import("@/pages/Plans"));
@@ -59,7 +58,6 @@ const router = createRouter([
       { path: Web.Login, element: <Login /> },
       { path: Web.Payments, element: <Payments /> },
       { path: Web.Register, element: <Register /> },
-      { path: Web.ResetPassword, element: <ResetPassword /> },
       { path: Web.StudentDashboard, element: <StudentDashboard /> },
       { path: Web.StudentSettings, element: <StudentSettings /> },
       { path: Web.TutorDashboard, element: <TutorDashboard /> },

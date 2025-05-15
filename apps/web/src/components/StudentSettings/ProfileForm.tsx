@@ -3,8 +3,7 @@ import TopicSelection from "@/components/StudentSettings/TopicSelection";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import { governorates } from "@/constants/user";
 import { useOnError } from "@/hooks/error";
-import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
-import { useSendVerifyEmail } from "@litespace/headless/auth";
+import { useSendVerificationEmailCode } from "@litespace/headless/confirmationCode";
 import { QueryKey } from "@litespace/headless/constants";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useInvalidateQuery } from "@litespace/headless/query";
@@ -375,7 +374,7 @@ const ConfirmEmail: React.FC = () => {
     },
   });
 
-  const mutation = useSendVerifyEmail({ onSuccess, onError });
+  const mutation = useSendVerificationEmailCode({ onSuccess, onError });
 
   return (
     <div className="flex flex-col gap-4">
@@ -387,7 +386,7 @@ const ConfirmEmail: React.FC = () => {
           {intl("student-settings.confirm-email.desc")}
         </Typography>
         <Button
-          onClick={() => mutation.mutate(VERIFY_EMAIL_CALLBACK_URL)}
+          onClick={() => mutation.mutate()}
           loading={mutation.isPending}
           disabled={mutation.isPending}
           htmlType="button"
