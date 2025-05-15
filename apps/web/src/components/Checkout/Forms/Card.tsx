@@ -21,6 +21,8 @@ import { env } from "@/lib/env";
 import { useOnError } from "@/hooks/error";
 import { IPlan } from "@litespace/types";
 import { useToast } from "@litespace/ui/Toast";
+import { IframeMessage } from "@/constants/iframe";
+import { useLogger } from "@litespace/headless/logger";
 
 type Form = {
   card: string;
@@ -35,6 +37,7 @@ const Payment: React.FC<{
 }> = ({ planId, period, phone }) => {
   const intl = useFormatMessage();
   const toast = useToast();
+  const logger = useLogger();
   const [showAddCardTokenDialog, setShowAddCardTokenDialog] =
     useState<boolean>(false);
 
@@ -104,11 +107,26 @@ const Payment: React.FC<{
   // ==================== iframe messages ====================
 
   const onWindowMessage = useCallback(
-    (event: MessageEvent<string>) => {
-      if (event.data === "card-added") setShowAddCardTokenDialog(false);
+    (event: MessageEvent<IframeMessage>) => {
+      if (event.data.action === "close") setShowAddCardTokenDialog(false);
+
+      if (event.data.action === "try-again") {
+        // close then re-open the dialog
+        setShowAddCardTokenDialog(false);
+        setTimeout(() => setShowAddCardTokenDialog(true), 200);
+      }
+
+      if (event.data.action === "report") {
+        logger.error({
+          fawryErrorCode: event.data.fawryErrorCode,
+          fawryErrorDescription: event.data.fawryErrorDescription,
+        });
+        setShowAddCardTokenDialog(false);
+      }
+
       findCardTokensQuery.refetch();
     },
-    [findCardTokensQuery]
+    [findCardTokensQuery, logger]
   );
 
   useEffect(() => {
@@ -239,14 +257,16 @@ const Payment: React.FC<{
         </Typography>
       </form>
 
-      <IframeDialog
-        open={showAddCardTokenDialog}
-        url={addCardTokenUrlQuery.data?.url}
-        loading={addCardTokenUrlQuery.isPending}
-        onOpenChange={(open) => {
-          setShowAddCardTokenDialog(open);
-        }}
-      />
+      {showAddCardTokenDialog ? (
+        <IframeDialog
+          open
+          url={addCardTokenUrlQuery.data?.url}
+          loading={addCardTokenUrlQuery.isPending}
+          onOpenChange={(open) => {
+            setShowAddCardTokenDialog(open);
+          }}
+        />
+      ) : null}
 
       {payWithCard.data ? (
         <IframeDialog
