@@ -13,6 +13,7 @@ import {
   availabilitySlots,
   contactRequests,
   invoices,
+  reports,
 } from "@/index";
 import {
   IInterview,
@@ -27,6 +28,7 @@ import {
   ITransaction,
   ISubscription,
   IPlan,
+  IReport,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -42,6 +44,7 @@ import { percentage, price } from "@litespace/utils";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await reports.builder(tx).del();
     await subscriptions.builder(tx).del();
     await transactions.builder(tx).del();
     await plans.builder(tx).del();
@@ -112,6 +115,18 @@ export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
   const slot = first(slots);
   if (!slot) throw new Error("Slot not found; should never happen");
   return slot;
+}
+
+export async function report(payload?: Partial<IReport.CreateModelPayload>) {
+  const report = await reports.create({
+    userId: await or.studentId(payload?.userId),
+    title: payload?.title || faker.lorem.words(5),
+    description: payload?.description || faker.lorem.words(25),
+    screenshot: payload?.screenshot,
+    log: payload?.log,
+  });
+  if (!report) throw new Error("Slot not found; should never happen");
+  return report;
 }
 
 const or = {
@@ -543,6 +558,7 @@ export default {
   plan,
   transaction,
   subscription,
+  report,
   room: makeRoom,
   rating: makeRating,
   message: makeMessage,

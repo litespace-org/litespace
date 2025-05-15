@@ -1,59 +1,70 @@
-import { MappedRecordAttributes, RecordAttributes } from "@/utils";
+import { IFilter } from "@/index";
+import { Paginated } from "@/utils";
+
+export enum AssetFileName {
+  Screenshot = "screenshot",
+  Log = "log",
+}
 
 export type Row = {
   id: number;
+  user_id: number | null;
   title: string;
   description: string;
-  category: string;
+  screenshot: string | null;
+  log: string | null;
   resolved: boolean;
-  resolved_at: Date | null;
   created_at: Date;
-  created_by: number;
   updated_at: Date;
-  updated_by: number;
 };
 
 export type Self = {
   id: number;
+  userId: number | null;
   title: string;
   description: string;
-  category: string;
+  screenshot: string | null;
+  log: string | null;
   resolved: boolean;
-  resolvedAt: string | null;
   createdAt: string;
-  createdBy: number;
   updatedAt: string;
-  updatedBy: number;
 };
 
-type SelectableSelf = Omit<
-  Self,
-  "createdAt" | "updatedAt" | "createdBy" | "updatedBy" | "resolvedAt"
->;
-
-export type Attributed = SelectableSelf &
-  RecordAttributes & {
-    resolvedAt: Date | null;
-  };
-
-export type MappedAttributes = SelectableSelf &
-  MappedRecordAttributes & {
-    resolvedAt: string | null;
-  };
-
-export type CreatePayload = {
+export type CreateModelPayload = {
+  userId: number;
   title: string;
   description: string;
-  category: string;
-  createdBy: number;
+  screenshot?: string;
+  log?: string;
 };
 
-export type UpdatePayload = Partial<
-  Omit<CreatePayload, "createdBy"> & { resolved: boolean }
-> & {
-  updatedBy: number;
+export type UpdateModelPayload = {
+  id: number;
+  resolved: boolean;
 };
 
-export type CreateApiPayload = Omit<CreatePayload, "createdBy">;
+export type FindModelQuery = IFilter.SkippablePagination & {
+  ids?: number[];
+  users?: number[];
+  title?: string;
+  description?: string;
+  screenshot?: boolean;
+  log?: boolean;
+  resolved?: boolean;
+  createdAt?: IFilter.Date;
+  updatedAt?: IFilter.Date;
+};
 
-export type UpdateApiPayload = Omit<UpdatePayload, "updatedBy">;
+export type CreateApiPayload = {
+  title: string;
+  description: string;
+};
+
+export type UpdateApiPayload = {
+  id: number;
+  resolved: boolean;
+};
+
+export type FindApiPayload = FindModelQuery;
+
+export type FindApiResponse = Paginated<Self>;
