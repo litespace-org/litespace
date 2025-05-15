@@ -21,7 +21,6 @@ import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 
 const publicRoutes: Web[] = [
   Web.Login,
-  Web.VerifyEmail,
   Web.ForgetPassword,
   Web.ResetPassword,
   Web.Register,
@@ -78,7 +77,6 @@ const Root: React.FC = () => {
       Web.ForgetPassword,
       Web.ResetPassword,
       Web.CompleteProfile,
-      Web.VerifyEmail,
       Web.CardAdded,
       Web.Checkout,
       Web.CompleteTutorProfile,

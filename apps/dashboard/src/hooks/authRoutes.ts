@@ -59,9 +59,6 @@ const routeConfigMap: Record<Dashboard, RouteConfig> = {
   [Dashboard.Topics]: {
     whitelist: [regularAdmin],
   },
-  [Dashboard.VerifyEmail]: {
-    whitelist: [regularAdmin],
-  },
   [Dashboard.UserSetting]: {
     whitelist: [regularAdmin, studio],
   },
