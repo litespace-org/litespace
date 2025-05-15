@@ -37,6 +37,8 @@ export enum OrderDirection {
   Descending = "desc",
 }
 
+export type Direction = "acs" | "desc";
+
 export type Numeric =
   | number
   | {

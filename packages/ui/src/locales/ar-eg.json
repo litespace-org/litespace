@@ -53,7 +53,6 @@
   "checkout.status.ewallet.title-2": "تفقد محفظتك الالكترونية",
   "checkout.status.ewallet.description-2": "يرجى العلم أنه تم إرسال إشعار إلى محفظتك الإلكترونية من خلال فوري. يمكنك الآن تفقد المحفظة الخاصة بك لتأكيد عملية الدفع.",
   "checkout.payment.failed.title": "تعذّر إتمام عملية الدفع",
-  "checkout.payment.failed.description": "لم نتمكن من إتمام عملية الدفع. يُرجى التحقق من بيانات البطاقة أو استخدام وسيلة دفع بديلة.",
   "complete-tutor-profile.title": "استكمل ملفك الشخصي",
   "complete-tutor-profile.description": "ملفك الشخصي هو أول ما يراه الطلاب عنك، وهو بوابتك لبناء الثقة وترك إنطباع جيد لدي طلابك.",
   "complete-tutor-profile.bio.label": "النبذة المختصرة",

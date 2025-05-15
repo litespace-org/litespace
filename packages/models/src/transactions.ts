@@ -70,26 +70,14 @@ export class Transactions {
   }: WithOptionalTx<ITransaction.FindQueryModel>): Promise<
     Paginated<ITransaction.Self>
   > {
-    const base = this.applySearchFilter(this.builder(tx), query);
+    const base = this.filter(this.builder(tx), query);
     const total = await countRows(base.clone(), { column: this.column("id") });
-    const queryBuilder = base.clone().select();
+    const queryBuilder = base
+      .clone()
+      .select()
+      .orderBy(this.column("created_at"), "desc");
     const rows = await withSkippablePagination(queryBuilder, { page, size });
     return { list: rows.map((row) => this.from(row)), total };
-  }
-
-  /**
-   * retrieve the last transaction of a specific user
-   */
-  async findLast({
-    tx,
-    userId,
-  }: WithOptionalTx<{ userId: number }>): Promise<ITransaction.Self | null> {
-    const rows = await this.builder(tx)
-      .where(this.column("user_id"), userId)
-      .orderBy(this.column("created_at"), "desc")
-      .select();
-    const row = first(rows);
-    return row ? this.from(row) : null;
   }
 
   from(row: ITransaction.Row): ITransaction.Self {
@@ -107,7 +95,7 @@ export class Transactions {
     };
   }
 
-  applySearchFilter<R extends object, T>(
+  filter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
     {
       ids = [],

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useApi } from "@/api";
 import { QueryKey } from "@/constants";
 import { useSocket } from "@/socket";
@@ -12,7 +12,7 @@ export function useFindLastTransaction(config?: { enabled?: boolean }) {
     return api.transaction.findLast();
   }, [api.transaction]);
 
-  const keys = useMemo(() => [QueryKey.FindLastTransaction], []);
+  const keys = [QueryKey.FindLastTransaction];
 
   const query = useQuery({
     queryFn: findLastTransaction,

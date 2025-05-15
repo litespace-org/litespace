@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import Logo from "@litespace/assets/LogoV3";
+import Logo from "@litespace/assets/Logo";
 import { Typography } from "@litespace/ui/Typography";
 import { useFindLastTransaction } from "@litespace/headless/transaction";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
@@ -18,6 +18,7 @@ import { Button } from "@litespace/ui/Button";
 import CheckCircleV2 from "@litespace/assets/CheckCircleV2";
 import { Link } from "react-router-dom";
 import { Web } from "@litespace/utils/routes";
+import { useSubscription } from "@litespace/headless/context/subscription";
 
 const Content: React.FC<{
   planId: number;
@@ -26,6 +27,7 @@ const Content: React.FC<{
 }> = ({ planId, period, userPhone }) => {
   const transaction = useFindLastTransaction();
   const plan = useFindPlanById(planId);
+  const { info: subscription } = useSubscription();
 
   useOnError({
     type: "query",
@@ -43,6 +45,7 @@ const Content: React.FC<{
     <div className="h-full gap-8 flex flex-col items-center mt-[15vh]">
       <Header />
       <Body
+        subscribed={!!subscription}
         userPhone={userPhone}
         period={period}
         plan={{
@@ -69,7 +72,7 @@ const Header: React.FC = () => {
   const intl = useFormatMessage();
   return (
     <div dir="ltr" className="flex flex-row gap-4 items-center justify-center">
-      <Logo className="w-14 h-14 fill-brand-500" />
+      <Logo className="w-14 h-14" />
       <Typography tag="p" className="text-h4 text-brand-500 font-bold">
         {intl("labels.litespace")}
       </Typography>
@@ -80,6 +83,7 @@ const Header: React.FC = () => {
 const Body: React.FC<{
   period: IPlan.PeriodLiteral;
   userPhone: string | null;
+  subscribed: boolean;
   plan: {
     loading: boolean;
     error: boolean;
@@ -93,9 +97,10 @@ const Body: React.FC<{
     data: ITransaction.Self | null;
     refetch: Void;
   };
-}> = ({ plan, transaction, period, userPhone }) => {
+}> = ({ plan, transaction, period, userPhone, subscribed }) => {
   const intl = useFormatMessage();
   const logger = useLogger();
+
   // =================== sync payment manually =====================
   const syncPayment = useSyncPaymentStatus({});
 
@@ -167,7 +172,7 @@ const Body: React.FC<{
       />
     );
 
-  if (transaction.data?.status === ITransaction.Status.Paid)
+  if (transaction.data?.status === ITransaction.Status.Paid && subscribed)
     return <TransactionDone />;
 
   if (transaction.data?.status === ITransaction.Status.New)
@@ -204,25 +209,13 @@ const TransactionDone: React.FC = () => {
       </div>
 
       <div className="flex gap-4">
-        <Link to={Web.Tutors}>
-          <Button
-            type="main"
-            variant="primary"
-            size="large"
-            htmlType="submit"
-            className="w-[209.5px]"
-          >
+        <Link to={Web.Tutors} tabIndex={-1}>
+          <Button type="main" variant="primary" size="large">
             {intl("checkout.payment.done.book-lesson-now")}
           </Button>
         </Link>
-        <Link to={Web.Root}>
-          <Button
-            type="main"
-            variant="secondary"
-            size="large"
-            htmlType="submit"
-            className="w-[209.5px]"
-          >
+        <Link to={Web.Root} tabIndex={-1}>
+          <Button type="main" variant="secondary" size="large">
             {intl("checkout.payment.done.main-page")}
           </Button>
         </Link>

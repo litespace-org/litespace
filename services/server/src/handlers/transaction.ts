@@ -6,6 +6,7 @@ import { forbidden, notfound } from "@/lib/error";
 import { id, pageNumber, pageSize, withNamedId } from "@/validation/utils";
 import { isAdmin, isStudent } from "@litespace/utils/user";
 import { transactions } from "@litespace/models";
+import { first } from "lodash";
 
 const findPayload = zod.object({
   ids: id.array().optional(),
@@ -57,9 +58,9 @@ async function findLast(req: Request, res: Response, next: NextFunction) {
   const allowed = isStudent(user);
   if (!allowed) return next(forbidden());
 
-  const tx = await transactions.findLast({ userId: user.id });
-  const response: ITransaction.FindLastApiResponse = tx;
-
+  const { list } = await transactions.find({ users: [user.id], size: 1 });
+  const transaction = first(list);
+  const response: ITransaction.FindLastApiResponse = transaction || null;
   res.status(200).json(response);
 }
 
