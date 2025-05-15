@@ -2,7 +2,7 @@ import { ISubscription } from "@litespace/types";
 import { createContext, useContext } from "react";
 
 export type Context = {
-  subscription: ISubscription.Self | null;
+  info: ISubscription.Self | null;
   remainingMinutes: number;
   loading: boolean;
   isError: boolean;

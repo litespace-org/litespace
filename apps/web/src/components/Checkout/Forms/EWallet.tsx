@@ -32,8 +32,7 @@ const Payment: React.FC<{
     type: "mutation",
     handler({ messageId }) {
       toast.error({
-        id: "pay-with-ewallet",
-        title: intl("checkout.payment.pay-error"),
+        title: intl("checkout.payment.failed.title"),
         description: intl(messageId),
       });
     },

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import Logo from "@litespace/assets/Logo";
 import { Typography } from "@litespace/ui/Typography";
-import { usePendingTransaction } from "@litespace/headless/transaction";
+import { useFindLastTransaction } from "@litespace/headless/transaction";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useOnError } from "@/hooks/error";
@@ -14,13 +14,66 @@ import { useSyncPaymentStatus } from "@litespace/headless/fawry";
 import { env } from "@/lib/env";
 import { useSocket } from "@litespace/headless/socket";
 import { useLogger } from "@litespace/headless/logger";
+import { Button } from "@litespace/ui/Button";
+import CheckCircleV2 from "@litespace/assets/CheckCircleV2";
+import { Link } from "react-router-dom";
+import { Web } from "@litespace/utils/routes";
+import { useSubscription } from "@litespace/headless/context/subscription";
+
+const Content: React.FC<{
+  planId: number;
+  period: IPlan.PeriodLiteral;
+  userPhone: string | null;
+}> = ({ planId, period, userPhone }) => {
+  const transaction = useFindLastTransaction();
+  const plan = useFindPlanById(planId);
+  const { info: subscription } = useSubscription();
+
+  useOnError({
+    type: "query",
+    error: transaction.query.error,
+    keys: transaction.keys,
+  });
+
+  useOnError({
+    type: "query",
+    error: plan.query.error,
+    keys: plan.keys,
+  });
+
+  return (
+    <div className="h-full gap-8 flex flex-col items-center mt-[15vh]">
+      <Header />
+      <Body
+        subscribed={!!subscription}
+        userPhone={userPhone}
+        period={period}
+        plan={{
+          loading: plan.query.isLoading,
+          error: plan.query.isError,
+          data: plan.query.data,
+          refetch: plan.query.refetch,
+        }}
+        transaction={{
+          fetching: transaction.query.isFetching,
+          loading: transaction.query.isLoading,
+          error: transaction.query.isError,
+          data: transaction.query.data || null,
+          refetch: transaction.query.refetch,
+        }}
+      />
+    </div>
+  );
+};
+
+export default Content;
 
 const Header: React.FC = () => {
   const intl = useFormatMessage();
   return (
     <div dir="ltr" className="flex flex-row gap-4 items-center justify-center">
       <Logo className="w-14 h-14" />
-      <Typography tag="p" className="text-h4 text-brand-700 font-bold">
+      <Typography tag="p" className="text-h4 text-brand-500 font-bold">
         {intl("labels.litespace")}
       </Typography>
     </div>
@@ -30,6 +83,7 @@ const Header: React.FC = () => {
 const Body: React.FC<{
   period: IPlan.PeriodLiteral;
   userPhone: string | null;
+  subscribed: boolean;
   plan: {
     loading: boolean;
     error: boolean;
@@ -43,9 +97,10 @@ const Body: React.FC<{
     data: ITransaction.Self | null;
     refetch: Void;
   };
-}> = ({ plan, transaction, period, userPhone }) => {
+}> = ({ plan, transaction, period, userPhone, subscribed }) => {
   const intl = useFormatMessage();
   const logger = useLogger();
+
   // =================== sync payment manually =====================
   const syncPayment = useSyncPaymentStatus({});
 
@@ -117,7 +172,10 @@ const Body: React.FC<{
       />
     );
 
-  if (transaction.data)
+  if (transaction.data?.status === ITransaction.Status.Paid && subscribed)
+    return <TransactionDone />;
+
+  if (transaction.data?.status === ITransaction.Status.New)
     return (
       <StatusContainer
         transactionId={transaction.data.id}
@@ -139,48 +197,29 @@ const Body: React.FC<{
   );
 };
 
-const Content: React.FC<{
-  planId: number;
-  period: IPlan.PeriodLiteral;
-  userPhone: string | null;
-}> = ({ planId, period, userPhone }) => {
-  const transaction = usePendingTransaction();
-  const plan = useFindPlanById(planId);
-
-  useOnError({
-    type: "query",
-    error: transaction.query.error,
-    keys: transaction.keys,
-  });
-
-  useOnError({
-    type: "query",
-    error: plan.query.error,
-    keys: plan.keys,
-  });
-
+const TransactionDone: React.FC = () => {
+  const intl = useFormatMessage();
   return (
-    <div className="h-full gap-8 flex flex-col items-center mt-[15vh]">
-      <Header />
-      <Body
-        userPhone={userPhone}
-        period={period}
-        plan={{
-          loading: plan.query.isLoading,
-          error: plan.query.isError,
-          data: plan.query.data,
-          refetch: plan.query.refetch,
-        }}
-        transaction={{
-          fetching: transaction.query.isFetching,
-          loading: transaction.query.isLoading,
-          error: transaction.query.isError,
-          data: transaction.query.data || null,
-          refetch: transaction.query.refetch,
-        }}
-      />
+    <div className="flex flex-col gap-4 items-center justify-center">
+      <div className="flex items-center gap-2">
+        <CheckCircleV2 className="w-6 h-6 stroke-brand-500" />
+        <Typography tag="h1" className="text-subtitle-2 font-bold">
+          {intl("checkout.payment.done")}
+        </Typography>
+      </div>
+
+      <div className="flex gap-4">
+        <Link to={Web.Tutors} tabIndex={-1}>
+          <Button type="main" variant="primary" size="large">
+            {intl("checkout.payment.done.book-lesson-now")}
+          </Button>
+        </Link>
+        <Link to={Web.Root} tabIndex={-1}>
+          <Button type="main" variant="secondary" size="large">
+            {intl("checkout.payment.done.main-page")}
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 };
-
-export default Content;

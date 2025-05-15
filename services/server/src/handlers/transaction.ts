@@ -53,25 +53,19 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-async function findPending(req: Request, res: Response, next: NextFunction) {
+async function findLast(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user);
   if (!allowed) return next(forbidden());
 
-  const { list } = await transactions.find({
-    users: [user.id],
-    statuses: [ITransaction.Status.New],
-  });
-
-  const transaction = first(list) || null;
-
-  const response: ITransaction.FindPendingApiResponse = transaction;
-
+  const { list } = await transactions.find({ users: [user.id], size: 1 });
+  const transaction = first(list);
+  const response: ITransaction.FindLastApiResponse = transaction || null;
   res.status(200).json(response);
 }
 
 export default {
-  findPending: safeRequest(findPending),
   find: safeRequest(find),
   findById: safeRequest(findById),
+  findLast: safeRequest(findLast),
 };

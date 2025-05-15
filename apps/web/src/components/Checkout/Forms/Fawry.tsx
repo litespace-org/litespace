@@ -28,8 +28,11 @@ const Payment: React.FC<{
   // ==================== pay with fawry ====================
   const onError = useOnError({
     type: "mutation",
-    handler(error) {
-      toast.error({ title: intl(error.messageId) });
+    handler({ messageId }) {
+      toast.error({
+        title: intl("checkout.payment.failed.title"),
+        description: intl(messageId),
+      });
     },
   });
 
@@ -73,7 +76,7 @@ const Payment: React.FC<{
           <PatternInput
             id="phone"
             mask=" "
-            idleDir="rtl"
+            idleDir="ltr"
             inputSize="large"
             name="phone"
             format="### #### ####"

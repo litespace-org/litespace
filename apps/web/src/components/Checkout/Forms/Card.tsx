@@ -20,6 +20,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { env } from "@/lib/env";
 import { useOnError } from "@/hooks/error";
 import { IPlan } from "@litespace/types";
+import { useToast } from "@litespace/ui/Toast";
 
 type Form = {
   card: string;
@@ -33,14 +34,18 @@ const Payment: React.FC<{
   phone: string | null;
 }> = ({ planId, period, phone }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
   const [showAddCardTokenDialog, setShowAddCardTokenDialog] =
     useState<boolean>(false);
 
   // ==================== pay with card ====================
   const onError = useOnError({
     type: "mutation",
-    handler(payload) {
-      console.log(payload);
+    handler({ messageId }) {
+      toast.error({
+        title: intl("checkout.payment.failed.title"),
+        description: intl(messageId),
+      });
     },
   });
 

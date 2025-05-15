@@ -75,7 +75,7 @@ export type FindQueryApi = FindQueryModel;
 
 export type FindApiResponse = Paginated<Self>;
 
-export type FindPendingApiResponse = Self | null;
+export type FindLastApiResponse = Self | null;
 
 export type FindByIdApiResponse = Self;
 

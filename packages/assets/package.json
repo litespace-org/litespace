@@ -59,6 +59,7 @@
     "./ChartSquare": "./dist/ChartSquare.tsx",
     "./Chat": "./dist/Chat.tsx",
     "./CheckCircleFill": "./dist/CheckCircleFill.tsx",
+    "./CheckCircleV2": "./dist/CheckCircleV2.tsx",
     "./CheckCircle": "./dist/CheckCircle.tsx",
     "./Check": "./dist/Check.tsx",
     "./Check1": "./dist/Check1.tsx",

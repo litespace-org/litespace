@@ -1,21 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useApi } from "@/api";
 import { QueryKey } from "@/constants";
 import { useSocket } from "@/socket";
 import { ITransaction, Wss } from "@litespace/types";
 
-export function usePendingTransaction(config?: { enabled?: boolean }) {
+export function useFindLastTransaction(config?: { enabled?: boolean }) {
   const api = useApi();
 
-  const findPendingTransaction = useCallback(async () => {
-    return api.transaction.findPending();
+  const findLastTransaction = useCallback(async () => {
+    return api.transaction.findLast();
   }, [api.transaction]);
 
-  const keys = useMemo(() => [QueryKey.FindPendingTransaction], []);
+  const keys = [QueryKey.FindLastTransaction];
 
   const query = useQuery({
-    queryFn: findPendingTransaction,
+    queryFn: findLastTransaction,
     queryKey: keys,
     enabled: config?.enabled,
   });
