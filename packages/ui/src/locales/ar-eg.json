@@ -975,6 +975,7 @@
   "error.api.expired-verification-code": "هذا الكود انتهت صلاحيته، برجاء المحاولة مرة أخرى",
   "error.api.invalid-verification-code": "هذا الكود خاطئ، برجاء التأكد من صحة الكود والمحاولة مرة أخرى",
   "error.api.incorrect-phone": "هذا الرقم خاطئ، برجاء التأكد من صحة الكود والمحاولة مرة أخرى",
+  "error.api.large-file-size": "حجم الملف الذي تحاول رفعه قد تعدى السعة المتاحة.",
   "error.name.length.short": "إسم قصير جدا",
   "error.name.length.long": "إسم طويل جدا",
   "error.name.invalid": "إسم غير مناسب",
