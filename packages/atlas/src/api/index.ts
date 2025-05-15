@@ -6,7 +6,6 @@ import { Plan } from "@/api/plan";
 import { Coupon } from "@/api/coupon";
 import { Invite } from "@/api/invite";
 import { Report } from "@/api/report";
-import { ReportReply } from "@/api/reportReply";
 import { Asset } from "@/api/asset";
 import { Rating } from "@/api/rating";
 import { Chat } from "@/api/chat";
@@ -32,7 +31,6 @@ export class Api {
   public readonly coupon: Coupon;
   public readonly invite: Invite;
   public readonly report: Report;
-  public readonly reportReply: ReportReply;
   public readonly asset: Asset;
   public readonly rating: Rating;
   public readonly chat: Chat;
@@ -57,7 +55,6 @@ export class Api {
     this.coupon = new Coupon(client);
     this.invite = new Invite(client);
     this.report = new Report(client);
-    this.reportReply = new ReportReply(client);
     this.asset = new Asset(client);
     this.rating = new Rating(client);
     this.chat = new Chat(client);
