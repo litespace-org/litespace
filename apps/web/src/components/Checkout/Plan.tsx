@@ -1,46 +1,30 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
 import { Link } from "react-router-dom";
 import { Web } from "@litespace/utils/routes";
 import { IPlan } from "@litespace/types";
-import { formatDuration, formatNumber, formatWeeks } from "@litespace/ui/utils";
+import { formatMinutes, formatNumber, formatWeeks } from "@litespace/ui/utils";
+import { PLAN_PERIOD_LITERAL_TO_WEEK_COUNT, price } from "@litespace/utils";
+import { LocalId } from "@litespace/ui/locales";
 import {
-  MILLISECONDS_IN_SECOND,
-  percentage,
-  SECONDS_IN_MINUTE,
-} from "@litespace/utils";
+  calculateTotalPriceAfterDiscount,
+  calculateTotalPriceBeforeDiscount,
+} from "@litespace/utils/plan";
 
-const PlanInfo: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
+const PLAN_PERIOD_LITERAL_TO_MESSAGE_ID: Record<IPlan.PeriodLiteral, LocalId> =
+  {
+    month: "checkout.plan.period.month",
+    quarter: "checkout.plan.period.quarter",
+    year: "checkout.plan.period.year",
+  };
+
+const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
   data,
   period,
 }) => {
   const intl = useFormatMessage();
-
-  const months = useMemo(() => {
-    console.log(period);
-    if (period === "month") return 1;
-    if (period === "quarter") return 3;
-    if (period === "year") return 12;
-    return 0;
-  }, [period]);
-
-  const planTitle = useMemo(() => {
-    if (period === "month") return intl("checkout.plan.period.month");
-    if (period === "quarter") return intl("checkout.plan.period.quarter");
-    if (period === "year") return intl("checkout.plan.period.year");
-    return "";
-  }, [period, intl]);
-
-  const discount = useMemo(() => {
-    console.log(data.quarterDiscount);
-    if (period === "month") return percentage.unscale(data.monthDiscount) / 100;
-    if (period === "quarter")
-      return percentage.unscale(data.quarterDiscount) / 100;
-    if (period === "year") return percentage.unscale(data.yearDiscount) / 100;
-    return 0;
-  }, [period, data]);
 
   return (
     <div className="flex flex-col gap-4 py-6 rounded-2xl border border-natural-100">
@@ -50,17 +34,15 @@ const PlanInfo: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
 
       <div className="flex flex-col gap-2 px-6">
         <Typography tag="h2" className="text-subtitle-2 font-semibold">
-          {planTitle}
+          {intl(PLAN_PERIOD_LITERAL_TO_MESSAGE_ID[period])}
         </Typography>
         <Typography
           tag="span"
           className="text-caption lg:text-body font-normal"
         >
           {intl("checkout.plan.houry-quota", {
-            hours: formatDuration(
-              data.weeklyMinutes * SECONDS_IN_MINUTE * MILLISECONDS_IN_SECOND
-            ),
-            weeks: formatWeeks(months * 4),
+            hours: formatMinutes(data.weeklyMinutes),
+            weeks: formatWeeks(PLAN_PERIOD_LITERAL_TO_WEEK_COUNT[period]),
           })}
         </Typography>
       </div>
@@ -78,7 +60,7 @@ const PlanInfo: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
             className="text-caption lg:text-body font-normal"
           >
             {intl("checkout.plan.price", {
-              price: formatNumber(data.baseMonthlyPrice),
+              price: formatNumber(price.unscale(data.baseMonthlyPrice)),
             })}
           </Typography>
         </div>
@@ -87,14 +69,16 @@ const PlanInfo: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
             tag="span"
             className="text-caption lg:text-body font-normal"
           >
-            {intl("checkout.plan.total-price")}
+            {intl("checkout.plan.total-price-before-discount")}
           </Typography>
           <Typography
             tag="span"
             className="text-caption lg:text-body font-normal"
           >
             {intl("checkout.plan.price", {
-              price: formatNumber(data.baseMonthlyPrice * months),
+              price: formatNumber(
+                calculateTotalPriceBeforeDiscount(data.baseMonthlyPrice, period)
+              ),
             })}
           </Typography>
         </div>
@@ -102,26 +86,17 @@ const PlanInfo: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
 
       <div className="flex justify-between px-6 mt-2 mb-4">
         <Typography tag="span" className="text-caption lg:text-body font-bold">
-          {intl("checkout.plan.current-payment")}
+          {intl("checkout.plan.total-price-after-discount")}
         </Typography>
         <Typography tag="span" className="text-caption lg:text-body font-bold">
           {intl("checkout.plan.price", {
-            price: formatNumber(
-              data.baseMonthlyPrice * months * (1 - discount)
-            ),
+            price: formatNumber(calculateTotalPriceAfterDiscount(data, period)),
           })}
         </Typography>
       </div>
 
       <Link to={Web.PlansV2} className="px-6" tabIndex={-1}>
-        <Button
-          type="main"
-          size="large"
-          variant="secondary"
-          className="w-full"
-          disabled={false}
-          loading={false}
-        >
+        <Button type="main" size="large" variant="secondary" className="w-full">
           {intl("checkout.plan.change-plan")}
         </Button>
       </Link>
@@ -129,4 +104,4 @@ const PlanInfo: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
   );
 };
 
-export default PlanInfo;
+export default Plan;

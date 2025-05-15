@@ -112,6 +112,10 @@
     "./subscription": {
       "import": "./dist/esm/subscription.js",
       "require": "./dist/cjs/subscription.js"
+    },
+    "./plan": {
+      "import": "./dist/esm/plan.js",
+      "require": "./dist/cjs/plan.js"
     }
   },
   "react-native": {
