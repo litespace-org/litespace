@@ -1,3 +1,10 @@
+import {
+  DAYS_IN_WEEK,
+  HOURS_IN_DAY,
+  MILLISECONDS_IN_SECOND,
+  MINUTES_IN_HOUR,
+  SECONDS_IN_MINUTE,
+} from "@litespace/utils";
 import humanize, { Options } from "humanize-duration";
 
 export function formatNumber(
@@ -27,8 +34,8 @@ export function formatCurrency(value: number): string {
   }).format(value);
 }
 
-export function formatMinutes(value: number, options: Options = {}): string {
-  return humanize(value * 60 * 1000, {
+function humanizeAr(ms: number, options: Options = {}) {
+  return humanize(ms, {
     language: "ar",
     digitReplacements: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
     ...options,
@@ -36,9 +43,28 @@ export function formatMinutes(value: number, options: Options = {}): string {
 }
 
 export function formatDuration(ms: number, options: Options = {}): string {
-  return humanize(ms, {
-    language: "ar",
-    digitReplacements: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-    ...options,
-  });
+  return humanizeAr(ms, options);
+}
+
+export function formatMinutes(value: number, options: Options = {}): string {
+  return humanizeAr(
+    value * SECONDS_IN_MINUTE * MILLISECONDS_IN_SECOND,
+    options
+  );
+}
+
+export function formatWeeks(value: number, options: Options = {}): string {
+  return humanizeAr(
+    value *
+      DAYS_IN_WEEK *
+      HOURS_IN_DAY *
+      MINUTES_IN_HOUR *
+      SECONDS_IN_MINUTE *
+      MILLISECONDS_IN_SECOND,
+    {
+      maxDecimalPoints: 0,
+      units: ["w"],
+      ...options,
+    }
+  );
 }

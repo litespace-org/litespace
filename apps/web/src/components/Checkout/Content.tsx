@@ -130,7 +130,7 @@ const Body: React.FC<{
 
   return (
     <Tabs
-      planId={plan.data.id}
+      plan={plan.data}
       period={period}
       phone={userPhone}
       sync={transaction.refetch}
