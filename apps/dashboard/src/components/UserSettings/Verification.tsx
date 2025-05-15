@@ -1,5 +1,4 @@
-import { CALLBACK_URL } from "@/lib/route";
-import { useSendVerifyEmail } from "@litespace/headless/auth";
+import { useSendVerificationEmailCode } from "@litespace/headless/confirmationCode";
 import { useUserContext } from "@litespace/headless/context/user";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -28,10 +27,10 @@ const VerificationDetails: React.FC = () => {
     });
   }, [toast, intl]);
 
-  const reverify = useSendVerifyEmail({ onSuccess, onError });
+  const reverify = useSendVerificationEmailCode({ onSuccess, onError });
 
   const reverifyEmail = useCallback(() => {
-    reverify.mutate(CALLBACK_URL);
+    reverify.mutate();
   }, [reverify]);
 
   if (!user) return null;

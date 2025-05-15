@@ -3,7 +3,7 @@ import { Text } from "@react-email/components";
 import cn from "classnames";
 
 const Typography: React.FC<{
-  element?: "h4" | "body";
+  element?: "h3" | "h4" | "body";
   weight?: "bold" | "semibold" | "medium" | "regular";
   text?:
     | "brand-500"
@@ -12,10 +12,12 @@ const Typography: React.FC<{
     | "natural-700"
     | "natural-50";
   children?: React.ReactNode;
-}> = ({ element = "body", weight = "regular", children, text }) => {
+  spacedBy?: number;
+}> = ({ element = "body", weight = "regular", children, text, spacedBy }) => {
   return (
     <Text
       className={cn("leading-[150%] p-0 m-0 box-border", {
+        "text-[40px]": element === "h3",
         "text-[32px]": element === "h4",
         "text-base": element === "body",
         "font-bold": weight === "bold",
@@ -28,6 +30,9 @@ const Typography: React.FC<{
         "text-natural-700": text === "natural-700",
         "text-natural-50": text === "natural-50",
       })}
+      style={{
+        letterSpacing: spacedBy ? `${spacedBy}px` : "0px",
+      }}
     >
       {children}
     </Text>

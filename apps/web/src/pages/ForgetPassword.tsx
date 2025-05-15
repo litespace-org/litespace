@@ -1,6 +1,5 @@
 import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
-import { useForgetPassword } from "@litespace/headless/auth";
 import { Button } from "@litespace/ui/Button";
 import { Controller, Form } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -15,12 +14,11 @@ import { Link } from "react-router-dom";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
+import { useSendForgetPasswordCode } from "@litespace/headless/confirmationCode";
 
 type FormData = {
   email: string;
 };
-
-const callbackUrl = window.location.origin + Web.ResetPassword;
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -52,7 +50,7 @@ const ForgetPassword: React.FC = () => {
   });
   const errors = formState.errors;
 
-  const forgetPassword = useForgetPassword({
+  const forgetPassword = useSendForgetPasswordCode({
     onSuccess() {
       setSentEmail(true);
       reset();
@@ -71,7 +69,6 @@ const ForgetPassword: React.FC = () => {
     () =>
       handleSubmit((data) => {
         forgetPassword.mutate({
-          callbackUrl,
           email: data.email,
         });
       }),

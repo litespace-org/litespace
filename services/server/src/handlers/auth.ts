@@ -1,24 +1,15 @@
 import safeRequest from "express-async-handler";
-import {
-  already,
-  bad,
-  emailAlreadyVerified,
-  forbidden,
-  notfound,
-  serviceUnavailable,
-} from "@/lib/error";
+import { bad, forbidden, notfound, serviceUnavailable } from "@/lib/error";
 import { knex, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import { hashPassword, withImageUrl } from "@/lib/user";
-import { IToken, IUser } from "@litespace/types";
-import { email, id, password, string, url } from "@/validation/utils";
+import { IUser } from "@litespace/types";
+import { email, password, string } from "@/validation/utils";
 import { googleConfig, jwtSecret } from "@/constants";
 import { encodeAuthJwt, decodeAuthJwt } from "@litespace/auth";
 import { isUser } from "@litespace/utils/user";
 import { OAuth2Client } from "google-auth-library";
 import zod from "zod";
-import jwt from "jsonwebtoken";
-import { sendBackgroundMessage } from "@/workers";
 import axios from "axios";
 
 const credentials = zod.object({
@@ -39,21 +30,7 @@ const googleUserInfo = zod.object({
   email_verified: zod.boolean().optional(),
 });
 
-const forgotPasswordPayload = zod.object({ email, callbackUrl: url });
 const loginWithAuthTokenPayload = zod.object({ token: string });
-const resetPasswordPayload = zod.object({ token: string, password });
-const verifyEmailPayload = zod.object({ token: string });
-const verifyEmailJwtPayload = zod.object({
-  type: zod.literal(IToken.Type.VerifyEmail),
-  user: id,
-});
-
-const foregetPasswordJwtPayload = zod.object({
-  type: zod.literal(IToken.Type.ForgetPassword),
-  user: id,
-});
-
-const sendVerificationEmailPayload = zod.object({ callbackUrl: url });
 
 async function loginWithPassword(
   req: Request,
@@ -184,95 +161,9 @@ async function refreshAuthToken(
   res.status(200).json(response);
 }
 
-async function forgetPassword(req: Request, res: Response) {
-  const { email, callbackUrl }: IUser.ForgetPasswordApiPayload =
-    forgotPasswordPayload.parse(req.body);
-
-  const user = await users.findByEmail(email);
-
-  if (user) {
-    sendBackgroundMessage({
-      type: "send-forget-password-email",
-      payload: {
-        email: user.email,
-        user: user.id,
-        callbackUrl,
-      },
-    });
-  }
-
-  res.status(200).send();
-}
-
-async function resetPassword(req: Request, res: Response, next: NextFunction) {
-  const { password, token } = resetPasswordPayload.parse(req.body);
-  const jwtPayload = jwt.verify(token, jwtSecret);
-  const { type, user: id } = foregetPasswordJwtPayload.parse(jwtPayload);
-  if (type !== IToken.Type.ForgetPassword) return next(bad());
-
-  const user = await users.findById(id);
-  if (!user) return next(notfound.user());
-
-  const updated = await users.update(id, {
-    password: hashPassword(password),
-  });
-
-  const response: IUser.ResetPasswordApiResponse = {
-    user: await withImageUrl(updated),
-    token: encodeAuthJwt(id, jwtSecret),
-  };
-
-  res.status(200).json(response);
-}
-
-async function verifyEmail(req: Request, res: Response, next: NextFunction) {
-  const { token } = verifyEmailPayload.parse(req.body);
-  const jwtPayload = jwt.verify(token, jwtSecret);
-
-  const { type, user: id }: IToken.VerifyEmailJwtPayload =
-    verifyEmailJwtPayload.parse(jwtPayload);
-  if (type !== IToken.Type.VerifyEmail) return next(bad());
-
-  const user = await users.findById(id);
-  if (!user) return next(notfound.user());
-  if (user.verifiedEmail) return next(emailAlreadyVerified());
-
-  await users.update(id, { verifiedEmail: true });
-  res.status(200).send();
-}
-
-async function sendVerificationEmail(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const user = req.user;
-  const allowed = isUser(user);
-  if (!allowed) return next(forbidden());
-
-  const { callbackUrl } = sendVerificationEmailPayload.parse(req.body);
-
-  if (user.verifiedEmail) return next(already.verified());
-
-  sendBackgroundMessage({
-    type: "send-user-verification-email",
-    payload: {
-      callbackUrl: callbackUrl,
-      email: user.email,
-      user: user.id,
-    },
-  });
-
-  res.status(200).send();
-}
-
 export default {
   loginWithGoogle: safeRequest(loginWithGoogle),
   loginWithPassword: safeRequest(loginWithPassword),
   loginWithAuthToken: safeRequest(loginWithAuthToken),
-  forgetPassword: safeRequest(forgetPassword),
-  resetPassword: safeRequest(resetPassword),
-  verifyEmail: safeRequest(verifyEmail),
-  sendVerificationEmail: safeRequest(sendVerificationEmail),
   refreshAuthToken: safeRequest(refreshAuthToken),
 };

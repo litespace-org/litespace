@@ -257,16 +257,6 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     return user;
   });
 
-  // todo: generate a confirmation code.
-  sendBackgroundMessage({
-    type: "send-user-verification-email",
-    payload: {
-      callbackUrl: payload.callbackUrl,
-      email: user.email,
-      user: user.id,
-    },
-  });
-
   const token = encodeAuthJwt(user.id, jwtSecret);
   const response: IUser.RegisterApiResponse = { user, token };
   res.status(200).json(response);
