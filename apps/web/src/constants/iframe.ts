@@ -12,4 +12,4 @@ type ReportAction = {
   fawryErrorDescription: string;
 };
 
-export type IFrameMessage = CloseAction | TryAgainAction | ReportAction;
+export type IframeMessage = CloseAction | TryAgainAction | ReportAction;
