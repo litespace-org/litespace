@@ -10,6 +10,7 @@ import Sidebar from "@/components/Layout/Sidebar";
 import { useAuthRoutes } from "@/hooks/authRoutes";
 import { router } from "@/lib/route";
 import { isRegularUser } from "@litespace/utils";
+import Navbar from "@/components/Layout/Navbar";
 
 const Root: React.FC = () => {
   const { user, logout } = useUserContext();
@@ -49,7 +50,10 @@ const Root: React.FC = () => {
         )}
       >
         {user ? <Sidebar /> : null}
-        <Outlet />
+        <div className="flex-1 flex flex-col">
+          <Navbar />
+          <Outlet />
+        </div>
       </main>
     </>
   );

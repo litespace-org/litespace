@@ -26,6 +26,7 @@ interface ReactTableProps<T extends object> {
   loading?: boolean;
   fetching?: boolean;
   headless?: boolean;
+  className?: string;
 }
 
 export const Table = <T extends object>({
@@ -39,6 +40,7 @@ export const Table = <T extends object>({
   prev,
   goto,
   next,
+  className,
 }: ReactTableProps<T>) => {
   const table = useReactTable({
     data,
@@ -64,20 +66,20 @@ export const Table = <T extends object>({
       <div
         className={cn(
           "relative w-full",
-          "rounded-md border border-border-strong",
+          "rounded-lg border border-natural-100",
           "overflow-x-auto",
           "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
         )}
       >
         <table className="min-w-full">
           {!headless ? (
-            <thead className="text-tiny text-foreground bg-surface-75">
+            <thead className="text-tiny text-foreground bg-natural-100">
               {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
+                <tr key={headerGroup.id} className={className}>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="px-4 py-3 truncate text-start"
+                      className="p-4 truncate text-start"
                       colSpan={header.colSpan}
                       scope="col"
                     >
@@ -95,9 +97,12 @@ export const Table = <T extends object>({
           ) : null}
           <tbody className="border-b bg-surface-200">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-b border-border-strong">
+              <tr key={row.id} className={className}>
                 {row.getVisibleCells().map((cell) => (
-                  <td className="px-4 py-2" key={cell.id}>
+                  <td
+                    className="p-4 border-l border-natural-100 last:border-0"
+                    key={cell.id}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -107,7 +112,7 @@ export const Table = <T extends object>({
         </table>
       </div>
       {prev && goto && next && page && totalPages ? (
-        <footer className="relative flex items-center justify-center gap-4 pt-4">
+        <footer className="relative flex items-center justify-center gap-2 pt-4">
           <div className="absolute top-4 right-0 w-16">
             <Select
               size="small"
@@ -117,33 +122,33 @@ export const Table = <T extends object>({
             />
           </div>
           <Button
-            size="small"
+            size="large"
             type="main"
-            variant="secondary"
+            variant="tertiary"
             onClick={() => goto(1)}
             disabled={page <= 1 || loading || fetching}
             startIcon={<ChevronDoubleRight className="icon" />}
           />
           <Button
-            size="small"
+            size="large"
             type="main"
-            variant="secondary"
+            variant="tertiary"
             onClick={prev}
             disabled={page <= 1 || loading || fetching}
             startIcon={<ArrowRight className="icon" />}
           />
           <Button
-            size="small"
+            size="large"
             type="main"
-            variant="secondary"
+            variant="tertiary"
             onClick={next}
             disabled={page >= totalPages || loading || fetching}
             startIcon={<ArrowLeft className="icon" />}
           />
           <Button
-            size={"small"}
-            type={"main"}
-            variant={"secondary"}
+            size="large"
+            type="main"
+            variant="tertiary"
             onClick={() => goto(totalPages)}
             disabled={page >= totalPages || loading || fetching}
             startIcon={<ChevronDoubleLeft className="icon" />}

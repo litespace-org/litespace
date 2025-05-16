@@ -135,15 +135,31 @@ const Sidebar: React.FC = () => {
       Icon: Rate,
     };
 
+    const tutors: LinkInfo = {
+      label: intl("dashboard.tutors.title"),
+      route: Dashboard.Tutors,
+      isActive: match(Dashboard.Tutors),
+      Icon: People,
+    };
+
     if (user?.role === IUser.Role.Studio) return [photoSession];
 
-    return [users, invoices, plans, topics, interviews, photoSession, lessons];
+    return [
+      users,
+      invoices,
+      plans,
+      topics,
+      interviews,
+      photoSession,
+      lessons,
+      tutors,
+    ];
   }, [intl, location.pathname, user?.role]);
 
   return (
     <div
       className={cn(
-        "flex flex-col gap-10",
+        "flex flex-col gap-10 relative z-sidebar",
         "bg-natural-50 w-[98px] lg:w-60 p-4 lg:p-6 shadow-app-sidebar"
       )}
     >

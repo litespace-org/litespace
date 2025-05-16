@@ -35,7 +35,11 @@ export const Dialog: React.FC<{
 }) => {
   return (
     <Root open={open} onOpenChange={setOpen}>
-      {trigger ? <Trigger>{trigger}</Trigger> : null}
+      {trigger ? (
+        <Trigger asChild>
+          <div>{trigger}</div>
+        </Trigger>
+      ) : null}
       <Portal>
         <Overlay
           onClick={close}
