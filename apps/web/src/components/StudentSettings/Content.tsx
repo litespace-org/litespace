@@ -20,7 +20,7 @@ const Content: React.FC<{
     () => [
       {
         id: "personal",
-        label: intl("student-settings.personal.title"),
+        label: intl("shared-settings.personal.title"),
         important:
           !user.name ||
           !user.email ||
@@ -33,7 +33,7 @@ const Content: React.FC<{
       },
       {
         id: "password",
-        label: intl("student-settings.password.title"),
+        label: intl("shared-settings.password.title"),
         important: !user.password,
       },
       {
@@ -43,7 +43,7 @@ const Content: React.FC<{
       },
       {
         id: "topics",
-        label: intl("student-settings.topics.title"),
+        label: intl("student-settings.edit.personal.topics.title"),
         important: false,
       },
     ],

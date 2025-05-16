@@ -33,10 +33,10 @@ const VerifyEmailSection: React.FC = () => {
           className="text-subtitle-2 font-bold text-natural-950"
           tag="h3"
         >
-          {intl("student-settings.verify-email.title")}
+          {intl("shared-settings.verify-email.title")}
         </Typography>
         <Typography className="mt-4 text-body text-natural-950" tag="p">
-          {intl("student-settings.verify-email.description")}
+          {intl("shared-settings.verify-email.description")}
         </Typography>
       </div>
       <Button
@@ -45,7 +45,7 @@ const VerifyEmailSection: React.FC = () => {
         className="min-w-fit mt-4 lg:mt-0 w-[173px]"
         variant="secondary"
       >
-        {intl("student-settings.verify-email.title")}
+        {intl("shared-settings.verify-email.title")}
       </Button>
     </div>
   );
@@ -60,10 +60,10 @@ const VerifyPhoneSection: React.FC = () => {
           className="text-subtitle-2 font-bold text-natural-950"
           tag="h3"
         >
-          {intl("student-settings.verify-phone.title")}
+          {intl("shared-settings.verify-phone.title")}
         </Typography>
         <Typography className="mt-4 text-body text-natural-950" tag="p">
-          {intl("student-settings.verify-phone.description")}
+          {intl("shared-settings.verify-phone.description")}
         </Typography>
       </div>
       <Button
@@ -71,7 +71,7 @@ const VerifyPhoneSection: React.FC = () => {
         className="mt-4 lg:mt-0 min-w-[173px]"
         variant="secondary"
       >
-        {intl("student-settings.verify-phone.title")}
+        {intl("shared-settings.verify-phone.title")}
       </Button>
     </div>
   );

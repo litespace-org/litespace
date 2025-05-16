@@ -18,6 +18,7 @@ import { useOnError } from "@/hooks/error";
 import Close2 from "@litespace/assets/Close2";
 import { ITopic } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
+import cn from "classnames";
 
 const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
   forTutor = false,
@@ -50,10 +51,6 @@ const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
     );
   }, [userTopicIds, selectedTopics]);
 
-  const onRemoveTopic = useCallback((id: number) => {
-    setSelectedTopics((prev) => prev.filter((topic) => topic.id !== id));
-  }, []);
-
   const onSuccess = useCallback(() => {
     invalidate([QueryKey.FindUserTopics]);
     setShowDialog(false);
@@ -63,7 +60,7 @@ const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
     type: "mutation",
     handler: ({ messageId }) => {
       toast.error({
-        title: intl("student-settings.topics.selection-dialog.update-error"),
+        title: intl("shared-settings.topics.selection-dialog.update-error"),
         description: intl(messageId),
       });
     },
@@ -92,6 +89,19 @@ const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
     [updateTopics, userTopicIds]
   );
 
+  const onRemoveTopic = useCallback(
+    (id: number) => {
+      if (forTutor)
+        confirm(
+          selectedTopics
+            .filter((topic) => topic.id !== id)
+            .map((topic) => topic.id)
+        );
+      setSelectedTopics((prev) => prev.filter((topic) => topic.id !== id));
+    },
+    [forTutor, selectedTopics, confirm]
+  );
+
   if (userTopicsQuery.isPending)
     return (
       <TopicSelectionTemplate
@@ -104,7 +114,7 @@ const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
       >
         <Loading
           size="small"
-          text={intl("student-settings.topics.selection-dialog.loading")}
+          text={intl("shared-settings.topics.selection-dialog.loading")}
         />
       </TopicSelectionTemplate>
     );
@@ -124,7 +134,7 @@ const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
             size="small"
             retry={userTopicsQuery.refetch}
             error={intl(
-              "student-settings.topics.selection-dialog.loading-error"
+              "shared-settings.topics.selection-dialog.loading-error"
             )}
           />
         </div>
@@ -155,7 +165,11 @@ const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
                 tag="span"
                 className="text-tiny md:text-caption lg:text-body font-medium"
               >
-                {intl("student-settings.add-topics-button.label")}
+                {intl(
+                  forTutor
+                    ? "tutor-settings.add-topics-button.label"
+                    : "student-settings.add-topics-button.label"
+                )}
               </Typography>
             </Button>
           </Animate>
@@ -192,14 +206,16 @@ const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
             </Animate>
           ))}
         </div>
-        <Button
-          size="large"
-          disabled={updateTopics.isPending || !dataChanged}
-          onClick={() => confirm(selectedTopics.map((s) => s.id))}
-          className="md:mt-10 mr-auto md:mr-0"
-        >
-          {intl("shared-settings.save")}
-        </Button>
+        {forTutor ? null : (
+          <Button
+            size="large"
+            disabled={updateTopics.isPending || !dataChanged}
+            onClick={() => confirm(selectedTopics.map((s) => s.id))}
+            className="md:mt-10 mr-auto md:mr-0"
+          >
+            {intl("shared-settings.save")}
+          </Button>
+        )}
       </div>
     </TopicSelectionTemplate>
   );
@@ -235,13 +251,17 @@ const TopicSelectionTemplate = ({
   }, [allTopicsQuery]);
 
   return (
-    <div className="flex flex-col gap-4 grow">
+    <div className={cn("flex flex-col grow", forTutor ? "gap-6" : "gap-4")}>
       <div className="flex items-center justify-between">
         <Typography
           tag="h2"
           className="text-natural-950 text-subtitle-2 font-bold"
         >
-          {intl("student-settings.edit.personal.topics.title")}
+          {intl(
+            forTutor
+              ? "tutor-settings.personal-info.topics"
+              : "student-settings.edit.personal.topics.title"
+          )}
         </Typography>
 
         {!isEmpty(userTopicIds) ? (
@@ -262,9 +282,15 @@ const TopicSelectionTemplate = ({
       {showDialog ? (
         <TopicSelectionDialog
           forTutor={forTutor}
-          title={intl("student-settings.topics.selection-dialog.title")}
+          title={intl(
+            forTutor
+              ? "tutor-settings.topics.selection-dialog.title"
+              : "student-settings.topics.selection-dialog.title"
+          )}
           description={intl(
-            "student-settings.topics.selection-dialog.description"
+            forTutor
+              ? "tutor-settings.topics.selection-dialog.description"
+              : "student-settings.topics.selection-dialog.description"
           )}
           topics={topicOptions}
           initialTopics={userTopicIds}

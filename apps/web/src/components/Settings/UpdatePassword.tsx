@@ -90,7 +90,7 @@ const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
         tag="h2"
         className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
       >
-        {intl("student-settings.password.title")}
+        {intl("shared-settings.password.title")}
       </Typography>
       <form
         onSubmit={form.onSubmit}

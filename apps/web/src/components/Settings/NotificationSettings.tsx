@@ -60,11 +60,11 @@ function NotificationSettings({
   const options = useMemo(
     () => [
       {
-        label: intl("student-settings.edit.notification.whatsapp"),
+        label: intl("shared-settings.edit.notification.whatsapp"),
         value: IUser.NotificationMethod.Whatsapp,
       },
       {
-        label: intl("student-settings.edit.notification.telegram"),
+        label: intl("shared-settings.edit.notification.telegram"),
         value: IUser.NotificationMethod.Telegram,
       },
     ],
@@ -177,7 +177,7 @@ function NotificationSettings({
         tag="h2"
         className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
       >
-        {intl("student-settings.notification.title")}
+        {intl("shared-settings.notification.title")}
       </Typography>
       {showDialog ? (
         <VerifyNotificationMethodDialog
@@ -198,8 +198,8 @@ function NotificationSettings({
         <Select
           onChange={onChange}
           id="notification-method"
-          label={intl("student-settings.edit.notification.label")}
-          placeholder={intl("student-settings.edit.notification.placeholder")}
+          label={intl("shared-settings.edit.notification.label")}
+          placeholder={intl("shared-settings.edit.notification.placeholder")}
           value={optional(form.state.notificationMethod)}
           options={options}
         />

@@ -41,7 +41,8 @@ const CompleteProfileBanner: React.FC = () => {
 
   const ignoreRoute = useMemo(() => {
     const routes: Web[] = [
-      Web.TutorSettings,
+      Web.TutorAccountSettings,
+      Web.TutorProfileSettings,
       Web.Lesson,
       Web.Login,
       Web.Register,
@@ -57,7 +58,7 @@ const CompleteProfileBanner: React.FC = () => {
       <Typography tag="p" className="text-tiny md:text-caption text-white">
         {intl("layout.banner.complete-profile")}
       </Typography>
-      <Link to={router.web({ route: Web.TutorSettings })}>
+      <Link to={router.web({ route: Web.TutorAccountSettings })}>
         <Button size="large" variant="secondary">
           {intl("layout.banner.complete-profile.action")}
         </Button>

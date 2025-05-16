@@ -5,7 +5,7 @@ import { Select } from "@litespace/ui/Select";
 import { governorates } from "@/constants/user";
 import React, { useCallback, useMemo } from "react";
 import { Button } from "@litespace/ui/Button";
-import { IUser } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import { useForm } from "@litespace/headless/form";
 import {
   getNullableFiledUpdatedValue,
@@ -23,15 +23,20 @@ import { PatternInput } from "@litespace/ui/PatternInput";
 import { ConfirmContactMethod } from "@/components/Settings/ConfirmContactMethod";
 import {
   isValidEmail,
+  isValidNotice,
   isValidPhone,
   isValidUserName,
 } from "@litespace/ui/lib/validate";
 import { Typography } from "@litespace/ui/Typography";
+import { useFindStudios } from "@litespace/headless/studio";
+import cn from "classnames";
 
 type Form = {
   name: string;
   email: string;
   phone: string;
+  notice: number;
+  studio?: number | null;
   city: IUser.City | null;
   gender: IUser.Gender | null;
 };
@@ -47,6 +52,8 @@ type Props = {
   gender: IUser.Gender | null;
   verifiedEmail: boolean;
   verifiedPhone: boolean;
+  notice?: ITutor.Self["notice"];
+  studio?: ITutor.Self["studioId"];
 };
 
 const PersonalDetails: React.FC<Props> = ({
@@ -60,15 +67,29 @@ const PersonalDetails: React.FC<Props> = ({
   verifiedEmail,
   verifiedPhone,
   forStudent,
+  notice,
+  studio,
 }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
 
+  const studiosQuery = useFindStudios({});
+
+  const studioOptions = useMemo(
+    () =>
+      studiosQuery.data?.list.map((studio) => ({
+        label: studio.name || "",
+        value: studio.id,
+      })),
+    [studiosQuery]
+  );
+
   const validators = useMakeValidators<Form>({
     name: { required: !!name, validate: isValidUserName },
     email: { required: true, validate: isValidEmail },
     phone: { required: false, validate: isValidPhone },
+    notice: { required: false, validate: isValidNotice },
   });
 
   const form = useForm<Form>({
@@ -78,9 +99,11 @@ const PersonalDetails: React.FC<Props> = ({
       email,
       city,
       gender,
+      studio,
+      notice: notice || 0,
     },
     validators,
-    onSubmit: (data) => {
+    onSubmit: (data) =>
       mutation.mutate({
         id: id,
         payload: {
@@ -88,10 +111,11 @@ const PersonalDetails: React.FC<Props> = ({
           phone: getNullableFiledUpdatedValue(phone, data.phone || null),
           email: getOptionalFieldUpdatedValue(email, data.email),
           city: getNullableFiledUpdatedValue(city, data.city),
+          notice: getOptionalFieldUpdatedValue(notice, data.notice),
+          studioId: getNullableFiledUpdatedValue(studio, data.studio),
           gender: getNullableFiledUpdatedValue(gender, data.gender),
         },
-      });
-    },
+      }),
   });
 
   const unchanged = useMemo(() => {
@@ -100,7 +124,9 @@ const PersonalDetails: React.FC<Props> = ({
       (phone || "") === form.state.phone &&
       email === form.state.email &&
       city === form.state.city &&
-      gender === form.state.gender
+      gender === form.state.gender &&
+      notice === form.state.notice &&
+      studio === form.state.studio
     );
   }, [
     city,
@@ -110,14 +136,19 @@ const PersonalDetails: React.FC<Props> = ({
     form.state.gender,
     form.state.name,
     form.state.phone,
+    form.state.studio,
+    form.state.notice,
     gender,
     name,
     phone,
+    notice,
+    studio,
   ]);
 
   const onSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
-  }, [invalidateQuery]);
+    if (!forStudent) invalidateQuery([QueryKey.FindTutorMeta, id]);
+  }, [invalidateQuery, id, forStudent]);
 
   const onError = useOnError({
     type: "mutation",
@@ -169,7 +200,7 @@ const PersonalDetails: React.FC<Props> = ({
           tag="h2"
           className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
         >
-          {intl("tutor-settings.tabs.personal-settings")}
+          {intl("shared-settings.personal-settings.title")}
         </Typography>
       ) : null}{" "}
       <div className="flex flex-wrap md:flex-nowrap gap-6 md:gap-10 md:mt-6">
@@ -244,13 +275,38 @@ const PersonalDetails: React.FC<Props> = ({
             disabled={mutation.isPending || unchanged}
             loading={mutation.isPending}
             onClick={form.submit}
-            className="mt-10 hidden md:block"
+            className={cn(forStudent ? "mt-10 hidden md:block" : "hidden")}
           >
             {intl("shared-settings.save")}
           </Button>
         </div>
 
-        <div className="max-w-[320px] lg:max-w-[640px]">
+        <div className="max-w-[320px] lg:max-w-[640px] flex flex-col gap-6">
+          {!forStudent ? (
+            <div className="flex flex-col gap-4 lg:max-w-[422px]">
+              <Select
+                id="studio"
+                value={optional(form.state.studio)}
+                onChange={(value) => form.set("studio", value)}
+                options={studioOptions}
+                label={intl("labels.studio")}
+                placeholder={intl("labels.studio.placeholder")}
+                state={form.errors.studio ? "error" : undefined}
+                helper={form.errors?.studio}
+              />
+              <Input
+                id="notice"
+                name="notice"
+                value={form.state.notice}
+                onChange={(e) => form.set("notice", Number(e.target.value))}
+                label={intl("labels.notice")}
+                placeholder={intl("labels.notice.placeholder")}
+                state={form.errors?.notice ? "error" : undefined}
+                helper={form.errors?.notice}
+                autoComplete="off"
+              />
+            </div>
+          ) : null}
           <ConfirmContactMethod
             verifiedEmail={verifiedEmail}
             verifiedPhone={verifiedPhone}
@@ -262,7 +318,7 @@ const PersonalDetails: React.FC<Props> = ({
         disabled={mutation.isPending || unchanged}
         loading={mutation.isPending}
         onClick={form.submit}
-        className="mt-6 md:hidden mr-auto"
+        className={cn(forStudent ? "mt-6 md:hidden mr-auto" : "mt-10")}
       >
         {intl("shared-settings.save")}
       </Button>

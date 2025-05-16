@@ -107,6 +107,7 @@ const updateUserPayload = zod.object({
     .optional(),
   phone: zod.union([zod.string().max(15).trim(), zod.null()]).optional(),
   activated: zod.boolean().optional(),
+  studioId: id.optional(),
 });
 
 const orderByOptions = ["created_at", "updated_at"] as const satisfies Array<
@@ -314,6 +315,7 @@ function update(_: ApiContext) {
         phone,
         city,
         notificationMethod,
+        studioId,
         activated,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
@@ -388,6 +390,7 @@ function update(_: ApiContext) {
           about,
           notice,
           video,
+          studioId,
           thumbnail,
           activated,
         };
@@ -570,7 +573,8 @@ async function findOnboardedTutors(req: Request, res: Response) {
 
 async function findStudios(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  if (!isUser(user)) return next(forbidden());
+  const allowed = isTutor(user) || isAdmin(user);
+  if (!allowed) return next(forbidden());
 
   const { size, page } = findStudiosQuery.parse(req.query);
 
