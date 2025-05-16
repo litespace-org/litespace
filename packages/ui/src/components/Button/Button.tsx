@@ -166,13 +166,13 @@ export const Button: React.FC<{
           loading ? "opacity-0" : "opacity-100",
           "flex flex-row items-center justify-center gap-2",
           {
-            "[&_.icon>*]:stroke-success-700 group-hover:[&_.icon>*]:stroke-success-500 [&_.icon>*]:transition-[stroke] [&_.icon>*]:duration-200":
+            "[&_.icon>*]:stroke-success-700 group-hover:[&_.icon>*]:stroke-success-500 [&_.icon>*]:transition-[stroke] [&_.icon>*]:duration-200 [&_.text]:text-success-700 group-hover:[&_.text]:text-success-500 [&_.text]:transition-colors":
               is.success && is.secondary,
             "[&_.icon>*]:stroke-natural-50":
               (is.main && is.primary) || (is.error && is.primary),
             "[&_.icon>*]:stroke-brand-700": is.main && is.secondary,
             "[&_.icon>*]:stroke-natural-700": is.main && is.tertiary,
-            "[&_.icon>*]:stroke-destructive-700 group-hover:[&_.icon>*]:stroke-destructive-500 [&_.icon>*]:transition-[stroke] [&_.icon>*]:duration-200":
+            "[&_.icon>*]:stroke-destructive-700 group-hover:[&_.icon>*]:stroke-destructive-500 [&_.icon>*]:transition-[stroke] [&_.icon>*]:duration-200 [&_.text]:text-destructive-700 group-hover:[&_.text]:text-destructive-500 [&_.text]:transition-colors":
               is.error && is.secondary,
           }
         )}

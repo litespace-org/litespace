@@ -35,7 +35,6 @@ const children = (
 
 export const Primary: Story = {
   args: {
-    trigger: <button>trigger</button>,
     className: "w-[600px]",
     close: () => {},
     title,

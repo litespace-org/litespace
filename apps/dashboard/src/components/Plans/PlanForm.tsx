@@ -102,9 +102,6 @@ const PlanForm: React.FC<{
   return (
     <Dialog
       close={onClose}
-      trigger={
-        <Button size={"medium"}>{intl("dashboard.plans.createPlanBtn")}</Button>
-      }
       title={intl("dashboard.plan.form.create")}
       open={open}
       setOpen={setOpen}

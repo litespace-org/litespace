@@ -1,33 +1,31 @@
 import { router } from "@/lib/route";
 import AddCircle from "@litespace/assets/AddCircle";
 import { useForm } from "@litespace/headless/form";
-import { useInvalidateQuery } from "@litespace/headless/query";
 import { useCreateUser } from "@litespace/headless/users";
-import { IUser } from "@litespace/types";
+import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
 import { Input, Password } from "@litespace/ui/Input";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
-import { useRender } from "@litespace/ui/hooks/common";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { isValidEmail, isValidPassword } from "@litespace/ui/lib/validate";
 import { Dashboard } from "@litespace/utils/routes";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 
-type IForm = {
+type Form = {
   email: string;
   password: string;
 };
 
-export const AddTutorDialog: React.FC<{ queryKey: string[] }> = ({
-  queryKey,
-}) => {
+export const AddTutorDialog: React.FC<{
+  refetch: Void;
+  open: boolean;
+  close: Void;
+}> = ({ refetch, open, close }) => {
   const intl = useFormatMessage();
   const toast = useToast();
-  const render = useRender();
-  const invalidate = useInvalidateQuery();
 
   const validators = useMakeValidators({
     email: {
@@ -40,11 +38,10 @@ export const AddTutorDialog: React.FC<{ queryKey: string[] }> = ({
     },
   });
 
-  const form = useForm<IForm>({
+  const form = useForm<Form>({
     defaults: { email: "", password: "" },
     validators,
     onSubmit(data) {
-      if (!isValidEmail(data.email) || !isValidPassword(data.password)) return;
       mutation.mutate({
         ...data,
         role: IUser.Role.Tutor,
@@ -55,16 +52,14 @@ export const AddTutorDialog: React.FC<{ queryKey: string[] }> = ({
 
   const onClose = useCallback(() => {
     form.reset();
-    render.hide();
-  }, [form, render]);
+    close();
+  }, [close, form]);
 
   const onSuccess = useCallback(() => {
-    toast.success({
-      title: intl("dashboard.tutor.form.create.success"),
-    });
+    toast.success({ title: intl("dashboard.tutor.form.create.success") });
     onClose();
-    invalidate(queryKey);
-  }, [intl, invalidate, queryKey, onClose, toast]);
+    refetch();
+  }, [toast, intl, onClose, refetch]);
 
   const onError = useCallback(
     (error: Error) => {
@@ -78,30 +73,9 @@ export const AddTutorDialog: React.FC<{ queryKey: string[] }> = ({
 
   const mutation = useCreateUser({ onSuccess, onError });
 
-  const isEmpty = useMemo(() => {
-    if (!form.state.email || !form.state.password) return true;
-    return false;
-  }, [form.state.email, form.state.password]);
-
   return (
     <Dialog
-      open={render.open}
-      trigger={
-        <Button
-          onClick={() => render.show()}
-          size="large"
-          endIcon={
-            <AddCircle className="w-4 h-4 [&>*]:stroke-natural-50 icon" />
-          }
-        >
-          <Typography
-            tag="span"
-            className="text-body font-medium text-natural-50"
-          >
-            {intl("dashboard.tutors.add-tutor")}
-          </Typography>
-        </Button>
-      }
+      open={open}
       title={
         <div className="flex gap-2 items-center">
           <AddCircle className="w-6 h-6 [&>*]:stroke-natural-950" />
@@ -142,7 +116,7 @@ export const AddTutorDialog: React.FC<{ queryKey: string[] }> = ({
             idleDir="rtl"
             autoComplete="off"
             label={intl("labels.password")}
-            placeholder={intl("labels.enter-password.placeholder")}
+            placeholder={intl("labels.password.placeholder-stars")}
             onChange={(e) => form.set("password", e.target.value)}
             value={form.state.password}
             state={form.errors?.password ? "error" : undefined}
@@ -156,7 +130,7 @@ export const AddTutorDialog: React.FC<{ queryKey: string[] }> = ({
             className="flex-1"
             htmlType="submit"
             loading={mutation.isPending}
-            disabled={mutation.isPending || isEmpty}
+            disabled={mutation.isPending}
           >
             <Typography
               tag="span"
@@ -170,13 +144,13 @@ export const AddTutorDialog: React.FC<{ queryKey: string[] }> = ({
             size="large"
             variant="secondary"
             className="flex-1"
-            onClick={() => onClose()}
+            onClick={onClose}
           >
             <Typography
               tag="span"
               className="text-body font-medium text-brand-700"
             >
-              {intl("global.labels.cancel")}
+              {intl("labels.cancel")}
             </Typography>
           </Button>
         </div>

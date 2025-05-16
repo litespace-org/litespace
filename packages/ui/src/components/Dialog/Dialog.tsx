@@ -1,7 +1,6 @@
 import {
   Root,
   Title,
-  Trigger,
   Overlay,
   Content,
   Close,
@@ -13,7 +12,6 @@ import X from "@litespace/assets/X";
 import { Void } from "@litespace/types";
 
 export const Dialog: React.FC<{
-  trigger?: React.ReactNode;
   title?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
@@ -23,7 +21,6 @@ export const Dialog: React.FC<{
   setOpen?: (open: boolean) => void;
   close?: Void;
 }> = ({
-  trigger,
   title,
   children,
   className,
@@ -35,11 +32,6 @@ export const Dialog: React.FC<{
 }) => {
   return (
     <Root open={open} onOpenChange={setOpen}>
-      {trigger ? (
-        <Trigger asChild>
-          <div>{trigger}</div>
-        </Trigger>
-      ) : null}
       <Portal>
         <Overlay
           onClick={close}

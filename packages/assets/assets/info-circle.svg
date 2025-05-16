@@ -1,9 +1,13 @@
 <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="vuesax/linear/info-circle">
-<g id="info-circle">
-<path id="Vector" d="M12.3604 22C17.8604 22 22.3604 17.5 22.3604 12C22.3604 6.5 17.8604 2 12.3604 2C6.86035 2 2.36035 6.5 2.36035 12C2.36035 17.5 6.86035 22 12.3604 22Z" stroke="#0D0D0D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_2" d="M12.3604 8V13" stroke="#0D0D0D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_3" d="M12.355 16H12.364" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-</g>
+    <g id="vuesax/linear/info-circle">
+        <g id="info-circle">
+            <path id="Vector"
+                d="M12.3604 22C17.8604 22 22.3604 17.5 22.3604 12C22.3604 6.5 17.8604 2 12.3604 2C6.86035 2 2.36035 6.5 2.36035 12C2.36035 17.5 6.86035 22 12.3604 22Z"
+                stroke="#0D0D0D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path id="Vector_2" d="M12.3604 8V13" stroke="#0D0D0D" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            <path id="Vector_3" d="M12.355 16H12.364" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+        </g>
+    </g>
 </svg>

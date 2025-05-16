@@ -51,7 +51,15 @@ const Root: React.FC = () => {
       >
         {user ? <Sidebar /> : null}
         <div className="flex-1 flex flex-col">
-          <Navbar />
+          {user ? (
+            <Navbar
+              id={user.id}
+              name={user.name}
+              email={user.email}
+              image={user.image}
+            />
+          ) : null}
+
           <Outlet />
         </div>
       </main>

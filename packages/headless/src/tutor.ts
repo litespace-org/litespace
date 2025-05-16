@@ -237,9 +237,5 @@ export function useFindFullTutors() {
     [api.user]
   );
 
-  const key: QueryKey[] = [QueryKey.FindFullTutors];
-
-  const query = usePaginate(findFullTutors, key);
-
-  return { query, key };
+  return usePaginate(findFullTutors, [QueryKey.FindFullTutors]);
 }
