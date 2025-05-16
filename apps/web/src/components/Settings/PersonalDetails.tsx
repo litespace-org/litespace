@@ -5,7 +5,7 @@ import { Select } from "@litespace/ui/Select";
 import { governorates } from "@/constants/user";
 import { useCallback, useMemo } from "react";
 import { Button } from "@litespace/ui/Button";
-import { IUser } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import { useForm } from "@litespace/headless/form";
 import {
   getNullableFiledUpdatedValue,
@@ -22,16 +22,20 @@ import { PatternInput } from "@litespace/ui/PatternInput";
 import { ConfirmContactMethod } from "@/components/Settings/ConfirmContactMethod";
 import {
   isValidEmail,
+  isValidNotice,
   isValidPhone,
   isValidUserName,
 } from "@litespace/ui/lib/validate";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Typography } from "@litespace/ui/Typography";
+import { useFindStudios } from "@litespace/headless/studio";
 
 type Form = {
   name: string;
   email: string;
   phone: string;
+  notice: number;
+  studio: number | null;
   city: IUser.City | null;
   gender: IUser.Gender | null;
 };
@@ -45,6 +49,8 @@ export default function PersonalDetailsForm({
   city,
   gender,
   forStudent,
+  notice,
+  studio,
 }: {
   id: number;
   forStudent: boolean;
@@ -54,16 +60,30 @@ export default function PersonalDetailsForm({
   phone: string | null;
   city: IUser.City | null;
   gender: IUser.Gender | null;
+  notice: ITutor.Self["notice"];
+  studio: ITutor.Self["studioId"];
 }) {
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
   const mq = useMediaQuery();
 
+  const studiosQuery = useFindStudios({});
+
+  const studioOptions = useMemo(
+    () =>
+      studiosQuery.data?.list.map((studio) => ({
+        label: studio.name || "",
+        value: studio.id,
+      })),
+    [studiosQuery]
+  );
+
   const validators = useMakeValidators<Form>({
     name: { required: !!name, validate: isValidUserName },
     email: { required: true, validate: isValidEmail },
     phone: { required: false, validate: isValidPhone },
+    notice: { required: false, validate: isValidNotice },
   });
 
   const form = useForm<Form>({
@@ -73,6 +93,8 @@ export default function PersonalDetailsForm({
       email,
       city,
       gender,
+      studio,
+      notice,
     },
     validators,
     onSubmit: (data) => {
@@ -83,6 +105,8 @@ export default function PersonalDetailsForm({
           phone: getNullableFiledUpdatedValue(phone, data.phone || null),
           email: getOptionalFieldUpdatedValue(email, data.email),
           city: getNullableFiledUpdatedValue(city, data.city),
+          notice: getOptionalFieldUpdatedValue(notice, data.notice),
+          studioId: getNullableFiledUpdatedValue(studio, data.studio),
           gender: getNullableFiledUpdatedValue(gender, data.gender),
         },
       });
@@ -95,7 +119,9 @@ export default function PersonalDetailsForm({
       (phone || "") === form.state.phone &&
       email === form.state.email &&
       city === form.state.city &&
-      gender === form.state.gender
+      gender === form.state.gender &&
+      notice === form.state.notice &&
+      studio === form.state.studio
     );
   }, [
     city,
@@ -105,14 +131,19 @@ export default function PersonalDetailsForm({
     form.state.gender,
     form.state.name,
     form.state.phone,
+    form.state.studio,
+    form.state.notice,
     gender,
     name,
     phone,
+    notice,
+    studio,
   ]);
 
   const onSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
-  }, [invalidateQuery]);
+    invalidateQuery([QueryKey.FindTutorMeta, id]);
+  }, [invalidateQuery, id]);
 
   const onError = useOnError({
     type: "mutation",
@@ -245,7 +276,32 @@ export default function PersonalDetailsForm({
           </Button>
         </div>
 
-        <div className="max-w-[320px] lg:max-w-[640px]">
+        <div className="max-w-[320px] lg:max-w-[640px] flex flex-col gap-6">
+          {forStudent ? null : (
+            <div className="flex flex-col gap-4 lg:max-w-[422px]">
+              <Select
+                id="studio"
+                value={optional(form.state.studio)}
+                onChange={(value) => form.set("studio", value)}
+                options={studioOptions}
+                label={intl("labels.studio")}
+                placeholder={intl("labels.studio.placeholder")}
+                state={form.errors.studio ? "error" : undefined}
+                helper={form.errors?.studio}
+              />
+              <Input
+                id="notice"
+                name="notice"
+                value={form.state.notice}
+                onChange={(e) => form.set("notice", Number(e.target.value))}
+                label={intl("labels.notice")}
+                placeholder={intl("labels.notice.placeholder")}
+                state={form.errors?.notice ? "error" : undefined}
+                helper={form.errors?.notice}
+                autoComplete="off"
+              />
+            </div>
+          )}
           <ConfirmContactMethod />
         </div>
       </div>

@@ -301,6 +301,7 @@ function update(_: ApiContext) {
         phone,
         city,
         notificationMethod,
+        studioId,
         activated,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
@@ -372,6 +373,7 @@ function update(_: ApiContext) {
           about,
           notice,
           video,
+          studioId,
           thumbnail,
           activated,
         };

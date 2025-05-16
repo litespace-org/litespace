@@ -1,4 +1,4 @@
-import { IUser } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import React, { useMemo } from "react";
 import { Tab, TabId } from "@/components/TutorSettings/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -8,7 +8,7 @@ import UpdatePassword from "@/components/Settings/UpdatePassword";
 import NotificationSettings from "@/components/Settings/NotificationSettings";
 
 type Props = {
-  user: IUser.Self;
+  user: IUser.Self & ITutor.FindTutorMetaApiResponse;
   tab: TabId;
   setTab: (tab: TabId) => void;
 };
@@ -26,7 +26,9 @@ const AccountSettings: React.FC<Props> = ({ user, setTab, tab }) => {
           !user.city ||
           !user.gender ||
           !user.verifiedEmail ||
-          !user.verifiedPhone,
+          !user.verifiedPhone ||
+          !user.notice ||
+          !user.studioId,
       },
       {
         id: "password",
@@ -49,6 +51,8 @@ const AccountSettings: React.FC<Props> = ({ user, setTab, tab }) => {
       user.phone,
       user.verifiedEmail,
       user.verifiedPhone,
+      user.notice,
+      user.studioId,
     ]
   );
 
@@ -68,6 +72,8 @@ const AccountSettings: React.FC<Props> = ({ user, setTab, tab }) => {
           city={user.city}
           gender={user.gender}
           phone={user.phone}
+          notice={user.notice}
+          studio={user.studioId}
         />
       ) : null}
 

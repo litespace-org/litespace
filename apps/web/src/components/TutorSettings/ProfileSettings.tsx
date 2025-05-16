@@ -1,29 +1,26 @@
-import React, { useCallback, useMemo } from "react";
-import { Button } from "@litespace/ui/Button";
+import React, { useCallback } from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useToast } from "@litespace/ui/Toast";
 import { Form } from "@litespace/ui/Form";
 import { ITutorSettingsForm } from "@/components/TutorSettings/types";
-import { ITutor } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { getNullableFiledUpdatedValue } from "@litespace/utils/utils";
 import ProfileCard from "@/components/TutorSettings/ProfileCard";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Typography } from "@litespace/ui/Typography";
 import { useOnError } from "@/hooks/error";
-import { useForm } from "@litespace/headless/form";
+import { useFieldMutation, useForm } from "@litespace/headless/form";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 import { MAX_TUTOR_ABOUT_TEXT_LENGTH } from "@litespace/utils";
-import { Textarea } from "@litespace/ui/Textarea";
-import { Input } from "@litespace/ui/Input";
+import { AutoSaveTextarea } from "@litespace/ui/Textarea";
+import { AutoSaveInput } from "@litespace/ui/Input";
 import TopicSelection from "@/components/Settings/TopicSelection";
 
 const ProfileSettings: React.FC<{
   info: ITutor.FindTutorInfoApiResponse;
 }> = ({ info }) => {
-  const { sm } = useMediaQuery();
   const intl = useFormatMessage();
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
@@ -67,29 +64,26 @@ const ProfileSettings: React.FC<{
     },
   });
 
-  const dataChanged = useMemo(
-    () =>
-      info.name !== form.state.name ||
-      info.about !== form.state.about ||
-      info.bio !== form.state.bio,
-    [info, form]
+  const [nameState, saveName] = useFieldMutation<string, IUser.Self>((value) =>
+    updateTutor.mutateAsync({
+      id: info.id,
+      payload: { name: getNullableFiledUpdatedValue(info.name, value) },
+    })
   );
 
-  const saveButton = useMemo(
-    () => (
-      <Button
-        htmlType="submit"
-        loading={updateTutor.isPending}
-        disabled={updateTutor.isPending || !dataChanged}
-        size="large"
-        className="self-end sm:self-start shrink-0"
-      >
-        <Typography tag="p" className="font-medium">
-          {intl("shared-settings.save")}
-        </Typography>
-      </Button>
-    ),
-    [intl, updateTutor.isPending, dataChanged]
+  const [bioState, saveBio] = useFieldMutation<string, IUser.Self>((value) =>
+    updateTutor.mutateAsync({
+      id: info.id,
+      payload: { bio: getNullableFiledUpdatedValue(info.bio, value) },
+    })
+  );
+
+  const [aboutState, saveAbout] = useFieldMutation<string, IUser.Self>(
+    (value) =>
+      updateTutor.mutateAsync({
+        id: info.id,
+        payload: { about: getNullableFiledUpdatedValue(info.about, value) },
+      })
   );
 
   return (
@@ -104,7 +98,6 @@ const ProfileSettings: React.FC<{
           lessonCount={info.lessonCount}
           avgRating={info.avgRating}
         />
-        {sm ? saveButton : null}
       </div>
       <div className="flex flex-col gap-6 lg:gap-6 md:pb-10">
         <Typography
@@ -114,29 +107,32 @@ const ProfileSettings: React.FC<{
           {intl("tutor-settings.personal-info.title")}
         </Typography>
         <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 -mt-2 lg:mt-0">
-          <Input
+          <AutoSaveInput
             id="name"
             value={form.state.name}
             onChange={(e) => form.set("name", e.target.value)}
-            autoComplete="off"
+            onSave={(value) => saveName(value)}
+            isPending={nameState.isPending}
+            isSuccess={nameState.isSuccess}
+            isError={nameState.isError}
             label={intl("tutor-settings.personal-info.name")}
-            name="name"
-            state={form.errors.name ? "error" : undefined}
-            helper={form.errors.name}
+            helper={nameState.isError ? "Failed to save" : undefined}
           />
-          <Input
+
+          <AutoSaveInput
             id="bio"
             value={form.state.bio}
             onChange={(e) => form.set("bio", e.target.value)}
-            autoComplete="off"
+            onSave={(value) => saveBio(value)}
+            isPending={bioState.isPending}
+            isSuccess={bioState.isSuccess}
+            isError={bioState.isError}
             label={intl("tutor-settings.personal-info.bio")}
-            state={form.errors.bio ? "error" : undefined}
-            helper={form.errors.bio}
-            name="bio"
+            helper={bioState.isError ? "Failed to save" : undefined}
           />
         </div>
 
-        <TopicSelection />
+        <TopicSelection forTutor />
 
         <Typography
           tag="h1"
@@ -144,10 +140,14 @@ const ProfileSettings: React.FC<{
         >
           {intl("tutor-settings.personal-info.about")}
         </Typography>
-        <Textarea
+        <AutoSaveTextarea
           id="about"
           value={form.state.about}
           onChange={(e) => form.set("about", e.target.value)}
+          onSave={(value) => saveAbout(value)}
+          isPending={aboutState.isPending}
+          isSuccess={aboutState.isSuccess}
+          isError={aboutState.isError}
           autoComplete="off"
           className="min-h-[172px]"
           state={form.errors.about ? "error" : undefined}
@@ -169,11 +169,6 @@ const ProfileSettings: React.FC<{
           </>
         ) : null}
       </div>
-      {!sm ? (
-        <div className="fixed bottom-0 left-0 w-full p-4 flex justify-end bg-natural-50 shadow-form-submit-container">
-          {saveButton}
-        </div>
-      ) : null}
     </Form>
   );
 };
