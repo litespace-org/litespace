@@ -99,7 +99,6 @@ export const notfound = {
   invoice: () => error(ApiError.InvoiceNotFound, 404),
   plan: () => error(ApiError.PlanNotFound, 404),
   report: () => error(ApiError.ReportNotFound, 404),
-  reportReply: () => error(ApiError.ReportReplyNotFound, 404),
   withdrawMethod: () => error(ApiError.WidthdrawMethodNotFound, 404),
   topic: () => error(ApiError.TopicNotFound, 404),
 } as const;

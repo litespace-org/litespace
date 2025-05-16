@@ -9,7 +9,6 @@ export { messages } from "@/messages";
 export { plans } from "@/plans";
 export { subscriptions } from "@/subscriptions";
 export { ratings } from "@/ratings";
-export { reportReplies } from "@/reportReplies";
 export { reports } from "@/reports";
 export { tokens } from "@/tokens";
 export { tutors } from "@/tutors";
