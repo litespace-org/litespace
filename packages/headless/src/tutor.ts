@@ -6,11 +6,12 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { IInterview, ITutor, IUser, Void } from "@litespace/types";
+import { IFilter, IInterview, ITutor, IUser, Void } from "@litespace/types";
 import { MutationKey, QueryKey } from "@/constants";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useInfinitePaginationQuery } from "@/query";
+import { usePaginate } from "@/pagination";
 
 dayjs.extend(utc);
 
@@ -224,4 +225,21 @@ export function useFindTutorInfo(id: number | null) {
   });
 
   return { query, keys };
+}
+
+export function useFindFullTutors() {
+  const api = useApi();
+
+  const findFullTutors = useCallback(
+    async ({ page, size }: IFilter.Pagination) => {
+      return await api.user.findFullTutors({ page, size });
+    },
+    [api.user]
+  );
+
+  const key: QueryKey[] = [QueryKey.FindFullTutors];
+
+  const query = usePaginate(findFullTutors, key);
+
+  return { query, key };
 }

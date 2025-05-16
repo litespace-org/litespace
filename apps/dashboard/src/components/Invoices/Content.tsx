@@ -336,9 +336,9 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
         </div>
       </header>
       <div className="w-full">
-        {query.isLoading ? (
-          <Loading />
-        ) : query.data ? (
+        {/* @TODO: update the loading view once designed in the Figma prototype. */}
+        {query.isLoading ? <Loading /> : null}
+        {query.data && !query.isLoading ? (
           <List data={query.data} query={query} {...pagination} />
         ) : null}
       </div>

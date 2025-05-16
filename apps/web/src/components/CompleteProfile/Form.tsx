@@ -162,7 +162,7 @@ const CompleteProfile: React.FC = () => {
               label={intl("labels.password")}
               rules={{ validate: validatePassword }}
               state={errors.password ? "error" : undefined}
-              placeholder={intl("labels.password.placeholder")}
+              placeholder={intl("labels.create-password.placeholder")}
               helper={errors.password?.message}
             />
           ) : null}
