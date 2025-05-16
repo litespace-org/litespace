@@ -18,6 +18,7 @@ import {
   useSendPhoneCode,
   useVerifyPhoneCode,
 } from "@litespace/headless/confirmationCode";
+import { Typography } from "@litespace/ui/Typography";
 
 type Form = {
   notificationMethod: IUser.Self["notificationMethod"];
@@ -36,7 +37,7 @@ type Form = {
  * opens the dialog automatically and he needs to enter the number -> this will save his number then he needs
  * to enter the code sent to him.
  */
-export function NotificationSettings({
+function NotificationSettings({
   id,
   notificationMethod,
   verifiedTelegram,
@@ -172,6 +173,12 @@ export function NotificationSettings({
 
   return (
     <div className="md:max-w-[344px] lg:max-w-[400px] grow md:grow-0 flex flex-col">
+      <Typography
+        tag="h2"
+        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
+      >
+        {intl("student-settings.notification.title")}
+      </Typography>
       {showDialog ? (
         <VerifyNotificationMethodDialog
           method={selectedMethod}
@@ -193,17 +200,6 @@ export function NotificationSettings({
           value={optional(form.state.notificationMethod)}
           options={options}
         />
-        <Button
-          size="large"
-          disabled={
-            updateUserMutation.isPending ||
-            form.state.notificationMethod === notificationMethod
-          }
-          onClick={form.submit}
-          className="mt-10"
-        >
-          {intl("shared-settings.save")}
-        </Button>
       </form>
       <Button
         size="large"
@@ -216,3 +212,5 @@ export function NotificationSettings({
     </div>
   );
 }
+
+export default NotificationSettings;

@@ -2,7 +2,7 @@ import PageTitle from "@/components/Common/PageTitle";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import Conent from "@/components/StudentSettings/V2/Conent";
+import Content from "@/components/StudentSettings/V2/Content";
 import { TabId } from "@/components/StudentSettings/V2/types";
 import { isValidTab } from "@/components/StudentSettings/V2/utils";
 import { useUserContext } from "@litespace/headless/context/user";
@@ -28,7 +28,7 @@ export default function StudentSettingsV2() {
         fetching={fetching}
       />
 
-      <Conent tab={tab} user={user} setTab={(tab) => setParams({ tab })} />
+      <Content tab={tab} user={user} setTab={(tab) => setParams({ tab })} />
     </div>
   );
 }

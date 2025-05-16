@@ -18,8 +18,11 @@ import { useOnError } from "@/hooks/error";
 import Close2 from "@litespace/assets/Close2";
 import { ITopic } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
+import cn from "classnames";
 
-const TopicSelection: React.FC = () => {
+const TopicSelection: React.FC<{ forTutor?: boolean }> = ({
+  forTutor = false,
+}) => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
   const { query: userTopicsQuery } = useUserTopics();
@@ -47,10 +50,6 @@ const TopicSelection: React.FC = () => {
       userTopicIds.some((id) => !selectedTopics.map((s) => s.id).includes(id))
     );
   }, [userTopicIds, selectedTopics]);
-
-  const onRemoveTopic = useCallback((id: number) => {
-    setSelectedTopics((prev) => prev.filter((topic) => topic.id !== id));
-  }, []);
 
   const onSuccess = useCallback(() => {
     invalidate([QueryKey.FindUserTopics]);
@@ -88,6 +87,19 @@ const TopicSelection: React.FC = () => {
       });
     },
     [updateTopics, userTopicIds]
+  );
+
+  const onRemoveTopic = useCallback(
+    (id: number) => {
+      if (forTutor)
+        confirm(
+          selectedTopics
+            .filter((topic) => topic.id !== id)
+            .map((topic) => topic.id)
+        );
+      setSelectedTopics((prev) => prev.filter((topic) => topic.id !== id));
+    },
+    [forTutor, selectedTopics, confirm]
   );
 
   if (userTopicsQuery.isPending)
@@ -136,6 +148,7 @@ const TopicSelection: React.FC = () => {
         isUpdating={updateTopics.isPending}
         setShowDialog={setShowDialog}
         showDialog={showDialog}
+        forTutor={forTutor}
         userTopicsQuery={userTopicsQuery}
         userTopicIds={userTopicIds}
       >
@@ -163,6 +176,7 @@ const TopicSelection: React.FC = () => {
   return (
     <TopicSelectionTemplate
       confirm={confirm}
+      forTutor={forTutor}
       isUpdating={updateTopics.isPending}
       setShowDialog={setShowDialog}
       showDialog={showDialog}
@@ -188,14 +202,16 @@ const TopicSelection: React.FC = () => {
             </Animate>
           ))}
         </div>
-        <Button
-          size="large"
-          disabled={updateTopics.isPending || !dataChanged}
-          onClick={() => confirm(selectedTopics.map((s) => s.id))}
-          className="md:mt-10 mr-auto md:mr-0"
-        >
-          {intl("shared-settings.save")}
-        </Button>
+        {forTutor ? null : (
+          <Button
+            size="large"
+            disabled={updateTopics.isPending || !dataChanged}
+            onClick={() => confirm(selectedTopics.map((s) => s.id))}
+            className="md:mt-10 mr-auto md:mr-0"
+          >
+            {intl("shared-settings.save")}
+          </Button>
+        )}
       </div>
     </TopicSelectionTemplate>
   );
@@ -208,7 +224,7 @@ const TopicSelectionTemplate = ({
   confirm,
   userTopicsQuery,
   isUpdating,
-
+  forTutor = false,
   children,
 }: {
   userTopicIds: number[];
@@ -218,6 +234,7 @@ const TopicSelectionTemplate = ({
   userTopicsQuery: UseQueryResult<ITopic.FindUserTopicsApiResponse, Error>;
   isUpdating: boolean;
   children: React.ReactNode;
+  forTutor?: boolean;
 }) => {
   const intl = useFormatMessage();
   const allTopicsQuery = useTopics({});
@@ -230,13 +247,17 @@ const TopicSelectionTemplate = ({
   }, [allTopicsQuery]);
 
   return (
-    <div className="flex flex-col gap-4 grow">
+    <div className={cn("flex flex-col grow", forTutor ? "gap-6" : "gap-4")}>
       <div className="flex items-center justify-between">
         <Typography
           tag="h2"
           className="text-natural-950 text-subtitle-2 font-bold"
         >
-          {intl("student-settings.edit.personal.topics.title")}
+          {intl(
+            forTutor
+              ? "tutor-settings.personal-info.topics"
+              : "student-settings.edit.personal.topics.title"
+          )}
         </Typography>
 
         {!isEmpty(userTopicIds) ? (
@@ -256,6 +277,7 @@ const TopicSelectionTemplate = ({
 
       {showDialog ? (
         <TopicSelectionDialog
+          forTutor={forTutor}
           title={intl("student-settings.topics.selection-dialog.title")}
           description={intl(
             "student-settings.topics.selection-dialog.description"

@@ -28,7 +28,8 @@ const PlansV2 = lazy(() => import("@/pages/PlansV2"));
 const Lesson = lazy(() => import("@/pages/Lesson"));
 const LessonV2 = lazy(() => import("@/pages/LessonV2"));
 const LessonV3 = lazy(() => import("@/pages/LessonV3"));
-const TutorSettings = lazy(() => import("@/pages/TutorSettings"));
+const TutorAccountSettings = lazy(() => import("@/pages/TutorAccountSettings"));
+const TutorProfileSettings = lazy(() => import("@/pages/TutorProfileSettings"));
 const ScheduleManagement = lazy(() => import("@/pages/ScheduleManagement"));
 const ForgetPassword = lazy(() => import("@/pages/ForgetPassword"));
 const TutorDashboard = lazy(() => import("@/pages/TutorDashboard"));
@@ -43,8 +44,8 @@ const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 function withCrash(routes: RouteObject[]): RouteObject[] {
   return routes.map((route) => ({
     ...route,
-    element: <Splash children={route.element} />,
-    errorElement: <Splash children={<Crash />} />,
+    element: <Splash children={route.element} position="top" />,
+    errorElement: <Splash children={<Crash />} position="top" />,
   }));
 }
 
@@ -63,7 +64,8 @@ const router = createRouter([
       { path: Web.StudentDashboard, element: <StudentDashboard /> },
       { path: Web.StudentSettings, element: <StudentSettings /> },
       { path: Web.TutorDashboard, element: <TutorDashboard /> },
-      { path: Web.TutorSettings, element: <TutorSettings /> },
+      { path: Web.TutorAccountSettings, element: <TutorAccountSettings /> },
+      { path: Web.TutorProfileSettings, element: <TutorProfileSettings /> },
       { path: Web.LessonsSchedule, element: <LessonsSchedule /> },
       { path: Web.ScheduleManagement, element: <ScheduleManagement /> },
       { path: Web.Plans, element: <Plans /> },

@@ -1,16 +1,16 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useMemo } from "react";
 import { Tabs } from "@litespace/ui/Tabs";
-import { NotificationSettings } from "@/components/StudentSettings/V2/NotificationSettings";
-import { UpdatePassword } from "@/components/StudentSettings/V2/UpdatePassword";
-import PersonalDetails from "@/components/StudentSettings/V2/PersonalDetails";
-import TopicSelection from "@/components/StudentSettings/V2/TopicSelection";
+import NotificationSettings from "@/components/Settings/NotificationSettings";
+import UpdatePassword from "@/components/Settings/UpdatePassword";
+import PersonalDetails from "@/components/Settings/PersonalDetails";
+import TopicSelection from "@/components/Settings/TopicSelection";
+import UploadPhoto from "@/components/StudentSettings/V2/UploadPhoto";
 import { IUser } from "@litespace/types";
 import { Tab, TabId } from "@/components/StudentSettings/V2/types";
-import UploadPhoto from "@/components/StudentSettings/V2/UploadPhoto";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
-const Conent: React.FC<{
+const Content: React.FC<{
   tab: TabId;
   setTab: (tab: TabId) => void;
   user: IUser.Self;
@@ -78,6 +78,7 @@ const Conent: React.FC<{
 
       {tab === "personal" ? (
         <PersonalDetails
+          forStudent
           id={user.id}
           image={user.image}
           email={user.email}
@@ -102,11 +103,11 @@ const Conent: React.FC<{
 
       {tab === "topics" ? (
         <div className="max-w-[531px] grow flex">
-          <TopicSelection />
+          <TopicSelection forTutor={false} />
         </div>
       ) : null}
     </div>
   );
 };
 
-export default Conent;
+export default Content;
