@@ -85,13 +85,7 @@ export const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
 
   return (
     <div className="max-w-[400px]">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          form.submit();
-        }}
-        className="w-full flex flex-col gap-4"
-      >
+      <form onSubmit={form.onSubmit} className="w-full flex flex-col gap-4">
         <Password
           required
           name="current"

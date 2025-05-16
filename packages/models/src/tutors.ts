@@ -200,7 +200,9 @@ export class Tutors {
     withListFilter(builder, users.column("gender"), gender);
 
     const total = await countRows(builder.clone(), { distinct: true });
-    const query = builder.select<ITutor.FullRow[]>(fullTutorFields);
+    const query = builder
+      .select<ITutor.FullRow[]>(fullTutorFields)
+      .orderBy(tutors.column("created_at"), "desc");
     const rows = await withSkippablePagination(query, pagination);
     const list = rows.map((row) => this.asFull(row));
 

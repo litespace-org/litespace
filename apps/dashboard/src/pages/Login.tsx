@@ -1,19 +1,20 @@
-import { production } from "@/lib/env";
 import { router } from "@/lib/route";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useLoginUser } from "@litespace/headless/user";
-import { IUser } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
-import { Controller, Form } from "@litespace/ui/Form";
+import { Form } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { isRegularUser } from "@litespace/utils";
 import { Dashboard, Landing } from "@litespace/utils/routes";
-import React, { useMemo } from "react";
-import { useForm } from "react-hook-form";
+import React from "react";
+import { useForm } from "@litespace/headless/form";
 import { useNavigate } from "react-router-dom";
+import { Input, Password } from "@litespace/ui/Input";
+import { useMakeValidators } from "@litespace/ui/hooks/validation";
+import { isValidEmail, isValidPassword } from "@litespace/ui/lib/validate";
 
-interface IForm {
+interface Form {
   email: string;
   password: string;
 }
@@ -23,20 +24,6 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const user = useUserContext();
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<IForm>({
-    defaultValues: {
-      email: production ? "admin@litespace.org" : "",
-      password: production ? "Password@8" : "",
-    },
-  });
-
-  const email = watch("email");
-  const password = watch("password");
 
   const mutation = useLoginUser({
     onSuccess(result) {
@@ -59,13 +46,27 @@ const Login: React.FC = () => {
     },
   });
 
-  const onSubmit = useMemo(
-    () =>
-      handleSubmit((credentials: IUser.Credentials) =>
-        mutation.mutate(credentials)
-      ),
-    [handleSubmit, mutation]
-  );
+  const validators = useMakeValidators<Form>({
+    email: {
+      required: true,
+      validate: isValidEmail,
+    },
+    password: {
+      required: true,
+      validate: isValidPassword,
+    },
+  });
+
+  const form = useForm<Form>({
+    defaults: {
+      email: "",
+      password: "",
+    },
+    validators,
+    onSubmit(data) {
+      mutation.mutate(data);
+    },
+  });
 
   return (
     <div className="flex flex-row flex-1 min-h-screen text-foreground">
@@ -77,36 +78,36 @@ const Login: React.FC = () => {
             </h1>
           </div>
 
-          <Form onSubmit={onSubmit}>
+          <Form onSubmit={form.onSubmit}>
             <div className="flex flex-col gap-4">
-              <Controller.Input
+              <Input
                 id="email"
-                control={control}
                 name="email"
-                value={email}
+                value={form.state.email}
                 placeholder={intl("labels.email.placeholder")}
+                onChange={(e) => form.set("email", e.target.value)}
                 autoComplete="off"
                 disabled={mutation.isPending}
                 label={intl("labels.email")}
-                state={errors.email ? "error" : undefined}
-                helper={errors.email?.message}
+                state={form.errors.email ? "error" : undefined}
+                helper={form.errors.email}
               />
 
-              <Controller.Password
+              <Password
                 id="password"
-                control={control}
                 idleDir="rtl"
                 name="password"
                 autoComplete="off"
-                value={password}
+                value={form.state.password}
+                onChange={(e) => form.set("password", e.target.value)}
                 disabled={mutation.isPending}
                 label={intl("labels.password")}
-                state={errors.password ? "error" : undefined}
-                helper={errors.password?.message}
+                helper={form.errors.password}
+                state={form.errors.password ? "error" : undefined}
               />
 
               <Button
-                size={"medium"}
+                size="medium"
                 disabled={mutation.isPending}
                 loading={mutation.isPending}
               >

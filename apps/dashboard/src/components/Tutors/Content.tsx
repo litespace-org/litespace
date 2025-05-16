@@ -7,7 +7,6 @@ import Edit from "@litespace/assets/Edit";
 import InfoCircle from "@litespace/assets/InfoCircle";
 import Profile from "@litespace/assets/ProfileAvatar";
 import UserTag from "@litespace/assets/UserTag";
-import { useInvalidateQuery } from "@litespace/headless/query";
 import { useUpdateUser } from "@litespace/headless/user";
 import { Element, ITutor, IUser, Void } from "@litespace/types";
 import { AvatarV2 as Avatar } from "@litespace/ui/Avatar";
@@ -21,7 +20,7 @@ import cn from "classnames";
 import React, { useCallback, useMemo } from "react";
 
 export const Content: React.FC<{
-  queryKey: string[];
+  refetch: Void;
   tutors?: ITutor.FindFullTutorsApiResponse["list"];
   fetching: boolean;
   loading: boolean;
@@ -30,10 +29,9 @@ export const Content: React.FC<{
   totalPages: number;
   next: Void;
   prev: Void;
-  retry: Void;
   goto: (pageNumber: number) => void;
 }> = ({
-  queryKey,
+  refetch,
   tutors,
   fetching,
   loading,
@@ -42,18 +40,16 @@ export const Content: React.FC<{
   totalPages,
   next,
   prev,
-  retry,
   goto,
 }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const columnHelper =
     createColumnHelper<Element<ITutor.FindFullTutorsApiResponse["list"]>>();
-  const invalidate = useInvalidateQuery();
 
   const onSuccess = useCallback(() => {
-    invalidate(queryKey);
-  }, [invalidate, queryKey]);
+    refetch();
+  }, [refetch]);
 
   const onError = useCallback(() => {
     toast.error({ title: intl("dashboard.tutors.change-tutor-state.error") });
@@ -200,6 +196,7 @@ export const Content: React.FC<{
                 const payload: IUser.UpdateApiPayload = {
                   activated: !isActivated,
                 };
+
                 mutation.mutate({
                   id,
                   payload,
@@ -208,10 +205,7 @@ export const Content: React.FC<{
             >
               <Typography
                 tag="span"
-                className={cn(
-                  "text-body font-medium",
-                  isActivated ? "text-destructive-700" : "text-brand-700"
-                )}
+                className={cn("text-body font-medium text")}
               >
                 {isActivated
                   ? intl("dashboard.tutors.table.de-activate-account")
@@ -232,18 +226,16 @@ export const Content: React.FC<{
       </div>
     );
 
-  if (error)
+  if (error || !tutors)
     return (
       <div className="h-[40vh] flex items-center justify-center">
         <LoadingError
           size="medium"
           error={intl("dashboard.tutors.error")}
-          retry={retry}
+          retry={refetch}
         />
       </div>
     );
-
-  if (!tutors) return;
 
   return (
     <Table
