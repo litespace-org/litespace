@@ -44,9 +44,7 @@ const Root: React.FC = () => {
   const location = useLocation();
 
   const publicRoute = useMemo(() => {
-    return publicRoutes.some((route) =>
-      router.isMatch.web(route, location.pathname)
-    );
+    return publicRoutes.some((route) => router.match(route, location.pathname));
   }, [location.pathname]);
 
   useEffect(() => {
@@ -86,17 +84,14 @@ const Root: React.FC = () => {
       Web.CompleteTutorProfile,
     ];
     const match = routes.some((route) =>
-      router.isMatch.web(route, location.pathname)
+      router.match(route, location.pathname)
     );
     return !match;
   }, [location.pathname, params]);
 
   const fullScreenPage = useMemo(() => {
-    const routes: Web[] = [
-      Web.Lesson,
-      // Web.Chat, // TODO: chat page should be added.
-    ];
-    return routes.some((route) => router.isMatch.web(route, location.pathname));
+    const routes: Web[] = [Web.Lesson, Web.LessonV2, Web.LessonV3];
+    return routes.some((route) => router.match(route, location.pathname));
   }, [location.pathname]);
 
   useEffect(() => {

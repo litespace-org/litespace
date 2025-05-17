@@ -100,7 +100,7 @@ const Sidebar: React.FC<{
   const { user, logout } = useUserContext();
 
   const mainPages: LinkInfo[] = useMemo(() => {
-    const match = (route: Web) => router.isMatch.web(route, location.pathname);
+    const match = (route: Web) => router.match(route, location.pathname);
     const dashboard: LinkInfo = {
       label: intl("sidebar.dashboard"),
       route:

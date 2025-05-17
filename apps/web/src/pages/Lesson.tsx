@@ -8,9 +8,9 @@ import Content from "@/components/Lesson/Content";
 import { useUserContext } from "@litespace/headless/context/user";
 import cn from "classnames";
 
-type Params = Replace<UrlParamsOf<Web.Lesson>, "id", string>;
+type Params = Replace<UrlParamsOf<Web.LessonV3>, "id", string>;
 
-const Lesson: React.FC = () => {
+const LessonV3: React.FC = () => {
   const params = useParams<Params>();
   const logger = useLogger();
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const Lesson: React.FC = () => {
   const lessonId = useMemo(() => {
     const id = Number(params.id);
     if (!isInteger(id)) {
-      logger.error(`Invalid lesson id: ${params.id}`);
+      logger.error(`invalid lesson id: ${params.id}`);
       return null;
     }
     return id;
@@ -34,10 +34,8 @@ const Lesson: React.FC = () => {
   return (
     <div
       className={cn(
-        // Standard page layout styles.
-        "max-h-screen p-4",
-        // The pre-session page is design to take the full screen.
-        "flex-1 overflow-hidden"
+        // standard page layout styles.
+        "flex-1 overflow-hidden p-4"
       )}
     >
       <Content lessonId={lessonId} self={user} />
@@ -45,4 +43,4 @@ const Lesson: React.FC = () => {
   );
 };
 
-export default Lesson;
+export default LessonV3;

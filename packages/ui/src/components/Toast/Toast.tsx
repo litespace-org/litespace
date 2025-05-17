@@ -90,7 +90,7 @@ export const Toast: React.FC<{
       </Title>
 
       {description ? (
-        <Description asChild className="ms-7">
+        <Description className="ms-7">
           <Typography
             tag="p"
             className="text-natural-600 font-semibold dark:text-natural-50 text-caption select-text"

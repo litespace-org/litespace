@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import cn from "classnames";
 import { AvatarV2 } from "@litespace/ui/Avatar";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
-import Lottie from "react-lottie";
-import audioWave from "@/components/Session/audioWave.json";
 import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Loading } from "@litespace/ui/Loading";
+import { VideoTrack as BaseVideoTrack } from "@livekit/components-react";
+import { TrackReference } from "@/components/Session/types";
 
-const Stream: React.FC<{
-  stream: MediaStream | null;
+const VideoTrack: React.FC<{
+  trackRef: TrackReference | null;
   muted?: boolean;
   video?: boolean;
   audio?: boolean;
@@ -20,8 +20,7 @@ const Stream: React.FC<{
   userName: string | null;
   loading?: boolean;
 }> = ({
-  stream,
-  muted,
+  trackRef,
   video,
   audio,
   speaking,
@@ -31,7 +30,6 @@ const Stream: React.FC<{
   loading,
   size = "md",
 }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [dirty, setDirty] = useState(false);
   const [fillHorizontally, setFillHorizontally] = useState(true);
   const mq = useMediaQuery();
@@ -40,12 +38,6 @@ const Stream: React.FC<{
     if (dirty) return;
     if (mq.lg) setFillHorizontally(false);
   }, [dirty, mq.lg]);
-
-  useEffect(() => {
-    // Attach the media stream to the video element to start playing it.
-    // Note: video element can play both audio and video tracks.
-    if (videoRef.current) videoRef.current.srcObject = stream;
-  }, [stream]);
 
   return (
     <div
@@ -80,21 +72,6 @@ const Stream: React.FC<{
         )}
       >
         <MicrophoneSlash className="w-4 h-4 [&_*]:stroke-natural-50" />
-      </div>
-
-      <div
-        className={cn(
-          "absolute top-4 left-4 z-stream-v2-speaking w-8 h-8",
-          speaking && audio ? "visible" : "invisible"
-        )}
-      >
-        <Lottie
-          options={{
-            loop: true,
-            autoplay: true,
-            animationData: audioWave, // TODO: get the latest file from Ziad.
-          }}
-        />
       </div>
 
       <div
@@ -134,55 +111,54 @@ const Stream: React.FC<{
         ) : null}
       </div>
 
-      <video
-        onClick={() => {
-          setFillHorizontally(!fillHorizontally);
-          setDirty(true);
-        }}
-        ref={videoRef}
-        autoPlay
-        /**
-         * Current user should never hear his sound (else it will feel off)
-         */
-        muted={muted}
-        // Ref: https://css-tricks.com/what-does-playsinline-mean-in-web-video/
-        playsInline
-        /**
-         * Ref: https://webrtchacks.com/mirror-framerate/
-         *
-         * When the media stream is rendered, user is expecting to see himself
-         * mirrored (as if he is looking into a mirror). To achieve this, we
-         * need to flip the media stream using css.
-         *
-         * TIP: Disable the `transform` to notice the difference.
-         */
-        style={{ transform: "scale(-1,1)" }}
-        className={
+      {trackRef ? (
+        <BaseVideoTrack
+          trackRef={trackRef}
+          onClick={() => {
+            setFillHorizontally(!fillHorizontally);
+            setDirty(true);
+          }}
+          autoPlay
+          muted
+          // ref: https://css-tricks.com/what-does-playsinline-mean-in-web-video/
+          playsInline
           /**
-           * A video must be positioned absolute as it will overflow from its
-           * parent if we do otherwise.
+           * @desc when the media stream is rendered, user is expecting to see himself
+           * mirrored (as if he is looking into a mirror). To achieve this, we
+           * need to flip the media stream using css.
+           *
+           * @ref https://webrtchacks.com/mirror-framerate/
+           *
+           * @tip disable the `transform` to notice the difference.
            */
-          cn("absolute", "cursor-pointer", {
+          style={{ transform: "scale(-1,1)" }}
+          className={
             /**
-             * When the user disables the camera, the video element will be black.
-             * In this case, we should mark it as "hidden/invisible" not to
-             * interfer with the styling.
-             *
-             * TIP: Disable the line below to notice the difference.
+             * a video must be positioned absolute as it will overflow from its
+             * parent if we do otherwise.
              */
-            invisible: !video,
-            /**
-             * @note `w-full` vs `h-full`
-             * - `w-full` (default): The video element will take the full width of
-             *   the card, potentially cropping the video vertically.
-             * - `h-full`: The video element will take the full height of the card,
-             *   potentially cropping the video horizontally.
-             */
-            "h-full": !fillHorizontally,
-            "w-full": fillHorizontally,
-          })
-        }
-      />
+            cn("absolute", "cursor-pointer", {
+              /**
+               * when the user disables the camera, the video element will be black.
+               * in this case, we should mark it as "hidden/invisible" not to
+               * interfer with the styling.
+               *
+               * @tip disable the line below to notice the difference.
+               */
+              invisible: !video,
+              /**
+               * @note `w-full` vs `h-full`
+               * - `w-full` (default): The video element will take the full width of
+               *   the card, potentially cropping the video vertically.
+               * - `h-full`: The video element will take the full height of the card,
+               *   potentially cropping the video horizontally.
+               */
+              "h-full": !fillHorizontally,
+              "w-full": fillHorizontally,
+            })
+          }
+        />
+      ) : null}
 
       <div // Ref: https://css-tricks.com/design-considerations-text-images/
         id="user-name"
@@ -205,4 +181,4 @@ const Stream: React.FC<{
   );
 };
 
-export default Stream;
+export default VideoTrack;

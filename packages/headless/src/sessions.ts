@@ -1,6 +1,6 @@
 import { ISession, Void, Wss } from "@litespace/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { safe } from "@litespace/utils/error";
+import { safe, safePromise } from "@litespace/utils/error";
 import { useSocket } from "@/socket";
 import { MediaConnection, PeerError } from "peerjs";
 import zod from "zod";
@@ -2453,4 +2453,119 @@ export function useGetSessionToken(sessionId?: ISession.Id) {
   });
 
   return { query, keys };
+}
+
+export function useUserMediaV2(): UseUserMediaReturn {
+  const logger = useLogger();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [mic, setMic] = useState<boolean>(false);
+  const [camera, setCamera] = useState<boolean>(false);
+  const [audio, setAudio] = useState<boolean>(false);
+  const [video, setVideo] = useState<boolean>(false);
+  const [denied, setUserDenied] = useState<boolean>(false);
+
+  const getUserMedia = useCallback(async (): Promise<Error | MediaStream> => {
+    // Ref: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+    // Ref: https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
+    // Ref: https://www.webrtc-developers.com/getusermedia-constraints-explained/
+    // Ref: https://webrtchacks.com/getusermedia-resolutions-3/
+    // Ref: https://www.webrtc-developers.com/getusermedia-constraints-explained/#applying-new-constraints
+    // Ref: https://blog.addpipe.com/getusermedia-video-constraints/
+    // Ref: https://blog.addpipe.com/common-getusermedia-errors/
+    return await safePromise(
+      navigator.mediaDevices.getUserMedia({
+        audio: {
+          noiseSuppression: true,
+          echoCancellation: true, // Optional: Enable echo cancellation
+        },
+        video: {
+          width: 1280,
+          height: 720,
+        },
+      })
+    );
+  }, []);
+
+  const stop = useCallback(() => {
+    if (!stream) return;
+    stream.getTracks().forEach((track) => track.stop());
+    setStream(null);
+    setCamera(false);
+    setMic(false);
+    setVideo(false);
+    setAudio(false);
+  }, [stream]);
+
+  const capture = useCallback(async () => {
+    setLoading(true);
+    const capturedStream = await getUserMedia();
+    const error = capturedStream instanceof Error;
+    if (error) logger.error(capturedStream);
+
+    // stopping the previous stream incase we got a new stream.
+    if (!error) stop();
+    if (error && isNotAllowed(capturedStream)) setUserDenied(true);
+    setError(error ? capturedStream : null);
+    if (!error) setStream(capturedStream);
+    setLoading(false);
+    return capturedStream;
+  }, [getUserMedia, logger, stop]);
+
+  const toggleMic = useCallback(() => {
+    if (!stream) return;
+    const [track] = stream.getAudioTracks();
+    if (!track) return;
+    track.enabled = !track.enabled;
+    setAudio(track.enabled);
+  }, [stream]);
+
+  const toggleCamera = useCallback(() => {
+    if (!stream) return;
+    const [track] = stream.getVideoTracks();
+    if (!track) return;
+    track.enabled = !track.enabled;
+    setVideo(track.enabled);
+  }, [stream]);
+
+  const speaking = useSpeakingV3(stream);
+
+  useEffect(() => {
+    if (!stream) return;
+    const videoTracks = stream.getVideoTracks();
+    const audioTracks = stream.getAudioTracks();
+
+    if (!isEmpty(videoTracks)) setCamera(true);
+    if (!isEmpty(audioTracks)) setMic(true);
+
+    setAudio(!!audioTracks.find((track) => track.enabled));
+    setVideo(!!videoTracks.find((track) => track.enabled));
+  }, [stream]);
+
+  const hasVideoTracks = useMemo(() => {
+    return !isEmpty(stream?.getVideoTracks());
+  }, [stream]);
+
+  const hasAudioTracks = useMemo(() => {
+    return !isEmpty(stream?.getAudioTracks());
+  }, [stream]);
+
+  return {
+    speaking,
+    loading,
+    stream,
+    error,
+    capture,
+    stop,
+    toggleMic,
+    toggleCamera,
+    audio,
+    mic,
+    video,
+    camera,
+    denied,
+    hasVideoTracks,
+    hasAudioTracks,
+  };
 }

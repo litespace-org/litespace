@@ -1,82 +1,137 @@
-import { IUser, Void } from "@litespace/types";
-import React, { useEffect } from "react";
-import Stream from "@/components/Session/Stream";
+import { IUser } from "@litespace/types";
+import React, { useEffect, useMemo } from "react";
+import Preview from "@/components/Session/Preview";
+import { usePreview } from "@/components/Session/room";
 import Controllers, { Controller } from "@/components/Session/Controllers";
+import { supportsBackgroundProcessors } from "@livekit/track-processors";
 import Ready from "@/components/Session/Ready";
-import { useSearchParams } from "react-router-dom";
+import { useTracks } from "@livekit/components-react";
+import { TrackReference } from "@/components/Session/types";
 
 const PreSession: React.FC<{
-  self: {
-    id: number;
-    image: string | null;
-    name: string | null;
-    stream: MediaStream | null;
-    audio: boolean;
-    video: boolean;
-    speaking: boolean;
-  };
-  member: {
-    id: number;
-    role: IUser.Role;
-    gender: IUser.Gender;
-    joined: boolean;
-  };
   start: string;
   duration: number;
-  join: Void;
-  disabled: boolean;
-  loading: boolean;
-  error: boolean;
-  video: Controller;
-  audio: Controller;
+  localMemberId: number;
+  localMemberName: string | null;
+  localMemberImage: string | null;
+  remoteMemberId: number;
+  remoteMemberRole: IUser.Role;
 }> = ({
-  self,
-  member,
-  start,
-  duration,
-  join,
-  disabled,
-  loading,
-  error,
-  audio,
-  video,
+  localMemberId,
+  localMemberName,
+  localMemberImage,
+  remoteMemberId,
+  remoteMemberRole,
+  start: sessionStart,
+  duration: sessionDuration,
 }) => {
-  const [params, setParams] = useSearchParams();
+  const tracks: TrackReference[] = useTracks();
+  const {
+    loading,
+    error,
+    success,
+    start,
+    join,
+    videoRef,
+    videoTrack,
+    audioTrack,
+    audioEnabled,
+    videoEnabled,
+    toggleBackgroundBlur,
+    togglingBackgroundBlur,
+    backgroundBlurEnabled,
+  } = usePreview();
 
-  /**
-   * Based on the design, the pre-session should have a navigation. We need to
-   * make sure to remove it incase it is still their.
-   */
+  const remoteMemberJoined = useMemo(() => {
+    return !!tracks.find(
+      (track) => track.participant.identity === remoteMemberId.toString()
+    );
+  }, [remoteMemberId, tracks]);
+
   useEffect(() => {
-    if (params.get("nav")) setParams({});
-  }, [params, setParams]);
+    if (loading || error || success) return;
+    start();
+  }, [error, loading, start, success]);
+
+  const controllers = useMemo(() => {
+    const audio: Controller = {
+      toggle: () => {
+        if (!audioTrack) return;
+        if (audioEnabled) return audioTrack.mute();
+        if (!audioEnabled) return audioTrack.unmute();
+      },
+      enabled: audioEnabled,
+      error: !audioTrack,
+    };
+
+    const video: Controller = {
+      toggle: () => {
+        if (!videoTrack) return;
+        if (videoEnabled) return videoTrack.mute();
+        if (!videoEnabled) return videoTrack.unmute();
+      },
+      enabled: videoEnabled,
+      error: !videoTrack,
+    };
+
+    const blur: Controller = {
+      toggle: toggleBackgroundBlur,
+      enabled: backgroundBlurEnabled,
+      error: false,
+      loading: togglingBackgroundBlur,
+    };
+
+    return {
+      audio,
+      video,
+      blur: supportsBackgroundProcessors() && videoTrack ? blur : undefined,
+    };
+  }, [
+    audioEnabled,
+    audioTrack,
+    backgroundBlurEnabled,
+    toggleBackgroundBlur,
+    togglingBackgroundBlur,
+    videoEnabled,
+    videoTrack,
+  ]);
 
   return (
-    <div className="h-full flex flex-col gap-4 max-w-screen-3xl mx-auto">
-      <div className="flex-1 h-0">
-        <Stream
-          stream={self.stream}
-          video={self.video}
-          audio={self.audio}
-          speaking={self.speaking}
-          userId={self.id}
-          userImage={self.image}
-          userName={self.name}
-          size="md"
-          muted
+    <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 md:mt-28 max-h-full">
+      <div className="flex flex-col items-center justify-center gap-6 md:w-[480px] lg:w-[640px] h-full overflow-hidden">
+        <div className="w-full max-h-[calc(100%-40px)] overflow-hidden aspect-mobile md:aspect-desktop">
+          <Preview
+            videoRef={videoRef}
+            audio={audioEnabled}
+            video={videoEnabled}
+            userId={localMemberId}
+            image={localMemberImage}
+            name={localMemberName}
+          />
+        </div>
+
+        <Controllers
+          audio={controllers.audio}
+          video={controllers.video}
+          blur={controllers.blur}
         />
       </div>
-      <div className="flex flex-col gap-4">
-        <Ready
-          otherMember={member}
-          start={start}
-          duration={duration}
-          join={join}
-          disabled={disabled}
-          loading={loading}
-          error={error}
-        />
-        <Controllers video={video} audio={audio} />
+
+      <div>
+        <div className="md:h-[calc(100%-24px-40px)] flex items-center justify-center">
+          <Ready
+            start={sessionStart}
+            duration={sessionDuration}
+            join={join}
+            disabled={!audioTrack && !videoTrack}
+            remoteMember={{
+              id: remoteMemberId,
+              role: remoteMemberRole,
+              gender: IUser.Gender.Male,
+              joined: remoteMemberJoined,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

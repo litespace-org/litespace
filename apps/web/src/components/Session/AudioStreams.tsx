@@ -1,7 +1,7 @@
 import { useTracks } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import React, { useEffect, useMemo, useRef } from "react";
-import { TrackReference } from "@/components/SessionV3/types";
+import { TrackReference } from "@/components/Session/types";
 
 const AudioPlayback: React.FC<{
   stream: MediaStream;

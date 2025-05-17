@@ -1,60 +1,84 @@
+import React, { useMemo } from "react";
 import { useOnError } from "@/hooks/error";
 import { useFindLesson } from "@litespace/headless/lessons";
-import { useLogger } from "@litespace/headless/logger";
+import { useGetSessionToken } from "@litespace/headless/sessions";
 import { IUser } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
-import React, { useMemo } from "react";
+import { optional } from "@litespace/utils";
 import Session from "@/components/Session";
+import { RemoteMember } from "@/components/Session/types";
 import { asRateLessonQuery } from "@/lib/query";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { useNavigate } from "react-router-dom";
 
-const Content: React.FC<{ lessonId: number; self: IUser.Self }> = ({
-  lessonId,
-  self,
-}) => {
+const Content: React.FC<{
+  lessonId: number;
+  self: IUser.Self;
+}> = ({ lessonId, self }) => {
   const navigate = useNavigate();
   const intl = useFormatMessage();
-  const { query: lesson, keys } = useFindLesson(lessonId);
-  const logger = useLogger();
+  const { query: lessonQuery, keys: lessonQueryKeys } = useFindLesson(lessonId);
+  const { query: tokenQuery, keys: tokenQueryKeys } = useGetSessionToken(
+    optional(lessonQuery.data?.lesson.sessionId)
+  );
 
   useOnError({
     type: "query",
-    error: lesson.error,
-    keys,
+    error: lessonQuery.error,
+    keys: lessonQueryKeys,
   });
 
-  const member = useMemo(() => {
-    if (!lesson.data) return;
+  useOnError({
+    type: "query",
+    error: tokenQuery.error,
+    keys: tokenQueryKeys,
+  });
 
-    const member = lesson.data.members.find(
+  const member = useMemo((): RemoteMember | null => {
+    if (!lessonQuery.data) return null;
+
+    const member = lessonQuery.data.members.find(
       (member) => member.userId !== self.id
     );
 
-    if (!member)
-      return logger.error(
-        "The other member is not found; should never happen.",
-        lesson.data
-      );
+    if (!member) return null;
 
-    return member;
-  }, [lesson.data, logger, self.id]);
+    return {
+      id: member.userId,
+      name: member.name,
+      gender: IUser.Gender.Male,
+      role: member.role,
+      image: member.image,
+    };
+  }, [lessonQuery.data, self.id]);
 
-  if (lesson.isPending || lesson.isLoading)
+  if (lessonQuery.isPending || tokenQuery.isPending)
     return (
       <div className="mt-[15vh]">
-        <Loading size="small" text={intl("lesson.loading")} />
+        <Loading size="large" />
       </div>
     );
 
-  if (lesson.isError || !lesson.data || !member)
+  if (
+    lessonQuery.isError ||
+    !lessonQuery.data ||
+    tokenQuery.isError ||
+    !tokenQuery.data ||
+    !member
+  )
     return (
       <div className="mt-[15vh] max-w-fit mx-auto">
         <LoadingError
           size="small"
-          retry={lesson.refetch}
+          retry={() => {
+            if (lessonQuery.isError || !lessonQuery.data)
+              return lessonQuery.refetch();
+
+            if (tokenQuery.isError || !tokenQuery.data)
+              return tokenQuery.refetch();
+          }}
           error={intl("lesson.loading-error")}
         />
       </div>
@@ -62,29 +86,20 @@ const Content: React.FC<{ lessonId: number; self: IUser.Self }> = ({
 
   return (
     <Session
-      self={self}
       type="lesson"
-      resourceId={lessonId}
-      sessionId={lesson.data.lesson.sessionId}
-      start={lesson.data.lesson.start}
-      duration={lesson.data.lesson.duration}
-      member={{
-        id: member.userId,
-        name: member.name,
-        gender: IUser.Gender.Male,
-        role: member.role,
-        image: member.image,
-      }}
+      localMember={self}
+      token={tokenQuery.data.token}
+      remoteMember={member}
       onLeave={() => {
-        if (!lesson.data) return;
+        if (!lessonQuery.data) return;
         const student = self.role === IUser.Role.Student;
 
         const query = asRateLessonQuery({
           lessonId: lessonId,
-          start: lesson.data.lesson.start,
-          tutorId: member.userId,
+          start: lessonQuery.data.lesson.start,
+          tutorId: member.id,
           tutorName: member.name,
-          duration: lesson.data.lesson.duration,
+          duration: lessonQuery.data.lesson.duration,
         });
 
         navigate(
@@ -94,6 +109,8 @@ const Content: React.FC<{ lessonId: number; self: IUser.Self }> = ({
           })
         );
       }}
+      start={lessonQuery.data.lesson.start}
+      duration={lessonQuery.data.lesson.duration}
     />
   );
 };

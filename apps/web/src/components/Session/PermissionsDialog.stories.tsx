@@ -4,7 +4,6 @@ import {
   Props,
 } from "@/components/Session/PermissionsDialog";
 import { useState } from "react";
-import React from "react";
 
 type Component = typeof PermissionsDialog;
 type Story = StoryObj<Component>;

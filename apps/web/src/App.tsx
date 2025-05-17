@@ -26,8 +26,6 @@ const UpcomingLessons = lazy(() => import("@/pages/UpcomingLessons"));
 const Plans = lazy(() => import("@/pages/Plans"));
 const PlansV2 = lazy(() => import("@/pages/PlansV2"));
 const Lesson = lazy(() => import("@/pages/Lesson"));
-const LessonV2 = lazy(() => import("@/pages/LessonV2"));
-const LessonV3 = lazy(() => import("@/pages/LessonV3"));
 const TutorSettings = lazy(() => import("@/pages/TutorSettings"));
 const ScheduleManagement = lazy(() => import("@/pages/ScheduleManagement"));
 const ForgetPassword = lazy(() => import("@/pages/ForgetPassword"));
@@ -72,8 +70,6 @@ const router = createRouter([
       { path: Web.Tutors, element: <Tutors /> },
       { path: Web.UpcomingLessons, element: <UpcomingLessons /> },
       { path: Web.Lesson, element: <Lesson /> },
-      { path: Web.LessonV2, element: <LessonV2 /> },
-      { path: Web.LessonV3, element: <LessonV3 /> },
       { path: Web.VerifyEmail, element: <VerifyEmail /> },
       { path: Web.ForgetPassword, element: <ForgetPassword /> },
       { path: Web.CardAdded, element: <CardAdded /> },

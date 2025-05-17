@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
-import Stream from "@/components/SessionV3/Stream";
+import Stream from "@/components/Session/Stream";
 import { Movable } from "@litespace/ui/Movable";
 import { Layout } from "@litespace/headless/sessions";
-import { TrackReference } from "@/components/SessionV3/types";
+import { TrackReference } from "@/components/Session/types";
 
 const VideoStreams: React.FC<{
   selfTrackRef: TrackReference | null;
@@ -77,7 +77,7 @@ const VideoStreams: React.FC<{
             container={ref}
             className="absolute bottom-4 right-4 z-session-movable-stream shadow-session-movable-stream rounded-lg"
           >
-            <div className="w-32 md:w-60">
+            <div className="w-32 md:w-60 lg:w-72 aspect-mobile md:aspect-desktop">
               <Stream
                 trackRef={selfTrackRef}
                 userId={selfId}

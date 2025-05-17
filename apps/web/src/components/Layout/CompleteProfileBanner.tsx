@@ -47,7 +47,7 @@ const CompleteProfileBanner: React.FC = () => {
       Web.Register,
       Web.CompleteProfile,
     ];
-    return routes.some((route) => router.isMatch.web(route, location.pathname));
+    return routes.some((route) => router.match(route, location.pathname));
   }, [location.pathname]);
 
   if (isOnboarded || !isTutor || ignoreRoute) return null;

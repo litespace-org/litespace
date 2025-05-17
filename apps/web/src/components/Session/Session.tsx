@@ -1,130 +1,99 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import Stream from "@/components/Session/Stream";
-import Controllers, { Controller } from "@/components/Session/Controllers";
+import {
+  useConnectionState,
+  useLocalParticipant,
+  useRemoteParticipant,
+  useTracks,
+} from "@livekit/components-react";
+import { ConnectionState, Track } from "livekit-client";
+import React, { useMemo } from "react";
+import {
+  LocalMember,
+  RemoteMember,
+  TrackReference,
+} from "@/components/Session/types";
+import VideoStreams from "@/components/Session/VideoStreams";
+import { nullable } from "@litespace/utils";
+import { Layout } from "@litespace/headless/sessions";
+import { simulateMobile } from "@/lib/window";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import AudioStreams from "@/components/Session/AudioStreams";
+import Controllers from "@/components/Session/Controllers";
 import { Void } from "@litespace/types";
-import { Movable } from "@litespace/ui/Movable";
-import { useSearchParams } from "react-router-dom";
-import { first } from "lodash";
-import { Layout, layoutAspectRatio } from "@litespace/headless/sessions";
+import {
+  useAudioController,
+  useBlurController,
+  useVideoController,
+} from "@/components/Session/room";
 
 const Session: React.FC<{
-  selfStream: MediaStream;
-  selfId: number;
-  selfName: string | null;
-  selfImage: string | null;
-  selfAudio: boolean;
-  selfVideo: boolean;
-  selfSpeaking: boolean;
-  memberStream: MediaStream | null;
-  memberId: number;
-  memberName: string | null;
-  memberImage: string | null;
-  memberAudio: boolean;
-  memberVideo: boolean;
-  memberSpeaking: boolean;
-  connecting: boolean;
-  audioController: Controller;
-  videoController: Controller;
-  layout: Layout;
+  localMember: LocalMember;
+  remoteMember: RemoteMember;
   leave: Void;
-}> = ({
-  selfStream,
-  selfId,
-  selfImage,
-  selfName,
-  selfAudio,
-  selfVideo,
-  selfSpeaking,
-  memberStream,
-  memberId,
-  memberImage,
-  memberName,
-  memberAudio,
-  memberVideo,
-  memberSpeaking,
-  audioController,
-  videoController,
-  connecting,
-  layout,
-  leave,
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [params, setParams] = useSearchParams();
+}> = ({ localMember, remoteMember, leave }) => {
+  const mq = useMediaQuery();
+  const videoTracks = useTracks([Track.Source.Camera]);
+  const localParticipant = useLocalParticipant();
+  const remoteParticipant = useRemoteParticipant(remoteMember.id.toString());
+  const connectionState = useConnectionState();
+  const blurController = useBlurController();
+  const videoController = useVideoController();
+  const audioController = useAudioController();
 
-  /**
-   * Based on the desing, the session should not have any navigation.
-   */
-  useEffect(() => {
-    if (params.get("nav") !== "false") setParams({ nav: "false" });
-  }, [params, setParams]);
+  const videoTrackRef = useMemo(() => {
+    const local = videoTracks.find(
+      (track: TrackReference) => track.participant.isLocal
+    ) as TrackReference | undefined;
 
-  const movableStreamAspectRatio = useMemo(() => {
-    const defaultAspectRatio = layoutAspectRatio[layout].aspectRatio;
-    const track = first(selfStream.getVideoTracks());
-    return track?.getSettings().aspectRatio || defaultAspectRatio;
-  }, [layout, selfStream]);
+    const remote = videoTracks.find(
+      (track: TrackReference) => !track.participant.isLocal
+    ) as TrackReference | undefined;
+
+    return {
+      local: nullable(local),
+      remote: nullable(remote),
+    };
+  }, [videoTracks]);
+
+  const layout = useMemo((): Layout => {
+    if (simulateMobile()) return "simulated-mobile";
+    if (mq.xl) return "desktop";
+    if (mq.sm) return "tablet";
+    return "mobile";
+  }, [mq.sm, mq.xl]);
 
   return (
-    <div className="h-full flex flex-col gap-4">
-      <div
-        className="flex-1 relative flex flex-col items-center justify-center gap-4"
-        ref={ref}
-      >
-        {memberStream ? (
-          <Stream
-            stream={memberStream}
-            userId={memberId}
-            userImage={memberImage}
-            userName={memberName}
-            audio={memberAudio}
-            video={memberVideo}
-            speaking={memberSpeaking}
-            loading={connecting}
-            size="lg"
-          />
-        ) : (
-          <Stream
-            stream={selfStream}
-            userId={selfId}
-            userImage={selfImage}
-            userName={selfName}
-            audio={selfAudio}
-            video={selfVideo}
-            speaking={selfSpeaking}
-            size="lg"
-            muted
-          />
-        )}
+    <div className="h-full flex flex-col gap-10">
+      <div className="h-[calc(100%-40px)]">
+        <VideoStreams
+          selfTrackRef={videoTrackRef.local}
+          selfId={localMember.id}
+          selfName={localMember.name}
+          selfImage={localMember.image}
+          selfAudio={localParticipant.isMicrophoneEnabled}
+          selfVideo={localParticipant.isCameraEnabled}
+          selfSpeaking={localParticipant.localParticipant.isSpeaking}
+          memberTrackRef={videoTrackRef.remote}
+          memberId={remoteMember.id}
+          memberImage={remoteMember.image}
+          memberName={remoteMember.name}
+          memberAudio={!!remoteParticipant?.isMicrophoneEnabled}
+          memberVideo={!!remoteParticipant?.isCameraEnabled}
+          memberSpeaking={!!remoteParticipant?.isSpeaking}
+          connecting={
+            connectionState === ConnectionState.Connecting ||
+            connectionState === ConnectionState.Reconnecting
+          }
+          layout={layout}
+        />
 
-        {memberStream ? (
-          <Movable
-            container={ref}
-            className="absolute bottom-4 right-4 z-session-movable-stream shadow-session-movable-stream rounded-lg"
-          >
-            <div
-              className="w-32 md:w-60"
-              style={{ aspectRatio: movableStreamAspectRatio }}
-            >
-              <Stream
-                stream={selfStream}
-                userId={selfId}
-                userImage={selfImage}
-                userName={selfName}
-                audio={selfAudio}
-                video={selfVideo}
-                speaking={selfSpeaking}
-                size="sm"
-                muted
-              />
-            </div>
-          </Movable>
-        ) : null}
+        <AudioStreams />
       </div>
 
       <Controllers
+        leave={leave}
         audio={audioController}
         video={videoController}
-        leave={leave}
+        blur={blurController}
       />
     </div>
   );

@@ -1,14 +1,7 @@
 import { Dashboard, Landing, Web } from "@/routes/route";
 import { Env, IPlan, ISession, IShortUrl } from "@litespace/types";
 import { clients } from "@/routes/clients";
-
-function isStrictMatch(
-  base: Web | Landing | Dashboard,
-  target: string
-): boolean {
-  const regex = new RegExp(base);
-  return regex.test(target);
-}
+import { asRegex } from "@/routes/utils";
 
 function withUrl({
   client,
@@ -154,38 +147,9 @@ export type UrlParamsOf<T extends Web | Landing | Dashboard> = Omit<
 export class RoutesManager {
   constructor(public readonly client: Env.Client) {}
 
-  public readonly isMatch = {
-    web(base: Web, target: string): boolean {
-      // Ref: https://regex101.com/r/8Y2LKA/1
-      if (base === Web.Register)
-        return /^\/register\/(tutor|student)\/?$/.test(target);
-
-      // Ref: https://regex101.com/r/a1B4Dw/1
-      if (base === Web.TutorProfile) return /\/?t\/([^/]+)\/?$/.test(target);
-
-      // Ref: https://regex101.com/r/f36T16/1
-      if (base === Web.Lesson) return /^\/?lesson\/([^/]+)\/?$/.test(target);
-
-      if (base === Web.LessonV2)
-        return /^\/?lesson-v2\/([^/]+)\/?$/.test(target);
-
-      if (base === Web.LessonV3)
-        return /^\/?lesson-v3\/([^/]+)\/?$/.test(target);
-
-      if (base === Web.Checkout)
-        return /^\/?checkout\/([^/]+)\/([^/]+)\/?$/.test(target);
-
-      return isStrictMatch(base, target);
-    },
-    landing(base: Landing, target: string): boolean {
-      return isStrictMatch(base, target);
-    },
-    dashboard(base: Dashboard, target: string): boolean {
-      // https://regex101.com/r/20073X/1
-      if (base === Dashboard.User) return /\/?user\/([^/]+)\/?/.test(target);
-      return isStrictMatch(base, target);
-    },
-  };
+  match(base: Web | Dashboard | Landing, path: string): boolean {
+    return asRegex(base).test(path);
+  }
 
   private make({
     full,

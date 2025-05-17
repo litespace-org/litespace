@@ -65,6 +65,11 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 :root {
+  --web-navbar-height-mobile: 72px;
+  --web-navbar-height-desktop: 88px;
+}
+
+:root {
   --colors-black: 0deg 0% 0%;
   --colors-white: 0deg 0% 100%;
   --colors-gray-dark-100: 0deg 0% 8.6%;
