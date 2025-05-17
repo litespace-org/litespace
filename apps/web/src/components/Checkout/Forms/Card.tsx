@@ -167,7 +167,7 @@ const Payment: React.FC<{
         className="flex flex-col gap-6"
       >
         <div className="flex flex-col gap-4">
-          <Typography tag="p" className="text-body font-medium">
+          <Typography tag="p" className="text-caption md:text-body font-medium">
             {intl("checkout.payment.description")}
           </Typography>
 
@@ -200,7 +200,10 @@ const Payment: React.FC<{
                 onClick={() => setShowAddCardTokenDialog(true)}
                 className="ms-4 flex-shrink-0"
               >
-                <Typography tag="span" className="text-body font-medium">
+                <Typography
+                  tag="span"
+                  className="text-caption md:text-body font-medium"
+                >
                   {intl("checkout.payment.card.add-card")}
                 </Typography>
               </Button>
@@ -249,7 +252,9 @@ const Payment: React.FC<{
           disabled={payWithCard.isPending}
           loading={payWithCard.isPending}
         >
-          {intl("checkout.payment.confirm")}
+          <Typography tag="span" className="text text-body font-medium">
+            {intl("checkout.payment.confirm")}
+          </Typography>
         </Button>
 
         <Typography tag="p" className="text-tiny font-normal">

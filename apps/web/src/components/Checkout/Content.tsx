@@ -42,7 +42,7 @@ const Content: React.FC<{
   });
 
   return (
-    <div className="h-full gap-8 flex flex-col items-center mt-[15vh]">
+    <div className="h-full gap-8 flex flex-col items-center mt-0 md:mt-[8vh] lg:mt-[15vh] mx-auto">
       <Header />
       <Body
         subscribed={!!subscription}
