@@ -10,6 +10,9 @@ import {
   isValidTutorAbout as isValidTutorAboutBase,
   isValidTutorBio as isValidTutorBioBase,
   isValidConfirmationCode as isValidConfirmationCodeBase,
+  isValidPlanWeeklyMinutes as isValidPlanWeeklyMinutesBase,
+  isValidPrice as isValidPriceBase,
+  isValidPlanDiscount as isValidPlanDiscountBase,
 } from "@litespace/utils/validation";
 
 export function validateText({
@@ -89,4 +92,24 @@ export function isValidConfirmationCode(code: number): LocalId | null {
   const valid = isValidConfirmationCodeBase(code);
   if (valid === true) return null;
   return "error.confirmation-code.invalid";
+}
+
+export function isValidPlanWeeklyMinutes(
+  weeklyMinutes: number
+): LocalId | null {
+  const valid = isValidPlanWeeklyMinutesBase(weeklyMinutes);
+  if (valid === true) return null;
+  return "error.plans.weekly-minutes.invalid";
+}
+
+export function isValidPrice(price: number): LocalId | null {
+  const valid = isValidPriceBase(price);
+  if (valid === true) return null;
+  return "error.plans.price";
+}
+
+export function isValidPlanDiscount(discount: number): LocalId | null {
+  const valid = isValidPlanDiscountBase(discount);
+  if (valid === true) return null;
+  return "error.plans.discount";
 }
