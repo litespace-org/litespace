@@ -28,17 +28,23 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
 
   return (
     <div className="flex flex-col gap-4 py-6 rounded-2xl border border-natural-100">
-      <Typography tag="h1" className="text-subtitle-1 font-bold px-6">
+      <Typography
+        tag="h1"
+        className="text-body lg:text-subtitle-1 font-bold px-6"
+      >
         {intl("checkout.plan.summary")}
       </Typography>
 
       <div className="flex flex-col gap-2 px-6">
-        <Typography tag="h2" className="text-subtitle-2 font-semibold">
+        <Typography
+          tag="h2"
+          className="text-caption lg:text-subtitle-2 font-bold lg:font-semibold"
+        >
           {intl(PLAN_PERIOD_LITERAL_TO_MESSAGE_ID[period])}
         </Typography>
         <Typography
           tag="span"
-          className="text-caption lg:text-body font-normal"
+          className="text-caption lg:text-body font-medium md:font-normal"
         >
           {intl("checkout.plan.houry-quota", {
             hours: formatMinutes(data.weeklyMinutes),
@@ -51,13 +57,13 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
         <div className="flex justify-between mx-6">
           <Typography
             tag="span"
-            className="text-caption lg:text-body font-normal"
+            className="text-caption lg:text-body font-semibold md:font-normal"
           >
             {intl("checkout.plan.month-price")}
           </Typography>
           <Typography
             tag="span"
-            className="text-caption lg:text-body font-normal"
+            className="text-caption lg:text-body font-semibold md:font-normal"
           >
             {intl("checkout.plan.price", {
               price: formatNumber(price.unscale(data.baseMonthlyPrice)),
@@ -67,13 +73,13 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
         <div className="flex justify-between mx-6">
           <Typography
             tag="span"
-            className="text-caption lg:text-body font-normal"
+            className="text-caption lg:text-body font-semibold md:font-normal"
           >
             {intl("checkout.plan.total-price-before-discount")}
           </Typography>
           <Typography
             tag="span"
-            className="text-caption lg:text-body font-normal"
+            className="text-caption lg:text-body font-semibold md:font-normal"
           >
             {intl("checkout.plan.price", {
               price: formatNumber(
@@ -85,7 +91,10 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
       </div>
 
       <div className="flex justify-between px-6 mt-2 mb-4">
-        <Typography tag="span" className="text-caption lg:text-body font-bold">
+        <Typography
+          tag="span"
+          className="text-caption lg:text-body font-semibold md:font-bold"
+        >
           {intl("checkout.plan.total-price-after-discount")}
         </Typography>
         <Typography tag="span" className="text-caption lg:text-body font-bold">
@@ -97,7 +106,9 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
 
       <Link to={Web.PlansV2} className="px-6" tabIndex={-1}>
         <Button type="main" size="large" variant="secondary" className="w-full">
-          {intl("checkout.plan.change-plan")}
+          <Typography tag="span" className="text text-caption font-semibold">
+            {intl("checkout.plan.change-plan")}
+          </Typography>
         </Button>
       </Link>
     </div>
