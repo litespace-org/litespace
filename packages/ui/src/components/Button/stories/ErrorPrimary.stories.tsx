@@ -93,4 +93,14 @@ export const WithOnlyIcon: StoryObj<typeof Button> = {
   },
 };
 
+export const LocadingIconOnly: StoryObj<typeof Button> = {
+  args: {
+    endIcon: <Home className="icon" />,
+    type: "error",
+    variant: "primary",
+    size: "large",
+    loading: true,
+  },
+};
+
 export default meta;

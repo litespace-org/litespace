@@ -93,6 +93,7 @@
     "./Fawry": "./dist/Fawry.tsx",
     "./FullScreen": "./dist/FullScreen.tsx",
     "./Google": "./dist/Google.tsx",
+    "./Grid": "./dist/Grid.tsx",
     "./Home": "./dist/Home.tsx",
     "./Illustration": "./dist/Illustration.tsx",
     "./Info": "./dist/Info.tsx",

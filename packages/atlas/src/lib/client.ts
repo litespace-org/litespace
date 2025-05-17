@@ -20,18 +20,19 @@ export const sockets: Record<
   Record<Env.Server, string>
 > = {
   main: {
-    local: `ws://localhost:4000`,
+    local: "ws://localhost:4000",
     staging: "wss://api.staging.litespace.org",
     production: "wss://api.litespace.org",
   },
   echo: {
-    local: `ws://localhost:4004`,
+    local: "ws://localhost:4004",
     staging: "wss://echo.staging.litespace.org",
     production: "wss://echo.litespace.org",
   },
   livekit: {
-    local: `ws://localhost:7880`,
-    staging: "wss://livekit.staging.litespace.org",
+    local: "ws://localhost:7880",
+    // TODO: add livekit staging server
+    staging: "wss://livekit.litespace.org",
     production: "wss://livekit.litespace.org",
   },
 } as const;

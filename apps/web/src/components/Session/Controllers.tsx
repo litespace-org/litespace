@@ -1,18 +1,28 @@
 import { Void } from "@litespace/types";
+import { Button, ButtonType, ButtonVariant } from "@litespace/ui/Button";
 import React, { useMemo } from "react";
 import CallIncoming from "@litespace/assets/CallIncoming";
-import { Button, ButtonType, ButtonVariant } from "@litespace/ui/Button";
-import Microphone from "@litespace/assets/Microphone";
-import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Video from "@litespace/assets/Video";
+import Grid from "@litespace/assets/Grid";
 import VideoSlash from "@litespace/assets/VideoSlash";
 import CastScreen from "@litespace/assets/CastScreen";
 import Chat from "@litespace/assets/Chat";
+import Microphone from "@litespace/assets/Microphone";
+import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Error from "@litespace/assets/Error";
 import cn from "classnames";
 
-type Icon = "microphone" | "camera" | "screen" | "chat";
-const iconsMap: Record<
+type Icon = "microphone" | "camera" | "blur" | "screen" | "chat";
+
+export type Controller = {
+  toggle: Void;
+  enabled: boolean;
+  error?: boolean;
+  loading?: boolean;
+  disabled?: boolean;
+};
+
+const ICON_MAP: Record<
   Icon,
   {
     on: React.FC<{ className?: string }>;
@@ -21,17 +31,19 @@ const iconsMap: Record<
 > = {
   microphone: { on: Microphone, off: MicrophoneSlash },
   camera: { on: Video, off: VideoSlash },
+  blur: { on: Grid, off: Grid },
   screen: { on: CastScreen, off: CastScreen },
   chat: { on: Chat, off: Chat },
 };
 
-export const Toggle: React.FC<{
-  toggle: Void;
-  enabled: boolean;
-  icon: Icon;
-  error?: boolean;
-}> = ({ toggle, icon, enabled, error = false }) => {
-  const icons = useMemo(() => iconsMap[icon], [icon]);
+export const Toggle: React.FC<Controller & { icon: Icon }> = ({
+  toggle,
+  icon,
+  enabled,
+  loading,
+  error = false,
+}) => {
+  const icons = useMemo(() => ICON_MAP[icon], [icon]);
   const { varient, type } = useMemo((): {
     varient: ButtonVariant;
     type: ButtonType;
@@ -60,6 +72,8 @@ export const Toggle: React.FC<{
         variant={varient}
         onClick={toggle}
         size="large"
+        loading={loading}
+        disabled={loading}
       />
       {error ? (
         <div
@@ -75,55 +89,40 @@ export const Toggle: React.FC<{
   );
 };
 
-export type Controller = {
-  toggle: Void;
-  enabled: boolean;
-  error?: boolean;
-};
-
 const Controllers: React.FC<{
-  chat?: Controller;
-  screen?: Controller;
-  video?: Controller;
-  audio?: Controller;
+  audio: Controller;
+  video: Controller;
+  blur?: Controller;
   leave?: Void;
-}> = ({ leave, chat, screen, video, audio }) => {
+}> = ({ audio, video, blur, leave }) => {
   return (
-    <div
-      dir="ltr"
-      className={cn("flex justify-center", {
-        "gap-[22px] md:gap-6": leave,
-        "gap-6": !leave,
-      })}
-    >
-      {chat ? (
-        <Toggle toggle={chat.toggle} enabled={chat.enabled} icon="chat" />
-      ) : null}
+    <div dir="ltr" className="flex items-center justify-center gap-6">
+      <Toggle
+        toggle={audio.toggle}
+        enabled={audio.enabled}
+        error={audio.error}
+        loading={audio.loading}
+        disabled={audio.disabled}
+        icon="microphone"
+      />
 
-      {audio ? (
-        <Toggle
-          toggle={audio.toggle}
-          enabled={audio.enabled}
-          error={audio.error}
-          icon="microphone"
-        />
-      ) : null}
+      <Toggle
+        toggle={video.toggle}
+        enabled={video.enabled}
+        error={video.error}
+        loading={video.loading}
+        disabled={video.disabled}
+        icon="camera"
+      />
 
-      {video ? (
+      {blur ? (
         <Toggle
-          toggle={video.toggle}
-          enabled={video.enabled}
-          error={video.error}
-          icon="camera"
-        />
-      ) : null}
-
-      {screen ? (
-        <Toggle
-          toggle={screen.toggle}
-          enabled={screen.enabled}
-          error={screen.error}
-          icon="screen"
+          toggle={blur.toggle}
+          enabled={blur.enabled}
+          error={blur.error}
+          loading={blur.loading}
+          disabled={blur.disabled}
+          icon="blur"
         />
       ) : null}
 

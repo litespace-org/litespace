@@ -83,8 +83,7 @@ const Sidebar: React.FC = () => {
   const { user, logout } = useUserContext();
 
   const mainPages: LinkInfo[] = useMemo(() => {
-    const match = (route: Dashboard) =>
-      router.isMatch.dashboard(route, location.pathname);
+    const match = (route: Dashboard) => router.match(route, location.pathname);
 
     const photoSession: LinkInfo = {
       label: intl("dashboard.sidebar.photo-sessions"),

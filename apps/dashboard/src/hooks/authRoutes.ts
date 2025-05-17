@@ -85,7 +85,7 @@ export function useAuthRoutes() {
     const pathname = location.pathname;
 
     for (const [route, config] of entries(routeConfigMap)) {
-      const active = router.isMatch.dashboard(route as Dashboard, pathname);
+      const active = router.match(route as Dashboard, pathname);
       if (active) return config;
     }
 
