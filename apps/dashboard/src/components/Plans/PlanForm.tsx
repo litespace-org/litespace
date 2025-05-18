@@ -1,50 +1,96 @@
-import { useCreatePlan, useUpdatePlan } from "@litespace/headless/plans";
-import { formatCurrency } from "@litespace/ui/utils";
+import { useCreatePlan } from "@litespace/headless/plans";
 import { Button } from "@litespace/ui/Button";
-import { Controller, Field, Form, Label } from "@litespace/ui/Form";
+import { Dialog } from "@litespace/ui/Dialog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
-import { Dialog } from "@litespace/ui/Dialog";
-import { Duration } from "@litespace/utils/duration";
-import { percentage, price } from "@litespace/utils/value";
 import { IPlan, Void } from "@litespace/types";
-import React, { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import React, { useCallback, useMemo } from "react";
+import AddCircle from "@litespace/assets/AddCircle";
+import { useForm } from "@litespace/headless/form";
+import { useMakeValidators } from "@litespace/ui/hooks/validation";
+import {
+  isValidPlanDiscount,
+  isValidPlanWeeklyMinutes,
+  isValidPrice,
+} from "@litespace/ui/lib/validate";
+import { NumericInput } from "@litespace/ui/NumericInput";
+import { Typography } from "@litespace/ui/Typography";
+import { formatNumber } from "@litespace/ui/utils";
+import {
+  MAX_DISCOUNT_VALUE,
+  MIN_DISCOUNT_VALUE,
+  MINUTES_IN_WEEK,
+  MONTHS_IN_QUARTER,
+  MONTHS_IN_YEAR,
+  percentage,
+  price,
+} from "@litespace/utils";
 
 type IForm = {
-  weeklyMinutes: Duration;
+  weeklyMinutes: number;
   baseMonthlyPrice: number; // scaled
   monthDiscount: number; // scaled
   quarterDiscount: number; // scaled
   yearDiscount: number; // scaled
-  forInvitesOnly: boolean;
-  active: boolean;
 };
 
-function formatPriceAfterDiscount(price: number, discount: number): string {
-  if (discount < 0 || discount > 100) return "-";
+function calcPriceAfterDiscount(
+  price: number,
+  discount: number
+): number | null {
+  if (discount < 0 || discount > 100) return null;
   const afterDiscount = price - (price * discount) / 100;
-  return formatCurrency(afterDiscount);
+  return afterDiscount;
 }
 
 const PlanForm: React.FC<{
   open: boolean;
+  refetch: Void;
   close: Void;
-  refresh: Void;
-  plan?: IPlan.Self;
-  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ open, plan, close, refresh, setOpen }) => {
+}> = ({ open, refetch, close }) => {
   const intl = useFormatMessage();
   const toast = useToast();
+
+  const validators = useMakeValidators<IForm>({
+    weeklyMinutes: {
+      required: true,
+      validate: isValidPlanWeeklyMinutes,
+    },
+    baseMonthlyPrice: {
+      required: true,
+      validate: isValidPrice,
+    },
+    monthDiscount: {
+      validate: isValidPlanDiscount,
+    },
+    quarterDiscount: {
+      validate: isValidPlanDiscount,
+    },
+    yearDiscount: {
+      validate: isValidPlanDiscount,
+    },
+  });
+
   const form = useForm<IForm>({
-    defaultValues: {
-      weeklyMinutes: Duration.from(plan ? plan.weeklyMinutes.toString() : "0"),
-      baseMonthlyPrice: plan ? price.unscale(plan.baseMonthlyPrice) : 0,
-      monthDiscount: plan ? percentage.unscale(plan.monthDiscount) : 0,
-      quarterDiscount: plan ? price.unscale(plan.quarterDiscount) : 0,
-      yearDiscount: plan ? percentage.unscale(plan.yearDiscount) : 0,
-      forInvitesOnly: plan ? plan.forInvitesOnly : false,
-      active: plan ? plan.active : false,
+    defaults: {
+      weeklyMinutes: 0,
+      baseMonthlyPrice: 0,
+      monthDiscount: 0,
+      quarterDiscount: 0,
+      yearDiscount: 0,
+    },
+    validators,
+    onSubmit(data) {
+      const payload: IPlan.CreatePayload = {
+        weeklyMinutes: data.weeklyMinutes,
+        baseMonthlyPrice: price.scale(data.baseMonthlyPrice), // scaled
+        monthDiscount: percentage.scale(data.monthDiscount), // scaled
+        quarterDiscount: percentage.scale(data.quarterDiscount), // scaled
+        yearDiscount: percentage.scale(data.yearDiscount),
+        active: false,
+        forInvitesOnly: false,
+      };
+      createPlan.mutate(payload);
     },
   });
 
@@ -55,165 +101,209 @@ const PlanForm: React.FC<{
 
   const onSuccess = useCallback(() => {
     toast.success({
-      title: intl(
-        plan
-          ? "dashboard.plan.form.update.success"
-          : "dashboard.plan.form.create.success"
-      ),
+      title: intl("dashboard.plan.form.create.success"),
     });
-    refresh();
+    refetch();
     onClose();
-  }, [intl, onClose, plan, refresh, toast]);
+  }, [intl, onClose, refetch, toast]);
 
   const onError = useCallback(
     (error: Error) => {
       toast.error({
-        title: intl(
-          plan
-            ? "dashboard.plan.form.update.error"
-            : "dashboard.plan.form.create.error"
-        ),
+        title: intl("dashboard.plan.form.create.error"),
         description: error.message,
       });
     },
-    [intl, plan, toast]
+    [intl, toast]
   );
 
   const createPlan = useCreatePlan({ onSuccess, onError });
-  const updatePlan = useUpdatePlan({ onSuccess, onError });
 
-  const onSubmit = useCallback(
-    (data: IForm) => {
-      const payload = {
-        active: data.active,
-        weeklyMinutes: data.weeklyMinutes.minutes(),
-        forInvitesOnly: data.forInvitesOnly,
-        baseMonthlyPrice: price.scale(data.baseMonthlyPrice),
-        monthDiscount: percentage.scale(data.monthDiscount),
-        quarterDiscount: price.scale(data.quarterDiscount),
-        yearDiscount: percentage.scale(data.yearDiscount),
-      };
-      if (plan) updatePlan.mutate({ id: plan.id, payload });
-      else createPlan.mutate(payload);
-    },
-    [createPlan, plan, updatePlan]
-  );
+  const monthHelperText = useMemo(() => {
+    const priceAfterdiscount = calcPriceAfterDiscount(
+      form.state.baseMonthlyPrice,
+      form.state.monthDiscount
+    );
+    if (!priceAfterdiscount) return;
+    if (form.state.baseMonthlyPrice && form.state.monthDiscount)
+      return intl("dashboard.plan.price-after-discount", {
+        value: formatNumber(priceAfterdiscount),
+      });
+  }, [form.state.baseMonthlyPrice, form.state.monthDiscount, intl]);
+
+  const quarterHelperText = useMemo(() => {
+    const totalPrice = form.state.baseMonthlyPrice * MONTHS_IN_QUARTER;
+    const priceAfterdiscount = calcPriceAfterDiscount(
+      totalPrice,
+      form.state.quarterDiscount
+    );
+    const monthPriceAfterDiscount = priceAfterdiscount
+      ? priceAfterdiscount / MONTHS_IN_QUARTER
+      : null;
+    if (!monthPriceAfterDiscount) return;
+    if (form.state.baseMonthlyPrice && form.state.quarterDiscount)
+      return intl("dashboard.plan.price-after-discount", {
+        value: formatNumber(monthPriceAfterDiscount),
+      });
+  }, [form.state.baseMonthlyPrice, form.state.quarterDiscount, intl]);
+
+  const yearHelperText = useMemo(() => {
+    const totalPrice = form.state.baseMonthlyPrice * MONTHS_IN_YEAR;
+    const priceAfterDiscount = calcPriceAfterDiscount(
+      totalPrice,
+      form.state.yearDiscount
+    );
+    const monthPriceAfterDiscount = priceAfterDiscount
+      ? priceAfterDiscount / MONTHS_IN_YEAR
+      : null;
+    if (!monthPriceAfterDiscount) return;
+    if (form.state.baseMonthlyPrice && form.state.yearDiscount)
+      return intl("dashboard.plan.price-after-discount", {
+        value: formatNumber(monthPriceAfterDiscount),
+      });
+  }, [form.state.baseMonthlyPrice, form.state.yearDiscount, intl]);
 
   return (
     <Dialog
-      close={onClose}
-      title={intl("dashboard.plan.form.create")}
       open={open}
-      setOpen={setOpen}
+      close={onClose}
+      title={
+        <div className="flex gap-2 items-center">
+          <AddCircle className="w-6 h-6 [&>*]:stroke-natural-950" />
+          <Typography tag="span" className="text-subtitle-2 font-bold">
+            {intl("dashboard.plans.create-plan.title")}
+          </Typography>
+        </div>
+      }
+      className="focus-visible:outline-none"
     >
-      <Form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="min-w-96 max-h-[32rem] overflow-y-auto scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
-      >
-        <div>
-          <Field
-            className="mb-1"
-            label={<Label>{intl("dashboard.plan.weeklyMinutes")}</Label>}
-            field={
-              <Controller.Duration
-                control={form.control}
-                name="weeklyMinutes"
-                value={form.watch("weeklyMinutes")}
-              />
+      <form onSubmit={form.onSubmit} className="min-w-[512px]">
+        <div className="py-6 flex flex-col gap-4">
+          <NumericInput
+            label={intl("dashboard.plan.weekly-minutes.label")}
+            placeholder={intl("dashboard.plan.weekly-minutes.placeholder")}
+            onValueChange={({ value }) =>
+              form.set("weeklyMinutes", parseInt(value))
             }
+            value={form.state.weeklyMinutes}
+            autoComplete="off"
+            dir="rtl"
+            state={form.errors.weeklyMinutes ? "error" : undefined}
+            helper={form.errors.weeklyMinutes}
+            thousandSeparator=","
+            decimalScale={0}
+            isAllowed={(values) => {
+              const { floatValue = 0 } = values;
+              return floatValue < MINUTES_IN_WEEK && floatValue > 0;
+            }}
           />
-          <div className="flex justify-around gap-3 mb-1">
-            <Field
-              label={<Label>{intl("dashboard.plan.fullMonthPrice")}</Label>}
-              field={
-                <Controller.NumericInput
-                  control={form.control}
-                  name="baseMonthlyPrice"
-                  value={form.watch("baseMonthlyPrice")}
-                  allowNegative={false}
-                  decimalScale={2}
-                  prefix="EGP "
-                  thousandSeparator=","
-                />
-              }
-            />
-            <Field
-              label={<Label>{intl("dashboard.plan.fullMonthDiscount")}</Label>}
-              field={
-                <Controller.NumericInput
-                  control={form.control}
-                  name="monthDiscount"
-                  value={form.watch("monthDiscount")}
-                  allowNegative={false}
-                  decimalScale={2}
-                  prefix={`(${formatPriceAfterDiscount(
-                    form.watch("monthDiscount"),
-                    form.watch("monthDiscount")
-                  )}) % `}
-                />
-              }
-            />
-          </div>
-          <Field
-            label={<Label>{intl("dashboard.plan.fullQuarterDiscount")}</Label>}
-            field={
-              <Controller.NumericInput
-                control={form.control}
-                name="quarterDiscount"
-                value={form.watch("quarterDiscount")}
-                allowNegative={false}
-                decimalScale={2}
-                prefix={`(${formatPriceAfterDiscount(
-                  form.watch("quarterDiscount"),
-                  form.watch("quarterDiscount")
-                )}) % `}
-              />
+          <NumericInput
+            label={intl("dashboard.plan.full-month-price")}
+            placeholder={intl("dashboard.plan.full-month-price.placeholder")}
+            onValueChange={({ value }) =>
+              form.set("baseMonthlyPrice", parseInt(value))
             }
+            value={form.state.baseMonthlyPrice}
+            autoComplete="off"
+            dir="rtl"
+            state={form.errors.baseMonthlyPrice ? "error" : undefined}
+            helper={form.errors.baseMonthlyPrice}
+            allowNegative={false}
+            decimalScale={2}
+            thousandSeparator=","
+          />
+          <NumericInput
+            label={intl("dashboard.plan.full-month-discount")}
+            placeholder={intl("placeholder.percent")}
+            onChange={(e) =>
+              form.set(
+                "monthDiscount",
+                parseInt(e.target.value.replace("%", ""))
+              )
+            }
+            value={form.state.monthDiscount}
+            autoComplete="off"
+            dir="rtl"
+            state={form.errors.monthDiscount ? "error" : undefined}
+            helper={form.errors.monthDiscount || monthHelperText}
+            prefix="%"
+            decimalScale={2}
+            isAllowed={(values) => {
+              const { floatValue = 0 } = values;
+              return (
+                floatValue < MAX_DISCOUNT_VALUE &&
+                floatValue >= MIN_DISCOUNT_VALUE
+              );
+            }}
+          />
+          <NumericInput
+            label={intl("dashboard.plan.full-quarter-discount")}
+            placeholder={intl("placeholder.percent")}
+            onChange={(e) =>
+              form.set(
+                "quarterDiscount",
+                parseInt(e.target.value.replace("%", ""))
+              )
+            }
+            value={form.state.quarterDiscount}
+            autoComplete="off"
+            dir="rtl"
+            state={form.errors.quarterDiscount ? "error" : undefined}
+            helper={form.errors.quarterDiscount || quarterHelperText}
+            prefix="%"
+            isAllowed={(values) => {
+              const { floatValue = 0 } = values;
+              return (
+                floatValue < MAX_DISCOUNT_VALUE &&
+                floatValue >= MIN_DISCOUNT_VALUE
+              );
+            }}
+          />
+          <NumericInput
+            label={intl("dashboard.plan.full-year-discount")}
+            placeholder={intl("placeholder.percent")}
+            onChange={(e) =>
+              form.set(
+                "yearDiscount",
+                parseInt(e.target.value.replace("%", ""))
+              )
+            }
+            value={form.state.yearDiscount}
+            autoComplete="off"
+            dir="rtl"
+            state={form.errors.yearDiscount ? "error" : undefined}
+            helper={form.errors.yearDiscount || yearHelperText}
+            prefix="%"
+            isAllowed={(values) => {
+              const { floatValue = 0 } = values;
+              return (
+                floatValue < MAX_DISCOUNT_VALUE &&
+                floatValue >= MIN_DISCOUNT_VALUE
+              );
+            }}
           />
         </div>
-        <div className="flex justify-around gap-3 mb-1">
-          <Field
-            label={<Label>{intl("dashboard.plan.halfYearDiscount")}</Label>}
-            field={
-              <Controller.NumericInput
-                control={form.control}
-                name="yearDiscount"
-                value={form.watch("yearDiscount")}
-                allowNegative={false}
-                prefix={`(${formatPriceAfterDiscount(
-                  form.watch("yearDiscount"),
-                  form.watch("yearDiscount")
-                )}) % `}
-                max={100}
-                decimalScale={2}
-              />
-            }
-          />
+        <div className="flex gap-6">
+          <Button
+            size="large"
+            loading={createPlan.isPending}
+            disabled={createPlan.isPending}
+            htmlType="submit"
+            className="flex-1"
+          >
+            {intl("dashboard.plans.create-plan.btn")}
+          </Button>
+          <Button
+            size="large"
+            variant="secondary"
+            disabled={createPlan.isPending}
+            className="flex-1"
+            onClick={onClose}
+          >
+            {intl("labels.cancel")}
+          </Button>
         </div>
-        <div className="flex justify-around gap-2 mt-3 mb-1">
-          <Field
-            variant="row"
-            label={<Label>{intl("dashboard.plan.forInvitesOnly")}</Label>}
-            field={
-              <Controller.Switch control={form.control} name="forInvitesOnly" />
-            }
-          />
-          <Field
-            variant="row"
-            label={<Label>{intl("dashboard.plan.active")}</Label>}
-            field={<Controller.Switch control={form.control} name="active" />}
-          />
-        </div>
-
-        <Button
-          size={"medium"}
-          loading={createPlan.isPending}
-          disabled={createPlan.isPending}
-          htmlType="submit"
-        >
-          {intl(plan ? "labels.update" : "labels.create")}
-        </Button>
-      </Form>
+      </form>
     </Dialog>
   );
 };
