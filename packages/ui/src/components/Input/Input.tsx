@@ -155,8 +155,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                   "text-success-600": state === "success",
                   // Error
                   "text-destructive-600": state === "error",
-                  // Disabled
-                  "text-natural-500": disabled,
                 })}
               >
                 {helper}
