@@ -347,9 +347,6 @@ function update(_: ApiContext) {
 
       // remove assets ids from the database / update user data
       const updated = await knex.transaction(async (tx: Knex.Transaction) => {
-        const newEmail = email && email !== target.email;
-        const newPhone = phone && phone !== target.phone;
-
         const updateUserPayload: IUser.UpdatePayloadModel = {
           city,
           name,
@@ -359,13 +356,13 @@ function update(_: ApiContext) {
           image,
           email,
           // reset user verification status incase his email or phone got updated.
-          verifiedEmail: newEmail ? false : undefined,
-          verifiedPhone: newPhone ? false : undefined,
-          verifiedTelegram: newPhone ? false : undefined,
-          verifiedWhatsApp: newPhone ? false : undefined,
+          verifiedEmail: email ? false : undefined,
+          verifiedPhone: phone ? false : undefined,
+          verifiedTelegram: phone ? false : undefined,
+          verifiedWhatsApp: phone ? false : undefined,
           password: password ? hashPassword(password.new) : undefined,
           // reset notification method incase the user phone got updated
-          notificationMethod: newPhone ? null : notificationMethod,
+          notificationMethod: phone ? null : notificationMethod,
         };
 
         const updated = await users.update(id, updateUserPayload, tx);
