@@ -29,6 +29,18 @@ export function isValidPlanWeeklyMinutes(
     return FieldError.EmptyPlanWeeklyMinutes;
   return true;
 }
+export function isValidPrice(
+  price: number
+):
+  | FieldError.ZeroPlanPrice
+  | FieldError.InfinitePlanPrice
+  | FieldError.PlanPriceNotInteger
+  | true {
+  if (price <= 0) return FieldError.ZeroPlanPrice;
+  if (!Number.isFinite(price)) return FieldError.InfinitePlanPrice;
+  if (!Number.isInteger(price)) return FieldError.PlanPriceNotInteger;
+  return true;
+}
 export function isValidPlanPrice(
   price: number,
   discount: number
@@ -50,11 +62,9 @@ export function isValidPlanDiscount(
   discount: number
 ):
   | FieldError.MinPlanDiscountSubceeded
-  | FieldError.PlanTotalDiscount
   | FieldError.MaxPlanDiscountExceeded
   | true {
   if (discount < MIN_PLAN_DISCOUNT) return FieldError.MinPlanDiscountSubceeded;
-  if (discount == MIN_PLAN_DISCOUNT) return FieldError.PlanTotalDiscount;
   if (discount > MAX_PLAN_DISCOUNT) return FieldError.MaxPlanDiscountExceeded;
   return true;
 }

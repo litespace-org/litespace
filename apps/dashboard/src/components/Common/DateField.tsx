@@ -3,7 +3,7 @@ import { dayjs } from "@/lib/dayjs";
 import { Tooltip } from "@litespace/ui/Tooltip";
 
 const DateField: React.FC<{ date: string }> = ({ date }) => {
-  const formatedDate = useMemo(() => dayjs(date).format("YYYY/MM/DD"), [date]);
+  const formatedDate = useMemo(() => dayjs(date).format("D/M/YYYY"), [date]);
   return (
     <Tooltip
       content={
@@ -15,7 +15,9 @@ const DateField: React.FC<{ date: string }> = ({ date }) => {
         </div>
       }
     >
-      <span>{formatedDate}</span>
+      <span className="text-body font-semibold text-natural-800">
+        {formatedDate}
+      </span>
     </Tooltip>
   );
 };

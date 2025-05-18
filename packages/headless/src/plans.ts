@@ -1,25 +1,19 @@
 import { useApi } from "@/api/context";
-import { IPlan, Void } from "@litespace/types";
+import { IFilter, IPlan, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { QueryKey } from "@/constants";
+import { usePaginate } from "@/pagination";
 
-export function usePlans(payload?: IPlan.FindApiQuery) {
+export function usePlans() {
   const api = useApi();
 
   const findPlans = useCallback(
-    () => api.plan.find(payload),
-    [api.plan, payload]
+    ({ page, size }: IFilter.Pagination) => api.plan.find({ page, size }),
+    [api.plan]
   );
 
-  const keys = [QueryKey.FindPlans, payload];
-
-  const query = useQuery({
-    queryFn: findPlans,
-    queryKey: keys,
-  });
-
-  return { query, keys };
+  return usePaginate(findPlans, [QueryKey.FindPlans]);
 }
 
 export function useCreatePlan({
