@@ -309,6 +309,11 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
           message,
         });
 
+      // This is mandatory in order to avoid duplicate refIds.
+      // With out this the first recieved and the first activated message will have
+      // the same refId: 1. @NOTE: uniqueId is used also in activateMessage function.
+      message.refId = uniqueId();
+
       return onMessage({
         type: MessageStream.Add,
         message,
@@ -416,7 +421,7 @@ function activateMessage(
   messages: IMessage.AttributedMessage[]
 ) {
   return messages.map((message) => {
-    if (message.refId == incoming.refId) {
+    if (message.refId === incoming.refId) {
       return incoming;
     }
     return message;
