@@ -210,6 +210,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     }) => {
       if (!onMessage || !socket) return;
       const refId = uniqueId();
+      console.log("HERE: ", refId);
       socket.emit(
         Wss.ClientEvent.SendMessage,
         {
@@ -308,6 +309,11 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
           type: ActionType.ActivateMessage,
           message,
         });
+
+      // This is mandatory in order to avoid duplicate refIds.
+      // With out this the first recieved and the first activated message will have
+      // the same refId: 1. @NOTE: uniqueId is used also in activateMessage function.
+      message.refId = uniqueId();
 
       return onMessage({
         type: MessageStream.Add,
@@ -416,7 +422,7 @@ function activateMessage(
   messages: IMessage.AttributedMessage[]
 ) {
   return messages.map((message) => {
-    if (message.refId == incoming.refId) {
+    if (message.refId === incoming.refId) {
       return incoming;
     }
     return message;
@@ -651,8 +657,12 @@ function reducer(state: State, action: Action) {
     const freshMessages = structuredClone(state.freshMessages);
     const roomMessages = freshMessages[room] || [];
 
+    console.log("1: ", state.freshMessages);
+
     const newFreshMessages = activateMessage(action.message, roomMessages);
     freshMessages[room] = newFreshMessages;
+
+    console.log("2: ", freshMessages);
 
     return mutate({ freshMessages });
   }

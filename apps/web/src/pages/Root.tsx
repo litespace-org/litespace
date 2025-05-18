@@ -90,7 +90,7 @@ const Root: React.FC = () => {
   }, [location.pathname, params]);
 
   const fullScreenPage = useMemo(() => {
-    const routes: Web[] = [Web.Lesson, Web.LessonV2, Web.LessonV3];
+    const routes: Web[] = [Web.Lesson];
     return routes.some((route) => router.match(route, location.pathname));
   }, [location.pathname]);
 
