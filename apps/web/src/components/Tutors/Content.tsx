@@ -30,6 +30,7 @@ const Content: React.FC<{
   const intl = useFormatMessage();
   const toast = useToast();
   const [tutor, setTutor] = useState<Tutor | null>(null);
+
   const mq = useMediaQuery();
 
   const openBookingDialog = useCallback((tutor: Tutor) => setTutor(tutor), []);

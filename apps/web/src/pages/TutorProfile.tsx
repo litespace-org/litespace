@@ -24,6 +24,7 @@ const TutorProfile: React.FC = () => {
   const intl = useFormatMessage();
   const [open, setOpen] = useState<boolean>(false);
   const { user } = useUserContext();
+
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
