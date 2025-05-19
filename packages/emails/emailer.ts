@@ -9,6 +9,11 @@ import {
 } from "@/emails";
 import { EMAIL_SUBJECT } from "@/lib/subject";
 
+function asUser(email: string) {
+  const [user] = email.split("@");
+  return user;
+}
+
 function makeTransporter({
   user,
   pass,
@@ -21,7 +26,7 @@ function makeTransporter({
   debug: boolean;
 }): nodemailer.Transporter {
   return nodemailer.createTransport({
-    host: "mail.privateemail.com",
+    host: "mail.litespace.org",
     port: 465,
     secure: true,
     auth: { user, pass },
@@ -57,7 +62,7 @@ export class Emailer {
   }) {
     this.email = email;
     this.transporter = makeTransporter({
-      user: email,
+      user: asUser(email),
       pass: password,
       logger,
       debug,

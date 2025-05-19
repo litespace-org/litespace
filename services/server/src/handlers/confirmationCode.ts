@@ -271,10 +271,7 @@ async function sendEmailVerificationCode(
 
   sendBackgroundMessage({
     type: "send-user-verification-code-email",
-    payload: {
-      code,
-      email: user.email,
-    },
+    payload: { code, email: user.email },
   });
 
   res.sendStatus(200);

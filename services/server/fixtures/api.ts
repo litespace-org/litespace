@@ -62,7 +62,6 @@ export class Api {
 
   async createUser(payload?: Partial<IUser.CreateApiPayload>) {
     return this.api.user.create({
-      callbackUrl: payload?.callbackUrl || faker.internet.url(),
       email: payload?.email || faker.internet.email(),
       password: payload?.password || "Password@8",
       role: payload?.role || (sample(Object.values(IUser.Role)) as IUser.Role),
