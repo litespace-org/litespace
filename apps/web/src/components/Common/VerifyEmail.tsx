@@ -12,10 +12,11 @@ import { useUserContext } from "@litespace/headless/context/user";
 
 type Props = {
   close: Void;
+  emailSent?: boolean;
 };
 
-export const VerifyEmail: React.FC<Props> = ({ close }) => {
-  const [sent, setSent] = useState(false);
+export const VerifyEmail: React.FC<Props> = ({ close, emailSent }) => {
+  const [sent, setSent] = useState(emailSent);
   const toast = useToast();
   const intl = useFormatMessage();
   const { user, refetch } = useUserContext();
@@ -36,8 +37,8 @@ export const VerifyEmail: React.FC<Props> = ({ close }) => {
 
   useEffect(() => {
     if (sent) return;
-    sendMutation.mutate();
     setSent(true);
+    sendMutation.mutate();
   }, [sendMutation, sent]);
 
   const onVerifySuccess = useCallback(() => {
