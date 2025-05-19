@@ -25,6 +25,8 @@ import { IUser } from "@litespace/types";
 import { capture } from "@/lib/sentry";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import VerifyNotifications from "@/components/Common/VerifyNotifications";
+import { NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL } from "@litespace/utils";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -36,6 +38,15 @@ const LessonsSchedule: React.FC = () => {
   const [date, setDate] = useState(dayjs().startOf("week"));
   const [view, setView] = useState<View>("list");
   const { user } = useUser();
+  const [showEnableNotificationDialog, setShowEnableNotificationDialog] =
+    useState(false);
+
+  const selectedMethod = useMemo(() => {
+    if (!user?.notificationMethod) return null;
+    return NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[
+      user?.notificationMethod
+    ];
+  }, [user]);
   const navigate = useNavigate();
   const [lessonId, setLessonId] = useState<number | null>(null);
   const [manageLessonData, setManageLessonData] =
@@ -74,11 +85,24 @@ const LessonsSchedule: React.FC = () => {
     });
   }, [lessons.list, user]);
 
+  const enableNotificationsActions = useMemo(() => {
+    if (selectedMethod) return undefined;
+    return [
+      {
+        label: intl("labels.enable-notifications"),
+        onClick: () => setShowEnableNotificationDialog(true),
+      },
+    ];
+  }, [selectedMethod, intl]);
+
   const onCancelSuccess = useCallback(() => {
-    toast.success({ title: intl("cancel-lesson.success") });
+    toast.success({
+      title: intl("cancel-lesson.success"),
+      actions: enableNotificationsActions,
+    });
     setLessonId(null);
     invalidate([QueryKey.FindInfiniteLessons]);
-  }, [toast, intl, invalidate]);
+  }, [toast, intl, invalidate, enableNotificationsActions]);
 
   const onCancelError = useCallback(
     (error: unknown) => {
@@ -237,6 +261,14 @@ const LessonsSchedule: React.FC = () => {
           close={() => {
             setManageLessonData(null);
           }}
+        />
+      ) : null}
+
+      {showEnableNotificationDialog ? (
+        <VerifyNotifications
+          close={() => setShowEnableNotificationDialog(false)}
+          selectedMethod={selectedMethod}
+          phone={user?.phone || null}
         />
       ) : null}
     </div>

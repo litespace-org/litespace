@@ -17,6 +17,8 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { useUser } from "@litespace/headless/context/user";
 import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
+import VerifyNotifications from "@/components/Common/VerifyNotifications";
+import { NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL } from "@litespace/utils";
 
 type Base = {
   close: Void;
@@ -50,6 +52,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   const now = useRef(dayjs());
 
   const [showVerifyEmailDialog, setShowVerifyEmailDialog] = useState(false);
+  const [showNotificationDialog, setShowNotificationDialog] = useState(false);
 
   const lessons = useFindLessons({
     canceled: false,
@@ -70,18 +73,49 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   });
   const { query: tutor } = useFindTutorInfo(tutorId);
 
+  const selectedMethod = useMemo(() => {
+    if (!user?.notificationMethod) return null;
+    return NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[
+      user?.notificationMethod
+    ];
+  }, [user]);
+
+  console.log({ selectedMethod });
+
+  const enableNotificationsActions = useMemo(() => {
+    if (selectedMethod) return undefined;
+    return [
+      {
+        label: intl("labels.enable-notifications"),
+        onClick: () => setShowNotificationDialog(true),
+      },
+    ];
+  }, [selectedMethod, intl]);
+
   // book lesson
   const onCreateSuccess = useCallback(() => {
     if (tutor.data?.name)
       toast.success({
-        title: intl("book-lesson.success", { tutor: tutor.data.name }),
+        title: intl("book-lesson.success", {
+          tutor: tutor.data?.name
+            ? tutor.data.name
+            : intl("manage-lesson.tutor.placeholder"),
+        }),
+        actions: enableNotificationsActions,
       });
     invalidate([QueryKey.FindAvailabilitySlots]);
     invalidate([QueryKey.FindLesson]);
     invalidate([QueryKey.FindInfiniteLessons]);
     invalidate([QueryKey.FindTutors]);
     close();
-  }, [close, tutor.data?.name, toast, intl, invalidate]);
+  }, [
+    close,
+    tutor.data?.name,
+    toast,
+    intl,
+    invalidate,
+    enableNotificationsActions,
+  ]);
 
   const onCreateError = useOnError({
     type: "mutation",
@@ -100,16 +134,27 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   // update lesson
   const onUpdateSuccess = useCallback(() => {
-    if (tutor.data?.name)
-      toast.success({
-        title: intl("update-lesson.success", { tutor: tutor.data.name }),
-      });
+    toast.success({
+      title: intl("update-lesson.success", {
+        tutor: tutor.data?.name
+          ? tutor.data.name
+          : intl("manage-lesson.tutor.placeholder"),
+      }),
+      actions: enableNotificationsActions,
+    });
     invalidate([QueryKey.FindAvailabilitySlots]);
     invalidate([QueryKey.FindLesson]);
     invalidate([QueryKey.FindInfiniteLessons]);
     invalidate([QueryKey.FindTutors]);
     close();
-  }, [close, tutor.data?.name, toast, intl, invalidate]);
+  }, [
+    close,
+    tutor.data?.name,
+    toast,
+    intl,
+    invalidate,
+    enableNotificationsActions,
+  ]);
 
   const onUpdateError = useOnError({
     type: "mutation",
@@ -207,6 +252,14 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
           close={() => {
             setShowVerifyEmailDialog(false);
           }}
+        />
+      ) : null}
+
+      {showNotificationDialog ? (
+        <VerifyNotifications
+          close={() => setShowNotificationDialog(false)}
+          selectedMethod={selectedMethod}
+          phone={user?.phone || null}
         />
       ) : null}
     </>

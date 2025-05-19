@@ -20,6 +20,7 @@ const Content: React.FC<{
 }> = ({ tutors, loading, error, more, hasMore, fetching, refetch }) => {
   const intl = useFormatMessage();
   const [tutor, setTutor] = useState<Tutor | null>(null);
+
   const mq = useMediaQuery();
 
   const openBookingDialog = useCallback((tutor: Tutor) => setTutor(tutor), []);

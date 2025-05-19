@@ -1,7 +1,7 @@
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { LessonCard, EmptyLessons, CancelLesson } from "@litespace/ui/Lessons";
 import { ILesson, IUser, Void } from "@litespace/types";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { InView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 import { useCancelLesson } from "@litespace/headless/lessons";
@@ -21,6 +21,8 @@ import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isStudent } from "@litespace/utils/user";
+import { NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL } from "@litespace/utils";
+import VerifyNotifications from "@/components/Common/VerifyNotifications";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -39,18 +41,40 @@ export const Content: React.FC<{
   const toast = useToast();
   const { user } = useUser();
   const navigate = useNavigate();
+  const [showEnableNotificationDialog, setShowEnableNotificationDialog] =
+    useState(false);
+
+  const selectedMethod = useMemo(() => {
+    if (!user?.notificationMethod) return null;
+    return NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[
+      user?.notificationMethod
+    ];
+  }, [user]);
+
+  const enableNotificationsActions = useMemo(() => {
+    if (user?.notificationMethod) return undefined;
+    return [
+      {
+        label: intl("labels.enable-notifications"),
+        onClick: () => setShowEnableNotificationDialog(true),
+      },
+    ];
+  }, [user?.notificationMethod, intl]);
 
   const [cancelLessonId, setCancelLessonId] = useState<number | null>(null);
   const [manageLessonData, setManageLessonData] =
     useState<ManageLessonPayload | null>(null);
 
   const onCancelSuccess = useCallback(() => {
-    toast.success({ title: intl("cancel-lesson.success") });
+    toast.success({
+      title: intl("cancel-lesson.success"),
+      actions: enableNotificationsActions,
+    });
     setCancelLessonId(null);
     queryClient.invalidateQueries({
       queryKey: [QueryKey.FindInfiniteLessons],
     });
-  }, [toast, queryClient, intl]);
+  }, [toast, queryClient, enableNotificationsActions, intl]);
 
   const onCancelError = useCallback(
     (error: unknown) => {
@@ -179,7 +203,12 @@ export const Content: React.FC<{
         })}
       </div>
 
-      {fetching ? <Loading className="mt-6 text-natural-950" /> : null}
+      {fetching ? (
+        <div className="mt-6">
+          {" "}
+          <Loading />{" "}
+        </div>
+      ) : null}
 
       {!fetching ? (
         <InView
@@ -205,6 +234,14 @@ export const Content: React.FC<{
             setManageLessonData(null);
           }}
           {...manageLessonData}
+        />
+      ) : null}
+
+      {showEnableNotificationDialog ? (
+        <VerifyNotifications
+          close={() => setShowEnableNotificationDialog(false)}
+          selectedMethod={selectedMethod}
+          phone={user?.phone || null}
         />
       ) : null}
     </div>
