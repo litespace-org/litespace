@@ -5,7 +5,6 @@ export const envBoolean = zod
   .transform((value) => value === "true");
 
 const schema = zod.object({
-  port: zod.coerce.number().positive().int(),
   telegram: zod.object({
     bot: zod.object({
       token: zod.string(),
@@ -28,7 +27,6 @@ const schema = zod.object({
 });
 
 export const config = schema.parse({
-  port: process.env.PORT,
   telegram: {
     bot: {
       token: process.env.TELEGRAM_BOT_TOKEN,
