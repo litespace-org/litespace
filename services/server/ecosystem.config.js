@@ -4,9 +4,5 @@ module.exports = {
       script: "pnpm start",
       name: "api",
     },
-    {
-      script: "pnpm peer",
-      name: "peer",
-    },
   ],
 };

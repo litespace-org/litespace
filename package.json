@@ -21,8 +21,6 @@
     "dev:landing": "pnpm --filter @litespace/landing dev",
     "docker": "docker compose up -d",
     "docker:linux": "sudo docker compose up -d",
-    "peer": "pnpm --filter @litespace/server peer",
-    "reseed": "pnpm --filter @litespace/models reseed",
     "build:web:vercel": "pnpm --filter @litespace/web build:vercel",
     "build:ui:vercel": "pnpm --filter @litespace/ui build:vercel",
     "build:dashboard:vercel": "pnpm --filter @litespace/dashboard build:vercel",
