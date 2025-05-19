@@ -25,7 +25,7 @@ services:
     container_name: pgadmin
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-dev@litespace.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:
@@ -37,6 +37,7 @@ services:
       - postgres
     restart: unless-stopped
   redis:
+    container_name: redis
     image: redis/redis-stack-server:latest
     ports:
       - 6379:6379
@@ -45,6 +46,7 @@ services:
     volumes:
       - redis:/data
   kafka:
+    container_name: kafak
     image: apache/kafka-native
     ports:
       - "9092:9092"
@@ -70,6 +72,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   kafka-ui:
+    container_name: kfaka-ui
     image: ghcr.io/kafbat/kafka-ui:latest
     ports:
       - 4006:8080
