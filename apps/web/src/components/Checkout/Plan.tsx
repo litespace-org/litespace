@@ -95,7 +95,7 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
         </Typography>
       </div>
 
-      <Link to={Web.PlansV2} className="px-6" tabIndex={-1}>
+      <Link to={Web.Plans} className="px-6" tabIndex={-1}>
         <Button type="main" size="large" variant="secondary" className="w-full">
           {intl("checkout.plan.change-plan")}
         </Button>

@@ -1,16 +1,25 @@
-import PageTitle from "@/components/Common/PageTitle";
-import Content from "@/components/Plans/Content";
-import { data } from "@/components/Plans/data.json";
-import { PlansDataProps } from "@/components/Plans/types";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Content } from "@/components/Plans/Content";
+import React from "react";
+import { usePlans } from "@litespace/headless/plans";
+import { useOnError } from "@/hooks/error";
 
-export const Plans: React.FC = () => {
-  const intl = useFormatMessage();
+const Plans: React.FC = () => {
+  const { query, keys } = usePlans();
+
+  useOnError({
+    type: "query",
+    error: query.error,
+    keys,
+  });
 
   return (
     <div className="w-full p-4 md:p-6 mx-auto max-w-screen-3xl">
-      <PageTitle title={intl("plans.title")} className="mb-4 md:mb-6" />
-      <Content plans={data as PlansDataProps} />
+      <Content
+        loading={query.isLoading}
+        error={query.isError}
+        refetch={query.refetch}
+        list={query.data?.list || []}
+      />
     </div>
   );
 };
