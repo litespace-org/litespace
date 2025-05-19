@@ -52,7 +52,7 @@ const PayWithFawryStatus: React.FC<{
         onClick={copy}
       >
         {copied ? (
-          <CopyCheck className="w-6 h-6 [&>*]:stroke-natural-700" />
+          <CopyCheck className="w-6 h-6 [&>*]:fill-natural-700" />
         ) : (
           <Copy className="w-6 h-6 [&>*]:stroke-natural-700" />
         )}
