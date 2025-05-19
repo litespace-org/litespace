@@ -16,7 +16,7 @@ import {
 import { useGoogle } from "@/hooks/google";
 import Google from "@litespace/assets/Google";
 import { Landing, Web } from "@litespace/utils/routes";
-import { router, VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
+import { router } from "@/lib/routes";
 import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
 
@@ -91,7 +91,6 @@ const RegisterForm: React.FC = () => {
         return mutation.mutate({
           email: payload.email,
           password: payload.password,
-          callbackUrl: VERIFY_EMAIL_CALLBACK_URL,
           role,
         });
       }),

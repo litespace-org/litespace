@@ -1,4 +1,3 @@
-import { router } from "@/lib/route";
 import AddCircle from "@litespace/assets/AddCircle";
 import { useForm } from "@litespace/headless/form";
 import { useCreateUser } from "@litespace/headless/users";
@@ -11,7 +10,6 @@ import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { isValidEmail, isValidPassword } from "@litespace/ui/lib/validate";
-import { Dashboard } from "@litespace/utils/routes";
 import React, { useCallback } from "react";
 
 type Form = {
@@ -45,7 +43,6 @@ export const AddTutorDialog: React.FC<{
       mutation.mutate({
         ...data,
         role: IUser.Role.Tutor,
-        callbackUrl: router.dashboard({ route: Dashboard.Tutors, full: true }),
       });
     },
   });

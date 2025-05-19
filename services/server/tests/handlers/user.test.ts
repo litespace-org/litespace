@@ -53,7 +53,6 @@ describe("/api/v1/user/", () => {
           role: IUser.Role.Student,
           email,
           password,
-          callbackUrl: "https://litespace.org/verify-email",
         },
       });
       expect(body?.user.email).to.be.eq(email);

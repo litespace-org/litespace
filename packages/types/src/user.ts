@@ -169,7 +169,6 @@ export type CreateApiPayload = {
   role: Role;
   email: string;
   password: string;
-  callbackUrl: string;
 };
 
 export type UpdateMediaPayload =

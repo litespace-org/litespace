@@ -1,5 +1,11 @@
-import { tutors, users, knex, lessons } from "@litespace/models";
-import { ILesson, ITutor, IUser } from "@litespace/types";
+import {
+  tutors,
+  users,
+  knex,
+  lessons,
+  confirmationCodes,
+} from "@litespace/models";
+import { IConfirmationCode, ILesson, ITutor, IUser } from "@litespace/types";
 import {
   apierror,
   bad,
@@ -26,7 +32,6 @@ import {
   string,
   withNamedId,
   role,
-  url,
   pageNumber,
   pageSize,
   jsonBoolean,
@@ -66,12 +71,15 @@ import { getRequestFile, upload } from "@/lib/assets";
 import bytes from "bytes";
 import s3 from "@/lib/s3";
 import { isOnboard } from "@litespace/utils/tutor";
-import { isEmptyObject } from "@litespace/utils";
+import {
+  CONFIRMATION_CODE_VALIDITY_MINUTES,
+  isEmptyObject,
+} from "@litespace/utils";
+import { generateConfirmationCode } from "@/lib/confirmationCodes";
 
 const createUserPayload = zod.object({
   role,
   password,
-  callbackUrl: url,
   email,
 });
 
@@ -228,7 +236,7 @@ const findFullTutorsQueryFilter = zod.object({
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
-  const payload = createUserPayload.parse(req.body);
+  const payload: IUser.CreateApiPayload = createUserPayload.parse(req.body);
   const creator = req.user;
   const admin = isAdmin(creator);
   // both students and tutors can create/register account on the application,
@@ -257,14 +265,19 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     return user;
   });
 
-  // todo: generate a confirmation code.
+  const { code } = await confirmationCodes.create({
+    userId: user.id,
+    purpose: IConfirmationCode.Purpose.VerifyEmail,
+    code: generateConfirmationCode(),
+    expiresAt: dayjs
+      .utc()
+      .add(CONFIRMATION_CODE_VALIDITY_MINUTES, "minutes")
+      .toISOString(),
+  });
+
   sendBackgroundMessage({
-    type: "send-user-verification-email",
-    payload: {
-      callbackUrl: payload.callbackUrl,
-      email: user.email,
-      user: user.id,
-    },
+    type: "send-user-verification-code-email",
+    payload: { code, email: user.email },
   });
 
   const token = encodeAuthJwt(user.id, jwtSecret);

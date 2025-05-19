@@ -13,8 +13,6 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IUser, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { router } from "@/lib/route";
-import { Web } from "@litespace/utils/routes";
 import { Typography } from "@litespace/ui/Typography";
 
 type IForm = {
@@ -64,13 +62,7 @@ const UserForm: React.FC<{
 
   const onSubmit = useCallback(
     (data: IForm) => {
-      createUser.mutate({
-        ...data,
-        callbackUrl: router.web({
-          route: Web.VerifyEmail,
-          full: true,
-        }),
-      });
+      createUser.mutate(data);
     },
     [createUser]
   );
