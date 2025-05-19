@@ -210,7 +210,6 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     }) => {
       if (!onMessage || !socket) return;
       const refId = uniqueId();
-      console.log("HERE: ", refId);
       socket.emit(
         Wss.ClientEvent.SendMessage,
         {
@@ -657,12 +656,8 @@ function reducer(state: State, action: Action) {
     const freshMessages = structuredClone(state.freshMessages);
     const roomMessages = freshMessages[room] || [];
 
-    console.log("1: ", state.freshMessages);
-
     const newFreshMessages = activateMessage(action.message, roomMessages);
     freshMessages[room] = newFreshMessages;
-
-    console.log("2: ", freshMessages);
 
     return mutate({ freshMessages });
   }
