@@ -27,18 +27,24 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
   const intl = useFormatMessage();
 
   return (
-    <div className="flex flex-col gap-4 py-6 rounded-2xl border border-natural-100">
-      <Typography tag="h1" className="text-subtitle-1 font-bold px-6">
+    <div className="flex flex-col py-4 lg:py-6 rounded-2xl border border-natural-100">
+      <Typography
+        tag="h1"
+        className="text-body lg:text-subtitle-1 font-bold px-4 lg:px-6 mb-2 lg:mb-4"
+      >
         {intl("checkout.plan.summary")}
       </Typography>
 
-      <div className="flex flex-col gap-2 px-6">
-        <Typography tag="h2" className="text-subtitle-2 font-semibold">
+      <div className="flex flex-col gap-2 px-4 pb-4 md:pb-5 lg:pb-4 lg:px-6">
+        <Typography
+          tag="h2"
+          className="text-caption lg:text-subtitle-2 font-bold lg:font-semibold"
+        >
           {intl(PLAN_PERIOD_LITERAL_TO_MESSAGE_ID[period])}
         </Typography>
         <Typography
           tag="span"
-          className="text-caption lg:text-body font-normal"
+          className="text-caption lg:text-body font-medium md:font-normal"
         >
           {intl("checkout.plan.houry-quota", {
             hours: formatMinutes(data.weeklyMinutes),
@@ -47,33 +53,33 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
         </Typography>
       </div>
 
-      <div className="flex flex-col gap-2 py-6 border-t border-b border-natural-100">
-        <div className="flex justify-between mx-6">
+      <div className="flex flex-col gap-2 p-4 md:pb-5 lg:p-6 border-y border-natural-100">
+        <div className="flex justify-between">
           <Typography
             tag="span"
-            className="text-caption lg:text-body font-normal"
+            className="text-caption lg:text-body font-semibold md:font-normal"
           >
             {intl("checkout.plan.month-price")}
           </Typography>
           <Typography
             tag="span"
-            className="text-caption lg:text-body font-normal"
+            className="text-caption lg:text-body font-semibold md:font-normal"
           >
             {intl("checkout.plan.price", {
               price: formatNumber(price.unscale(data.baseMonthlyPrice)),
             })}
           </Typography>
         </div>
-        <div className="flex justify-between mx-6">
+        <div className="flex justify-between">
           <Typography
             tag="span"
-            className="text-caption lg:text-body font-normal"
+            className="text-caption lg:text-body font-semibold md:font-normal"
           >
             {intl("checkout.plan.total-price-before-discount")}
           </Typography>
           <Typography
             tag="span"
-            className="text-caption lg:text-body font-normal"
+            className="text-caption lg:text-body font-semibold md:font-normal"
           >
             {intl("checkout.plan.price", {
               price: formatNumber(
@@ -84,20 +90,31 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
         </div>
       </div>
 
-      <div className="flex justify-between px-6 mt-2 mb-4">
-        <Typography tag="span" className="text-caption lg:text-body font-bold">
+      <div className="flex justify-between px-4 lg:px-6 mt-4 lg:mt-6">
+        <Typography
+          tag="span"
+          className="text-caption lg:text-body font-semibold md:font-bold"
+        >
           {intl("checkout.plan.total-price-after-discount")}
         </Typography>
-        <Typography tag="span" className="text-caption lg:text-body font-bold">
+        <Typography
+          tag="span"
+          className="text-caption lg:text-body font-semibold md:font-bold"
+        >
           {intl("checkout.plan.price", {
             price: formatNumber(calculateTotalPriceAfterDiscount(data, period)),
           })}
         </Typography>
       </div>
 
-      <Link to={Web.Plans} className="px-6" tabIndex={-1}>
+      <Link to={Web.Plans} className="px-4 lg:px-6 mt-6 lg:mt-8" tabIndex={-1}>
         <Button type="main" size="large" variant="secondary" className="w-full">
-          {intl("checkout.plan.change-plan")}
+          <Typography
+            tag="span"
+            className="text text-caption md:text-body font-semibold md:font-medium"
+          >
+            {intl("checkout.plan.change-plan")}
+          </Typography>
         </Button>
       </Link>
     </div>

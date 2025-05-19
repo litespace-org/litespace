@@ -69,14 +69,16 @@ const CardAdded: React.FC = () => {
 const Success: React.FC<{ onContinue: Void }> = ({ onContinue }) => {
   const intl = useFormatMessage();
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 items-center">
       <div className="flex flex-row gap-2">
         <Check className="w-6 h-6 [&>*]:stroke-brand-700" />
         <Typography tag="p">{intl("card-added.succeeded")}</Typography>
       </div>
 
       <Button size="large" onClick={onContinue}>
-        {intl("card-added.continue-to-payment")}
+        <Typography tag="span" className="text text-body font-medium">
+          {intl("card-added.continue-to-payment")}
+        </Typography>
       </Button>
     </div>
   );
@@ -96,10 +98,14 @@ const Failed: React.FC<{
 
       <div className="flex gap-4 items-center">
         <Button size="large" variant="primary" onClick={onTryAgain}>
-          {intl("labels.try-again")}
+          <Typography tag="span" className="text text-body font-medium">
+            {intl("labels.try-again")}
+          </Typography>
         </Button>
         <Button size="large" variant="secondary" onClick={onReport}>
-          {intl("labels.report")}
+          <Typography tag="span" className="text text-body font-medium">
+            {intl("labels.report")}
+          </Typography>
         </Button>
       </div>
     </div>

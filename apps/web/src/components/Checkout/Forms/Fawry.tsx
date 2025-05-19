@@ -69,7 +69,7 @@ const Payment: React.FC<{
     <div>
       <form onSubmit={form.onSubmit} className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">
-          <Typography tag="p" className="text-body font-medium">
+          <Typography tag="p" className="text-caption md:text-body font-medium">
             {intl("checkout.payment.description")}
           </Typography>
 
@@ -99,7 +99,9 @@ const Payment: React.FC<{
           disabled={payWithFawry.isPending || syncing}
           loading={payWithFawry.isPending}
         >
-          {intl("checkout.payment.confirm")}
+          <Typography tag="span" className="text text-body font-medium">
+            {intl("checkout.payment.confirm")}
+          </Typography>
         </Button>
       </form>
     </div>
