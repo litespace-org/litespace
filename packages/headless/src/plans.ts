@@ -4,17 +4,22 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { QueryKey } from "@/constants";
 
-const FIND_PLANS_QUERY_KEY = [QueryKey.FindPlans];
-
-export function usePlans() {
+export function usePlans(payload?: IPlan.FindApiQuery) {
   const api = useApi();
-  const findPlans = useCallback(() => api.plan.find(), [api.plan]);
+
+  const findPlans = useCallback(
+    () => api.plan.find(payload),
+    [api.plan, payload]
+  );
+
+  const keys = [QueryKey.FindPlans, payload];
+
   const query = useQuery({
     queryFn: findPlans,
-    queryKey: FIND_PLANS_QUERY_KEY,
+    queryKey: keys,
   });
 
-  return { query, keys: FIND_PLANS_QUERY_KEY };
+  return { query, keys };
 }
 
 export function useCreatePlan({

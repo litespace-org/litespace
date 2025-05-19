@@ -3,6 +3,7 @@
     "target": "es2022",
     "jsx": "react",
     "module": "nodenext",
+    "moduleResolution": "nodenext",
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"],

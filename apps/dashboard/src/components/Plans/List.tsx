@@ -17,7 +17,7 @@ import Error from "@/components/Common/Error";
 import { useDeletePlan } from "@litespace/headless/plans";
 
 const List: React.FC<{
-  query: UseQueryResult<IPlan.FindPlansApiResponse, Error>;
+  query: UseQueryResult<IPlan.FindApiResponse, Error>;
   refresh: Void;
 }> = ({ query, refresh }) => {
   const intl = useFormatMessage();

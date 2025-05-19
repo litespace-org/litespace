@@ -1,6 +1,14 @@
 import { forbidden, notfound } from "@/lib/error";
 import { plans } from "@litespace/models";
-import { boolean, pagination, withNamedId } from "@/validation/utils";
+import {
+  boolean,
+  dateFilter,
+  id,
+  numericFilter,
+  pageNumber,
+  pageSize,
+  withNamedId,
+} from "@/validation/utils";
 import { IPlan } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
@@ -27,6 +35,41 @@ const updatePlanPayload = zod.object({
   yearDiscount: zod.optional(number),
   forInvitesOnly: zod.optional(boolean),
   active: zod.optional(boolean),
+});
+
+const findPlansQuery = zod.object({
+  ids: id.array().optional().describe("fild plans by ids"),
+  weeklyMinutes: numericFilter
+    .optional()
+    .describe("filter plans by weekly minutes"),
+  baseMonthlyPrice: numericFilter
+    .optional()
+    .describe("filter plans by base monthly price"),
+  monthDiscount: numericFilter
+    .optional()
+    .describe("filter plans by monthly discount"),
+  quarterDiscount: numericFilter
+    .optional()
+    .describe("filter plans by quarter discount"),
+  yearDiscount: numericFilter
+    .optional()
+    .describe("filter plans by year discount"),
+  active: zod
+    .boolean()
+    .optional()
+    .describe("filter plans by whether they are active or not"),
+  forInvitesOnly: zod
+    .boolean()
+    .optional()
+    .describe("filter plans by whether they are for invites only or not"),
+  createdAt: dateFilter
+    .optional()
+    .describe("filter plans by their creation date"),
+  updatedAt: dateFilter
+    .optional()
+    .describe("filter plans by their latest update date"),
+  page: zod.optional(pageNumber),
+  size: zod.optional(pageSize),
 });
 
 async function create(req: Request, res: Response, next: NextFunction) {
@@ -73,6 +116,9 @@ async function update(req: Request, res: Response, next: NextFunction) {
     active,
   }: IPlan.UpdateApiPayload = updatePlanPayload.parse(req.body);
 
+  const found = await plans.findById(id);
+  if (!found) return next(notfound.plan());
+
   const plan = await plans.update(id, {
     weeklyMinutes,
     baseMonthlyPrice,
@@ -90,6 +136,10 @@ async function deletePlan(req: Request, res: Response, next: NextFunction) {
   const allowed = isSuperAdmin(req.user);
   if (!allowed) return next(forbidden());
   const { id } = withNamedId("id").parse(req.params);
+
+  const found = await plans.findById(id);
+  if (!found) return next(notfound.plan());
+
   await plans.delete(id);
   res.status(200).send();
 }
@@ -111,9 +161,9 @@ async function findById(req: Request, res: Response, next: NextFunction) {
 }
 
 async function find(req: Request, res: Response) {
-  const { page, size } = pagination.parse(req.query);
-  const list = await plans.find({ page, size });
-  const response: IPlan.FindPlansApiResponse = list;
+  const query: IPlan.FindApiQuery = findPlansQuery.parse(req.query);
+  const list = await plans.find(query);
+  const response: IPlan.FindApiResponse = list;
   res.status(200).json(response);
 }
 

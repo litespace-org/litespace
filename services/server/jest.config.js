@@ -9,6 +9,7 @@ module.exports = {
         diagnostics: {
           exclude: ["**"],
         },
+        tsconfig: "tsconfig.test.json",
       },
     ],
     "^.+\\.(js|jsx)$": "babel-jest",

@@ -1,4 +1,5 @@
 import { Paginated } from "@/utils";
+import { IFilter } from ".";
 
 export enum Period {
   Month,
@@ -60,6 +61,19 @@ export type Self = {
   updatedAt: string;
 };
 
+export type FindQueryModel = IFilter.SkippablePagination & {
+  ids?: number[];
+  weeklyMinutes?: IFilter.Numeric;
+  baseMonthlyPrice?: IFilter.Numeric;
+  monthDiscount?: IFilter.Numeric;
+  quarterDiscount?: IFilter.Numeric;
+  yearDiscount?: IFilter.Numeric;
+  forInvitesOnly?: boolean;
+  active?: boolean;
+  createdAt?: IFilter.Date;
+  updatedAt?: IFilter.Date;
+};
+
 export type CreatePayload = {
   weeklyMinutes: number;
   baseMonthlyPrice: number;
@@ -76,6 +90,8 @@ export type CreateApiPayload = CreatePayload;
 
 export type UpdateApiPayload = UpdatePayload;
 
-export type FindPlansApiResponse = Paginated<Self>;
+export type FindApiQuery = FindQueryModel;
+
+export type FindApiResponse = Paginated<Self>;
 
 export type FindByIdApiResponse = Self;
