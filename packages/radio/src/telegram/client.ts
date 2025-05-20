@@ -54,9 +54,9 @@ export class TelegramClient {
 
         return code;
       },
-      onError: (error) => {
+      async onError(error) {
         console.error(error);
-        console.log("Error!!");
+        return true;
       },
     });
 
