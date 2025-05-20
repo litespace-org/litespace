@@ -26,14 +26,14 @@ export function isOnboard({
     !!about &&
     !!bio &&
     !!phone &&
-    !!city;
+    !!city &&
+    activated;
 
   if (role === IUser.Role.TutorManager) return base;
 
   return (
     base &&
     !!verifiedPhone &&
-    !!activated &&
     !!video &&
     !!thumbnail &&
     !!birthYear &&

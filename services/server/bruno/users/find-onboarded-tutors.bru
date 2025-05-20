@@ -1,0 +1,11 @@
+meta {
+  name: find-onboarded-tutors
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{api}}/tutor/list/onboarded
+  body: none
+  auth: inherit
+}
