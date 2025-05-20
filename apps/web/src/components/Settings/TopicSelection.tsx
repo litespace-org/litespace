@@ -268,9 +268,9 @@ const TopicSelectionTemplate = ({
           <button type="button" onClick={() => setShowDialog(true)}>
             <Typography
               tag="span"
-              className="flex text-brand-700 text-caption font-semibold"
+              className="flex text-natural-700 items-center gap-2 text-caption font-semibold"
             >
-              <Edit className="w-6 h-6 ml-2 [&>*]:stroke-brand-700" />
+              <Edit className="w-4 h-4 [&>*]:stroke-natural-700" />
               {intl("labels.update")}
             </Typography>
           </button>

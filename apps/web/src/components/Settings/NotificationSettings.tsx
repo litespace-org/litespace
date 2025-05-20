@@ -53,6 +53,7 @@ function NotificationSettings({
   const intl = useFormatMessage();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [sentCode, setSentCode] = useState<boolean>(false);
+  const [unresolvedPhone, setUnresolvedPhone] = useState<boolean>(false);
 
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
@@ -77,12 +78,14 @@ function NotificationSettings({
 
   const onSendCodeSuccess = useCallback(() => {
     setSentCode(true);
+    setUnresolvedPhone(false);
     invalidateQuery([QueryKey.FindCurrentUser]);
   }, [invalidateQuery]);
 
   const onUpdateUserError = useOnError({
     type: "mutation",
     handler: ({ messageId }) => {
+      if (messageId === "error.api.unresolved-phone") setUnresolvedPhone(true);
       toast.error({
         title: intl("shared-settings.update-notification.error"),
         description: intl(messageId),
@@ -182,6 +185,7 @@ function NotificationSettings({
       {showDialog ? (
         <VerifyNotificationMethodDialog
           method={selectedMethod}
+          unresolvedPhone={unresolvedPhone}
           close={() => setShowDialog(false)}
           phone={phone}
           sendCode={sendPhoneCodeMutation.mutate}
@@ -203,17 +207,6 @@ function NotificationSettings({
           value={optional(form.state.notificationMethod)}
           options={options}
         />
-        <Button
-          size="large"
-          disabled={
-            updateUserMutation.isPending ||
-            form.state.notificationMethod === notificationMethod
-          }
-          onClick={form.submit}
-          className="md:mt-10 mb-4 md:mb-0 mr-auto md:mr-0"
-        >
-          {intl("shared-settings.save")}
-        </Button>
       </form>
       <Button
         size="large"

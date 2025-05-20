@@ -1,8 +1,8 @@
-import { Button } from "@/components/Button";
-import { ConfirmationCode } from "@/components/ConfirmationCode";
-import { Dialog } from "@/components/Dialog";
-import { Typography } from "@/components/Typography";
-import { useFormatMessage } from "@/hooks";
+import { Button } from "@litespace/ui/Button";
+import { ConfirmationCode } from "@litespace/ui/ConfirmationCode";
+import { Dialog } from "@litespace/ui/Dialog";
+import { Typography } from "@litespace/ui/Typography";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Void } from "@litespace/types";
 import cn from "classnames";

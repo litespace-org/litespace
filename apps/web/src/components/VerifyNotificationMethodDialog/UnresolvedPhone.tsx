@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from "react";
-import { Typography } from "@/components/Typography";
-import { useFormatMessage } from "@/hooks";
-import { Popover } from "@/components/Popover";
+import { Typography } from "@litespace/ui/Typography";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Popover } from "@litespace/ui/Popover";
 import { Link } from "react-router-dom";
 import cn from "classnames";
 import { TELEGRAM_NUMBER } from "@litespace/utils";
-import { Button } from "@/components/Button";
+import { Button } from "@litespace/ui/Button";
 import { Void } from "@litespace/types";
 
 export const UnresolvedPhone: React.FC<{
@@ -29,27 +29,27 @@ export const UnresolvedPhone: React.FC<{
         tag="h6"
         className="text-caption font-semibold text-natural-950"
       >
-        {intl("verify-phone-dialog.telegram.privacy-issue.description-1")}
+        {intl("verify-dialog.telegram.privacy-issue.description-1")}
       </Typography>
       <Typography
         tag="h6"
         className="text-caption font-semibold text-natural-950"
       >
-        {intl("verify-phone-dialog.telegram.privacy-issue.description-2")}
+        {intl("verify-dialog.telegram.privacy-issue.description-2")}
       </Typography>
       <Typography
         tag="h6"
         className="text-caption font-semibold text-natural-950"
       >
-        {intl.rich("verify-phone-dialog.telegram.privacy-issue.description-3", {
+        {intl.rich("verify-dialog.telegram.privacy-issue.description-3", {
           phone: (
             <Popover
               content={
                 <Typography tag="span">
                   {intl(
                     copied
-                      ? "verify-phone-dialog.telegram.privacy-issue.copied"
-                      : "verify-phone-dialog.telegram.privacy-issue.click-to-copy"
+                      ? "verify-dialog.telegram.privacy-issue.copied"
+                      : "verify-dialog.telegram.privacy-issue.click-to-copy"
                   )}
                 </Typography>
               }
