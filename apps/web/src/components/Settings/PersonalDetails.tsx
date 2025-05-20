@@ -101,6 +101,8 @@ const PersonalDetails: React.FC<Props> = ({
     notice: { required: false, validate: validateNotice },
   });
 
+  console.log({ forStudent });
+
   const form = useForm<Form>({
     defaults: {
       name: name || "",
@@ -277,23 +279,23 @@ const PersonalDetails: React.FC<Props> = ({
               helper={form.errors?.gender}
             />
 
-            <NumericInput
-              data-student={forStudent}
-              id="notice"
-              name="notice"
-              value={optional(form.state.notice)}
-              onValueChange={({ floatValue }) =>
-                form.set("notice", floatValue || 0)
-              }
-              dir="rtl"
-              label={intl("labels.notice")}
-              placeholder={intl("labels.notice.placeholder")}
-              state={form.errors?.notice ? "error" : undefined}
-              helper={noticeHelper}
-              autoComplete="off"
-              thousandSeparator=","
-              className="data-[student=true]:hidden"
-            />
+            {!forStudent ? (
+              <NumericInput
+                id="notice"
+                name="notice"
+                value={optional(form.state.notice)}
+                onValueChange={({ floatValue }) =>
+                  form.set("notice", floatValue || 0)
+                }
+                dir="rtl"
+                label={intl("labels.notice")}
+                placeholder={intl("labels.notice.placeholder")}
+                state={form.errors?.notice ? "error" : undefined}
+                helper={noticeHelper}
+                autoComplete="off"
+                thousandSeparator=","
+              />
+            ) : null}
           </div>
         </div>
 

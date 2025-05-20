@@ -4,6 +4,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useState } from "react";
 import cn from "classnames";
+import VerifyPhone from "@/components/Common/VerifyPhone";
 
 export const ConfirmContactMethod: React.FC<{
   verifiedEmail: boolean;
@@ -72,8 +73,17 @@ const VerifyPhoneSection: React.FC<{ forStudent: boolean }> = ({
   forStudent,
 }) => {
   const intl = useFormatMessage();
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+
   return (
     <div className="flex flex-wrap lg:flex-nowrap lg:gap-[57px] items-end">
+      {showVerifyDialog ? (
+        <VerifyPhone
+          close={() => {
+            setShowVerifyDialog(false);
+          }}
+        />
+      ) : null}
       <div>
         <Typography
           className="text-subtitle-2 font-bold text-natural-950"
@@ -94,6 +104,7 @@ const VerifyPhoneSection: React.FC<{ forStudent: boolean }> = ({
         </Typography>
       </div>
       <Button
+        onClick={() => setShowVerifyDialog(true)}
         size="large"
         className="mt-4 lg:mt-0 min-w-[173px]"
         variant="secondary"

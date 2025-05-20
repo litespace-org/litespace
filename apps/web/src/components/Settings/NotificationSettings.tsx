@@ -53,6 +53,7 @@ const NotificationSettings: React.FC<{
   const intl = useFormatMessage();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [sentCode, setSentCode] = useState<boolean>(false);
+  const [unresolvedPhone, setUnresolvedPhone] = useState<boolean>(false);
 
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
@@ -77,12 +78,14 @@ const NotificationSettings: React.FC<{
 
   const onSendCodeSuccess = useCallback(() => {
     setSentCode(true);
+    setUnresolvedPhone(false);
     invalidateQuery([QueryKey.FindCurrentUser]);
   }, [invalidateQuery]);
 
   const onUpdateUserError = useOnError({
     type: "mutation",
     handler: ({ messageId }) => {
+      if (messageId === "error.api.unresolved-phone") setUnresolvedPhone(true);
       toast.error({
         title: intl("shared-settings.update-notification.error"),
         description: intl(messageId),
@@ -182,6 +185,7 @@ const NotificationSettings: React.FC<{
       {showDialog ? (
         <VerifyNotificationMethodDialog
           method={selectedMethod}
+          unresolvedPhone={unresolvedPhone}
           close={() => setShowDialog(false)}
           phone={phone}
           sendCode={sendPhoneCodeMutation.mutate}

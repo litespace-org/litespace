@@ -7,7 +7,7 @@ import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { PatternInput } from "@litespace/ui/PatternInput";
 import { validatePhone } from "@litespace/ui/lib/validate";
 import React from "react";
-import { Form } from "@/components/Form";
+import { Form } from "@litespace/ui/Form";
 
 type Props = {
   setPhone: (phone: string) => void;

@@ -8,6 +8,7 @@ import { VerifyCode } from "@/components/VerifyNotificationMethodDialog/VerifyCo
 import { EnterPhoneNumber } from "@/components/VerifyNotificationMethodDialog/EnterPhoneNumber";
 import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import UnresolvedPhone from "@/components/VerifyNotificationMethodDialog/UnresolvedPhone";
 
 type Props = {
   close: Void;
@@ -18,6 +19,7 @@ type Props = {
   sentCode: boolean;
   verifyCode: (payload: IConfirmationCode.VerifyPhoneCodePayload) => void;
   verifing: boolean;
+  unresolvedPhone: boolean;
 };
 
 export const VerifyNotificationMethodDialog: React.FC<Props> = ({
@@ -29,6 +31,7 @@ export const VerifyNotificationMethodDialog: React.FC<Props> = ({
   sendCode,
   verifyCode,
   verifing,
+  unresolvedPhone,
 }) => {
   const intl = useFormatMessage();
   const [method, setMethod] = useState<IUser.NotificationMethodLiteral | null>(
@@ -71,6 +74,17 @@ export const VerifyNotificationMethodDialog: React.FC<Props> = ({
               if (!phone || !method) return;
               sendCode({ method, phone });
             }}
+          />
+        ) : null}
+
+        {/* ================= unresolved phone ================= */}
+        {unresolvedPhone && phone ? (
+          <UnresolvedPhone
+            resend={() => {
+              if (!method) return;
+              sendCode({ phone, method });
+            }}
+            sendingCode={sendingCode}
           />
         ) : null}
 
