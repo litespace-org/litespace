@@ -13,9 +13,11 @@ import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
 import { LocalStorage } from "@litespace/headless/storage";
 import { Direction } from "@litespace/ui/Direction";
 import { env } from "@/lib/env";
+import { logger } from "@/lib/logger";
 import App from "@/App.tsx";
 
 import "@litespace/ui/tailwind.css";
+import { LoggerProvider } from "@litespace/headless/logger";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,23 +35,28 @@ createRoot(document.getElementById("root")!).render(
       defaultLocale="ar-EG"
     >
       <Direction>
-        <AppConfigProvider>
-          <ToastProvider>
-            <QueryClientProvider client={queryClient}>
-              <ServerProvider server={env.server} storage={new LocalStorage()}>
-                <ApiProvider>
-                  <SocketProvider>
-                    <UserProvider>
-                      <MediaQueryProvider>
-                        <App />
-                      </MediaQueryProvider>
-                    </UserProvider>
-                  </SocketProvider>
-                </ApiProvider>
-              </ServerProvider>
-            </QueryClientProvider>
-          </ToastProvider>
-        </AppConfigProvider>
+        <LoggerProvider logger={logger}>
+          <AppConfigProvider>
+            <ToastProvider>
+              <QueryClientProvider client={queryClient}>
+                <ServerProvider
+                  server={env.server}
+                  storage={new LocalStorage()}
+                >
+                  <ApiProvider>
+                    <SocketProvider>
+                      <UserProvider>
+                        <MediaQueryProvider>
+                          <App />
+                        </MediaQueryProvider>
+                      </UserProvider>
+                    </SocketProvider>
+                  </ApiProvider>
+                </ServerProvider>
+              </QueryClientProvider>
+            </ToastProvider>
+          </AppConfigProvider>
+        </LoggerProvider>
       </Direction>
     </IntlProvider>
   </StrictMode>
