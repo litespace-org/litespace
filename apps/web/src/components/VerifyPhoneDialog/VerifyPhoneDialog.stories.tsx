@@ -1,6 +1,6 @@
 import { VerifyPhoneDialog } from "@/components/VerifyPhoneDialog";
 import { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import { useState } from "react";
 
 type Component = typeof VerifyPhoneDialog;
 

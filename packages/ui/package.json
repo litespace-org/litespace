@@ -78,8 +78,6 @@
     "./TopicSelectionDialog": "./dist/components/TopicSelectionDialog/index.js",
     "./utils": "./dist/components/utils/index.js",
     "./VideoPlayer": "./dist/components/VideoPlayer/V2/index.js",
-    "./VerifyEmailDialog": "./dist/components/VerifyEmailDialog/index.js",
-    "./VerifyPhoneDialog": "./dist/components/VerifyPhoneDialog/index.js",
     "./WeekdayPicker": "./dist/components/WeekdayPicker/index.js",
     "./hooks/intl": "./dist/hooks/intl.js",
     "./hooks/validation": "./dist/hooks/validation.js",

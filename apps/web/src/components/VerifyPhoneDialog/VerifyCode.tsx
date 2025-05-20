@@ -2,7 +2,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { ConfirmationCode } from "@litespace/ui/ConfirmationCode";
 import { Button } from "@litespace/ui/Button";
-import { IUser, Void } from "@litespace/types";
+import { IConfirmationCode, IUser, Void } from "@litespace/types";
 import React, { useState } from "react";
 import { PHONE_METHOD_TO_INTL_MSG_ID } from "@/components/VerifyPhoneDialog/utils";
 
@@ -12,7 +12,7 @@ type Props = {
   resending: boolean;
   verifing: boolean;
   method: IUser.NotificationMethodLiteral;
-  verifyCode: (code: number) => void;
+  verifyCode: (payload: IConfirmationCode.VerifyPhoneCodePayload) => void;
   close: Void;
 };
 
@@ -80,7 +80,7 @@ export const VerifyCode: React.FC<Props> = ({
         <Button
           onClick={() => {
             if (!code) return;
-            verifyCode(code);
+            verifyCode({ code, method });
           }}
           disabled={verifing || !code}
           loading={verifing}

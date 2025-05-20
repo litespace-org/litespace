@@ -1,4 +1,3 @@
-import React from "react";
 import { StoryObj, Meta } from "@storybook/react";
 import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";
 import { faker } from "@faker-js/faker/locale/ar";

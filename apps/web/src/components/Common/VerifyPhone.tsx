@@ -1,29 +1,31 @@
-import React, { useEffect, useCallback, useState } from "react";
+import { VerifyPhoneDialog } from "@/components/VerifyPhoneDialog/VerifyPhoneDialog";
 import { useOnError } from "@/hooks/error";
 import {
-  useConfirmVerificationEmailCode,
-  useSendVerificationEmailCode,
+  useSendPhoneCode,
+  useVerifyPhoneCode,
 } from "@litespace/headless/confirmationCode";
+import { useUserContext } from "@litespace/headless/context/user";
 import { Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
-import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useCallback, useState } from "react";
 
-type Props = {
-  close: Void;
-  emailSent?: boolean;
-};
-
-export const VerifyEmail: React.FC<Props> = ({ close, emailSent }) => {
-  const [sent, setSent] = useState(emailSent);
+const VerifyPhone: React.FC<{ close: Void }> = ({ close }) => {
+  const { user, refetch } = useUserContext();
+  const [sentCode, setSentCode] = useState<boolean>(false);
+  const [unresolvedPhone, setUnresolvedPhone] = useState<boolean>(false);
   const toast = useToast();
   const intl = useFormatMessage();
-  const { user, refetch } = useUserContext();
+
+  const onSendSuccess = useCallback(() => {
+    setSentCode(true);
+    setUnresolvedPhone(false);
+  }, []);
 
   const onSendError = useOnError({
     type: "mutation",
     handler: ({ messageId }) => {
+      if (messageId === "error.api.unresolved-phone") setUnresolvedPhone(true);
       toast.error({
         title: intl("send-verification-email.error"),
         description: intl(messageId),
@@ -31,15 +33,10 @@ export const VerifyEmail: React.FC<Props> = ({ close, emailSent }) => {
     },
   });
 
-  const sendMutation = useSendVerificationEmailCode({
+  const sendMutation = useSendPhoneCode({
+    onSuccess: onSendSuccess,
     onError: onSendError,
   });
-
-  useEffect(() => {
-    if (sent) return;
-    setSent(true);
-    sendMutation.mutate();
-  }, [sendMutation, sent]);
 
   const onVerifySuccess = useCallback(() => {
     close();
@@ -58,8 +55,7 @@ export const VerifyEmail: React.FC<Props> = ({ close, emailSent }) => {
       });
     },
   });
-
-  const verifyMutation = useConfirmVerificationEmailCode({
+  const verifyMutation = useVerifyPhoneCode({
     onSuccess: onVerifySuccess,
     onError: onVerifyError,
   });
@@ -67,17 +63,17 @@ export const VerifyEmail: React.FC<Props> = ({ close, emailSent }) => {
   if (!user) return null;
 
   return (
-    <VerifyEmailDialog
-      open
+    <VerifyPhoneDialog
+      sendCode={sendMutation.mutate}
+      sentCode={sentCode}
+      sendingCode={sendMutation.isPending}
+      verifyCode={verifyMutation.mutate}
+      verifyingCode={verifyMutation.isPending}
+      unresolvedPhone={unresolvedPhone}
+      phone={user.phone}
       close={close}
-      email={user.email}
-      sending={sendMutation.isPending}
-      verifiying={verifyMutation.isPending}
-      verify={verifyMutation.mutate}
-      resend={() => {
-        sendMutation.mutate();
-        setSent(true);
-      }}
     />
   );
 };
+
+export default VerifyPhone;
