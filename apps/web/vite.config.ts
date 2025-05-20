@@ -2,11 +2,9 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from "node:path";
-import { location } from "@litespace/assets";
-import { viteStaticCopy } from "vite-plugin-static-copy";
 
-const backend = process.env.VITE_BACKEND;
-const development = backend !== "production";
+// const backend = process.env.VITE_BACKEND;
+// const development = backend !== "production";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,7 +31,7 @@ export default defineConfig({
     // Sentry uploads source maps only in production mode.
     // Sentry NOTE: Generating sourcemaps may expose them to the public,
     // potentially causing your source code to be leaked.
-    sourcemap: !!process.env.TAURI_DEBUG || !development,
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -68,20 +66,20 @@ export default defineConfig({
       project: process.env.SENTRY_PROJECT_NAME,
       authToken: process.env.SENTRY_AUTH_TOKEN,
       telemetry: false,
-
       sourcemaps: {
         // TODO: fill this array with sourcemaps files
         filesToDeleteAfterUpload: [],
       },
     }),
-    viteStaticCopy({
-      targets: [
-        {
-          src: location + "*.svg",
-          dest: ".",
-        },
-      ],
-    }),
+    // disable static copy for now.
+    // viteStaticCopy({
+    //   targets: [
+    //     {
+    //       src: location + "*.svg",
+    //       dest: ".",
+    //     },
+    //   ],
+    // }),
   ],
   resolve: {
     alias: {
