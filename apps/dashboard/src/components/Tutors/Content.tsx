@@ -75,16 +75,16 @@ export const Content: React.FC<{
           <div className="flex gap-2 items-center">
             <div className="rounded-full overflow-hidden w-8 h-8">
               <Avatar
-                src={info.row.original.image}
-                alt={info.getValue()}
                 id={info.row.original.id}
+                src={info.row.original.image}
+                alt={info.row.original.name}
               />
             </div>
             <Typography
               tag="span"
               className="text-body text-natural-800 font-semibold "
             >
-              {info.getValue()}
+              {info.row.original.name}
             </Typography>
           </div>
         ),

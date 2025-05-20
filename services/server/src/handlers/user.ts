@@ -1148,8 +1148,13 @@ async function findFullTutors(req: Request, res: Response, next: NextFunction) {
     req.query
   );
 
-  const result = await tutors.find(query);
-  const response: ITutor.FindFullTutorsApiResponse = result;
+  const { list, total } = await tutors.find(query);
+
+  const response: ITutor.FindFullTutorsApiResponse = {
+    list: await withImageUrls(list),
+    total,
+  };
+
   res.status(200).json(response);
 }
 
