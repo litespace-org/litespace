@@ -3,30 +3,33 @@
   "version": "1.0.0",
   "description": "LiteSpace recording server",
   "scripts": {
-    "start": "env-cmd node dist/index.js",
+    "start": "env-cmd node dist/app.js",
     "prepare": "ts-patch install -s",
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json",
+    "start:egress": "docker run --rm --cap-add SYS_ADMIN -e EGRESS_CONFIG_FILE=/out/config.yaml -v ~/livekit-egress:/out livekit/egress",
+    "start:egress:ubuntu": "sudo docker run --rm --cap-add SYS_ADMIN -e EGRESS_CONFIG_FILE=/out/config.yaml -v ~/livekit-egress:/out:wr livekit/egress",
+    "start:egress:fedora": "sudo docker run --rm --cap-add SYS_ADMIN -e EGRESS_CONFIG_FILE=/out/config.yaml -v ~/livekit-egress:/out:Z livekit/egress"
   },
   "keywords": [],
   "author": "LiteSpace Foundation <core@litespace.org>",
   "license": "ISC",
   "dependencies": {
+    "@litespace/auth": "workspace:^",
     "@litespace/models": "workspace:^",
+    "@litespace/radio": "workspace:^",
     "@litespace/types": "workspace:^",
     "@litespace/utils": "workspace:^",
-    "@litespace/radio": "workspace:^",
-    "dayjs": "^1.11.13",
-    "node-schedule": "^2.1.1",
-    "playwright": "^1.48.2",
-    "zod": "^3.23.8",
-    "ms": "^2.1.3",
-    "lodash": "^4.17.21"
+    "@livekit/egress-sdk": "^0.2.1",
+    "express": "^4.21.2",
+    "livekit-server-sdk": "^2.12.0",
+    "lodash": "^4.17.21",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node-schedule": "^2.1.7",
+    "env-cmd": "^10.1.0",
     "ts-patch": "^3.2.1",
     "typescript": "^5.4.5",
-    "typescript-transform-paths": "^3.5.2",
-    "env-cmd": "^10.1.0"
+    "typescript-transform-paths": "^3.5.2"
   }
 }

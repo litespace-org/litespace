@@ -25,6 +25,8 @@ import {
 } from "livekit-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller } from "@/components/Session/Controllers";
+import { useRecord } from "@litespace/headless/recorder";
+import { ISession } from "@litespace/types";
 
 const serverUrl = sockets.livekit[env.server];
 
@@ -175,6 +177,27 @@ export function useAudioController(): Controller {
   }, [isMicrophoneEnabled, localParticipant, onDeviceError]);
 
   return { toggle, enabled: isMicrophoneEnabled, loading, error };
+}
+
+export function useRecordController(sessionId: ISession.Id): Controller {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+
+  const recordMutation = useRecord({
+    onSuccess: () => console.log("the session is being recorded"),
+    onError: (error) => {
+      console.log("recording failed: ", error);
+      setError(error instanceof Error);
+    },
+  });
+
+  const toggle = useCallback(async () => {
+    setLoading(true);
+    recordMutation.mutate(sessionId);
+    setLoading(false);
+  }, [recordMutation, sessionId]);
+
+  return { toggle, enabled: true, loading, error };
 }
 
 export function useDeviceError() {

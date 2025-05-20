@@ -18,18 +18,20 @@ import { simulateMobile } from "@/lib/window";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import AudioStreams from "@/components/Session/AudioStreams";
 import Controllers from "@/components/Session/Controllers";
-import { Void } from "@litespace/types";
+import { ISession, Void } from "@litespace/types";
 import {
   useAudioController,
   useBlurController,
+  useRecordController,
   useVideoController,
 } from "@/components/Session/room";
 
 const Session: React.FC<{
+  id: ISession.Id;
   localMember: LocalMember;
   remoteMember: RemoteMember;
   leave: Void;
-}> = ({ localMember, remoteMember, leave }) => {
+}> = ({ id, localMember, remoteMember, leave }) => {
   const mq = useMediaQuery();
   const videoTracks = useTracks([Track.Source.Camera]);
   const localParticipant = useLocalParticipant();
@@ -38,6 +40,7 @@ const Session: React.FC<{
   const blurController = useBlurController();
   const videoController = useVideoController();
   const audioController = useAudioController();
+  const recordController = useRecordController(id);
 
   const videoTrackRef = useMemo(() => {
     const local = videoTracks.find(
@@ -94,6 +97,7 @@ const Session: React.FC<{
         audio={audioController}
         video={videoController}
         blur={blurController}
+        record={recordController}
       />
     </div>
   );

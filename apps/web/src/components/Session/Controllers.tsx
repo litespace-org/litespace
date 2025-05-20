@@ -11,6 +11,7 @@ import Microphone from "@litespace/assets/Microphone";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Error from "@litespace/assets/Error";
 import cn from "classnames";
+import { Circle } from "react-feather";
 
 type Icon = "microphone" | "camera" | "blur" | "screen" | "chat";
 
@@ -92,9 +93,10 @@ export const Toggle: React.FC<Controller & { icon: Icon }> = ({
 const Controllers: React.FC<{
   audio: Controller;
   video: Controller;
+  record?: Controller;
   blur?: Controller;
   leave?: Void;
-}> = ({ audio, video, blur, leave }) => {
+}> = ({ audio, video, blur, leave, record }) => {
   return (
     <div dir="ltr" className="flex items-center justify-center gap-6">
       <Toggle
@@ -133,6 +135,17 @@ const Controllers: React.FC<{
           variant="primary"
           startIcon={<CallIncoming className="icon" />}
           onClick={leave}
+        />
+      ) : null}
+
+      {record ? (
+        <Button
+          type="main"
+          size="large"
+          variant="primary"
+          startIcon={<Circle className="icon" />}
+          onClick={record.toggle}
+          disabled={!record.enabled || record.loading}
         />
       ) : null}
     </div>

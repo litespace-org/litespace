@@ -86,6 +86,7 @@ const Content: React.FC<{
 
   return (
     <Session
+      id={lessonQuery.data.lesson.sessionId}
       type="lesson"
       localMember={self}
       token={tokenQuery.data.token}

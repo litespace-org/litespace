@@ -175,6 +175,7 @@ To create a new package, follow these steps:
 | Studio               | services/studio    | 4005 |
 | Jobs                 | services/jobs      | N/A  |
 | Kafka UI             | System             | 4006 |
+| recorder             | services/recorder  | 4007 |
 | PostgreSQL           | System             | 5432 |
 | Redis                | System             | 6379 |
 | Kafka                | System             | 9092 |

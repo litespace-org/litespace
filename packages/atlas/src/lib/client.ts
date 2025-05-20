@@ -37,7 +37,7 @@ export const sockets: Record<
   },
 } as const;
 
-export type Server = "api" | "messenger" | "echo";
+export type Server = "api" | "messenger" | "echo" | "recorder";
 
 export const servers: Record<Server, Record<Env.Server, string>> = {
   api: {
@@ -54,6 +54,11 @@ export const servers: Record<Server, Record<Env.Server, string>> = {
     local: "http://localhost:4004",
     staging: "https://echo.staging.litespace.org",
     production: "https://echo.litespace.org",
+  },
+  recorder: {
+    local: "http://localhost:4007",
+    staging: "https://livekit.staging.litespace.org",
+    production: "https://livekite.litespace.org",
   },
 };
 

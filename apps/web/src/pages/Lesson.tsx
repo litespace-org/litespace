@@ -8,9 +8,9 @@ import Content from "@/components/Lesson/Content";
 import { useUserContext } from "@litespace/headless/context/user";
 import cn from "classnames";
 
-type Params = Replace<UrlParamsOf<Web.LessonV3>, "id", string>;
+type Params = Replace<UrlParamsOf<Web.Lesson>, "id", string>;
 
-const LessonV3: React.FC = () => {
+const Lesson: React.FC = () => {
   const params = useParams<Params>();
   const logger = useLogger();
   const navigate = useNavigate();
@@ -43,4 +43,4 @@ const LessonV3: React.FC = () => {
   );
 };
 
-export default LessonV3;
+export default Lesson;

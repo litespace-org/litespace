@@ -1,5 +1,9 @@
 import { safe } from "@litespace/utils/error";
 import { useCallback, useState } from "react";
+import { ISession } from "@litespace/types";
+import { useMutation } from "@tanstack/react-query";
+import { MutationKey } from "@/constants";
+import { useApi } from "@/api";
 
 export function useDisplayRecorder() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -49,4 +53,24 @@ export function useDisplayRecorder() {
     loading,
     error,
   };
+}
+
+export function useRecord({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?(): void;
+  onError?(error: Error): void;
+}) {
+  const api = useApi();
+  const record = useCallback(
+    (sessionId: ISession.Id) => api.recorder.record(sessionId),
+    [api.recorder]
+  );
+  return useMutation({
+    mutationFn: record,
+    mutationKey: [MutationKey.Record],
+    onSuccess,
+    onError,
+  });
 }
