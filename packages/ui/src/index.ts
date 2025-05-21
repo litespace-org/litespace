@@ -40,7 +40,6 @@ export { ForgetPasswordDialog } from "@/components/ForgetPasswordDialog";
 export { Loading } from "@/components/Loading";
 export { RawHtml } from "@/components/RawHtml";
 export { Price } from "@/components/Price";
-export { PlanCard } from "@/components/PlanCard";
 export { SidebarNav } from "@/components/SidebarNav";
 export { OnlineStatus, UserOnlineStatus } from "@/components/OnlineStatus";
 export { messages, locales, type LocalMap, type LocalId } from "@/locales";
