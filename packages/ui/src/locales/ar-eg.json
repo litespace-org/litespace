@@ -756,7 +756,6 @@
   "plan.discount": "{value} % خصم لفترة محدودة",
   "plan.instead-of": "بدلا من {value}",
   "plan.price": "{value} جنيه مصري",
-  "plan.price-before-discount": "{value} ج.م",
   "plan.label.most-common": "الأكثر شهرة",
   "plan.label.most-valuable": "الأفضل قيمة",
   "plan.subscribe-now": "اشترك الآن",

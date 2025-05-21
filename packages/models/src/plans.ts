@@ -1,5 +1,15 @@
-import { IFilter, IPlan, Paginated } from "@litespace/types";
-import { column, countRows, knex, withPagination } from "@/query";
+import { IPlan, Paginated } from "@litespace/types";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withBooleanFilter,
+  withDateFilter,
+  withNumericFilter,
+  withListFilter,
+  withSkippablePagination,
+} from "@/query";
 import { first } from "lodash";
 import { Knex } from "knex";
 
@@ -69,20 +79,53 @@ export class Plans {
 
   async find({
     tx,
-    page,
-    size,
-  }: { tx?: Knex.Transaction } & IFilter.Pagination): Promise<
-    Paginated<IPlan.Self>
-  > {
-    const total = await countRows(this.builder(tx));
-    const rows = await withPagination(this.builder(tx).select(), {
-      page,
-      size,
-    });
-    return {
-      list: rows.map((row) => this.from(row)),
-      total,
-    };
+    ids,
+    weeklyMinutes,
+    baseMonthlyPrice,
+    monthDiscount,
+    quarterDiscount,
+    yearDiscount,
+    forInvitesOnly,
+    active,
+    createdAt,
+    updatedAt,
+    ...pagination
+  }: WithOptionalTx<IPlan.FindQueryModel>): Promise<Paginated<IPlan.Self>> {
+    const builder = this.builder(tx);
+
+    // ============== boolean fields ========
+    withBooleanFilter(builder, this.column("for_invites_only"), forInvitesOnly);
+    withBooleanFilter(builder, this.column("active"), active);
+
+    // ============== numerical fileds ========
+    withNumericFilter(builder, this.column("weekly_minutes"), weeklyMinutes);
+    withNumericFilter(
+      builder,
+      this.column("base_monthly_price"),
+      baseMonthlyPrice
+    );
+    withNumericFilter(builder, this.column("month_discount"), monthDiscount);
+    withNumericFilter(
+      builder,
+      this.column("quarter_discount"),
+      quarterDiscount
+    );
+    withNumericFilter(builder, this.column("year_discount"), yearDiscount);
+
+    // ============== date fields ========
+    withDateFilter(builder, this.column("created_at"), createdAt);
+    withDateFilter(builder, this.column("updated_at"), updatedAt);
+
+    // ==============  list-based fileds ========
+    withListFilter(builder, this.column("id"), ids);
+
+    const total = await countRows(builder.clone(), { distinct: true });
+    const query = builder.select().orderBy(this.column("created_at"), "desc");
+
+    const rows = await withSkippablePagination(query, pagination);
+    const list = rows.map((row) => this.from(row));
+
+    return { list, total };
   }
 
   from(row: IPlan.Row): IPlan.Self {

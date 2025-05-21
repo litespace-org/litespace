@@ -73,7 +73,7 @@ const PlansPanel: React.FC<{
 };
 
 export const Selector: React.FC<{
-  plans: IPlan.FindPlansApiResponse["list"];
+  plans: IPlan.FindApiResponse["list"];
 }> = ({ plans }) => {
   const intl = useFormatMessage();
 

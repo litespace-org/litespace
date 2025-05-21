@@ -1,5 +1,5 @@
 import { Base } from "@/lib/base";
-import { IFilter, IPlan } from "@litespace/types";
+import { IPlan } from "@litespace/types";
 
 export class Plan extends Base {
   async create(payload: IPlan.CreateApiPayload): Promise<void> {
@@ -7,7 +7,7 @@ export class Plan extends Base {
   }
 
   async update(id: number, payload: IPlan.UpdateApiPayload) {
-    await this.put({ route: `/api/v1/plan/${id}`, payload });
+    await this.patch({ route: `/api/v1/plan/${id}`, payload });
   }
 
   async delete(id: number) {
@@ -18,9 +18,7 @@ export class Plan extends Base {
     return this.get({ route: `/api/v1/plan/${id}` });
   }
 
-  async find(
-    pagination?: IFilter.Pagination
-  ): Promise<IPlan.FindPlansApiResponse> {
-    return this.get({ route: `/api/v1/plan/list`, params: pagination });
+  async find(query?: IPlan.FindApiQuery): Promise<IPlan.FindApiResponse> {
+    return this.get({ route: `/api/v1/plan/list`, params: query });
   }
 }
