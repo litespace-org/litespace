@@ -4,7 +4,7 @@ import {
   useConfirmForgetPasswordCode,
   useSendForgetPasswordCode,
 } from "@litespace/headless/confirmationCode";
-import { Void } from "@litespace/types";
+import { ApiError, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { ForgetPasswordDialog } from "@litespace/ui/ForgetPasswordDialog";
@@ -40,7 +40,13 @@ export const ForgetPassword: React.FC<Props> = ({ close }) => {
 
   const onResetError = useOnError({
     type: "mutation",
-    handler: ({ messageId }) => {
+    handler: ({ messageId, errorCode }) => {
+      if (
+        errorCode === ApiError.InvalidVerificationCode ||
+        errorCode === ApiError.ExpiredVerificationCode
+      )
+        return sendMutation.reset();
+
       toast.error({
         title: intl("reset-password-dialog.error"),
         description: intl(messageId),
