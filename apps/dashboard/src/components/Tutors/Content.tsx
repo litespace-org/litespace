@@ -172,7 +172,7 @@ export const Content: React.FC<{
               tag="h6"
               className="text-body text-natural-950 font-bold"
             >
-              {intl("dashboard.tutors.table.action")}
+              {intl("dashboard.table.action")}
             </Typography>
           </div>
         ),

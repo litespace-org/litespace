@@ -185,7 +185,8 @@ const PlanPeriod: React.FC<{
                 })}
               </Typography>
             ) : null}
-            {period !== "month" ? (
+            {/* @TODO: Reactivate when the installment feature is added */}
+            {/* {period !== "month" ? (
               <Typography
                 tag="span"
                 className="border border-brand-600 bg-brand-50 rounded-[4px] px-2 py-[2px] text-tiny font-normal text-brand-600"
@@ -197,7 +198,7 @@ const PlanPeriod: React.FC<{
                   ? intl("plan.labels.installment-four-times")
                   : null}
               </Typography>
-            ) : null}
+            ) : null} */}
           </div>
         </div>
         {open ? (

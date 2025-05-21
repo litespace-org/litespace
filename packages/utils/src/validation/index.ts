@@ -22,6 +22,7 @@ export { isValidRatingValue, isValidRatingText } from "@/validation/rating";
 
 export {
   isValidPlanAlias,
+  isValidPrice,
   isValidPlanPrice,
   isValidPlanDiscount,
   isValidPlanWeeklyMinutes,
