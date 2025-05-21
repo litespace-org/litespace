@@ -1,6 +1,7 @@
 import { StoryObj, Meta } from "@storybook/react";
 import { ForgetPasswordDialog } from "@/components/ForgetPasswordDialog";
 import React, { useState } from "react";
+import { Button } from "@/components/Button";
 
 type Component = typeof ForgetPasswordDialog;
 type Story = StoryObj<Component>;
@@ -17,71 +18,40 @@ const meta: Meta<Component> = {
   ],
 };
 
-export const Primary: Story = {
-  args: {
-    open: true,
-    sendCode: (email) => console.log(email),
-    sendingCode: false,
-    sentCode: false,
-    resetPassword: (payload) => alert(JSON.stringify(payload)),
-    resetSendCode: () => {},
-    resettingPassword: false,
-  },
-  render(props) {
+export const ForgetPassword: Story = {
+  render() {
+    const [open, setOpen] = useState(false);
     const [sentCode, setSentCode] = useState<boolean>(false);
     const [sendingCode, setSendingCode] = useState<boolean>(false);
-    return (
-      <ForgetPasswordDialog
-        {...props}
-        sendCode={() => {
-          setSendingCode(true);
-          setSentCode(false);
-          setTimeout(() => {
-            setSendingCode(false);
-            setSentCode(true);
-          }, 500);
-        }}
-        sentCode={sentCode}
-        resetSendCode={() => {
-          setSentCode(false);
-          setSendingCode(false);
-        }}
-        sendingCode={sendingCode}
-      />
-    );
-  },
-};
+    const [resettingPassword, setResettingPassword] = useState(false);
 
-export const SendingCode: Story = {
-  args: {
-    open: true,
-    sendCode: (email) => console.log(email),
-    sendingCode: true,
-    resetPassword: (payload) => alert(JSON.stringify(payload)),
-    resetSendCode: () => {},
-    resettingPassword: false,
-  },
-};
-
-export const SentCode: Story = {
-  args: {
-    open: true,
-    sendCode: (email) => console.log(email),
-    sendingCode: false,
-    sentCode: true,
-    resetPassword: (payload) => console.log(payload),
-    resetSendCode: () => {},
-    resettingPassword: false,
-  },
-  render(props) {
-    const [sentCode, setSentCode] = useState<boolean>(false);
     return (
-      <ForgetPasswordDialog
-        {...props}
-        sendCode={() => setSentCode(true)}
-        sentCode={sentCode}
-        resetSendCode={() => setSentCode(false)}
-      />
+      <>
+        <Button onClick={() => setOpen(true)}>forget password</Button>
+        <ForgetPasswordDialog
+          open={open}
+          close={() => setOpen(false)}
+          sendCode={() => {
+            setSendingCode(true);
+            setTimeout(() => {
+              setSendingCode(false);
+              setSentCode(true);
+            }, 3000);
+          }}
+          sendingCode={sendingCode}
+          sentCode={sentCode}
+          resendCode={() => setSentCode(false)}
+          resetPassword={(newPassword) => {
+            setResettingPassword(true);
+            setTimeout(() => {
+              setResettingPassword(false);
+              console.log(newPassword);
+              setOpen(false);
+            }, 3000);
+          }}
+          resettingPassword={resettingPassword}
+        />
+      </>
     );
   },
 };
