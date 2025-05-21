@@ -1,6 +1,6 @@
 import PageTitle from "@/components/Common/PageTitle";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { useTopics } from "@litespace/headless/topic";
+import { usePaginatedTopics } from "@litespace/headless/topic";
 import List from "@/components/Topics/List";
 import { Button } from "@litespace/ui/Button";
 import { useRender } from "@litespace/ui/hooks/common";
@@ -32,7 +32,7 @@ const Topics = () => {
     [name, orderBy, orderDirection]
   );
 
-  const query = useTopics(filter);
+  const query = usePaginatedTopics(filter);
 
   const debouncedRefetch = useMemo(
     () =>

@@ -1,51 +1,33 @@
 import PageTitle from "@/components/Common/PageTitle";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import React, { useEffect } from "react";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import Content from "@/components/StudentSettings/Content";
+import { TabId } from "@/components/StudentSettings/types";
+import { isValidTab } from "@/components/StudentSettings/utils";
 import { useUserContext } from "@litespace/headless/context/user";
-import { ProfileForm } from "@/components/StudentSettings/ProfileForm";
-import { redirect } from "react-router-dom";
-import { Loading, LoadingError } from "@litespace/ui/Loading";
-import { Web } from "@litespace/utils/routes";
 
-const Settings: React.FC = () => {
+export default function StudentSettingsV2() {
   const intl = useFormatMessage();
-  const { user, fetching, error, loading, refetch } = useUserContext();
+  const [params, setParams] = useSearchParams();
+  const { user, fetching } = useUserContext();
 
-  useEffect(() => {
-    if (!user && !!loading && !error) redirect(Web.Login);
-  }, [user, loading, error]);
+  const tab: TabId = useMemo(() => {
+    const tab = params.get("tab");
+    if (!tab || !isValidTab(tab)) return "personal";
+    return tab;
+  }, [params]);
+
+  if (!user) return null;
 
   return (
-    <div className="p-4 md:p-6 mx-auto w-full max-w-screen-3xl">
-      <div className="relative w-full">
-        <PageTitle
-          title={intl("student-settings.profile.title")}
-          className="mb-4 md:mb-6"
-          fetching={fetching && !loading}
-        />
+    <div className="p-4 flex flex-col gap-4 lg:gap-6 lg:p-6 max-w-screen-3xl mx-auto w-full md:max-h-max h-full">
+      <PageTitle
+        title={intl("student-settings.profile.title")}
+        fetching={fetching}
+      />
 
-        <div>
-          {loading ? (
-            <div className="w-full mt-[12.5%] flex justify-center">
-              <Loading size="large" text={intl("student-settings.loading")} />
-            </div>
-          ) : null}
-
-          {error && !loading ? (
-            <div className="w-full mt-[12.5%] flex justify-center">
-              <LoadingError
-                size="large"
-                retry={refetch.user}
-                error={intl("student-settings.error")}
-              />
-            </div>
-          ) : null}
-
-          {user && !error && !loading ? <ProfileForm user={user} /> : null}
-        </div>
-      </div>
+      <Content tab={tab} user={user} setTab={(tab) => setParams({ tab })} />
     </div>
   );
-};
-
-export default Settings;
+}

@@ -43,10 +43,10 @@ export function useInfiniteLessons({
   const findLessons: InfiniteQueryHandler<
     Element<ILesson.FindUserLessonsApiResponse["list"]>
   > = useCallback(
-    async ({ pageParam }) => {
+    async ({ page }) => {
       if (userOnly && !query.users?.length) return { list: [], total: 0 };
       return await api.lesson.findLessons({
-        page: pageParam,
+        page,
         ...query,
       });
     },

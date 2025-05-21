@@ -1,4 +1,4 @@
-import { TabId } from "@/components/StudentSettings/V2/types";
+import { TabId } from "@/components/StudentSettings/types";
 
 export function isValidTab(tab: string): tab is TabId {
   return ["personal", "password", "notifications", "topics"].includes(tab);

@@ -20,7 +20,7 @@ const VerifyEmailSection: React.FC = () => {
   const intl = useFormatMessage();
   const [showVerifyDialog, setShowVerifyDialog] = useState(false);
   return (
-    <div className="flex gap-14 items-end">
+    <div className="flex flex-wrap lg:flex-nowrap lg:gap-[57px] items-end">
       {showVerifyDialog ? (
         <VerifyEmail
           close={() => {
@@ -42,7 +42,7 @@ const VerifyEmailSection: React.FC = () => {
       <Button
         onClick={() => setShowVerifyDialog(true)}
         size="large"
-        className="min-w-fit"
+        className="min-w-fit mt-4 lg:mt-0 w-[173px]"
         variant="secondary"
       >
         {intl("student-settings.verify-email.title")}
@@ -54,7 +54,7 @@ const VerifyEmailSection: React.FC = () => {
 const VerifyPhoneSection: React.FC = () => {
   const intl = useFormatMessage();
   return (
-    <div className="flex gap-14 items-end">
+    <div className="flex flex-wrap lg:flex-nowrap lg:gap-[57px] items-end">
       <div>
         <Typography
           className="text-subtitle-2 font-bold text-natural-950"
@@ -66,7 +66,11 @@ const VerifyPhoneSection: React.FC = () => {
           {intl("student-settings.verify-phone.description")}
         </Typography>
       </div>
-      <Button size="large" className="min-w-fit" variant="secondary">
+      <Button
+        size="large"
+        className="mt-4 lg:mt-0 min-w-[173px]"
+        variant="secondary"
+      >
         {intl("student-settings.verify-phone.title")}
       </Button>
     </div>

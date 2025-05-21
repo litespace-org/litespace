@@ -84,7 +84,7 @@ export const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
   const mutation = useUpdateUser({ onSuccess, onError });
 
   return (
-    <div className="max-w-[400px]">
+    <div className="max-w-[400px] grow md:grow-0 flex flex-col gap-6">
       <form onSubmit={form.onSubmit} className="w-full flex flex-col gap-4">
         <Password
           required
@@ -124,12 +124,7 @@ export const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
           helper={form.errors?.confirm}
         />
       </form>
-      <Button
-        size="large"
-        disabled={mutation.isPending}
-        onClick={form.submit}
-        className="mt-10"
-      >
+      <Button size="large" disabled={mutation.isPending} onClick={form.submit}>
         {intl("shared-settings.save")}
       </Button>
     </div>

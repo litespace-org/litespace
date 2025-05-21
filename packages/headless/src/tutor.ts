@@ -22,8 +22,8 @@ export function useTutors() {
   const api = useApi();
 
   const findTutors = useCallback(
-    ({ pageParam }: { pageParam: number }) => {
-      return api.user.findOnboardedTutors({ page: pageParam });
+    ({ page }: { page: number }) => {
+      return api.user.findOnboardedTutors({ page });
     },
     [api.user]
   );
@@ -77,11 +77,11 @@ export function useFindStudioTutors(studioId?: number, search?: string) {
   const api = useApi();
 
   const findStudioTutors = useCallback(
-    async ({ pageParam }: { pageParam: number }) => {
+    async ({ page }: { page: number }) => {
       return await api.user.findStudioTutors({
         studioId,
         search,
-        pagination: { page: pageParam },
+        pagination: { page },
       });
     },
     [api.user, search, studioId]
