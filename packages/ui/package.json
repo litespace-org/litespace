@@ -48,7 +48,6 @@
     "./PatternInput": "./dist/components/PatternInput/index.js",
     "./OnlineStatus": "./dist/components/OnlineStatus/index.js",
     "./OverviewCard": "./dist/components/OverviewCard/index.js",
-    "./PlanCard": "./dist/components/PlanCard/index.js",
     "./Popover": "./dist/components/Popover/index.js",
     "./Price": "./dist/components/Price/index.js",
     "./Profile": "./dist/components/Profile/index.js",
