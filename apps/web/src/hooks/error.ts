@@ -1,10 +1,10 @@
 import { router } from "@/lib/routes";
 import { capture } from "@/lib/sentry";
 import { useLogger } from "@litespace/headless/logger";
-import { Optional, Void } from "@litespace/types";
+import { ApiErrorCode, Optional, Void } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { LocalId } from "@litespace/ui/locales";
-import { isForbidden } from "@litespace/utils";
+import { isForbidden, ResponseError } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef } from "react";
@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 export type ErrorPayload = {
   raw: unknown;
   messageId: LocalId;
+  errorCode?: ApiErrorCode;
 };
 
 type QueryPayload = {
@@ -61,6 +62,7 @@ export function useOnError(payload: OnErrorPayload) {
       handlerRef.current({
         messageId,
         raw: error,
+        errorCode: error instanceof ResponseError ? error.errorCode : undefined,
       });
     },
     [logger, navigate]
