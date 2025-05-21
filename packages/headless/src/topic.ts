@@ -4,6 +4,7 @@ import { useCallback, useMemo } from "react";
 import { useApi } from "@/api";
 import { usePaginate } from "@/pagination";
 import { MutationKey, QueryKey } from "@/constants";
+import { useInfinitePaginationQuery } from "@/query";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
@@ -32,7 +33,7 @@ export function useCreateTopic({
   });
 }
 
-export function useTopics(
+export function usePaginatedTopics(
   query: Omit<ITopic.FindTopicsApiQuery, "page" | "size">
 ) {
   const api = useApi();
@@ -45,6 +46,19 @@ export function useTopics(
   );
 
   return usePaginate(findTopics, [QueryKey.FindTopic, query]);
+}
+
+export function useInfiniteTopics() {
+  const api = useApi();
+
+  const findTopics = useCallback(
+    async ({ page }: { page: number }) => {
+      return await api.topic.findTopics({ page });
+    },
+    [api.topic]
+  );
+
+  return useInfinitePaginationQuery(findTopics, [QueryKey.FindTopics]);
 }
 
 export function useUserTopics() {

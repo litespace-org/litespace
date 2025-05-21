@@ -1,17 +1,12 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-import { Controller } from "@litespace/ui/Form";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 import Edit from "@litespace/assets/Edit";
 import { TopicSelectionDialog } from "@litespace/ui/TopicSelectionDialog";
 import { useCallback, useMemo, useState } from "react";
-import { useTopics, useUserTopics } from "@litespace/headless/topic";
+import { usePaginatedTopics, useUserTopics } from "@litespace/headless/topic";
 import { useUpdateUserTopics } from "@litespace/headless/user";
 import { useToast } from "@litespace/ui/Toast";
-import {
-  useValidateBio,
-  useValidateUserName,
-} from "@litespace/ui/hooks/validation";
 import { UseFormReturn } from "react-hook-form";
 import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
@@ -109,16 +104,16 @@ const Topics: React.FC<{
 const PublicSettings: React.FC<{
   video: string | null;
   form: UseFormReturn<ITutorSettingsForm, unknown, undefined>;
-}> = ({ video, form }) => {
+}> = ({ video }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const [showTopicsDialog, setShowTopoicsDialog] = useState<boolean>(false);
   const invalidateQuery = useInvalidateQuery();
-  const topics = useTopics({});
+  const topics = usePaginatedTopics({});
   const { query: userTopics } = useUserTopics();
-  const validateUserName = useValidateUserName(form.watch("name") !== null);
-  const validateBio = useValidateBio(form.watch("bio") !== null);
-  const errors = form.formState.errors;
+  // const validateUserName = useValidateUserName(form.watch("name") !== null);
+  // const validateBio = useValidateBio(form.watch("bio") !== null);
+  // const errors = form.formState.errors;
 
   const allTopics = useMemo(() => {
     if (!topics.query.data) return [];
@@ -188,7 +183,7 @@ const PublicSettings: React.FC<{
       >
         {intl("tutor-settings.personal-info.title")}
       </Typography>
-      <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 -mt-2 lg:mt-0">
+      {/* <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 -mt-2 lg:mt-0">
         <Controller.Input
           id="name"
           value={form.watch("name")}
@@ -211,7 +206,7 @@ const PublicSettings: React.FC<{
           helper={errors.bio?.message}
           name="bio"
         />
-      </div>
+      </div> */}
 
       <Topics
         edit={() => setShowTopoicsDialog(true)}
@@ -220,7 +215,7 @@ const PublicSettings: React.FC<{
         loading={userTopics.isLoading}
         retry={userTopics.refetch}
       />
-
+      {/* 
       <Controller.Textarea
         id="about"
         value={form.watch("about")}
@@ -231,7 +226,7 @@ const PublicSettings: React.FC<{
         label={intl("tutor-settings.personal-info.about")}
         state={errors.about ? "error" : undefined}
         helper={errors.about?.message}
-      />
+      /> */}
 
       {video ? (
         <div>

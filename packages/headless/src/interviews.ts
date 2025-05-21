@@ -47,12 +47,12 @@ export function useFindInfinitInterviews(
   const api = useApi();
 
   const findInterviews = useCallback(
-    async ({ pageParam }: { pageParam: number }) => {
+    async ({ page }: { page: number }) => {
       if (!user) return { list: [], total: 0 };
       return api.interview.findInterviews({
         users: user ? [user] : [],
-        page: pageParam,
         size: 10,
+        page,
       });
     },
     [api.interview, user]

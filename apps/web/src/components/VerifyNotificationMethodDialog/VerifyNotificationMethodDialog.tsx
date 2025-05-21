@@ -7,6 +7,7 @@ import { SelectMethod } from "@/components/VerifyNotificationMethodDialog/Select
 import { VerifyCode } from "@/components/VerifyNotificationMethodDialog/VerifyCode";
 import { EnterPhoneNumber } from "@/components/VerifyNotificationMethodDialog/EnterPhoneNumber";
 import { Typography } from "@litespace/ui/Typography";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
   close: Void;
@@ -34,6 +35,7 @@ export const VerifyNotificationMethodDialog: React.FC<Props> = ({
     defaultMethod
   );
   const [phone, setPhone] = useState<string | null>(defaultPhone);
+  const mq = useMediaQuery();
 
   return (
     <Dialog
@@ -45,9 +47,10 @@ export const VerifyNotificationMethodDialog: React.FC<Props> = ({
           {intl("notification-method.dialog.title")}
         </Typography>
       }
-      className="w-[512px]"
-      open
+      position={mq.sm ? "center" : "bottom"}
+      className={mq.sm ? "w-[512px]" : "w-full"}
       close={close}
+      open
     >
       <AnimatePresence mode="wait">
         {method === null ? (

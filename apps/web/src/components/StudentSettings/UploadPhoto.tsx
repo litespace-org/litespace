@@ -22,10 +22,10 @@ const UploadPhoto: React.FC<{
   const toast = useToast();
   const intl = useFormatMessage();
   const ref = useRef<HTMLInputElement>(null);
-  const { md, lg } = useMediaQuery();
+  const { md } = useMediaQuery();
   const invalidateQuery = useInvalidateQuery();
 
-  const { mutation } = useUploadUserImage({
+  const { mutation: uploadUserImage } = useUploadUserImage({
     onSuccess() {
       invalidateQuery([QueryKey.FindCurrentUser]);
     },
@@ -45,7 +45,7 @@ const UploadPhoto: React.FC<{
       });
     },
   });
-  const updateUser = useUpdateUser({
+  const updateUserInfo = useUpdateUser({
     onSuccess: onClearPhotoSuccess,
     onError: onClearPhotoError,
   });
@@ -63,12 +63,12 @@ const UploadPhoto: React.FC<{
         className="hidden"
         accept="image/jpeg,image/gif,image/png"
         ref={ref}
-        onChange={async (event) => {
+        onChange={(event) => {
           const file = first(event.target.files);
           if (!file) return;
           setPhoto(file);
-          mutation.reset();
-          mutation.mutate({ image: file });
+          uploadUserImage.reset();
+          uploadUserImage.mutate({ image: file });
         }}
       />
       <div className="min-w-[84px] min-h-[84px] lg:w-[102px] lg:h-[102px] rounded-full overflow-hidden">
@@ -77,23 +77,20 @@ const UploadPhoto: React.FC<{
       <div className="grow md:grow-0 flex flex-col justify-between gap-2 lg:gap-5">
         <Typography
           tag="span"
-          className="text-natural-700 max-w-fit sm:max-w-[214px] md:max-w-[240px] text-tiny lg:text-caption font-semibold md:font-normal lg:font-semibold"
+          className="text-natural-700 max-w-[214px] md:max-w-[240px] text-tiny lg:text-caption font-semibold md:font-normal lg:font-semibold"
         >
           {intl("student-settings.upload.image.desc")}
         </Typography>
         <div className="flex gap-2">
           <Button
             size="large"
-            loading={mutation.isPending}
-            disabled={mutation.isPending}
+            loading={uploadUserImage.isPending}
+            disabled={uploadUserImage.isPending}
             onClick={() => {
               if (!ref.current) return;
               ref.current.click();
             }}
-            className={cn(
-              "w-full text-body font-medium",
-              lg ? "max-w-fit" : "max-w-[126px]"
-            )}
+            className="w-fit text-body font-medium"
           >
             {intl("student-settings.upload.image.change")}
           </Button>
@@ -102,28 +99,23 @@ const UploadPhoto: React.FC<{
             size="large"
             variant="secondary"
             type="error"
-            loading={updateUser.isPending}
+            loading={updateUserInfo.isPending}
             disabled={
-              mutation.isPending ||
-              updateUser.isPending ||
+              uploadUserImage.isPending ||
+              updateUserInfo.isPending ||
               (!image && !photoUrl)
             }
             onClick={() => {
-              updateUser.mutate({
-                id,
-                payload: { image: null },
-              });
+              updateUserInfo.mutate({ id, payload: { image: null } });
             }}
-            className={cn(
-              "md:max-w-fit md:w-full w-12 whitespace-nowrap text-body font-medium",
-              !image && !photoUrl ? "hidden" : ""
-            )}
+            className={cn(!image && !photoUrl && "hidden")}
+            endIcon={!md ? <Trash className="icon w-4 h-4" /> : undefined}
           >
             {md ? (
-              intl("student-settings.upload.image.clear")
-            ) : (
-              <Trash className="[&>*]:stroke-destructive-700 w-4 h-4" />
-            )}
+              <Typography tag="p" className="text text-body font-medium">
+                {intl("student-settings.upload.image.clear")}
+              </Typography>
+            ) : null}
           </Button>
         </div>
       </div>

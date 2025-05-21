@@ -184,10 +184,7 @@ export function NotificationSettings({
           verifing={verifyPhoneCodeMutation.isPending}
         />
       ) : null}
-      <form
-        onSubmit={form.onSubmit}
-        className="grow flex justify-between flex-col md:justify-start"
-      >
+      <form onSubmit={form.onSubmit} className="grow flex flex-col gap-6">
         <Select
           onChange={onChange}
           id="notification-method"
@@ -203,7 +200,6 @@ export function NotificationSettings({
             form.state.notificationMethod === notificationMethod
           }
           onClick={form.submit}
-          className="md:mt-10 mb-4 md:mb-0 mr-auto md:mr-0"
         >
           {intl("shared-settings.save")}
         </Button>

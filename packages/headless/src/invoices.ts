@@ -51,15 +51,11 @@ export function useFindInvoicesByUser(
 ): useFindInvoicesByUserProps {
   const api = useApi();
   const findInvoices = useCallback(
-    async ({
-      pageParam,
-    }: {
-      pageParam: number;
-    }): Promise<Paginated<IInvoice.Self>> => {
+    async ({ page }: { page: number }): Promise<Paginated<IInvoice.Self>> => {
       if (filter.userOnly && !filter.users) return { list: [], total: 0 };
       return await api.invoice.find({
+        page,
         users: filter.users,
-        page: pageParam,
         ...filter,
       });
     },

@@ -68,7 +68,7 @@ const Content: React.FC<{
         <UploadPhoto id={user.id} name={user.name} image={user.image} />
       </div>
 
-      <div className="max-w-fit mb-6 lg:mb-10">
+      <div className="md:max-w-fit mb-6 lg:mb-10">
         <Tabs tabs={tabs} tab={tab} setTab={setTab} />
       </div>
 
@@ -99,7 +99,7 @@ const Content: React.FC<{
       ) : null}
 
       {tab === "topics" ? (
-        <div className="max-w-[531px] grow flex">
+        <div className="max-w-[530px] grow flex">
           <TopicSelection />
         </div>
       ) : null}

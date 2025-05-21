@@ -38,14 +38,11 @@ export const LoadingError: React.FC<{
   return (
     <div className="flex flex-col items-center justify-center w-[226px]">
       <div
-        className={cn(
-          "flex items-center justify-center bg-destructive-200 rounded-full",
-          {
-            "p-[3.33px] w-8 h-8": size === "small",
-            "p-[5.33px] w-16 h-16": size === "medium",
-            "p-[6.67px] w-20 h-20": size === "large",
-          }
-        )}
+        className={cn("flex items-center justify-center rounded-full", {
+          "w-8 h-8": size === "small",
+          "w-16 h-16": size === "medium",
+          "w-20 h-20": size === "large",
+        })}
       >
         <ExclaimationMarkCircle />
       </div>

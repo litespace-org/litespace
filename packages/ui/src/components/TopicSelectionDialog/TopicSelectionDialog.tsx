@@ -96,7 +96,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           {title}
         </Typography>
       }
-      className={mq.md ? "w-[744px]" : "w-screen"}
+      className={mq.md ? "w-[512px]" : "w-full"}
       close={confirming ? undefined : onClose}
       open={opened}
       position={mq.sm ? "center" : "bottom"}

@@ -930,8 +930,8 @@ export function useFindUncontactedTutors(
   const api = useApi();
 
   const findUncontactedTutors = useCallback(
-    ({ pageParam }: { pageParam: number }) => {
-      return api.user.findUncontactedTutors({ page: pageParam });
+    ({ page }: { page: number }) => {
+      return api.user.findUncontactedTutors({ page });
     },
     [api.user]
   );
@@ -993,12 +993,9 @@ export function useFindUserRooms(
 ): UseInfinitePaginationQueryResult<IRoom.FindUserRoomsApiRecord> {
   const api = useApi();
   const findUserRooms = useCallback(
-    async ({ pageParam }: { pageParam: number }) => {
+    async ({ page }: { page: number }) => {
       if (!userId) return { list: [], total: 0 };
-      return await api.chat.findRooms(userId, {
-        page: pageParam,
-        ...payload,
-      });
+      return await api.chat.findRooms(userId, { page, ...payload });
     },
     [api.chat, userId, payload]
   );

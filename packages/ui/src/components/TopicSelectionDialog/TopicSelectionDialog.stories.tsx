@@ -24,6 +24,8 @@ const actions = {
 
 export const FewTopics: Story = {
   args: {
+    title: faker.lorem.words(5),
+    description: faker.lorem.paragraph(),
     topics: faker.lorem
       .words(10)
       .split(" ")
@@ -35,6 +37,8 @@ export const FewTopics: Story = {
 
 export const ManyTopics: Story = {
   args: {
+    title: faker.lorem.words(5),
+    description: faker.lorem.paragraph(),
     topics: faker.lorem
       .words(50)
       .split(" ")
@@ -46,6 +50,8 @@ export const ManyTopics: Story = {
 
 export const WithSelectedTopics: Story = {
   args: {
+    title: faker.lorem.words(5),
+    description: faker.lorem.paragraph(),
     topics: faker.lorem
       .words(10)
       .split(" ")
@@ -58,6 +64,8 @@ export const WithSelectedTopics: Story = {
 
 export const Error: Story = {
   args: {
+    title: faker.lorem.words(5),
+    description: faker.lorem.paragraph(),
     topics: [],
     opened: true,
     error: true,
@@ -67,6 +75,8 @@ export const Error: Story = {
 
 export const Loading: Story = {
   args: {
+    title: faker.lorem.words(5),
+    description: faker.lorem.paragraph(),
     topics: [],
     opened: true,
     loading: true,
@@ -76,6 +86,8 @@ export const Loading: Story = {
 
 export const Confirming: Story = {
   args: {
+    title: faker.lorem.words(5),
+    description: faker.lorem.paragraph(),
     topics: faker.lorem
       .words(10)
       .split(" ")
@@ -89,6 +101,8 @@ export const Confirming: Story = {
 
 export const Simulation: Story = {
   args: {
+    title: faker.lorem.words(5),
+    description: faker.lorem.paragraph(),
     topics: faker.lorem
       .words(100)
       .split(" ")
