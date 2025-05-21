@@ -31,7 +31,6 @@ export enum ApiError {
   InterviewNotFound = "interview-not-found",
   TopicNotFound = "topic-not-found",
   InterviewAlreadySigned = "interview-already-signed",
-  ReportReplyNotFound = "report-reply-not-found",
   WidthdrawMethodNotFound = "withdraw-method-not-found",
   SubscriptionNotFound = "subscription-not-found",
   EmailAlreadyVerified = "email-already-verified",

@@ -189,10 +189,10 @@ export function withBooleanFilter<R extends object, T>(
 export function withNullableFilter<R extends object, T>(
   builder: Knex.QueryBuilder<R, T>,
   column: string,
-  value?: boolean
+  notnull?: boolean
 ): Knex.QueryBuilder<R, T> {
-  if (typeof value === "undefined") return builder;
-  return builder.where(column, value ? "IS NOT" : "IS", null);
+  if (typeof notnull === "undefined") return builder;
+  return builder.where(column, notnull ? "IS NOT" : "IS", null);
 }
 
 export function withListFilter<R extends object, T, V extends string | number>(
