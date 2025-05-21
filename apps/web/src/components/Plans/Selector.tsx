@@ -10,9 +10,9 @@ import {
   price,
   SECONDS_IN_MINUTE,
 } from "@litespace/utils";
-import { PaymentMethods } from "@/components/PlansV2/PaymentMethods";
+import { PaymentMethods } from "@/components/Plans/PaymentMethods";
 import { IPlan } from "@litespace/types";
-import PlanPeriod from "@/components/PlansV2/PlanPeriod";
+import PlanPeriod from "@/components/Plans/PlanPeriod";
 import { first, orderBy } from "lodash";
 import { Link } from "react-router-dom";
 import { router } from "@/lib/routes";

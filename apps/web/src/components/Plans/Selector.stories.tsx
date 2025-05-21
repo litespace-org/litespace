@@ -1,5 +1,5 @@
 import { StoryObj, Meta } from "@storybook/react";
-import { Selector } from "@/components/PlansV2/Selector";
+import { Selector } from "@/components/Plans/Selector";
 import { faker } from "@faker-js/faker/locale/ar";
 import { range } from "lodash";
 import { percentage, price } from "@litespace/utils";

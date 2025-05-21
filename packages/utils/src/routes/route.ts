@@ -18,7 +18,6 @@ export enum Web {
   StudentSettings = "/s/settings",
   StudentSettingsV2 = "/s/settings-v2",
   Plans = "/plans",
-  PlansV2 = "/plans-v2",
   TutorOnboarding = "/tutor/onboarding",
   Tutors = "/tutors",
   TutorProfile = "/t/:id",

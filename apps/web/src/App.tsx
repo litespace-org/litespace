@@ -24,7 +24,6 @@ const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
 const UpcomingLessons = lazy(() => import("@/pages/UpcomingLessons"));
 const Plans = lazy(() => import("@/pages/Plans"));
-const PlansV2 = lazy(() => import("@/pages/PlansV2"));
 const Lesson = lazy(() => import("@/pages/Lesson"));
 const TutorSettings = lazy(() => import("@/pages/TutorSettings"));
 const ScheduleManagement = lazy(() => import("@/pages/ScheduleManagement"));
@@ -64,7 +63,6 @@ const router = createRouter([
       { path: Web.LessonsSchedule, element: <LessonsSchedule /> },
       { path: Web.ScheduleManagement, element: <ScheduleManagement /> },
       { path: Web.Plans, element: <Plans /> },
-      { path: Web.PlansV2, element: <PlansV2 /> },
       { path: Web.TutorProfile, element: <TutorProfile /> },
       { path: Web.Tutors, element: <Tutors /> },
       { path: Web.UpcomingLessons, element: <UpcomingLessons /> },
