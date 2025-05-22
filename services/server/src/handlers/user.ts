@@ -84,6 +84,7 @@ import {
 } from "@litespace/utils";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
 import { findFullTutorsQuery } from "@litespace/schemas/user";
+import { isUserSubscribed } from "@/lib/subscription";
 
 const createUserPayload: ZodSchema<IUser.CreateApiPayload> = zod.object({
   role,
@@ -525,6 +526,8 @@ async function findOnboardedTutors(req: Request, res: Response) {
   const ordered = orderTutors({
     tutors: filtered,
     userGender,
+    subscribed:
+      isUser(user) && user.id ? await isUserSubscribed(user.id) : false,
   });
 
   // paginate the ordered (tutors) list

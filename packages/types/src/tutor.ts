@@ -36,6 +36,7 @@ export type FullRow = OmitProp<IUser.Row, "created_at" | "updated_at"> &
 
 export type Cache = {
   id: number;
+  role: IUser.Role;
   name: string | null;
   image: string | null;
   video: string | null;
