@@ -15,6 +15,8 @@ import {
   reachedBookingLimit,
   forbidden,
   notfound,
+  subscriptionRequired,
+  noEnoughMinutes,
 } from "@/lib/error";
 import { ILesson, Wss } from "@litespace/types";
 import {
@@ -24,6 +26,7 @@ import {
   rooms,
   availabilitySlots,
   interviews,
+  subscriptions,
 } from "@litespace/models";
 import { Knex } from "knex";
 import safeRequest from "express-async-handler";
@@ -31,17 +34,20 @@ import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import {
   isAdmin,
+  isRegularTutor,
   isStudent,
   isTutorManager,
   isUser,
 } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
-import { isEmpty, isEqual } from "lodash";
+import { first, isEmpty, isEqual } from "lodash";
 import { genSessionId } from "@litespace/utils";
 import { withImageUrls } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import { sendBackgroundMessage } from "@/workers";
+import { calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription } from "@/lib/subscription";
+import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -90,13 +96,46 @@ function create(context: ApiContext) {
       // Lesson should be in the future
       if (dayjs.utc(payload.start).isBefore(dayjs.utc())) return next(bad());
 
-      // User is allowed to have only one not-canceled lesson at a time.
+      const sub = first(
+        (
+          await subscriptions.find({
+            users: [user.id],
+            terminated: false,
+            end: { after: dayjs.utc().toISOString() },
+          })
+        ).list
+      );
+
+      // Unsubscribed user is allowed to have only one not-canceled lesson at a time.
       const userLessons = await lessons.find({
         users: [user.id],
         after: dayjs.utc().toISOString(),
         canceled: false,
       });
-      if (userLessons.total !== 0) return next(reachedBookingLimit());
+      if (!sub && userLessons.total !== 0) return next(reachedBookingLimit());
+
+      // Unsubscribed users cannot book lessons with paid (regular) tutors
+      if (!sub && isRegularTutor(tutor)) return next(subscriptionRequired());
+
+      // subscribed users with no enough minutes quota should not be able to book with regular tutors
+      if (sub && isRegularTutor(tutor)) {
+        const remainingMinutes =
+          await calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription({
+            userId: sub.userId,
+            start: sub.start,
+            weeklyMinutes: sub.weeklyMinutes,
+          });
+        if (remainingMinutes < payload.duration) return next(noEnoughMinutes());
+
+        // subscribed users should not be able to book lessons not within the current week
+        const weekBoundaries = getCurrentWeekBoundaries(sub?.start);
+        if (
+          !dayjs
+            .utc(payload.start)
+            .isBetween(weekBoundaries.start, weekBoundaries.end)
+        )
+          return next(bad());
+      }
 
       const price = isTutorManager(tutor)
         ? 0
@@ -150,7 +189,7 @@ function create(context: ApiContext) {
       );
 
       if (tutor.phone && tutor.verifiedPhone && tutor.notificationMethod)
-        await sendBackgroundMessage({
+        sendBackgroundMessage({
           type: "send-message",
           payload: {
             type: "create-lesson",
