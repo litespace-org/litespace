@@ -20,37 +20,7 @@ export class Auth extends Base {
     });
   }
 
-  async forgetPassword(payload: IUser.ForgetPasswordApiPayload): Promise<void> {
-    await this.post({
-      route: "/api/v1/auth/password/forget",
-      payload,
-    });
-  }
-
-  async resetPassword(
-    payload: IUser.ResetPasswordApiPayload
-  ): Promise<IUser.ResetPasswordApiResponse> {
-    return await this.put({
-      route: "/api/v1/auth/password/reset",
-      payload,
-    });
-  }
-
   async refreshToken(): Promise<IUser.RefreshAuthTokenApiResponse> {
     return this.post({ route: "/api/v1/auth/refresh-token" });
-  }
-
-  async verifyEmail(token: string): Promise<void> {
-    await this.put({
-      route: "/api/v1/auth/verify-email",
-      payload: { token },
-    });
-  }
-
-  async sendVerifyEmail(callbackUrl: string): Promise<void> {
-    await this.put({
-      route: "/api/v1/auth/send-verify-email",
-      payload: { callbackUrl },
-    });
   }
 }

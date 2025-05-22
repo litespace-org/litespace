@@ -1,8 +1,5 @@
 import { emailer } from "@/lib/email";
 import { EmailTemplate } from "@litespace/emails";
-import { IToken } from "@litespace/types";
-import jwt from "jsonwebtoken";
-import { tokensExpireTime, jwtSecret } from "@/constants";
 import { safe, safePromise } from "@litespace/utils/error";
 import { nameof } from "@litespace/utils/utils";
 import { WorkerMessageOf, WorkerMessagePayloadOf } from "@/workers/types";
@@ -14,38 +11,6 @@ import dayjs from "@/lib/dayjs";
 import { producer } from "@/lib/kafka";
 import { NOTIFICATION_METHOD_TO_KAFKA_TOPIC } from "@litespace/utils";
 
-export async function sendAuthTokenEmail({
-  email,
-  user,
-  callbackUrl,
-  type,
-}: {
-  email: string;
-  user: number;
-  callbackUrl: string;
-  type: IToken.Type.ForgetPassword | IToken.Type.VerifyEmail;
-}) {
-  const error = await safe(async () => {
-    const payload: IToken.AuthTokenEmail = { type, user };
-    const token = jwt.sign(payload, jwtSecret, {
-      expiresIn: tokensExpireTime[type],
-    });
-    const url = new URL(callbackUrl);
-    url.searchParams.set("token", token);
-
-    await emailer.send({
-      to: email,
-      template:
-        type === IToken.Type.VerifyEmail
-          ? EmailTemplate.VerifyEmail
-          : EmailTemplate.ForgetPassword,
-      props: { redirectUrl: url.toString() },
-    });
-  });
-
-  if (error instanceof Error) console.error(nameof(sendAuthTokenEmail), error);
-}
-
 export async function sendForgetPasswordCodeEmail({
   email,
   code,
@@ -56,7 +21,7 @@ export async function sendForgetPasswordCodeEmail({
   const result = await safePromise(
     emailer.send({
       to: email,
-      template: EmailTemplate.ForgetPasswordV2,
+      template: EmailTemplate.ForgetPassword,
       props: { code },
     })
   );
@@ -75,7 +40,7 @@ export async function sendUserVerificationCodeEmail({
   const error = await safePromise(
     emailer.send({
       to: email,
-      template: EmailTemplate.VerifyEmailV2,
+      template: EmailTemplate.VerifyEmail,
       props: { code },
     })
   );

@@ -185,23 +185,11 @@ export type RegisterApiResponse = LoginApiResponse;
 
 export type FindUsersApiResponse = Paginated<Self>;
 
-export type ResetPasswordApiResponse = LoginApiResponse;
-
 export type LoginWithAuthTokenApiResponse = LoginApiResponse;
 
 export type FindCurrentUserApiResponse = Self;
 
 export type RefreshAuthTokenApiResponse = string;
-
-export type ForgetPasswordApiPayload = {
-  email: string;
-  callbackUrl: string;
-};
-
-export type ResetPasswordApiPayload = {
-  token: string;
-  password: string;
-};
 
 export type FindUsersQuery = IFilter.SkippablePagination & {
   role?: Role;

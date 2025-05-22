@@ -53,8 +53,8 @@ describe(nameof(RoutesManager), () => {
     ).to.be.eq("https://app.litespace.org/register/student?src=fb");
 
     expect(
-      routes.web({ route: Web.Login, query: { redirect: Web.VerifyEmail } })
-    ).to.be.eq("/login?redirect=%2Fverify-email");
+      routes.web({ route: Web.Login, query: { redirect: Web.Plans } })
+    ).to.be.eq("/login?redirect=%2plans");
     expect(
       routes.landing({
         query: { role: "tutor" },

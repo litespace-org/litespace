@@ -2,14 +2,6 @@ import { ISessionEvent, ISession, IUser } from "@litespace/types";
 
 export type WorkerMessage =
   | {
-      type: "send-user-verification-email" | "send-forget-password-email";
-      payload: {
-        user: number;
-        email: string;
-        callbackUrl: string;
-      };
-    }
-  | {
       type:
         | "send-user-verification-code-email"
         | "send-forget-password-code-email";

@@ -20,14 +20,11 @@ const StudentSettings = lazy(() => import("@/pages/StudentSettings"));
 const Payments = lazy(() => import("@/pages/Payments"));
 const Tutors = lazy(() => import("@/pages/Tutors"));
 const Chat = lazy(() => import("@/pages/Chat"));
-const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
-const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
 const UpcomingLessons = lazy(() => import("@/pages/UpcomingLessons"));
 const Plans = lazy(() => import("@/pages/Plans"));
 const Lesson = lazy(() => import("@/pages/Lesson"));
 const TutorSettings = lazy(() => import("@/pages/TutorSettings"));
 const ScheduleManagement = lazy(() => import("@/pages/ScheduleManagement"));
-const ForgetPassword = lazy(() => import("@/pages/ForgetPassword"));
 const TutorDashboard = lazy(() => import("@/pages/TutorDashboard"));
 const Invoices = lazy(() => import("@/pages/Invoices"));
 const CardAdded = lazy(() => import("@/pages/CardAdded"));
@@ -55,7 +52,6 @@ const router = createRouter([
       { path: Web.Login, element: <Login /> },
       { path: Web.Payments, element: <Payments /> },
       { path: Web.Register, element: <Register /> },
-      { path: Web.ResetPassword, element: <ResetPassword /> },
       { path: Web.StudentDashboard, element: <StudentDashboard /> },
       { path: Web.StudentSettings, element: <StudentSettings /> },
       { path: Web.TutorDashboard, element: <TutorDashboard /> },
@@ -67,8 +63,6 @@ const router = createRouter([
       { path: Web.Tutors, element: <Tutors /> },
       { path: Web.UpcomingLessons, element: <UpcomingLessons /> },
       { path: Web.Lesson, element: <Lesson /> },
-      { path: Web.VerifyEmail, element: <VerifyEmail /> },
-      { path: Web.ForgetPassword, element: <ForgetPassword /> },
       { path: Web.CardAdded, element: <CardAdded /> },
       { path: Web.Checkout, element: <Checkout /> },
       { path: Web.CompleteTutorProfile, element: <CompleteTutorProfile /> },

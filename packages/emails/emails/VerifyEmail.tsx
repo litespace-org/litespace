@@ -4,12 +4,11 @@ import Template from "@/components/Layout/Template";
 import Typography from "@/components/Common/Typography";
 import { translate } from "@/components/Common/Translate";
 import { Container, Section } from "@react-email/components";
-import Button from "@/components/Common/Button";
 import Footer from "@/components/Layout/Footer";
 
-export function VerifyEmail({ redirectUrl }: { redirectUrl: string }) {
+export function VerifyEmail({ code }: { code: number }) {
   return (
-    <Template preview={translate.string("verify-email.title")}>
+    <Template preview={translate.string("verify-email.preview")}>
       <Header />
 
       <Section className="max-w-[312px] mt-[46px] text-center">
@@ -26,11 +25,14 @@ export function VerifyEmail({ redirectUrl }: { redirectUrl: string }) {
 
       <Container>
         <Section className="mt-[48px] text-center">
-          <Button href={redirectUrl}>
-            <Typography element="body" weight="medium" text="natural-50">
-              {translate.string("verify-email.confirm")}
-            </Typography>
-          </Button>
+          <Typography
+            element="h3"
+            weight="bold"
+            text="natural-950"
+            spacedBy={16}
+          >
+            {code}
+          </Typography>
         </Section>
       </Container>
 
@@ -40,5 +42,4 @@ export function VerifyEmail({ redirectUrl }: { redirectUrl: string }) {
     </Template>
   );
 }
-
 export default VerifyEmail;
