@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres:/data/postgres
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     networks:
       - postgres
     restart: unless-stopped
@@ -26,7 +26,7 @@ services:
       - pgadmin:/var/lib/pgadmin
 
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
+      - "127.0.0.1:5050:80"
     networks:
       - postgres
     restart: unless-stopped
@@ -34,7 +34,7 @@ services:
     container_name: redis
     image: redis/redis-stack-server:latest
     ports:
-      - 6379:6379
+      - "127.0.0.1:6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
     volumes:
@@ -43,7 +43,7 @@ services:
     container_name: kafak
     image: apache/kafka-native
     ports:
-      - "9092:9092"
+      - "127.0.0.1:9092:9092"
     environment:
       # Auto create topics on first use
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
@@ -69,7 +69,7 @@ services:
     container_name: kfaka-ui
     image: ghcr.io/kafbat/kafka-ui:latest
     ports:
-      - 4006:8080
+      - "127.0.0.1:4006:8080"
     environment:
       DYNAMIC_CONFIG_ENABLED: "true"
       KAFKA_CLUSTERS_0_NAME: local
