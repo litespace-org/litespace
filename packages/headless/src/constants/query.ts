@@ -43,6 +43,7 @@ export enum QueryKey {
   FindCurrentSubscription = "find-current-subscription",
   FindPlans = "find-plans",
   FindPlanById = "find-plan-by-id",
+  FindStudios = "find-studios",
   FindLastTransaction = "find-last-transaction",
   GetPaymentStatus = "get-payment-status",
   GetSessionToken = "get-session-token",

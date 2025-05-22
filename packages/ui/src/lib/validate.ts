@@ -8,6 +8,7 @@ import {
   isValidPassword as isValidPasswordBase,
   isValidUserBirthYear as isValidUserBirthYearBase,
   isValidTutorAbout as isValidTutorAboutBase,
+  isValidTutorNotice as isValidTutorNoticeBase,
   isValidTutorBio as isValidTutorBioBase,
   isValidConfirmationCode as isValidConfirmationCodeBase,
 } from "@litespace/utils/validation";
@@ -89,4 +90,13 @@ export function isValidConfirmationCode(code: number): LocalId | null {
   const valid = isValidConfirmationCodeBase(code);
   if (valid === true) return null;
   return "error.confirmation-code.invalid";
+}
+
+export function isValidNotice(notice: number): LocalId | null {
+  const valid = isValidTutorNoticeBase(notice);
+  if (valid === true) return null;
+
+  if (valid === FieldError.MaxNoticeExceeded)
+    return "error.field.max-notice-exceeded";
+  return "error.field.invalid-notice";
 }
