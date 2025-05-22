@@ -50,7 +50,7 @@ const Header: React.FC<{ tab: Tab; setTab(tab: Tab): void }> = ({
 }) => {
   const intl = useFormatMessage();
   return (
-    <div className="flex items-center justify-center mb-8">
+    <div className="flex items-center justify-center md:w-fit mx-auto mb-4 md:mb-10 lg:mb-8">
       <Tabs<Tab>
         tab={tab}
         setTab={setTab}
@@ -82,7 +82,7 @@ const Body: React.FC<{
   sync: Void;
 }> = ({ tab, phone, period, syncing, sync, plan }) => {
   return (
-    <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-10 lg:min-w-[1004px] px-10">
+    <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-4 lg:gap-10 lg:min-w-[1004px] ">
       <PaymentPannel
         planId={plan.id}
         tab={tab}

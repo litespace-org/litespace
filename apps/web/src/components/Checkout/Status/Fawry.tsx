@@ -35,8 +35,8 @@ const PayWithFawryStatus: React.FC<{
   const parts = useMemo(() => asParts(orderRefNum), [orderRefNum]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6 max-w-[435px]">
-      <Typography tag="h1" className="text-subtitle-2 font-bold">
+    <div className="flex flex-col items-center justify-center gap-6 max-w-[435px] mt-2 lg:mt-0">
+      <Typography tag="h1" className="text-subtitle-1 font-bold text-center">
         {intl("checkout.status.fawry.title")}
       </Typography>
 
@@ -81,8 +81,11 @@ const PayWithFawryStatus: React.FC<{
         disabled={canceling || syncing}
         loading={canceling}
         onClick={cancel}
+        className="w-full sm:w-auto"
       >
-        {intl("checkout.payment.cancel-and-retry")}
+        <Typography tag="span" className="text text-body font-medium">
+          {intl("checkout.payment.cancel-and-retry")}
+        </Typography>
       </Button>
     </div>
   );

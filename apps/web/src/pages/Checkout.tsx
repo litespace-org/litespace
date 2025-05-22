@@ -36,7 +36,11 @@ const Checkout: React.FC = () => {
 
   if (!planId || !period || !user) return null;
 
-  return <Content planId={planId} period={period} userPhone={user.phone} />;
+  return (
+    <div className="flex flex-col lg:flex-row p-4 sm:p-6 gap-6 max-w-screen-3xl mx-auto w-full">
+      <Content planId={planId} period={period} userPhone={user.phone} />
+    </div>
+  );
 };
 
 export default Checkout;

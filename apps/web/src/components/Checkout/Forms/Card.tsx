@@ -164,10 +164,10 @@ const Payment: React.FC<{
           e.preventDefault();
           form.submit();
         }}
-        className="flex flex-col gap-6"
+        className="flex flex-col gap-6 md:gap-4 lg:gap-6"
       >
         <div className="flex flex-col gap-4">
-          <Typography tag="p" className="text-body font-medium">
+          <Typography tag="p" className="text-caption md:text-body font-medium">
             {intl("checkout.payment.description")}
           </Typography>
 
@@ -192,22 +192,25 @@ const Payment: React.FC<{
               <Button
                 type="main"
                 variant="tertiary"
-                size="large"
+                size="small"
                 htmlType="button"
                 startIcon={<AddCard className="icon" />}
                 disabled={false}
                 loading={false}
                 onClick={() => setShowAddCardTokenDialog(true)}
-                className="ms-4 flex-shrink-0"
+                className="ms-2 lg:ms-4 flex-shrink-0"
               >
-                <Typography tag="span" className="text-body font-medium">
+                <Typography
+                  tag="span"
+                  className="text-caption md:text-body font-medium"
+                >
                   {intl("checkout.payment.card.add-card")}
                 </Typography>
               </Button>
             }
           />
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4">
             <PatternInput
               id="cvv"
               size={3}
@@ -249,10 +252,12 @@ const Payment: React.FC<{
           disabled={payWithCard.isPending}
           loading={payWithCard.isPending}
         >
-          {intl("checkout.payment.confirm")}
+          <Typography tag="span" className="text text-body font-medium">
+            {intl("checkout.payment.confirm")}
+          </Typography>
         </Button>
 
-        <Typography tag="p" className="text-tiny font-normal">
+        <Typography tag="p" className="text-tiny font-normal text-natural-800">
           {intl("checkout.payment.card.confirmation-code-note")}
         </Typography>
       </form>
