@@ -179,7 +179,11 @@ export const Content: React.FC<{
         })}
       </div>
 
-      {fetching ? <Loading className="mt-6 text-natural-950" /> : null}
+      {fetching ? (
+        <div className="mt-6">
+          <Loading />
+        </div>
+      ) : null}
 
       {!fetching ? (
         <InView
