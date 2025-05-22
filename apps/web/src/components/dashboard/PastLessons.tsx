@@ -53,6 +53,7 @@ export const PastLessons: React.FC = () => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
   const [tutor, setTutor] = useState<number | null>(null);
+  const { user } = useUserContext();
 
   const closeRebookingDialog = useCallback(() => {
     setTutor(null);
@@ -62,7 +63,6 @@ export const PastLessons: React.FC = () => {
     setTutor(tutorId);
   }, []);
 
-  const { user } = useUserContext();
   const now = useMemo(() => dayjs.utc().toISOString(), []);
 
   const lessonsQuery = useInfiniteLessons({

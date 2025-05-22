@@ -1,4 +1,4 @@
-import { VerifyNotificationMethodDialog } from "@/components/VerifyNotificationMethodDialog";
+import VerifyNotifications from "@/components/Common/VerifyNotifications";
 import { useOnError } from "@/hooks/error";
 import { QueryKey } from "@litespace/headless/constants";
 import { useForm } from "@litespace/headless/form";
@@ -14,10 +14,6 @@ import {
   optional,
 } from "@litespace/utils";
 import { useCallback, useMemo, useState } from "react";
-import {
-  useSendPhoneCode,
-  useVerifyPhoneCode,
-} from "@litespace/headless/confirmationCode";
 
 type Form = {
   notificationMethod: IUser.Self["notificationMethod"];
@@ -29,7 +25,7 @@ type Form = {
  * submit changes -> update the user directly using `useUpdateUser`.
  *
  * 2. The user has phone and doesn't have verified method -> user can select a method which opens the dialog
- * and it will send automatically the code to the selected method -> user enters the code sent to him
+ * -> user will confirm his phone -> user enters the code sent to him
  * this will verify the method and update it automatically.
  *
  * 3. The user doesn't have a phone number nor a verified method -> user will need to select the method ->
@@ -51,7 +47,6 @@ export function NotificationSettings({
 }) {
   const intl = useFormatMessage();
   const [showDialog, setShowDialog] = useState<boolean>(false);
-  const [sentCode, setSentCode] = useState<boolean>(false);
 
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
@@ -74,11 +69,6 @@ export function NotificationSettings({
     invalidateQuery([QueryKey.FindCurrentUser]);
   }, [invalidateQuery]);
 
-  const onSendCodeSuccess = useCallback(() => {
-    setSentCode(true);
-    invalidateQuery([QueryKey.FindCurrentUser]);
-  }, [invalidateQuery]);
-
   const onUpdateUserError = useOnError({
     type: "mutation",
     handler: ({ messageId }) => {
@@ -89,47 +79,9 @@ export function NotificationSettings({
     },
   });
 
-  const onSendCodeError = useOnError({
-    type: "mutation",
-    handler: ({ messageId }) => {
-      toast.error({
-        title: intl("shared-settings.send-code.error"),
-        description: intl(messageId),
-      });
-    },
-  });
-
-  const onVerifySuccess = useCallback(() => {
-    invalidateQuery([QueryKey.FindCurrentUser]);
-    setShowDialog(false);
-    setSentCode(false);
-    toast.success({
-      title: intl("shared-settings.verify-code.success"),
-    });
-  }, [invalidateQuery, intl, toast]);
-
-  const onVerifyCodeError = useOnError({
-    type: "mutation",
-    handler: ({ messageId }) => {
-      toast.error({
-        title: intl("shared-settings.verify-code.error"),
-        description: intl(messageId),
-      });
-    },
-  });
-
   const updateUserMutation = useUpdateUser({
     onSuccess: onUpdateUserSuccess,
     onError: onUpdateUserError,
-  });
-
-  const sendPhoneCodeMutation = useSendPhoneCode({
-    onSuccess: onSendCodeSuccess,
-    onError: onSendCodeError,
-  });
-  const verifyPhoneCodeMutation = useVerifyPhoneCode({
-    onSuccess: onVerifySuccess,
-    onError: onVerifyCodeError,
   });
 
   const form = useForm<Form>({
@@ -151,37 +103,32 @@ export function NotificationSettings({
     ];
   }, [form]);
 
+  const isVerifiedMethod = useCallback(
+    (val: IUser.NotificationMethod | null) => {
+      if (val === null) return false;
+      return (
+        (val === IUser.NotificationMethod.Whatsapp && !verifiedWhatsApp) ||
+        (val === IUser.NotificationMethod.Telegram && !verifiedTelegram)
+      );
+    },
+    [verifiedTelegram, verifiedWhatsApp]
+  );
+
   const onChange = useCallback(
     (value: IUser.NotificationMethod) => {
       form.set("notificationMethod", value);
-
-      const verificationNeeded =
-        (value === IUser.NotificationMethod.Whatsapp && !verifiedWhatsApp) ||
-        (value === IUser.NotificationMethod.Telegram && !verifiedTelegram);
-
-      if (verificationNeeded) setShowDialog(true);
-
-      if (phone && verificationNeeded)
-        sendPhoneCodeMutation.mutate({
-          method: NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[value],
-          phone,
-        });
+      if (isVerifiedMethod(value)) setShowDialog(true);
     },
-    [form, phone, sendPhoneCodeMutation, verifiedTelegram, verifiedWhatsApp]
+    [form, isVerifiedMethod]
   );
 
   return (
     <div className="md:max-w-[344px] lg:max-w-[400px] grow md:grow-0 h-full flex flex-col">
       {showDialog ? (
-        <VerifyNotificationMethodDialog
-          method={selectedMethod}
+        <VerifyNotifications
           close={() => setShowDialog(false)}
           phone={phone}
-          sendCode={sendPhoneCodeMutation.mutate}
-          sendingCode={sendPhoneCodeMutation.isPending}
-          sentCode={sentCode}
-          verifyCode={verifyPhoneCodeMutation.mutate}
-          verifing={verifyPhoneCodeMutation.isPending}
+          selectedMethod={selectedMethod}
         />
       ) : null}
       <form onSubmit={form.onSubmit} className="grow flex flex-col gap-6">
