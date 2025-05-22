@@ -40,6 +40,13 @@ const findStudioTutor = mockApi(handlers.findStudioTutor);
 
 const findStudioTutors = mockApi(handlers.findStudioTutors);
 
+const findOnboardedTutors = mockApi<
+  object,
+  object,
+  object,
+  ITutor.FindOnboardedTutorsApiResponse
+>(handlers.findOnboardedTutors);
+
 const findFullTutors = mockApi<
   void,
   void,
@@ -56,6 +63,7 @@ const findTutoringMinutes = mockApi<
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
+    await cache.flush();
     await db.flush();
   });
 
@@ -110,6 +118,43 @@ describe("/api/v1/user/", () => {
 
       const updated = await tutors.findById(tutor.id);
       expect(updated?.bypassOnboarding).to.be.true;
+    });
+  });
+
+  describe("GET /api/v1/user/tutor/list/onboarded", () => {
+    it("should retrieve a list of onboarded tutors with the tutor managers at the top for unsubscribed users", async () => {
+      const student = await db.student();
+
+      await Promise.all([
+        db.onboardedTutor(),
+        db.onboardedTutorManager(),
+        db.onboardedTutor(),
+        db.onboardedTutorManager(),
+        db.onboardedTutor(),
+      ]);
+
+      const res = await findOnboardedTutors({ user: student });
+      expect(res.body?.total).to.eq(5);
+      expect(res.body?.list[0].role).to.eq(IUser.Role.TutorManager);
+      expect(res.body?.list[1].role).to.eq(IUser.Role.TutorManager);
+    });
+
+    it("should retrieve a list of onboarded tutors with the regular tutors at the top for subscribed users", async () => {
+      const student = await db.student();
+      await db.validSubscription(student.id);
+
+      await Promise.all([
+        db.onboardedTutorManager(),
+        db.onboardedTutor(),
+        db.onboardedTutorManager(),
+        db.onboardedTutor(),
+        db.onboardedTutorManager(),
+      ]);
+
+      const res = await findOnboardedTutors({ user: student });
+      expect(res.body?.total).to.eq(5);
+      expect(res.body?.list[0].role).to.eq(IUser.Role.Tutor);
+      expect(res.body?.list[1].role).to.eq(IUser.Role.Tutor);
     });
   });
 
