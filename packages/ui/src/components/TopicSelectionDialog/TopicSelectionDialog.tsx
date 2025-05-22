@@ -6,11 +6,12 @@ import { Void } from "@litespace/types";
 import { Dialog } from "@/components/Dialog";
 import { Button } from "@/components/Button";
 import { Loading, LoadingError } from "@/components/Loading";
-import { concat, uniq } from "lodash";
+import { concat, isEmpty, uniq } from "lodash";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
 import { Animate } from "@/components/Animate";
 import { AnimatePresence } from "framer-motion";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { InView } from "react-intersection-observer";
 
 type Props = {
   title: string;
@@ -19,30 +20,32 @@ type Props = {
     id: number;
     label: string;
   }>;
-  close: Void;
-  retry: Void;
-  confirm: (topicIds: number[]) => void;
   opened: boolean;
-  forTutor: boolean;
   initialTopics?: number[];
   confirming?: boolean;
+  canLoadMore: boolean;
   loading?: boolean;
   error?: boolean;
+  close: Void;
+  more: Void;
+  retry: Void;
+  confirm: (topicIds: number[]) => void;
 };
 
 export const TopicSelectionDialog: React.FC<Props> = ({
   title,
   description,
-  forTutor,
   topics,
   initialTopics,
-  close,
-  confirm,
-  retry,
   opened,
   loading,
   confirming,
   error,
+  canLoadMore,
+  close,
+  confirm,
+  retry,
+  more,
 }) => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
@@ -98,7 +101,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           {title}
         </Typography>
       }
-      className={forTutor ? "w-screen md:w-[512px]" : "w-screen md:w-[744px]"}
+      className="w-full md:w-[512px]"
       close={confirming ? undefined : onClose}
       open={opened}
       position={mq.sm ? "center" : "bottom"}
@@ -112,7 +115,21 @@ export const TopicSelectionDialog: React.FC<Props> = ({
         </Typography>
 
         <AnimatePresence initial={false} mode="wait">
-          {loading && !error ? (
+          {!isEmpty(topics) ? (
+            <TopicList
+              canLoadMore={canLoadMore}
+              disableSelection={disableSelection}
+              more={more}
+              onSelect={onSelect}
+              selection={selection}
+              topics={topics}
+              confirming={confirming}
+              error={error}
+              loading={loading}
+            />
+          ) : null}
+
+          {loading && !error && isEmpty(topics) ? (
             <Animate
               key="loading"
               className="flex justify-center items-center my-20"
@@ -134,44 +151,6 @@ export const TopicSelectionDialog: React.FC<Props> = ({
                 error={intl("tutor-settings.topics.selection-dialog.error")}
                 retry={retry}
               />
-            </Animate>
-          ) : null}
-
-          {!loading && !error ? (
-            <Animate
-              key="topics"
-              className={cn(
-                "flex flex-wrap gap-2 md:gap-4 my-8 md:my-6 overflow-auto max-h-[264px]",
-                "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
-              )}
-            >
-              {topics.map((topic, i) => (
-                <button
-                  key={i}
-                  disabled={
-                    confirming ||
-                    (disableSelection && !selection.includes(topic.id))
-                  }
-                  className={cn(
-                    "rounded-full p-3 md:py-2 md:px-3 transition-colors duration-200 border",
-                    "disabled:opacity-50 disabled:cursor-not-allowed",
-                    {
-                      "bg-natural-100 text-natural-950 border-transparent":
-                        !selection.includes(topic.id),
-                      "bg-brand-200 border-brand-700 text-brand-700":
-                        !!selection.includes(topic.id),
-                    }
-                  )}
-                  onClick={() => onSelect(topic.id)}
-                >
-                  <Typography
-                    tag="span"
-                    className="font-semibold md:font-medium text-tiny md:text-body sm:text-caption"
-                  >
-                    {topic.label}
-                  </Typography>
-                </button>
-              ))}
             </Animate>
           ) : null}
 
@@ -207,3 +186,91 @@ export const TopicSelectionDialog: React.FC<Props> = ({
 };
 
 export default TopicSelectionDialog;
+
+const TopicBadge: React.FC<{
+  confirming?: boolean;
+  disableSelection: boolean;
+  selection: number[];
+  topic: { id: number; label: string };
+  onSelect: (id: number) => void;
+}> = ({ confirming, disableSelection, selection, topic, onSelect }) => {
+  return (
+    <button
+      disabled={
+        confirming || (disableSelection && !selection.includes(topic.id))
+      }
+      className={cn(
+        "rounded-full p-3 md:py-2 md:px-3 transition-colors duration-200 border",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
+        {
+          "bg-natural-100 text-natural-950 border-transparent":
+            !selection.includes(topic.id),
+          "bg-brand-200 border-brand-700 text-brand-700": !!selection.includes(
+            topic.id
+          ),
+        }
+      )}
+      onClick={() => onSelect(topic.id)}
+    >
+      <Typography
+        tag="span"
+        className="font-semibold md:font-medium text-tiny md:text-body sm:text-caption"
+      >
+        {topic.label}
+      </Typography>
+    </button>
+  );
+};
+
+const TopicList: React.FC<{
+  confirming?: boolean;
+  disableSelection: boolean;
+  selection: number[];
+  topics: { id: number; label: string }[];
+  onSelect: (id: number) => void;
+  canLoadMore: boolean;
+  loading?: boolean;
+  error?: boolean;
+  more: Void;
+}> = ({
+  topics,
+  selection,
+  disableSelection,
+  confirming,
+  loading,
+  error,
+  canLoadMore,
+  more,
+  onSelect,
+}) => {
+  return (
+    <Animate
+      key="topics"
+      className={cn(
+        "my-8 md:my-6 overflow-auto max-h-[150px] lg:max-h-[264px]",
+        "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
+      )}
+    >
+      <div className="flex flex-wrap gap-2 md:gap-4">
+        {topics.map((topic, i) => (
+          <TopicBadge
+            topic={topic}
+            key={i}
+            disableSelection={disableSelection}
+            onSelect={onSelect}
+            selection={selection}
+            confirming={confirming}
+          />
+        ))}
+      </div>
+      {loading ? <Loading size="small" /> : null}
+      {canLoadMore && !loading && !error ? (
+        <InView
+          onChange={(inview) => {
+            if (inview) more();
+          }}
+        />
+      ) : null}
+    </Animate>
+  );
+};

@@ -6,6 +6,7 @@ import { Tabs } from "@litespace/ui/Tabs";
 import PersonalDetailsForm from "@/components/Settings/PersonalDetails";
 import UpdatePassword from "@/components/Settings/UpdatePassword";
 import NotificationSettings from "@/components/Settings/NotificationSettings";
+import { isPersonalInfoIncomplete } from "@/components/Settings/utils";
 
 type Props = {
   user: IUser.Self & ITutor.FindTutorMetaApiResponse;
@@ -20,15 +21,7 @@ const AccountSettings: React.FC<Props> = ({ user, setTab, tab }) => {
       {
         id: "personal",
         label: intl("tutor-settings.personal.title"),
-        important:
-          !user.email ||
-          !user.phone ||
-          !user.city ||
-          !user.gender ||
-          !user.verifiedEmail ||
-          !user.verifiedPhone ||
-          !user.notice ||
-          !user.studioId,
+        important: isPersonalInfoIncomplete(user),
       },
       {
         id: "password",
@@ -41,18 +34,49 @@ const AccountSettings: React.FC<Props> = ({ user, setTab, tab }) => {
         important: !user.notificationMethod,
       },
     ],
+    [intl, user]
+  );
+
+  const tabComponents: Record<TabId, React.JSX.Element> = useMemo(
+    () => ({
+      personal: (
+        <PersonalDetailsForm
+          forStudent={false}
+          id={user.id}
+          image={user.image}
+          email={user.email}
+          name={user.name}
+          city={user.city}
+          gender={user.gender}
+          phone={user.phone}
+          verifiedEmail={user.verifiedEmail}
+          verifiedPhone={user.verifiedPhone}
+        />
+      ),
+      password: <UpdatePassword id={user.id} />,
+      notifications: (
+        <NotificationSettings
+          id={user.id}
+          phone={user.phone}
+          verifiedWhatsApp={user.verifiedWhatsApp}
+          verifiedTelegram={user.verifiedTelegram}
+          notificationMethod={user.notificationMethod}
+        />
+      ),
+    }),
     [
-      intl,
       user.city,
       user.email,
+      user.name,
       user.gender,
-      user.notificationMethod,
-      user.password,
       user.phone,
       user.verifiedEmail,
       user.verifiedPhone,
-      user.notice,
-      user.studioId,
+      user.verifiedTelegram,
+      user.verifiedWhatsApp,
+      user.image,
+      user.id,
+      user.notificationMethod,
     ]
   );
 
@@ -62,34 +86,7 @@ const AccountSettings: React.FC<Props> = ({ user, setTab, tab }) => {
         <Tabs tabs={tabs} tab={tab} setTab={setTab} />
       </div>
 
-      {tab === "personal" ? (
-        <PersonalDetailsForm
-          forStudent={false}
-          image={user.image}
-          name={user.name}
-          id={user.id}
-          email={user.email}
-          city={user.city}
-          gender={user.gender}
-          phone={user.phone}
-          notice={user.notice}
-          studio={user.studioId}
-          verifiedEmail={user.verifiedEmail}
-          verifiedPhone={user.verifiedPhone}
-        />
-      ) : null}
-
-      {tab === "password" ? <UpdatePassword id={user.id} /> : null}
-
-      {tab === "notifications" ? (
-        <NotificationSettings
-          id={user.id}
-          phone={user.phone}
-          verifiedWhatsApp={user.verifiedWhatsApp}
-          verifiedTelegram={user.verifiedTelegram}
-          notificationMethod={user.notificationMethod}
-        />
-      ) : null}
+      {tabComponents[tab]}
     </div>
   );
 };

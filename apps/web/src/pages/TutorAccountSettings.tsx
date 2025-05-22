@@ -1,9 +1,9 @@
 import PageTitle from "@/components/Common/PageTitle";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useMemo } from "react";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useSearchParams } from "react-router-dom";
-import AccountSettings from "@/components/TutorSettings/AccountSettings";
+import Content from "@/components/TutorSettings/AccountSettings";
 import { TabId } from "@/components/TutorSettings/types";
 import { isValidTab } from "@/components/TutorSettings/utils";
 import { useFindTutorMeta } from "@litespace/headless/tutor";
@@ -11,7 +11,7 @@ import { useFindTutorMeta } from "@litespace/headless/tutor";
 const TutorSettings: React.FC = () => {
   const intl = useFormatMessage();
   const [params, setParams] = useSearchParams();
-  const { user, fetching } = useUserContext();
+  const { user, fetching } = useUser();
   const tutorQury = useFindTutorMeta(user?.id);
 
   const tutorMeta = tutorQury.query.data;
@@ -33,7 +33,7 @@ const TutorSettings: React.FC = () => {
           fetching={fetching}
         />
 
-        <AccountSettings
+        <Content
           user={{ ...user, ...tutorMeta }}
           tab={tab}
           setTab={(tab) => setParams({ tab })}

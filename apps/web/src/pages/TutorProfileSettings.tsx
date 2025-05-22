@@ -1,21 +1,15 @@
 import PageTitle from "@/components/Common/PageTitle";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import React, { useEffect } from "react";
+import React from "react";
 import { useUser } from "@litespace/headless/context/user";
-import { redirect } from "react-router-dom";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
-import ProfileSettings from "@/components/TutorSettings/ProfileSettings";
+import Content from "@/components/TutorSettings/ProfileSettings";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
-import { Web } from "@litespace/utils/routes";
 
 const TutorSettings: React.FC = () => {
   const intl = useFormatMessage();
-  const { user, fetching, error, loading, refetch } = useUser();
+  const { user, refetch } = useUser();
   const { query: tutorInfo } = useFindTutorInfo(user?.id || null);
-
-  useEffect(() => {
-    if (!user && !loading && !error) redirect(Web.Login);
-  }, [user, loading, error]);
 
   if (!user) return null;
 
@@ -25,11 +19,11 @@ const TutorSettings: React.FC = () => {
         <div className="mb-4 md:mb-10">
           <PageTitle
             title={intl("tutor-settings.profile.title")}
-            fetching={fetching && !loading}
+            fetching={tutorInfo.isPending}
           />
         </div>
 
-        {loading || tutorInfo.isPending ? (
+        {tutorInfo.isPending ? (
           <div className="mt-[15vh]">
             <Loading
               size="large"
@@ -38,8 +32,8 @@ const TutorSettings: React.FC = () => {
           </div>
         ) : null}
 
-        {(error || tutorInfo.isError) && !loading && !tutorInfo.isPending ? (
-          <div className="mt-[15vh]">
+        {tutorInfo.isError && !tutorInfo.isPending ? (
+          <div className="mt-[15vh] w-full">
             <LoadingError
               size="large"
               retry={() => {
@@ -52,8 +46,8 @@ const TutorSettings: React.FC = () => {
           </div>
         ) : null}
 
-        {tutorInfo.data && !error && !loading ? (
-          <ProfileSettings
+        {tutorInfo.data && !tutorInfo.isError && !tutorInfo.isPending ? (
+          <Content
             info={{
               ...tutorInfo.data,
             }}

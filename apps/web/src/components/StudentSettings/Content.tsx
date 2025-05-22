@@ -9,6 +9,7 @@ import TopicSelection from "@/components/Settings/TopicSelection";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import { IUser } from "@litespace/types";
 import { Tab, TabId } from "@/components/StudentSettings/types";
+import { isPersonalInfoIncomplete } from "@/components/Settings/utils";
 
 const Content: React.FC<{
   tab: TabId;
@@ -17,20 +18,12 @@ const Content: React.FC<{
 }> = ({ tab, setTab, user }) => {
   const intl = useFormatMessage();
 
-  const tabs: Tab[] = useMemo(
-    () => [
+  const tabs: Tab[] = useMemo(() => {
+    return [
       {
         id: "personal",
         label: intl("shared-settings.personal.title"),
-        important:
-          !user.name ||
-          !user.email ||
-          !user.phone ||
-          !user.city ||
-          !user.gender ||
-          !user.image ||
-          !user.verifiedEmail ||
-          !user.verifiedPhone,
+        important: isPersonalInfoIncomplete(user),
       },
       {
         id: "password",
@@ -47,19 +40,54 @@ const Content: React.FC<{
         label: intl("student-settings.topics.title"),
         important: false,
       },
-    ],
+    ];
+  }, [intl, user]);
+
+  const tabComponents: Record<TabId, React.JSX.Element> = useMemo(
+    () => ({
+      personal: (
+        <PersonalDetails
+          forStudent
+          id={user.id}
+          image={user.image}
+          email={user.email}
+          name={user.name}
+          city={user.city}
+          gender={user.gender}
+          phone={user.phone}
+          verifiedEmail={user.verifiedEmail}
+          verifiedPhone={user.verifiedPhone}
+        />
+      ),
+      password: <UpdatePassword id={user.id} />,
+      notifications: (
+        <NotificationSettings
+          id={user.id}
+          phone={user.phone}
+          verifiedWhatsApp={user.verifiedWhatsApp}
+          verifiedTelegram={user.verifiedTelegram}
+          notificationMethod={user.notificationMethod}
+        />
+      ),
+      topics: (
+        <div className="max-w-[530px] grow flex">
+          <TopicSelection />
+        </div>
+      ),
+    }),
     [
-      intl,
       user.city,
       user.email,
-      user.gender,
-      user.image,
       user.name,
-      user.notificationMethod,
-      user.password,
+      user.gender,
       user.phone,
       user.verifiedEmail,
       user.verifiedPhone,
+      user.verifiedTelegram,
+      user.verifiedWhatsApp,
+      user.image,
+      user.id,
+      user.notificationMethod,
     ]
   );
 
@@ -73,38 +101,7 @@ const Content: React.FC<{
         <Tabs tabs={tabs} tab={tab} setTab={setTab} />
       </div>
 
-      {tab === "personal" ? (
-        <PersonalDetails
-          forStudent
-          id={user.id}
-          image={user.image}
-          email={user.email}
-          name={user.name}
-          city={user.city}
-          gender={user.gender}
-          phone={user.phone}
-          verifiedEmail={user.verifiedEmail}
-          verifiedPhone={user.verifiedPhone}
-        />
-      ) : null}
-
-      {tab === "password" ? <UpdatePassword id={user.id} /> : null}
-
-      {tab === "notifications" ? (
-        <NotificationSettings
-          id={user.id}
-          phone={user.phone}
-          verifiedWhatsApp={user.verifiedWhatsApp}
-          verifiedTelegram={user.verifiedTelegram}
-          notificationMethod={user.notificationMethod}
-        />
-      ) : null}
-
-      {tab === "topics" ? (
-        <div className="max-w-[530px] grow flex">
-          <TopicSelection forTutor={false} />
-        </div>
-      ) : null}
+      {tabComponents[tab]}
     </div>
   );
 };

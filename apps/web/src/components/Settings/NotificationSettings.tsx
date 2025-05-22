@@ -37,19 +37,19 @@ type Form = {
  * opens the dialog automatically and he needs to enter the number -> this will save his number then he needs
  * to enter the code sent to him.
  */
-function NotificationSettings({
-  id,
-  notificationMethod,
-  verifiedTelegram,
-  verifiedWhatsApp,
-  phone,
-}: {
+const NotificationSettings: React.FC<{
   id: number;
   notificationMethod: IUser.NotificationMethod | null;
   phone: string | null;
   verifiedWhatsApp: boolean;
   verifiedTelegram: boolean;
-}) {
+}> = ({
+  id,
+  notificationMethod,
+  verifiedTelegram,
+  verifiedWhatsApp,
+  phone,
+}) => {
   const intl = useFormatMessage();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [sentCode, setSentCode] = useState<boolean>(false);
@@ -156,13 +156,13 @@ function NotificationSettings({
     (value: IUser.NotificationMethod) => {
       form.set("notificationMethod", value);
 
-      const verificationNeeded =
+      const isVerificationNeeded =
         (value === IUser.NotificationMethod.Whatsapp && !verifiedWhatsApp) ||
         (value === IUser.NotificationMethod.Telegram && !verifiedTelegram);
 
-      if (verificationNeeded) setShowDialog(true);
+      if (isVerificationNeeded) setShowDialog(true);
 
-      if (phone && verificationNeeded)
+      if (phone && isVerificationNeeded)
         sendPhoneCodeMutation.mutate({
           method: NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[value],
           phone,
@@ -214,6 +214,6 @@ function NotificationSettings({
       </form>
     </div>
   );
-}
+};
 
 export default NotificationSettings;

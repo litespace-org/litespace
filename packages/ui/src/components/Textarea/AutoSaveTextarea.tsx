@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import Spinner2 from "@litespace/assets/Spinner2";
 import ExclaimationMarkCircle from "@litespace/assets/ExclaimationMarkCircle";
 import { debounce } from "lodash";
-import Check2 from "@litespace/assets/Check2";
+import Check4 from "@litespace/assets/Check4";
 import { Textarea, TextareaProps } from "@/components/Textarea";
 
 export const AutoSaveTextarea: React.FC<
@@ -37,7 +37,7 @@ export const AutoSaveTextarea: React.FC<
   }, [debouncedSave]);
 
   const icon = useMemo(() => {
-    if (isSuccess) return <Check2 className="w-4 h-4" />;
+    if (isSuccess) return <Check4 className="w-4 h-4" />;
     if (isError) return <ExclaimationMarkCircle className="w-4 h-4" />;
     if (isPending) return <Spinner2 className="w-4 h-4 animate-spin" />;
   }, [isError, isPending, isSuccess]);

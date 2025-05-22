@@ -27,6 +27,7 @@ import {
   isValidUserName,
 } from "@litespace/ui/lib/validate";
 import { Typography } from "@litespace/ui/Typography";
+import { Form } from "@litespace/ui/Form";
 
 type Form = {
   name: string;
@@ -99,22 +100,25 @@ const PersonalDetails: React.FC<Props> = ({
       notice: notice || 0,
     },
     validators,
-    onSubmit: (data) =>
+    onSubmit: (data) => {
+      const getUpdatePayload = (data: Form) => ({
+        name: getNullableFiledUpdatedValue(name, data.name || null),
+        phone: getNullableFiledUpdatedValue(phone, data.phone || null),
+        email: getOptionalFieldUpdatedValue(email, data.email),
+        city: getNullableFiledUpdatedValue(city, data.city),
+        notice: getOptionalFieldUpdatedValue(notice, data.notice),
+        studioId: getNullableFiledUpdatedValue(studio, data.studio),
+        gender: getNullableFiledUpdatedValue(gender, data.gender),
+      });
+
       mutation.mutate({
         id: id,
-        payload: {
-          name: getNullableFiledUpdatedValue(name, data.name || null),
-          phone: getNullableFiledUpdatedValue(phone, data.phone || null),
-          email: getOptionalFieldUpdatedValue(email, data.email),
-          city: getNullableFiledUpdatedValue(city, data.city),
-          notice: getOptionalFieldUpdatedValue(notice, data.notice),
-          studioId: getNullableFiledUpdatedValue(studio, data.studio),
-          gender: getNullableFiledUpdatedValue(gender, data.gender),
-        },
-      }),
+        payload: getUpdatePayload(data),
+      });
+    },
   });
 
-  const unchanged = useMemo(() => {
+  const hasNoChanges = useMemo(() => {
     return (
       (name || "") === form.state.name &&
       (phone || "") === form.state.phone &&
@@ -186,13 +190,41 @@ const PersonalDetails: React.FC<Props> = ({
     [intl, forStudent]
   );
 
+  const StudentPhotoControl = () => (
+    <div className="hidden md:block">
+      <UploadPhoto id={id} name={name} image={image} />
+    </div>
+  );
+
+  const TutorSpecificControl = () => (
+    <div className="flex flex-col gap-4 lg:max-w-[422px]">
+      <Select
+        id="studio"
+        value={optional(form.state.studio)}
+        onChange={(value) => form.set("studio", value)}
+        options={studioOptions}
+        label={intl("labels.studio")}
+        placeholder={intl("labels.studio.placeholder")}
+        state={form.errors.studio ? "error" : undefined}
+        helper={form.errors?.studio}
+      />
+      <Input
+        id="notice"
+        name="notice"
+        value={form.state.notice}
+        onChange={(e) => form.set("notice", Number(e.target.value))}
+        label={intl("labels.notice")}
+        placeholder={intl("labels.notice.placeholder")}
+        state={form.errors?.notice ? "error" : undefined}
+        helper={form.errors?.notice}
+        autoComplete="off"
+      />
+    </div>
+  );
+
   return (
     <div>
-      {forStudent ? (
-        <div className="hidden md:block">
-          <UploadPhoto id={id} name={name} image={image} />{" "}
-        </div>
-      ) : null}
+      {forStudent ? <StudentPhotoControl /> : null}
       {!forStudent ? (
         <Typography
           tag="h2"
@@ -201,12 +233,12 @@ const PersonalDetails: React.FC<Props> = ({
           {intl("tutor-settings.tabs.personal-settings")}
         </Typography>
       ) : null}{" "}
-      <div className="flex flex-wrap md:flex-nowrap gap-6 md:gap-10 md:mt-6">
+      <Form
+        onSubmit={form.onSubmit}
+        className="flex flex-wrap md:flex-nowrap gap-6 md:gap-10 md:mt-6"
+      >
         <div className="w-full md:w-[320px] lg:w-[400px] flex-shrink-0">
-          <form
-            onSubmit={form.onSubmit}
-            className="w-full flex flex-col gap-2 md:gap-4"
-          >
+          <div className="w-full flex flex-col gap-2 md:gap-4">
             {forStudent ? (
               <Input
                 id="name"
@@ -240,6 +272,8 @@ const PersonalDetails: React.FC<Props> = ({
               value={optional(form.state.phone)}
               onValueChange={(e) => form.set("phone", e.value)}
               label={intl("labels.phone")}
+              dir={"ltr"}
+              className="text-right"
               placeholder={intl("labels.phone.placeholder")}
               state={form.errors?.phone ? "error" : undefined}
               helper={form.errors?.phone}
@@ -267,45 +301,21 @@ const PersonalDetails: React.FC<Props> = ({
               state={form.errors.gender ? "error" : undefined}
               helper={form.errors?.gender}
             />
-          </form>
+          </div>
         </div>
 
         <div className="max-w-[320px] lg:max-w-[640px] flex flex-col gap-6">
-          {!forStudent ? (
-            <div className="flex flex-col gap-4 lg:max-w-[422px]">
-              <Select
-                id="studio"
-                value={optional(form.state.studio)}
-                onChange={(value) => form.set("studio", value)}
-                options={studioOptions}
-                label={intl("labels.studio")}
-                placeholder={intl("labels.studio.placeholder")}
-                state={form.errors.studio ? "error" : undefined}
-                helper={form.errors?.studio}
-              />
-              <Input
-                id="notice"
-                name="notice"
-                value={form.state.notice}
-                onChange={(e) => form.set("notice", Number(e.target.value))}
-                label={intl("labels.notice")}
-                placeholder={intl("labels.notice.placeholder")}
-                state={form.errors?.notice ? "error" : undefined}
-                helper={form.errors?.notice}
-                autoComplete="off"
-              />
-            </div>
-          ) : null}{" "}
+          {!forStudent ? <TutorSpecificControl /> : null}{" "}
           <ConfirmContactMethod
             forStudent={forStudent}
             verifiedEmail={verifiedEmail}
             verifiedPhone={verifiedPhone}
           />
         </div>
-      </div>
+      </Form>
       <Button
         size="large"
-        disabled={mutation.isPending || unchanged}
+        disabled={mutation.isPending || hasNoChanges}
         loading={mutation.isPending}
         onClick={form.submit}
         className="mt-6 mr-auto lg:mt-10 lg:mr-0"

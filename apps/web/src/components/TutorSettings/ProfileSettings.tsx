@@ -53,38 +53,36 @@ const ProfileSettings: React.FC<{
       about: info.about || "",
     },
     onSubmit: (data) => {
+      const getUpdatePayload = (data: ITutorSettingsForm) => ({
+        name: getNullableFiledUpdatedValue(info.name, data.name.trim()),
+        bio: getNullableFiledUpdatedValue(info.bio, data.bio.trim()),
+        about: getNullableFiledUpdatedValue(info.about, data.about.trim()),
+      });
+
       updateTutor.mutate({
         id: info.id,
-        payload: {
-          name: getNullableFiledUpdatedValue(info.name, data.name.trim()),
-          bio: getNullableFiledUpdatedValue(info.bio, data.bio.trim()),
-          about: getNullableFiledUpdatedValue(info.about, data.about.trim()),
-        },
+        payload: getUpdatePayload(data),
       });
     },
   });
 
-  const [nameState, saveName] = useFieldMutation<string, IUser.Self>((value) =>
-    updateTutor.mutateAsync({
-      id: info.id,
-      payload: { name: getNullableFiledUpdatedValue(info.name, value) },
-    })
-  );
-
-  const [bioState, saveBio] = useFieldMutation<string, IUser.Self>((value) =>
-    updateTutor.mutateAsync({
-      id: info.id,
-      payload: { bio: getNullableFiledUpdatedValue(info.bio, value) },
-    })
-  );
-
-  const [aboutState, saveAbout] = useFieldMutation<string, IUser.Self>(
-    (value) =>
+  const useFieldMutationHelper = (
+    fieldName: keyof ITutorSettingsForm,
+    currentValue: string | null
+  ) => {
+    return useFieldMutation<string, IUser.Self>((value) =>
       updateTutor.mutateAsync({
         id: info.id,
-        payload: { about: getNullableFiledUpdatedValue(info.about, value) },
+        payload: {
+          [fieldName]: getNullableFiledUpdatedValue(currentValue, value.trim()),
+        },
       })
-  );
+    );
+  };
+
+  const [nameState, saveName] = useFieldMutationHelper("name", info.name);
+  const [bioState, saveBio] = useFieldMutationHelper("bio", info.bio);
+  const [aboutState, saveAbout] = useFieldMutationHelper("about", info.about);
 
   return (
     <Form onSubmit={form.onSubmit} className="flex flex-col gap-6">
@@ -116,6 +114,7 @@ const ProfileSettings: React.FC<{
             isSuccess={nameState.isSuccess}
             isError={nameState.isError}
             label={intl("tutor-settings.personal-info.name")}
+            placeholder={intl("tutor-settings.personal-info.name.placeholder")}
             helper={nameState.isError ? "Failed to save" : undefined}
           />
 
@@ -128,11 +127,12 @@ const ProfileSettings: React.FC<{
             isSuccess={bioState.isSuccess}
             isError={bioState.isError}
             label={intl("tutor-settings.personal-info.bio")}
+            placeholder={intl("tutor-settings.personal-info.bio.placeholder")}
             helper={bioState.isError ? "Failed to save" : undefined}
           />
         </div>
 
-        <TopicSelection forTutor />
+        <TopicSelection />
 
         <Typography
           tag="h1"
@@ -150,6 +150,7 @@ const ProfileSettings: React.FC<{
           isError={aboutState.isError}
           autoComplete="off"
           className="min-h-[172px]"
+          placeholder={intl("tutor-settings.personal-info.about.placeholder")}
           state={form.errors.about ? "error" : undefined}
           maxAllowedCharacters={MAX_TUTOR_ABOUT_TEXT_LENGTH}
           name="about"
