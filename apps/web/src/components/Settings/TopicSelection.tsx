@@ -250,6 +250,10 @@ const TopicSelectionTemplate = ({
     }));
   }, [allTopicsQuery]);
 
+  console.log({
+    loading: allTopicsQuery.query.isFetching || userTopicsQuery.isPending,
+  });
+
   return (
     <div className={cn("flex flex-col grow", forTutor ? "gap-6" : "gap-4")}>
       <div className="flex items-center justify-between">
@@ -293,6 +297,8 @@ const TopicSelectionTemplate = ({
 
       {showDialog ? (
         <TopicSelectionDialog
+          more={allTopicsQuery.more}
+          canLoadMore={allTopicsQuery.hasMore}
           forTutor={forTutor}
           title={intl(
             forTutor
@@ -312,7 +318,11 @@ const TopicSelectionTemplate = ({
             if (userTopicsQuery.isError) userTopicsQuery.refetch();
           }}
           confirming={isUpdating}
-          loading={userTopicsQuery.isPending || allTopicsQuery.query.isPending}
+          loading={
+            userTopicsQuery.isPending ||
+            allTopicsQuery.query.isPending ||
+            allTopicsQuery.query.isFetching
+          }
           error={userTopicsQuery.isError || allTopicsQuery.query.isError}
           close={() => {
             setShowDialog(false);
