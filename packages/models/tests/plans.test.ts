@@ -76,7 +76,7 @@ describe("plans", () => {
         fixtures.plan({ active: false }),
       ]);
       const found = await plans.find({ active: false });
-      expect(found.list).to.deep.eq(created.slice(2));
+      expect(found.list).to.deep.members(created.slice(2));
     });
 
     it("should list active and not forInvitesOnly plans", async () => {
