@@ -51,6 +51,7 @@ export async function constructTutorsCache(): Promise<TutorsCache> {
       bio: tutor.bio,
       about: tutor.about,
       gender: tutor.gender,
+      role: tutor.role,
       notice: tutor.notice,
       topics: filteredTopics,
       avgRating:
@@ -87,11 +88,14 @@ export function isPublicTutor(
 export function orderTutors({
   tutors,
   userGender,
+  subscribed,
 }: {
   tutors: ITutor.Cache[];
   userGender?: IUser.Gender;
+  subscribed?: boolean;
 }): ITutor.Cache[] {
   const iteratees = [
+    "role",
     (tutor: ITutor.Cache) => {
       if (!userGender) return 0; // disable ordering by gender if user is not logged in or gender is unkown
       if (!tutor.gender) return Infinity;
@@ -100,7 +104,11 @@ export function orderTutors({
     },
     "notice",
   ];
-  const orders: Array<"asc" | "desc"> = ["asc", "asc"];
+  const orders: Array<"asc" | "desc"> = [
+    subscribed ? "asc" : "desc",
+    "asc",
+    "asc",
+  ];
   return orderBy(tutors, iteratees, orders);
 }
 
@@ -156,6 +164,7 @@ export async function joinTutorCache(
     bio: tutor.bio,
     about: tutor.about,
     gender: tutor.gender,
+    role: tutor.role,
     notice: tutor.notice,
     ...meta,
   };
