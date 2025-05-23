@@ -68,7 +68,7 @@
     "messenger": "pnpm --filter @litespace/messenger",
     "studio": "pnpm --filter @litespace/studio",
     "kafka": "pnpm --filter @litespace/kafka",
-    "livekit:dev": "livekit-server --dev"
+    "livekit:dev": "livekit-server --dev --config livekit.config.yaml"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.2",

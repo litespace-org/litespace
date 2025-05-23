@@ -30,18 +30,10 @@ export async function getSessions({
   ]);
 
   const sessions = lessonsResult.list
-    .map(
-      (lesson): Session => ({
-        type: "lesson",
-        ...lesson,
-      })
-    )
+    .map((lesson): Session => ({ type: "lesson", ...lesson }))
     .concat(
       interviewsResult.list.map(
-        (interview): Session => ({
-          type: "interview",
-          ...interview,
-        })
+        (interview): Session => ({ type: "interview", ...interview })
       )
     );
 

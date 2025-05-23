@@ -1,0 +1,25 @@
+services:
+  livekit-redis:
+    container_name: livekit-redis
+    image: redis/redis-stack-server:latest
+    ports:
+      - "6378:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+
+  livekit-egress:
+    container_name: livekit-egress
+    image: livekit/egress:latest
+    network_mode: host
+    environment:
+      - |
+        EGRESS_CONFIG_BODY=
+        log_level: debug
+        api_key: devkey
+        api_secret: secret
+        ws_url: ws://127.0.0.1:7880
+        insecure: true
+        redis:
+          address: 127.0.0.1:6378
+    depends_on:
+      - livekit-redis
