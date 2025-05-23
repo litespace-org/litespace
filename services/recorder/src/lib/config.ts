@@ -10,6 +10,11 @@ const schema = zod.object({
     zod.literal("staging"),
     zod.literal("production"),
   ]),
+  s3: zod.object({
+    key: zod.string(),
+    secret: zod.string(),
+    bucket: zod.string(),
+  }),
 });
 
 export type Config = Zod.infer<typeof schema>;
@@ -20,4 +25,9 @@ export const config: Config = schema.parse({
     chat: process.env.TELEGRAM_CHAT,
   },
   env: process.env.ENVIRONMENT,
+  s3: {
+    key: process.env.S3_KEY,
+    secret: process.env.S3_SECRET,
+    bucket: process.env.S3_BUCKET,
+  },
 });
