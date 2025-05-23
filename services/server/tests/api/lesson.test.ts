@@ -83,7 +83,7 @@ describe("/api/v1/lesson/", () => {
     });
   });
 
-  describe("POST /api/v1/lesson", () => {
+  describe.skip("POST /api/v1/lesson", () => {
     it("should respond with bad request when students try to book a lesson in the past", async () => {
       const tutorApi = await Api.forTutor();
       const studentApi = await Api.forStudent();

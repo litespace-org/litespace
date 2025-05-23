@@ -271,8 +271,14 @@ function student() {
   return user({ role: IUser.Role.Student });
 }
 
-function tutorManager() {
-  return user({ role: IUser.Role.TutorManager });
+async function tutorManager(
+  userPayload?: Partial<IUser.CreatePayload>,
+  tutorPayload?: Partial<ITutor.UpdatePayload>
+) {
+  const info = await user({ ...userPayload, role: IUser.Role.TutorManager });
+  const tutor = await tutors.create(info.id);
+  await tutors.update(tutor.id, tutorPayload || {});
+  return tutor;
 }
 
 async function students(count: number) {
