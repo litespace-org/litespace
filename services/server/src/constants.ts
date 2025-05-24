@@ -37,10 +37,7 @@ export const databaseConnection = {
 
 export const redisUrl = zod
   .string({ message: "Missing or invalid redis url" })
-  .regex(
-    /^redis:\/\/\w+:\d+/,
-    "Provided redis url doesn't match the expected format `redis://<host>:<port>`"
-  )
+  .startsWith("redis://")
   .parse(process.env.REDIS_URL);
 
 // Server
