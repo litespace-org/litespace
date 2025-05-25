@@ -46,3 +46,12 @@ export async function calculateRemainingWeeklyMinutesOfCurrentWeekByUserId(
     userId: subscription.userId,
   });
 }
+
+export async function isUserSubscribed(userId: number): Promise<boolean> {
+  const sub = await subscriptions.find({
+    users: [userId],
+    terminated: false,
+    end: { after: dayjs.utc().toISOString() },
+  });
+  return !!first(sub.list);
+}
