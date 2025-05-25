@@ -8,6 +8,8 @@ export enum ApiError {
   UserExists = "user-exists",
   RatingExists = "rating-exists",
   SubscriptionExists = "subscription-exists",
+  SubscriptionRequired = "subscription-required",
+  NoEnoughMinutes = "no-enough-minutes",
   BusyTutor = "busy-tutor",
   BusyTutorManager = "busy-tutor-manager",
   Unexpected = "unexpected",

@@ -30,6 +30,12 @@ describe("sessions test suite", () => {
 
     studentApi = await Api.forStudent();
     student = await studentApi.findCurrentUser();
+
+    await db.subscription({
+      userId: student.id,
+      start: dayjs().toISOString(),
+      end: dayjs().add(1, "month").toISOString(),
+    });
   });
 
   it("should join the user socket in the socket.io room when the user pre-join", async () => {
