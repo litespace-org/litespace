@@ -11,6 +11,7 @@ export enum ApiError {
   IntroVideoExists = "intro-video-exists",
   SubscriptionExists = "subscription-exists",
   SubscriptionRequired = "subscription-required",
+  SubscriptionUncancellable = "subscription-uncancellable",
   NoEnoughMinutes = "no-enough-minutes",
   BusyTutor = "busy-tutor",
   BusyTutorManager = "busy-tutor-manager",

@@ -19,6 +19,9 @@ export const subscriptionRequired = () =>
 
 export const noEnoughMinutes = () => error(ApiError.NoEnoughMinutes, 403);
 
+export const subscriptionUncancellable = () =>
+  error(ApiError.SubscriptionUncancellable, 403);
+
 export const bad = (message?: string) =>
   error(ApiError.BadRequest, 400, message);
 

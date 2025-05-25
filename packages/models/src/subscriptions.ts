@@ -47,6 +47,7 @@ export class Subscriptions {
       .update(
         {
           extended_by: payload.extendedBy,
+          terminated_by: payload.terminatedBy,
           terminated_at:
             typeof payload.terminatedAt === "string"
               ? dayjs.utc(payload.terminatedAt).toDate()
@@ -107,6 +108,7 @@ export class Subscriptions {
       start: row.start.toISOString(),
       end: row.end.toISOString(),
       extendedBy: row.extended_by,
+      terminatedBy: row.terminated_by,
       terminatedAt: row.terminated_at ? row.terminated_at.toISOString() : null,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),

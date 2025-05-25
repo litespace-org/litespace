@@ -505,7 +505,7 @@ async function transaction(
 ): Promise<ITransaction.Self> {
   return await transactions.create({
     userId: payload?.userId || (await user({})).id,
-    amount: payload?.amount || randomInt(1, 1000),
+    amount: payload?.amount || randomInt(100, 1000),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
     planId: await or.planId(payload?.planId),
@@ -517,7 +517,7 @@ async function plan(
   payload?: Partial<IPlan.CreatePayload>
 ): Promise<IPlan.Self> {
   return await plans.create({
-    weeklyMinutes: payload?.weeklyMinutes || randomInt(1, 1000),
+    weeklyMinutes: payload?.weeklyMinutes || randomInt(100, 1000),
     baseMonthlyPrice: payload?.baseMonthlyPrice || randomPrice(),
     monthDiscount: payload?.monthDiscount || randomDiscount(),
     quarterDiscount: payload?.quarterDiscount || randomDiscount(),
@@ -549,7 +549,7 @@ function randomPrice() {
 }
 
 function randomDiscount() {
-  return percentage.scale(randomInt(1, 100));
+  return percentage.scale(randomInt(10, 100));
 }
 
 async function subscription(
