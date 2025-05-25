@@ -14,9 +14,11 @@
     "esModuleInterop": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@sb": ["./.storybook/*"]
+      "@sb/*": ["./.storybook/*"],
+      "@cy/*": ["./cypress/*"]
     },
     /* Linting */
     "strict": true,
@@ -24,6 +26,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "cypress"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
