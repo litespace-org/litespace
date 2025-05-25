@@ -1,2 +1,2 @@
 export { Direction } from "@/components/Direction/Direction";
-export { Dir } from "@/components/Direction/types";
+export { type Dir } from "@/components/Direction/types";

@@ -1,5 +1,4 @@
 export { Button } from "@/components/Button";
-export { Dir } from "@/components/Direction";
 export { Input, type InputType } from "@/components/Input";
 export { NumericInput } from "@/components/NumericInput";
 export { Toast, ToastProvider, useToast } from "@/components/Toast";

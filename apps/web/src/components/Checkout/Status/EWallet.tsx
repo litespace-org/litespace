@@ -5,11 +5,11 @@ import { Button } from "@litespace/ui/Button";
 import { walletPaymentQrCode } from "@/lib/cache";
 import { Void } from "@litespace/types";
 
-const QrPayment: React.FC<{ qr: string; cancel: Void; canceling: boolean }> = ({
-  qr,
-  cancel,
-  canceling,
-}) => {
+const QrPayment: React.FC<{
+  qr: string;
+  cancel: Void;
+  canceling: boolean;
+}> = ({ qr, cancel, canceling }) => {
   const intl = useFormatMessage();
 
   return (

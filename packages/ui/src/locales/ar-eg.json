@@ -11,7 +11,7 @@
   "checkout.payment.description": "يرجى إدخال كافة المعلومات أدناه لإكمال عملية الدفع.",
   "checkout.payment.confirm": "تأكيد ومتابعة الدفع",
   "checkout.payment.card.card-number": "رقم الكارت",
-  "checkout.payment.card.card-number-placeholder": "1234 **** **** ****",
+  "checkout.payment.card.card-number-placeholder": "**** **** **** 1234",
   "checkout.payment.card.cvv": "الرقم السري",
   "checkout.payment.card.cvv-placeholder": "123",
   "checkout.payment.card.add-card": "اضافة بطاقة",

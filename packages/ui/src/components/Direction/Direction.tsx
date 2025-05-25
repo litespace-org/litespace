@@ -5,7 +5,7 @@ import { DirectionProvider as RadixDirectionProvider } from "@radix-ui/react-dir
 export const Direction: React.FC<{
   dir?: Dir;
   children: React.ReactNode;
-}> = ({ dir = Dir.RTL, children }) => {
+}> = ({ dir = "rtl", children }) => {
   return (
     <RadixDirectionProvider dir={dir}>
       <main dir={dir}>{children}</main>
