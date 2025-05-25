@@ -112,6 +112,7 @@ export type RefundPayload = {
   orderRefNum: string;
   /**
    * The required amount to be refunded.
+   * @NOTE: expected to be scaled.
    */
   refundAmount: number;
   /**
