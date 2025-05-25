@@ -10,6 +10,10 @@ const schema = zod.object({
     zod.literal("staging"),
     zod.literal("production"),
   ]),
+  /**
+   * restore file path
+   */
+  rfp: zod.string(),
 });
 
 type ConfigSchema = Zod.infer<typeof schema>;
@@ -20,4 +24,20 @@ export const config: ConfigSchema = schema.parse({
     chat: process.env.TELEGRAM_CHAT,
   },
   env: process.env.ENVIRONMENT,
+  rfp: process.env.RFP,
 });
+
+export const spaceConfig = {
+  bucketName: zod
+    .string({ message: "Missing or invalid digital ocean space bucket name" })
+    .trim()
+    .parse(process.env.SPACES_BUCKET_NAME),
+  accessKeyId: zod
+    .string({ message: "Missing or invalid digital ocean space access key" })
+    .trim()
+    .parse(process.env.SPACES_ACCESS_KEY),
+  secretAccessKey: zod
+    .string({ message: "Missing or invalid digital ocean space secret key" })
+    .trim()
+    .parse(process.env.SPACES_SECRET_ACCESS_KEY),
+} as const;
