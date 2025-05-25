@@ -51,13 +51,15 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
 };
 
 const Subscription: React.FC = () => {
-  const { info, remainingWeeklyMinutes } = useSubscription();
+  const { info, remainingWeeklyMinutes, loading } = useSubscription();
   const intl = useFormatMessage();
 
   const ended = useMemo(
     () => !!info && dayjs(info.end).isBefore(dayjs()),
     [info]
   );
+
+  if (loading) return null;
 
   if (!info || ended)
     return (
