@@ -39,6 +39,7 @@ export const Select = <T extends string | number>({
   label,
   value,
   placeholder,
+  valueDir,
   options = [],
   showDropdownIcon = true,
   disabled = false,
@@ -131,6 +132,7 @@ export const Select = <T extends string | number>({
           >
             <Typography
               tag="span"
+              dir={valueDir}
               className={cn("font-medium text-caption", {
                 // filled
                 "text-natural-950": !disabled && value,

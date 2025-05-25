@@ -1,10 +1,12 @@
 import { Void } from "@litespace/types";
+import { Dir } from "@/components/Direction";
 
 export type SelectProps<T extends string | number> = {
   id?: string;
   className?: string;
   label?: string;
   placeholder?: string;
+  valueDir?: Dir;
   options?: SelectList<T>;
   value?: T;
   size?: SelectSize;

@@ -102,7 +102,11 @@ const Body: React.FC<{
   const logger = useLogger();
 
   // =================== sync payment manually =====================
-  const syncPayment = useSyncPaymentStatus({});
+  const syncPayment = useSyncPaymentStatus({
+    onSuccess() {
+      transaction.refetch();
+    },
+  });
 
   useHotkeys(
     "ctrl+s",
@@ -158,7 +162,7 @@ const Body: React.FC<{
     };
   }, [onTransactionStatusUpdate, socket]);
 
-  if (plan.loading || transaction.loading) return <Loading size="small" />;
+  if (plan.loading || transaction.loading) return <Loading size="large" />;
 
   if (plan.error || transaction.error || !plan.data)
     return (

@@ -178,6 +178,7 @@ const Payment: React.FC<{
             value={form.state.card}
             options={cardOptions}
             placeholder={intl("checkout.payment.card.card-number-placeholder")}
+            valueDir="ltr"
             onChange={(value) => form.set("card", value)}
             state={form.errors.card ? "error" : undefined}
             helper={form.errors.card}
@@ -192,7 +193,7 @@ const Payment: React.FC<{
               <Button
                 type="main"
                 variant="tertiary"
-                size="small"
+                size="large"
                 htmlType="button"
                 startIcon={<AddCard className="icon" />}
                 disabled={false}

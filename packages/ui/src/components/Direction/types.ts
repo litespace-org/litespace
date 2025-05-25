@@ -1,4 +1,1 @@
-export enum Dir {
-  RTL = "rtl",
-  LTR = "ltr",
-}
+export type Dir = "rtl" | "ltr";
