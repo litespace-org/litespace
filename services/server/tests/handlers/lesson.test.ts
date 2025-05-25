@@ -12,7 +12,7 @@ import {
   subscriptionRequired,
   noEnoughMinutes,
 } from "@/lib/error";
-import { dayjs, safe } from "@litespace/utils";
+import { dayjs, nameof, safe } from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";
 import { lessons, subscriptions } from "@litespace/models";
 
@@ -38,7 +38,7 @@ describe("/api/v1/lesson/", () => {
     await cache.flush();
   });
 
-  describe("POST /api/v1/lesson/", () => {
+  describe(nameof(createLesson), () => {
     it("should respond with forbidden in case the user is not student", async () => {
       const users = await Promise.all([
         db.user({ role: IUser.Role.Tutor }),
@@ -445,59 +445,9 @@ describe("/api/v1/lesson/", () => {
       expect(res2).to.not.be.instanceof(Error);
       expect(res2.status).to.eq(200);
     });
-
-    it("should successfully create lesson in case the sub user has no quota but subscribing with tutor-manager", async () => {
-      const now = dayjs();
-      const student = await db.student();
-
-      const tutor = await db.tutor();
-      await db.slot({
-        userId: tutor.id,
-        start: now.toISOString(),
-        end: now.add(1, "week").toISOString(),
-      });
-
-      // create a one week subscription
-      const sub = await db.subscription({
-        userId: student.id,
-        start: now.toISOString(),
-        end: now.add(1, "week").toISOString(),
-        weeklyMinutes: 300,
-      });
-
-      for (let i = 0; i < Math.floor(sub.weeklyMinutes / 30); i++) {
-        await db.lesson({
-          student: student.id,
-          tutor: tutor.id,
-          start: now.add(i * 30, "minute").toISOString(),
-          duration: ILesson.Duration.Long,
-        });
-      }
-
-      const tutorManager = await db.tutorManager();
-      const slot = await db.slot({
-        userId: tutorManager.id,
-        start: now.toISOString(),
-        end: now.add(1, "week").toISOString(),
-      });
-
-      const i = Math.ceil(sub.weeklyMinutes / 30);
-      const res = await createLesson({
-        user: student,
-        body: {
-          tutorId: tutorManager.id,
-          slotId: slot.id,
-          start: now.add(i * 30, "minute").toISOString(),
-          duration: ILesson.Duration.Short,
-        },
-      });
-
-      expect(res).to.not.be.instanceof(Error);
-      expect(res.status).to.eq(200);
-    });
   });
 
-  describe("PATCH /api/v1/lesson/", () => {
+  describe(nameof(updateLesson), () => {
     it("should respond with forbidden in case the requester is not a student.", async () => {
       const res = await safe(async () =>
         updateLesson({

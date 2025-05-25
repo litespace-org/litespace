@@ -93,20 +93,19 @@ function create(context: ApiContext) {
       const slot = await availabilitySlots.findById(payload.slotId);
       if (!slot) return next(notfound.slot());
 
-      // Lesson should be in the future
+      // lesson should be in the future
       if (dayjs.utc(payload.start).isBefore(dayjs.utc())) return next(bad());
 
-      const sub = first(
-        (
-          await subscriptions.find({
-            users: [user.id],
-            terminated: false,
-            end: { after: dayjs.utc().toISOString() },
-          })
-        ).list
-      );
+      const sub = await subscriptions
+        .find({
+          users: [user.id],
+          terminated: false,
+          end: { after: dayjs.utc().toISOString() },
+        })
+        .then(({ list }) => first(list));
 
-      // Unsubscribed user is allowed to have only one not-canceled lesson at a time.
+      // unsubscribed user is allowed to have only one not-canceled lesson at a
+      // time.
       const userLessons = await lessons.find({
         users: [user.id],
         after: dayjs.utc().toISOString(),
@@ -114,11 +113,12 @@ function create(context: ApiContext) {
       });
       if (!sub && userLessons.total !== 0) return next(reachedBookingLimit());
 
-      // Unsubscribed users cannot book lessons with paid (regular) tutors
+      // unsubscribed users cannot book lessons with paid (regular) tutors
       if (!sub && isRegularTutor(tutor)) return next(subscriptionRequired());
 
-      // subscribed users with no enough minutes quota should not be able to book with regular tutors
-      if (sub && isRegularTutor(tutor)) {
+      // subscribed users with no enough minutes quota should not be able to
+      // book with paid/unpaid tutors
+      if (sub) {
         const remainingMinutes =
           await calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription({
             userId: sub.userId,
@@ -127,14 +127,14 @@ function create(context: ApiContext) {
           });
         if (remainingMinutes < payload.duration) return next(noEnoughMinutes());
 
-        // subscribed users should not be able to book lessons not within the current week
-        const weekBoundaries = getCurrentWeekBoundaries(sub?.start);
-        if (
-          !dayjs
-            .utc(payload.start)
-            .isBetween(weekBoundaries.start, weekBoundaries.end)
-        )
-          return next(bad());
+        // subscribed users should not be able to book lessons not within the
+        // current week
+        const weekBoundaries = getCurrentWeekBoundaries(sub.start);
+        const within = dayjs
+          .utc(payload.start)
+          .add(payload.duration, "minutes")
+          .isBetween(weekBoundaries.start, weekBoundaries.end, "minutes", "[]");
+        if (!within) return next(bad());
       }
 
       const price = isTutorManager(tutor)
