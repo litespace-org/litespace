@@ -14,10 +14,19 @@ export const Content: React.FC<{
 }> = ({ loading, error, list, refetch }) => {
   const intl = useFormatMessage();
 
-  if (loading) return <Loading size="large" text={intl("plans.loading")} />;
+  if (loading)
+    return (
+      <div className="mx-auto mt-[15vh]">
+        <Loading size="large" text={intl("plans.loading")} />
+      </div>
+    );
 
   if (error || isEmpty(list))
-    return <LoadingError error={intl("plans.error")} retry={refetch} />;
+    return (
+      <div className="w-fit mx-auto mt-[15vh]">
+        <LoadingError error={intl("plans.error")} retry={refetch} />
+      </div>
+    );
 
   return (
     <div className="mt-4 md:mt-6">

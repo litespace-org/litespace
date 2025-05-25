@@ -39,6 +39,7 @@ import {
   id,
   numericFilter,
   dateFilter,
+  queryBoolean,
 } from "@/validation/utils";
 import { jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, groupBy, sample } from "lodash";
@@ -159,7 +160,7 @@ const findStudioTutorsQuery = zod.object({
   search: zod.optional(string),
 });
 
-const findFullTutorsQueryFilter = zod.object({
+const findFullTutorsQuery = zod.object({
   bio: zod
     .union([zod.string(), zod.null()])
     .describe("search by tutor bio")
@@ -177,40 +178,31 @@ const findFullTutorsQueryFilter = zod.object({
     .optional()
     .describe("search by tutor phone number"),
   email: zod.string().optional().describe("search by tutor email"),
-  video: zod
-    .boolean()
+  video: queryBoolean
     .optional()
     .describe("filter by tutor having video or not"),
-  thumbnail: zod
-    .boolean()
+  thumbnail: queryBoolean
     .optional()
     .describe("filter by tutor having thumbnail or not"),
-  image: zod
-    .boolean()
+  image: queryBoolean
     .optional()
     .describe("filter by tutor having image or not"),
-  activated: zod
-    .boolean()
+  activated: queryBoolean
     .optional()
     .describe("filter by tutor either activated or not"),
-  verifiedEmail: zod
-    .boolean()
+  verifiedEmail: queryBoolean
     .optional()
     .describe("filter by tutor either verified their email or not"),
-  verifiedPhone: zod
-    .boolean()
+  verifiedPhone: queryBoolean
     .optional()
     .describe("filter by tutor either verified their phone or not"),
-  verifiedWhatsapp: zod
-    .boolean()
+  verifiedWhatsapp: queryBoolean
     .optional()
     .describe("filter by tutor either verified their whatsapp or not"),
-  verifiedTelegram: zod
-    .boolean()
+  verifiedTelegram: queryBoolean
     .optional()
     .describe("filter by tutor either verified their telegram or not"),
-  password: zod
-    .boolean()
+  password: queryBoolean
     .optional()
     .describe("filter by tutor either having password or not"),
   notice: numericFilter.optional().describe("filter by tutors notice period"),
@@ -1144,7 +1136,7 @@ async function findFullTutors(req: Request, res: Response, next: NextFunction) {
   const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const query: ITutor.FindFullTutorsApiQuery = findFullTutorsQueryFilter.parse(
+  const query: ITutor.FindFullTutorsApiQuery = findFullTutorsQuery.parse(
     req.query
   );
 
