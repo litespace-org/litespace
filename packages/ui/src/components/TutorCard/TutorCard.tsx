@@ -1,223 +1,76 @@
-import React, { useMemo } from "react";
-import cn from "classnames";
-import { AvatarV2 } from "@/components/Avatar";
-import { Typography } from "@/components/Typography";
+import React from "react";
+import { Void } from "@litespace/types";
+import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
+import { Typography } from "@/components/Typography";
 import Star from "@litespace/assets/Star";
 import { useFormatMessage } from "@/hooks";
-import { formatNumber } from "@/components/utils";
-import { Link } from "react-router-dom";
-import { Tooltip } from "@/components/Tooltip";
-import { CardProps } from "@/components/TutorCard/types";
-import { isEmpty } from "lodash";
 
-const FRESH_TUTOR_MAX_TOPIC_COUNT = 7;
-const TUTOR_MAX_TOPIC_COUNT = 3;
-
-export const TutorCard: React.FC<CardProps> = ({
-  id,
-  name,
-  bio,
-  about,
-  imageUrl,
-  lessonCount,
-  studentCount,
-  profileUrl,
-  rating,
-  onBook,
-  topics,
-}) => {
+export const TutorCard: React.FC<{
+  id: number;
+  bio: string | null;
+  name: string | null;
+  free?: boolean;
+  image: string | null;
+  rating?: number;
+  action: {
+    label: string;
+    onClick: Void;
+  };
+}> = ({ id, bio, name, image, action, rating, free }) => {
   const intl = useFormatMessage();
 
-  const isFreshTutor = useMemo(
-    () => !studentCount && !lessonCount && !rating,
-    [lessonCount, rating, studentCount]
-  );
-
-  const remainingTopicsCount = useMemo(() => {
-    const displayedCount = !isFreshTutor
-      ? FRESH_TUTOR_MAX_TOPIC_COUNT
-      : TUTOR_MAX_TOPIC_COUNT;
-    const totalTopics = topics.length;
-
-    const remainingTopicsCount =
-      totalTopics < displayedCount ? 0 : totalTopics - displayedCount;
-
-    return remainingTopicsCount;
-  }, [isFreshTutor, topics]);
-
   return (
-    <div
-      className={cn(
-        "flex flex-col",
-        "bg-natural-50 border border-natural-100",
-        "px-4 py-[0.906rem] shadow-ls-x-small rounded-lg"
-      )}
-    >
-      <div className="flex flex-row gap-2 mb-2">
-        <div className="rounded-lg overflow-hidden shrink-0 w-[58px] h-[58px]">
-          <AvatarV2 src={imageUrl} alt={name} id={id} object="cover" />
-        </div>
-        <div>
+    <div className="h-[394px] focus-visible:ring-transparent w-full border border-natural-100 rounded-lg p-4 flex flex-col gap-4">
+      <div className="w-full min-h-[225px] rounded-[10px] grow overflow-hidden relative">
+        {free ? (
+          <div className="absolute px-3 py-[6px] z-free-badge top-2 right-0 flex items-center justify-center rounded-l-full bg-brand-700 ">
+            <Typography
+              tag="span"
+              className="text-natural-50 text-tiny font-semibold"
+            >
+              {intl("labels.free")}
+            </Typography>
+          </div>
+        ) : null}
+        <Avatar src={image} alt={name} seed={id} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between">
           <Typography
-            tag="span"
-            className="text-brand-700 mb-0.5 line-clamp-1 font-bold text-caption"
+            tag="h4"
+            className="text-caption font-bold text-natural-950"
           >
             {name}
           </Typography>
-
-          <Typography
-            tag="p"
-            className="ellipsis line-clamp-2 text-natural-800 text-tiny"
-          >
-            {bio}
-          </Typography>
-        </div>
-      </div>
-
-      <Typography
-        tag="p"
-        className="ellipsis line-clamp-2 text-natural-800 font-medium text-caption"
-      >
-        {about}
-      </Typography>
-
-      <Link to={profileUrl} className="cursor-pointer">
-        <Typography
-          tag="span"
-          className="ellipsis line-clamp-2 text-natural-950 underline font-semibold text-caption"
-        >
-          {intl("tutors.card.label.read-more")}
-        </Typography>
-      </Link>
-
-      {!isFreshTutor ? (
-        <div className={cn("flex gap-8 my-4")}>
-          {studentCount ? (
-            <div className="flex flex-col gap-1 w-[46px]">
-              <Typography
-                tag="span"
-                className="text-natural-800 font-normal text-tiny"
-              >
-                {intl("tutors.card.label.students")}
-              </Typography>
-              <Typography
-                tag="span"
-                className="text-natural-950 font-semibold text-body"
-              >
-                {formatNumber(studentCount)}
-              </Typography>
-            </div>
-          ) : null}
-
-          {lessonCount ? (
-            <div className="flex flex-col gap-1 w-[46px]">
-              <Typography
-                tag="span"
-                className="text-natural-800 font-normal text-tiny"
-              >
-                {intl("tutors.card.label.lessons")}
-              </Typography>
-              <Typography
-                tag="span"
-                className="text-natural-950 font-semibold text-body"
-              >
-                {formatNumber(lessonCount)}
-              </Typography>
-            </div>
-          ) : null}
-
           {rating ? (
-            <div className="flex flex-col gap-1 w-[46px]">
+            <div className="flex items-center gap-[5px]">
               <Typography
+                className="text-xs font-semibold text-secondary-950"
                 tag="span"
-                className="text-natural-800 font-normal text-tiny"
               >
-                {intl("tutors.card.label.rating")}
+                {rating}
               </Typography>
-              <div className="flex flex-row items-center gap-[5px] h-full">
-                <Typography
-                  tag="span"
-                  className="inline-block text-natural-950 font-semibold text-body"
-                >
-                  {rating}
-                </Typography>
-                <Star
-                  width={15}
-                  height={15}
-                  className="[&>*]:fill-warning-500"
-                />
-              </div>
+              <Star className="w-[15px] h-[15px]" />
             </div>
           ) : null}
         </div>
-      ) : null}
-
-      {!isEmpty(topics) && topics.join("").length > 0 ? (
-        <div
-          className={cn("flex gap-2 flex-wrap justify-start mb-4", {
-            "mt-4": isFreshTutor,
-          })}
-        >
-          {topics.map((topic, idx) => {
-            if (
-              (isFreshTutor && idx < FRESH_TUTOR_MAX_TOPIC_COUNT) ||
-              (!isFreshTutor && idx < TUTOR_MAX_TOPIC_COUNT)
-            )
-              return (
-                <Tooltip
-                  key={idx}
-                  content={<Typography tag="span">{topic}</Typography>}
-                >
-                  <div className="w-24">
-                    <Typography
-                      tag="span"
-                      className="block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl text-center truncate font-normal text-tiny"
-                    >
-                      {topic}
-                    </Typography>
-                  </div>
-                </Tooltip>
-              );
-          })}
-          <Typography
-            tag="span"
-            className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-normal text-tiny"
-          >
-            {remainingTopicsCount}
-            {"+"}
-          </Typography>
-        </div>
-      ) : null}
-
-      <div className="flex flex-row gap-3">
-        <Button
-          onClick={onBook}
-          className="w-full"
-          type="main"
-          variant="primary"
-          size="large"
-        >
-          {intl("tutors.card.book-button.label")}
-        </Button>
-        <Link
-          to={profileUrl}
-          className={cn(
-            "w-full flex items-center justify-center text-base",
-            "text-center px-4 py-2 border border-brand-700 rounded-lg",
-            "hover:bg-brand-100 hover:border-brand-700",
-            "focus:bg-brand-200 focus:ring-1 focus:ring-brand-900",
-            "transition-colors ease-out duration-200"
-          )}
-        >
-          <Typography
-            tag="span"
-            className="text-brand-700 text-caption font-semibold"
-          >
-            {intl("tutors.card.profile-button.label")}
-          </Typography>
-        </Link>
+        <Typography className="text-tiny text-natural-800 line-clamp-1" tag="p">
+          {bio}
+        </Typography>
       </div>
+      <Button
+        className="w-full bg-brand-500"
+        size="large"
+        onClick={(e) => {
+          e.preventDefault();
+          action.onClick();
+        }}
+      >
+        <Typography tag="span" className="text-body font-medium">
+          {action.label}
+        </Typography>
+      </Button>
     </div>
   );
 };

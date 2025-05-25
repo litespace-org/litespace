@@ -1,70 +1,74 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { TutorCard } from "@/components/TutorCard";
-import { DarkStoryWrapper } from "@/internal/DarkWrapper";
-import { faker } from "@faker-js/faker/locale/ar";
 import React from "react";
-import { range } from "lodash";
+import { StoryObj, Meta } from "@storybook/react";
+import { TutorCard } from "@/components/TutorCard";
+import { faker } from "@faker-js/faker/locale/ar";
 
-type Component = typeof TutorCard;
-
-const meta: Meta<Component> = {
+const meta: Meta<typeof TutorCard> = {
   title: "TutorCard",
   component: TutorCard,
-  parameters: { layout: "centered" },
   decorators: [
     (Story) => (
-      <div className="w-64">
+      <div className="w-[276px]">
         <Story />
       </div>
     ),
-    DarkStoryWrapper,
   ],
 };
 
-const makeTopics = (count: number, wordLength?: number | null) =>
-  range(count).map(() => {
-    return faker.word.sample({ length: wordLength || { min: 5, max: 15 } });
-  });
+type Story = StoryObj<typeof TutorCard>;
 
-export const Primary: StoryObj<Component> = {
+export const Primary: Story = {
   args: {
+    action: {
+      label: faker.lorem.words(2),
+      onClick: () => alert("book now"),
+    },
     id: 1,
-    name: faker.person.fullName(),
-    bio: faker.lorem.words(10),
-    about: faker.lorem.paragraphs(3),
-    studentCount: 12,
-    lessonCount: 40,
-    rating: 4.85,
-    imageUrl: "https://picsum.photos/200",
-    topics: [],
+    bio: faker.lorem.words(5),
+    name: faker.lorem.words(2),
+    rating: 5,
+    image: faker.image.urlPicsumPhotos(),
   },
 };
 
-export const HighStats: StoryObj<Component> = {
+export const NoRatings: Story = {
   args: {
-    id: 2,
-    name: faker.person.fullName(),
-    bio: faker.lorem.words(10),
-    about: faker.lorem.paragraphs(3),
-    studentCount: 2000,
-    lessonCount: 7123,
-    rating: 4.85,
-    imageUrl: "https://picsum.photos/200",
-    topics: [],
+    action: {
+      label: faker.lorem.words(2),
+      onClick: () => alert("book now"),
+    },
+    id: 1,
+    bio: faker.lorem.words(5),
+    name: faker.lorem.words(2),
+    image: faker.image.urlPicsumPhotos(),
   },
 };
 
-export const WithTopics: StoryObj<Component> = {
+export const Free: Story = {
   args: {
-    id: 2,
-    name: faker.person.fullName(),
-    bio: faker.lorem.words(10),
-    about: faker.lorem.paragraphs(3),
-    studentCount: 2000,
-    lessonCount: 7123,
-    rating: 4.85,
-    imageUrl: "https://picsum.photos/200",
-    topics: makeTopics(12),
+    free: true,
+    action: {
+      label: faker.lorem.words(2),
+      onClick: () => alert("book now"),
+    },
+    id: 1,
+    bio: faker.lorem.words(5),
+    name: faker.lorem.words(2),
+    image: faker.image.urlPicsumPhotos(),
+  },
+};
+
+export const LongBio: Story = {
+  args: {
+    action: {
+      label: faker.lorem.words(2),
+      onClick: () => alert("book now"),
+    },
+    id: 1,
+    bio: faker.lorem.words(40),
+    name: faker.lorem.words(2),
+    rating: 5,
+    image: faker.image.urlPicsumPhotos(),
   },
 };
 
