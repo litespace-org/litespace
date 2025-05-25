@@ -2,6 +2,7 @@ import { IPlan } from "@litespace/types";
 import {
   PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD,
   PLAN_PERIOD_TO_MONTH_COUNT,
+  PLAN_PERIOD_TO_WEEK_COUNT,
 } from "@/constants";
 import { percentage, price } from "@/value";
 
@@ -53,4 +54,11 @@ export function calculateTotalPriceAfterDiscount(
     period
   );
   return (totalPriceBeforeDiscount * (100 - discount)) / 100;
+}
+
+export function calculateTotalMinutes(
+  period: IPlan.Period | IPlan.PeriodLiteral,
+  weeklyMinutes: number
+): number {
+  return PLAN_PERIOD_TO_WEEK_COUNT[asPlanPeriod(period)] * weeklyMinutes;
 }

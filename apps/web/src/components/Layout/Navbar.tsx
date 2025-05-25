@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import cn from "classnames";
 import dayjs from "dayjs";
@@ -7,7 +7,7 @@ import Menu from "@litespace/assets/Menu";
 import Crown from "@litespace/assets/Crown";
 import { Button } from "@litespace/ui/Button";
 import { Web } from "@litespace/utils/routes";
-import { IUser, Void } from "@litespace/types";
+import { Void } from "@litespace/types";
 import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -19,13 +19,7 @@ import { useSaveLogs } from "@/hooks/logger";
 import { useSubscription } from "@litespace/headless/context/subscription";
 
 const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
-  const intl = useFormatMessage();
   const { md } = useMediaQuery();
-  const { user } = useUserContext();
-  const { save } = useSaveLogs();
-
-  const [counter, setCounter] = useState<number>(0);
-  const { info, remainingWeeklyMinutes } = useSubscription();
 
   return (
     <div className="shadow-app-navbar shadow lg:shadow-app-navbar-mobile w-full z-navbar bg-natural-50">
@@ -34,16 +28,9 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
           "max-w-screen-3xl mx-auto": location.pathname !== Web.Chat,
         })}
       >
-        {dayjs(info?.end).isBefore(dayjs()) &&
-        user?.role === IUser.Role.Student &&
-        location.pathname !== Web.Plans ? (
-          <SubscribeNowButton />
-        ) : (
-          <SubscriptionInfo
-            remainingWeeklyMinutes={remainingWeeklyMinutes}
-            weeklyMinutes={info?.weeklyMinutes || 0}
-          />
-        )}
+        <div className="hidden md:block">
+          <Subscription />
+        </div>
 
         {!md ? (
           <button
@@ -56,98 +43,102 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
         ) : null}
 
         <div className="ms-auto flex items-center justify-center">
-          {user ? (
-            <button
-              onClick={async () => {
-                if (counter < 2) return setCounter(counter + 1);
-                setCounter(0);
-                await save();
-              }}
-            >
-              <ProfileInfo
-                imageUrl={user.image}
-                name={user.name}
-                email={user.email}
-                id={user.id}
-              />
-            </button>
-          ) : null}
-
-          {!user ? (
-            <div className="flex gap-2">
-              <Link to={Web.Register}>
-                <Button size="large">
-                  <Typography
-                    tag="p"
-                    className="text-body text-natural-50 font-medium"
-                  >
-                    {intl("navbar.register")}
-                  </Typography>
-                </Button>
-              </Link>
-              <Link to={Web.Login}>
-                <Button size="large" variant="secondary">
-                  <Typography
-                    tag="p"
-                    className="text-body text-brand-700 font-medium"
-                  >
-                    {intl("navbar.login")}
-                  </Typography>
-                </Button>
-              </Link>
-            </div>
-          ) : null}
+          <User />
         </div>
       </div>
     </div>
   );
 };
 
-export default Navbar;
-
-const SubscriptionInfo = ({
-  remainingWeeklyMinutes,
-  weeklyMinutes,
-}: {
-  remainingWeeklyMinutes: number;
-  weeklyMinutes: number;
-}) => {
+const Subscription: React.FC = () => {
+  const { info, remainingWeeklyMinutes } = useSubscription();
   const intl = useFormatMessage();
+
+  const ended = useMemo(
+    () => !!info && dayjs(info.end).isBefore(dayjs()),
+    [info]
+  );
+
+  if (!info || ended)
+    return (
+      <Link to={Web.Plans} tabIndex={-1}>
+        <Button size="large" htmlType="button" endIcon={<Crown />}>
+          <Typography
+            tag="span"
+            className="text-natural-50 text-body font-bold"
+          >
+            {intl("navbar.subscription.subscribe-now")}
+          </Typography>
+        </Button>
+      </Link>
+    );
+
   return (
     <Tooltip
-      className="w-[462px] text-body font-normal"
-      content={intl.rich("sidebar.subscriptions.tooltip", {
-        day: () => (
-          <span className="font-bold">{intl("global.days.sun").slice(2)}</span>
-        ),
-        hour: () => (
-          <span className="font-bold">{intl("global.hours.three-am")}</span>
-        ),
+      content={intl("navbar.subscription.tooltip", {
+        day: dayjs(info.start).format("dddd"),
       })}
     >
-      <button className="hidden md:flex justify-start">
+      <div>
         <SubscriptionQuota
           remainingMinutes={remainingWeeklyMinutes}
-          weeklyMinutes={weeklyMinutes}
+          weeklyMinutes={info.weeklyMinutes}
         />
-      </button>
+      </div>
     </Tooltip>
   );
 };
 
-const SubscribeNowButton = () => {
+const User: React.FC = () => {
+  const { user } = useUserContext();
   const intl = useFormatMessage();
+  const { save } = useSaveLogs();
+  const [counter, setCounter] = useState<number>(0);
+
+  if (!user)
+    return (
+      <div className="flex gap-2">
+        <Link to={Web.Register} tabIndex={-1}>
+          <Button size="large">
+            <Typography
+              tag="p"
+              className="text-body text-natural-50 font-medium"
+            >
+              {intl("navbar.register")}
+            </Typography>
+          </Button>
+        </Link>
+
+        <Link to={Web.Login} tabIndex={-1}>
+          <Button size="large" variant="secondary">
+            <Typography
+              tag="p"
+              className="text-body text-brand-700 font-medium"
+            >
+              {intl("navbar.login")}
+            </Typography>
+          </Button>
+        </Link>
+      </div>
+    );
+
   return (
-    <Link to={Web.Plans} className="hidden md:flex">
-      <Button
-        size="large"
-        htmlType="button"
-        endIcon={<Crown height={16} width={16} />}
-      >
-        <Typography tag="span" className="text-natural-50 text-body font-bold">
-          {intl("navbar.subscribe-now")}
-        </Typography>
-      </Button>
-    </Link>
+    <button
+      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 focus-visible:ring-offset-4 rounded-md"
+      onClick={async () => {
+        if (counter < 2) return setCounter(counter + 1);
+        setCounter(0);
+        await save();
+      }}
+    >
+      <ProfileInfo
+        imageUrl={user.image}
+        name={user.name}
+        email={user.email}
+        id={user.id}
+      />
+    </button>
   );
 };
+
+export default Navbar;
