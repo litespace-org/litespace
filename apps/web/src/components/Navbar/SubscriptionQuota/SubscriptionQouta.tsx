@@ -3,6 +3,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { formatMinutes, formatPercentage } from "@litespace/ui/utils";
 import React, { useMemo } from "react";
 import Info from "@litespace/assets/Info";
+import cn from "classnames";
 
 const SubscriptionQouta: React.FC<{
   weeklyMinutes: number;
@@ -35,7 +36,10 @@ const SubscriptionQouta: React.FC<{
 
         <Typography
           tag="span"
-          className="text-natural-950 text-caption font-normal"
+          className={cn(
+            "text-natural-950 text-caption font-normal",
+            consumption <= 0 ? "hidden" : "block"
+          )}
         >
           {intl("navbar.subscription.quota-consumption", {
             value: formatPercentage(consumption),
