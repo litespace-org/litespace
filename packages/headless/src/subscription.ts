@@ -1,21 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useApi } from "@/api";
 import { QueryKey } from "@/constants";
 
-export function useCurrentSubscription(config?: { enabled?: boolean }) {
+export function useCurrentSubscription({
+  userId,
+  enabled,
+}: {
+  enabled?: boolean;
+  userId?: number;
+}) {
   const api = useApi();
 
   const findCurrentSubscription = useCallback(async () => {
-    return api.subscription.findCurrentSubscription();
-  }, [api.subscription]);
+    if (!userId) return null;
+    return api.subscription.findUserSubscription({ userId });
+  }, [api.subscription, userId]);
 
-  const keys = useMemo(() => [QueryKey.FindCurrentSubscription], []);
+  const keys = [QueryKey.FindCurrentSubscription];
 
   const query = useQuery({
     queryFn: findCurrentSubscription,
     queryKey: keys,
-    enabled: config?.enabled,
+    enabled,
   });
 
   return { query, keys };

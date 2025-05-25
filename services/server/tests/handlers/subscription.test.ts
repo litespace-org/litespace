@@ -5,8 +5,15 @@ import { mockApi } from "@fixtures/mockApi";
 import { expect } from "chai";
 import { forbidden, notfound } from "@/lib/error";
 
-const find = mockApi<ISubscription.FindQueryApi>(handlers.find);
-const findById = mockApi<object, { id: number }, object>(handlers.findById);
+const find = mockApi<
+  void,
+  void,
+  ISubscription.FindApiQuery,
+  ISubscription.FindApiResponse
+>(handlers.find);
+const findById = mockApi<object, { id: number }, object, ISubscription.Self>(
+  handlers.findById
+);
 
 describe("/api/v1/sub/", () => {
   beforeEach(async () => {
@@ -52,7 +59,7 @@ describe("/api/v1/sub/", () => {
       const s1 = await db.user({ role: IUser.Role.Student });
       const tx = await db.subscription({ userId: s1.id });
 
-      const res = await findById<ISubscription.Self>({
+      const res = await findById({
         user: s1,
         params: { id: tx.id },
       });
@@ -83,7 +90,7 @@ describe("/api/v1/sub/", () => {
         db.subscription({ userId: student.id }),
       ]);
 
-      const res = await find<ISubscription.FindApiResponse>({
+      const res = await find({
         user: student,
         query: {
           users: [student.id],

@@ -78,13 +78,17 @@ export type ModelFindFilter = {
 
 export type ModelFindQuery = IFilter.SkippablePagination & ModelFindFilter;
 
-export type FindQueryApi = ModelFindQuery;
+export type FindApiQuery = ModelFindQuery;
 
 export type FindApiResponse = Paginated<Self>;
 
 export type FindByIdApiResponse = Self;
 
-export type FindCurrentApiResponse = {
+export type FindUserSubscriptionApiResponse = {
   info: Self | null;
   remainingWeeklyMinutes: number;
+};
+
+export type FindUserSubscriptionApiQuery = {
+  userId: number;
 };

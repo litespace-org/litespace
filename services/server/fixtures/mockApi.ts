@@ -63,11 +63,7 @@ export function mockApi<
         response as unknown as Response,
         (next) => resolve(next)
       );
-
-      if (result instanceof Promise)
-        result.then(() => {
-          return resolve(response.data);
-        });
+      if (result instanceof Promise) result.then(() => resolve(response.data));
       else return resolve(response.data);
     });
   };
