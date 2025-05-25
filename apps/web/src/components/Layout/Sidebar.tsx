@@ -332,7 +332,7 @@ const Sidebar: React.FC<{
                 tag="span"
                 className="text-natural-50 text-caption font-semibold"
               >
-                {intl("navbar.subscribe-now")}
+                {intl("sidebar.subscribe-now")}
               </Typography>
             </Button>
           </Link>

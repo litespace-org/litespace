@@ -1,3 +1,5 @@
+name: litespace-prod
+
 services:
   postgres:
     container_name: postgres

@@ -1,3 +1,5 @@
+name: litespace-egress-dev
+
 services:
   livekit-redis:
     container_name: livekit-redis

@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import { Typography } from "@/components/Typography";
-import { AvatarV2 } from "@/components/Avatar";
+import { Typography } from "@litespace/ui/Typography";
+import { AvatarV2 } from "@litespace/ui/Avatar";
 import { optional } from "@litespace/utils/utils";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
