@@ -48,12 +48,16 @@ const findQuery = zod.object({
   size: pageSize.optional().default(10),
 });
 
+const findUserSubscriptionQuery = zod.object({
+  userId: id,
+});
+
 async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isAdmin(user) || isStudent(user);
   if (!allowed) return next(forbidden());
 
-  const query: ISubscription.FindQueryApi = findQuery.parse(req.query);
+  const query: ISubscription.FindApiQuery = findQuery.parse(req.query);
 
   const response: ISubscription.FindApiResponse = await subscriptions.find({
     ...query,
@@ -79,14 +83,22 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-async function findCurrent(req: Request, res: Response, next: NextFunction) {
+async function findUserSubscription(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const user = req.user;
-  const allowed = isStudent(user);
+  const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
+
+  const { userId }: ISubscription.FindUserSubscriptionApiQuery =
+    findUserSubscriptionQuery.parse(req.query);
+  if (isStudent(user) && user.id !== userId) return next(forbidden());
 
   const now = dayjs.utc();
   const { list } = await subscriptions.find({
-    users: [user.id],
+    users: [userId],
     terminated: false,
     end: { after: now.toISOString() },
   });
@@ -101,7 +113,7 @@ async function findCurrent(req: Request, res: Response, next: NextFunction) {
       })
     : 0;
 
-  const response: ISubscription.FindCurrentApiResponse = {
+  const response: ISubscription.FindUserSubscriptionApiResponse = {
     info: subscription || null,
     remainingWeeklyMinutes,
   };
@@ -112,5 +124,5 @@ async function findCurrent(req: Request, res: Response, next: NextFunction) {
 export default {
   find: safeRequest(find),
   findById: safeRequest(findById),
-  findCurrent: safeRequest(findCurrent),
+  findUserSubscription: safeRequest(findUserSubscription),
 };

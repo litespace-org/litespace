@@ -7,12 +7,14 @@ export class Subscription extends Base {
   }
 
   async find(
-    params?: ISubscription.FindQueryApi
+    params?: ISubscription.FindApiQuery
   ): Promise<ISubscription.FindApiResponse> {
     return this.get({ route: `/api/v1/sub/list`, params });
   }
 
-  async findCurrentSubscription(): Promise<ISubscription.FindCurrentApiResponse> {
-    return this.get({ route: `/api/v1/sub/current` });
+  async findUserSubscription(
+    params: ISubscription.FindUserSubscriptionApiQuery
+  ): Promise<ISubscription.FindUserSubscriptionApiResponse> {
+    return this.get({ route: `/api/v1/sub/user`, params });
   }
 }

@@ -1,47 +1,37 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { SubscriptionContext, Context } from "@/subscription/context";
-import { ISubscription } from "@litespace/types";
 import { useCurrentSubscription } from "@/subscription";
 import { useServer } from "@/server";
-
-type Data = ISubscription.FindCurrentApiResponse;
-
-const defaultData: Data = {
-  info: null,
-  remainingWeeklyMinutes: 0,
-};
+import { useUserContext } from "@/user/context";
+import { isStudent } from "@litespace/utils";
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [data, setData] = useState<Data>(defaultData);
   const { canPerformPrivateRequests } = useServer();
+  const { user } = useUserContext();
 
   const { query } = useCurrentSubscription({
-    enabled: canPerformPrivateRequests,
+    enabled: canPerformPrivateRequests && isStudent(user),
+    userId: user?.id,
   });
-
-  useEffect(() => {
-    if (!query.data || query.isLoading || query.isFetching) return;
-    setData(query.data);
-  }, [query.data, query.isFetching, query.isLoading, setData]);
 
   const context = useMemo((): Context => {
     return {
-      info: data.info,
-      remainingWeeklyMinutes: data.remainingWeeklyMinutes,
+      info: query.data?.info || null,
+      remainingWeeklyMinutes: query.data?.remainingWeeklyMinutes || 0,
       loading: query.isLoading,
       isError: query.isError,
       error: query.error,
       fetching: query.isFetching,
     };
   }, [
-    data.info,
-    data.remainingWeeklyMinutes,
+    query.data?.info,
+    query.data?.remainingWeeklyMinutes,
     query.isLoading,
-    query.isFetching,
     query.isError,
     query.error,
+    query.isFetching,
   ]);
 
   return (
