@@ -1,179 +1,193 @@
-import BooleanField from "@/components/Common/BooleanField";
 import DateField from "@/components/Common/DateField";
-import PlanForm from "@/components/Plans/PlanForm";
-import Price from "@/components/Plans/Price";
-import { Table } from "@/components/Common/Table";
-import { ActionsMenu } from "@litespace/ui/ActionsMenu";
-import { formatMinutes } from "@litespace/ui/utils";
-import { Loading } from "@litespace/ui/Loading";
-import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-
+import { Table, TableNaviationProps } from "@/components/Common/Table";
+import Price from "@/components/Common/Price";
+import { useUpdatePlan } from "@litespace/headless/plans";
 import { IPlan, Void } from "@litespace/types";
-import { UseQueryResult } from "@tanstack/react-query";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
+import { useToast } from "@litespace/ui/Toast";
+import { Typography } from "@litespace/ui/Typography";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { formatMinutes } from "@litespace/ui/utils";
 import { createColumnHelper } from "@tanstack/react-table";
-import React, { useCallback, useMemo, useState } from "react";
-import Error from "@/components/Common/Error";
-import { useDeletePlan } from "@litespace/headless/plans";
+import React, { useCallback, useMemo } from "react";
+import { PLAN_PERIOD_LITERAL_TO_MONTH_COUNT } from "@litespace/utils";
+import { Switch } from "@litespace/ui/Switch";
 
-const List: React.FC<{
-  query: UseQueryResult<IPlan.FindApiResponse, Error>;
-  refresh: Void;
-}> = ({ query, refresh }) => {
+const List: React.FC<
+  {
+    list?: IPlan.FindApiResponse["list"];
+    error: boolean;
+    refetch: Void;
+  } & TableNaviationProps
+> = ({ list, refetch, error, fetching, loading, ...naviation }) => {
   const intl = useFormatMessage();
-  const [plan, setPlan] = useState<IPlan.Self | null>(null);
-  const close = useCallback(() => setPlan(null), []);
   const toast = useToast();
 
   const onSuccess = useCallback(() => {
-    toast.success({ title: intl("dashboard.plan.delete.success") });
-    refresh();
-  }, [intl, refresh, toast]);
+    refetch();
+  }, [refetch]);
 
   const onError = useCallback(
     (error: Error) => {
       toast.error({
-        title: intl("dashboard.plan.delete.error"),
+        title: intl("dashboard.plans.update-error"),
         description: error.message,
       });
     },
     [intl, toast]
   );
-  const deletePlan = useDeletePlan({ onSuccess, onError });
+
+  const mutation = useUpdatePlan({ onSuccess, onError });
+
   const columnHelper = createColumnHelper<IPlan.Self>();
+
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
-        header: intl("global.labels.id"),
-        cell: (info) => info.row.original.id,
+        header: () => (
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.id")}
+          </Typography>
+        ),
+        cell: (info) => (
+          <Typography
+            tag="span"
+            className="text-body font-semibold text-natural-800"
+          >
+            {intl("labels.hash-value", { value: info.getValue() })}
+          </Typography>
+        ),
       }),
       columnHelper.accessor("weeklyMinutes", {
-        header: intl("dashboard.plan.weeklyMinutes"),
-        cell: (info) => formatMinutes(info.row.original.weeklyMinutes),
+        header: () => (
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.weekly-minutes")}
+          </Typography>
+        ),
+        cell: (info) => (
+          <Typography
+            tag="span"
+            className="text-body font-semibold text-natural-800"
+          >
+            {formatMinutes(info.row.original.weeklyMinutes)}
+          </Typography>
+        ),
       }),
       columnHelper.accessor("baseMonthlyPrice", {
-        header: intl("dashboard.plan.fullMonthPrice"),
+        header: () => (
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.full-month-price")}
+          </Typography>
+        ),
         cell: (info) => {
           return (
             <Price
-              price={info.row.original.baseMonthlyPrice}
-              discount={info.row.original.baseMonthlyPrice}
-            />
-          );
-        },
-      }),
-      columnHelper.accessor("monthDiscount", {
-        header: intl("dashboard.plan.fullQuarterPrice"),
-        cell: (info) => {
-          return (
-            <Price
-              price={info.row.original.baseMonthlyPrice}
+              price={
+                info.getValue() * PLAN_PERIOD_LITERAL_TO_MONTH_COUNT["month"]
+              }
               discount={info.row.original.monthDiscount}
             />
           );
         },
       }),
       columnHelper.accessor("quarterDiscount", {
-        header: intl("dashboard.plan.halfYearPrice"),
+        header: () => (
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.full-quarter-price")}
+          </Typography>
+        ),
+
         cell: (info) => {
           return (
             <Price
-              price={info.row.original.quarterDiscount}
-              discount={info.row.original.quarterDiscount}
+              price={
+                info.row.original.baseMonthlyPrice *
+                PLAN_PERIOD_LITERAL_TO_MONTH_COUNT["quarter"]
+              }
+              discount={info.getValue()}
             />
           );
         },
       }),
       columnHelper.accessor("yearDiscount", {
-        header: intl("dashboard.plan.fullYearPrice"),
+        header: () => (
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.full-year-price")}
+          </Typography>
+        ),
         cell: (info) => {
           return (
             <Price
-              price={info.row.original.yearDiscount}
-              discount={info.row.original.yearDiscount}
+              price={
+                info.row.original.baseMonthlyPrice *
+                PLAN_PERIOD_LITERAL_TO_MONTH_COUNT["year"]
+              }
+              discount={info.getValue()}
             />
           );
         },
       }),
-      columnHelper.accessor("forInvitesOnly", {
-        header: intl("dashboard.plan.forInvitesOnly"),
-        cell: (info) => {
-          return <BooleanField checked={info.row.original.forInvitesOnly} />;
-        },
-      }),
-      columnHelper.accessor("active", {
-        header: intl("dashboard.plan.active"),
-        cell: (info) => {
-          return <BooleanField checked={info.row.original.active} />;
-        },
-      }),
       columnHelper.accessor("createdAt", {
-        header: intl("dashboard.plan.created-at"),
+        header: () => (
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.created-at")}
+          </Typography>
+        ),
         cell: (info) => {
           return <DateField date={info.row.original.createdAt} />;
         },
       }),
-      columnHelper.accessor("updatedAt", {
-        header: intl("dashboard.plan.updated-at"),
-        cell: (info) => {
-          return <DateField date={info.row.original.updatedAt} />;
-        },
-      }),
-      columnHelper.display({
+      columnHelper.accessor("active", {
         id: "actions",
+        header: () => (
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.state")}
+          </Typography>
+        ),
         cell: (info) => (
-          <ActionsMenu
-            actions={[
-              {
-                id: 1,
-                label: intl("global.labels.edit"),
-                onClick() {
-                  setPlan(info.row.original);
-                },
-              },
-              {
-                id: 2,
-                label: intl("global.labels.delete"),
-                danger: true,
-                onClick: () => {
-                  deletePlan.mutate(info.row.original.id);
-                },
-              },
-            ]}
+          <Switch
+            id="toggle-plan"
+            checked={info.getValue()}
+            onChange={(checked) =>
+              mutation.mutate({
+                id: info.row.original.id,
+                payload: { active: checked },
+              })
+            }
+            disabled={mutation.isPending}
           />
         ),
       }),
     ],
-    [columnHelper, deletePlan, intl]
+    [columnHelper, intl, mutation]
   );
 
-  if (query.isLoading) return <Loading />;
-  if (query.error)
+  if (loading)
     return (
-      <Error
-        error={query.error}
-        title={intl("dashboard.error.alert.title")}
-        refetch={query.refetch}
-      />
+      <div className="flex justify-center items-center mt-[15vh]">
+        <Loading text={intl("dashboard.plans.loading")} size="large" />
+      </div>
     );
-  if (!query.data) return null;
+
+  if (error || !list)
+    return (
+      <div className="flex justify-center items-center mt-[15vh]">
+        <LoadingError
+          error={intl("dashboard.plans.error")}
+          retry={refetch}
+          size="medium"
+        />
+      </div>
+    );
+
   return (
-    <div>
-      <Table
-        columns={columns}
-        data={query.data.list}
-        goto={() => {}}
-        prev={() => {}}
-        next={() => {}}
-        totalPages={0}
-        fetching={false}
-        loading={false}
-        page={1}
-      />
-      {plan ? (
-        <PlanForm plan={plan} open close={close} refresh={query.refetch} />
-      ) : null}
-    </div>
+    <Table
+      data={list}
+      columns={columns}
+      loading={loading}
+      fetching={fetching}
+      {...naviation}
+    />
   );
 };
 

@@ -6,7 +6,6 @@ import {
   isValidEmail,
   isValidPassword,
   isValidPhone,
-  isValidTutorBio,
   isValidUserName,
 } from "@litespace/utils/validation";
 import { Validators } from "@litespace/headless/form";
@@ -93,37 +92,6 @@ export function useValidateEmail(required: boolean = false) {
       return true;
     },
     [required, intl]
-  );
-}
-
-export function useValidateBio(required: boolean = false) {
-  const intl = useFormatMessage();
-
-  const errorMap = useMemo(
-    (): Record<
-      | FieldError.EmptyBio
-      | FieldError.ShortBio
-      | FieldError.LongBio
-      | FieldError.InvalidBio,
-      LocalId
-    > => ({
-      [FieldError.EmptyBio]: "error.bio.empty",
-      [FieldError.ShortBio]: "error.bio.short",
-      [FieldError.LongBio]: "error.bio.long",
-      [FieldError.InvalidBio]: "error.bio.invalid",
-    }),
-    []
-  );
-
-  return useCallback(
-    (value: unknown) => {
-      if (!required && !value) return true;
-      if (required && !value) return intl("error.required");
-      const valid = isValidTutorBio(value);
-      if (valid !== true) return intl(errorMap[valid]);
-      return true;
-    },
-    [required, intl, errorMap]
   );
 }
 

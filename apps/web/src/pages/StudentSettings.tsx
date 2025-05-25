@@ -5,12 +5,12 @@ import { useSearchParams } from "react-router-dom";
 import Content from "@/components/StudentSettings/Content";
 import { TabId } from "@/components/StudentSettings/types";
 import { isValidTab } from "@/components/StudentSettings/utils";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 
 export default function StudentSettingsV2() {
   const intl = useFormatMessage();
   const [params, setParams] = useSearchParams();
-  const { user, fetching } = useUserContext();
+  const { user, fetching } = useUser();
 
   const tab: TabId = useMemo(() => {
     const tab = params.get("tab");

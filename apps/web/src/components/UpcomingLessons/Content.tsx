@@ -12,7 +12,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import ManageLesson, {
   ManageLessonPayload,
 } from "@/components/Lessons/ManageLesson";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useNavigateToRoom } from "@/hooks/chat";
@@ -37,7 +37,7 @@ export const Content: React.FC<{
   const queryClient = useQueryClient();
   const intl = useFormatMessage();
   const toast = useToast();
-  const { user } = useUserContext();
+  const { user } = useUser();
   const navigate = useNavigate();
 
   const [cancelLessonId, setCancelLessonId] = useState<number | null>(null);

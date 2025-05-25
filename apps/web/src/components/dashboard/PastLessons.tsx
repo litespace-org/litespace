@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { PastLessonsSummary, PastLessonsTable } from "@litespace/ui/Lessons";
@@ -62,7 +62,7 @@ export const PastLessons: React.FC = () => {
     setTutor(tutorId);
   }, []);
 
-  const { user } = useUserContext();
+  const { user } = useUser();
   const now = useMemo(() => dayjs.utc().toISOString(), []);
 
   const lessonsQuery = useInfiniteLessons({

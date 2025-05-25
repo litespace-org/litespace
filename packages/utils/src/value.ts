@@ -5,14 +5,14 @@ function value(scaler: number) {
      * scale up the value by a factor of `value.scaler`
      */
     scale(value: number): number {
-      return Math.floor(value * this.scaler);
+      return Math.floor(value * scaler);
     },
     /**
      * scale down the value by a factor of `value.scaler`
      * @returns
      */
     unscale(value: number): number {
-      return value / this.scaler;
+      return value / scaler;
     },
   } as const;
 }

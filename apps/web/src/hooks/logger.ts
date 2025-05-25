@@ -1,4 +1,4 @@
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useLogger } from "@litespace/headless/logger";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
@@ -14,7 +14,7 @@ export function useSaveLogs(options?: {
   const logger = useLogger();
   const toast = useToast();
   const intl = useFormatMessage();
-  const { user } = useUserContext();
+  const { user } = useUser();
 
   const save = useCallback(async () => {
     const context = user ? `[context] user=${user.id}` : "[context] N/A";

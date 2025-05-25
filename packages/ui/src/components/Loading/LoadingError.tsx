@@ -6,7 +6,7 @@ import { Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
 import { useLogger } from "@litespace/headless/logger";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useToast } from "@/components/Toast";
 import { safePromise } from "@litespace/utils";
 
@@ -18,7 +18,7 @@ export const LoadingError: React.FC<{
   const intl = useFormatMessage();
   const logger = useLogger();
   const toast = useToast();
-  const { user } = useUserContext();
+  const { user } = useUser();
   const [saving, setSaving] = useState<boolean>(false);
 
   const save = useCallback(async () => {

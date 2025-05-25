@@ -14,7 +14,7 @@ import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { nullable } from "@litespace/utils/utils";
 import dayjs from "@/lib/dayjs";
 import { useInvalidateQuery } from "@litespace/headless/query";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
 
@@ -43,7 +43,7 @@ type Props = Base & ManageLessonPayload;
  * book new lessons or edit existing lesson
  */
 const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
-  const { user } = useUserContext();
+  const { user } = useUser();
   const toast = useToast();
   const intl = useFormatMessage();
   const invalidate = useInvalidateQuery();

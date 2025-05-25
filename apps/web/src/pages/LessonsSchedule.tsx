@@ -8,7 +8,7 @@ import {
 import Header, { View } from "@/components/LessonSchedule/Header";
 import { AnimatePresence, motion } from "framer-motion";
 import LessonsList from "@/components/UpcomingLessons/Content";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import cn from "classnames";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +35,7 @@ const LessonsSchedule: React.FC = () => {
   const { md, lg } = useMediaQuery();
   const [date, setDate] = useState(dayjs().startOf("week"));
   const [view, setView] = useState<View>("list");
-  const { user } = useUserContext();
+  const { user } = useUser();
   const navigate = useNavigate();
   const [lessonId, setLessonId] = useState<number | null>(null);
   const [manageLessonData, setManageLessonData] =

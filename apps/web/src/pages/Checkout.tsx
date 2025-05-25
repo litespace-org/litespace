@@ -4,8 +4,8 @@ import { Replace } from "@litespace/types";
 import { useNavigate, useParams } from "react-router-dom";
 import { isInteger } from "lodash";
 import { useLogger } from "@litespace/headless/logger";
-import { isValidPlanPeriodLiteral } from "@litespace/utils";
-import { useUserContext } from "@litespace/headless/context/user";
+import { isValidPlanPeriodLiteral } from "@litespace/utils/validation";
+import { useUser } from "@litespace/headless/context/user";
 import Content from "@/components/Checkout/Content";
 
 type Params = Replace<UrlParamsOf<Web.Checkout>, "planId" | "period", string>;
@@ -14,7 +14,7 @@ const Checkout: React.FC = () => {
   const params = useParams<Params>();
   const logger = useLogger();
   const navigate = useNavigate();
-  const { user } = useUserContext();
+  const { user } = useUser();
 
   const planId = useMemo(() => {
     const planId = Number(params.planId);

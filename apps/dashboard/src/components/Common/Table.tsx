@@ -15,19 +15,21 @@ import ArrowLeft from "@litespace/assets/ArrowLeft";
 import ChevronDoubleRight from "@litespace/assets/ChevronDoubleRight";
 import ChevronDoubleLeft from "@litespace/assets/ChevronDoubleLeft";
 
-interface ReactTableProps<T extends object> {
-  data: T[];
-  columns: TableOptions<T>["columns"];
+export type TableNaviationProps = {
   goto?: (page: number) => void;
   next?: Void;
   prev?: Void;
-  totalPages?: number;
-  page?: number;
   loading?: boolean;
   fetching?: boolean;
+  page?: number;
+  totalPages?: number;
+};
+
+type TableProps<T extends object> = TableNaviationProps & {
+  data: T[];
+  columns: TableOptions<T>["columns"];
   headless?: boolean;
-  className?: string;
-}
+};
 
 export const Table = <T extends object>({
   data,
@@ -40,8 +42,7 @@ export const Table = <T extends object>({
   prev,
   goto,
   next,
-  className,
-}: ReactTableProps<T>) => {
+}: TableProps<T>) => {
   const table = useReactTable({
     data,
     columns,
@@ -67,7 +68,7 @@ export const Table = <T extends object>({
         className={cn(
           "relative w-full",
           "rounded-lg border border-natural-100",
-          "overflow-x-auto",
+          "overflow-x-auto whitespace-nowrap",
           "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
         )}
       >
@@ -75,7 +76,7 @@ export const Table = <T extends object>({
           {!headless ? (
             <thead className="text-tiny text-foreground bg-natural-100">
               {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className={className}>
+                <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
@@ -97,7 +98,7 @@ export const Table = <T extends object>({
           ) : null}
           <tbody className="border-b bg-surface-200">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className={className}>
+              <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <td
                     className="p-4 border-l border-natural-100 last:border-0"
@@ -111,6 +112,7 @@ export const Table = <T extends object>({
           </tbody>
         </table>
       </div>
+
       {prev && goto && next && page && totalPages ? (
         <footer className="relative flex items-center justify-center gap-2 pt-4">
           <div className="absolute top-4 right-0 w-16">

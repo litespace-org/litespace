@@ -566,7 +566,7 @@ async function subscription(
     planId: await or.planId(payload?.planId),
     txId: await or.txId(payload?.txId, userId),
     period: or.planPeriod(payload?.period),
-    weeklyMinutes: payload?.weeklyMinutes || randomInt(1000),
+    weeklyMinutes: payload?.weeklyMinutes || sample([120, 150, 180]),
     start: payload?.start || faker.date.future().toISOString(),
     end: payload?.end || faker.date.future().toISOString(),
   });

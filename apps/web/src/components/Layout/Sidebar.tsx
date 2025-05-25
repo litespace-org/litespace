@@ -11,7 +11,7 @@ import Tag from "@litespace/assets/Tag";
 import Video from "@litespace/assets/Video";
 import AccountPromotion from "@litespace/assets/AccountPromotion";
 import TrendUp from "@litespace/assets/TrendUp";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
@@ -97,7 +97,7 @@ const Sidebar: React.FC<{
   const intl = useFormatMessage();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useUserContext();
+  const { user, logout } = useUser();
 
   const mainPages: LinkInfo[] = useMemo(() => {
     const match = (route: Web) => router.match(route, location.pathname);

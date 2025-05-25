@@ -295,6 +295,7 @@ describe("/api/v1/lesson/", () => {
         userId: student.id,
         start: start.toISOString(),
         end: start.add(2, "week").toISOString(),
+        weeklyMinutes: 120,
       });
 
       const tutor = await db.tutor();

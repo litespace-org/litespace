@@ -3,7 +3,7 @@ import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { RatingDialog } from "@litespace/ui/RatingDialog";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import React, { useCallback, useState } from "react";
 import { useCreateRatingTutor } from "@litespace/headless/rating";
 import { useToast } from "@litespace/ui/Toast";
@@ -15,7 +15,7 @@ export const RateTutor: React.FC<{
   tutorName: string;
   tutorId: number;
 }> = ({ tutorName, tutorId }) => {
-  const { user } = useUserContext();
+  const { user } = useUser();
   const intl = useFormatMessage();
   const [rating, setRating] = useState<boolean>(false);
   const toast = useToast();

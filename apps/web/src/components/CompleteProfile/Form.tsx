@@ -1,7 +1,7 @@
 import { IUser } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useToast } from "@litespace/ui/Toast";
 import { useNavigate } from "react-router-dom";
 import { governorates } from "@/constants/user";
@@ -32,7 +32,7 @@ const CompleteProfile: React.FC = () => {
   const intl = useFormatMessage();
 
   const toast = useToast();
-  const { user } = useUserContext();
+  const { user } = useUser();
   const invalidateQuery = useInvalidateQuery();
 
   const { control, handleSubmit, watch, formState } = useForm<IForm>({

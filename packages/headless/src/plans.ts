@@ -3,23 +3,18 @@ import { IPlan, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { QueryKey } from "@/constants";
+import { usePaginate } from "@/pagination";
 
 export function usePlans(payload?: IPlan.FindApiQuery) {
   const api = useApi();
 
   const findPlans = useCallback(
-    () => api.plan.find(payload),
+    ({ page, size }: IPlan.FindApiQuery) =>
+      api.plan.find({ page, size, ...payload }),
     [api.plan, payload]
   );
 
-  const keys = [QueryKey.FindPlans, payload];
-
-  const query = useQuery({
-    queryFn: findPlans,
-    queryKey: keys,
-  });
-
-  return { query, keys };
+  return usePaginate(findPlans, [QueryKey.FindPlans, payload]);
 }
 
 export function useCreatePlan({

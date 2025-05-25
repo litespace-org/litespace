@@ -10,7 +10,7 @@ import { IMessage, IRoom, ITutor, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import AllMessages from "@litespace/assets/AllMessages";
 import Pin from "@litespace/assets/Pin";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { isOnline, isTyping } from "@/lib/room";
 import { RoomsMap } from "@litespace/headless/chat";
 import React, { useCallback, useMemo } from "react";
@@ -59,7 +59,7 @@ const Rooms: React.FC<{
   canLoadMore,
 }) => {
   const intl = useFormatMessage();
-  const { user } = useUserContext();
+  const { user } = useUser();
 
   const { icon, label }: RoomsData = useMemo(() => {
     if (type === "all")

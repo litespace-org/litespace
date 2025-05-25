@@ -5,7 +5,7 @@ import {
   useFindAvailabilitySlots,
   useSetAvailabilitySlots,
 } from "@litespace/headless/availabilitySlots";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 
 import { AvailabilitySlotProps, Calendar } from "@litespace/ui/Calendar";
 import { DeleteSlotDialog } from "@litespace/ui/DeleteSlotDialog";
@@ -25,7 +25,7 @@ import { useCalendarController } from "@/hooks/calendar";
 
 const ScheduleManagement: React.FC = () => {
   const { md } = useMediaQuery();
-  const { user } = useUserContext();
+  const { user } = useUser();
   const { start, end, next, prev } = useCalendarController();
 
   const toast = useToast();

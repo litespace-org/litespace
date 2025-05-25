@@ -5,7 +5,7 @@ import cn from "classnames";
 import { useSelectedRoom } from "@litespace/ui/hooks/chat";
 import { useChatStatus, useFindRoomMembers } from "@litespace/headless/chat";
 import { asOtherMember, isOnline, isTyping } from "@/lib/room";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import StartMessaging from "@litespace/assets/StartMessaging";
 import { Typography } from "@litespace/ui/Typography";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
@@ -20,7 +20,7 @@ const Chat: React.FC = () => {
 
   const mq = useMediaQuery();
 
-  const { user } = useUserContext();
+  const { user } = useUser();
   const intl = useFormatMessage();
   const { select, selected } = useSelectedRoom();
 

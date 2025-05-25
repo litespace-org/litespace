@@ -8,7 +8,7 @@ export const Direction: React.FC<{
 }> = ({ dir = "rtl", children }) => {
   return (
     <RadixDirectionProvider dir={dir}>
-      <main dir={dir}>{children}</main>
+      <div dir={dir}>{children}</div>
     </RadixDirectionProvider>
   );
 };

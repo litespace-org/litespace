@@ -2,14 +2,14 @@ import React, { useMemo } from "react";
 import { SubscriptionContext, Context } from "@/subscription/context";
 import { useCurrentSubscription } from "@/subscription";
 import { useServer } from "@/server";
-import { useUserContext } from "@/user/context";
+import { useUser } from "@/user/context";
 import { isStudent } from "@litespace/utils";
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { canPerformPrivateRequests } = useServer();
-  const { user } = useUserContext();
+  const { user } = useUser();
 
   const { query } = useCurrentSubscription({
     enabled: canPerformPrivateRequests && isStudent(user),

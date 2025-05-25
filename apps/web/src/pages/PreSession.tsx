@@ -1,4 +1,4 @@
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { ISession, Replace } from "@litespace/types";
 import { isValidSessionType } from "@litespace/utils";
 import { UrlParamsOf, Web } from "@litespace/utils/routes";
@@ -13,7 +13,7 @@ type Params = Replace<UrlParamsOf<Web.PreSession>, "id", string>;
 
 const PreSession: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useUserContext();
+  const { user } = useUser();
   const params = useParams<Params>();
 
   const resourceId = useMemo((): number | null => {

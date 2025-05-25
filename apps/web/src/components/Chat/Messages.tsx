@@ -29,7 +29,7 @@ import dayjs from "dayjs";
 import { entries, groupBy, isEmpty } from "lodash";
 import { Typography } from "@litespace/ui/Typography";
 import Trash from "@litespace/assets/Trash";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { InView } from "react-intersection-observer";
 import { optional } from "@litespace/utils/utils";
 import ManageLesson from "@/components/Lessons/ManageLesson";
@@ -85,7 +85,7 @@ const Messages: React.FC<{
   select,
   close,
 }) => {
-  const { user } = useUserContext();
+  const { user } = useUser();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLUListElement>(null);
 

@@ -6,7 +6,7 @@ import {
   useFindUserRooms,
   useUpdateRoom,
 } from "@litespace/headless/chat";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -19,7 +19,7 @@ export function useRoomManager(isStudent: boolean) {
   const toast = useToast();
   const intl = useFormatMessage();
   const [keyword, setKeyword] = useState("");
-  const { user } = useUserContext();
+  const { user } = useUser();
 
   const pinnedRooms = useFindUserRooms(user?.id, {
     pinned: true,

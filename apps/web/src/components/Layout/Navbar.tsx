@@ -11,7 +11,7 @@ import { Void } from "@litespace/types";
 import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 
 import { Tooltip } from "@litespace/ui/Tooltip";
 import { ProfileInfo, SubscriptionQuota } from "@/components/Navbar";
@@ -92,7 +92,7 @@ const Subscription: React.FC = () => {
 };
 
 const User: React.FC = () => {
-  const { user } = useUserContext();
+  const { user } = useUser();
   const intl = useFormatMessage();
   const { save } = useSaveLogs();
   const [counter, setCounter] = useState<number>(0);

@@ -1,5 +1,5 @@
 import { useSendVerificationEmailCode } from "@litespace/headless/confirmationCode";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Input } from "@litespace/ui/Input";
@@ -10,7 +10,7 @@ import React, { useCallback } from "react";
 import { Check } from "react-feather";
 
 const VerificationDetails: React.FC = () => {
-  const { user } = useUserContext();
+  const { user } = useUser();
   const intl = useFormatMessage();
   const toast = useToast();
 

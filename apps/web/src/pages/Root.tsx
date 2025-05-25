@@ -2,7 +2,7 @@ import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
 import { router } from "@/lib/routes";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Landing, Web } from "@litespace/utils/routes";
 import { isForbidden } from "@litespace/utils";
@@ -31,7 +31,7 @@ const publicRoutes: Web[] = [
 const Root: React.FC = () => {
   const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const { user, meta, error, logout } = useUserContext();
+  const { user, meta, error, logout } = useUser();
 
   /**
    * `nav` is a url param used to hide the page navigation. It is mainlly used

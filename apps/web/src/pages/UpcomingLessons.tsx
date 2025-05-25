@@ -1,6 +1,6 @@
 import PageTitle from "@/components/Common/PageTitle";
 import Content from "@/components/UpcomingLessons/Content";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import {
   useCreateRatingTutor,
@@ -39,7 +39,7 @@ const defaultRateLessonParams: RateLessonParams = {
 const UpcomingLessons: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const { user } = useUserContext();
+  const { user } = useUser();
   const toast = useToast();
 
   const [params, setParams] = useSearchParams();

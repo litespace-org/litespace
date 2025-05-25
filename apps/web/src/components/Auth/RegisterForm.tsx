@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { IUser } from "@litespace/types";
 import { useRegisterUser } from "@litespace/headless/user";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { Typography } from "@litespace/ui/Typography";
 import {
   useValidateEmail,
@@ -30,7 +30,7 @@ type Role = "student" | "tutor";
 
 const RegisterForm: React.FC = () => {
   const intl = useFormatMessage();
-  const user = useUserContext();
+  const user = useUser();
   const navigate = useNavigate();
   const toast = useToast();
   const params = useParams<{ role: Role }>();
