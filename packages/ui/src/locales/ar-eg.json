@@ -942,6 +942,7 @@
   "error.api.intro-video-exists": "يوجد فيديو بالفعل، لا يمكن رفع فيديو آخر.",
   "error.api.subscription-exists": "انت مشترك بالفعل، يمكنك حجز حصة مع مدرس الان.",
   "error.api.subscription-required": "للوصول إلى هذه الميزة، يرجى الاشتراك أولاً.",
+  "error.api.subscription-uncancellable": "عذرا، لا يمكنك إلغاء الإشتراك بعد تعدي الحد الأقصى من الحصص.",
   "error.api.no-enough-minutes": "لا توجد دقائق كافية لحجز الحصة",
   "error.api.invalid-email": "تأكد من صحة البريد الإلكتروني الذي أدخلته.",
   "error.api.busy-tutor": "هذا الميعاد محجوز بالفعل، برجاء اختيار ميعاد اّخر.",

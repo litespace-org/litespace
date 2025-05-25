@@ -17,4 +17,10 @@ export class Subscription extends Base {
   ): Promise<ISubscription.FindUserSubscriptionApiResponse> {
     return this.get({ route: `/api/v1/sub/user`, params });
   }
+
+  async cancel(
+    payload: ISubscription.CancelApiPayload
+  ): Promise<ISubscription.CancelApiResponse> {
+    return this.patch({ route: `/api/v1/sub/cancel`, payload });
+  }
 }
