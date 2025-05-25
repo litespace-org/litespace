@@ -25,5 +25,6 @@ module.exports = {
     "<rootDir>/fixtures/worker.ts",
     "<rootDir>/fixtures/telegram.ts",
     "<rootDir>/fixtures/kafka.ts",
+    "<rootDir>/fixtures/fawry.ts",
   ],
 };

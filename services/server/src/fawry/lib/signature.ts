@@ -187,7 +187,7 @@ export function forRefundRequest(
     fawryConfig.merchantCode,
     data.referenceNumber,
     data.refundAmount,
-    data.reason,
+    data.reason || "",
     fawryConfig.secureKey
   );
 }

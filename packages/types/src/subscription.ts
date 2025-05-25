@@ -11,6 +11,7 @@ export type Row = {
   end: Date;
   extended_by: number | null;
   terminated_at: Date | null;
+  terminated_by: number | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -50,6 +51,7 @@ export type Self = {
    */
   extendedBy: number | null;
   terminatedAt: string | null;
+  terminatedBy: number | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -59,7 +61,9 @@ export type CreatePayload = Pick<
   "userId" | "planId" | "txId" | "period" | "weeklyMinutes" | "start" | "end"
 >;
 
-export type UpdatePayload = Partial<Pick<Self, "extendedBy" | "terminatedAt">>;
+export type UpdatePayload = Partial<
+  Pick<Self, "extendedBy" | "terminatedAt" | "terminatedBy">
+>;
 
 export type ModelFindFilter = {
   ids?: number[];
@@ -91,4 +95,16 @@ export type FindUserSubscriptionApiResponse = {
 
 export type FindUserSubscriptionApiQuery = {
   userId: number;
+};
+
+export type CancelApiPayload = {
+  /**
+   * subscription id to be canceled.
+   * @NOTE: should only be provided by admins.
+   */
+  id?: number;
+};
+
+export type CancelApiResponse = {
+  refundAmount: number;
 };
