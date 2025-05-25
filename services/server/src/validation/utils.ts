@@ -151,3 +151,9 @@ export const dateFilter = zod.union([
     lt: zod.string().optional(),
   }),
 ]);
+
+export const queryBoolean = zod
+  .custom<
+    "true" | "false" | true | false
+  >((value) => value === "true" || value === "false" || value === true || value === false)
+  .transform((value) => value === "true" || value === true);

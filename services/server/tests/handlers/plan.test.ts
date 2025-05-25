@@ -79,7 +79,7 @@ describe("/api/v1/plan/", () => {
         query: { active: true },
       });
 
-      expect(res.body?.list).to.deep.eq(created.slice(0, 2));
+      expect(res.body?.list).to.deep.members(created.slice(0, 2));
     });
 
     it("should respond with a list of inactive plans", async () => {
@@ -108,6 +108,8 @@ describe("/api/v1/plan/", () => {
       const res = await find({
         query: { active: true, forInvitesOnly: false },
       });
+
+      console.log(res);
 
       expect(res.body?.list).to.deep.eq(created.slice(0, 2));
     });

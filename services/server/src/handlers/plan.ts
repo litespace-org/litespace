@@ -7,6 +7,7 @@ import {
   numericFilter,
   pageNumber,
   pageSize,
+  queryBoolean,
   withNamedId,
 } from "@/validation/utils";
 import { IPlan } from "@litespace/types";
@@ -54,12 +55,10 @@ const findPlansQuery = zod.object({
   yearDiscount: numericFilter
     .optional()
     .describe("filter plans by year discount"),
-  active: zod
-    .boolean()
+  active: queryBoolean
     .optional()
     .describe("filter plans by whether they are active or not"),
-  forInvitesOnly: zod
-    .boolean()
+  forInvitesOnly: queryBoolean
     .optional()
     .describe("filter plans by whether they are for invites only or not"),
   createdAt: dateFilter
