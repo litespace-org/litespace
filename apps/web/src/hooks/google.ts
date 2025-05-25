@@ -1,5 +1,5 @@
 import { useApi } from "@litespace/headless/api";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { safe } from "@litespace/utils/error";
@@ -34,7 +34,7 @@ export function useGoogle({
   const logger = useLogger();
   const [loading, setLoading] = useState<boolean>(false);
   const api = useApi();
-  const user = useUserContext();
+  const user = useUser();
   const navigate = useNavigate();
   const toast = useToast();
   const intl = useFormatMessage();

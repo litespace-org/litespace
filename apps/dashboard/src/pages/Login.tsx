@@ -1,5 +1,5 @@
 import { router } from "@/lib/route";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useLoginUser } from "@litespace/headless/user";
 import { Button } from "@litespace/ui/Button";
 import { Form } from "@litespace/ui/Form";
@@ -23,7 +23,7 @@ const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
-  const user = useUserContext();
+  const user = useUser();
 
   const mutation = useLoginUser({
     onSuccess(result) {

@@ -120,7 +120,17 @@ export class Plans {
     withListFilter(builder, this.column("id"), ids);
 
     const total = await countRows(builder.clone(), { distinct: true });
-    const query = builder.select().orderBy(this.column("created_at"), "desc");
+    // const query = builder.select().orderBy(this.column("created_at"), "desc");
+    const query = builder.select().orderBy([
+      {
+        column: this.column("created_at"),
+        order: "desc",
+      },
+      {
+        column: this.column("id"),
+        order: "desc",
+      },
+    ]);
 
     const rows = await withSkippablePagination(query, pagination);
     const list = rows.map((row) => this.from(row));

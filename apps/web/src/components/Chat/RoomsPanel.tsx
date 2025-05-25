@@ -15,7 +15,7 @@ import { useRoomManager } from "@/hooks/chat";
 import { RoomsMap } from "@litespace/headless/chat";
 import { isEmpty } from "lodash";
 import { ITutor, IUser } from "@litespace/types";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useOnError } from "@/hooks/error";
 
 const RoomsPanel: React.FC<{
@@ -32,7 +32,7 @@ const RoomsPanel: React.FC<{
   selectedRoom,
 }) => {
   const intl = useFormatMessage();
-  const { user } = useUserContext();
+  const { user } = useUser();
   const isStudent = useMemo(
     () => !!user && user.role === IUser.Role.Student,
     [user]

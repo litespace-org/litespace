@@ -4,7 +4,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Input } from "@litespace/ui/Input";
 import { Typography } from "@litespace/ui/Typography";
 
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useFindStudioTutors } from "@litespace/headless/tutor";
 
 import Search from "@litespace/assets/Search";
@@ -15,7 +15,7 @@ import { debounce } from "lodash";
 
 const PhotoSessions = () => {
   const intl = useFormatMessage();
-  const { user } = useUserContext();
+  const { user } = useUser();
 
   const [search, setSearch] = useState("");
 

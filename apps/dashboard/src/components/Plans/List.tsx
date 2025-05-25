@@ -1,11 +1,8 @@
 import DateField from "@/components/Common/DateField";
-import { Table } from "@/components/Common/Table";
-import Price from "@/components/Plans/Price";
-import CheckCircle from "@litespace/assets/CheckCircle";
-import CloseCircle from "@litespace/assets/CloseCircle";
+import { Table, TableNaviationProps } from "@/components/Common/Table";
+import Price from "@/components/Common/Price";
 import { useUpdatePlan } from "@litespace/headless/plans";
 import { IPlan, Void } from "@litespace/types";
-import { Button } from "@litespace/ui/Button";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
@@ -13,43 +10,27 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { formatMinutes } from "@litespace/ui/utils";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo } from "react";
+import { PLAN_PERIOD_LITERAL_TO_MONTH_COUNT } from "@litespace/utils";
+import { Switch } from "@litespace/ui/Switch";
 
-const List: React.FC<{
-  list?: IPlan.FindApiResponse["list"];
-  page: number;
-  totalPages: number;
-  isFetching: boolean;
-  isLoading: boolean;
-  error: boolean;
-  next: Void;
-  prev: Void;
-  retry: Void;
-  goto: (pageNumber: number) => void;
-  refetch: Void;
-}> = ({
-  list,
-  goto,
-  refetch,
-  next,
-  page,
-  prev,
-  error,
-  totalPages,
-  isFetching,
-  isLoading,
-}) => {
+const List: React.FC<
+  {
+    list?: IPlan.FindApiResponse["list"];
+    error: boolean;
+    refetch: Void;
+  } & TableNaviationProps
+> = ({ list, refetch, error, fetching, loading, ...naviation }) => {
   const intl = useFormatMessage();
   const toast = useToast();
 
   const onSuccess = useCallback(() => {
-    toast.success({ title: intl("dashboard.plan.update.success") });
     refetch();
-  }, [intl, refetch, toast]);
+  }, [refetch]);
 
   const onError = useCallback(
     (error: Error) => {
       toast.error({
-        title: intl("dashboard.plan.update.error"),
+        title: intl("dashboard.plans.update-error"),
         description: error.message,
       });
     },
@@ -59,12 +40,13 @@ const List: React.FC<{
   const mutation = useUpdatePlan({ onSuccess, onError });
 
   const columnHelper = createColumnHelper<IPlan.Self>();
+
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
         header: () => (
-          <Typography tag="h1" className="text-body font-bold text-natural-950">
-            {intl("labels.plan.id")}
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.id")}
           </Typography>
         ),
         cell: (info) => (
@@ -78,8 +60,8 @@ const List: React.FC<{
       }),
       columnHelper.accessor("weeklyMinutes", {
         header: () => (
-          <Typography tag="h1" className="text-body font-bold text-natural-950">
-            {intl("dashboard.plan.weekly-minutes")}
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.weekly-minutes")}
           </Typography>
         ),
         cell: (info) => (
@@ -93,14 +75,16 @@ const List: React.FC<{
       }),
       columnHelper.accessor("baseMonthlyPrice", {
         header: () => (
-          <Typography tag="h1" className="text-body font-bold text-natural-950">
-            {intl("dashboard.plan.full-month-price")}
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.full-month-price")}
           </Typography>
         ),
         cell: (info) => {
           return (
             <Price
-              price={info.getValue()}
+              price={
+                info.getValue() * PLAN_PERIOD_LITERAL_TO_MONTH_COUNT["month"]
+              }
               discount={info.row.original.monthDiscount}
             />
           );
@@ -108,15 +92,18 @@ const List: React.FC<{
       }),
       columnHelper.accessor("quarterDiscount", {
         header: () => (
-          <Typography tag="h1" className="text-body font-bold text-natural-950">
-            {intl("dashboard.plan.full-quarter-price")}
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.full-quarter-price")}
           </Typography>
         ),
 
         cell: (info) => {
           return (
             <Price
-              price={info.row.original.baseMonthlyPrice * 3}
+              price={
+                info.row.original.baseMonthlyPrice *
+                PLAN_PERIOD_LITERAL_TO_MONTH_COUNT["quarter"]
+              }
               discount={info.getValue()}
             />
           );
@@ -124,14 +111,17 @@ const List: React.FC<{
       }),
       columnHelper.accessor("yearDiscount", {
         header: () => (
-          <Typography tag="h1" className="text-body font-bold text-natural-950">
-            {intl("dashboard.plan.full-year-price")}
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.full-year-price")}
           </Typography>
         ),
         cell: (info) => {
           return (
             <Price
-              price={info.row.original.baseMonthlyPrice * 12}
+              price={
+                info.row.original.baseMonthlyPrice *
+                PLAN_PERIOD_LITERAL_TO_MONTH_COUNT["year"]
+              }
               discount={info.getValue()}
             />
           );
@@ -139,8 +129,8 @@ const List: React.FC<{
       }),
       columnHelper.accessor("createdAt", {
         header: () => (
-          <Typography tag="h1" className="text-body font-bold text-natural-950">
-            {intl("dashboard.plan.created-at")}
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.created-at")}
           </Typography>
         ),
         cell: (info) => {
@@ -150,41 +140,29 @@ const List: React.FC<{
       columnHelper.accessor("active", {
         id: "actions",
         header: () => (
-          <Typography tag="h1" className="text-body font-bold text-natural-950">
-            {intl("dashboard.table.action")}
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.state")}
           </Typography>
         ),
         cell: (info) => (
-          <Button
-            variant="secondary"
-            type={info.getValue() ? "error" : "success"}
-            endIcon={
-              info.getValue() ? (
-                <CloseCircle className="w-4 h-4 [&>*]:stroke-destructive-700 icon" />
-              ) : (
-                <CheckCircle className="w-4 h-4 [&>*]:stroke-brand-700 icon" />
-              )
-            }
-            onClick={() => {
+          <Switch
+            id="toggle-plan"
+            checked={info.getValue()}
+            onChange={(checked) =>
               mutation.mutate({
                 id: info.row.original.id,
-                payload: { active: !info.getValue() },
-              });
-            }}
-          >
-            <Typography tag="span" className="text-body font-medium">
-              {info.getValue()
-                ? intl("dashboard.plan.de-activate")
-                : intl("dashboard.plan.activate")}
-            </Typography>
-          </Button>
+                payload: { active: checked },
+              })
+            }
+            disabled={mutation.isPending}
+          />
         ),
       }),
     ],
     [columnHelper, intl, mutation]
   );
 
-  if (isLoading)
+  if (loading)
     return (
       <div className="flex justify-center items-center mt-[15vh]">
         <Loading text={intl("dashboard.plans.loading")} size="large" />
@@ -197,25 +175,19 @@ const List: React.FC<{
         <LoadingError
           error={intl("dashboard.plans.error")}
           retry={refetch}
-          size="large"
+          size="medium"
         />
       </div>
     );
 
   return (
-    <div>
-      <Table
-        columns={columns}
-        data={list}
-        goto={goto}
-        prev={prev}
-        next={next}
-        totalPages={totalPages}
-        fetching={isFetching}
-        loading={isLoading}
-        page={page}
-      />
-    </div>
+    <Table
+      data={list}
+      columns={columns}
+      loading={loading}
+      fetching={fetching}
+      {...naviation}
+    />
   );
 };
 

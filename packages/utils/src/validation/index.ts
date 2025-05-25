@@ -21,12 +21,10 @@ export {
 export { isValidRatingValue, isValidRatingText } from "@/validation/rating";
 
 export {
-  isValidPlanAlias,
-  isValidPrice,
-  isValidPlanPrice,
-  isValidPlanDiscount,
-  isValidPlanWeeklyMinutes,
   isValidPlanPeriodLiteral,
+  validatePlanDiscount,
+  validatePlanPrice,
+  validatePlanWeeklyMinutes,
 } from "@/validation/plan";
 
 export {

@@ -85,20 +85,10 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [FieldError.TooHighRatingValue]: "error.field.too-high-rating-value",
   [FieldError.TooLongRatingText]: "error.field.too-long-rating-text",
   [FieldError.TooShortRatingText]: "error.field.too-short-rating-text",
-  [FieldError.TooLongPlanAlias]: "error.field.too-long-plan-alias",
-  [FieldError.TooShortPlanAlias]: "error.field.too-short-plan-alias",
-  [FieldError.PlanPriceNotInteger]: "error.field.plan-price-not-integer",
-  [FieldError.PlanTotalDiscount]: "error.field.plan-total-discount",
-  [FieldError.NegativePlanPrice]: "error.field.negative-plan-price",
-  [FieldError.InfinitePlanPrice]: "error.field.infinite-plan-price",
-  [FieldError.ZeroPlanPrice]: "error.field.zero-plan-price",
-  [FieldError.MaxPlanWeeklyMinutesExceeded]:
-    "error.field.max-weekly-minutes-exceeded",
-  [FieldError.EmptyPlanWeeklyMinutes]: "error.field.empty-weekly-minutes",
-  [FieldError.MaxPlanDiscountExceeded]:
-    "error.field.max-plan-discount-exceeded",
-  [FieldError.MinPlanDiscountSubceeded]:
-    "error.field.min-plan-discount-subceeded",
+  [FieldError.PlanWeeklyMinutesOutOfRange]:
+    "error.field.invalid-weekly-minutes",
+  [FieldError.PlanDiscountOutOfRange]: "error.field.invalid-plan-discount",
+  [FieldError.InvalidPlanPrice]: "error.field.invalid-plan-price",
   [FieldError.InvalidCouponCode]: "error.field.invalid-coupon-code",
   [FieldError.ZeroCouponDiscount]: "error.field.zero-coupon-discount",
   [FieldError.MaxCouponDiscountExceeded]:

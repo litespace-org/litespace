@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useNavigate } from "react-router-dom";
 import { isTutor } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
@@ -7,7 +7,7 @@ import { isProfileComplete } from "@litespace/utils/tutor";
 import Content from "@/components/CompleteTutorProfile/Content";
 
 const CompleteTutorProfile: React.FC = () => {
-  const { user, meta, refetch } = useUserContext();
+  const { user, meta, refetch } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {

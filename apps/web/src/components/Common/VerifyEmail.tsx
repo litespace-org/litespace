@@ -8,7 +8,7 @@ import { Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { VerifyEmailDialog } from "@litespace/ui/VerifyEmailDialog";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 
 type Props = {
   close: Void;
@@ -19,7 +19,7 @@ export const VerifyEmail: React.FC<Props> = ({ close, emailSent }) => {
   const [sent, setSent] = useState(emailSent);
   const toast = useToast();
   const intl = useFormatMessage();
-  const { user, refetch } = useUserContext();
+  const { user, refetch } = useUser();
 
   const onSendError = useOnError({
     type: "mutation",

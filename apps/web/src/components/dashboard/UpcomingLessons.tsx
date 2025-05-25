@@ -1,5 +1,5 @@
 import dayjs from "@/lib/dayjs";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { UpcomingLessonsSummary as Summary } from "@litespace/ui/Lessons";
 import { ILesson, IUser } from "@litespace/types";
@@ -29,7 +29,7 @@ function asUpcomingLessons(
 }
 
 export const UpcomingLessons = () => {
-  const { user } = useUserContext();
+  const { user } = useUser();
 
   const now = useMemo(() => dayjs.utc().toISOString(), []);
   const lessonsQuery = useInfiniteLessons({

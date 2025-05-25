@@ -3,7 +3,7 @@ import cn from "classnames";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { IUser } from "@litespace/types";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { Dashboard, Landing } from "@litespace/utils/routes";
 
 import Sidebar from "@/components/Layout/Sidebar";
@@ -13,7 +13,7 @@ import { isRegularUser } from "@litespace/utils";
 import Navbar from "@/components/Layout/Navbar";
 
 const Root: React.FC = () => {
-  const { user, logout } = useUserContext();
+  const { user, logout } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
   useAuthRoutes();
@@ -43,27 +43,26 @@ const Root: React.FC = () => {
   }, [location.pathname, logout, navigate, user]);
 
   return (
-    <>
-      <main
-        className={cn(
-          "flex flex-row items-stretch min-h-screen overflow-y-hidden bg-natural-50"
-        )}
-      >
-        {user ? <Sidebar /> : null}
-        <div className="flex-1 flex flex-col">
-          {user ? (
-            <Navbar
-              id={user.id}
-              name={user.name}
-              email={user.email}
-              image={user.image}
-            />
-          ) : null}
+    <div
+      className={cn(
+        "flex flex-row items-stretch min-h-screen overflow-x-hidden bg-natural-50"
+      )}
+    >
+      {user ? <Sidebar /> : null}
 
-          <Outlet />
-        </div>
-      </main>
-    </>
+      <div className="flex-1 flex flex-col overflow-y-hidden">
+        {user ? (
+          <Navbar
+            id={user.id}
+            name={user.name}
+            email={user.email}
+            image={user.image}
+          />
+        ) : null}
+
+        <Outlet />
+      </div>
+    </div>
   );
 };
 

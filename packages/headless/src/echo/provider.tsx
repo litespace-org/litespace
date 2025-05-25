@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { EchoSocketContext, Context } from "@/echo/context";
 import { useServer } from "@/server";
 import { ISession } from "@litespace/types";
-import { useUserContext } from "@/user/index";
+import { useUser } from "@/user/index";
 import { Socket } from "@/echo/socket";
 
 export const EchoSocketProvider: React.FC<{
@@ -10,7 +10,7 @@ export const EchoSocketProvider: React.FC<{
   sessionId: ISession.Id;
 }> = ({ children, sessionId }) => {
   const { server } = useServer();
-  const { user } = useUserContext();
+  const { user } = useUser();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connecting, setConnecting] = useState<boolean>(false);
   const [connected, setConnected] = useState<boolean>(false);

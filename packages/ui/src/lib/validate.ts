@@ -10,9 +10,9 @@ import {
   isValidTutorAbout as isValidTutorAboutBase,
   isValidTutorBio as isValidTutorBioBase,
   isValidConfirmationCode as isValidConfirmationCodeBase,
-  isValidPlanWeeklyMinutes as isValidPlanWeeklyMinutesBase,
-  isValidPrice as isValidPriceBase,
-  isValidPlanDiscount as isValidPlanDiscountBase,
+  validatePlanWeeklyMinutes as validatePlanWeeklyMinutesBase,
+  validatePlanPrice as validatePlanPriceBase,
+  validatePlanDiscount as validatePlanDiscountBase,
 } from "@litespace/utils/validation";
 
 export function validateText({
@@ -82,34 +82,34 @@ export function isValidTutorAbout(about: string): LocalId | null {
 export function isValidTutorBio(about: string): LocalId | null {
   const valid = isValidTutorBioBase(about);
   if (valid === true) return null;
-  if (valid === FieldError.EmptyBio) return "error.bio.empty";
+  if (valid === FieldError.EmptyBio) return "error.field.bio.empty";
   if (valid === FieldError.ShortBio) return "error.text.short";
   if (valid === FieldError.LongBio) return "error.text.long";
-  return "error.bio.invalid";
+  return "error.field.bio.invalid";
 }
 
 export function isValidConfirmationCode(code: number): LocalId | null {
   const valid = isValidConfirmationCodeBase(code);
   if (valid === true) return null;
-  return "error.confirmation-code.invalid";
+  return "error.field.confirmation-code.invalid";
 }
 
-export function isValidPlanWeeklyMinutes(
+export function validatePlanWeeklyMinutes(
   weeklyMinutes: number
 ): LocalId | null {
-  const valid = isValidPlanWeeklyMinutesBase(weeklyMinutes);
-  if (valid === true) return null;
-  return "error.plans.weekly-minutes.invalid";
+  const error = validatePlanWeeklyMinutesBase(weeklyMinutes);
+  if (!error) return null;
+  return "error.field.invalid-weekly-minutes";
 }
 
-export function isValidPrice(price: number): LocalId | null {
-  const valid = isValidPriceBase(price);
-  if (valid === true) return null;
-  return "error.plans.price";
+export function validatePlanPrice(price: number): LocalId | null {
+  const error = validatePlanPriceBase(price);
+  if (!error) return null;
+  return "error.field.invalid-plan-price";
 }
 
-export function isValidPlanDiscount(discount: number): LocalId | null {
-  const valid = isValidPlanDiscountBase(discount);
-  if (valid === true) return null;
-  return "error.plans.discount";
+export function validatePlanDiscount(discount: number): LocalId | null {
+  const error = validatePlanDiscountBase(discount);
+  if (!error) return null;
+  return "error.field.invalid-plan-discount";
 }

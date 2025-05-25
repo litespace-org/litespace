@@ -5,7 +5,7 @@ import { isInteger } from "lodash";
 import React, { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Content from "@/components/Lesson/Content";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import cn from "classnames";
 
 type Params = Replace<UrlParamsOf<Web.LessonV3>, "id", string>;
@@ -14,7 +14,7 @@ const LessonV3: React.FC = () => {
   const params = useParams<Params>();
   const logger = useLogger();
   const navigate = useNavigate();
-  const { user } = useUserContext();
+  const { user } = useUser();
 
   const lessonId = useMemo(() => {
     const id = Number(params.id);

@@ -1,4 +1,5 @@
 import { IConfirmationCode, IKafka, IPlan, IUser } from "@litespace/types";
+import { percentage } from "@/value";
 
 export const WEEKS_IN_YEAR = 52;
 export const WEEKS_IN_MONTH = 4;
@@ -20,8 +21,6 @@ export const MIN_INTERVIEW_LEVEL = 1;
 export const MAX_INTERVIEW_LEVEL = 5;
 export const MAX_RATING_TEXT_LENGTH = 1000;
 export const MIN_RATING_TEXT_LENGTH = 3;
-export const MAX_PLAN_ALIAS_LENGTH = 255;
-export const MIN_PLAN_ALIAS_LENGTH = 3;
 export const MIN_RATING_VALUE = 1;
 export const MAX_RATING_VALUE = 5;
 export const MIN_DISCOUNT_VALUE = 0;
@@ -41,9 +40,16 @@ export const MAX_FEEDBACK_TEXT_LENGTH = 1000;
 export const MIN_FEEDBACK_TEXT_LENGTH = 5;
 export const MAX_NOTE_TEXT_LENGTH = 1000;
 export const MIN_NOTE_TEXT_LENGTH = 5;
-export const MIN_PLAN_WEEKLY_MINUTES = 0;
-export const MAX_PLAN_DISCOUNT = 100;
-export const MIN_PLAN_DISCOUNT = 0;
+
+export const MIN_LESSON_DURATION = 15;
+export const MAX_LESSON_DURATION = 30;
+
+export const MIN_PLAN_WEEKLY_MINUTES = MIN_LESSON_DURATION;
+export const MAX_PLAN_DISCOUNT_UNSCALED = 100;
+export const MIN_PLAN_DISCOUNT_UNSCALED = 0;
+export const MAX_PLAN_DISCOUNT_SCALED = percentage.scale(100);
+export const MIN_PLAN_DISCOUNT_SCALED = percentage.scale(0);
+
 export const MAX_MESSAGE_TEXT_LENGTH = 1000;
 export const MIN_MESSAGE_TEXT_LENGTH = 1;
 export const MAX_PLAN_WEEKLY_MINUTES = MINUTES_IN_WEEK;
@@ -67,8 +73,6 @@ export const MIN_CONTACT_REQUEST_TITLE_LENGTH = 5;
 export const MAX_CONTACT_REQUEST_TITLE_LENGTH = 128;
 export const MIN_CONTACT_REQUEST_MESSAGE_LENGTH = 10;
 export const MAX_CONTACT_REQUEST_MESSAGE_LENGTH = 1000;
-export const MIN_LESSON_DURATION = 15;
-export const MAX_LESSON_DURATION = 30;
 export const TELEGRAM_NUMBER = "010-2001-7777";
 
 // All users except tutors and tutor-managers can have their names in either Arabic or English or both.

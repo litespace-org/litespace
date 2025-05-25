@@ -338,30 +338,30 @@
   "dashboard.sidebar.platform-settings": "إعدادات المنصة",
   "dashboard.sidebar.user-settings": "إعدادات الحساب",
   "dashboard.plans.title": "خطط الأسعار",
-  "dashboard.plans.create-plan.title": "إضافة خطة جديدة",
-  "dashboard.plans.create-plan.btn": "إضافة خطة",
+  "dashboard.plans.create-plan-button": "إضافة خطة",
   "dashboard.plans.loading": "برجاء الانتظار... جاري تحميل جدول خطط الأسعار!",
   "dashboard.plans.error": "عذرًا، حدث خطأ أثناء تحميل  جدول خطط الأسعار، برجاء المحاولة مرة أخرى",
-  "dashboard.plan.weekly-minutes": "دقائق الإسبوع",
-  "dashboard.plan.weekly-minutes.label": "عدد الدقائق الاسبوعية",
-  "dashboard.plan.weekly-minutes.placeholder": "300",
-  "dashboard.plan.full-month-price": "سعر الشهر",
-  "dashboard.plan.price-after-discount": "سعر الشهر بعد الخصم {value} ج.م",
-  "dashboard.plan.full-month-price.placeholder": "2500",
-  "dashboard.plan.full-month-discount": "نسبة الخصم علي الشهر (داخل الباقة الأساسية)",
-  "dashboard.plan.full-quarter-price": "سعر 3 شهور",
-  "dashboard.plan.full-quarter-discount": "نسبة الخصم علي الشهر (داخل باقة ال 3 شهور)",
-  "dashboard.plan.full-year-price": "سعر السنة",
-  "dashboard.plan.full-year-discount": "نسبة الخصم علي الشهر (داخل باقة السنة)",
-  "dashboard.plan.activate": "تفعيل الخطة",
-  "dashboard.plan.de-activate": "تعطيل الخطة",
-  "dashboard.plan.form.create": "خطة جديدة",
+  "dashboard.plans.id": "الرقم التعريفي",
+  "dashboard.plans.created-at": "تاريخ الإنشاء",
+  "dashboard.plans.state": "الحالة",
+  "dashboard.plans.weekly-minutes": "الدقائق الأسبوعية",
+  "dashboard.plans.full-month-price": "السعر الشهري",
+  "dashboard.plans.full-quarter-price": "سعر ال 3 شهور",
+  "dashboard.plans.full-year-price": "السعر السنوي",
+  "dashboard.plans.create.title": "إضافة خطة جديدة",
+  "dashboard.plans.create.weekly-minutes.label": "عدد الدقائق الاسبوعية",
+  "dashboard.plans.create.weekly-minutes.placeholder": "180",
+  "dashboard.plans.create.base-month-price.label": "سعر الشهر",
+  "dashboard.plans.create.base-month-price.placeholder": "2,500 ج.م",
+  "dashboard.plans.create.month-discount": "خصم الباقة الشهرية",
+  "dashboard.plans.create.quarter-discount": "خصم باقة الثلاث شهور",
+  "dashboard.plans.create.year-discount": "خصم الباقة السنوية",
+  "dashboard.plans.create.discount-helper": "قبل الخصم: {before} ج.م ، بعد الخصم: {after} ج.م ، الفرق: {diff} ج.م",
+  "dashboard.plans.create.submit": "إضافة خطة",
   "dashboard.plan.form.create.success": "تم إنشاء خطة جديدة بنجاح",
   "dashboard.plan.form.create.error": "نأسف، حدث خطأ أثناء إنشاء الخطة",
-  "dashboard.plan.created-at": "تاريخ الإنشاء",
+  "dashboard.plans.update-error": "نأسف، حدث خطأ أثناء تعديل الخطة",
   "dashboard.error.alert.title": "حدث خطأ ما",
-  "dashboard.plan.update.success": "تم تعديل الخطة بنجاح",
-  "dashboard.plan.update.error": "نأسف، حدث خطأ أثناء تعديل الخطة",
   "dashboard.users.title": "المستخدمين",
   "dashboard.users.create": "إنشاء مستخدم",
   "dashboard.user.name": "الاسم",
@@ -488,6 +488,11 @@
   "dashboard.tutor.form.create.success": "تم إنشاء معلم بنجاح 🎉",
   "dashboard.tutor.form.create.error": "نأسف، حدث خطأ أثناء إنشاء معلم",
   "dashboard.tutor.form.email.label": "البريد الإلكتروني",
+  "dashboard.labels.price-before-discount": "قبل الخصم: {value} ج.م",
+  "dashboard.labels.price-after-discount": "بعد الخصم: {value} ج.م",
+  "dashboard.labels.price-diff": "الفرق: {value} ج.م",
+  "dashboard.labels.price-discount": "الخصم: {value}",
+  "dashboard.labels.price-with-discount": "{price} ج.م ({discount})",
   "layout.banner.complete-profile": "استكمل ملفك الشخصي الآن لتعزيز ظهورك وزيادة فرصك في جذب الطلاب!",
   "layout.banner.complete-profile.action": "استكمل الأن",
   "webrtc-check.title": "تنبيه: متصفحك لا يدعم تقنيه  WebRTC",
@@ -778,6 +783,7 @@
   "payment.methods.cards": "البطاقات",
   "payment.methods.fawry": "الدفع عن طريق فوري",
   "labels.percent": "{value}%",
+  "labels.hash-value": "{value}#",
   "labels.currency.egp": "{value} ج.م",
   "labels.next": "التالي",
   "labels.report": "إبلاغ",
@@ -831,9 +837,9 @@
   "labels.file-upload-canceled": "تم إلغاء التحميل",
   "labels.cancel": "إلغاء",
   "labels.back-to-site": "الرجوع الي الموقع",
+  "labels.percent.placeholder": "%10",
   "placeholders.from": "من",
   "placeholders.to": "إلي",
-  "placeholder.percent": "%10",
   "logs.export.title": "تم حفظ الملف بنجاح",
   "logs.export.desc": "شارك هذا الملف مع فريق المطورين ليتمكنوا من فحص المشاكل والأخطاء وإيجاد حلول لها",
   "global.created-at": "تاريخ الإنشاء",
@@ -925,22 +931,6 @@
   "error.invlaid-cvv": "رقم التحقق من البطاقة غير صالح، برجاء التحقق من البيانات",
   "error.alert": "حدث خطأ ما",
   "error.required": "مطلوب",
-  "error.name.length.short": "إسم قصير جدا",
-  "error.name.length.long": "إسم طويل جدا",
-  "error.name.invalid": "إسم غير مناسب",
-  "error.email.invalid": "عنوان بريد اليكتروني غير صحيح",
-  "error.phone-number.invlaid": "رقم الهاتف غير صحيح",
-  "error.text.short": "النص قصير جدا",
-  "error.text.long": "النص طويل جدا",
-  "error.birth-year-out-of-range": "يبدو أن هناك مشكلة في العمر الذي أدخلته. الرجاء مراجعته والتأكد من أنه ضمن النطاق الصحيح؟",
-  "error.unexpected": "لم نتمكن من معالجة طلبك في هذا الوقت. يرجى المحاولة مرة أخرى خلال بضع دقائق. إذا استمرت المشكلة، يرجى الاتصال بالدعم.",
-  "error.password.short": "كلمة مرور قصيرة",
-  "error.password.long": "كلمة مرور طويلة",
-  "error.password.invalid": "يجب أن يحتوي علي أرقام و حروف و رموز",
-  "error.bio.empty": "صف نفسك في كلمات موجزه.",
-  "error.bio.short": "محتوي البايو قصير للغاية.",
-  "error.bio.long": "تخطي البايو الحد الأقصي من الكلمات.",
-  "error.bio.invalid": "يحتوي البايو علي محتوي غير مناسب.",
   "error.api.fawry-error": "خلل في بوابة الدفع",
   "error.api.service-unavailable": "عذرا، هذه الخدمة غير متاحة حاليا.",
   "error.api.unauthenticated": "عذرا، لم يتم التعرف على هويتك؛ برجاء تسجيل الدخول مرة أخرى.",
@@ -991,6 +981,20 @@
   "error.api.expired-verification-code": "هذا الكود انتهت صلاحيته، برجاء المحاولة مرة أخرى",
   "error.api.invalid-verification-code": "هذا الكود خاطئ، برجاء التأكد من صحة الكود والمحاولة مرة أخرى",
   "error.api.incorrect-phone": "هذا الرقم خاطئ، برجاء التأكد من صحة الكود والمحاولة مرة أخرى",
+  "error.name.length.short": "إسم قصير جدا",
+  "error.name.length.long": "إسم طويل جدا",
+  "error.name.invalid": "إسم غير مناسب",
+  "error.email.invalid": "عنوان بريد اليكتروني غير صحيح",
+  "error.phone-number.invlaid": "رقم الهاتف غير صحيح",
+  "error.text.short": "النص قصير جدا",
+  "error.text.long": "النص طويل جدا",
+  "error.birth-year-out-of-range": "يبدو أن هناك مشكلة في العمر الذي أدخلته. الرجاء مراجعته والتأكد من أنه ضمن النطاق الصحيح؟",
+  "error.unexpected": "لم نتمكن من معالجة طلبك في هذا الوقت. يرجى المحاولة مرة أخرى خلال بضع دقائق. إذا استمرت المشكلة، يرجى الاتصال بالدعم.",
+  "error.password.short": "كلمة مرور قصيرة",
+  "error.password.long": "كلمة مرور طويلة",
+  "error.password.invalid": "يجب أن يحتوي علي أرقام و حروف و رموز",
+  "error.field.bio.empty": "صف نفسك في كلمات موجزه.",
+  "error.field.bio.invalid": "يحتوي البايو علي محتوي غير مناسب.",
   "error.field.invalid-email": "البريد الإلكتروني غير صالح، برجاء التحقق وإعادة المحاولة.",
   "error.field.short-password": "كلمة المرور قصيرة جدًا، برجاء اختيار كلمة مرور أطول.",
   "error.field.long-password": "كلمة المرور طويلة جدًا، برجاء اختيار كلمة مرور أقصر.",
@@ -1020,17 +1024,6 @@
   "error.field.too-high-rating-value": "قيمة التقييم مرتفعة جدًا، برجاء تعديلها.",
   "error.field.too-long-rating-text": "نص التقييم طويل جدًا، برجاء تقليل النص.",
   "error.field.too-short-rating-text": "نص التقييم قصير جدًا، برجاء إضافة المزيد.",
-  "error.field.too-long-plan-alias": "اسم الخطة طويل جدًا، برجاء تقليل النص.",
-  "error.field.too-short-plan-alias": "اسم الخطة قصير جدًا، برجاء إضافة المزيد.",
-  "error.field.plan-price-not-integer": "سعر الخطة يجب أن يكون عددًا صحيحًا، برجاء التحقق.",
-  "error.field.plan-total-discount": "إجمالي الخصم غير صالح، برجاء التحقق من الخصم.",
-  "error.field.negative-plan-price": "سعر الخطة يجب ألا يكون سالبًا، برجاء التعديل.",
-  "error.field.infinite-plan-price": "سعر الخطة غير صالح، برجاء تعديلها.",
-  "error.field.zero-plan-price": "سعر الخطة يجب أن يكون أكبر من الصفر، برجاء التعديل.",
-  "error.field.max-weekly-minutes-exceeded": "تم تجاوز الحد الأقصى للدقائق الأسبوعية، برجاء التعديل.",
-  "error.field.empty-weekly-minutes": "لا يوجد لديك دقائق متبقية، برجاء شراء دقائق إضافية.",
-  "error.field.max-plan-discount-exceeded": "تم تجاوز الحد الأقصى للخصم المسموح به للخطة، برجاء المحاولة مرة أخرى.",
-  "error.field.min-plan-discount-subceeded": "لا يمكن أن يقل سعر الخصم عن الحد الأدنى المسموح به، برجاء التعديل.",
   "error.field.invalid-coupon-code": "كود الخصم غير صالح، برجاء التحقق.",
   "error.field.zero-coupon-discount": "قيمة الخصم في الكوبون غير صالحة، برجاء التعديل.",
   "error.field.max-coupon-discount-exceeded": "تم تجاوز الحد الأقصى لقيمة الخصم المسموح به للكوبون، برجاء التعديل.",
@@ -1059,8 +1052,8 @@
   "error.field.short-contact-request-message": "الرسالة قصيرة جدا!",
   "error.field.long-contact-request-message": "عذرا، الرسالة طويلة جدا.",
   "error.field.invalid-type": "عذرا، القيمة التي تحاول إدخالها غير صحيحة.",
-  "error.confirmation-code.invalid": "رقم تأكيد غير صحيح",
-  "error.plans.weekly-minutes.invalid": "عدد دقائق عير صحيح",
-  "error.plans.price": "السعر غير صحيح",
-  "error.plans.discount": "خصم غير صحيح"
+  "error.field.confirmation-code.invalid": "رقم تأكيد غير صحيح",
+  "error.field.invalid-weekly-minutes": "عدد دقائق غير مناسب",
+  "error.field.invalid-plan-price": "سعر غير مناسب",
+  "error.field.invalid-plan-discount": "خصم غير مناسب"
 }

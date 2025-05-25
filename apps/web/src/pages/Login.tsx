@@ -7,7 +7,7 @@ import { useGoogle } from "@/hooks/google";
 import { router } from "@/lib/routes";
 import Google from "@litespace/assets/Google";
 import Logo from "@litespace/assets/Logo";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useLoginUser } from "@litespace/headless/user";
 import { IUser } from "@litespace/types";
@@ -36,7 +36,7 @@ const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
-  const user = useUserContext();
+  const user = useUser();
   const mq = useMediaQuery();
   const [showForgetPasswordDialog, setShowForgetPasswordDialog] =
     useState(false);

@@ -1,6 +1,6 @@
 import PageTitle from "@/components/Common/PageTitle";
 import List from "@/components/Plans/List";
-import PlanForm from "@/components/Plans/PlanForm";
+import CreatePlan from "@/components/Plans/CreatePlan";
 import AddCircle from "@litespace/assets/AddCircle";
 import { usePlans } from "@litespace/headless/plans";
 import { Button } from "@litespace/ui/Button";
@@ -13,8 +13,7 @@ import React from "react";
 export const Plans: React.FC = () => {
   const intl = useFormatMessage();
   const render = useRender();
-  const query = usePlans();
-  const { query: plans } = query;
+  const plans = usePlans();
 
   return (
     <div
@@ -23,38 +22,37 @@ export const Plans: React.FC = () => {
       <header className="flex items-center justify-between">
         <PageTitle
           title={intl("dashboard.plans.title")}
-          count={plans.data?.total}
-          fetching={plans.isFetching && !plans.isLoading}
+          count={plans.query.data?.total}
+          fetching={plans.query.isFetching && !plans.query.isLoading}
         />
         <Button
           size="large"
           onClick={render.show}
-          endIcon={
-            <AddCircle className="w-4 h-4 icon [&>*]:stroke-natural-50" />
-          }
+          startIcon={<AddCircle className="icon" />}
         >
           <Typography tag="span" className="text-body font-medium text">
-            {intl("dashboard.plans.create-plan.title")}
+            {intl("dashboard.plans.create-plan-button")}
           </Typography>
         </Button>
-        <PlanForm
+
+        <CreatePlan
           open={render.open}
           close={render.hide}
-          refetch={plans.refetch}
+          refetch={plans.query.refetch}
         />
       </header>
+
       <List
-        list={plans.data?.list}
-        next={query.next}
-        prev={query.prev}
-        goto={query.goto}
-        retry={query.query.refetch}
-        page={query.page}
-        totalPages={query.totalPages}
-        error={plans.isError}
-        isFetching={plans.isFetching}
-        isLoading={plans.isLoading}
-        refetch={plans.refetch}
+        list={plans.query.data?.list}
+        next={plans.next}
+        prev={plans.prev}
+        goto={plans.goto}
+        page={plans.page}
+        totalPages={plans.totalPages}
+        error={plans.query.isError}
+        fetching={plans.query.isFetching}
+        loading={plans.query.isLoading}
+        refetch={plans.query.refetch}
       />
     </div>
   );

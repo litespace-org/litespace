@@ -1,5 +1,5 @@
 import { router } from "@/lib/routes";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { ITutor, IUser } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -26,7 +26,7 @@ function asFullTutor(
 
 const CompleteProfileBanner: React.FC = () => {
   const intl = useFormatMessage();
-  const { user, meta } = useUserContext();
+  const { user, meta } = useUser();
   const location = useLocation();
   const isTutor = useMemo(
     () =>

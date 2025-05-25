@@ -20,5 +20,4 @@ export {
   useRequired,
   useValidatePassword,
   useValidateEmail,
-  useValidateBio,
 } from "@/hooks/validation";

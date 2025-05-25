@@ -8,10 +8,6 @@ import {
   isValidInterviewLevel,
   isValidInterviewNote,
   isValidPassword,
-  isValidPlanAlias,
-  isValidPlanDiscount,
-  isValidPlanPrice,
-  isValidPlanWeeklyMinutes,
   isValidRatingText,
   isValidRatingValue,
   isValidTutorAbout,
@@ -279,68 +275,7 @@ describe("rating text validation", () => {
     expect(isValidRatingText("me")).toBe(FieldError.TooShortRatingText);
   });
 });
-describe("plan alias validation", () => {
-  it("should accept a valid plan alias range between 3-255", () => {
-    expect(isValidPlanAlias("text vlue")).toBe(true);
-    expect(isValidPlanAlias("foo")).toBe(true);
-  });
-  it("should reject text more than 255 chars", () => {
-    const fakePlanAlias = faker.lorem.sentence(270);
-    expect(isValidPlanAlias(fakePlanAlias)).toBe(FieldError.TooLongPlanAlias);
-  });
-  it("should reject alias less than 3 chars", () => {
-    expect(isValidPlanAlias("me")).toBe(FieldError.TooShortPlanAlias);
-  });
-});
-describe("plan weekly minutes validation", () => {
-  it("should accept a plan with weekly minutes between 1 and less that week", () => {
-    expect(isValidPlanWeeklyMinutes(1)).toBe(true);
-    expect(isValidPlanWeeklyMinutes(60)).toBe(true);
-    expect(isValidPlanWeeklyMinutes(10080)).toBe(true);
-  });
-  it("should reject weekly minutes more than one week duration", () => {
-    expect(isValidPlanWeeklyMinutes(10081)).toBe(
-      FieldError.MaxPlanWeeklyMinutesExceeded
-    );
-  });
-  it("should reject weekly minutes less than 0 (minus)", () => {
-    expect(isValidPlanWeeklyMinutes(-3)).toBe(
-      FieldError.EmptyPlanWeeklyMinutes
-    );
-  });
-});
-describe("plan price validation", () => {
-  it("should accept a valid plan price not minus, zero, infinite or not integer", () => {
-    expect(isValidPlanPrice(100, 10)).toBe(true);
-    expect(isValidPlanPrice(1, 10)).toBe(true);
-  });
-  it("should reject plan price which is infinite", () => {
-    expect(isValidPlanPrice(Math.pow(10, 1000), 10)).toBe(
-      FieldError.InfinitePlanPrice
-    );
-  });
-  it("should reject plan price which is zero", () => {
-    expect(isValidPlanPrice(0, 10)).toBe(FieldError.ZeroPlanPrice);
-  });
-  it("should reject plan price with 100% discount", () => {
-    expect(isValidPlanPrice(100, 100)).toBe(FieldError.PlanTotalDiscount);
-  });
-  it("should reject plan price with non integer number", () => {
-    expect(isValidPlanPrice(6.6, 39)).toBe(FieldError.PlanPriceNotInteger);
-  });
-});
-describe("plan discount validation", () => {
-  it("should accept discount between 0 and 100", () => {
-    expect(isValidPlanDiscount(20)).toBe(true);
-  });
-  it("should reject discount below or equal 0", () => {
-    expect(isValidPlanDiscount(0)).toBe(FieldError.PlanTotalDiscount);
-    expect(isValidPlanDiscount(-23)).toBe(FieldError.MinPlanDiscountSubceeded);
-  });
-  it("should reject discount above 100", () => {
-    expect(isValidPlanDiscount(102)).toBe(FieldError.MaxPlanDiscountExceeded);
-  });
-});
+
 describe("coupon code validation", () => {
   it("should accept valid coupon code containing english letters, numbers or symbols", () => {
     expect(isValidCouponCode("1234")).toBe(true);
@@ -351,6 +286,7 @@ describe("coupon code validation", () => {
     expect(isValidCouponCode("كوبون")).toBe(FieldError.InvalidCouponCode);
   });
 });
+
 describe("coupon code discount validation", () => {
   it("should accept discount between 0 and 100", () => {
     expect(isValidCouponDiscount(20)).toBe(true);
@@ -359,10 +295,8 @@ describe("coupon code discount validation", () => {
     expect(isValidCouponDiscount(0)).toBe(FieldError.ZeroCouponDiscount);
     expect(isValidCouponDiscount(-23)).toBe(FieldError.ZeroCouponDiscount);
   });
-  it("should reject discount above 100", () => {
-    expect(isValidPlanDiscount(102)).toBe(FieldError.MaxPlanDiscountExceeded);
-  });
 });
+
 describe("coupon expire date validation", () => {
   it("should accept ISO valid dates and not to be before current time", () => {
     expect(isValidCouponExpireDate("3/2/2025")).toBe(true);

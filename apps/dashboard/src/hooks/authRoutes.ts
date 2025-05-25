@@ -1,5 +1,5 @@
 import { router } from "@/lib/route";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { IUser } from "@litespace/types";
 import { Dashboard } from "@litespace/utils/routes";
 import { concat, entries, isEmpty } from "lodash";
@@ -77,7 +77,7 @@ const routeConfigMap: Record<Dashboard, RouteConfig> = {
 };
 
 export function useAuthRoutes() {
-  const { user } = useUserContext();
+  const { user } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 

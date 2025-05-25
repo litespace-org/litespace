@@ -1,23 +1,28 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { dayjs } from "@/lib/dayjs";
 import { Tooltip } from "@litespace/ui/Tooltip";
+import { Typography } from "@litespace/ui/Typography";
 
 const DateField: React.FC<{ date: string }> = ({ date }) => {
-  const formatedDate = useMemo(() => dayjs(date).format("D/M/YYYY"), [date]);
   return (
     <Tooltip
       content={
-        <div className="max-w-52 text-center leading-relaxed">
-          <span>
-            {dayjs(date).format("dddd D MMMM YYYY hh:mm a")}&nbsp;(
-            {dayjs(date).fromNow()})
-          </span>
+        <div className="text-center leading-relaxed">
+          <Typography tag="span" className="text-caption">
+            {dayjs(date).format("dddd D MMMM YYYY hh:mm a")}
+            <br />({dayjs(date).fromNow()})
+          </Typography>
         </div>
       }
     >
-      <span className="text-body font-semibold text-natural-800">
-        {formatedDate}
-      </span>
+      <div className="w-fit">
+        <Typography
+          tag="p"
+          className="text-body font-semibold text-natural-800"
+        >
+          {dayjs(date).format("YYYY/MM/D")}
+        </Typography>
+      </div>
     </Tooltip>
   );
 };

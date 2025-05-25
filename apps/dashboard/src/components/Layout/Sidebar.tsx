@@ -7,7 +7,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 import { IUser } from "@litespace/types";
 import { Dashboard } from "@litespace/utils/routes";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 
 import Logo from "@litespace/assets/Logo";
 import Logout from "@litespace/assets/Logout";
@@ -80,7 +80,7 @@ const Sidebar: React.FC = () => {
   const intl = useFormatMessage();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useUserContext();
+  const { user, logout } = useUser();
 
   const mainPages: LinkInfo[] = useMemo(() => {
     const match = (route: Dashboard) => router.match(route, location.pathname);

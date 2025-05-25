@@ -15,7 +15,7 @@ import ManageLesson from "@/components/Lessons/ManageLesson";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Web } from "@litespace/utils/routes";
 import ProfileCard from "@/components/TutorProfile/ProfileCard";
-import { useUserContext } from "@litespace/headless/context/user";
+import { useUser } from "@litespace/headless/context/user";
 import { router } from "@/lib/routes";
 
 const TutorProfile: React.FC = () => {
@@ -23,7 +23,7 @@ const TutorProfile: React.FC = () => {
   const params = useParams<{ id: string }>();
   const intl = useFormatMessage();
   const [open, setOpen] = useState<boolean>(false);
-  const { user } = useUserContext();
+  const { user } = useUser();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 

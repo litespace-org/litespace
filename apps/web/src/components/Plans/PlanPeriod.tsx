@@ -185,20 +185,8 @@ const PlanPeriod: React.FC<{
                 })}
               </Typography>
             ) : null}
-            {/* @TODO: Reactivate when the installment feature is added */}
-            {/* {period !== "month" ? (
-              <Typography
-                tag="span"
-                className="border border-brand-600 bg-brand-50 rounded-[4px] px-2 py-[2px] text-tiny font-normal text-brand-600"
-              >
-                {period === "quarter"
-                  ? intl("plan.labels.installment-twice")
-                  : null}
-                {period === "year"
-                  ? intl("plan.labels.installment-four-times")
-                  : null}
-              </Typography>
-            ) : null} */}
+
+            {/* <Installment period={period} /> */}
           </div>
         </div>
         {open ? (
@@ -225,5 +213,21 @@ const PlanPeriod: React.FC<{
     </div>
   );
 };
+
+// const Installment: React.FC<{ period: IPlan.PeriodLiteral }> = ({ period }) => {
+//   const intl = useFormatMessage();
+
+//   if (period === "month") return null;
+
+//   return (
+//     <Typography
+//       tag="span"
+//       className="border border-brand-600 bg-brand-50 rounded-[4px] px-2 py-[2px] text-tiny font-normal text-brand-600"
+//     >
+//       {period === "quarter" ? intl("plan.labels.installment-twice") : null}
+//       {period === "year" ? intl("plan.labels.installment-four-times") : null}
+//     </Typography>
+//   );
+// };
 
 export default PlanPeriod;
