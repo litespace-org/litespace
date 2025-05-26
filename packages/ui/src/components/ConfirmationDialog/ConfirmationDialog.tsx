@@ -1,6 +1,5 @@
 import {
   Root,
-  Trigger,
   Close,
   Overlay,
   Content,
@@ -89,7 +88,6 @@ const Actions: React.FC<{
 };
 
 export const ConfirmationDialog: React.FC<{
-  trigger?: React.ReactNode;
   title: string;
   description?: string;
   open?: boolean;
@@ -122,7 +120,6 @@ export const ConfirmationDialog: React.FC<{
 }> = ({
   type = "main",
   description,
-  trigger,
   title,
   open,
   icon,
@@ -134,18 +131,18 @@ export const ConfirmationDialog: React.FC<{
 }) => {
   return (
     <Root open={open}>
-      {trigger ? <Trigger>{trigger}</Trigger> : null}
       <Portal>
         <Overlay
           onClick={closable ? close : undefined}
-          className="fixed inset-0 backdrop-blur-[15px] bg-overlay-dialog z-dialog-overlay"
+          className="fixed inset-0 backdrop-blur-[15px] bg-overlay-dialog z-confirm-dialog-overlay"
         />
         <Title className="hidden">{title}</Title>
         <Content
+          aria-describedby={description}
           dir="rtl"
           className={cn(
             "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-natural-50",
-            "border border-border-strong rounded-xl w-[328px] lg:w-[400px] shadow-lg z-[98]",
+            "border border-border-strong rounded-xl w-[328px] lg:w-[400px] shadow-lg z-confirm-dialog-content",
             "shadow-dialog-confirm p-6"
           )}
         >
@@ -174,6 +171,7 @@ export const ConfirmationDialog: React.FC<{
               disabled={!closable}
               className={cn(
                 "rounded-full h-11 w-11 flex items-center justify-center",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600",
                 { "cursor-not-allowed opacity-50": !closable }
               )}
             >

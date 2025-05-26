@@ -19,6 +19,7 @@ import CheckCircleV2 from "@litespace/assets/CheckCircleV2";
 import { Link } from "react-router-dom";
 import { Web } from "@litespace/utils/routes";
 import { useSubscription } from "@litespace/headless/context/subscription";
+import cn from "classnames";
 
 const Content: React.FC<{
   planId: number;
@@ -66,17 +67,22 @@ const Content: React.FC<{
   );
 };
 
-export default Content;
-
 const Header: React.FC = () => {
   const intl = useFormatMessage();
   return (
-    <div dir="ltr" className="flex flex-row gap-4 items-center justify-center">
+    <Link
+      to={Web.Root}
+      dir="ltr"
+      className={cn(
+        "flex flex-row gap-4 items-center justify-center",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary-600 rounded-md"
+      )}
+    >
       <Logo className="w-14 h-14" />
       <Typography tag="p" className="text-h4 text-brand-500 font-bold">
         {intl("labels.litespace")}
       </Typography>
-    </div>
+    </Link>
   );
 };
 
@@ -231,3 +237,5 @@ const TransactionDone: React.FC = () => {
     </div>
   );
 };
+
+export default Content;

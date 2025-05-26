@@ -22,7 +22,6 @@
     "./form": "./dist/form.js",
     "./login": "./dist/login.js",
     "./users": "./dist/users.js",
-    "./utils": "./dist/utils.js",
     "./rating": "./dist/rating.js",
     "./topic": "./dist/topic.js",
     "./query": "./dist/query.js",

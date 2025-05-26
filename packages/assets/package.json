@@ -144,6 +144,7 @@
     "./Recording": "./dist/Recording.tsx",
     "./RegisterDark": "./dist/RegisterDark.tsx",
     "./RegisterLight": "./dist/RegisterLight.tsx",
+    "./RemoveCard": "./dist/RemoveCard.tsx",
     "./RightArrowHead": "./dist/RightArrowHead.tsx",
     "./ScheduleManagement": "./dist/ScheduleManagement.tsx",
     "./Search": "./dist/Search.tsx",

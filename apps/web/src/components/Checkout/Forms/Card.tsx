@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { Button } from "@litespace/ui/Button";
 import AddCard from "@litespace/assets/AddCard";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -13,16 +13,20 @@ import {
   useFindCardTokens,
   useDeleteCardToken,
   usePayWithCard,
+  useCancelUnpaidOrder,
 } from "@litespace/headless/fawry";
 import { IframeDialog } from "@litespace/ui/IframeDilaog";
 import { first, isEmpty } from "lodash";
 import { useHotkeys } from "react-hotkeys-hook";
 import { env } from "@/lib/env";
 import { useOnError } from "@/hooks/error";
-import { IPlan } from "@litespace/types";
+import { IPlan, Void } from "@litespace/types";
 import { useToast } from "@litespace/ui/Toast";
 import { IframeMessage } from "@/constants/iframe";
 import { useLogger } from "@litespace/headless/logger";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import RemoveCard from "@litespace/assets/RemoveCard";
+import { useRender, useBlock } from "@litespace/ui/hooks/common";
 
 type Form = {
   card: string;
@@ -38,11 +42,31 @@ const Payment: React.FC<{
   const intl = useFormatMessage();
   const toast = useToast();
   const logger = useLogger();
-  const [showAddCardTokenDialog, setShowAddCardTokenDialog] =
-    useState<boolean>(false);
+  const addCardDialog = useRender();
+  const confirmCloseAddCardDialog = useRender();
+  const confirmClosePayDialog = useRender();
+
+  // ==================== cancel payment ====================
+  const onCancelError = useOnError({
+    type: "mutation",
+    handler(payload) {
+      toast.error({
+        id: "cancel-ewallet-payment",
+        title: intl("checkout.payment.cancel-error"),
+        description: intl(payload.messageId),
+      });
+    },
+  });
+
+  const cancelUnpaidOrder = useCancelUnpaidOrder({
+    onError: onCancelError,
+    onSuccess() {
+      confirmClosePayDialog.hide();
+    },
+  });
 
   // ==================== pay with card ====================
-  const onError = useOnError({
+  const onPayError = useOnError({
     type: "mutation",
     handler({ messageId }) {
       toast.error({
@@ -53,7 +77,7 @@ const Payment: React.FC<{
   });
 
   const payWithCard = usePayWithCard({
-    onError,
+    onError: onPayError,
   });
 
   // ==================== form ====================
@@ -108,12 +132,12 @@ const Payment: React.FC<{
 
   const onWindowMessage = useCallback(
     (event: MessageEvent<IframeMessage>) => {
-      if (event.data.action === "close") setShowAddCardTokenDialog(false);
+      if (event.data.action === "close") addCardDialog.hide();
 
       if (event.data.action === "try-again") {
         // close then re-open the dialog
-        setShowAddCardTokenDialog(false);
-        setTimeout(() => setShowAddCardTokenDialog(true), 200);
+        addCardDialog.hide();
+        setTimeout(() => addCardDialog.show(), 200);
       }
 
       if (event.data.action === "report") {
@@ -121,12 +145,12 @@ const Payment: React.FC<{
           fawryErrorCode: event.data.fawryErrorCode,
           fawryErrorDescription: event.data.fawryErrorDescription,
         });
-        setShowAddCardTokenDialog(false);
+        addCardDialog.hide();
       }
 
       findCardTokensQuery.refetch();
     },
-    [findCardTokensQuery, logger]
+    [addCardDialog, findCardTokensQuery, logger]
   );
 
   useEffect(() => {
@@ -157,6 +181,17 @@ const Payment: React.FC<{
     [deleteCardToken, form.state]
   );
 
+  // ==================== unsaved changes ====================
+
+  useBlock(() => {
+    return (
+      addCardDialog.open ||
+      confirmCloseAddCardDialog.open ||
+      !!payWithCard.data ||
+      confirmClosePayDialog.open
+    );
+  });
+
   return (
     <div>
       <form
@@ -184,10 +219,12 @@ const Payment: React.FC<{
             helper={form.errors.card}
             asButton={isEmpty(cardOptions)}
             onTriggerClick={() => {
-              if (isEmpty(cardOptions)) setShowAddCardTokenDialog(true);
+              if (!isEmpty(cardOptions)) return;
+              addCardDialog.show();
             }}
             onOpenChange={(open) => {
-              if (open && isEmpty(cardOptions)) setShowAddCardTokenDialog(true);
+              if (!open || !isEmpty(cardOptions)) return;
+              addCardDialog.show();
             }}
             post={
               <Button
@@ -198,7 +235,7 @@ const Payment: React.FC<{
                 startIcon={<AddCard className="icon" />}
                 disabled={false}
                 loading={false}
-                onClick={() => setShowAddCardTokenDialog(true)}
+                onClick={() => addCardDialog.show()}
                 className="ms-2 lg:ms-4 flex-shrink-0"
               >
                 <Typography
@@ -263,16 +300,25 @@ const Payment: React.FC<{
         </Typography>
       </form>
 
-      {showAddCardTokenDialog ? (
-        <IframeDialog
-          open
-          url={addCardTokenUrlQuery.data?.url}
-          loading={addCardTokenUrlQuery.isPending}
-          onOpenChange={(open) => {
-            setShowAddCardTokenDialog(open);
-          }}
-        />
-      ) : null}
+      <IframeDialog
+        open={addCardDialog.open}
+        url={addCardTokenUrlQuery.data?.url}
+        loading={addCardTokenUrlQuery.isPending}
+        onOpenChange={(open) => {
+          if (!open) confirmCloseAddCardDialog.show();
+        }}
+      />
+
+      <ConfirmCloseAddCardDialog
+        open={confirmCloseAddCardDialog.open}
+        back={() => {
+          confirmCloseAddCardDialog.hide();
+        }}
+        cancel={() => {
+          confirmCloseAddCardDialog.hide();
+          addCardDialog.hide();
+        }}
+      />
 
       {payWithCard.data ? (
         <IframeDialog
@@ -283,7 +329,83 @@ const Payment: React.FC<{
           url={payWithCard.data.redirectUrl}
         />
       ) : null}
+
+      <ConfirmClosePayDialog
+        open={confirmClosePayDialog.open}
+        back={() => {
+          confirmClosePayDialog.hide();
+        }}
+        canceling={cancelUnpaidOrder.isPending}
+        cancel={() => {
+          if (!payWithCard.data) return;
+          cancelUnpaidOrder.mutate({
+            transactionId: payWithCard.data.transactionId,
+          });
+        }}
+      />
     </div>
+  );
+};
+
+const ConfirmCloseAddCardDialog: React.FC<{
+  open: boolean;
+  back: Void;
+  cancel: Void;
+}> = ({ open, back, cancel }) => {
+  const intl = useFormatMessage();
+  return (
+    <ConfirmationDialog
+      open={open}
+      type="warning"
+      title={intl("checkout.payment.card.confirm-close-add-card-dialog.title")}
+      description={intl(
+        "checkout.payment.card.confirm-close-add-card-dialog.desc"
+      )}
+      closable={false}
+      icon={<RemoveCard />}
+      actions={{
+        primary: {
+          label: intl("labels.go-back"),
+          onClick: back,
+        },
+        secondary: {
+          label: intl("labels.confirm"),
+          onClick: cancel,
+        },
+      }}
+    />
+  );
+};
+
+const ConfirmClosePayDialog: React.FC<{
+  open: boolean;
+  back: Void;
+  cancel: Void;
+  canceling: boolean;
+}> = ({ open, back, cancel, canceling }) => {
+  const intl = useFormatMessage();
+  return (
+    <ConfirmationDialog
+      open={open}
+      type="warning"
+      title={intl("checkout.payment.card.confirm-close-pay-dialog.title")}
+      description={intl("checkout.payment.card.confirm-close-pay-dialog.desc")}
+      closable={false}
+      icon={<RemoveCard />}
+      actions={{
+        primary: {
+          label: intl("labels.go-back"),
+          loading: canceling,
+          disabled: canceling,
+          onClick: back,
+        },
+        secondary: {
+          label: intl("labels.confirm"),
+          disabled: canceling,
+          onClick: cancel,
+        },
+      }}
+    />
   );
 };
 

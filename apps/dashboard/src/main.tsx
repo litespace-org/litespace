@@ -14,10 +14,10 @@ import { LocalStorage } from "@litespace/headless/storage";
 import { Direction } from "@litespace/ui/Direction";
 import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
+import { LoggerProvider } from "@litespace/headless/logger";
 import App from "@/App.tsx";
 
 import "@litespace/ui/tailwind.css";
-import { LoggerProvider } from "@litespace/headless/logger";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,7 +34,7 @@ createRoot(document.getElementById("root")!).render(
       locale="ar-EG"
       defaultLocale="ar-EG"
     >
-      <Direction>
+      <Direction dir="rtl">
         <LoggerProvider logger={logger}>
           <AppConfigProvider>
             <ToastProvider>
