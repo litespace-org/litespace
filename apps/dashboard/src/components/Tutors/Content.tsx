@@ -248,7 +248,6 @@ export const Content: React.FC<{
       goto={goto}
       page={page}
       totalPages={totalPages}
-      className="flex [&>*]:flex-1"
     />
   );
 };

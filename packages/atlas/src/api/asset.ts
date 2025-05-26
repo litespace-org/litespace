@@ -10,8 +10,4 @@ export class Asset extends Base {
     const { data } = await this.client.get(url, { responseType: "blob" });
     return data;
   }
-
-  async sample(): Promise<string> {
-    return await this.get({ route: "/api/v1/asset/sample" });
-  }
 }
