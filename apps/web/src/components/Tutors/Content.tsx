@@ -1,15 +1,11 @@
 import ManageLesson from "@/components/Lessons/ManageLesson";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
-import { TutorCard } from "@litespace/ui/TutorCard";
+import { TutorCard } from "@/components/Tutors/TutorCard";
 import { Element, ITutor, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { InView } from "react-intersection-observer";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { router } from "@/lib/routes";
-import { Web } from "@litespace/utils/routes";
-import { Link } from "react-router-dom";
-import { isTutorManager } from "@litespace/utils";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -39,7 +35,7 @@ const Content: React.FC<{
       </div>
     );
 
-  if (error)
+  if (error || !tutors)
     return (
       <div className="mt-[15vh] max-w-fit mx-auto">
         <LoadingError
@@ -50,37 +46,21 @@ const Content: React.FC<{
       </div>
     );
 
-  if (!tutors) return null;
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {tutors.map((tutor) => {
-          const profileUrl = router.web({
-            route: Web.TutorProfile,
-            id: tutor.id,
-          });
-
-          return (
-            <Link
-              to={profileUrl}
-              key={tutor.id}
-              className="focus-visible:ring outline-none focus-visible:ring-secondary-600 ring-offset-2 rounded-xl"
-            >
-              <TutorCard
-                free={isTutorManager(tutor)}
-                id={tutor.id}
-                bio={tutor.bio}
-                name={tutor.name}
-                rating={tutor.avgRating}
-                action={{
-                  onClick: () => openBookingDialog(tutor),
-                  label: intl("labels.book-now"),
-                }}
-                image={tutor.image}
-              />
-            </Link>
-          );
-        })}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+        {tutors.map((tutor) => (
+          <TutorCard
+            key={tutor.id}
+            free={false} // todo: access user role from the tutors cache
+            id={tutor.id}
+            bio={tutor.id == 49 ? tutor.bio : null}
+            name={tutor.name}
+            rating={tutor.avgRating}
+            onBook={() => openBookingDialog(tutor)}
+            image={tutor.image}
+          />
+        ))}
       </div>
 
       {tutor ? (

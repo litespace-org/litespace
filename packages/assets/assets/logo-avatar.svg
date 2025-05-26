@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="logo" data-name="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+<svg width="100%" height="100%" id="logo" data-name="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
     <defs>
         <style>
             .cls-1 {
@@ -11,7 +11,7 @@
             }
         </style>
     </defs>
-    <rect class="cls-2" data-id="colored" x="-.06" y="-1.8" width="500.06" height="502.76" />
+    <rect class="cls-2" data-id="colored" x="-.06" y="-1.8" width="100%" height="100%" />
     <g>
         <ellipse class="cls-1" cx="249.97" cy="250.97" rx="153.57" ry="156.7" />
         <ellipse class="cls-2" data-id="colored" cx="167.79" cy="259.58" rx="36.86" ry="37.61" />

@@ -80,4 +80,17 @@ export const Rounded: Story = {
   },
 };
 
+export const Asymmetric = {
+  args: {},
+  render() {
+    return (
+      <div>
+        <div className="w-32 h-16">
+          <AvatarV2 id={1} />
+        </div>
+      </div>
+    );
+  },
+};
+
 export default meta;

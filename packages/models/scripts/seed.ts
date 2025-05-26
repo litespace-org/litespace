@@ -22,7 +22,7 @@ import dayjs from "dayjs";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { logger } from "@litespace/utils/log";
 import { percentage, price } from "@litespace/utils/value";
-import { first, range, sample } from "lodash";
+import { first, range, sample, uniqueId } from "lodash";
 import { Knex } from "knex";
 import utc from "dayjs/plugin/utc";
 import { faker } from "@faker-js/faker/locale/ar";
@@ -101,7 +101,7 @@ async function main(): Promise<void> {
               notificationMethod: notificationMethod(),
               phone: phone(),
               city: city(),
-              image: `/image-${idx + 1}.png`,
+              image: uniqueId(),
               verifiedEmail: true,
               verifiedPhone: true,
             },
@@ -156,7 +156,7 @@ async function main(): Promise<void> {
             phone: phone(),
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
             city: city(),
-            image: "/image.png",
+            image: uniqueId(),
             verifiedEmail: sample([true, false]),
             verifiedPhone: sample([true, false]),
           },
@@ -213,7 +213,7 @@ async function main(): Promise<void> {
               phone: phone(),
               gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
               city: city(),
-              image: "/image.png",
+              image: uniqueId(),
               verifiedEmail: true,
               verifiedPhone: true,
             },

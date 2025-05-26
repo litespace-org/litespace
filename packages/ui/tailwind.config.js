@@ -82,7 +82,9 @@ export default {
       screens: {
         "3xl": "1600px",
       },
-      containers: {},
+      containers: {
+        "2md": "30rem",
+      },
       backgroundImage: {
         "toast-success":
           "radial-gradient(50% 50% at 50% 50%, rgba(0, 237, 81, 0.12) 0%, rgba(0, 237, 123, 0) 100%)",
@@ -96,6 +98,38 @@ export default {
         whatsapp: "linear-gradient(248.7deg, #61FD7D -70.28%, #25CF43 96.43%)",
       },
       colors: {
+        avatar: {
+          green: {
+            1: "var(--avatar-green-1)",
+            2: "var(--avatar-green-2)",
+            3: "var(--avatar-green-3)",
+            4: "var(--avatar-green-4)",
+          },
+          blue: {
+            1: "var(--avatar-blue-1)",
+            2: "var(--avatar-blue-2)",
+            3: "var(--avatar-blue-3)",
+            4: "var(--avatar-blue-4)",
+          },
+          pink: {
+            1: "var(--avatar-pink-1)",
+            2: "var(--avatar-pink-2)",
+            3: "var(--avatar-pink-3)",
+            4: "var(--avatar-pink-4)",
+          },
+          redish: {
+            1: "var(--avatar-redish-1)",
+            2: "var(--avatar-redish-2)",
+            3: "var(--avatar-redish-3)",
+            4: "var(--avatar-redish-4)",
+          },
+          violate: {
+            1: "var(--avatar-violate-1)",
+            2: "var(--avatar-violate-2)",
+            3: "var(--avatar-violate-3)",
+            4: "var(--avatar-violate-4)",
+          },
+        },
         dash: {
           sidebar: "hsl(var(--background-dash-sidebar))",
           canva: "hsl(var(--background-dash-canvas))",

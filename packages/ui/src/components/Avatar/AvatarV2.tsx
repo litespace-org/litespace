@@ -1,6 +1,6 @@
 "use client";
 
-import Logo from "@litespace/assets/LogoAvatar";
+import Logo from "@litespace/assets/LogoAvatarV2";
 import React, { useMemo, useCallback, useState } from "react";
 import cn from "classnames";
 import { optional } from "@litespace/utils";
@@ -9,30 +9,30 @@ type Status = "loading" | "loaded" | "error";
 
 const COLOR_STYLES = [
   // green
-  "[&>[data-id=colored]]:fill-[oklch(0.57_0.2311_144.75)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.62_0.2467_144.75)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.65_0.2742_144.75)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.69_0.2491_148.23)]",
+  "[&>svg>[data-id=colored]]:fill-avatar-green-1 bg-avatar-green-1",
+  "[&>svg>[data-id=colored]]:fill-avatar-green-2 bg-avatar-green-2",
+  "[&>svg>[data-id=colored]]:fill-avatar-green-3 bg-avatar-green-3",
+  "[&>svg>[data-id=colored]]:fill-avatar-green-4 bg-avatar-green-4",
   // blue
-  "[&>[data-id=colored]]:fill-[oklch(0.56_0.2509_257.98)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.55_0.2124_257.98)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.51_0.2171_257.98)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.48_0.2871_268.94)]",
+  "[&>svg>[data-id=colored]]:fill-avatar-blue-1 bg-avatar-blue-1",
+  "[&>svg>[data-id=colored]]:fill-avatar-blue-2 bg-avatar-blue-2",
+  "[&>svg>[data-id=colored]]:fill-avatar-blue-3 bg-avatar-blue-3",
+  "[&>svg>[data-id=colored]]:fill-avatar-blue-4 bg-avatar-blue-4",
   // pink
-  "[&>[data-id=colored]]:fill-[oklch(0.55_0.2687_335.64)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.59_0.2837_335.64)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.63_0.3009_335.64)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.64_0.3145_335.64)]",
+  "[&>svg>[data-id=colored]]:fill-avatar-pink-1 bg-avatar-pink-1",
+  "[&>svg>[data-id=colored]]:fill-avatar-pink-2 bg-avatar-pink-2",
+  "[&>svg>[data-id=colored]]:fill-avatar-pink-3 bg-avatar-pink-3",
+  "[&>svg>[data-id=colored]]:fill-avatar-pink-4 bg-avatar-pink-4",
   // redish
-  "[&>[data-id=colored]]:fill-[oklch(0.54_0.1998_36.85)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.6_0.2252_36.85)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.63_0.2383_36.85)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.65_0.241_36.85)]",
+  "[&>svg>[data-id=colored]]:fill-avatar-redish-1 bg-avatar-redish-1",
+  "[&>svg>[data-id=colored]]:fill-avatar-redish-2 bg-avatar-redish-2",
+  "[&>svg>[data-id=colored]]:fill-avatar-redish-3 bg-avatar-redish-3",
+  "[&>svg>[data-id=colored]]:fill-avatar-redish-4 bg-avatar-redish-4",
   // violate
-  "[&>[data-id=colored]]:fill-[oklch(0.49_0.2541_308.19)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.55_0.2938_308.19)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.58_0.3112_308.19)]",
-  "[&>[data-id=colored]]:fill-[oklch(0.6_0.3009_308.19)]",
+  "[&>svg>[data-id=colored]]:fill-avatar-violate-1 bg-avatar-violate-1",
+  "[&>svg>[data-id=colored]]:fill-avatar-violate-2 bg-avatar-violate-2",
+  "[&>svg>[data-id=colored]]:fill-avatar-violate-3 bg-avatar-violate-3",
+  "[&>svg>[data-id=colored]]:fill-avatar-violate-4 bg-avatar-violate-4",
 ];
 
 export const AvatarV2: React.FC<{
@@ -80,10 +80,11 @@ export const AvatarV2: React.FC<{
         className={cn(
           "opacity-100 transition-opacity duration-300",
           "data-[status=loaded]:opacity-0",
-          "absolute top-0 left-0 w-full h-full z-chat-avatar"
+          "absolute top-0 left-0 w-full h-full z-chat-avatar",
+          COLOR_STYLES[mod]
         )}
       >
-        <Logo className={COLOR_STYLES[mod]} />
+        <Logo className="w-full h-full" />
       </div>
     </div>
   );
