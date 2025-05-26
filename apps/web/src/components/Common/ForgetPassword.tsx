@@ -10,10 +10,11 @@ import { useToast } from "@litespace/ui/Toast";
 import { ForgetPasswordDialog } from "@litespace/ui/ForgetPasswordDialog";
 
 type Props = {
+  open: boolean;
   close: Void;
 };
 
-export const ForgetPassword: React.FC<Props> = ({ close }) => {
+export const ForgetPassword: React.FC<Props> = ({ open, close }) => {
   const toast = useToast();
   const intl = useFormatMessage();
 
@@ -66,12 +67,12 @@ export const ForgetPassword: React.FC<Props> = ({ close }) => {
       sendCode={(email) => sendMutation.mutate({ email })}
       sendingCode={sendMutation.isPending}
       sentCode={sendMutation.isSuccess}
-      resendCode={(email) => {
+      resendCode={(email: string) => {
         sendMutation.reset();
         sendMutation.mutate({ email });
       }}
       close={close}
-      open
+      open={open}
     />
   );
 };

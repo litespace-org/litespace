@@ -5,13 +5,12 @@ export function useRender() {
   const show = useCallback(() => setOpen(true), []);
   const hide = useCallback(() => setOpen(false), []);
   const toggle = useCallback(() => setOpen(!open), [open]);
-  const set = useCallback((value: boolean) => setOpen(value), []);
 
   return {
     open,
     show,
     hide,
     toggle,
-    set,
+    setOpen,
   };
 }

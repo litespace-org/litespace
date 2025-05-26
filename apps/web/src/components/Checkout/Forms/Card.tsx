@@ -26,7 +26,8 @@ import { IframeMessage } from "@/constants/iframe";
 import { useLogger } from "@litespace/headless/logger";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import RemoveCard from "@litespace/assets/RemoveCard";
-import { useRender, useBlock } from "@litespace/ui/hooks/common";
+import { useBlock } from "@litespace/ui/hooks/common";
+import { useRender } from "@litespace/headless/common";
 
 type Form = {
   card: string;

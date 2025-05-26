@@ -29,7 +29,7 @@ import { MAX_TUTOR_ABOUT_TEXT_LENGTH, optional } from "@litespace/utils";
 import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
 import VerifyPhone from "@/components/Common/VerifyPhone";
-import { useRender } from "@/hooks/render";
+import { useRender } from "@litespace/headless/common";
 
 type Form = {
   name: string;

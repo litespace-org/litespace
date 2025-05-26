@@ -17,7 +17,7 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { useUser } from "@litespace/headless/context/user";
 import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
-import { useRender } from "@/hooks/render";
+import { useRender } from "@litespace/headless/common";
 
 type Base = {
   close: Void;

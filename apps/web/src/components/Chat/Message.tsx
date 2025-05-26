@@ -1,6 +1,6 @@
 import { RawHtml } from "@litespace/ui/RawHtml";
 import { MenuAction, ActionsMenu } from "@litespace/ui/ActionsMenu";
-import { useRender } from "@litespace/ui/hooks/common";
+import { useRender } from "@litespace/headless/common";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IMessage, Void } from "@litespace/types";
 import cn from "classnames";

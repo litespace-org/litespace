@@ -5,7 +5,7 @@ import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React from "react";
 import AddCircle from "@litespace/assets/AddCircle";
-import { useRender } from "@litespace/ui/hooks/common";
+import { useRender } from "@litespace/headless/common";
 import { Typography } from "@litespace/ui/Typography";
 import { router } from "@/lib/route";
 import { Landing } from "@litespace/utils/routes";

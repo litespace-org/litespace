@@ -5,7 +5,7 @@ import { Typography } from "@litespace/ui/Typography";
 import React from "react";
 import cn from "classnames";
 import VerifyPhone from "@/components/Common/VerifyPhone";
-import { useRender } from "@/hooks/render";
+import { useRender } from "@litespace/headless/common";
 
 export const ConfirmContactMethod: React.FC<{
   verifiedEmail: boolean;

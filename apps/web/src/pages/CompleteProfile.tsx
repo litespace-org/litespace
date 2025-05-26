@@ -1,8 +1,8 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React from "react";
-import Header from "@/components/Auth/Header";
+import Header from "@/components/Auth/Common/Header";
 import { Typography } from "@litespace/ui/Typography";
-import Aside from "@/components/Auth/Aside";
+import Aside from "@/components/Auth/Common/Aside";
 import Form from "@/components/CompleteProfile/Form";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 

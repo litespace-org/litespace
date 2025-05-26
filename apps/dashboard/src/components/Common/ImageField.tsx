@@ -1,5 +1,5 @@
 import { Button } from "@litespace/ui/Button";
-import { useRender } from "@litespace/ui/hooks/common";
+import { useRender } from "@litespace/headless/common";
 import { Typography } from "@litespace/ui/Typography";
 import ImageDialog from "@/components/Common/ImageDialog";
 import React from "react";
