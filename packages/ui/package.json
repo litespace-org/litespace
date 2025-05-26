@@ -72,7 +72,6 @@
     "./Typography": "./dist/components/Typography/index.js",
     "./Toast": "./dist/components/Toast/index.js",
     "./Tooltip": "./dist/components/Tooltip/index.js",
-    "./TutorCard": "./dist/components/TutorCard/index.js",
     "./TutorOverview": "./dist/components/TutorOverview/index.js",
     "./TopicSelectionDialog": "./dist/components/TopicSelectionDialog/index.js",
     "./utils": "./dist/components/utils/index.js",

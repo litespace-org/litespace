@@ -196,18 +196,11 @@
   "platform.rating.question.description": "رأيك يهمنا لتحسين تجربتك على منصتنا. أخبرنا بما أعجبك وما يمكننا تطويره لنكون دائماً عند توقعاتك.",
   "student-dashboard.overview.title": "نظرة عامة",
   "student-dashboard.past-lessons.title": "الحصص السابقة",
+  "tutor-card.book-now": "احجز الان",
+  "tutor-card.free": "مجاني",
   "tutors.title": "كل المعلمين",
   "tutors.loading": "برجاء الانتظار... جاري تحميل بيانات المعلمين!",
   "tutors.error": " عذرًا، حدث خطأ أثناء تحميل بيانات المعلمين، برجاء المحاولة مرة أخرى",
-  "tutors.card.book-button.label": "احجز الآن",
-  "tutors.card.profile-button.label": "عرض الملف",
-  "tutors.card.label.students": "الطلاب",
-  "tutors.card.label.lessons": "الدروس",
-  "tutors.card.label.rating": "التقييم",
-  "tutors.card.label.read-more": "اقرأ المزيد",
-  "tutors.coming-soon": "فرص تعلم جديدة تقترب... معلمون مميزون سينضمون قريبًا!",
-  "tutors.coming.set-notifications": "أخبرني عند التوفر",
-  "tutors.coming-soon.notification-description": "سوف يتم اشعارك بجميع المعلمين الجدد",
   "tutor.profile.tabs.profile": "الملف الشخصى",
   "tutor.profile.tabs.profile.about": "حول المعلم",
   "tutor.profile.tabs.profile.specialities": "مجالات خبرة المعلم",
@@ -833,7 +826,6 @@
   "labels.delete": "حذف",
   "labels.share": "مشاركة",
   "labels.go-back": "الرجوع",
-  "labels.coming-soon": "قريبا 🎉",
   "labels.done": "تم",
   "labels.file-upload-done": "اكتمل رفع الملف",
   "labels.file-upload-failed": "تعذر رفع الملف",

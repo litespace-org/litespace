@@ -89,7 +89,7 @@ export class Tutors {
         studio_id: payload.studioId,
         updated_at: now,
       })
-      .where("id", id);
+      .where(this.column("id"), id);
   }
 
   async delete(id: number): Promise<void> {
