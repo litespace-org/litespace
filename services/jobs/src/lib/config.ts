@@ -15,6 +15,13 @@ const schema = zod.object({
    * restore file path
    */
   rfp: zod.string(),
+  /**
+   * @NOTE: backupMethod is a file extension; *.sql, etc.
+   */
+  backupMethod: zod
+    .literal("dump")
+    .or(zod.literal("sql"))
+    .or(zod.literal("tar")),
 });
 
 type ConfigSchema = Zod.infer<typeof schema>;
@@ -27,7 +34,13 @@ export const config: ConfigSchema = schema.parse({
   env: process.env.ENVIRONMENT,
   adminPhoneNumber: process.env.ADMIN_PHONE_NUMBER,
   rfp: process.env.RFP,
+  backupMethod: process.env.BACKUP_METHOD,
 });
+
+export const dbConfig = {
+  user: zod.string().trim().parse(process.env.PG_USER),
+  database: zod.string().trim().parse(process.env.PG_DATABASE),
+} as const;
 
 export const spaceConfig = {
   bucketName: zod
