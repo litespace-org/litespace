@@ -37,6 +37,8 @@ export const empty = () => error(ApiError.EmptyRequest, 400);
 
 export const busyTutor = () => error(ApiError.BusyTutor, 400);
 
+export const invalidEmail = () => error(ApiError.InvalidEmail, 400);
+
 export const busyTutorManager = () => error(ApiError.BusyTutorManager, 400);
 
 export const unexpected = (msg?: string) =>
@@ -74,14 +76,14 @@ export const fawryError = (msg?: string) =>
   error(ApiError.FawryError, 500, msg);
 
 export const exists = {
-  room: () => error(ApiError.RoomExists, 400),
-  user: () => error(ApiError.UserExists, 400),
-  rate: () => error(ApiError.RatingExists, 400),
-  subscription: () => error(ApiError.SubscriptionExists, 400),
+  room: () => error(ApiError.RoomExists, 409),
+  user: () => error(ApiError.UserExists, 409),
+  rate: () => error(ApiError.RatingExists, 409),
+  subscription: () => error(ApiError.SubscriptionExists, 409),
 };
 
 export const already = {
-  verified: () => error(ApiError.UserAlreadyVerified, 400),
+  verified: () => error(ApiError.UserAlreadyVerified, 409),
 };
 
 export const notfound = {

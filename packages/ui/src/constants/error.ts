@@ -6,6 +6,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.Unauthenticated]: "error.api.unauthenticated",
   [ApiError.Forbidden]: "error.api.forbidden",
   [ApiError.BadRequest]: "error.api.bad-request",
+  [ApiError.InvalidEmail]: "error.api.invalid-email",
   [ApiError.RoomExists]: "error.api.room-exists",
   [ApiError.UserExists]: "error.api.user-exists",
   [ApiError.RatingExists]: "error.api.rating-exists",

@@ -11,6 +11,7 @@ import {
   bad,
   exists,
   forbidden,
+  invalidEmail,
   notfound,
   unexpected,
   wrongPassword,
@@ -39,7 +40,7 @@ import {
   dateFilter,
   queryBoolean,
 } from "@/validation/utils";
-import { jwtSecret, paginationDefaults } from "@/constants";
+import { environment, jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, groupBy, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
@@ -75,6 +76,7 @@ import {
   isEmptyObject,
 } from "@litespace/utils";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
+import { isEmailValid } from "@/lib/validate";
 
 const createUserPayload = zod.object({
   role,
@@ -232,6 +234,11 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
   const userObject = await users.findByEmail(payload.email);
   if (userObject) return next(exists.user());
+
+  if (environment !== "local") {
+    const validEmail = await isEmailValid(payload.email);
+    if (!validEmail) return next(invalidEmail());
+  }
 
   const user = await knex.transaction(async (tx) => {
     const user = await users.create(
