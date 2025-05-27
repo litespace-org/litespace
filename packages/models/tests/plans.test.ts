@@ -87,7 +87,7 @@ describe("plans", () => {
         fixtures.plan({ active: false }),
       ]);
       const found = await plans.find({ active: true, forInvitesOnly: false });
-      expect(found.list).to.deep.eq(created.slice(0, 1));
+      expect(found.list).to.deep.members(created.slice(0, 1));
     });
   });
 });

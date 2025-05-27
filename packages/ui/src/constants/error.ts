@@ -11,6 +11,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.RatingExists]: "error.api.rating-exists",
   [ApiError.SubscriptionExists]: "error.api.subscription-exists",
   [ApiError.SubscriptionRequired]: "error.api.subscription-required",
+  [ApiError.SubscriptionUncancellable]: "error.api.subscription-uncancellable",
   [ApiError.NoEnoughMinutes]: "error.api.no-enough-minutes",
   [ApiError.BusyTutor]: "error.api.busy-tutor",
   [ApiError.BusyTutorManager]: "error.api.busy-tutor-manager",
