@@ -40,19 +40,19 @@ export async function restoreDB(key: string) {
   // @NOTE: the restore filed is assumed to be in the (docker postgres) data directory
   // see docker.compose file
   exec(
-    `docker exec postgres pg_restore -U postgres -F tar -d litespace /data/postgres/${filename}`
+    `docker exec postgres pg_restore -U postgres -Fc -d litespace /data/postgres/${filename}`
   );
 }
 
 async function backupPSQL() {
   const now = dayjs().format("YYYY-MM-DD");
 
-  const filename = `${now}.tar`;
+  const filename = `${now}.dump`;
   const filepath = `/tmp/${filename}`;
 
   if (fs.existsSync(filepath)) fs.rmSync(filepath);
   await execute(
-    `docker exec postgres pg_dump -U postgres -F tar -d litespace >> ${filepath}`
+    `docker exec postgres pg_dump -U postgres -Fc -d litespace >> ${filepath}`
   );
   await uploadWithS3(filepath, "backups/psql/" + filename);
   fs.rmSync(filepath);
