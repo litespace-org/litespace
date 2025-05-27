@@ -148,6 +148,7 @@ export type UpdateApiPayload = {
   about?: string | null;
   phone?: string | null;
   city?: City | null;
+  studioId?: number | null;
   notificationMethod?: NotificationMethod | null;
   activated?: boolean;
 };
@@ -196,8 +197,6 @@ export type FindUsersQuery = IFilter.SkippablePagination & {
   verified?: boolean;
   gender?: Gender;
   city?: City;
-  orderBy?: Extract<keyof Row, "created_at" | "updated_at">;
-  orderDirection?: IFilter.OrderDirection;
 };
 
 export type FindUsersApiQuery = FindUsersQuery;

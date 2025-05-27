@@ -1,4 +1,4 @@
-import { ExtractObjectKeys, Paginated } from "@/utils";
+import { Paginated } from "@/utils";
 import { IFilter } from "@/index";
 
 export type Self = {
@@ -72,20 +72,15 @@ export type ReplaceUserTopicsApiPayload = {
   removeTopics: number[];
 };
 
-export type FindTopicsQueryFilter = IFilter.Pagination & {
+export type FindTopicsQueryModel = IFilter.Pagination & {
   name?: string;
-  orderBy?: ExtractObjectKeys<
-    Row,
-    "name_ar" | "name_en" | "created_at" | "updated_at"
-  >;
-  orderDirection?: IFilter.OrderDirection;
 };
 
 export type CreateTopicApiResponse = Self;
 
 export type UpdateTopicApiResponse = Self;
 
-export type FindTopicsApiQuery = FindTopicsQueryFilter;
+export type FindTopicsApiQuery = FindTopicsQueryModel;
 
 export type FindTopicsApiResponse = Paginated<Self>;
 

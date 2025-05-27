@@ -1,13 +1,15 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useMemo } from "react";
 import { Tabs } from "@litespace/ui/Tabs";
-import { NotificationSettings } from "@/components/StudentSettings/NotificationSettings";
-import { UpdatePassword } from "@/components/StudentSettings/UpdatePassword";
-import { PersonalDetails } from "@/components/StudentSettings/PersonalDetails";
-import TopicSelection from "@/components/StudentSettings/TopicSelection";
+
+import NotificationSettings from "@/components/Settings/NotificationSettings";
+import UpdatePassword from "@/components/Settings/UpdatePassword";
+import PersonalDetails from "@/components/Settings/PersonalDetails";
+import TopicSelection from "@/components/Settings/TopicSelection";
+import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import { IUser } from "@litespace/types";
 import { Tab, TabId } from "@/components/StudentSettings/types";
-import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
+import { isPersonalInfoIncomplete } from "@/components/Settings/utils";
 
 const Content: React.FC<{
   tab: TabId;
@@ -16,29 +18,21 @@ const Content: React.FC<{
 }> = ({ tab, setTab, user }) => {
   const intl = useFormatMessage();
 
-  const tabs: Tab[] = useMemo(
-    () => [
+  const tabs: Tab[] = useMemo(() => {
+    return [
       {
         id: "personal",
-        label: intl("student-settings.personal.title"),
-        important:
-          !user.name ||
-          !user.email ||
-          !user.phone ||
-          !user.city ||
-          !user.gender ||
-          !user.image ||
-          !user.verifiedEmail ||
-          !user.verifiedPhone,
+        label: intl("shared-settings.personal.title"),
+        important: isPersonalInfoIncomplete(user),
       },
       {
         id: "password",
-        label: intl("student-settings.password.title"),
+        label: intl("shared-settings.password.title"),
         important: !user.password,
       },
       {
         id: "notifications",
-        label: intl("student-settings.notification.title"),
+        label: intl("shared-settings.notification.title"),
         important: !user.notificationMethod,
       },
       {
@@ -46,21 +40,8 @@ const Content: React.FC<{
         label: intl("student-settings.topics.title"),
         important: false,
       },
-    ],
-    [
-      intl,
-      user.city,
-      user.email,
-      user.gender,
-      user.image,
-      user.name,
-      user.notificationMethod,
-      user.password,
-      user.phone,
-      user.verifiedEmail,
-      user.verifiedPhone,
-    ]
-  );
+    ];
+  }, [intl, user]);
 
   return (
     <div className="grow flex flex-col">
@@ -74,6 +55,7 @@ const Content: React.FC<{
 
       {tab === "personal" ? (
         <PersonalDetails
+          forStudent
           id={user.id}
           image={user.image}
           email={user.email}

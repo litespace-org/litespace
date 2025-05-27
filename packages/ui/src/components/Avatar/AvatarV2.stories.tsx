@@ -41,7 +41,7 @@ export const All: Story = {
   render() {
     return (
       <div className="grid grid-cols-4">
-        {range(0, 20).map((i) => (
+        {range(0, 22).map((i) => (
           <div className="grid-cols-1 w-40 h-40" key={i}>
             <Tooltip
               side="top"

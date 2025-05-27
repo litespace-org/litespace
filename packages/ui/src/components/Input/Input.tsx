@@ -118,14 +118,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               value={value}
               disabled={disabled}
               className={cn(
-                "grow bg-inherit focus-within:outline-none font-medium text-[0.875rem] leading-[150%] h-full",
-                // Placeholder
+                "grow bg-inherit focus-within:outline-none font-medium text-caption leading-[150%] h-full",
+                // placeholder
                 "placeholder:text-natural-600 placeholder:font-cairo",
                 "placeholder:text-right",
                 {
-                  // Filled
+                  // filled
                   "text-natural-950": !disabled && value,
-                  // Disabled
+                  // disabled
                   "text-natural-500 placeholder:text-natural-500 cursor-not-allowed":
                     disabled,
                 },

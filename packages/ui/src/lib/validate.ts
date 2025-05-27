@@ -8,6 +8,7 @@ import {
   isValidPassword as isValidPasswordBase,
   isValidUserBirthYear as isValidUserBirthYearBase,
   isValidTutorAbout as isValidTutorAboutBase,
+  validateTutorNotice as validateTutorNoticeBase,
   isValidTutorBio as isValidTutorBioBase,
   isValidConfirmationCode as isValidConfirmationCodeBase,
   validatePlanWeeklyMinutes as validatePlanWeeklyMinutesBase,
@@ -33,18 +34,18 @@ export function validateText({
   return true;
 }
 
-export function isValidPhone(phone: string): LocalId | null {
+export function validatePhone(phone: string): LocalId | null {
   const valid = isValidPhoneBase(phone);
   if (valid === true) return null;
   return "error.phone-number.invlaid";
 }
 
-export function isValidCvv(cvv: string): LocalId | null {
+export function validateCvv(cvv: string): LocalId | null {
   const valid = isValidCvvBase(cvv);
   return !valid ? "error.invlaid-cvv" : null;
 }
 
-export function isValidUserName(name: string): LocalId | null {
+export function validateUserName(name: string): LocalId | null {
   const valid = isValidUserNameBase(name);
   if (valid === true) return null;
   if (valid === FieldError.InvalidUserName) return "error.name.invalid";
@@ -52,13 +53,13 @@ export function isValidUserName(name: string): LocalId | null {
   return "error.name.length.long";
 }
 
-export function isValidEmail(email: string): LocalId | null {
+export function validateEmail(email: string): LocalId | null {
   const valid = isValidEmailBase(email);
   if (valid === true) return null;
   return "error.email.invalid";
 }
 
-export function isValidPassword(password: string): LocalId | null {
+export function validatePassword(password: string): LocalId | null {
   const valid = isValidPasswordBase(password);
   if (valid === true) return null;
   if (valid === FieldError.ShortPassword) return "error.password.short";
@@ -66,20 +67,20 @@ export function isValidPassword(password: string): LocalId | null {
   return "error.password.invalid";
 }
 
-export function isValidUserBirthYear(year: number): LocalId | null {
+export function validateUserBirthYear(year: number): LocalId | null {
   const valid = isValidUserBirthYearBase(year);
   if (valid === true) return null;
   return "error.birth-year-out-of-range";
 }
 
-export function isValidTutorAbout(about: string): LocalId | null {
+export function validateTutorAbout(about: string): LocalId | null {
   const valid = isValidTutorAboutBase(about);
   if (valid === true) return null;
   if (valid === FieldError.ShortTutorAbout) return "error.text.short";
   return "error.text.long";
 }
 
-export function isValidTutorBio(about: string): LocalId | null {
+export function validateTutorBio(about: string): LocalId | null {
   const valid = isValidTutorBioBase(about);
   if (valid === true) return null;
   if (valid === FieldError.EmptyBio) return "error.field.bio.empty";
@@ -88,7 +89,7 @@ export function isValidTutorBio(about: string): LocalId | null {
   return "error.field.bio.invalid";
 }
 
-export function isValidConfirmationCode(code: number): LocalId | null {
+export function validateConfirmationCode(code: number): LocalId | null {
   const valid = isValidConfirmationCodeBase(code);
   if (valid === true) return null;
   return "error.field.confirmation-code.invalid";
@@ -112,4 +113,12 @@ export function validatePlanDiscount(discount: number): LocalId | null {
   const error = validatePlanDiscountBase(discount);
   if (!error) return null;
   return "error.field.invalid-plan-discount";
+}
+
+export function validateNotice(notice: number): LocalId | null {
+  const error = validateTutorNoticeBase(notice);
+  if (!error) return null;
+  if (error === FieldError.MaxNoticeExceeded)
+    return "error.field.max-notice-exceeded";
+  return "error.field.invalid-notice";
 }

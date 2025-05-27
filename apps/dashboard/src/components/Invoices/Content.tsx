@@ -7,7 +7,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { withdrawMethodsIntlMap } from "@/components/utils/invoice";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
-import { IFilter, IInvoice, IWithdrawMethod } from "@litespace/types";
+import { IInvoice, IWithdrawMethod } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";
 import {
   useFindInvoices,
@@ -15,7 +15,6 @@ import {
 } from "@litespace/headless/invoices";
 import {
   invoiceBankIntlMap,
-  invoiceOrderIntlMap,
   invoiceStatusIntlMap,
 } from "@/components/utils/invoice";
 
@@ -42,11 +41,6 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
   const [statuses, setStatuses] = useState<IInvoice.Status[]>(
     DEFAULT_STATUSES_FILTER
   );
-  const [orderBy, setOrderBy] =
-    useState<IInvoice.FindInvoicesQuery["orderBy"]>(undefined);
-  const [orderDirection, setOrderDirection] = useState<IFilter.OrderDirection>(
-    IFilter.OrderDirection.Descending
-  );
 
   const filter = useMemo(
     (): UseFindInvoicesPayload => ({
@@ -56,10 +50,8 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
       banks,
       statuses,
       receipt,
-      orderBy,
-      orderDirection,
     }),
-    [user, methods, banks, statuses, receipt, orderBy, orderDirection]
+    [user, methods, banks, statuses, receipt]
   );
 
   const { query, ...pagination } = useFindInvoices(filter);
@@ -129,15 +121,6 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
     }),
     [statuses, intl]
   );
-  const makeOrderByOption = useCallback(
-    (order: Exclude<IInvoice.FindInvoicesQuery["orderBy"], undefined>) => ({
-      id: order,
-      label: intl(invoiceOrderIntlMap[order]),
-      checked: orderBy === order,
-      onClick: () => setOrderBy(order),
-    }),
-    [orderBy, intl]
-  );
 
   const actions = useMemo(
     (): MenuAction[] => [
@@ -149,17 +132,13 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
           isEqual(methods, DEFAULT_METHODS_FILTER) &&
           (banks === undefined || banks.length === 0) &&
           statuses === DEFAULT_STATUSES_FILTER &&
-          receipt === undefined &&
-          orderBy === undefined &&
-          orderDirection === IFilter.OrderDirection.Descending,
+          receipt === undefined,
 
         onClick: () => {
           setMethods(DEFAULT_METHODS_FILTER);
           setBanks(undefined);
           setStatuses(DEFAULT_STATUSES_FILTER);
           setReceipt(undefined);
-          setOrderBy(undefined);
-          setOrderDirection(IFilter.OrderDirection.Descending);
         },
       },
       {
@@ -261,42 +240,6 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
           },
         ],
       },
-      {
-        id: 5,
-        label: intl("dashboard.user.filter.order-by"),
-        subActions: [
-          {
-            id: 0,
-            label: intl("global.labels.cancel"),
-            disabled: orderBy === undefined,
-            danger: true,
-            onClick: () => setOrderBy(undefined),
-          },
-          makeOrderByOption("amount"),
-          makeOrderByOption("created_at"),
-          makeOrderByOption("updated_at"),
-          makeOrderByOption("bank"),
-        ],
-      },
-      {
-        id: 6,
-        label: intl("dashboard.filter.order-direction"),
-        value: orderDirection,
-        onRadioValueChange: (value) =>
-          setOrderDirection(value as IFilter.OrderDirection),
-        radioGroup: [
-          {
-            id: 1,
-            label: intl("dashboard.filter.order-direction.desc"),
-            value: IFilter.OrderDirection.Descending,
-          },
-          {
-            id: 2,
-            label: intl("dashboard.filter.order-direction.asc"),
-            value: IFilter.OrderDirection.Ascending,
-          },
-        ],
-      },
     ],
     [
       intl,
@@ -304,12 +247,9 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
       banks,
       statuses,
       receipt,
-      orderBy,
-      orderDirection,
       makeMethodOption,
       makeBankOption,
       makeStatusOption,
-      makeOrderByOption,
     ]
   );
 

@@ -5,90 +5,20 @@ import List from "@/components/Topics/List";
 import { Button } from "@litespace/ui/Button";
 import { useRender } from "@litespace/ui/hooks/common";
 import TopicDialog from "@/components/Topics/TopicDialog";
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import { Input } from "@litespace/ui/Input";
-import { debounce } from "lodash";
-import { IFilter, ITopic } from "@litespace/types";
-import { optional } from "@litespace/utils/utils";
-import { Select } from "@litespace/ui/Select";
 
 const Topics = () => {
   const intl = useFormatMessage();
   const addNewTopic = useRender();
 
   const [name, setName] = useState<string>("");
-  const [orderBy, setOrderBy] =
-    useState<ITopic.FindTopicsApiQuery["orderBy"]>("name_ar");
-  const [orderDirection, setOrderDirection] = useState<
-    ITopic.FindTopicsApiQuery["orderDirection"]
-  >(IFilter.OrderDirection.Descending);
 
-  const filter = useMemo(
-    () => ({
-      name: optional(name),
-      orderBy: optional(orderBy),
-      orderDirection: optional(orderDirection),
-    }),
-    [name, orderBy, orderDirection]
-  );
+  const query = usePaginatedTopics({ name });
 
-  const query = usePaginatedTopics(filter);
-
-  const debouncedRefetch = useMemo(
-    () =>
-      debounce(() => {
-        query.query.refetch();
-      }, 500),
-    [query]
-  );
-
-  const handleNameChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setName(e.target.value);
-      debouncedRefetch();
-    },
-    [debouncedRefetch]
-  );
-
-  const orderOptions = useMemo(
-    () => [
-      { label: intl("dashboard.topics.name.ar"), value: "name_ar" },
-      { label: intl("dashboard.topics.name.en"), value: "name_en" },
-      { label: intl("global.created-at"), value: "created_at" },
-      { label: intl("global.updated-at"), value: "updated_at" },
-    ],
-    [intl]
-  );
-
-  const handleOrderChange = useCallback(
-    (value: string) => {
-      setOrderBy(value as ITopic.FindTopicsApiQuery["orderBy"]);
-      debouncedRefetch();
-    },
-    [debouncedRefetch]
-  );
-
-  const orderDirectionOptions = useMemo(
-    () => [
-      {
-        label: intl("dashboard.filter.order-direction.asc"),
-        value: IFilter.OrderDirection.Ascending,
-      },
-      {
-        label: intl("dashboard.filter.order-direction.desc"),
-        value: IFilter.OrderDirection.Descending,
-      },
-    ],
-    [intl]
-  );
-
-  const handleOrderDirectionChange = useCallback(
-    (value: string) => {
-      setOrderDirection(value as ITopic.FindTopicsApiQuery["orderDirection"]);
-      debouncedRefetch();
-    },
-    [debouncedRefetch]
-  );
+  const handleNameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  }, []);
 
   return (
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
@@ -109,19 +39,6 @@ const Topics = () => {
           placeholder={intl("dashboard.topics.name")}
           value={name}
         />
-
-        <div className="flex-shrink-0 flex flex-row items-center justify-center gap-4">
-          <Select
-            onChange={handleOrderChange}
-            options={orderOptions}
-            value={orderBy}
-          />
-          <Select
-            onChange={handleOrderDirectionChange}
-            options={orderDirectionOptions}
-            value={orderDirection}
-          />
-        </div>
       </div>
 
       <div className="mt-4">

@@ -12,10 +12,9 @@ import {
   bank,
   ids,
   invoiceStatus,
-  jsonBoolean,
-  orderDirection,
   pageNumber,
   pageSize,
+  queryBoolean,
   withdrawMethod,
   withNamedId,
 } from "@/validation/utils";
@@ -52,23 +51,14 @@ const updateByReceiverPayload = zod.object({
   cancel: zod.optional(zod.boolean()),
 });
 
-const orderByOptions = [
-  "created_at",
-  "updated_at",
-  "amount",
-  "bank",
-] as const satisfies Array<IInvoice.FindInvoicesQuery["orderBy"]>;
-
-const findPayload = zod.object({
+const findQueryPayload = zod.object({
   users: zod.optional(ids),
-  methods: zod.optional(zod.array(withdrawMethod)),
-  banks: zod.optional(zod.array(bank)),
-  statuses: zod.optional(zod.array(invoiceStatus)),
-  receipt: zod.optional(jsonBoolean),
-  orderBy: zod.optional(zod.enum(orderByOptions)),
-  orderDirection: zod.optional(orderDirection),
-  page: zod.optional(pageNumber),
-  size: zod.optional(pageSize),
+  methods: zod.array(withdrawMethod).optional(),
+  banks: zod.array(bank).optional(),
+  statuses: zod.array(invoiceStatus).optional(),
+  receipt: queryBoolean.optional(),
+  page: pageNumber.optional(),
+  size: pageSize.optional(),
 });
 
 async function stats(req: Request, res: Response, next: NextFunction) {
@@ -298,7 +288,7 @@ export function updateByAdmin(context: ApiContext) {
 
 async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const query: IInvoice.FindInvoicesQuery = findPayload.parse(req.query);
+  const query: IInvoice.FindInvoicesQuery = findQueryPayload.parse(req.query);
   const allowed =
     (isRegularTutor(user) && query.users?.includes(user.id)) || isAdmin(user);
   if (!allowed) return next(forbidden());

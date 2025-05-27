@@ -3,20 +3,29 @@ import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useState } from "react";
+import cn from "classnames";
 
 export const ConfirmContactMethod: React.FC<{
   verifiedEmail: boolean;
   verifiedPhone: boolean;
-}> = ({ verifiedEmail, verifiedPhone }) => {
+  forStudent: boolean;
+}> = ({ verifiedEmail, verifiedPhone, forStudent }) => {
   return (
-    <div className="w-full flex flex-col gap-6">
-      {!verifiedEmail ? <VerifyEmailSection /> : null}
-      {!verifiedPhone ? <VerifyPhoneSection /> : null}
+    <div
+      className={cn(
+        "w-full flex gap-6",
+        forStudent ? "flex-col-reverse" : "flex-col"
+      )}
+    >
+      {!verifiedPhone ? <VerifyPhoneSection forStudent={forStudent} /> : null}
+      {!verifiedEmail ? <VerifyEmailSection forStudent={forStudent} /> : null}
     </div>
   );
 };
 
-const VerifyEmailSection: React.FC = () => {
+const VerifyEmailSection: React.FC<{
+  forStudent: boolean;
+}> = ({ forStudent }) => {
   const intl = useFormatMessage();
   const [showVerifyDialog, setShowVerifyDialog] = useState(false);
   return (
@@ -33,10 +42,18 @@ const VerifyEmailSection: React.FC = () => {
           className="text-subtitle-2 font-bold text-natural-950"
           tag="h3"
         >
-          {intl("student-settings.verify-email.title")}
+          {intl(
+            forStudent
+              ? "student-settings.verify-email.title"
+              : "tutor-settings.verify-email.title"
+          )}
         </Typography>
         <Typography className="mt-4 text-body text-natural-950" tag="p">
-          {intl("student-settings.verify-email.description")}
+          {intl(
+            forStudent
+              ? "student-settings.verify-email.description"
+              : "tutor-settings.verify-email.description"
+          )}
         </Typography>
       </div>
       <Button
@@ -51,7 +68,9 @@ const VerifyEmailSection: React.FC = () => {
   );
 };
 
-const VerifyPhoneSection: React.FC = () => {
+const VerifyPhoneSection: React.FC<{ forStudent: boolean }> = ({
+  forStudent,
+}) => {
   const intl = useFormatMessage();
   return (
     <div className="flex flex-wrap lg:flex-nowrap lg:gap-[57px] items-end">
@@ -60,10 +79,18 @@ const VerifyPhoneSection: React.FC = () => {
           className="text-subtitle-2 font-bold text-natural-950"
           tag="h3"
         >
-          {intl("student-settings.verify-phone.title")}
+          {intl(
+            forStudent
+              ? "student-settings.verify-phone.title"
+              : "tutor-settings.verify-phone.title"
+          )}
         </Typography>
         <Typography className="mt-4 text-body text-natural-950" tag="p">
-          {intl("student-settings.verify-phone.description")}
+          {intl(
+            forStudent
+              ? "student-settings.verify-phone.description"
+              : "tutor-settings.verify-phone.description"
+          )}
         </Typography>
       </div>
       <Button

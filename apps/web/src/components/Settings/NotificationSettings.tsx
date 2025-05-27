@@ -18,6 +18,7 @@ import {
   useSendPhoneCode,
   useVerifyPhoneCode,
 } from "@litespace/headless/confirmationCode";
+import { Typography } from "@litespace/ui/Typography";
 
 type Form = {
   notificationMethod: IUser.Self["notificationMethod"];
@@ -36,19 +37,19 @@ type Form = {
  * opens the dialog automatically and he needs to enter the number -> this will save his number then he needs
  * to enter the code sent to him.
  */
-export function NotificationSettings({
-  id,
-  notificationMethod,
-  verifiedTelegram,
-  verifiedWhatsApp,
-  phone,
-}: {
+const NotificationSettings: React.FC<{
   id: number;
   notificationMethod: IUser.NotificationMethod | null;
   phone: string | null;
   verifiedWhatsApp: boolean;
   verifiedTelegram: boolean;
-}) {
+}> = ({
+  id,
+  notificationMethod,
+  verifiedTelegram,
+  verifiedWhatsApp,
+  phone,
+}) => {
   const intl = useFormatMessage();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [sentCode, setSentCode] = useState<boolean>(false);
@@ -59,11 +60,11 @@ export function NotificationSettings({
   const options = useMemo(
     () => [
       {
-        label: intl("student-settings.edit.notification.whatsapp"),
+        label: intl("shared-settings.edit.notification.whatsapp"),
         value: IUser.NotificationMethod.Whatsapp,
       },
       {
-        label: intl("student-settings.edit.notification.telegram"),
+        label: intl("shared-settings.edit.notification.telegram"),
         value: IUser.NotificationMethod.Telegram,
       },
     ],
@@ -155,13 +156,13 @@ export function NotificationSettings({
     (value: IUser.NotificationMethod) => {
       form.set("notificationMethod", value);
 
-      const verificationNeeded =
+      const isVerificationNeeded =
         (value === IUser.NotificationMethod.Whatsapp && !verifiedWhatsApp) ||
         (value === IUser.NotificationMethod.Telegram && !verifiedTelegram);
 
-      if (verificationNeeded) setShowDialog(true);
+      if (isVerificationNeeded) setShowDialog(true);
 
-      if (phone && verificationNeeded)
+      if (phone && isVerificationNeeded)
         sendPhoneCodeMutation.mutate({
           method: NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[value],
           phone,
@@ -172,6 +173,12 @@ export function NotificationSettings({
 
   return (
     <div className="md:max-w-[344px] lg:max-w-[400px] grow md:grow-0 h-full flex flex-col">
+      <Typography
+        tag="h2"
+        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
+      >
+        {intl("shared-settings.notification.title")}
+      </Typography>
       {showDialog ? (
         <VerifyNotificationMethodDialog
           method={selectedMethod}
@@ -184,12 +191,12 @@ export function NotificationSettings({
           verifing={verifyPhoneCodeMutation.isPending}
         />
       ) : null}
-      <form onSubmit={form.onSubmit} className="grow flex flex-col gap-6">
+      <form onSubmit={form.onSubmit} className="grow flex flex-col">
         <Select
           onChange={onChange}
           id="notification-method"
-          label={intl("student-settings.edit.notification.label")}
-          placeholder={intl("student-settings.edit.notification.placeholder")}
+          label={intl("shared-settings.edit.notification.label")}
+          placeholder={intl("shared-settings.edit.notification.placeholder")}
           value={optional(form.state.notificationMethod)}
           options={options}
         />
@@ -200,10 +207,13 @@ export function NotificationSettings({
             form.state.notificationMethod === notificationMethod
           }
           onClick={form.submit}
+          className="mt-6"
         >
           {intl("shared-settings.save")}
         </Button>
       </form>
     </div>
   );
-}
+};
+
+export default NotificationSettings;

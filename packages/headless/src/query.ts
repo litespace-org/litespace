@@ -22,6 +22,7 @@ export type UseInfinitePaginationQueryResult<T> = {
   more: Void;
   hasMore: boolean;
   keys: unknown[];
+  total: number;
 };
 
 export type InfiniteQueryHandler<T> = ({
@@ -70,5 +71,5 @@ export function useInfinitePaginationQuery<T, K>(
     return list?.length !== total;
   }, [list?.length, total]);
 
-  return { query, list, more, hasMore, keys };
+  return { query, list, more, hasMore, keys, total };
 }

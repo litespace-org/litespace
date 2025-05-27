@@ -1,5 +1,5 @@
 import type { Type as WithdrawMethod } from "@/withdrawMethod";
-import { ExtractObjectKeys, Paginated } from "@/utils";
+import { Paginated } from "@/utils";
 import { IFilter } from "@/index";
 
 export enum Bank {
@@ -129,9 +129,4 @@ export type FindInvoicesQuery = IFilter.Pagination & {
   banks?: Bank[];
   statuses?: Status[];
   receipt?: boolean;
-  orderBy?: ExtractObjectKeys<
-    Row,
-    "amount" | "created_at" | "updated_at" | "bank"
-  >;
-  orderDirection?: IFilter.OrderDirection;
 };

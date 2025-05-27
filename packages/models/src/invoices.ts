@@ -154,8 +154,6 @@ export class Invoices {
     banks,
     statuses,
     receipt,
-    orderBy = "created_at",
-    orderDirection = IFilter.OrderDirection.Descending,
     page,
     size,
     tx,
@@ -182,7 +180,7 @@ export class Invoices {
     const query = builder
       .clone()
       .select(this.columns)
-      .orderBy(this.column(orderBy), orderDirection);
+      .orderBy(this.column("created_at"), "desc");
 
     const rows = await withPagination(query, { page, size });
     return { list: rows.map((row) => this.from(row)), total };

@@ -9,7 +9,7 @@ export {
 export {
   isValidTutorBio,
   isValidTutorAbout,
-  isValidTutorNotice,
+  validateTutorNotice,
 } from "@/validation/tutor";
 
 export {

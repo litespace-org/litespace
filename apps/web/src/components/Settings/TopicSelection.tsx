@@ -2,26 +2,32 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Edit from "@litespace/assets/Edit";
-import { TopicSelectionDialog } from "@litespace/ui/TopicSelectionDialog";
+import { TopicSelectionDialog } from "@/components/Common/TopicSelectionDialog";
 import { Button } from "@litespace/ui/Button";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { useInfiniteTopics, useUserTopics } from "@litespace/headless/topic";
-import { useInvalidateQuery } from "@litespace/headless/query";
-import { QueryKey } from "@litespace/headless/constants";
 import { useToast } from "@litespace/ui/Toast";
 import { useUpdateUserTopics } from "@litespace/headless/user";
 import { useOnError } from "@/hooks/error";
 import Close2 from "@litespace/assets/Close2";
 import { ITopic, Void } from "@litespace/types";
 import { isEmpty } from "lodash";
+import { useUser } from "@litespace/headless/context/user";
+import { isTutor as isUserTutor } from "@litespace/utils";
+import cn from "classnames";
+import AddCircle from "@litespace/assets/AddCircle";
 
 const TopicSelection: React.FC = () => {
   const intl = useFormatMessage();
+  const [showDialog, setShowDialog] = useState<boolean>(false);
+
   const { query: userTopicsQuery, keys: userTopicsQueryKeys } = useUserTopics();
   const {
     query: allTopicsQuery,
     keys: allTopicsQueryKeys,
     list: allTopics,
+    more,
+    hasMore,
   } = useInfiniteTopics();
 
   useOnError({
@@ -37,17 +43,17 @@ const TopicSelection: React.FC = () => {
   });
 
   const toast = useToast();
-  const invalidate = useInvalidateQuery();
 
   const onSuccess = useCallback(() => {
-    invalidate([QueryKey.FindUserTopics]);
-  }, [invalidate]);
+    userTopicsQuery.refetch();
+    setShowDialog(false);
+  }, [userTopicsQuery]);
 
   const onError = useOnError({
     type: "mutation",
     handler: ({ messageId }) => {
       toast.error({
-        title: intl("student-settings.topics.selection-dialog.update-error"),
+        title: intl("shared-settings.topics.selection-dialog.update-error"),
         description: intl(messageId),
       });
     },
@@ -60,13 +66,22 @@ const TopicSelection: React.FC = () => {
 
   return (
     <Content
+      more={more}
+      hasMore={hasMore}
       allTopics={allTopics}
       userTopics={userTopicsQuery.data || null}
       update={(payload: ITopic.ReplaceUserTopicsApiPayload) =>
         updateTopics.mutate(payload)
       }
+      showDialog={showDialog}
+      setShowDialog={setShowDialog}
       updating={updateTopics.isPending}
-      loading={allTopicsQuery.isPending || userTopicsQuery.isPending}
+      loading={
+        userTopicsQuery.isLoading ||
+        allTopicsQuery.isLoading ||
+        allTopicsQuery.isLoading
+      }
+      fetching={allTopicsQuery.isFetching}
       error={allTopicsQuery.isError || userTopicsQuery.isError}
       refetch={() => {
         if (allTopicsQuery.isError) allTopicsQuery.refetch();
@@ -81,15 +96,35 @@ const Content: React.FC<{
   userTopics: ITopic.PopulatedUserTopic[] | null;
   loading: boolean;
   error: boolean;
-  refetch: Void;
-  update: (payload: ITopic.ReplaceUserTopicsApiPayload) => void;
   updating: boolean;
-}> = ({ allTopics, userTopics, loading, error, refetch, update, updating }) => {
+  hasMore: boolean;
+  showDialog: boolean;
+  fetching: boolean;
+  setShowDialog: (val: boolean) => void;
+  more: Void;
+  update: (payload: ITopic.ReplaceUserTopicsApiPayload) => void;
+  refetch: Void;
+}> = ({
+  allTopics,
+  userTopics,
+  loading,
+  error,
+  hasMore,
+  updating,
+  showDialog,
+  fetching,
+  setShowDialog,
+  more,
+  update,
+  refetch,
+}) => {
   const intl = useFormatMessage();
-  const [showDialog, setShowDialog] = useState<boolean>(false);
   const [selectedTopics, setSelectedTopics] = useState<
     ITopic.PopulatedUserTopic[]
   >([]);
+
+  const { user } = useUser();
+  const isTutor = useMemo(() => isUserTutor(user), [user]);
 
   useEffect(() => {
     if (!userTopics) return;
@@ -135,21 +170,40 @@ const Content: React.FC<{
     [update, userTopicIds]
   );
 
-  const onRemoveTopic = useCallback((id: number) => {
-    setSelectedTopics((prev) => prev.filter((topic) => topic.id !== id));
-  }, []);
+  const onRemoveTopic = useCallback(
+    (id: number) => {
+      if (isTutor)
+        confirm(
+          selectedTopics
+            .filter((topic) => topic.id !== id)
+            .map((topic) => topic.id)
+        );
+
+      setSelectedTopics((prev) => {
+        const clone = structuredClone(prev);
+        const filtered = clone.filter((topic) => topic.id !== id);
+        if (isEmpty(filtered) && !isTutor) confirm([]);
+        return filtered;
+      });
+    },
+    [isTutor, confirm, selectedTopics]
+  );
 
   return (
-    <div className="flex flex-col gap-4 grow">
+    <div
+      className={cn("flex flex-col gap-4 grow", isTutor ? "gap-6" : "gap-4")}
+    >
       <ContentHeader
         edit={() => {
           setShowDialog(true);
         }}
         canEdit
+        isTutor={isTutor}
       />
 
       <ContentBody
         loading={loading}
+        isTutor={isTutor}
         error={error}
         refetch={refetch}
         topics={selectedTopics}
@@ -162,9 +216,18 @@ const Content: React.FC<{
 
       {showDialog ? (
         <TopicSelectionDialog
-          title={intl("student-settings.topics.selection-dialog.title")}
+          more={more}
+          hasMore={hasMore}
+          fetching={fetching}
+          title={intl(
+            isTutor
+              ? "tutor-settings.topics.selection-dialog.title"
+              : "student-settings.topics.selection-dialog.title"
+          )}
           description={intl(
-            "student-settings.topics.selection-dialog.description"
+            isTutor
+              ? "tutor-settings.topics.selection-dialog.description"
+              : "student-settings.topics.selection-dialog.description"
           )}
           topics={topicOptions}
           initialTopics={userTopicIds}
@@ -183,23 +246,38 @@ const Content: React.FC<{
   );
 };
 
-const ContentHeader: React.FC<{ canEdit: boolean; edit: Void }> = ({
-  canEdit,
-  edit,
-}) => {
+const ContentHeader: React.FC<{
+  canEdit: boolean;
+  isTutor: boolean;
+  edit: Void;
+}> = ({ canEdit, isTutor, edit }) => {
   const intl = useFormatMessage();
   return (
     <div className="flex items-center justify-between">
       <Typography
         tag="h2"
-        className="text-natural-950 text-subtitle-2 font-bold"
+        data-tutor={isTutor}
+        className={cn(
+          "text-natural-950 text-subtitle-2 data-[tutor=true]:text-subtitle-1 font-bold"
+        )}
       >
-        {intl("student-settings.edit.personal.topics.title")}
+        {intl(
+          isTutor
+            ? "tutor-settings.personal-info.topics"
+            : "student-settings.selected-topics.title"
+        )}
       </Typography>
 
       {canEdit ? (
         <Button
-          startIcon={<Edit className="icon" />}
+          startIcon={
+            <Edit
+              className={cn(
+                "icon",
+                isTutor ? "[&>*]:stroke-brand-700" : "[&>*]:stroke-natural-700"
+              )}
+            />
+          }
           variant="tertiary"
           size="medium"
           onClick={edit}
@@ -219,6 +297,7 @@ const ContentBody: React.FC<{
   refetch: Void;
   topics: ITopic.Self[];
   dataChanged: boolean;
+  isTutor: boolean;
   save: Void;
   saving: boolean;
   onRemoveTopic: (id: number) => void;
@@ -226,6 +305,7 @@ const ContentBody: React.FC<{
 }> = ({
   loading,
   error,
+  isTutor,
   refetch,
   topics,
   dataChanged,
@@ -244,7 +324,7 @@ const ContentBody: React.FC<{
         <LoadingError
           size="small"
           retry={refetch}
-          error={intl("student-settings.topics.selection-dialog.loading-error")}
+          error={intl("shared-settings.topics.selection-dialog.loading-error")}
         />
       </div>
     );
@@ -252,9 +332,19 @@ const ContentBody: React.FC<{
   if (isEmpty(topics))
     return (
       <div className="flex items-center justify-center mt-4">
-        <Button onClick={add} type="main" variant="primary" size="large">
+        <Button
+          onClick={add}
+          endIcon={<AddCircle className="[&>*]:stroke-natural-50 w-4 h-4" />}
+          type="main"
+          variant="primary"
+          size="large"
+        >
           <Typography tag="p" className="text-body font-medium">
-            {intl("student-settings.add-topics-button.label")}
+            {intl(
+              isTutor
+                ? "tutor-settings.add-topics-button.label"
+                : "student-settings.add-topics-button.label"
+            )}
           </Typography>
         </Button>
       </div>
@@ -264,14 +354,16 @@ const ContentBody: React.FC<{
     <div className="grow md:grow-0 flex flex-col gap-6">
       <TopicList topics={topics} onRemove={onRemoveTopic} />
 
-      <Button
-        size="large"
-        loading={saving}
-        disabled={saving || loading || !dataChanged}
-        onClick={save}
-      >
-        {intl("shared-settings.save")}
-      </Button>
+      {!isTutor ? (
+        <Button
+          size="large"
+          loading={saving}
+          disabled={saving || loading || !dataChanged}
+          onClick={save}
+        >
+          {intl("shared-settings.save")}
+        </Button>
+      ) : null}
     </div>
   );
 };

@@ -175,4 +175,13 @@ export class User extends Base {
       params: query,
     });
   }
+
+  async findStudios(
+    query?: IFilter.Pagination
+  ): Promise<IUser.FindStudiosApiResponse> {
+    return await this.get({
+      route: `/api/v1/user/studio/list`,
+      params: query,
+    });
+  }
 }

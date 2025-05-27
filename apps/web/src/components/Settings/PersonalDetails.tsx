@@ -10,6 +10,7 @@ import { useForm } from "@litespace/headless/form";
 import {
   getNullableFiledUpdatedValue,
   getOptionalFieldUpdatedValue,
+  isEmptyObject,
   optional,
 } from "@litespace/utils";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
@@ -19,23 +20,31 @@ import { useOnError } from "@/hooks/error";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { PatternInput } from "@litespace/ui/PatternInput";
-import { ConfirmContactMethod } from "@/components/StudentSettings/ConfirmContactMethod";
+import { ConfirmContactMethod } from "@/components/Settings/ConfirmContactMethod";
 import {
-  isValidEmail,
-  isValidPhone,
-  isValidUserName,
+  validateEmail,
+  validateNotice,
+  validatePhone,
+  validateUserName,
 } from "@litespace/ui/lib/validate";
+import { Typography } from "@litespace/ui/Typography";
+import { NumericInput } from "@litespace/ui/NumericInput";
+import { formatMinutes } from "@litespace/ui/utils";
+import { useBlock } from "@litespace/ui/hooks/common";
 
 type Form = {
   name: string;
   email: string;
   phone: string;
   city: IUser.City | null;
+  notice: number;
+  studio?: number | null;
   gender: IUser.Gender | null;
 };
 
 type Props = {
   id: number;
+  forStudent: boolean;
   name: string | null;
   email: string;
   image: string | null;
@@ -44,9 +53,31 @@ type Props = {
   gender: IUser.Gender | null;
   verifiedEmail: boolean;
   verifiedPhone: boolean;
+  notice: number;
 };
 
-export const PersonalDetails: React.FC<Props> = ({
+function asUpdatePayload(
+  current: {
+    name: string | null;
+    email: string;
+    phone: string | null;
+    city: IUser.City | null;
+    gender: IUser.Gender | null;
+    notice: number;
+  },
+  updated: Form
+) {
+  return {
+    name: getNullableFiledUpdatedValue(current.name, updated.name || null),
+    phone: getNullableFiledUpdatedValue(current.phone, updated.phone || null),
+    email: getOptionalFieldUpdatedValue(current.email, updated.email),
+    city: getNullableFiledUpdatedValue(current.city, updated.city),
+    notice: getOptionalFieldUpdatedValue(current.notice, updated.notice),
+    gender: getNullableFiledUpdatedValue(current.gender, updated.gender),
+  };
+}
+
+const PersonalDetails: React.FC<Props> = ({
   id,
   name,
   email,
@@ -54,17 +85,20 @@ export const PersonalDetails: React.FC<Props> = ({
   phone,
   city,
   gender,
+  forStudent,
   verifiedEmail,
   verifiedPhone,
+  notice,
 }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
 
   const validators = useMakeValidators<Form>({
-    name: { required: !!name, validate: isValidUserName },
-    email: { required: true, validate: isValidEmail },
-    phone: { required: false, validate: isValidPhone },
+    name: { required: !!name, validate: validateUserName },
+    email: { required: true, validate: validateEmail },
+    phone: { required: false, validate: validatePhone },
+    notice: { required: false, validate: validateNotice },
   });
 
   const form = useForm<Form>({
@@ -74,46 +108,37 @@ export const PersonalDetails: React.FC<Props> = ({
       email,
       city,
       gender,
+      notice: notice,
     },
     validators,
     onSubmit: (data) => {
       mutation.mutate({
         id: id,
-        payload: {
-          name: getNullableFiledUpdatedValue(name, data.name || null),
-          phone: getNullableFiledUpdatedValue(phone, data.phone || null),
-          email: getOptionalFieldUpdatedValue(email, data.email),
-          city: getNullableFiledUpdatedValue(city, data.city),
-          gender: getNullableFiledUpdatedValue(gender, data.gender),
-        },
+        payload: asUpdatePayload(
+          { name, phone, email, city, notice, gender },
+          data
+        ),
       });
     },
   });
 
-  const unchanged = useMemo(() => {
-    return (
-      (name || "") === form.state.name &&
-      (phone || "") === form.state.phone &&
-      email === form.state.email &&
-      city === form.state.city &&
-      gender === form.state.gender
-    );
-  }, [
-    city,
-    email,
-    form.state.city,
-    form.state.email,
-    form.state.gender,
-    form.state.name,
-    form.state.phone,
-    gender,
-    name,
-    phone,
-  ]);
+  const unchanged = useMemo(
+    () =>
+      isEmptyObject(
+        asUpdatePayload(
+          { name, phone, email, city, notice, gender },
+          form.state
+        )
+      ),
+    [city, email, form.state, gender, name, notice, phone]
+  );
+
+  useBlock(!unchanged);
 
   const onSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
-  }, [invalidateQuery]);
+    if (!forStudent) invalidateQuery([QueryKey.FindTutorMeta, id]);
+  }, [invalidateQuery, id, forStudent]);
 
   const onError = useOnError({
     type: "mutation",
@@ -124,6 +149,7 @@ export const PersonalDetails: React.FC<Props> = ({
       });
     },
   });
+
   const mutation = useUpdateUser({ onSuccess, onError });
 
   const cityOptions = useMemo(
@@ -137,37 +163,71 @@ export const PersonalDetails: React.FC<Props> = ({
 
   const genderOptions = useMemo(
     () => [
-      { label: intl("labels.gender.male-student"), value: IUser.Gender.Male },
       {
-        label: intl("labels.gender.female-student"),
+        label: intl(
+          forStudent ? "labels.gender.male-student" : "labels.gender.male-tutor"
+        ),
+        value: IUser.Gender.Male,
+      },
+      {
+        label: intl(
+          forStudent
+            ? "labels.gender.female-student"
+            : "labels.gender.female-tutor"
+        ),
         value: IUser.Gender.Female,
       },
     ],
-    [intl]
+    [intl, forStudent]
   );
+
+  const noticeHelper = useMemo(() => {
+    if (form.errors.notice) return form.errors.notice;
+    if (!form.state.notice) return intl("labels.notice.helper");
+    return intl("labels.notice.helper-with-duration", {
+      duration: formatMinutes(form.state.notice),
+    });
+  }, [form.errors.notice, form.state.notice, intl]);
 
   return (
     <div>
-      <div className="hidden md:block">
-        <UploadPhoto id={id} name={name} image={image} />{" "}
+      <div
+        data-student={forStudent}
+        className="hidden data-[student=true]:hidden data-[student=true]:md:block"
+      >
+        <UploadPhoto id={id} name={name} image={image} />
       </div>
-      <div className="flex flex-wrap md:flex-nowrap gap-6 md:gap-10 md:mt-6">
+
+      <Typography
+        data-student={forStudent}
+        tag="h2"
+        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6 data-[student=false]:block"
+      >
+        {intl("tutor-settings.tabs.personal-settings")}
+      </Typography>
+
+      <form
+        onSubmit={form.onSubmit}
+        className="flex flex-wrap md:flex-nowrap gap-6 md:gap-10 md:mt-6"
+      >
         <div className="w-full md:w-[320px] lg:w-[400px] flex-shrink-0">
-          <form
-            onSubmit={form.onSubmit}
-            className="w-full flex flex-col gap-2 md:gap-4"
-          >
-            <Input
-              id="name"
-              name="name"
-              value={form.state.name}
-              onChange={(e) => form.set("name", e.target.value)}
-              label={intl("labels.name")}
-              placeholder={intl("labels.name.placeholder")}
-              state={form.errors?.name ? "error" : undefined}
-              helper={form.errors?.name}
-              autoComplete="off"
-            />
+          <div className="w-full flex flex-col gap-2 md:gap-4">
+            <div
+              data-student={forStudent}
+              className="hidden data-[student=true]:block"
+            >
+              <Input
+                id="name"
+                name="name"
+                value={form.state.name}
+                onChange={(e) => form.set("name", e.target.value)}
+                label={intl("labels.name")}
+                placeholder={intl("labels.name.placeholder")}
+                state={form.errors?.name ? "error" : undefined}
+                helper={form.errors?.name}
+                autoComplete="off"
+              />
+            </div>
 
             <Input
               id="email"
@@ -180,6 +240,7 @@ export const PersonalDetails: React.FC<Props> = ({
               helper={form.errors?.email}
               autoComplete="off"
             />
+
             <PatternInput
               id="phone"
               name="phone"
@@ -215,34 +276,46 @@ export const PersonalDetails: React.FC<Props> = ({
               state={form.errors.gender ? "error" : undefined}
               helper={form.errors?.gender}
             />
-          </form>
-          <Button
-            size="large"
-            disabled={mutation.isPending || unchanged}
-            loading={mutation.isPending}
-            onClick={form.submit}
-            className="mt-10 hidden md:block"
-          >
-            {intl("shared-settings.save")}
-          </Button>
+
+            <NumericInput
+              data-student={forStudent}
+              id="notice"
+              name="notice"
+              value={optional(form.state.notice)}
+              onValueChange={({ floatValue }) =>
+                form.set("notice", floatValue || 0)
+              }
+              dir="rtl"
+              label={intl("labels.notice")}
+              placeholder={intl("labels.notice.placeholder")}
+              state={form.errors?.notice ? "error" : undefined}
+              helper={noticeHelper}
+              autoComplete="off"
+              thousandSeparator=","
+              className="data-[student=true]:hidden"
+            />
+          </div>
         </div>
 
-        <div className="max-w-[320px] lg:max-w-[640px]">
+        <div className="max-w-[320px] lg:max-w-[640px] flex flex-col gap-6">
           <ConfirmContactMethod
+            forStudent={forStudent}
             verifiedEmail={verifiedEmail}
             verifiedPhone={verifiedPhone}
           />
         </div>
-      </div>
+      </form>
       <Button
         size="large"
         disabled={mutation.isPending || unchanged}
         loading={mutation.isPending}
         onClick={form.submit}
-        className="mt-6 md:hidden"
+        className="mt-6"
       >
         {intl("shared-settings.save")}
       </Button>
     </div>
   );
 };
+
+export default PersonalDetails;
