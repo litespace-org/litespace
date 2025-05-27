@@ -12,7 +12,7 @@ import { useForm } from "@litespace/headless/form";
 import { useNavigate } from "react-router-dom";
 import { Input, Password } from "@litespace/ui/Input";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
-import { isValidEmail, isValidPassword } from "@litespace/ui/lib/validate";
+import { validateEmail, validatePassword } from "@litespace/ui/lib/validate";
 
 interface Form {
   email: string;
@@ -49,11 +49,11 @@ const Login: React.FC = () => {
   const validators = useMakeValidators<Form>({
     email: {
       required: true,
-      validate: isValidEmail,
+      validate: validateEmail,
     },
     password: {
       required: true,
-      validate: isValidPassword,
+      validate: validatePassword,
     },
   });
 

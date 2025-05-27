@@ -1,7 +1,6 @@
 import { apierror, bad, empty, forbidden, notfound } from "@/lib/error";
 import {
   id,
-  orderDirection,
   pageNumber,
   pageSize,
   string,
@@ -12,6 +11,7 @@ import {
   isStudent,
   isTutor,
   isTutorManager,
+  isUser,
 } from "@litespace/utils/user";
 import { NextFunction, Request, Response } from "express";
 import { knex, topics } from "@litespace/models";
@@ -43,19 +43,10 @@ const replaceUserTopicsPayload = zod.object({
   addTopics: zod.array(id),
 });
 
-const orderByOptions = [
-  "name_ar",
-  "name_en",
-  "updated_at",
-  "created_at",
-] as const satisfies Array<Required<ITopic.FindTopicsQueryFilter["orderBy"]>>;
-
 const findTopicsQuery = zod.object({
-  name: zod.optional(zod.string()),
-  orderBy: zod.optional(zod.enum(orderByOptions)),
-  orderDirection: zod.optional(orderDirection),
-  page: zod.optional(pageNumber),
-  size: zod.optional(pageSize),
+  name: zod.string().optional(),
+  page: pageNumber.optional(),
+  size: pageSize.optional(),
 });
 
 async function createTopic(req: Request, res: Response, next: NextFunction) {
@@ -126,7 +117,10 @@ async function deleteTopic(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
-async function findTopics(req: Request, res: Response, _: NextFunction) {
+async function findTopics(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isUser(user);
+  if (!allowed) return next(forbidden());
   const query = findTopicsQuery.parse(req.query);
   const response: ITopic.FindTopicsApiResponse = await topics.find(query);
   res.status(200).json(response);

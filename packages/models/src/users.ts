@@ -109,8 +109,6 @@ export class Users {
     role,
     verified,
     gender,
-    orderBy,
-    orderDirection,
     city,
     ...pagination
   }: IUser.FindUsersQuery & {
@@ -131,7 +129,7 @@ export class Users {
     const query = base
       .clone()
       .select()
-      .orderBy(this.column(orderBy || "created_at"), orderDirection || "desc");
+      .orderBy(this.column("created_at"), "desc");
     const rows = await withSkippablePagination(query, pagination);
     const users = rows.map((row) => this.from(row));
 

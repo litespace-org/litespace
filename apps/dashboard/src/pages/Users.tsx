@@ -7,7 +7,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useCallback, useMemo, useState } from "react";
 import cn from "classnames";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
-import { IFilter, IUser } from "@litespace/types";
+import { IUser } from "@litespace/types";
 import { rolesMap } from "@/components/utils/user";
 import { optional } from "@litespace/utils/utils";
 
@@ -16,24 +16,15 @@ export const Users: React.FC = () => {
   const [role, setRole] = useState<IUser.Role | null>(null);
   const [gender, setGender] = useState<IUser.Gender | null>(null);
   const [verified, setVerified] = useState<boolean | null>(null);
-  // TODO: use a hook to get the online status from the server cache
   const [online, setOnline] = useState<boolean | null>(null);
-  const [orderBy, setOrderBy] = useState<
-    IUser.FindUsersApiQuery["orderBy"] | null
-  >(null);
-  const [orderDirection, setOrderDirection] = useState<IFilter.OrderDirection>(
-    IFilter.OrderDirection.Descending
-  );
 
   const filter = useMemo(
     (): IUser.FindUsersApiQuery => ({
       role: optional(role),
       gender: optional(gender),
       verified: typeof verified === "boolean" ? verified : undefined,
-      orderBy: optional(orderBy),
-      orderDirection,
     }),
-    [gender, orderBy, orderDirection, role, verified]
+    [gender, role, verified]
   );
 
   const users = useUsers(filter);
@@ -61,15 +52,12 @@ export const Users: React.FC = () => {
           role === null &&
           gender === null &&
           verified === null &&
-          online === null &&
-          orderBy === null,
+          online === null,
         onClick: () => {
           setRole(null);
           setGender(null);
           setVerified(null);
           setOnline(null);
-          setOrderBy(null);
-          setOrderDirection(IFilter.OrderDirection.Descending);
         },
       },
       {
@@ -166,61 +154,8 @@ export const Users: React.FC = () => {
           },
         ],
       },
-      {
-        id: 5,
-        label: intl("dashboard.user.filter.order-by"),
-        subActions: [
-          {
-            id: 0,
-            label: intl("global.labels.cancel"),
-            disabled: orderBy === null,
-            danger: true,
-            onClick: () => setOrderBy(null),
-          },
-          {
-            id: 1,
-            label: intl("dashboard.user.filter.order-by.create-at"),
-            checked: orderBy === "created_at",
-            onClick: () => setOrderBy("created_at"),
-          },
-          {
-            id: 2,
-            label: intl("dashboard.user.filter.order-by.updated-at"),
-            checked: orderBy === "updated_at",
-            onClick: () => setOrderBy("updated_at"),
-          },
-        ],
-      },
-      {
-        id: 6,
-        label: intl("dashboard.filter.order-direction"),
-        value: orderDirection,
-        onRadioValueChange: (value) =>
-          setOrderDirection(value as IFilter.OrderDirection),
-        radioGroup: [
-          {
-            id: 1,
-            label: intl("dashboard.filter.order-direction.desc"),
-            value: IFilter.OrderDirection.Descending,
-          },
-          {
-            id: 2,
-            label: intl("dashboard.filter.order-direction.asc"),
-            value: IFilter.OrderDirection.Ascending,
-          },
-        ],
-      },
     ],
-    [
-      gender,
-      intl,
-      makeRoleOption,
-      online,
-      orderBy,
-      orderDirection,
-      role,
-      verified,
-    ]
+    [gender, intl, makeRoleOption, online, role, verified]
   );
 
   return (

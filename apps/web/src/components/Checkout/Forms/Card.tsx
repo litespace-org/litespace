@@ -5,7 +5,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { Typography } from "@litespace/ui/Typography";
 import { useForm } from "@litespace/headless/form";
-import { isValidCvv, isValidPhone } from "@litespace/ui/lib/validate";
+import { validateCvv, validatePhone } from "@litespace/ui/lib/validate";
 import { Select, SelectList } from "@litespace/ui/Select";
 import { PatternInput } from "@litespace/ui/PatternInput";
 import {
@@ -84,11 +84,11 @@ const Payment: React.FC<{
   const validators = useMakeValidators<Form>({
     phone: {
       required: true,
-      validate: isValidPhone,
+      validate: validatePhone,
     },
     cvv: {
       required: true,
-      validate: isValidCvv,
+      validate: validateCvv,
     },
     card: { required: true },
   });

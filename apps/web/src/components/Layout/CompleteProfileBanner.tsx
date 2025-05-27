@@ -43,10 +43,10 @@ const CompleteProfileBanner: React.FC = () => {
     const routes: Web[] = [
       Web.TutorAccountSettings,
       Web.TutorProfileSettings,
+      Web.CompleteProfile,
       Web.Lesson,
       Web.Login,
       Web.Register,
-      Web.CompleteTutorProfile,
     ];
     return routes.some((route) => router.match(route, location.pathname));
   }, [location.pathname]);

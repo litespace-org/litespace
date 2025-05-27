@@ -6,7 +6,7 @@ import { Void } from "@litespace/types";
 import { useForm } from "@litespace/headless/form";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { PatternInput } from "@litespace/ui/PatternInput";
-import { isValidPhone } from "@litespace/ui/lib/validate";
+import { validatePhone } from "@litespace/ui/lib/validate";
 
 type Props = {
   phone: string | null;
@@ -28,7 +28,7 @@ export const EnterPhoneNumber: React.FC<Props> = ({
   const validators = useMakeValidators<Form>({
     phone: {
       required: true,
-      validate: isValidPhone,
+      validate: validatePhone,
     },
   });
 

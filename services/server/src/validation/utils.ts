@@ -44,9 +44,9 @@ export const jsonBoolean = zod
   .custom<"true" | "false">((value) => value === "true" || value === "false")
   .transform((value) => value === "true");
 
-export const orderDirection = zod.enum([
-  IFilter.OrderDirection.Ascending,
-  IFilter.OrderDirection.Descending,
+export const orderDirection = unionOfLiterals<IFilter.Direction>([
+  "acs",
+  "desc",
 ]);
 
 export const optionalString = zod.optional(string);

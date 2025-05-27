@@ -17,12 +17,12 @@ import { Button } from "@litespace/ui/Button";
 import { Textarea } from "@litespace/ui/Textarea";
 import { Select } from "@litespace/ui/Select";
 import {
-  isValidEmail,
-  isValidPhone,
-  isValidTutorAbout,
-  isValidTutorBio,
-  isValidUserBirthYear,
-  isValidUserName,
+  validateEmail,
+  validatePhone,
+  validateTutorAbout,
+  validateTutorBio,
+  validateUserBirthYear,
+  validateUserName,
 } from "@litespace/ui/lib/validate";
 import { LocalId } from "@litespace/ui/locales";
 import { MAX_TUTOR_ABOUT_TEXT_LENGTH, optional } from "@litespace/utils";
@@ -117,11 +117,11 @@ const Content: React.FC<{
 
   // ==================== form ====================
   const validators = useMakeValidators<Form>({
-    name: { required: true, validate: isValidUserName },
+    name: { required: true, validate: validateUserName },
     phone: {
       required: true,
       validate: (phone) => {
-        const messageId = isValidPhone(phone);
+        const messageId = validatePhone(phone);
         if (messageId !== null) return messageId;
         if (!verifiedPhone) return "complete-tutor-profile.phone.not-verified";
         return null;
@@ -130,7 +130,7 @@ const Content: React.FC<{
     email: {
       required: true,
       validate: (email) => {
-        const messageId = isValidEmail(email);
+        const messageId = validateEmail(email);
         if (messageId !== null) return messageId;
         if (!verifiedEmail) return "complete-tutor-profile.email.not-verified";
         return null;
@@ -138,9 +138,9 @@ const Content: React.FC<{
     },
     city: { required: true },
     gender: { required: true },
-    birthYear: { required: true, validate: isValidUserBirthYear },
-    about: { required: true, validate: isValidTutorAbout },
-    bio: { required: true, validate: isValidTutorBio },
+    birthYear: { required: true, validate: validateUserBirthYear },
+    about: { required: true, validate: validateTutorAbout },
+    bio: { required: true, validate: validateTutorBio },
   });
 
   const form = useForm<Form>({
@@ -341,8 +341,8 @@ const Content: React.FC<{
               name="bio"
               idleDir="rtl"
               inputSize={"large"}
-              label={intl("complete-tutor-profile.bio.label")}
-              placeholder={intl("complete-tutor-profile.bio.placeholder")}
+              label={intl("labels.bio")}
+              placeholder={intl("labels.bio.placeholder")}
               state={form.errors.bio ? "error" : undefined}
               helper={form.errors.bio}
               onChange={({ target }) => form.set("bio", target.value)}
@@ -356,8 +356,8 @@ const Content: React.FC<{
               name="about"
               idleDir="rtl"
               value={form.state.about}
-              label={intl("complete-tutor-profile.about.label")}
-              placeholder={intl("complete-tutor-profile.about.placeholder")}
+              label={intl("labels.about")}
+              placeholder={intl("labels.about.placeholder")}
               state={
                 form.errors.about ||
                 form.state.about.length > MAX_TUTOR_ABOUT_TEXT_LENGTH

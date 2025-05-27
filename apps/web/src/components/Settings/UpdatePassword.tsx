@@ -7,7 +7,7 @@ import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { Password } from "@litespace/ui/Input";
-import { isValidPassword } from "@litespace/ui/lib/validate";
+import { validatePassword } from "@litespace/ui/lib/validate";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useCallback } from "react";
@@ -26,11 +26,11 @@ const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
   const validators = useMakeValidators<Form>({
     current: {
       required: true,
-      validate: isValidPassword,
+      validate: validatePassword,
     },
     new: {
       required: true,
-      validate: isValidPassword,
+      validate: validatePassword,
     },
     confirm: {
       required: true,
@@ -135,7 +135,7 @@ const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
         size="large"
         disabled={mutation.isPending}
         onClick={form.submit}
-        className="md:mt-10 mr-auto md:mr-0"
+        className="mt-6"
       >
         {intl("shared-settings.save")}
       </Button>

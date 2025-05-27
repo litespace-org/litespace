@@ -1,6 +1,6 @@
 import { IUser } from "@litespace/types";
 
-export const isPersonalInfoIncomplete = (user: IUser.Self) => {
+export function isPersonalInfoIncomplete(user: IUser.Self) {
   return (
     !user.name ||
     !user.email ||
@@ -11,4 +11,4 @@ export const isPersonalInfoIncomplete = (user: IUser.Self) => {
     !user.verifiedEmail ||
     !user.verifiedPhone
   );
-};
+}

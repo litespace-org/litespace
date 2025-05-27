@@ -9,7 +9,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
-import { isValidEmail, isValidPassword } from "@litespace/ui/lib/validate";
+import { validateEmail, validatePassword } from "@litespace/ui/lib/validate";
 import React, { useCallback } from "react";
 
 type Form = {
@@ -28,11 +28,11 @@ export const AddTutorDialog: React.FC<{
   const validators = useMakeValidators({
     email: {
       required: true,
-      validate: isValidEmail,
+      validate: validateEmail,
     },
     password: {
       required: true,
-      validate: isValidPassword,
+      validate: validatePassword,
     },
   });
 

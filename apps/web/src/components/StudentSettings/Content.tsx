@@ -43,9 +43,17 @@ const Content: React.FC<{
     ];
   }, [intl, user]);
 
-  const tabComponents: Record<TabId, React.JSX.Element> = useMemo(
-    () => ({
-      personal: (
+  return (
+    <div className="grow flex flex-col">
+      <div className="mb-6 md:hidden">
+        <UploadPhoto id={user.id} name={user.name} image={user.image} />
+      </div>
+
+      <div className="md:max-w-fit mb-6 lg:mb-10">
+        <Tabs tabs={tabs} tab={tab} setTab={setTab} />
+      </div>
+
+      {tab === "personal" ? (
         <PersonalDetails
           forStudent
           id={user.id}
@@ -58,9 +66,11 @@ const Content: React.FC<{
           verifiedEmail={user.verifiedEmail}
           verifiedPhone={user.verifiedPhone}
         />
-      ),
-      password: <UpdatePassword id={user.id} />,
-      notifications: (
+      ) : null}
+
+      {tab === "password" ? <UpdatePassword id={user.id} /> : null}
+
+      {tab === "notifications" ? (
         <NotificationSettings
           id={user.id}
           phone={user.phone}
@@ -68,40 +78,13 @@ const Content: React.FC<{
           verifiedTelegram={user.verifiedTelegram}
           notificationMethod={user.notificationMethod}
         />
-      ),
-      topics: (
+      ) : null}
+
+      {tab === "topics" ? (
         <div className="max-w-[530px] grow flex">
           <TopicSelection />
         </div>
-      ),
-    }),
-    [
-      user.city,
-      user.email,
-      user.name,
-      user.gender,
-      user.phone,
-      user.verifiedEmail,
-      user.verifiedPhone,
-      user.verifiedTelegram,
-      user.verifiedWhatsApp,
-      user.image,
-      user.id,
-      user.notificationMethod,
-    ]
-  );
-
-  return (
-    <div className="grow flex flex-col">
-      <div className="mb-6 md:hidden">
-        <UploadPhoto id={user.id} name={user.name} image={user.image} />
-      </div>
-
-      <div className="md:max-w-fit mb-6 lg:mb-10">
-        <Tabs tabs={tabs} tab={tab} setTab={setTab} />
-      </div>
-
-      {tabComponents[tab]}
+      ) : null}
     </div>
   );
 };

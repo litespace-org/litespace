@@ -73,7 +73,6 @@
     "./Toast": "./dist/components/Toast/index.js",
     "./Tooltip": "./dist/components/Tooltip/index.js",
     "./TutorOverview": "./dist/components/TutorOverview/index.js",
-    "./TopicSelectionDialog": "./dist/components/TopicSelectionDialog/index.js",
     "./utils": "./dist/components/utils/index.js",
     "./VideoPlayer": "./dist/components/VideoPlayer/V2/index.js",
     "./VerifyEmailDialog": "./dist/components/VerifyEmailDialog/index.js",

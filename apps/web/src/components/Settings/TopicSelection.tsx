@@ -2,12 +2,10 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Edit from "@litespace/assets/Edit";
-import { TopicSelectionDialog } from "@litespace/ui/TopicSelectionDialog";
+import { TopicSelectionDialog } from "@/components/Common/TopicSelectionDialog";
 import { Button } from "@litespace/ui/Button";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { useInfiniteTopics, useUserTopics } from "@litespace/headless/topic";
-import { useInvalidateQuery } from "@litespace/headless/query";
-import { QueryKey } from "@litespace/headless/constants";
 import { useToast } from "@litespace/ui/Toast";
 import { useUpdateUserTopics } from "@litespace/headless/user";
 import { useOnError } from "@/hooks/error";
@@ -45,12 +43,11 @@ const TopicSelection: React.FC = () => {
   });
 
   const toast = useToast();
-  const invalidate = useInvalidateQuery();
 
   const onSuccess = useCallback(() => {
-    invalidate([QueryKey.FindUserTopics]);
+    userTopicsQuery.refetch();
     setShowDialog(false);
-  }, [invalidate]);
+  }, [userTopicsQuery]);
 
   const onError = useOnError({
     type: "mutation",
@@ -70,7 +67,7 @@ const TopicSelection: React.FC = () => {
   return (
     <Content
       more={more}
-      canLoadMore={hasMore}
+      hasMore={hasMore}
       allTopics={allTopics}
       userTopics={userTopicsQuery.data || null}
       update={(payload: ITopic.ReplaceUserTopicsApiPayload) =>
@@ -80,10 +77,11 @@ const TopicSelection: React.FC = () => {
       setShowDialog={setShowDialog}
       updating={updateTopics.isPending}
       loading={
-        userTopicsQuery.isPending ||
-        allTopicsQuery.isPending ||
-        allTopicsQuery.isFetching
+        userTopicsQuery.isLoading ||
+        allTopicsQuery.isLoading ||
+        allTopicsQuery.isLoading
       }
+      fetching={allTopicsQuery.isFetching}
       error={allTopicsQuery.isError || userTopicsQuery.isError}
       refetch={() => {
         if (allTopicsQuery.isError) allTopicsQuery.refetch();
@@ -99,8 +97,9 @@ const Content: React.FC<{
   loading: boolean;
   error: boolean;
   updating: boolean;
-  canLoadMore: boolean;
+  hasMore: boolean;
   showDialog: boolean;
+  fetching: boolean;
   setShowDialog: (val: boolean) => void;
   more: Void;
   update: (payload: ITopic.ReplaceUserTopicsApiPayload) => void;
@@ -110,9 +109,10 @@ const Content: React.FC<{
   userTopics,
   loading,
   error,
-  canLoadMore,
+  hasMore,
   updating,
   showDialog,
+  fetching,
   setShowDialog,
   more,
   update,
@@ -124,7 +124,6 @@ const Content: React.FC<{
   >([]);
 
   const { user } = useUser();
-
   const isTutor = useMemo(() => isUserTutor(user), [user]);
 
   useEffect(() => {
@@ -179,7 +178,13 @@ const Content: React.FC<{
             .filter((topic) => topic.id !== id)
             .map((topic) => topic.id)
         );
-      setSelectedTopics((prev) => prev.filter((topic) => topic.id !== id));
+
+      setSelectedTopics((prev) => {
+        const clone = structuredClone(prev);
+        const filtered = clone.filter((topic) => topic.id !== id);
+        if (isEmpty(filtered) && !isTutor) confirm([]);
+        return filtered;
+      });
     },
     [isTutor, confirm, selectedTopics]
   );
@@ -212,7 +217,8 @@ const Content: React.FC<{
       {showDialog ? (
         <TopicSelectionDialog
           more={more}
-          canLoadMore={canLoadMore}
+          hasMore={hasMore}
+          fetching={fetching}
           title={intl(
             isTutor
               ? "tutor-settings.topics.selection-dialog.title"
@@ -250,12 +256,15 @@ const ContentHeader: React.FC<{
     <div className="flex items-center justify-between">
       <Typography
         tag="h2"
-        className="text-natural-950 text-subtitle-2 font-bold"
+        data-tutor={isTutor}
+        className={cn(
+          "text-natural-950 text-subtitle-2 data-[tutor=true]:text-subtitle-1 font-bold"
+        )}
       >
         {intl(
           isTutor
             ? "tutor-settings.personal-info.topics"
-            : "student-settings.edit.personal.topics.title"
+            : "student-settings.selected-topics.title"
         )}
       </Typography>
 

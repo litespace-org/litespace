@@ -40,7 +40,7 @@ const Tab: React.FC<{
     <button
       type="button"
       className={cn(
-        "relative px-[5.5px] md:px-5 py-3 md:py-4 group rounded-xl w-full",
+        "relative px-1.5 md:px-4 py-[10px] group rounded-xl w-full",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-offset-0 focus-visible:ring-secondary-600",
         "flex items-center justify-center"
       )}

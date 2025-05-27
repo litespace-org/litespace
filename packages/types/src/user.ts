@@ -197,8 +197,6 @@ export type FindUsersQuery = IFilter.SkippablePagination & {
   verified?: boolean;
   gender?: Gender;
   city?: City;
-  orderBy?: Extract<keyof Row, "created_at" | "updated_at">;
-  orderDirection?: IFilter.OrderDirection;
 };
 
 export type FindUsersApiQuery = FindUsersQuery;

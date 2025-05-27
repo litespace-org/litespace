@@ -52,7 +52,7 @@ export const AvatarV2: React.FC<{
   }, []);
 
   const mod = useMemo(() => {
-    return Math.floor((id || 0) % (COLOR_STYLES.length + 1));
+    return Math.floor((id || 0) % COLOR_STYLES.length);
   }, [id]);
 
   return (

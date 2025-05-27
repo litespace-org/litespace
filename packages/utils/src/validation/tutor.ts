@@ -7,7 +7,7 @@ import {
   MIN_TUTOR_ABOUT_TEXT_LENGTH,
   MIN_TUTOR_NOTICE_DURATION,
 } from "@/constants";
-import { FieldError } from "@litespace/types";
+import { FieldError, Optional } from "@litespace/types";
 
 export function isValidTutorBio(
   bio: unknown
@@ -35,11 +35,10 @@ export function isValidTutorAbout(
   return true;
 }
 
-export function isValidTutorNotice(
+export function validateTutorNotice(
   tutorNotice: number
-): FieldError.MaxNoticeExceeded | FieldError.InvalidNotice | true {
+): Optional<FieldError.MaxNoticeExceeded | FieldError.InvalidNotice> {
   if (tutorNotice <= MIN_TUTOR_NOTICE_DURATION) return FieldError.InvalidNotice;
   if (tutorNotice > MAX_TUTOR_NOTICE_DURATION)
     return FieldError.MaxNoticeExceeded;
-  return true;
 }

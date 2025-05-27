@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import cn from "classnames";
-import { Typography } from "@/components/Typography";
-import { useFormatMessage } from "@/hooks";
+import { Typography } from "@litespace/ui/Typography";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Void } from "@litespace/types";
-import { Dialog } from "@/components/Dialog";
-import { Button } from "@/components/Button";
-import { Loading, LoadingError } from "@/components/Loading";
+import { Dialog } from "@litespace/ui/Dialog";
+import { Button } from "@litespace/ui/Button";
+import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { concat, isEmpty, uniq } from "lodash";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
-import { Animate } from "@/components/Animate";
-import { AnimatePresence } from "framer-motion";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { InView } from "react-intersection-observer";
 
@@ -24,8 +22,9 @@ type Props = {
   initialTopics?: number[];
   confirming?: boolean;
   hasMore: boolean;
-  loading?: boolean;
-  error?: boolean;
+  loading: boolean;
+  fetching: boolean;
+  error: boolean;
   close: Void;
   more: Void;
   retry: Void;
@@ -39,6 +38,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
   initialTopics,
   opened,
   loading,
+  fetching,
   confirming,
   error,
   hasMore,
@@ -95,7 +95,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
     <Dialog
       title={
         <Typography
-          tag="h1"
+          tag="p"
           className="text-natural-950 font-bold text-body md:text-subtitle-1"
         >
           {title}
@@ -114,72 +114,65 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           {description}
         </Typography>
 
-        <AnimatePresence initial={false} mode="wait">
-          {!isEmpty(topics) ? (
-            <TopicList
-              hasMore={hasMore}
-              disableSelection={disableSelection}
-              more={more}
-              onSelect={onSelect}
-              selection={selection}
-              topics={topics}
-              confirming={confirming}
-              error={error}
-              loading={loading}
+        {!isEmpty(topics) ? (
+          <TopicList
+            hasMore={hasMore}
+            disableSelection={disableSelection}
+            more={more}
+            onSelect={onSelect}
+            selection={selection}
+            topics={topics}
+            confirming={confirming}
+            error={error}
+            loading={loading}
+            fetching={fetching}
+          />
+        ) : null}
+
+        {loading && !fetching && !error ? (
+          <div className="flex justify-center items-center my-20">
+            <Loading
+              size="medium"
+              text={intl("tutor-settings.topics.selection-dialog.loading")}
             />
-          ) : null}
-
-          {loading && !error ? (
-            <Animate
-              key="loading"
-              className="flex justify-center items-center my-20"
-            >
-              <Loading
-                size="medium"
-                text={intl("tutor-settings.topics.selection-dialog.loading")}
-              />
-            </Animate>
-          ) : null}
-
-          {error || isEmpty(topics) ? (
-            <Animate
-              key="error"
-              className="flex justify-center items-center my-12"
-            >
-              <LoadingError
-                size="medium"
-                error={intl("tutor-settings.topics.selection-dialog.error")}
-                retry={retry}
-              />
-            </Animate>
-          ) : null}
-
-          <div className="flex flex-row w-full gap-4 lg:gap-6">
-            <Button
-              size="large"
-              variant="primary"
-              loading={confirming}
-              className="w-full"
-              onClick={() => confirm(selection)}
-              disabled={loading || error || confirming || !dataChanged}
-            >
-              <Typography tag="span" className="text-body font-medium">
-                {intl("labels.confirm")}
-              </Typography>
-            </Button>
-            <Button
-              size="large"
-              onClick={onClose}
-              variant="secondary"
-              className="w-full"
-              disabled={confirming}
-            >
-              <Typography tag="span" className="text-body font-medium">
-                {intl("labels.cancel")}
-              </Typography>
-            </Button>
           </div>
-        </AnimatePresence>
+        ) : null}
+
+        {error || isEmpty(topics) ? (
+          <div className="flex justify-center items-center my-12">
+            <LoadingError
+              size="medium"
+              error={intl("tutor-settings.topics.selection-dialog.error")}
+              retry={retry}
+            />
+          </div>
+        ) : null}
+
+        <div className="flex flex-row w-full gap-4 lg:gap-6">
+          <Button
+            size="large"
+            variant="primary"
+            loading={confirming}
+            className="w-full"
+            onClick={() => confirm(selection)}
+            disabled={loading || error || confirming || !dataChanged}
+          >
+            <Typography tag="span" className="text-body font-medium">
+              {intl("labels.confirm")}
+            </Typography>
+          </Button>
+          <Button
+            size="large"
+            onClick={onClose}
+            variant="secondary"
+            className="w-full"
+            disabled={confirming}
+          >
+            <Typography tag="span" className="text-body font-medium">
+              {intl("labels.cancel")}
+            </Typography>
+          </Button>
+        </div>
       </div>
     </Dialog>
   );
@@ -221,8 +214,9 @@ const TopicList: React.FC<{
   topics: { id: number; label: string }[];
   onSelect: (id: number) => void;
   hasMore: boolean;
-  loading?: boolean;
-  error?: boolean;
+  loading: boolean;
+  fetching: boolean;
+  error: boolean;
   more: Void;
 }> = ({
   topics,
@@ -230,14 +224,14 @@ const TopicList: React.FC<{
   disableSelection,
   confirming,
   loading,
+  fetching,
   error,
   hasMore,
   more,
   onSelect,
 }) => {
   return (
-    <Animate
-      key="topics"
+    <div
       className={cn(
         "my-8 md:my-6 overflow-auto max-h-[150px] lg:max-h-[264px]",
         "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
@@ -257,16 +251,20 @@ const TopicList: React.FC<{
         ))}
       </div>
 
-      {loading ? <Loading size="small" /> : null}
+      {fetching && !loading ? (
+        <div className="mt-8 md:mt-6">
+          <Loading size="small" />
+        </div>
+      ) : null}
 
-      {hasMore && !loading && !error ? (
+      {hasMore && !fetching && !loading && !error ? (
         <InView
           onChange={(inview) => {
             if (inview) more();
           }}
         />
       ) : null}
-    </Animate>
+    </div>
   );
 };
 

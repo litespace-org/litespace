@@ -207,7 +207,7 @@ const NotificationSettings: React.FC<{
             form.state.notificationMethod === notificationMethod
           }
           onClick={form.submit}
-          className="mt-auto md:mt-10 mr-auto md:mr-0"
+          className="mt-6"
         >
           {intl("shared-settings.save")}
         </Button>

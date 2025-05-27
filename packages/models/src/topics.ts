@@ -1,4 +1,4 @@
-import { IFilter, ITopic, Paginated } from "@litespace/types";
+import { ITopic, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { column, countRows, knex, withPagination } from "@/query";
 import dayjs from "@/lib/dayjs";
@@ -127,11 +127,9 @@ export class Topics {
   async find({
     tx,
     name,
-    orderBy = "created_at",
-    orderDirection = IFilter.OrderDirection.Descending,
     page,
     size,
-  }: ITopic.FindTopicsQueryFilter & {
+  }: ITopic.FindTopicsQueryModel & {
     tx?: Knex.Transaction;
   }): Promise<Paginated<ITopic.Self>> {
     const baseBuilder = this.builder(tx).topics;
@@ -147,9 +145,16 @@ export class Topics {
       column: this.column.topics("id"),
     });
 
-    const queryBuilder = baseBuilder
-      .clone()
-      .orderBy(this.column.topics(orderBy), orderDirection);
+    const queryBuilder = baseBuilder.clone().orderBy([
+      {
+        column: this.column.topics("created_at"),
+        order: "desc",
+      },
+      {
+        column: this.column.topics("id"),
+        order: "desc",
+      },
+    ]);
 
     const rows = await withPagination(queryBuilder, { page, size });
 

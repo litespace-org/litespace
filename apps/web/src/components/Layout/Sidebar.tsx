@@ -19,7 +19,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
 import React, { SVGProps, useCallback, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   MOBILE_NAVBAR_HEIGHT,
   MOBILE_SIDEBAR_WIDTH,
@@ -30,60 +30,6 @@ import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isTutor } from "@litespace/utils";
 
-const SidebarItem = ({
-  to,
-  hide,
-  Icon,
-  label,
-  active,
-}: {
-  to: string;
-  Icon: React.MemoExoticComponent<
-    (props: SVGProps<SVGSVGElement>) => JSX.Element
-  >;
-  label: React.ReactNode;
-  active?: boolean;
-  hide: Void;
-}) => {
-  const { md, lg } = useMediaQuery();
-
-  return (
-    <Link
-      className={cn(
-        "flex flex-row justify-start md:justify-center lg:justify-start gap-2 lg:gap-4 px-[14px] py-2 items-center ",
-        "rounded-lg transition-colors duration-200 group",
-        {
-          "bg-brand-700": active,
-          "bg-transparent hover:bg-natural-100": !active,
-        }
-      )}
-      to={to}
-      onClick={hide}
-    >
-      <Icon
-        className={cn(
-          "[&_*]:transition-all [&_*]:duration-200 h-4 w-4 md:h-6 md:w-6",
-          {
-            "[&_*]:stroke-natural-50": active,
-            "[&_*]:stroke-natural-700": !active,
-          }
-        )}
-      />
-      {lg || !md ? (
-        <Typography
-          tag="span"
-          className={cn(
-            active ? "text-natural-50" : "text-natural-700",
-            "text-tiny lg:text-caption font-normal lg:font-semibold"
-          )}
-        >
-          {label}
-        </Typography>
-      ) : null}
-    </Link>
-  );
-};
-
 type LinkInfo = {
   label: string;
   route: Web;
@@ -91,17 +37,11 @@ type LinkInfo = {
   isActive: boolean;
 };
 
-function match(route: Web) {
-  return router.match(route, location.pathname);
-}
-
 const Sidebar: React.FC<{
   hide: Void;
 }> = ({ hide }) => {
   const { md, lg } = useMediaQuery();
   const intl = useFormatMessage();
-  const navigate = useNavigate();
-  const { logout } = useUser();
 
   const onMouseDown = useCallback(
     (e: MouseEvent) => {
@@ -147,9 +87,7 @@ const Sidebar: React.FC<{
         >
           {intl("sidebar.main")}
         </Typography>
-        <ul className="flex flex-col gap-2">
-          <MainPages hide={hide} />
-        </ul>
+        <MainPages hide={hide} />
       </div>
 
       <div className="flex flex-col gap-2 md:gap-1.5">
@@ -161,30 +99,7 @@ const Sidebar: React.FC<{
         </Typography>
         <ul className="flex flex-col gap-1.5">
           <SettingsPages hide={hide} />
-
-          <button
-            onClick={() => {
-              navigate(Web.Login);
-              logout();
-              hide();
-            }}
-            className={cn(
-              "flex flex-row justify-start md:justify-center lg:justify-start gap-2 md:gap-0 lg:gap-4 px-[14px] py-2 rounded-lg",
-              "hover:text-destructive-400 hover:bg-destructive-100",
-              "active:bg-destructive-400 [&_*]:active:text-natural-50",
-              "[&_*]:active:stroke-natural-50 transition-all duration-200"
-            )}
-          >
-            <Logout className="h-4 w-4 md:h-6 md:w-6" />
-            {lg || !md ? (
-              <Typography
-                tag="span"
-                className="text-destructive-400 active:bg-destructive-400 active:text-natural-50 text-tiny lg:text-caption"
-              >
-                {intl("sidebar.logout")}
-              </Typography>
-            ) : null}
-          </button>
+          <LogoutButton hide={hide} />
         </ul>
       </div>
       <AccountPromotion />
@@ -195,8 +110,14 @@ const Sidebar: React.FC<{
 const MainPages: React.FC<{ hide: Void }> = ({ hide }) => {
   const intl = useFormatMessage();
   const { user } = useUser();
+  const location = useLocation();
 
-  const mainPages: LinkInfo[] = useMemo(() => {
+  const match = useCallback(
+    (route: Web) => router.match(route, location.pathname),
+    [location.pathname]
+  );
+
+  const pages: LinkInfo[] = useMemo(() => {
     const dashboard: LinkInfo = {
       label: intl("sidebar.dashboard"),
       route:
@@ -286,25 +207,36 @@ const MainPages: React.FC<{ hide: Void }> = ({ hide }) => {
       ];
 
     return [];
-  }, [intl, user?.role]);
+  }, [intl, match, user?.role]);
 
-  return mainPages.map(({ label, route, Icon, isActive }) => (
-    <SidebarItem
-      hide={hide}
-      key={label}
-      to={route}
-      Icon={Icon}
-      label={label}
-      active={isActive}
-    />
-  ));
+  return (
+    <ul className="flex flex-col gap-2">
+      {pages.map(({ label, route, Icon, isActive }) => (
+        <SidebarItem
+          hide={hide}
+          key={route}
+          to={route}
+          Icon={Icon}
+          label={label}
+          active={isActive}
+        />
+      ))}
+    </ul>
+  );
 };
 
 const SettingsPages: React.FC<{ hide: Void }> = ({ hide }) => {
   const intl = useFormatMessage();
   const { user } = useUser();
 
-  const settingsPages: LinkInfo[] = useMemo(() => {
+  const location = useLocation();
+
+  const match = useCallback(
+    (route: Web) => router.match(route, location.pathname),
+    [location.pathname]
+  );
+
+  const pages: LinkInfo[] = useMemo(() => {
     const tutorAccountSettings: LinkInfo = {
       Icon: ProfileAvatar,
       label: intl("sidebar.profile"),
@@ -329,12 +261,12 @@ const SettingsPages: React.FC<{ hide: Void }> = ({ hide }) => {
     if (isTutor(user)) return [tutorAccountSettings, tutorProfileSettings];
 
     return [studentSettings];
-  }, [intl, user]);
+  }, [intl, match, user]);
 
-  return settingsPages.map((page, index) => (
+  return pages.map((page) => (
     <SidebarItem
       hide={hide}
-      key={index}
+      key={page.route}
       to={page.route}
       Icon={page.Icon}
       label={page.label}
@@ -392,6 +324,86 @@ const AccountPromotion: React.FC = () => {
         </div>
       ) : null}
     </div>
+  );
+};
+
+const SidebarItem: React.FC<{
+  to: string;
+  Icon: React.MemoExoticComponent<
+    (props: SVGProps<SVGSVGElement>) => JSX.Element
+  >;
+  label: React.ReactNode;
+  active?: boolean;
+  hide: Void;
+}> = ({ to, hide, Icon, label, active }) => {
+  const { md, lg } = useMediaQuery();
+
+  return (
+    <Link
+      className={cn(
+        "flex flex-row justify-start md:justify-center lg:justify-start gap-2 lg:gap-4 px-[14px] py-2 items-center ",
+        "rounded-lg transition-colors duration-200 group",
+        {
+          "bg-brand-700": active,
+          "bg-transparent hover:bg-natural-100": !active,
+        }
+      )}
+      to={to}
+      onClick={hide}
+    >
+      <Icon
+        className={cn(
+          "[&_*]:transition-all [&_*]:duration-200 h-4 w-4 md:h-6 md:w-6",
+          {
+            "[&_*]:stroke-natural-50": active,
+            "[&_*]:stroke-natural-700": !active,
+          }
+        )}
+      />
+      {lg || !md ? (
+        <Typography
+          tag="span"
+          className={cn(
+            active ? "text-natural-50" : "text-natural-700",
+            "text-tiny lg:text-caption font-normal lg:font-semibold"
+          )}
+        >
+          {label}
+        </Typography>
+      ) : null}
+    </Link>
+  );
+};
+
+const LogoutButton: React.FC<{ hide: Void }> = ({ hide }) => {
+  const intl = useFormatMessage();
+  const { lg, md } = useMediaQuery();
+  const navigate = useNavigate();
+  const { logout } = useUser();
+  return (
+    <button
+      onClick={() => {
+        navigate(Web.Login);
+        logout();
+        hide();
+      }}
+      className={cn(
+        "flex flex-row justify-start md:justify-center lg:justify-start gap-2 md:gap-0 lg:gap-4 px-[14px] py-2 rounded-lg",
+        "hover:text-destructive-400 hover:bg-destructive-100",
+        "active:bg-destructive-400 [&_*]:active:text-natural-50",
+        "[&_*]:active:stroke-natural-50 transition-all duration-200"
+      )}
+    >
+      <Logout className="h-4 w-4 md:h-6 md:w-6" />
+      {lg || !md ? (
+        <Typography
+          tag="span"
+          className="text-destructive-400 active:bg-destructive-400 active:text-natural-50 text-tiny lg:text-caption"
+        >
+          {intl("sidebar.logout")}
+        </Typography>
+      ) : null}
+    </button>
   );
 };
 

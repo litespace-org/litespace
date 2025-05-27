@@ -34,8 +34,6 @@ import {
   role,
   pageNumber,
   pageSize,
-  jsonBoolean,
-  orderDirection,
   id,
   numericFilter,
   dateFilter,
@@ -111,20 +109,14 @@ const updateUserPayload = zod.object({
   studioId: id.optional(),
 });
 
-const orderByOptions = ["created_at", "updated_at"] as const satisfies Array<
-  IUser.FindUsersApiQuery["orderBy"]
->;
-
 const findUsersQuery = zod.object({
-  role: zod.optional(role),
-  verified: zod.optional(jsonBoolean),
-  gender: zod.optional(gender),
-  online: zod.optional(jsonBoolean),
-  city: zod.optional(zod.nativeEnum(IUser.City)),
-  page: zod.optional(pageNumber).default(paginationDefaults.page),
-  size: zod.optional(pageSize).default(paginationDefaults.size),
-  orderBy: zod.optional(zod.enum(orderByOptions)),
-  orderDirection: zod.optional(orderDirection),
+  role: role.optional(),
+  verified: queryBoolean.optional(),
+  gender: gender.optional(),
+  online: queryBoolean.optional(),
+  city: zod.nativeEnum(IUser.City),
+  page: pageNumber.optional(),
+  size: pageSize.optional(),
 });
 
 const findOnboardedTutorsQuery = zod.object({
