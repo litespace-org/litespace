@@ -1,5 +1,4 @@
 import { Typography } from "@litespace/ui/Typography";
-import { Animate } from "@/components/Common/Animate";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { ConfirmationCode } from "@litespace/ui/ConfirmationCode";
 import { Button } from "@litespace/ui/Button";
@@ -15,7 +14,7 @@ type Props = {
   close: Void;
 };
 
-export const VerifyCode: React.FC<Props> = ({
+export const Code: React.FC<Props> = ({
   phone,
   resend,
   resending,
@@ -27,7 +26,7 @@ export const VerifyCode: React.FC<Props> = ({
   const [code, setCode] = useState<number | null>(null);
 
   return (
-    <Animate>
+    <div>
       <Typography
         tag="p"
         className="text-caption mt-2 font-semibold text-natural-950"
@@ -50,7 +49,6 @@ export const VerifyCode: React.FC<Props> = ({
             setCode(code);
             verifyCode(code);
           }}
-          autoFocus={true}
           disabled={verifing}
         />
 
@@ -93,6 +91,8 @@ export const VerifyCode: React.FC<Props> = ({
           {intl("labels.cancel")}
         </Button>
       </div>
-    </Animate>
+    </div>
   );
 };
+
+export default Code;

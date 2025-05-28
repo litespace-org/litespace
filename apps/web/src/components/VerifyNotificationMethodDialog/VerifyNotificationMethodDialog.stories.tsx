@@ -88,4 +88,18 @@ export const ResendingCode: Story = {
   },
 };
 
+export const UnresolvedPhone: Story = {
+  args: {
+    close: () => {},
+    method: "telegram",
+    phone: "01012345678",
+    sendCode: () => {},
+    sendingCode: false,
+    sentCode: true,
+    verifyCode: () => {},
+    verifing: false,
+    unresolvedPhone: true,
+  },
+};
+
 export default meta;

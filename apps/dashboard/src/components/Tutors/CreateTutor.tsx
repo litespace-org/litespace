@@ -17,7 +17,7 @@ type Form = {
   password: string;
 };
 
-export const AddTutorDialog: React.FC<{
+export const CreateTutor: React.FC<{
   refetch: Void;
   open: boolean;
   close: Void;
@@ -156,4 +156,4 @@ export const AddTutorDialog: React.FC<{
   );
 };
 
-export default AddTutorDialog;
+export default CreateTutor;

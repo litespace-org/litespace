@@ -1,22 +1,18 @@
 import { Table } from "@/components/Common/Table";
 import dayjs from "@/lib/dayjs";
 import Calendar from "@litespace/assets/Calendar";
-import CheckCircle from "@litespace/assets/CheckCircle";
-import CloseCircle from "@litespace/assets/CloseCircle";
-import Edit from "@litespace/assets/Edit";
 import InfoCircle from "@litespace/assets/InfoCircle";
 import Profile from "@litespace/assets/ProfileAvatar";
 import UserTag from "@litespace/assets/UserTag";
 import { useUpdateUser } from "@litespace/headless/user";
-import { Element, ITutor, IUser, Void } from "@litespace/types";
+import { Element, ITutor, Void } from "@litespace/types";
 import { AvatarV2 as Avatar } from "@litespace/ui/Avatar";
-import { Button } from "@litespace/ui/Button";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
+import { Switch } from "@litespace/ui/Switch";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { createColumnHelper } from "@tanstack/react-table";
-import cn from "classnames";
 import React, { useCallback, useMemo } from "react";
 
 export const Content: React.FC<{
@@ -55,7 +51,7 @@ export const Content: React.FC<{
     toast.error({ title: intl("dashboard.tutors.change-tutor-state.error") });
   }, [intl, toast]);
 
-  const mutation = useUpdateUser({ onSuccess, onError });
+  const update = useUpdateUser({ onSuccess, onError });
 
   const columns = useMemo(
     () => [
@@ -148,75 +144,20 @@ export const Content: React.FC<{
           </div>
         ),
         cell: (info) => (
-          <Typography
-            tag="span"
-            className={cn(
-              "text-body font-semibold",
-              info.row.original.activated
-                ? "text-brand-700"
-                : "text-destructive-700"
-            )}
-          >
-            {info.row.original.activated
-              ? intl("dashboard.tutors.table.activated-account")
-              : intl("dashboard.tutors.table.de-activated-account")}
-          </Typography>
+          <Switch
+            checked={info.getValue()}
+            disabled={update.isPending}
+            onChange={(activated) =>
+              update.mutate({
+                id: info.row.original.id,
+                payload: { activated },
+              })
+            }
+          />
         ),
-      }),
-      columnHelper.display({
-        id: "action",
-        header: () => (
-          <div className="flex gap-[10px]">
-            <Edit className="w-6 h-6 [&>*]:stroke-natural-950" />
-            <Typography
-              tag="h6"
-              className="text-body text-natural-950 font-bold"
-            >
-              {intl("dashboard.table.action")}
-            </Typography>
-          </div>
-        ),
-        cell: (info) => {
-          const isActivated = info.row.original.activated;
-          return (
-            <Button
-              size="medium"
-              variant="secondary"
-              type={isActivated ? "error" : "success"}
-              endIcon={
-                isActivated ? (
-                  <CloseCircle className="w-4 h-4 [&>*]:stroke-destructive-700 icon" />
-                ) : (
-                  <CheckCircle className="w-4 h-4 [&>*]:stroke-brand-700 icon" />
-                )
-              }
-              onClick={() => {
-                const id = info.row.original.id;
-
-                const payload: IUser.UpdateApiPayload = {
-                  activated: !isActivated,
-                };
-
-                mutation.mutate({
-                  id,
-                  payload,
-                });
-              }}
-            >
-              <Typography
-                tag="span"
-                className={cn("text-body font-medium text")}
-              >
-                {isActivated
-                  ? intl("dashboard.tutors.table.de-activate-account")
-                  : intl("dashboard.tutors.table.activate-account")}
-              </Typography>
-            </Button>
-          );
-        },
       }),
     ],
-    [columnHelper, intl, mutation]
+    [columnHelper, intl, update]
   );
 
   if (loading)

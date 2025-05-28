@@ -5,7 +5,7 @@ import {
   useVerifyPhoneCode,
 } from "@litespace/headless/confirmationCode";
 import { useUser } from "@litespace/headless/context/user";
-import { Void } from "@litespace/types";
+import { ApiError, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { useCallback, useState } from "react";
@@ -24,8 +24,8 @@ const VerifyPhone: React.FC<{ close: Void }> = ({ close }) => {
 
   const onSendError = useOnError({
     type: "mutation",
-    handler: ({ messageId }) => {
-      if (messageId === "error.api.unresolved-phone") setUnresolvedPhone(true);
+    handler: ({ messageId, errorCode }) => {
+      if (errorCode === ApiError.UnresolvedPhone) setUnresolvedPhone(true);
       toast.error({
         title: intl("send-verification-code.error"),
         description: intl(messageId),

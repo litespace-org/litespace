@@ -15,6 +15,7 @@ import {
   NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC,
   NOTIFICATION_METHOD_LITERAL_TO_ENUM,
   NOTIFICATION_METHOD_LITERAL_TO_PURPOSE,
+  safePromise,
 } from "@litespace/utils";
 import { NextFunction, Request, Response } from "express";
 import zod from "zod";
@@ -67,7 +68,7 @@ async function sendVerifyPhoneCode(
     sendVerifyNotificationMethodCodePayload.parse(req.body);
 
   const { update, valid, phone } = selectPhone(user.phone, payload.phone);
-  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
+  if (!valid || !phone) return next(bad("invalid or missing phone number"));
   // update user phone if needed.
   if (update) await users.update(user.id, { phone });
 
@@ -95,7 +96,9 @@ async function sendVerifyPhoneCode(
   // If the method is telegram; we need to resolve the number first with telegram Api
   const resolvedPhone =
     payload.method !== "telegram" ||
-    (await messenger.telegram.resolvePhone({ phone }).then((phone) => !!phone));
+    (await safePromise(
+      messenger.telegram.resolvePhone({ phone }).then((phone) => !!phone)
+    ));
   if (!resolvedPhone) return next(unresolvedPhone());
 
   // Send the notification using Kafka Producer

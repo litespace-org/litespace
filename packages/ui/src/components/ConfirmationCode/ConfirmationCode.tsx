@@ -16,9 +16,9 @@ import { useHotkeys } from "react-hotkeys-hook";
 
 export const ConfirmationCode: React.FC<{
   disabled: boolean;
-  autoFocus?: boolean;
+  error?: boolean;
   setCode: (code: number) => void;
-}> = ({ disabled, setCode }) => {
+}> = ({ disabled, error, setCode }) => {
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [digits, setDigits] = useState<string[]>([]);
   // State has the index of the focused input
@@ -124,6 +124,7 @@ export const ConfirmationCode: React.FC<{
           onPaste={onPaste}
           disabled={disabled}
           className="w-[18px] text-center"
+          state={error ? "error" : undefined}
         />
       ))}
     </div>

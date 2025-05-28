@@ -1,11 +1,10 @@
 import { IConfirmationCode, IUser, Void } from "@litespace/types";
 import { Dialog } from "@litespace/ui/Dialog";
-import { AnimatePresence } from "framer-motion";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useState } from "react";
-import { SelectMethod } from "@/components/VerifyNotificationMethodDialog/SelectMethod";
-import { VerifyCode } from "@/components/VerifyNotificationMethodDialog/VerifyCode";
-import { EnterPhoneNumber } from "@/components/VerifyNotificationMethodDialog/EnterPhoneNumber";
+import Method from "@/components/VerifyNotificationMethodDialog/SelectMethod";
+import Code from "@/components/VerifyNotificationMethodDialog/Code";
+import { PhoneNumber } from "@/components/VerifyNotificationMethodDialog/PhoneNumber";
 import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import UnresolvedPhone from "@/components/VerifyNotificationMethodDialog/UnresolvedPhone";
@@ -55,50 +54,47 @@ export const VerifyNotificationMethodDialog: React.FC<Props> = ({
       close={close}
       open
     >
-      <AnimatePresence mode="wait">
-        {method === null ? (
-          <SelectMethod
-            selected={method}
-            select={(method) => setMethod(method)}
-            close={close}
-          />
-        ) : null}
+      {method === null ? (
+        <Method
+          selected={method}
+          select={(method) => setMethod(method)}
+          close={close}
+        />
+      ) : null}
 
-        {method !== null && !sentCode ? (
-          <EnterPhoneNumber
-            close={close}
-            phone={phone}
-            loading={sendingCode}
-            setPhone={(phone) => {
-              setPhone(phone);
-              if (!phone || !method) return;
-              sendCode({ method, phone });
-            }}
-          />
-        ) : null}
+      {method && !sentCode ? (
+        <PhoneNumber
+          close={close}
+          phone={phone}
+          loading={sendingCode}
+          setPhone={(phone) => {
+            setPhone(phone);
+            if (!phone || !method) return;
+            sendCode({ method, phone });
+          }}
+        />
+      ) : null}
 
-        {/* ================= unresolved phone ================= */}
-        {unresolvedPhone && phone ? (
-          <UnresolvedPhone
-            resend={() => {
-              if (!method) return;
-              sendCode({ phone, method });
-            }}
-            sendingCode={sendingCode}
-          />
-        ) : null}
+      {unresolvedPhone && phone ? (
+        <UnresolvedPhone
+          resend={() => {
+            if (!method) return;
+            sendCode({ phone, method });
+          }}
+          sendingCode={sendingCode}
+        />
+      ) : null}
 
-        {sentCode && phone && method ? (
-          <VerifyCode
-            phone={phone}
-            resend={() => sendCode({ method, phone })}
-            resending={sendingCode}
-            verifyCode={(code: number) => verifyCode({ code, method })}
-            verifing={verifing}
-            close={close}
-          />
-        ) : null}
-      </AnimatePresence>
+      {sentCode && !unresolvedPhone && phone && method ? (
+        <Code
+          phone={phone}
+          resend={() => sendCode({ method, phone })}
+          resending={sendingCode}
+          verifyCode={(code: number) => verifyCode({ code, method })}
+          verifing={verifing}
+          close={close}
+        />
+      ) : null}
     </Dialog>
   );
 };

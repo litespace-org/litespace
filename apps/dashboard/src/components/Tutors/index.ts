@@ -1,2 +1,2 @@
-export { AddTutorDialog } from "@/components/Tutors/AddTutorDialog";
+export { CreateTutor } from "@/components/Tutors/CreateTutor";
 export { Content } from "@/components/Tutors/Content";

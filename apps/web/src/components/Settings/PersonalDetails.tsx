@@ -101,8 +101,6 @@ const PersonalDetails: React.FC<Props> = ({
     notice: { required: false, validate: validateNotice },
   });
 
-  console.log({ forStudent });
-
   const form = useForm<Form>({
     defaults: {
       name: name || "",
@@ -255,6 +253,7 @@ const PersonalDetails: React.FC<Props> = ({
               state={form.errors?.phone ? "error" : undefined}
               helper={form.errors?.phone}
               autoComplete="off"
+              dir="ltr"
             />
 
             <Select
@@ -297,6 +296,15 @@ const PersonalDetails: React.FC<Props> = ({
               />
             ) : null}
           </div>
+          <Button
+            size="large"
+            disabled={mutation.isPending || unchanged}
+            loading={mutation.isPending}
+            className="mt-6"
+            htmlType="submit"
+          >
+            {intl("shared-settings.save")}
+          </Button>
         </div>
 
         <div className="max-w-[320px] lg:max-w-[640px] flex flex-col gap-6">
@@ -307,15 +315,6 @@ const PersonalDetails: React.FC<Props> = ({
           />
         </div>
       </form>
-      <Button
-        size="large"
-        disabled={mutation.isPending || unchanged}
-        loading={mutation.isPending}
-        onClick={form.submit}
-        className="mt-6"
-      >
-        {intl("shared-settings.save")}
-      </Button>
     </div>
   );
 };

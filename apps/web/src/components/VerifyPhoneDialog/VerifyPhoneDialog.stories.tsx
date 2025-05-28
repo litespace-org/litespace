@@ -54,17 +54,4 @@ export const SendingCode: Story = {
   },
 };
 
-export const UnresolvedPhone: Story = {
-  args: {
-    phone: "01234567890",
-    close: () => alert("closing"),
-    sendCode: () => {},
-    sendingCode: false,
-    sentCode: false,
-    unresolvedPhone: true,
-    verifyCode: (val) => alert(val),
-    verifyingCode: false,
-  },
-};
-
 export default meta;

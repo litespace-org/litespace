@@ -484,7 +484,7 @@ async function transaction(
 ): Promise<ITransaction.Self> {
   return await transactions.create({
     userId: payload?.userId || (await user({})).id,
-    amount: payload?.amount || randomInt(1000),
+    amount: payload?.amount || randomInt(1, 1000),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
     planId: await or.planId(payload?.planId),
@@ -496,7 +496,7 @@ async function plan(
   payload?: Partial<IPlan.CreatePayload>
 ): Promise<IPlan.Self> {
   return await plans.create({
-    weeklyMinutes: payload?.weeklyMinutes || randomInt(1000),
+    weeklyMinutes: payload?.weeklyMinutes || randomInt(1, 1000),
     baseMonthlyPrice: payload?.baseMonthlyPrice || randomPrice(),
     monthDiscount: payload?.monthDiscount || randomDiscount(),
     quarterDiscount: payload?.quarterDiscount || randomDiscount(),
@@ -507,11 +507,11 @@ async function plan(
 }
 
 function randomPrice() {
-  return price.scale(randomInt(5000));
+  return price.scale(randomInt(1, 5000));
 }
 
 function randomDiscount() {
-  return percentage.scale(randomInt(100));
+  return percentage.scale(randomInt(1, 100));
 }
 
 async function subscription(
@@ -523,7 +523,7 @@ async function subscription(
     planId: await or.planId(payload?.planId),
     txId: payload?.txId || (await transaction({ userId })).id,
     period: or.planPeriod(payload?.period),
-    weeklyMinutes: payload?.weeklyMinutes || randomInt(1000),
+    weeklyMinutes: payload?.weeklyMinutes || randomInt(1, 1000),
     start: payload?.start || faker.date.future().toISOString(),
     end: payload?.end || faker.date.future().toISOString(),
   });

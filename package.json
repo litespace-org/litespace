@@ -32,7 +32,7 @@
     "pre:push": "pnpm intl inpsect; pnpm prettier:check; pnpm lint; pnpm check:all; pnpm web build; pnpm dashboard build",
     "pre:push:tests": "pnpm models test:local; pnpm run server test:handlers",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "check:all": "pnpm atlas check && pnpm auth check && pnpm emails check && pnpm headless check && pnpm ui check && pnpm models check && pnpm utils check && pnpm types check && pnpm radio check && pnpm kafka check",
+    "check:all": "pnpm atlas check && pnpm auth check && pnpm emails check && pnpm headless check && pnpm ui check && pnpm models check && pnpm utils check && pnpm types check && pnpm radio check && pnpm kafka check && pnpm web check && pnpm dashboard check",
     "storybook": "pnpm --filter @litespace/ui storybook",
     "vercel": "env-cmd vite-node scripts/vercel.ts",
     "vercel:ci": "vite-node scripts/vercel.ts",

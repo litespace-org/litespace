@@ -3,8 +3,11 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { ConfirmationCode } from "@litespace/ui/ConfirmationCode";
 import { Button } from "@litespace/ui/Button";
 import { IConfirmationCode, IUser, Void } from "@litespace/types";
-import React, { useState } from "react";
+import React from "react";
 import { PHONE_METHOD_TO_INTL_MSG_ID } from "@/components/VerifyPhoneDialog/utils";
+import { useForm } from "@litespace/headless/form";
+import { useMakeValidators } from "@litespace/ui/hooks/validation";
+import { validateConfirmationCode } from "@litespace/ui/lib/validate";
 
 type Props = {
   phone: string;
@@ -14,6 +17,10 @@ type Props = {
   method: IUser.NotificationMethodLiteral;
   verifyCode: (payload: IConfirmationCode.VerifyPhoneCodePayload) => void;
   close: Void;
+};
+
+type Form = {
+  code: number;
 };
 
 export const VerifyCode: React.FC<Props> = ({
@@ -26,10 +33,26 @@ export const VerifyCode: React.FC<Props> = ({
   verifyCode,
 }) => {
   const intl = useFormatMessage();
-  const [code, setCode] = useState<number | null>(null);
+
+  const validators = useMakeValidators<Form>({
+    code: {
+      required: true,
+      validate: validateConfirmationCode,
+    },
+  });
+
+  const form = useForm<Form>({
+    defaults: {
+      code: 0,
+    },
+    validators,
+    onSubmit(data) {
+      verifyCode({ code: data.code, method });
+    },
+  });
 
   return (
-    <div>
+    <form onSubmit={form.onSubmit}>
       <Typography
         tag="p"
         className="text-caption mt-2 font-semibold text-natural-950"
@@ -54,23 +77,23 @@ export const VerifyCode: React.FC<Props> = ({
         </Typography>
 
         <ConfirmationCode
-          setCode={setCode}
-          autoFocus={true}
+          setCode={(code) => form.set("code", code)}
           disabled={verifing}
+          error={!!form.errors.code}
         />
 
         <div className="flex justify-center text-natural-700 items-center">
           <Button
             onClick={resend}
             disabled={verifing || resending}
+            loading={resending}
             className="font-medium"
             variant="tertiary"
             size="small"
+            htmlType="button"
           >
             <Typography tag="p" className="flex font-medium">
-              {resending
-                ? intl("verify-phone-dialog.resending")
-                : intl("verify-phone-dialog.resend")}
+              {intl("verify-phone-dialog.resend")}
             </Typography>
           </Button>
         </div>
@@ -78,11 +101,7 @@ export const VerifyCode: React.FC<Props> = ({
 
       <div className="flex gap-6 mt-6 w-full">
         <Button
-          onClick={() => {
-            if (!code) return;
-            verifyCode({ code, method });
-          }}
-          disabled={verifing || !code}
+          disabled={verifing || !form.state.code}
           loading={verifing}
           size="large"
           className="grow"
@@ -99,6 +118,6 @@ export const VerifyCode: React.FC<Props> = ({
           {intl("labels.cancel")}
         </Button>
       </div>
-    </div>
+    </form>
   );
 };

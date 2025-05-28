@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { faker } from "@faker-js/faker/locale/ar";
 import { Meta, StoryObj } from "@storybook/react";
-import { TopicSelectionDialog } from "@/components/TopicSelectionDialog";
+import { TopicSelectionDialog } from "@/components/Common/TopicSelectionDialog";
 
 type Story = StoryObj<typeof TopicSelectionDialog>;
 
