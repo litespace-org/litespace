@@ -156,7 +156,7 @@ describe("/api/v1/confirmation-code", () => {
         })
       );
 
-      expect(response).to.deep.eq(bad("Invalid or missing phone number"));
+      expect(response).to.deep.eq(bad("invalid or missing phone number"));
     });
 
     it("should reject because we phone is unresolved", async () => {

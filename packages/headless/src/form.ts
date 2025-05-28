@@ -79,6 +79,15 @@ export function useForm<T extends object>(config: Config<T>) {
     [submit]
   );
 
+  const isValid = useCallback(
+    (field: keyof T): boolean => {
+      const validate = config.validators?.[field];
+      if (!validate) return true;
+      return validate(state[field], state) == null;
+    },
+    [config.validators, state]
+  );
+
   return {
     state,
     errors,
@@ -87,5 +96,6 @@ export function useForm<T extends object>(config: Config<T>) {
     submit,
     reset,
     onSubmit,
+    isValid,
   };
 }

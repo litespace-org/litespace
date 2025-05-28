@@ -10,8 +10,12 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { useCallback, useState } from "react";
 
-const VerifyPhone: React.FC<{ close: Void }> = ({ close }) => {
-  const { user, refetch } = useUser();
+const VerifyPhone: React.FC<{
+  close: Void;
+  open: boolean;
+  phone: string | null;
+}> = ({ phone, close, open }) => {
+  const { refetch } = useUser();
   const [sentCode, setSentCode] = useState<boolean>(false);
   const [unresolvedPhone, setUnresolvedPhone] = useState<boolean>(false);
   const toast = useToast();
@@ -60,17 +64,16 @@ const VerifyPhone: React.FC<{ close: Void }> = ({ close }) => {
     onError: onVerifyError,
   });
 
-  if (!user) return null;
-
   return (
     <VerifyPhoneDialog
+      open={open}
       sendCode={sendMutation.mutate}
       sentCode={sentCode}
       sendingCode={sendMutation.isPending}
       verifyCode={verifyMutation.mutate}
       verifyingCode={verifyMutation.isPending}
       unresolvedPhone={unresolvedPhone}
-      phone={user.phone}
+      phone={phone}
       close={close}
     />
   );

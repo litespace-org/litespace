@@ -2,7 +2,7 @@ import { Form, Controller } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { IUser } from "@litespace/types";
@@ -19,6 +19,7 @@ import { Landing, Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
+import { useRender } from "@/hooks/render";
 
 interface IForm {
   email: string;
@@ -35,7 +36,7 @@ const RegisterForm: React.FC = () => {
   const toast = useToast();
   const params = useParams<{ role: Role }>();
 
-  const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false);
+  const verifyEmailDialog = useRender();
 
   const { watch, handleSubmit, control, formState } = useForm<IForm>({
     defaultValues: {
@@ -67,9 +68,9 @@ const RegisterForm: React.FC = () => {
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
       user.set({ user: info, token });
-      setShowVerifyDialog(true);
+      verifyEmailDialog.show();
     },
-    [user]
+    [user, verifyEmailDialog]
   );
 
   const onError = useOnError({
@@ -221,15 +222,14 @@ const RegisterForm: React.FC = () => {
           </Typography>
         </div>
       </div>
-      {showVerifyDialog ? (
-        <VerifyEmail
-          emailSent
-          close={() => {
-            setShowVerifyDialog(false);
-            navigate(Web.CompleteProfile);
-          }}
-        />
-      ) : null}
+      <VerifyEmail
+        emailSent
+        open={verifyEmailDialog.open}
+        close={() => {
+          verifyEmailDialog.hide();
+          navigate(Web.CompleteProfile);
+        }}
+      />
     </Form>
   );
 };

@@ -52,21 +52,24 @@ const Root: React.FC = () => {
   }, [error, logout, navigate, publicRoute]);
 
   useEffect(() => {
-    const root = location.pathname === Web.Root;
+    const root = router.match(Web.Root, location.pathname);
     if (!user && !publicRoute) return navigate(Web.Login);
-    if (!user || !root) return;
+    if (!user) return;
 
-    const { tutor, student, tutorManager } = destructureRole(user.role);
+    const role = destructureRole(user.role);
 
-    if ((tutor || tutorManager) && !!meta) {
-      return navigate(
-        isProfileComplete({ ...user, ...meta })
-          ? Web.TutorDashboard
-          : Web.CompleteTutorProfile
-      );
-    }
+    // tutor redirect
+    const tutor = role.tutor || role.tutorManager;
+    const settings =
+      router.match(Web.TutorProfileSettings, location.pathname) ||
+      router.match(Web.TutorAccountSettings, location.pathname);
+    const completedProfile = !!meta && isProfileComplete({ ...user, ...meta });
+    if (tutor && completedProfile && root) return navigate(Web.TutorDashboard);
+    if (tutor && !completedProfile && !settings)
+      return navigate(Web.CompleteTutorProfile);
 
-    if (student) return navigate(Web.StudentDashboard);
+    // student redirect
+    if (role.student && root) return navigate(Web.StudentDashboard);
   }, [navigate, location.pathname, user, publicRoute, meta]);
 
   const showNavigation = useMemo(() => {

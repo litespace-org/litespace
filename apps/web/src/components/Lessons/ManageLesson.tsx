@@ -5,7 +5,7 @@ import {
   useFindLessons,
   useUpdateLesson,
 } from "@litespace/headless/lessons";
-import React, { useMemo, useCallback, useState, useRef } from "react";
+import React, { useMemo, useCallback, useRef } from "react";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { QueryKey } from "@litespace/headless/constants";
@@ -17,6 +17,7 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { useUser } from "@litespace/headless/context/user";
 import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
+import { useRender } from "@/hooks/render";
 
 type Base = {
   close: Void;
@@ -49,7 +50,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   const invalidate = useInvalidateQuery();
   const now = useRef(dayjs());
 
-  const [showVerifyEmailDialog, setShowVerifyEmailDialog] = useState(false);
+  const verifyEmailDialog = useRender();
 
   const lessons = useFindLessons({
     canceled: false,
@@ -168,7 +169,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   return (
     <>
-      {!showVerifyEmailDialog ? (
+      {!verifyEmailDialog.open ? (
         <ManageLessonDialog
           open
           type={payload.type}
@@ -186,7 +187,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
             lessons.query.isPending
           }
           sendVerifyEmail={() => {
-            setShowVerifyEmailDialog(true);
+            verifyEmailDialog.show();
           }}
           bookedSlots={bookedSlots}
           slots={tutorAvailabilitySlots.data?.slots.list || []}
@@ -202,13 +203,10 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
         />
       ) : null}
 
-      {showVerifyEmailDialog ? (
-        <VerifyEmail
-          close={() => {
-            setShowVerifyEmailDialog(false);
-          }}
-        />
-      ) : null}
+      <VerifyEmail
+        open={verifyEmailDialog.open}
+        close={verifyEmailDialog.hide}
+      />
     </>
   );
 };

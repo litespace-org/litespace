@@ -50,6 +50,7 @@ export function isProfileComplete({
   bio,
   about,
   verifiedPhone,
+  verifiedEmail,
 }: Pick<
   ITutor.Full,
   | "name"
@@ -60,6 +61,7 @@ export function isProfileComplete({
   | "bio"
   | "about"
   | "verifiedPhone"
+  | "verifiedEmail"
 >): boolean {
   return (
     !!name &&
@@ -69,6 +71,7 @@ export function isProfileComplete({
     !!birthYear &&
     !!bio &&
     !!about &&
-    !!verifiedPhone
+    !!verifiedPhone &&
+    !!verifiedEmail
   );
 }

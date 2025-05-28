@@ -13,9 +13,10 @@ import { useUser } from "@litespace/headless/context/user";
 type Props = {
   close: Void;
   emailSent?: boolean;
+  open: boolean;
 };
 
-export const VerifyEmail: React.FC<Props> = ({ close, emailSent }) => {
+export const VerifyEmail: React.FC<Props> = ({ close, emailSent, open }) => {
   const [sent, setSent] = useState(emailSent);
   const toast = useToast();
   const intl = useFormatMessage();
@@ -36,18 +37,26 @@ export const VerifyEmail: React.FC<Props> = ({ close, emailSent }) => {
   });
 
   useEffect(() => {
-    if (sent) return;
+    if (
+      sent ||
+      !open ||
+      sendMutation.isPending ||
+      sendMutation.isSuccess ||
+      sendMutation.isError
+    )
+      return;
     setSent(true);
     sendMutation.mutate();
-  }, [sendMutation, sent]);
+  }, [open, sendMutation, sent]);
 
   const onVerifySuccess = useCallback(() => {
     close();
+    sendMutation.reset();
     refetch.user();
     toast.success({
       title: intl("verify-email-dialog.success"),
     });
-  }, [close, refetch, toast, intl]);
+  }, [close, sendMutation, refetch, toast, intl]);
 
   const onVerifyError = useOnError({
     type: "mutation",
@@ -68,8 +77,11 @@ export const VerifyEmail: React.FC<Props> = ({ close, emailSent }) => {
 
   return (
     <VerifyEmailDialog
-      open
-      close={close}
+      open={open}
+      close={() => {
+        close();
+        sendMutation.reset();
+      }}
       email={user.email}
       sending={sendMutation.isPending}
       verifiying={verifyMutation.isPending}

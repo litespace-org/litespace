@@ -312,6 +312,7 @@ const PersonalDetails: React.FC<Props> = ({
             forStudent={forStudent}
             verifiedEmail={verifiedEmail}
             verifiedPhone={verifiedPhone}
+            phone={phone}
           />
         </div>
       </form>
