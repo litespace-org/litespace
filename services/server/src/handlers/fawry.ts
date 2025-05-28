@@ -92,8 +92,13 @@ const refundPayload = zod.object({
   reason: zod.string().optional(),
 });
 
+const findCardTokensQueryPayload = zod.object({
+  userId: id,
+});
+
 const deleteCardTokenPayload = zod.object({
   cardToken: zod.string(),
+  userId: id,
 });
 
 const getPaymentStatusPayload = zod.object({
@@ -486,13 +491,17 @@ async function findCardTokens(req: Request, res: Response, next: NextFunction) {
   const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const result = await fawry.findCardTokens(user.id);
+  const { userId }: IFawry.FindCardTokensApiQuery =
+    findCardTokensQueryPayload.parse(req.query);
+  if (isStudent(user) && userId !== user.id) return next(forbidden());
+
+  const result = await fawry.findCardTokens(userId);
   if (result.statusCode !== 200)
     return next(fawryError(result.statusDescription));
 
   const response: IFawry.FindCardTokensResponse = { cards: result.cards };
 
-  res.json(response);
+  res.status(200).json(response);
 }
 
 async function deleteCardToken(
@@ -504,10 +513,11 @@ async function deleteCardToken(
   const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { cardToken } = deleteCardTokenPayload.parse(req.body);
-  const customerProfileId = user.id;
+  const { cardToken, userId }: IFawry.DeleteCardTokenPayload =
+    deleteCardTokenPayload.parse(req.body);
+  if (isStudent(user) && userId !== user.id) return next(forbidden());
 
-  const result = await fawry.findCardTokens(user.id);
+  const result = await fawry.findCardTokens(userId);
   if (result.statusCode !== 200)
     return next(fawryError(result.statusDescription));
 
@@ -515,7 +525,7 @@ async function deleteCardToken(
   if (!exist) return next(notfound.base());
 
   const { statusCode, statusDescription } = await fawry.deleteCardToken({
-    customerProfileId,
+    customerProfileId: userId,
     cardToken,
   });
 

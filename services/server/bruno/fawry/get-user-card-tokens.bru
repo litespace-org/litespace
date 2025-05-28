@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{api}}/api/v1/fawry/card-token/list
+  url: {{api}}/api/v1/fawry/card-token/list?userId=3
   body: none
   auth: inherit
+}
+
+params:query {
+  userId: 3
 }
