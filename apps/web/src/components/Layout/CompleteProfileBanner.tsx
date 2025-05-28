@@ -44,6 +44,7 @@ const CompleteProfileBanner: React.FC = () => {
       Web.TutorAccountSettings,
       Web.TutorProfileSettings,
       Web.CompleteProfile,
+      Web.CompleteTutorProfile,
       Web.Lesson,
       Web.Login,
       Web.Register,

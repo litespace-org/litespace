@@ -8,7 +8,7 @@ import { PatternInput } from "@litespace/ui/PatternInput";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { Web } from "@litespace/utils/routes";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { useForm } from "@litespace/headless/form";
 import { useNavigate } from "react-router-dom";
 import Check from "@litespace/assets/Check16X16";
@@ -28,6 +28,8 @@ import { LocalId } from "@litespace/ui/locales";
 import { MAX_TUTOR_ABOUT_TEXT_LENGTH, optional } from "@litespace/utils";
 import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
+import VerifyPhone from "@/components/Common/VerifyPhone";
+import { useRender } from "@/hooks/render";
 
 type Form = {
   name: string;
@@ -73,8 +75,8 @@ const Content: React.FC<{
   verifiedEmail,
 }) => {
   // ==================== states & hooks ====================
-  const [showVerifyEmailDialog, setShowVerifyEmailDialog] =
-    useState<boolean>(false);
+  const verifyEmailDialog = useRender();
+  const verifyPhoneDialog = useRender();
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
@@ -171,8 +173,6 @@ const Content: React.FC<{
     },
   });
 
-  const confirmPhone = useCallback(() => alert("not implemented yet!"), []);
-
   return (
     <div className="gap-10 flex flex-col items-center justify-center self-center h-full">
       <div
@@ -243,7 +243,7 @@ const Content: React.FC<{
                       variant="tertiary"
                       size="large"
                       htmlType="button"
-                      onClick={confirmPhone}
+                      onClick={verifyPhoneDialog.show}
                       loading={false}
                       disabled={update.isPending}
                     >
@@ -282,7 +282,7 @@ const Content: React.FC<{
                       variant="tertiary"
                       size="large"
                       htmlType="button"
-                      onClick={() => setShowVerifyEmailDialog(true)}
+                      onClick={verifyEmailDialog.show}
                       loading={false}
                       disabled={update.isPending}
                     >
@@ -297,7 +297,7 @@ const Content: React.FC<{
 
             <Select
               id="city"
-              value={form.state.city || undefined}
+              value={optional(form.state.city)}
               options={cityOptions}
               label={intl("labels.city")}
               placeholder={intl("labels.city.placeholder")}
@@ -307,7 +307,7 @@ const Content: React.FC<{
 
             <Select
               id="gender"
-              value={form.state.gender || undefined}
+              value={optional(form.state.gender)}
               options={genderOptions}
               label={intl("labels.gender")}
               placeholder={intl("labels.gender.tutor-placeholder")}
@@ -387,9 +387,16 @@ const Content: React.FC<{
         </Button>
       </form>
 
-      {showVerifyEmailDialog ? (
-        <VerifyEmail close={() => setShowVerifyEmailDialog(false)} />
-      ) : null}
+      <VerifyEmail
+        open={verifyEmailDialog.open}
+        close={verifyEmailDialog.hide}
+      />
+
+      <VerifyPhone
+        open={verifyPhoneDialog.open}
+        close={verifyPhoneDialog.hide}
+        phone={!validatePhone(form.state.phone) ? form.state.phone : null}
+      />
     </div>
   );
 };

@@ -20,6 +20,7 @@ const Root: React.FC = () => {
 
   useEffect(() => {
     if (location.pathname === Dashboard.Login) return;
+
     if (!user) return navigate(Dashboard.Login);
 
     if (location.pathname !== Dashboard.Root) return;
@@ -29,6 +30,7 @@ const Root: React.FC = () => {
       user.role === IUser.Role.RegularAdmin
     )
       navigate(Dashboard.Users);
+
     if (user.role === IUser.Role.Studio) navigate(Dashboard.Media);
 
     // Handling users that not allowed to use the dashboard

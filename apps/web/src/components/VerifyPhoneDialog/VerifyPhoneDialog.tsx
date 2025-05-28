@@ -6,10 +6,11 @@ import { UnresolvedPhone } from "@/components/VerifyPhoneDialog/UnresolvedPhone"
 import { VerifyCode } from "@/components/VerifyPhoneDialog/VerifyCode";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IConfirmationCode, Void } from "@litespace/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Method } from "@/components/VerifyPhoneDialog/utils";
 
 type Props = {
+  open: boolean;
   close: Void;
   phone: string | null;
   sendCode(payload: IConfirmationCode.SendVerifyPhoneCodePayload): void;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export const VerifyPhoneDialog: React.FC<Props> = ({
+  open,
   close,
   phone: defaultPhone,
   sendCode,
@@ -35,9 +37,13 @@ export const VerifyPhoneDialog: React.FC<Props> = ({
   const [phone, setPhone] = useState<string | null>(defaultPhone);
   const [method, setMethod] = useState<Method | null>(null);
 
+  useEffect(() => {
+    setPhone(defaultPhone);
+  }, [defaultPhone]);
+
   return (
     <Dialog
-      open
+      open={open}
       close={close}
       title={
         <Typography
