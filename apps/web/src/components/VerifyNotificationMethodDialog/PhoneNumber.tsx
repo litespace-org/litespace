@@ -1,5 +1,4 @@
 import { Typography } from "@litespace/ui/Typography";
-import { Animate } from "@/components/Common/Animate";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Button } from "@litespace/ui/Button";
 import { Void } from "@litespace/types";
@@ -17,7 +16,7 @@ type Props = {
 
 type Form = { phone: string };
 
-export const EnterPhoneNumber: React.FC<Props> = ({
+export const PhoneNumber: React.FC<Props> = ({
   close,
   phone,
   loading,
@@ -43,14 +42,14 @@ export const EnterPhoneNumber: React.FC<Props> = ({
   });
 
   return (
-    <Animate>
+    <form onSubmit={form.onSubmit}>
       <Typography
         tag="p"
         className="text-caption mt-2 font-semibold text-natural-950"
       >
         {intl("notification-method.dialog.phone.description")}
       </Typography>
-      <div className="mt-6 mb-12">
+      <div className="mt-6">
         <PatternInput
           id="phone"
           mask=" "
@@ -71,11 +70,11 @@ export const EnterPhoneNumber: React.FC<Props> = ({
       </div>
       <div className="flex gap-6 mt-6 w-full">
         <Button
-          onClick={form.submit}
           disabled={loading}
           loading={loading}
           size="large"
           className="grow"
+          htmlType="submit"
         >
           {intl("notification-method.dialog.phone.send-code")}
         </Button>
@@ -85,10 +84,13 @@ export const EnterPhoneNumber: React.FC<Props> = ({
           variant="secondary"
           size="large"
           className="grow"
+          htmlType="button"
         >
           {intl("labels.cancel")}
         </Button>
       </div>
-    </Animate>
+    </form>
   );
 };
+
+export default PhoneNumber;

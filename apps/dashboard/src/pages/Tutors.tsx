@@ -1,5 +1,5 @@
 import PageTitle from "@/components/Common/PageTitle";
-import { AddTutorDialog, Content } from "@/components/Tutors";
+import { CreateTutor, Content } from "@/components/Tutors";
 import { useFindFullTutors } from "@litespace/headless/tutor";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -22,7 +22,7 @@ const Tutors: React.FC = () => {
           fetching={query.isFetching}
         />
 
-        <AddTutorDialog
+        <CreateTutor
           open={render.open}
           close={render.hide}
           refetch={query.refetch}
@@ -43,6 +43,7 @@ const Tutors: React.FC = () => {
           </Typography>
         </Button>
       </div>
+
       <Content
         refetch={query.refetch}
         tutors={query.data?.list}

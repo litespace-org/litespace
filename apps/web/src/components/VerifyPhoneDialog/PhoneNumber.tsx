@@ -7,7 +7,6 @@ import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import { PatternInput } from "@litespace/ui/PatternInput";
 import { validatePhone } from "@litespace/ui/lib/validate";
 import React from "react";
-import { Form } from "@/components/Form";
 
 type Props = {
   setPhone: (phone: string) => void;
@@ -16,7 +15,7 @@ type Props = {
 
 type Form = { phone: string };
 
-export const EnterPhoneNumber: React.FC<Props> = ({ close, setPhone }) => {
+export const PhoneNumber: React.FC<Props> = ({ close, setPhone }) => {
   const intl = useFormatMessage();
 
   const validators = useMakeValidators<Form>({
@@ -44,7 +43,7 @@ export const EnterPhoneNumber: React.FC<Props> = ({ close, setPhone }) => {
       >
         {intl("verify-phone-dialog.empty-phone.description")}
       </Typography>
-      <Form onSubmit={form.onSubmit}>
+      <form onSubmit={form.onSubmit} className="flex flex-col gap-6">
         <PatternInput
           id="phone"
           mask=" "
@@ -58,27 +57,31 @@ export const EnterPhoneNumber: React.FC<Props> = ({ close, setPhone }) => {
             form.set("phone", value);
           }}
           value={form.state.phone}
-          placeholder={intl("verify-phone-dialog.phone.placeholder")}
+          placeholder={intl("labels.phone.placeholder")}
         />
-      </Form>
-      <div className="flex gap-6 w-full">
-        <Button
-          onClick={form.submit}
-          disabled={!form.state.phone}
-          size="large"
-          className="flex-1 font-medium"
-        >
-          {intl("labels.next")}
-        </Button>
-        <Button
-          onClick={close}
-          variant="secondary"
-          size="large"
-          className="flex-1 font-medium"
-        >
-          {intl("labels.cancel")}
-        </Button>
-      </div>
+
+        <div className="flex gap-6 w-full">
+          <Button
+            disabled={!form.state.phone}
+            size="large"
+            className="flex-1 font-medium"
+            htmlType="submit"
+          >
+            {intl("labels.next")}
+          </Button>
+          <Button
+            onClick={close}
+            variant="secondary"
+            size="large"
+            className="flex-1 font-medium"
+            htmlType="button"
+          >
+            {intl("labels.cancel")}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };
+
+export default PhoneNumber;

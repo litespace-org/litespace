@@ -66,7 +66,6 @@ export const Code: React.FC<{
         <ConfirmationCode
           disabled={sendingCode}
           setCode={(code) => form.set("code", code)}
-          autoFocus
         />
         <Button
           onClick={resend}

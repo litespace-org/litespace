@@ -65,6 +65,7 @@ const Content: React.FC<{
           phone={user.phone}
           verifiedEmail={user.verifiedEmail}
           verifiedPhone={user.verifiedPhone}
+          notice={0}
         />
       ) : null}
 

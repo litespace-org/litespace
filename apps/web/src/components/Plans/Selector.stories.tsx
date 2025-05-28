@@ -3,6 +3,7 @@ import { Selector } from "@/components/Plans/Selector";
 import { faker } from "@faker-js/faker/locale/ar";
 import { range } from "lodash";
 import { percentage, price } from "@litespace/utils";
+import { IPlan } from "@litespace/types";
 
 const meta: Meta<typeof Selector> = {
   title: "PlansSelector",
@@ -20,7 +21,7 @@ const meta: Meta<typeof Selector> = {
 
 type Story = StoryObj<typeof Selector>;
 
-function makePlan(max: number) {
+function makePlan(max: number): IPlan.Self {
   return {
     id: faker.number.int(),
     weeklyMinutes: faker.number.int({ min: 30, max: 350 }),
@@ -32,6 +33,10 @@ function makePlan(max: number) {
     monthDiscount: faker.number.float({ min: 0, max, fractionDigits: 0 }),
     quarterDiscount: faker.number.float({ min: 0, max, fractionDigits: 0 }),
     yearDiscount: faker.number.float({ min: 0, max, fractionDigits: 0 }),
+    active: false,
+    forInvitesOnly: false,
+    createdAt: faker.date.past().toISOString(),
+    updatedAt: faker.date.past().toISOString(),
   };
 }
 
@@ -45,6 +50,10 @@ export const Primary: Story = {
         monthDiscount: percentage.scale(15),
         quarterDiscount: percentage.scale(20),
         yearDiscount: percentage.scale(25),
+        active: false,
+        forInvitesOnly: false,
+        createdAt: faker.date.past().toISOString(),
+        updatedAt: faker.date.past().toISOString(),
       },
       {
         id: 2,
@@ -53,6 +62,10 @@ export const Primary: Story = {
         monthDiscount: percentage.scale(10),
         quarterDiscount: percentage.scale(15),
         yearDiscount: percentage.scale(20),
+        active: false,
+        forInvitesOnly: false,
+        createdAt: faker.date.past().toISOString(),
+        updatedAt: faker.date.past().toISOString(),
       },
       {
         id: 1,
@@ -61,16 +74,18 @@ export const Primary: Story = {
         monthDiscount: percentage.scale(0),
         quarterDiscount: percentage.scale(10),
         yearDiscount: percentage.scale(20),
+        active: false,
+        forInvitesOnly: false,
+        createdAt: faker.date.past().toISOString(),
+        updatedAt: faker.date.past().toISOString(),
       },
     ],
-    select: ({ planId, period }) => console.log({ planId, period }),
   },
 };
 
 export const WithoutDiscount: Story = {
   args: {
     plans: range(3).map(() => makePlan(0)),
-    select: ({ planId, period }) => console.log({ planId, period }),
   },
 };
 

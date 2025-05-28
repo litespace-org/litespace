@@ -7,7 +7,7 @@ import {
 import { Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
-import { VerifyEmailDialog } from "@litespace/ui/VerifyEmailDialog";
+import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";
 import { useUser } from "@litespace/headless/context/user";
 
 type Props = {

@@ -1,27 +1,22 @@
-import { Dialog } from "@/components/Dialog";
-import { Typography } from "@/components/Typography";
-import { EnterPhoneNumber } from "@/components/VerifyPhoneDialog";
-import { SelectMethod } from "@/components/VerifyPhoneDialog";
-import { UnresolvedPhone } from "@/components/VerifyPhoneDialog";
-import { VerifyCode } from "@/components/VerifyPhoneDialog";
-import { useFormatMessage } from "@/hooks";
-import { Void } from "@litespace/types";
+import { Dialog } from "@litespace/ui/Dialog";
+import { Typography } from "@litespace/ui/Typography";
+import PhoneNumber from "@/components/VerifyPhoneDialog/PhoneNumber";
+import { SelectMethod } from "@/components/VerifyPhoneDialog/SelectMethod";
+import { UnresolvedPhone } from "@/components/VerifyPhoneDialog/UnresolvedPhone";
+import { VerifyCode } from "@/components/VerifyPhoneDialog/VerifyCode";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { IConfirmationCode, Void } from "@litespace/types";
 import React, { useState } from "react";
 import { Method } from "@/components/VerifyPhoneDialog/utils";
-
-type Payload = {
-  method: Method;
-  phone: string;
-};
 
 type Props = {
   close: Void;
   phone: string | null;
-  sendCode(payload: Payload): void;
+  sendCode(payload: IConfirmationCode.SendVerifyPhoneCodePayload): void;
   sendingCode: boolean;
   sentCode: boolean;
   unresolvedPhone: boolean;
-  verifyCode(code: number): void;
+  verifyCode(payload: IConfirmationCode.VerifyPhoneCodePayload): void;
   verifyingCode: boolean;
 };
 
@@ -52,11 +47,10 @@ export const VerifyPhoneDialog: React.FC<Props> = ({
           {intl("verify-phone-dialog.title")}
         </Typography>
       }
+      className="w-[512px]"
     >
-      {/* ================= phone ================= */}
-      {!phone ? <EnterPhoneNumber close={close} setPhone={setPhone} /> : null}
+      {!phone ? <PhoneNumber close={close} setPhone={setPhone} /> : null}
 
-      {/* ================= method ================= */}
       {phone && !sentCode && !unresolvedPhone ? (
         <SelectMethod
           close={close}
@@ -68,7 +62,6 @@ export const VerifyPhoneDialog: React.FC<Props> = ({
         />
       ) : null}
 
-      {/* ================= unresolved phone ================= */}
       {unresolvedPhone && phone ? (
         <UnresolvedPhone
           resend={() => {
@@ -79,7 +72,6 @@ export const VerifyPhoneDialog: React.FC<Props> = ({
         />
       ) : null}
 
-      {/* ================= confirmation code ================= */}
       {phone && sentCode && method && !unresolvedPhone ? (
         <VerifyCode
           method={method}

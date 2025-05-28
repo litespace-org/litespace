@@ -1,4 +1,3 @@
-import { Animate } from "@/components/Common/Animate";
 import { Typography } from "@litespace/ui/Typography";
 import { MethodButton } from "@/components/VerifyNotificationMethodDialog/MethodButton";
 import Telegram from "@litespace/assets/TelegramWithoutCircle";
@@ -14,14 +13,14 @@ type Props = {
   close: Void;
 };
 
-export const SelectMethod: React.FC<Props> = ({ selected, select, close }) => {
+export const Method: React.FC<Props> = ({ selected, select, close }) => {
   const intl = useFormatMessage();
   const [method, setMethod] = useState<IUser.NotificationMethodLiteral | null>(
     selected
   );
 
   return (
-    <Animate>
+    <div>
       <Typography
         tag="p"
         className="text-caption mt-2 font-semibold text-natural-950"
@@ -67,6 +66,8 @@ export const SelectMethod: React.FC<Props> = ({ selected, select, close }) => {
           {intl("labels.cancel")}
         </Button>
       </div>
-    </Animate>
+    </div>
   );
 };
+
+export default Method;

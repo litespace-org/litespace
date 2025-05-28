@@ -1,6 +1,6 @@
 import { VerifyPhoneDialog } from "@/components/VerifyPhoneDialog";
 import { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import { useState } from "react";
 
 type Component = typeof VerifyPhoneDialog;
 
@@ -49,19 +49,6 @@ export const SendingCode: Story = {
     sendingCode: true,
     sentCode: false,
     unresolvedPhone: false,
-    verifyCode: (val) => alert(val),
-    verifyingCode: false,
-  },
-};
-
-export const UnresolvedPhone: Story = {
-  args: {
-    phone: "01234567890",
-    close: () => alert("closing"),
-    sendCode: () => {},
-    sendingCode: false,
-    sentCode: false,
-    unresolvedPhone: true,
     verifyCode: (val) => alert(val),
     verifyingCode: false,
   },

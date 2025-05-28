@@ -253,6 +253,7 @@ const PersonalDetails: React.FC<Props> = ({
               state={form.errors?.phone ? "error" : undefined}
               helper={form.errors?.phone}
               autoComplete="off"
+              dir="ltr"
             />
 
             <Select
@@ -277,24 +278,33 @@ const PersonalDetails: React.FC<Props> = ({
               helper={form.errors?.gender}
             />
 
-            <NumericInput
-              data-student={forStudent}
-              id="notice"
-              name="notice"
-              value={optional(form.state.notice)}
-              onValueChange={({ floatValue }) =>
-                form.set("notice", floatValue || 0)
-              }
-              dir="rtl"
-              label={intl("labels.notice")}
-              placeholder={intl("labels.notice.placeholder")}
-              state={form.errors?.notice ? "error" : undefined}
-              helper={noticeHelper}
-              autoComplete="off"
-              thousandSeparator=","
-              className="data-[student=true]:hidden"
-            />
+            {!forStudent ? (
+              <NumericInput
+                id="notice"
+                name="notice"
+                value={optional(form.state.notice)}
+                onValueChange={({ floatValue }) =>
+                  form.set("notice", floatValue || 0)
+                }
+                dir="rtl"
+                label={intl("labels.notice")}
+                placeholder={intl("labels.notice.placeholder")}
+                state={form.errors?.notice ? "error" : undefined}
+                helper={noticeHelper}
+                autoComplete="off"
+                thousandSeparator=","
+              />
+            ) : null}
           </div>
+          <Button
+            size="large"
+            disabled={mutation.isPending || unchanged}
+            loading={mutation.isPending}
+            className="mt-6"
+            htmlType="submit"
+          >
+            {intl("shared-settings.save")}
+          </Button>
         </div>
 
         <div className="max-w-[320px] lg:max-w-[640px] flex flex-col gap-6">
@@ -305,15 +315,6 @@ const PersonalDetails: React.FC<Props> = ({
           />
         </div>
       </form>
-      <Button
-        size="large"
-        disabled={mutation.isPending || unchanged}
-        loading={mutation.isPending}
-        onClick={form.submit}
-        className="mt-6"
-      >
-        {intl("shared-settings.save")}
-      </Button>
     </div>
   );
 };

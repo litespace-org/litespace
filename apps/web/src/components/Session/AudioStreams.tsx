@@ -21,7 +21,7 @@ const Audio: React.FC = () => {
     return tracks
       .filter((track: TrackReference) => !track.publication.isLocal)
       .map((track: TrackReference) => track.publication.track?.mediaStream)
-      .filter((stream) => stream !== undefined);
+      .filter((stream) => stream !== undefined) as MediaStream[];
   }, [tracks]);
 
   return (
