@@ -45,7 +45,7 @@ export const ForgetPassword: React.FC<Props> = ({ close }) => {
         errorCode === ApiError.InvalidVerificationCode ||
         errorCode === ApiError.ExpiredVerificationCode
       )
-        return sendMutation.reset();
+        sendMutation.reset();
 
       toast.error({
         title: intl("reset-password-dialog.error"),
@@ -66,7 +66,10 @@ export const ForgetPassword: React.FC<Props> = ({ close }) => {
       sendCode={(email) => sendMutation.mutate({ email })}
       sendingCode={sendMutation.isPending}
       sentCode={sendMutation.isSuccess}
-      resetSendCode={() => sendMutation.reset()}
+      resendCode={(email) => {
+        sendMutation.reset();
+        sendMutation.mutate({ email });
+      }}
       close={close}
       open
     />
