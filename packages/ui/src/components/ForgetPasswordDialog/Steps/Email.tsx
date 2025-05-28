@@ -1,21 +1,22 @@
 import { Input } from "@/components/Input";
 import { useFormatMessage } from "@/hooks";
 import { useMakeValidators } from "@/hooks/validation";
-import { isValidEmail } from "@/lib/validate";
+import { validateEmail } from "@/lib/validate";
 import { useForm } from "@litespace/headless/form";
-import React, { useCallback } from "react";
+import React from "react";
 import { Typography } from "@/components/Typography";
 import { Void } from "@litespace/types";
-import { DialogActions } from "@/components/ForgetPasswordDialog";
+import Actions from "@/components/ForgetPasswordDialog/Actions";
+import { flow } from "lodash";
 
-export const EmailForm: React.FC<{
+export const Email: React.FC<{
   sendCode: (email: string) => void;
   sendingCode: boolean;
   close: Void;
 }> = ({ sendCode, sendingCode, close }) => {
   const intl = useFormatMessage();
   const validators = useMakeValidators({
-    email: { required: true, validate: isValidEmail },
+    email: { required: true, validate: validateEmail },
   });
 
   const form = useForm<{ email: string }>({
@@ -26,13 +27,8 @@ export const EmailForm: React.FC<{
     },
   });
 
-  const onClose = useCallback(() => {
-    close();
-    form.reset();
-  }, [close, form]);
-
   return (
-    <>
+    <form onSubmit={form.onSubmit}>
       <Typography
         tag="h5"
         className="text-tiny md:text-caption font-semibold text-natural-950 mb-6"
@@ -53,14 +49,13 @@ export const EmailForm: React.FC<{
         inputSize="large"
         value={form.state.email}
       />
-      <DialogActions
+      <Actions
         loading={sendingCode}
         confirmId="forget-password-dialog.submit"
-        submit={form.submit}
-        close={onClose}
+        close={flow(form.reset, close)}
       />
-    </>
+    </form>
   );
 };
 
-export default EmailForm;
+export default Email;

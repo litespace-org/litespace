@@ -5,6 +5,7 @@ type Config<T extends object> = {
   defaults: T;
   onSubmit: (data: T) => void;
   validators?: Validators<T>;
+  resetOnSubmit?: boolean;
 };
 
 export type Validators<T extends object> = {
@@ -45,6 +46,12 @@ export function useForm<T extends object>(config: Config<T>) {
     [state, submitted]
   );
 
+  const reset = useCallback(() => {
+    setSubmitted(false);
+    setState(configRef.current.defaults);
+    setErrors({});
+  }, []);
+
   const submit = useCallback(() => {
     const errors: ErrorMap<T> = {};
 
@@ -61,13 +68,8 @@ export function useForm<T extends object>(config: Config<T>) {
     setErrors(errors);
     if (!isEmpty(errors)) return;
     configRef.current.onSubmit(state);
-  }, [state]);
-
-  const reset = useCallback(() => {
-    setSubmitted(false);
-    setState(configRef.current.defaults);
-    setErrors({});
-  }, []);
+    if (configRef.current.resetOnSubmit) reset();
+  }, [reset, state]);
 
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {

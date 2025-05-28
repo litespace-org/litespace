@@ -123,7 +123,7 @@ const CompleteProfile: React.FC = () => {
             mask=" "
             id="phone"
             control={control}
-            idleDir="rtl"
+            idleDir="ltr"
             inputSize="large"
             name="phone"
             value={phone}

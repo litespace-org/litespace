@@ -1,13 +1,13 @@
 import { Dialog } from "@/components/Dialog";
-import { EmailForm } from "@/components/ForgetPasswordDialog";
+import Email from "@/components/ForgetPasswordDialog/Steps/Email";
+import Code from "@/components/ForgetPasswordDialog/Steps/Code";
+import Password from "@/components/ForgetPasswordDialog/Steps/Password";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 import React, { useMemo, useState } from "react";
-import { CodeForm } from "@/components/ForgetPasswordDialog";
-import { PasswordForm } from "@/components/ForgetPasswordDialog";
 
 type Step = "email" | "code" | "password";
 type Payload = { code: number; password: string };
@@ -39,6 +39,7 @@ export const ForgetPasswordDialog: React.FC<{
   const step = useMemo((): Step => {
     if (sentCode && code) return "password";
     if (sentCode && !code) return "code";
+    setCode(0);
     return "email";
   }, [code, sentCode]);
 
@@ -59,7 +60,7 @@ export const ForgetPasswordDialog: React.FC<{
     >
       <div className="pt-2">
         {step === "email" ? (
-          <EmailForm
+          <Email
             sendCode={(email: string) => {
               setEmail(email);
               sendCode(email);
@@ -70,21 +71,17 @@ export const ForgetPasswordDialog: React.FC<{
         ) : null}
 
         {step === "code" ? (
-          <CodeForm
+          <Code
             email={email}
-            resendCode={() => {
-              resendCode(email);
-            }}
+            resend={() => resendCode(email)}
             sendingCode={sendingCode}
-            next={(code) => {
-              setCode(code);
-            }}
+            next={(code) => setCode(code)}
             close={close}
           />
         ) : null}
 
         {step === "password" ? (
-          <PasswordForm
+          <Password
             resetPassword={(password) => {
               resetPassword({ password, code });
             }}

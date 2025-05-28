@@ -1,14 +1,15 @@
-import { Password } from "@/components/Input";
+import { Password as PasswordInput } from "@/components/Input";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import { useMakeValidators } from "@/hooks/validation";
-import { isValidPassword } from "@/lib/validate";
+import { validatePassword } from "@/lib/validate";
 import { useForm } from "@litespace/headless/form";
-import React, { useCallback } from "react";
-import { DialogActions } from "@/components/ForgetPasswordDialog";
+import React from "react";
+import Actions from "@/components/ForgetPasswordDialog/Actions";
 import { Void } from "@litespace/types";
+import { flow } from "lodash";
 
-export const PasswordForm: React.FC<{
+export const Password: React.FC<{
   resetPassword: (password: string) => void;
   resettingPassword: boolean;
   close: Void;
@@ -18,7 +19,7 @@ export const PasswordForm: React.FC<{
   const validators = useMakeValidators({
     password: {
       required: true,
-      validate: isValidPassword,
+      validate: validatePassword,
     },
   });
 
@@ -30,22 +31,18 @@ export const PasswordForm: React.FC<{
     onSubmit() {
       resetPassword(form.state.password);
     },
+    resetOnSubmit: true,
   });
 
-  const onClose = useCallback(() => {
-    close();
-    form.reset();
-  }, [close, form]);
-
   return (
-    <>
+    <form onSubmit={form.onSubmit}>
       <Typography
         tag="h5"
         className="text-tiny md:text-caption font-semibold text-natural-950 mb-6"
       >
         {intl("forget-password-dialog.desc.password")}
       </Typography>
-      <Password
+      <PasswordInput
         autoFocus
         id="password"
         idleDir="rtl"
@@ -57,14 +54,13 @@ export const PasswordForm: React.FC<{
         state={form.errors?.password ? "error" : undefined}
         helper={form.errors?.password}
       />
-      <DialogActions
+      <Actions
         loading={resettingPassword}
         confirmId="labels.confirm"
-        submit={form.submit}
-        close={onClose}
+        close={flow(form.reset, close)}
       />
-    </>
+    </form>
   );
 };
 
-export default PasswordForm;
+export default Password;

@@ -3,46 +3,44 @@ import { ConfirmationCode } from "@/components/ConfirmationCode";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import { useMakeValidators } from "@/hooks/validation";
-import { isValidConfirmationCode } from "@/lib/validate";
+import { validateConfirmationCode } from "@/lib/validate";
 import { useForm } from "@litespace/headless/form";
-import React, { useCallback } from "react";
-import { DialogActions } from "@/components/ForgetPasswordDialog";
+import React from "react";
+import Actions from "@/components/ForgetPasswordDialog/Actions";
 import { Void } from "@litespace/types";
+import { flow } from "lodash";
 
-export const CodeForm: React.FC<{
+type Form = {
+  code: number;
+};
+
+export const Code: React.FC<{
   email: string;
   sendingCode: boolean;
-  resendCode: (email: string) => void;
+  resend: () => void;
   next: (code: number) => void;
   close: Void;
-}> = ({ email, sendingCode, resendCode, next, close }) => {
+}> = ({ sendingCode, email, resend, next, close }) => {
   const intl = useFormatMessage();
 
   const validators = useMakeValidators({
     code: {
       required: true,
-      validate: isValidConfirmationCode,
+      validate: validateConfirmationCode,
     },
   });
 
-  const form = useForm<{ code: number }>({
-    defaults: {
-      code: 0,
-    },
+  const form = useForm<Form>({
+    defaults: { code: 0 },
     validators,
-    onSubmit() {
-      next(form.state.code);
-      form.reset();
+    resetOnSubmit: true,
+    onSubmit(data) {
+      next(data.code);
     },
   });
-
-  const onClose = useCallback(() => {
-    close();
-    form.reset();
-  }, [close, form]);
 
   return (
-    <>
+    <form onSubmit={form.onSubmit}>
       <Typography
         tag="h5"
         className="text-tiny md:text-caption font-semibold text-natural-950 mb-6"
@@ -71,11 +69,12 @@ export const CodeForm: React.FC<{
           autoFocus
         />
         <Button
-          onClick={() => resendCode(email)}
+          onClick={resend}
           variant="tertiary"
           size="medium"
           className="mx-auto"
           disabled={sendingCode}
+          htmlType="button"
         >
           <Typography
             tag="span"
@@ -85,13 +84,13 @@ export const CodeForm: React.FC<{
           </Typography>
         </Button>
       </div>
-      <DialogActions
+
+      <Actions
         confirmId="forget-password-dialog.submit"
-        submit={form.submit}
-        close={onClose}
+        close={flow(form.reset, close)}
       />
-    </>
+    </form>
   );
 };
 
-export default CodeForm;
+export default Code;

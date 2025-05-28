@@ -5,23 +5,21 @@ import { useFormatMessage } from "@/hooks";
 import { Void } from "@litespace/types";
 import { LocalId } from "@/locales";
 
-export const DialogActions: React.FC<{
+export const Actions: React.FC<{
   loading?: boolean;
   confirmId: LocalId;
-  submit: Void;
   close: Void;
-}> = ({ loading, confirmId, submit, close }) => {
+}> = ({ loading, confirmId, close }) => {
   const intl = useFormatMessage();
 
   return (
-    <div className="flex gap-4 md:gap-6 mt-8 md:mt-12">
+    <div className="flex gap-4 md:gap-6 mt-8">
       <Button
         size="large"
         className="flex-1"
         htmlType="submit"
         loading={loading}
         disabled={loading}
-        onClick={submit}
       >
         <Typography tag="span" className="text-body font-medium">
           {intl(confirmId)}
@@ -43,4 +41,4 @@ export const DialogActions: React.FC<{
   );
 };
 
-export default DialogActions;
+export default Actions;
