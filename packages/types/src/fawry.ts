@@ -122,6 +122,10 @@ export type RefundPayload = {
 
 export type RefundResponse = BaseResponse & {};
 
+export type FindCardTokensApiQuery = {
+  userId: number;
+};
+
 export type FindCardTokensResponse = {
   cards: Array<{
     /**
@@ -145,6 +149,7 @@ export type FindCardTokensResponse = {
 
 export type DeleteCardTokenPayload = {
   cardToken: string;
+  userId: number;
 };
 
 export type DeleteCardTokenResponse = void;

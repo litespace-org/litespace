@@ -44,8 +44,13 @@ export class Fawry extends Base {
     return await this.post({ route: "/api/v1/fawry/refund", payload });
   }
 
-  public async findCardTokens(): Promise<IFawry.FindCardTokensResponse> {
-    return await this.get({ route: "/api/v1/fawry/card-token/list" });
+  public async findCardTokens(
+    query: IFawry.FindCardTokensApiQuery
+  ): Promise<IFawry.FindCardTokensResponse> {
+    return await this.get({
+      route: "/api/v1/fawry/card-token/list",
+      params: query,
+    });
   }
 
   public async deleteCardToken(
