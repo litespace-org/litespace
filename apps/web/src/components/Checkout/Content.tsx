@@ -20,12 +20,14 @@ import { Link } from "react-router-dom";
 import { Web } from "@litespace/utils/routes";
 import { useSubscription } from "@litespace/headless/context/subscription";
 import cn from "classnames";
+import { useToast } from "@litespace/ui/Toast";
 
 const Content: React.FC<{
+  userId: number;
   planId: number;
   period: IPlan.PeriodLiteral;
   userPhone: string | null;
-}> = ({ planId, period, userPhone }) => {
+}> = ({ userId, planId, period, userPhone }) => {
   const transaction = useFindLastTransaction();
   const plan = useFindPlanById(planId);
   const { info: subscription } = useSubscription();
@@ -46,6 +48,7 @@ const Content: React.FC<{
     <div className="h-full gap-4 md:gap-8 flex flex-col items-center mt-0 md:mt-[8vh] lg:mt-[15vh] mx-auto">
       <Header />
       <Body
+        userId={userId}
         subscribed={!!subscription}
         userPhone={userPhone}
         period={period}
@@ -87,6 +90,7 @@ const Header: React.FC = () => {
 };
 
 const Body: React.FC<{
+  userId: number;
   period: IPlan.PeriodLiteral;
   userPhone: string | null;
   subscribed: boolean;
@@ -103,9 +107,10 @@ const Body: React.FC<{
     data: ITransaction.Self | null;
     refetch: Void;
   };
-}> = ({ plan, transaction, period, userPhone, subscribed }) => {
+}> = ({ userId, plan, transaction, period, userPhone, subscribed }) => {
   const intl = useFormatMessage();
   const logger = useLogger();
+  const toast = useToast();
 
   // =================== sync payment manually =====================
   const syncPayment = useSyncPaymentStatus({
@@ -148,10 +153,16 @@ const Body: React.FC<{
 
   const onTransactionStatusUpdate = useCallback(
     (payload: Wss.EventPayload<Wss.ServerEvent.TransactionStatusUpdate>) => {
+      if (payload.status === ITransaction.Status.Failed)
+        toast.error({
+          title: intl("checkout.transaction.failed.title"),
+          description: intl("checkout.transaction.failed.desc"),
+        });
+
       logger.debug("transaction status update", payload);
       transaction.refetch();
     },
-    [logger, transaction]
+    [intl, logger, toast, transaction]
   );
 
   useEffect(() => {
@@ -198,11 +209,14 @@ const Body: React.FC<{
 
   return (
     <Tabs
+      userId={userId}
       plan={plan.data}
       period={period}
       phone={userPhone}
       sync={transaction.refetch}
       syncing={transaction.fetching}
+      transactionId={transaction.data?.id}
+      transactionStatus={transaction.data?.status}
     />
   );
 };

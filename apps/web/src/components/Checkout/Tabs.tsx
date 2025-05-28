@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { IPlan, Void } from "@litespace/types";
+import { IPlan, ITransaction, Void } from "@litespace/types";
 import { Tabs } from "@litespace/ui/Tabs";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useSearchParams } from "react-router-dom";
@@ -15,12 +15,24 @@ function isValidTab(tab: string): tab is Tab {
 }
 
 const TapsContainer: React.FC<{
+  userId: number;
   plan: IPlan.Self;
   period: IPlan.PeriodLiteral;
   phone: string | null;
   sync: Void;
   syncing: boolean;
-}> = ({ plan, period, phone, syncing, sync }) => {
+  transactionId?: number;
+  transactionStatus?: ITransaction.Status;
+}> = ({
+  userId,
+  plan,
+  period,
+  phone,
+  syncing,
+  sync,
+  transactionId,
+  transactionStatus,
+}) => {
   const [params, setParams] = useSearchParams({});
 
   const tab = useMemo((): Tab => {
@@ -33,12 +45,15 @@ const TapsContainer: React.FC<{
     <div>
       <Header tab={tab} setTab={(tab) => setParams({ tab })} />
       <Body
+        userId={userId}
         tab={tab}
         plan={plan}
         phone={phone}
         period={period}
         syncing={syncing}
         sync={sync}
+        transactionId={transactionId}
+        transactionStatus={transactionStatus}
       />
     </div>
   );
@@ -74,22 +89,38 @@ const Header: React.FC<{ tab: Tab; setTab(tab: Tab): void }> = ({
 };
 
 const Body: React.FC<{
+  userId: number;
   tab: Tab;
   plan: IPlan.Self;
   phone: string | null;
   period: IPlan.PeriodLiteral;
   syncing: boolean;
   sync: Void;
-}> = ({ tab, phone, period, syncing, sync, plan }) => {
+  transactionId?: number;
+  transactionStatus?: ITransaction.Status;
+}> = ({
+  userId,
+  tab,
+  phone,
+  period,
+  syncing,
+  sync,
+  plan,
+  transactionId,
+  transactionStatus,
+}) => {
   return (
     <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-4 lg:gap-10 lg:min-w-[1004px] ">
       <PaymentPannel
+        userId={userId}
         planId={plan.id}
         tab={tab}
         phone={phone}
         period={period}
         syncing={syncing}
         sync={sync}
+        transactionId={transactionId}
+        transactionStatus={transactionStatus}
       />
       <PlansPannel plan={plan} period={period} />
     </div>
@@ -98,16 +129,36 @@ const Body: React.FC<{
 
 const PaymentPannel: React.FC<{
   tab: Tab;
+  userId: number;
   planId: number;
   phone: string | null;
   period: IPlan.PeriodLiteral;
   syncing: boolean;
   sync: Void;
-}> = ({ tab, planId, phone, period, syncing, sync }) => {
+  transactionId?: number;
+  transactionStatus?: ITransaction.Status;
+}> = ({
+  tab,
+  userId,
+  planId,
+  phone,
+  period,
+  syncing,
+  sync,
+  transactionId,
+  transactionStatus,
+}) => {
   return (
     <div className="w-full md:flex-1 flex flex-col">
       {tab === "card" ? (
-        <Card planId={planId} phone={phone} period={period} />
+        <Card
+          transactionId={transactionId}
+          transactionStatus={transactionStatus}
+          userId={userId}
+          planId={planId}
+          phone={phone}
+          period={period}
+        />
       ) : null}
 
       {tab === "ewallet" ? (

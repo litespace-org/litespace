@@ -3,6 +3,12 @@ import {
   UseInfiniteQueryResult,
   useQueryClient,
   useInfiniteQuery,
+  useQuery,
+  QueryClient,
+  DefaultError,
+  QueryKey,
+  UseQueryResult,
+  UndefinedInitialDataOptions,
 } from "@tanstack/react-query";
 import { Paginated, Void } from "@litespace/types";
 import { first, flatten, sum } from "lodash";
@@ -72,4 +78,23 @@ export function useInfinitePaginationQuery<T, K>(
   }, [list?.length, total]);
 
   return { query, list, more, hasMore, keys, total };
+}
+
+type UseExtendedQueryResult<
+  T,
+  E,
+  K extends QueryKey = QueryKey,
+> = UseQueryResult<T, E> & { keys: K };
+
+export function useExtendedQuery<
+  TQueryFnData = unknown,
+  TError = DefaultError,
+  TData = TQueryFnData,
+  TQueryKey extends QueryKey = QueryKey,
+>(
+  options: UndefinedInitialDataOptions<TQueryFnData, TError, TData, TQueryKey>,
+  queryClient?: QueryClient
+): UseExtendedQueryResult<TData, TError, TQueryKey> {
+  const query = useQuery(options, queryClient);
+  return { ...query, keys: options.queryKey };
 }

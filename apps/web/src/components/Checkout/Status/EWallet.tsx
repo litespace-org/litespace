@@ -5,11 +5,41 @@ import { Button } from "@litespace/ui/Button";
 import { walletPaymentQrCode } from "@/lib/cache";
 import { Void } from "@litespace/types";
 
+const Status: React.FC<{
+  cancel: Void;
+  canceling: boolean;
+  disabled: boolean;
+}> = ({ cancel, canceling, disabled }) => {
+  const qr = useMemo(() => walletPaymentQrCode.get(), []);
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-6 max-w-[435px] mt-2 lg:-mt-2">
+      {qr ? (
+        <QrPayment
+          cancel={cancel}
+          canceling={canceling}
+          qr={qr}
+          disabled={disabled}
+        />
+      ) : null}
+
+      {!qr ? (
+        <RequestToPayPayment
+          cancel={cancel}
+          canceling={canceling}
+          disabled={disabled}
+        />
+      ) : null}
+    </div>
+  );
+};
+
 const QrPayment: React.FC<{
   qr: string;
   cancel: Void;
   canceling: boolean;
-}> = ({ qr, cancel, canceling }) => {
+  disabled: boolean;
+}> = ({ qr, cancel, canceling, disabled }) => {
   const intl = useFormatMessage();
 
   return (
@@ -31,7 +61,7 @@ const QrPayment: React.FC<{
           type="main"
           size="large"
           htmlType="submit"
-          disabled={canceling}
+          disabled={canceling || disabled}
           loading={canceling}
           onClick={cancel}
           className="w-full sm:w-auto"
@@ -48,7 +78,8 @@ const QrPayment: React.FC<{
 const RequestToPayPayment: React.FC<{
   cancel: Void;
   canceling: boolean;
-}> = ({ cancel, canceling }) => {
+  disabled: boolean;
+}> = ({ cancel, canceling, disabled }) => {
   const intl = useFormatMessage();
   return (
     <div className="flex flex-col items-center justify-center gap-6 lg:gap-4">
@@ -66,7 +97,7 @@ const RequestToPayPayment: React.FC<{
         type="main"
         size="large"
         htmlType="submit"
-        disabled={canceling}
+        disabled={canceling || disabled}
         loading={canceling}
         onClick={cancel}
         className="w-full sm:w-auto"
@@ -79,21 +110,4 @@ const RequestToPayPayment: React.FC<{
   );
 };
 
-const PayWithEWalletStatus: React.FC<{
-  cancel: Void;
-  canceling: boolean;
-}> = ({ cancel, canceling }) => {
-  const qr = useMemo(() => walletPaymentQrCode.get(), []);
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-6 max-w-[435px] mt-2 lg:-mt-2">
-      {qr ? <QrPayment cancel={cancel} canceling={canceling} qr={qr} /> : null}
-
-      {!qr ? (
-        <RequestToPayPayment cancel={cancel} canceling={canceling} />
-      ) : null}
-    </div>
-  );
-};
-
-export default PayWithEWalletStatus;
+export default Status;

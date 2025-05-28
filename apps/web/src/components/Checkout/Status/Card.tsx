@@ -2,34 +2,19 @@ import React from "react";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Button } from "@litespace/ui/Button";
-import { useToast } from "@litespace/ui/Toast";
-import { useCancelUnpaidOrder } from "@litespace/headless/fawry";
-import { useOnError } from "@/hooks/error";
+import { Void } from "@litespace/types";
 
-const PayWithCardStatus: React.FC<{
-  transactionId: number;
-}> = ({ transactionId }) => {
+const Status: React.FC<{
+  cancel: Void;
+  canceling: boolean;
+  disabled: boolean;
+}> = ({ cancel, canceling, disabled }) => {
   const intl = useFormatMessage();
-  const toast = useToast();
-
-  const onError = useOnError({
-    type: "mutation",
-    handler(payload) {
-      toast.error({ title: intl(payload.messageId) });
-    },
-  });
-
-  const cancel = useCancelUnpaidOrder({
-    onSuccess() {
-      window.location.reload();
-    },
-    onError,
-  });
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6 max-w-[435px]">
-      <Typography tag="h1" className="text-subtitle-2 font-bold">
-        On-going Card Payment (todo)
+    <div className="flex flex-col items-center justify-center gap-6 max-w-[350px]">
+      <Typography tag="p" className="text-body font-medium text-center">
+        {intl("checkout.status.card.desc")}
       </Typography>
 
       <Button
@@ -37,9 +22,9 @@ const PayWithCardStatus: React.FC<{
         size="large"
         htmlType="submit"
         className="w-full"
-        disabled={cancel.isPending}
-        loading={cancel.isPending}
-        onClick={() => cancel.mutate({ transactionId })}
+        disabled={canceling || disabled}
+        loading={canceling}
+        onClick={cancel}
       >
         {intl("checkout.payment.cancel-and-retry")}
       </Button>
@@ -47,4 +32,4 @@ const PayWithCardStatus: React.FC<{
   );
 };
 
-export default PayWithCardStatus;
+export default Status;
