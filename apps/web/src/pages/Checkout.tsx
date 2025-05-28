@@ -38,7 +38,12 @@ const Checkout: React.FC = () => {
 
   return (
     <div className="flex flex-col lg:flex-row p-4 sm:p-6 gap-6 max-w-screen-3xl mx-auto w-full">
-      <Content planId={planId} period={period} userPhone={user.phone} />
+      <Content
+        userId={user.id}
+        planId={planId}
+        period={period}
+        userPhone={user.phone}
+      />
     </div>
   );
 };

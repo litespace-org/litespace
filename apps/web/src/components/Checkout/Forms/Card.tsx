@@ -20,7 +20,7 @@ import { first, isEmpty } from "lodash";
 import { useHotkeys } from "react-hotkeys-hook";
 import { env } from "@/lib/env";
 import { useOnError } from "@/hooks/error";
-import { IPlan, Void } from "@litespace/types";
+import { IPlan, ITransaction, Void } from "@litespace/types";
 import { useToast } from "@litespace/ui/Toast";
 import { IframeMessage } from "@/constants/iframe";
 import { useLogger } from "@litespace/headless/logger";
@@ -35,10 +35,13 @@ type Form = {
 };
 
 const Payment: React.FC<{
+  userId: number;
   planId: number;
   period: IPlan.PeriodLiteral;
   phone: string | null;
-}> = ({ planId, period, phone }) => {
+  transactionId?: number;
+  transactionStatus?: ITransaction.Status;
+}> = ({ userId, planId, period, phone, transactionId, transactionStatus }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const logger = useLogger();
@@ -62,6 +65,10 @@ const Payment: React.FC<{
     onError: onCancelError,
     onSuccess() {
       confirmClosePayDialog.hide();
+      payWithCard.reset();
+      toast.success({
+        title: intl("checkout.payment.cancel-success"),
+      });
     },
   });
 
@@ -111,13 +118,25 @@ const Payment: React.FC<{
     },
   });
 
-  const { query: addCardTokenUrlQuery } = useGetAddCardUrl();
-  const { query: findCardTokensQuery } = useFindCardTokens();
+  const addCardTokenUrlQuery = useGetAddCardUrl();
+  const findCardTokensQuery = useFindCardTokens(userId);
+
+  useOnError({
+    type: "query",
+    error: findCardTokensQuery.error,
+    keys: findCardTokensQuery.keys,
+  });
+
+  useOnError({
+    type: "query",
+    error: addCardTokenUrlQuery.error,
+    keys: addCardTokenUrlQuery.keys,
+  });
 
   const cardOptions = useMemo((): SelectList<string> => {
     if (!findCardTokensQuery.data) return [];
     return findCardTokensQuery.data.cards.map((card) => ({
-      label: `${card.lastFourDigits} **** **** ****`,
+      label: `**** **** **** ${card.lastFourDigits} `,
       value: card.token,
     }));
   }, [findCardTokensQuery.data]);
@@ -172,7 +191,7 @@ const Payment: React.FC<{
     "ctrl+d",
     () => {
       if (!form.state.card) return;
-      deleteCardToken.mutate({ cardToken: form.state.card });
+      deleteCardToken.mutate({ cardToken: form.state.card, userId });
     },
     {
       preventDefault: true,
@@ -181,16 +200,35 @@ const Payment: React.FC<{
     [deleteCardToken, form.state]
   );
 
+  // ==================== transaction status ====================
+
+  const isTransactionPending = useMemo(() => {
+    return (
+      payWithCard.data?.transactionId !== transactionId ||
+      (payWithCard.data?.transactionId === transactionId &&
+        transactionStatus === ITransaction.Status.New)
+    );
+  }, [payWithCard.data, transactionId, transactionStatus]);
+
   // ==================== unsaved changes ====================
 
-  useBlock(() => {
-    return (
-      addCardDialog.open ||
-      confirmCloseAddCardDialog.open ||
-      !!payWithCard.data ||
-      confirmClosePayDialog.open
-    );
-  });
+  useBlock(
+    () => {
+      return (
+        addCardDialog.open ||
+        confirmCloseAddCardDialog.open ||
+        !!payWithCard.data ||
+        confirmClosePayDialog.open ||
+        payWithCard.isPending
+      );
+    },
+    () => {
+      if (isTransactionPending && payWithCard.data)
+        return cancelUnpaidOrder.mutate({
+          transactionId: payWithCard.data.transactionId,
+        });
+    }
+  );
 
   return (
     <div>
@@ -324,7 +362,9 @@ const Payment: React.FC<{
         <IframeDialog
           open
           onOpenChange={(open) => {
-            if (!open) payWithCard.reset();
+            if (!open && isTransactionPending)
+              return confirmClosePayDialog.show();
+            return payWithCard.reset();
           }}
           url={payWithCard.data.redirectUrl}
         />
@@ -338,6 +378,14 @@ const Payment: React.FC<{
         canceling={cancelUnpaidOrder.isPending}
         cancel={() => {
           if (!payWithCard.data) return;
+
+          // only cancel the transaction in case it is still in the `new` status
+          if (
+            payWithCard.data.transactionId === transactionId &&
+            transactionStatus !== ITransaction.Status.New
+          )
+            return;
+
           cancelUnpaidOrder.mutate({
             transactionId: payWithCard.data.transactionId,
           });
@@ -395,12 +443,12 @@ const ConfirmClosePayDialog: React.FC<{
       actions={{
         primary: {
           label: intl("labels.go-back"),
-          loading: canceling,
           disabled: canceling,
           onClick: back,
         },
         secondary: {
           label: intl("labels.confirm"),
+          loading: canceling,
           disabled: canceling,
           onClick: cancel,
         },

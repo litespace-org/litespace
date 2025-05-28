@@ -17,7 +17,7 @@ function asParts(orderRefNum: number) {
   return [ref.substring(0, 3), ref.substring(3, 6), ref.substring(6)];
 }
 
-const PayWithFawryStatus: React.FC<{
+const Status: React.FC<{
   orderRefNum: number;
   cancel: Void;
   canceling: boolean;
@@ -91,4 +91,4 @@ const PayWithFawryStatus: React.FC<{
   );
 };
 
-export default PayWithFawryStatus;
+export default Status;

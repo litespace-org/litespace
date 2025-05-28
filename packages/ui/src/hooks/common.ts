@@ -1,3 +1,4 @@
+import { Void } from "@litespace/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useBlocker, useNavigate } from "react-router-dom";
 
@@ -21,7 +22,7 @@ export function useRender() {
   };
 }
 
-export function useBlock(block?: boolean | (() => boolean)) {
+export function useBlock(block?: boolean | (() => boolean), onLeave?: Void) {
   const blockRef = useRef(block);
 
   useEffect(() => {
@@ -34,9 +35,10 @@ export function useBlock(block?: boolean | (() => boolean)) {
   }, []);
 
   useBlocker(() => {
-    if (shouldBlock())
-      return !window.confirm("Changes you made may not be saved.");
-    return false;
+    if (!shouldBlock()) return false;
+    const block = !window.confirm("Changes you made may not be saved.");
+    if (!block) onLeave?.();
+    return block;
   });
 
   const onBeforeUnload = useCallback(

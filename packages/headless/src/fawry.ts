@@ -4,8 +4,7 @@ import { useCallback, useMemo } from "react";
 import { MutationKey, QueryKey } from "@/constants";
 import { OnError, OnSuccess } from "@/types/query";
 import { IFawry } from "@litespace/types";
-
-const getAddCardTokenUrlQueryKeys = [QueryKey.GetAddCardTokenUrl];
+import { useExtendedQuery } from "@/query";
 
 export function useGetAddCardUrl() {
   const api = useApi();
@@ -15,30 +14,24 @@ export function useGetAddCardUrl() {
     [api.fawry]
   );
 
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: getAddCardTokenUrl,
-    queryKey: getAddCardTokenUrlQueryKeys,
+    queryKey: [QueryKey.GetAddCardTokenUrl],
   });
-
-  return { query, keys: getAddCardTokenUrlQueryKeys };
 }
 
-const findCardTokensQueryKeys = [QueryKey.FindCardTokens];
-
-export function useFindCardTokens() {
+export function useFindCardTokens(userId: number) {
   const api = useApi();
 
   const findCardTokens = useCallback(
-    () => api.fawry.findCardTokens(),
-    [api.fawry]
+    () => api.fawry.findCardTokens({ userId }),
+    [api.fawry, userId]
   );
 
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: findCardTokens,
-    queryKey: findCardTokensQueryKeys,
+    queryKey: [QueryKey.FindCardTokens, userId],
   });
-
-  return { query, keys: findCardTokensQueryKeys };
 }
 
 export function useDeleteCardToken({

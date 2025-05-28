@@ -41,12 +41,19 @@ const StatusContainer: React.FC<{
   }, [cancelUnpaidOrder, transactionId]);
 
   if (paymentMethod === ITransaction.PaymentMethod.Card)
-    return <PayWithCardStatus transactionId={transactionId} />;
+    return (
+      <PayWithCardStatus
+        cancel={cancel}
+        canceling={cancelUnpaidOrder.isPending}
+        disabled={syncing}
+      />
+    );
 
   if (paymentMethod === ITransaction.PaymentMethod.EWallet)
     return (
       <PayWithEWalletStatus
         canceling={cancelUnpaidOrder.isPending}
+        disabled={syncing}
         cancel={cancel}
       />
     );
