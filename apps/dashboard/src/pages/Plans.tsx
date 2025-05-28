@@ -1,19 +1,21 @@
 import PageTitle from "@/components/Common/PageTitle";
 import List from "@/components/Plans/List";
-import CreatePlan from "@/components/Plans/CreatePlan";
+import ManagePlan from "@/components/Plans/ManagePlan";
 import AddCircle from "@litespace/assets/AddCircle";
 import { usePlans } from "@litespace/headless/plans";
+import { IPlan } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { useRender } from "@litespace/ui/hooks/common";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
-import React from "react";
+import React, { useState } from "react";
 
 export const Plans: React.FC = () => {
   const intl = useFormatMessage();
   const render = useRender();
   const plans = usePlans();
+  const [selectedPlan, setSelectedPlan] = useState<IPlan.Self | null>(null);
 
   return (
     <div
@@ -35,11 +37,17 @@ export const Plans: React.FC = () => {
           </Typography>
         </Button>
 
-        <CreatePlan
-          open={render.open}
-          close={render.hide}
-          refetch={plans.query.refetch}
-        />
+        {selectedPlan || render.open ? (
+          <ManagePlan
+            open={true}
+            plan={selectedPlan}
+            close={() => {
+              render.hide();
+              setSelectedPlan(null);
+            }}
+            refetch={plans.query.refetch}
+          />
+        ) : null}
       </header>
 
       <List
@@ -53,6 +61,7 @@ export const Plans: React.FC = () => {
         fetching={plans.query.isFetching}
         loading={plans.query.isLoading}
         refetch={plans.query.refetch}
+        editPlan={setSelectedPlan}
       />
     </div>
   );

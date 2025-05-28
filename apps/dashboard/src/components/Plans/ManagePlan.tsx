@@ -1,4 +1,4 @@
-import { useCreatePlan } from "@litespace/headless/plans";
+import { useCreatePlan, useUpdatePlan } from "@litespace/headless/plans";
 import { Button } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -23,6 +23,7 @@ import {
   price,
 } from "@litespace/utils";
 import { flow } from "lodash";
+import Edit from "@litespace/assets/Edit";
 
 type Form = {
   weeklyMinutes: number;
@@ -36,14 +37,25 @@ function calcPriceAfterDiscount(price: number, discount: number): number {
   return price - (price * discount) / 100;
 }
 
-const CreatePlan: React.FC<{
+/**
+ * This component can create plans from scratch and can edit the plans,
+ * It determines its behavior by the plan prop, if it's there then it will edit the current plan
+ * otherwise create new one
+ *
+ * @NOTE be careful about scaling and unscaling:
+ *  - we show data as unscaled numbers
+ *  - we send the data as scaled numbers
+ */
+const ManagePlan: React.FC<{
   open: boolean;
   refetch: Void;
   close: Void;
-}> = ({ open, refetch, close }) => {
+  plan: IPlan.Self | null;
+}> = ({ open, refetch, close, plan }) => {
   const intl = useFormatMessage();
   const toast = useToast();
 
+  // ============ Form Control ==================
   const validators = useMakeValidators<Form>({
     weeklyMinutes: {
       required: true,
@@ -66,15 +78,27 @@ const CreatePlan: React.FC<{
 
   const form = useForm<Form>({
     defaults: {
-      weeklyMinutes: 0,
-      baseMonthlyPrice: 0,
-      monthDiscount: 0,
-      quarterDiscount: 0,
-      yearDiscount: 0,
+      weeklyMinutes: plan?.weeklyMinutes || 0,
+      baseMonthlyPrice: price.unscale(plan?.baseMonthlyPrice || 0),
+      monthDiscount: price.unscale(plan?.monthDiscount || 0),
+      quarterDiscount: price.unscale(plan?.quarterDiscount || 0),
+      yearDiscount: price.unscale(plan?.yearDiscount || 0),
     },
     validators,
     onSubmit(data) {
-      const payload: IPlan.CreatePayload = {
+      if (plan) {
+        const updatePayload: IPlan.UpdateApiPayload = {
+          weeklyMinutes: data.weeklyMinutes,
+          baseMonthlyPrice: price.scale(data.baseMonthlyPrice), // scaled
+          monthDiscount: percentage.scale(data.monthDiscount), // scaled
+          quarterDiscount: percentage.scale(data.quarterDiscount), // scaled
+          yearDiscount: percentage.scale(data.yearDiscount),
+        };
+        updatePlan.mutate({ id: plan.id, payload: updatePayload });
+        return;
+      }
+
+      const createPayload: IPlan.CreatePayload = {
         weeklyMinutes: data.weeklyMinutes,
         baseMonthlyPrice: price.scale(data.baseMonthlyPrice), // scaled
         monthDiscount: percentage.scale(data.monthDiscount), // scaled
@@ -83,24 +107,20 @@ const CreatePlan: React.FC<{
         active: false,
         forInvitesOnly: false,
       };
-      createPlan.mutate(payload);
+      createPlan.mutate(createPayload);
     },
   });
 
-  const onClose = useCallback(() => {
-    form.reset();
-    close();
-  }, [close, form]);
-
-  const onSuccess = useCallback(() => {
+  // ============ Create Mutation ==================
+  const onCreateSuccess = useCallback(() => {
     toast.success({
       title: intl("dashboard.plan.form.create.success"),
     });
     refetch();
-    onClose();
-  }, [intl, onClose, refetch, toast]);
+    close();
+  }, [intl, close, refetch, toast]);
 
-  const onError = useCallback(
+  const onCreateError = useCallback(
     (error: Error) => {
       toast.error({
         title: intl("dashboard.plan.form.create.error"),
@@ -110,8 +130,58 @@ const CreatePlan: React.FC<{
     [intl, toast]
   );
 
-  const createPlan = useCreatePlan({ onSuccess, onError });
+  const createPlan = useCreatePlan({
+    onSuccess: onCreateSuccess,
+    onError: onCreateError,
+  });
 
+  // ============ Update Plan Mutation ==================
+  const onUpdateSuccess = useCallback(() => {
+    toast.success({
+      title: intl("dashboard.plan.form.edit.success"),
+    });
+    refetch();
+    close();
+  }, [refetch, close, intl, toast]);
+
+  const onUpdateError = useCallback(
+    (error: Error) => {
+      toast.error({
+        title: intl("dashboard.plans.update-error"),
+        description: error.message,
+      });
+    },
+    [intl, toast]
+  );
+
+  const updatePlan = useUpdatePlan({
+    onSuccess: onUpdateSuccess,
+    onError: onUpdateError,
+  });
+
+  // ============ Dialog Title ==================
+  const Title = useMemo(() => {
+    if (plan)
+      return (
+        <div className="flex gap-2 items-center">
+          <Edit className="w-6 h-6 [&>*]:stroke-natural-950" />
+          <Typography tag="span" className="text-subtitle-2 font-bold">
+            {intl("dashboard.plans.edit.title")}
+          </Typography>
+        </div>
+      );
+
+    return (
+      <div className="flex gap-2 items-center">
+        <AddCircle className="w-6 h-6 [&>*]:stroke-natural-950" />
+        <Typography tag="span" className="text-subtitle-2 font-bold">
+          {intl("dashboard.plans.create.title")}
+        </Typography>
+      </div>
+    );
+  }, [plan, intl]);
+
+  // ============ Label Helpers ==================
   const formatDisountHelper = useCallback(
     (disount: number, period: IPlan.PeriodLiteral) => {
       const before =
@@ -172,19 +242,7 @@ const CreatePlan: React.FC<{
   ]);
 
   return (
-    <Dialog
-      open={open}
-      close={onClose}
-      title={
-        <div className="flex gap-2 items-center">
-          <AddCircle className="w-6 h-6 [&>*]:stroke-natural-950" />
-          <Typography tag="span" className="text-subtitle-2 font-bold">
-            {intl("dashboard.plans.create.title")}
-          </Typography>
-        </div>
-      }
-      className="w-[512px]"
-    >
+    <Dialog open={open} close={close} title={Title} className="w-[512px]">
       <form onSubmit={form.onSubmit}>
         <div className="py-6 flex flex-col gap-4">
           <NumericInput
@@ -268,19 +326,24 @@ const CreatePlan: React.FC<{
         <div className="flex gap-6">
           <Button
             size="large"
-            loading={createPlan.isPending}
-            disabled={createPlan.isPending}
+            loading={createPlan.isPending || updatePlan.isPending}
+            disabled={createPlan.isPending || updatePlan.isPending}
             htmlType="submit"
             className="flex-1"
           >
-            {intl("dashboard.plans.create.submit")}
+            {intl(
+              plan
+                ? "dashboard.plans.edit.submit"
+                : "dashboard.plans.create.submit"
+            )}
           </Button>
           <Button
             size="large"
             variant="secondary"
-            disabled={createPlan.isPending}
+            disabled={createPlan.isPending || updatePlan.isPending}
             className="flex-1"
-            onClick={onClose}
+            onClick={close}
+            htmlType="button"
           >
             {intl("labels.cancel")}
           </Button>
@@ -290,4 +353,4 @@ const CreatePlan: React.FC<{
   );
 };
 
-export default CreatePlan;
+export default ManagePlan;

@@ -4,6 +4,7 @@ import Price from "@/components/Common/Price";
 import { useUpdatePlan } from "@litespace/headless/plans";
 import { IPlan, Void } from "@litespace/types";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
+import { Menu } from "@litespace/ui/Menu";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -12,14 +13,16 @@ import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo } from "react";
 import { PLAN_PERIOD_LITERAL_TO_MONTH_COUNT } from "@litespace/utils";
 import { Switch } from "@litespace/ui/Switch";
+import MessageEdit from "@litespace/assets/MessageEdit";
 
 const List: React.FC<
   {
     list?: IPlan.FindApiResponse["list"];
     error: boolean;
     refetch: Void;
+    editPlan: (plan: IPlan.Self) => void;
   } & TableNaviationProps
-> = ({ list, refetch, error, fetching, loading, ...naviation }) => {
+> = ({ list, refetch, error, editPlan, fetching, loading, ...naviation }) => {
   const intl = useFormatMessage();
   const toast = useToast();
 
@@ -138,7 +141,7 @@ const List: React.FC<
         },
       }),
       columnHelper.accessor("active", {
-        id: "actions",
+        id: "state",
         header: () => (
           <Typography tag="p" className="text-body font-bold text-natural-950">
             {intl("dashboard.plans.state")}
@@ -158,8 +161,27 @@ const List: React.FC<
           />
         ),
       }),
+      columnHelper.display({
+        id: "actions",
+        header: () => (
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.actions")}
+          </Typography>
+        ),
+        cell: (info) => (
+          <Menu
+            actions={[
+              {
+                label: intl("dashboard.plans.actions.edit-plans"),
+                icon: <MessageEdit />,
+                onClick: () => editPlan(info.row.original),
+              },
+            ]}
+          />
+        ),
+      }),
     ],
-    [columnHelper, intl, mutation]
+    [columnHelper, intl, mutation, editPlan]
   );
 
   if (loading)
