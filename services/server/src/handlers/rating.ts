@@ -5,7 +5,6 @@ import { NextFunction } from "express";
 import safeRequest from "express-async-handler";
 import {
   id,
-  number,
   pagination,
   rating,
   string,
@@ -24,7 +23,7 @@ import zod from "zod";
 const createRatingPayload = zod.object({
   rateeId: id,
   value: rating,
-  feedback: zod.optional(zod.union([zod.null(), zod.string()])),
+  feedback: zod.union([zod.null(), zod.string()]),
 });
 
 const updateRatingPayload = zod.object({
@@ -32,17 +31,13 @@ const updateRatingPayload = zod.object({
   feedback: zod.optional(string),
 });
 
-const findTutorRatingsQuery = zod.object({
-  page: zod.optional(number),
-  size: zod.optional(number),
-});
-
 async function createRating(req: Request, res: Response, next: NextFunction) {
   const rater = req.user;
   const allowed = isStudent(rater) || isTutor(rater);
   if (!allowed) return next(forbidden());
 
-  const { rateeId, value, feedback } = createRatingPayload.parse(req.body);
+  const { rateeId, value, feedback }: IRating.CreateApiPayload =
+    createRatingPayload.parse(req.body);
   const ratee = await users.findById(rateeId);
   if (!ratee) return next(notfound.rating());
 
@@ -58,7 +53,7 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
 
   if (rating) return next(exists.rate());
 
-  const data = await ratings.create({
+  const data: IRating.CreateApiResponse = await ratings.create({
     raterId: rater.id,
     rateeId,
     value,
@@ -74,7 +69,7 @@ async function updateRating(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const { id } = withNamedId("id").parse(req.params);
-  const payload = updateRatingPayload.parse(req.body);
+  const payload: IRating.UpdateApiPayload = updateRatingPayload.parse(req.body);
   const rating = await ratings.findSelfById(id);
   if (!rating) return next(notfound.rating());
 
@@ -87,7 +82,6 @@ async function updateRating(req: Request, res: Response, next: NextFunction) {
 
 async function deleteRating(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  // NOTE: can tutors remove ratings?!
   const allowed = isStudent(user) || isTutor(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
@@ -107,8 +101,9 @@ async function findRatings(req: Request, res: Response, next: NextFunction) {
   const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const query = pagination.parse(req.query);
+  const query: IRating.FindRatingsApiQuery = pagination.parse(req.query);
   const result = await ratings.find(query);
+
   const response: IRating.FindRatingsApiResponse = result;
   res.status(200).json(response);
 }
@@ -157,7 +152,9 @@ async function findTutorRatings(
   const user = req.user;
 
   const { id } = withNamedId("id").parse(req.params);
-  const { page, size } = findTutorRatingsQuery.parse(req.query);
+  const { page, size }: IRating.FindTutorRatingsApiQuery = pagination.parse(
+    req.query
+  );
 
   const tutor = await tutors.findById(id);
   if (!tutor) return next(notfound.tutor());
@@ -184,7 +181,9 @@ async function findRatingById(req: Request, res: Response, next: NextFunction) {
   const allowed =
     (isUser(user) && user.id === rating.rater.id) || isAdmin(user);
   if (!allowed) return next(forbidden());
-  res.status(200).json(rating);
+
+  const response: IRating.FindRatingByIdApiResponse = rating;
+  res.status(200).json(response);
 }
 
 export default {

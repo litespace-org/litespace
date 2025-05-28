@@ -246,6 +246,16 @@ async function tutor(
   return tutor;
 }
 
+async function tutorUser(
+  userPayload?: Partial<IUser.CreatePayload>,
+  tutorPayload?: Partial<ITutor.UpdatePayload>
+) {
+  const info = await user({ ...userPayload, role: IUser.Role.Tutor });
+  const tutor = await tutors.create(info.id);
+  await tutors.update(tutor.id, tutorPayload || {});
+  return info;
+}
+
 async function onboardedTutor() {
   const newTutor = await tutor();
 
@@ -575,6 +585,7 @@ async function subscription(
 export default {
   user,
   tutor,
+  tutorUser,
   onboardedTutor,
   student,
   tutorManager,
