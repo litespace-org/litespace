@@ -17,6 +17,13 @@ services:
       - postgres
     restart: unless-stopped
 
+  reacherhq:
+    container_name: reacherhq
+    image: reacherhq/backend
+    ports:
+      - "127.0.0.1:4009:8080"
+    restart: unless-stopped
+
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
