@@ -24,7 +24,6 @@ const publicRoutes: Web[] = [
   Web.ForgetPassword,
   Web.ResetPassword,
   Web.Register,
-  Web.TutorProfile,
   Web.CardAdded,
 ];
 
@@ -65,7 +64,7 @@ const Root: React.FC = () => {
       router.match(Web.TutorAccountSettings, location.pathname);
     const completedProfile = !!meta && isProfileComplete({ ...user, ...meta });
     if (tutor && completedProfile && root) return navigate(Web.TutorDashboard);
-    if (tutor && !completedProfile && !settings)
+    if (tutor && !completedProfile && !settings && !publicRoute)
       return navigate(Web.CompleteTutorProfile);
 
     // student redirect

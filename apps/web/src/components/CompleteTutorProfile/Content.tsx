@@ -171,6 +171,7 @@ const Content: React.FC<{
         },
       });
     },
+    validationDeps: [verifiedEmail, verifiedPhone],
   });
 
   return (

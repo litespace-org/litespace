@@ -239,6 +239,7 @@ const PersonalDetails: React.FC<Props> = ({
               state={form.errors?.email ? "error" : undefined}
               helper={form.errors?.email}
               autoComplete="off"
+              disabled={!forStudent}
             />
 
             <PatternInput
