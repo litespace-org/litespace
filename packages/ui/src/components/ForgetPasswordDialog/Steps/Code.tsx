@@ -69,7 +69,8 @@ export const Code: React.FC<{
         />
         <Button
           onClick={resend}
-          variant="tertiary"
+          variant="primary"
+          type="natural"
           size="medium"
           className="mx-auto"
           disabled={sendingCode}

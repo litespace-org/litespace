@@ -346,6 +346,12 @@ export default {
         4: "4",
         5: "5",
       },
+      borderColor: {
+        "default-brand": "#19245233",
+        "active-brand": "#19245280",
+        "default-natural": "#4D4D4D33",
+        "active-natural": "#4D4D4D80",
+      },
     },
     boxShadow: {
       "ls-x-small": "0px 6px 20px 0px rgba(0, 0, 0, 0.08)",

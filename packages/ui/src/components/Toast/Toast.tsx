@@ -105,14 +105,14 @@ export const Toast: React.FC<{
           {actions.map((action, idx) => (
             <Button
               key={idx}
-              variant="tertiary"
+              variant="primary"
+              type="natural"
+              loading={action.loading}
+              disabled={action.disabled}
               onClick={() => {
                 const shouldClose = action.onClick?.();
                 if (shouldClose) onOpenChange?.(false);
               }}
-              loading={action.loading}
-              disabled={action.disabled}
-              type="main"
             >
               <Typography
                 tag="span"
