@@ -115,7 +115,8 @@ const SlotRow: React.FC<{
         <motion.div style={{ visibility: remove ? "visible" : "hidden" }}>
           <Button
             size="small"
-            variant="tertiary"
+            variant="primary"
+            type="natural"
             onClick={remove}
             startIcon={<Close className="icon" />}
           />

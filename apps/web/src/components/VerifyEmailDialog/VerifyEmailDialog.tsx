@@ -76,7 +76,8 @@ export const VerifyEmailDialog: React.FC<{
               resend();
               setCode(0);
             }}
-            variant="tertiary"
+            variant="primary"
+            type="natural"
             size="medium"
             className="mx-auto"
             disabled={sending || verifiying}

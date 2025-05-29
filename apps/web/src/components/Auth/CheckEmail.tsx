@@ -30,7 +30,8 @@ const CheckEmail: React.FC<{ resending: boolean; resend: Void }> = ({
         disabled={resending}
         loading={resending}
         onClick={resend}
-        variant="tertiary"
+        variant="secondary"
+        type="natural"
       >
         {intl("verify-email.check-resend")}
       </Button>

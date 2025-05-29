@@ -113,7 +113,7 @@ export const Select = <T extends string | number>({
               "bg-natural-50 transition-colors duration-200",
               "transition-colors duration-200",
               "disabled:cursor-not-allowed disabled:bg-natural-100 disabled:border-natural-200",
-              "focus-visible:outline-none focus-visible:ring-2 focus:ring-secondary-600",
+              "focus-visible:outline-none focus-visible:ring-2 focus:ring-brand-600",
               "border",
               {
                 // default or filled

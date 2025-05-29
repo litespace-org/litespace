@@ -17,7 +17,7 @@ const Register: React.FC = () => {
 
         <div className="flex-1 flex flex-col sm:justify-center max-w-[404px] w-full">
           <div className="flex flex-row items-center justify-center gap-4 mb-6 sm:mb-8">
-            <Logo className="h-[87px]" />
+            <Logo className="h-[87px] w-[87px]" />
             <div className="flex flex-col gap-2 items-start justify-center">
               <Typography tag="h1" className="text-brand-500 text-h3 font-bold">
                 {intl("labels.litespace")}

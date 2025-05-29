@@ -45,7 +45,8 @@ const TutorCard: React.FC<Props> = ({ image, name, email, createdAt, id }) => {
         </Typography>
 
         <Button
-          variant="tertiary"
+          type="natural"
+          variant="primary"
           startIcon={<ArrowLeft className="w-4 h-4" />}
           onClick={() =>
             navigate(

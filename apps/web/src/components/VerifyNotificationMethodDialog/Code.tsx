@@ -58,7 +58,8 @@ export const Code: React.FC<Props> = ({
             disabled={verifing || resending}
             loading={resending}
             className="font-medium"
-            variant="tertiary"
+            variant="primary"
+            type="natural"
             size="small"
           >
             <Typography tag="p" className="flex font-medium">
