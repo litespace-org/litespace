@@ -1,7 +1,7 @@
 export enum Type {
-  Wallet = "wallet",
-  Bank = "bank",
-  Instapay = "instapay",
+  Wallet = 0,
+  Bank = 1,
+  Instapay = 2,
 }
 
 export type Self = {

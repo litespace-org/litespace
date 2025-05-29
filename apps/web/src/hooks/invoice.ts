@@ -4,13 +4,11 @@ import { useMemo } from "react";
 export function useInvoiceStatus(status: IInvoice.Status) {
   return useMemo(
     () => ({
-      pending: status === IInvoice.Status.Pending,
-      canceledByReceiver: status === IInvoice.Status.CanceledByReceiver,
-      cancellationApprovedByAdmin:
-        status === IInvoice.Status.CancellationApprovedByAdmin,
-      fulfilled: status === IInvoice.Status.Fulfilled,
+      pendingApproval: status === IInvoice.Status.PendingApproval,
+      PendingCancellation: status === IInvoice.Status.PendingCancellation,
+      approved: status === IInvoice.Status.Approved,
+      canceled: status === IInvoice.Status.Canceled,
       rejected: status === IInvoice.Status.Rejected,
-      updatedByReceiver: status === IInvoice.Status.UpdatedByReceiver,
     }),
     [status]
   );

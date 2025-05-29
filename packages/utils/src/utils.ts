@@ -58,3 +58,12 @@ export function isEmptyObject<T extends object>(value: T): boolean {
 export function joinUrl(base: string, route: string) {
   return new URL(route, base).href;
 }
+
+/**
+ * Simple function that come in handy in unit tests
+ */
+export function wait(seconds: number) {
+  return new Promise((resolve) =>
+    setTimeout(() => resolve(seconds), seconds * 1000)
+  );
+}

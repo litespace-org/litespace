@@ -56,10 +56,6 @@ const List: React.FC<{
         header: intl("dashboard.invoices.receiver"),
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor("bank", {
-        header: intl("dashboard.invoices.bank"),
-        cell: (info) => info.getValue(),
-      }),
       columnHelper.accessor("amount", {
         header: intl("dashboard.invoices.amount"),
         cell: (info) => formatCurrency(info.getValue()),
@@ -104,11 +100,9 @@ const List: React.FC<{
         id: "actions",
         cell: (info) => {
           const status = info.row.original.status;
-          const fulfilled = status === IInvoice.Status.Fulfilled;
+          const fulfilled = status === IInvoice.Status.Approved;
           const canceledByReceiver =
-            status === IInvoice.Status.CanceledByReceiver;
-          const updatedByReceiver =
-            status === IInvoice.Status.UpdatedByReceiver;
+            status === IInvoice.Status.PendingCancellation;
           const rejected = status === IInvoice.Status.Rejected;
 
           const edit = (action: Action): void => {
@@ -138,12 +132,6 @@ const List: React.FC<{
                 },
                 {
                   id: 4,
-                  label: intl("invoices.process.actions.approveUpdateRequest"),
-                  disabled: !updatedByReceiver,
-                  onClick: () => edit(Action.ApproveUpdateRequest),
-                },
-                {
-                  id: 5,
                   label: intl("invoices.process.actions.markAsRejected"),
                   danger: true,
                   disabled: rejected,

@@ -15,7 +15,6 @@ export { tokens } from "@/tokens";
 export { tutors } from "@/tutors";
 export { users } from "@/users";
 export { rooms } from "@/rooms";
-export { withdrawMethods } from "@/withdrawMethods";
 export { invoices } from "@/invoices";
 export { topics } from "@/topics";
 export { transactions } from "@/transactions";

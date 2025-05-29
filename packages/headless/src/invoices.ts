@@ -91,23 +91,6 @@ export function useFindInvoiceStats(tutorId?: number): {
   return { query, keys };
 }
 
-export function useFindWithdrawalMethods() {
-  const api = useApi();
-
-  const findWithdrawalMethods = useCallback(() => {
-    return api.withdrawMethod.find();
-  }, [api.withdrawMethod]);
-
-  const keys = useMemo(() => [QueryKey.FindWithdrawalMethods], []);
-
-  const query = useQuery({
-    queryFn: findWithdrawalMethods,
-    queryKey: keys,
-  });
-
-  return { query, keys };
-}
-
 export function useCreateInvoice({
   onSuccess,
   onError,
@@ -127,59 +110,6 @@ export function useCreateInvoice({
   return useMutation({
     mutationFn: createUserInvoice,
     mutationKey: [MutationKey.CreateInvoice],
-    onSuccess,
-    onError,
-  });
-}
-
-export function useEditUserInvoice({
-  onSuccess,
-  onError,
-}: {
-  onSuccess: OnSuccess;
-  onError: OnError;
-}) {
-  const api = useApi();
-  const updateUserInvoice = useCallback(
-    async ({
-      id,
-      payload,
-    }: {
-      id: number;
-      payload: IInvoice.UpdateByReceiverApiPayload;
-    }) => {
-      return await api.invoice.updateByReceiver(id, payload);
-    },
-    [api.invoice]
-  );
-  return useMutation({
-    mutationFn: updateUserInvoice,
-    mutationKey: [MutationKey.EditInvoice],
-    onSuccess,
-    onError,
-  });
-}
-
-export function useCancelInvoiceById({
-  id,
-  onSuccess,
-  onError,
-}: {
-  id: number;
-  onSuccess: OnSuccess;
-  onError: OnError;
-}) {
-  const api = useApi();
-
-  const cancel = useCallback(async () => {
-    return await api.invoice.updateByReceiver(id, {
-      cancel: true,
-    });
-  }, [api.invoice, id]);
-
-  return useMutation({
-    mutationFn: cancel,
-    mutationKey: [MutationKey.CancelInvoice],
     onSuccess,
     onError,
   });

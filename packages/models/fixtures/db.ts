@@ -12,6 +12,7 @@ import {
   tutors,
   availabilitySlots,
   contactRequests,
+  invoices,
 } from "@/index";
 import {
   IInterview,
@@ -44,6 +45,7 @@ export async function flush() {
     await subscriptions.builder(tx).del();
     await transactions.builder(tx).del();
     await plans.builder(tx).del();
+    await invoices.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();

@@ -20,7 +20,6 @@ export * as Wss from "@/wss";
 export * as IAvailabilitySlot from "@/availabilitySlot";
 export * as IDate from "@/date";
 export * as ILesson from "@/lesson";
-export * as IWithdrawMethod from "@/withdrawMethod";
 export * as IInvoice from "@/invoice";
 export * as IAsset from "@/asset";
 export * as ITopic from "@/topic";
@@ -34,10 +33,10 @@ export * as IMessenger from "@/messenger";
 export * as IKafka from "@/kafka";
 export * as IFawry from "@/fawry";
 export * as ITransaction from "@/transaction";
+export * as IWithdrawMethod from "@/withdrawMethod";
 
 export * from "@/api";
 export * from "@/utils";
 export * from "@/validation";
 
-export { banks, type Bank } from "@/invoice";
-export { Type as WithdrawMethod } from "@/withdrawMethod";
+export { type Bank, BANKS, ReceiptFileKey } from "@/invoice";
