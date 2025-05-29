@@ -9,18 +9,21 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";
 import { useUser } from "@litespace/headless/context/user";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKey } from "@litespace/headless/constants";
 
 type Props = {
-  close: Void;
   emailSent?: boolean;
   open: boolean;
+  close: Void;
 };
 
 export const VerifyEmail: React.FC<Props> = ({ close, emailSent, open }) => {
   const [sent, setSent] = useState(emailSent);
   const toast = useToast();
   const intl = useFormatMessage();
-  const { user, refetch } = useUser();
+  const { user } = useUser();
+  const queryClient = useQueryClient();
 
   const onSendError = useOnError({
     type: "mutation",
@@ -49,14 +52,12 @@ export const VerifyEmail: React.FC<Props> = ({ close, emailSent, open }) => {
     sendMutation.mutate();
   }, [open, sendMutation, sent]);
 
-  const onVerifySuccess = useCallback(() => {
+  const onVerifySuccess = useCallback(async () => {
     close();
     sendMutation.reset();
-    refetch.user();
-    toast.success({
-      title: intl("verify-email-dialog.success"),
-    });
-  }, [close, sendMutation, refetch, toast, intl]);
+    queryClient.invalidateQueries({ queryKey: [QueryKey.FindCurrentUser] });
+    toast.success({ title: intl("verify-email-dialog.success") });
+  }, [close, sendMutation, queryClient, toast, intl]);
 
   const onVerifyError = useOnError({
     type: "mutation",

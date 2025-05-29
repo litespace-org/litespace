@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { LocalId } from "@/locales";
 import { useFormatMessage } from "@/hooks/intl";
 import { FieldError } from "@litespace/types";
@@ -137,18 +137,13 @@ export function useMakeValidators<T extends object>(validators: {
   [K in keyof T]?: ValidatePayload<T, K>;
 }): Validators<T> {
   const intl = useFormatMessage();
-  const validatorsRef = useRef(validators);
-
-  useEffect(() => {
-    validatorsRef.current = validators;
-  });
 
   return useMemo(() => {
     const output: Validators<T> = {};
 
-    for (const key of keys(validatorsRef.current)) {
+    for (const key of keys(validators)) {
       const safeKey = key as keyof T;
-      const safeValue = validatorsRef.current[safeKey];
+      const safeValue = validators[safeKey];
       if (!safeValue?.required && !safeValue?.validate) continue;
 
       output[safeKey] = (value, state) => {
@@ -161,5 +156,5 @@ export function useMakeValidators<T extends object>(validators: {
     }
 
     return output;
-  }, [intl]);
+  }, [intl, validators]);
 }

@@ -1,11 +1,12 @@
 import { entries, isEmpty } from "lodash";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Config<T extends object> = {
   defaults: T;
   onSubmit: (data: T) => void;
   validators?: Validators<T>;
   resetOnSubmit?: boolean;
+  validationDeps?: unknown[];
 };
 
 export type Validators<T extends object> = {
@@ -15,12 +16,6 @@ export type Validators<T extends object> = {
 export type ErrorMap<T extends object> = { [key in keyof T]?: string };
 
 export function useForm<T extends object>(config: Config<T>) {
-  const configRef = useRef(config);
-
-  useEffect(() => {
-    configRef.current = config;
-  });
-
   const [state, setState] = useState<T>(config.defaults);
   const [errors, setErrors] = useState<ErrorMap<T>>({});
   const [submitted, setSubmitted] = useState<boolean>(false);
@@ -31,7 +26,7 @@ export function useForm<T extends object>(config: Config<T>) {
       const updated = { ...cloned, [key]: value };
       setState(updated);
 
-      const validate = configRef.current.validators?.[key];
+      const validate = config.validators?.[key];
       if (!validate || !submitted) return;
 
       const valid = validate(value, updated);
@@ -43,33 +38,39 @@ export function useForm<T extends object>(config: Config<T>) {
         };
       });
     },
-    [state, submitted]
+    [config.validators, state, submitted]
   );
 
   const reset = useCallback(() => {
     setSubmitted(false);
-    setState(configRef.current.defaults);
+    setState(config.defaults);
     setErrors({});
-  }, []);
+  }, [config.defaults]);
 
-  const submit = useCallback(() => {
+  const validate = useCallback(() => {
     const errors: ErrorMap<T> = {};
 
     for (const [key, value] of entries(state)) {
       const safeKey = key as keyof T;
       const safeValue = value as T[keyof T];
-      const validate = configRef.current.validators?.[safeKey];
+      const validate = config.validators?.[safeKey];
       if (!validate) continue;
       const valid = validate(safeValue, state);
       if (valid !== true) errors[safeKey] = valid;
     }
 
-    setSubmitted(true);
     setErrors(errors);
-    if (!isEmpty(errors)) return;
-    configRef.current.onSubmit(state);
-    if (configRef.current.resetOnSubmit) reset();
-  }, [reset, state]);
+    const valid = isEmpty(errors);
+    return valid;
+  }, [config.validators, state]);
+
+  const submit = useCallback(() => {
+    setSubmitted(true);
+    const valid = validate();
+    if (!valid) return;
+    config.onSubmit(state);
+    if (config.resetOnSubmit) reset();
+  }, [config, reset, state, validate]);
 
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -88,6 +89,11 @@ export function useForm<T extends object>(config: Config<T>) {
     [config.validators, state]
   );
 
+  useEffect(() => {
+    if (config.validationDeps && submitted) validate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(config.validationDeps)]);
+
   return {
     state,
     errors,
@@ -97,5 +103,6 @@ export function useForm<T extends object>(config: Config<T>) {
     reset,
     onSubmit,
     isValid,
+    validate,
   };
 }
