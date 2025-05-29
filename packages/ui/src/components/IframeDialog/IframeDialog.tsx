@@ -27,8 +27,8 @@ export const IframeDialog: React.FC<{
           <div className="absolute top-0 left-0 w-full bg-natural-50 h-16 flex items-center justify-center px-4 z-iframe-dialog-conent">
             <Button
               onClick={() => onOpenChange?.(false)}
-              type="main"
-              variant="tertiary"
+              type="natural"
+              variant="secondary"
               endIcon={<X className="icon" />}
               className="me-auto"
             />

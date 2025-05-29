@@ -164,9 +164,9 @@ const Sidebar: React.FC = () => {
     >
       <Link
         to={Dashboard.Root}
-        className="flex justify-center lg:justify-start items-center gap-2"
+        className="flex flex-col justify-center lg:justify-start items-center gap-2"
       >
-        <Logo className="h-10 w-10 my-[5px] lg:my-0" />
+        <Logo className="rounded-full h-10 w-10 my-[5px] lg:my-0" />
         <Typography
           tag="h1"
           className="hidden lg:flex text-brand-500 text-tiny lg:text-subtitle-2 font-bold"

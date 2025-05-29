@@ -278,7 +278,8 @@ const ContentHeader: React.FC<{
               )}
             />
           }
-          variant="tertiary"
+          variant="secondary"
+          type="natural"
           size="medium"
           onClick={edit}
         >

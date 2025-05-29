@@ -125,32 +125,32 @@ export const Table = <T extends object>({
           </div>
           <Button
             size="large"
-            type="main"
-            variant="tertiary"
+            type="natural"
+            variant="secondary"
             onClick={() => goto(1)}
             disabled={page <= 1 || loading || fetching}
             startIcon={<ChevronDoubleRight className="icon" />}
           />
           <Button
             size="large"
-            type="main"
-            variant="tertiary"
+            type="natural"
+            variant="primary"
             onClick={prev}
             disabled={page <= 1 || loading || fetching}
             startIcon={<ArrowRight className="icon" />}
           />
           <Button
             size="large"
-            type="main"
-            variant="tertiary"
+            type="natural"
+            variant="primary"
             onClick={next}
             disabled={page >= totalPages || loading || fetching}
             startIcon={<ArrowLeft className="icon" />}
           />
           <Button
             size="large"
-            type="main"
-            variant="tertiary"
+            type="natural"
+            variant="secondary"
             onClick={() => goto(totalPages)}
             disabled={page >= totalPages || loading || fetching}
             startIcon={<ChevronDoubleLeft className="icon" />}

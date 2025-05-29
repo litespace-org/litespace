@@ -18,12 +18,7 @@ const ImageField: React.FC<{
 
   return (
     <>
-      <Button
-        type={"main"}
-        size={"small"}
-        variant="tertiary"
-        onClick={image.show}
-      >
+      <Button type="main" size="small" variant="secondary" onClick={image.show}>
         <Typography
           tag="span"
           className="truncate inline-block w-16 text-caption"

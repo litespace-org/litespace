@@ -1,21 +1,21 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "@/components/Button";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import Home from "@litespace/assets/Home";
+import type { Meta, StoryObj } from "@storybook/react";
 import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Button;
 
 const meta: Meta<Component> = {
-  title: "Button/Main/Primary",
+  title: "Button/Natural/Secondary",
   component: Button,
   parameters: { layout: "centered" },
   args: {
     children: faker.lorem.words({ min: 1, max: 4 }),
     size: "large",
-    variant: "primary",
-    type: "main",
+    type: "natural",
+    variant: "secondary",
   },
   argTypes: {
     children: { control: "text" },
@@ -32,7 +32,6 @@ export const Small: Story = {
 export const Medium: Story = {
   render: (args) => <Button {...args} size="medium" />,
 };
-
 export const Large: Story = {
   render: (args) => <Button {...args} />,
 };
@@ -56,6 +55,17 @@ export const WithEndIcon: Story = {
 export const WithOnlyIcon: Story = {
   render: (args) => (
     <Button {...args} children={null} endIcon={<Home className="icon" />} />
+  ),
+};
+
+export const LocadingIconOnly: Story = {
+  render: (args) => (
+    <Button
+      {...args}
+      children={null}
+      endIcon={<Home className="icon" />}
+      loading
+    />
   ),
 };
 
