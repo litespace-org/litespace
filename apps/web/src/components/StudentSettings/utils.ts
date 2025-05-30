@@ -1,5 +1,5 @@
-import { TabId } from "@/components/StudentSettings/types";
+import { StudentSettingsTabId } from "@litespace/utils/routes";
 
-export function isValidTab(tab: string): tab is TabId {
+export function isValidTab(tab: string): tab is StudentSettingsTabId {
   return ["personal", "password", "notifications", "topics"].includes(tab);
 }

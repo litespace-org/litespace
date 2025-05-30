@@ -17,7 +17,6 @@ export enum Web {
   TutorAccountSettings = "/t/account-settings",
   TutorProfileSettings = "/t/profile-settings",
   StudentSettings = "/s/settings",
-  StudentSettingsV2 = "/s/settings-v2",
   Plans = "/plans",
   TutorOnboarding = "/tutor/onboarding",
   Tutors = "/tutors",
@@ -62,3 +61,9 @@ export enum Dashboard {
   Tutor = "/tutor/:id",
   Tutors = "/tutors",
 }
+
+export type StudentSettingsTabId =
+  | "personal"
+  | "password"
+  | "notifications"
+  | "topics";

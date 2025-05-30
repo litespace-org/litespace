@@ -17,7 +17,6 @@ export function isOnboard({
   phone,
   role,
   city,
-  studioId,
 }: ITutor.Full): boolean {
   const base =
     !!verifiedEmail &&
@@ -28,17 +27,8 @@ export function isOnboard({
     !!phone &&
     !!city &&
     activated;
-
   if (role === IUser.Role.TutorManager) return base;
-
-  return (
-    base &&
-    !!verifiedPhone &&
-    !!video &&
-    !!thumbnail &&
-    !!birthYear &&
-    !!studioId
-  );
+  return base && !!verifiedPhone && !!video && !!thumbnail && !!birthYear;
 }
 
 export function isProfileComplete({

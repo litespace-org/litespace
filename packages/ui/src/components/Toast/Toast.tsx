@@ -106,7 +106,10 @@ export const Toast: React.FC<{
             <Button
               key={idx}
               variant="tertiary"
-              onClick={action.onClick}
+              onClick={() => {
+                const shouldClose = action.onClick?.();
+                if (shouldClose) onOpenChange?.(false);
+              }}
               loading={action.loading}
               disabled={action.disabled}
               type="main"
