@@ -20,7 +20,13 @@ const Hero: React.FC<{
             tag="h1"
             className="text-natural-50 text-subtitle-1 sm:text-h2 font-bold"
           >
-            {intl(title)}
+            {intl.rich(title, {
+              highlight: (text) => (
+                <Typography tag="span" className="text-brand-500">
+                  {text}
+                </Typography>
+              ),
+            })}
           </Typography>
           <Typography
             tag="p"
