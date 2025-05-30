@@ -7,6 +7,9 @@ import React from "react";
 import AddCircle from "@litespace/assets/AddCircle";
 import { useRender } from "@litespace/ui/hooks/common";
 import { Typography } from "@litespace/ui/Typography";
+import { router } from "@/lib/route";
+import { Landing } from "@litespace/utils/routes";
+import { IShortUrl } from "@litespace/types";
 
 const Tutors: React.FC = () => {
   const intl = useFormatMessage();
@@ -20,6 +23,11 @@ const Tutors: React.FC = () => {
           title={intl("dashboard.tutors.title")}
           count={query.data?.total}
           fetching={query.isFetching}
+          url={router.landing({
+            route: Landing.ShortUrl,
+            name: IShortUrl.Id.ManageTutorsDoc,
+            full: true,
+          })}
         />
 
         <CreateTutor

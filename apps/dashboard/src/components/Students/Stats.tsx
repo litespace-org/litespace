@@ -13,7 +13,6 @@ const Stats: React.FC<{
   return (
     <>
       <PageTitle
-        className="p-4"
         title={intl("stats.student.title")}
         fetching={stats.isFetching && !stats.isLoading}
       />

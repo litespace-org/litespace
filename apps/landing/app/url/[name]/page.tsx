@@ -12,6 +12,10 @@ const urls: Record<IShortUrl.Id, string> = {
   [IShortUrl.Id.StudentsInstagram]: "https://www.instagram.com/litespace_eng",
   [IShortUrl.Id.StudentsTikTok]: "https://www.tiktok.com/@litespace.eng",
   [IShortUrl.Id.StudentsX]: "https://x.com/litespace_eng",
+  [IShortUrl.Id.ManagePlansVideo]:
+    "https://drive.google.com/file/d/1SaLpO5IwrGGuACAZH1RbtNuoPCJ53uu1/view?usp=drive_link",
+  [IShortUrl.Id.ManageTutorsDoc]:
+    "https://docs.google.com/document/d/1cmKGhpokGd8UrP9DTPaV6brIILY5qf_xGI7jVb6eNVc/edit?usp=drive_link",
 };
 
 export default async function Url({ params }: Props) {

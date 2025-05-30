@@ -5,4 +5,6 @@ export enum Id {
   StudentsInstagram = "sig",
   StudentsTikTok = "stt",
   StudentsX = "sx",
+  ManagePlansVideo = "mpv",
+  ManageTutorsDoc = "mtd",
 }
