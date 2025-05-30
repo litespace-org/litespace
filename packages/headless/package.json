@@ -26,6 +26,7 @@
     "./topic": "./dist/topic.js",
     "./query": "./dist/query.js",
     "./constants": "./dist/constants/index.js",
+    "./common": "./dist/common.js",
     "./sessions": "./dist/sessions.js",
     "./invoices": "./dist/invoices.js",
     "./lessons": "./dist/lessons.js",

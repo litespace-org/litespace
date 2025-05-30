@@ -3,7 +3,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { usePaginatedTopics } from "@litespace/headless/topic";
 import List from "@/components/Topics/List";
 import { Button } from "@litespace/ui/Button";
-import { useRender } from "@litespace/ui/hooks/common";
+import { useRender } from "@litespace/headless/common";
 import TopicDialog from "@/components/Topics/TopicDialog";
 import { ChangeEvent, useCallback, useState } from "react";
 import { Input } from "@litespace/ui/Input";

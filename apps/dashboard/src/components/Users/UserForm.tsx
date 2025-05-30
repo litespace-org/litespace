@@ -3,7 +3,7 @@ import { Button } from "@litespace/ui/Button";
 import { Controller, Form } from "@litespace/ui/Form";
 import { Dialog } from "@litespace/ui/Dialog";
 import { useToast } from "@litespace/ui/Toast";
-import { useRender } from "@litespace/ui/hooks/common";
+import { useRender } from "@litespace/headless/common";
 import {
   useValidateEmail,
   useValidatePassword,

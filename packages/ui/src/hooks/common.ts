@@ -1,25 +1,10 @@
 import { Void } from "@litespace/types";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useBlocker, useNavigate } from "react-router-dom";
 
 export function useReload() {
   const naviate = useNavigate();
   return useCallback(() => naviate(0), [naviate]);
-}
-
-export function useRender() {
-  const [open, setOpen] = useState<boolean>(false);
-  const show = useCallback(() => setOpen(true), []);
-  const hide = useCallback(() => setOpen(false), []);
-  const toggle = useCallback(() => setOpen(!open), [open]);
-
-  return {
-    open,
-    show,
-    hide,
-    toggle,
-    setOpen,
-  };
 }
 
 export function useBlock(block?: boolean | (() => boolean), onLeave?: Void) {

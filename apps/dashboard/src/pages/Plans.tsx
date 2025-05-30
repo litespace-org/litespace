@@ -6,7 +6,7 @@ import AddCircle from "@litespace/assets/AddCircle";
 import { usePlans } from "@litespace/headless/plans";
 import { IPlan, IShortUrl } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
-import { useRender } from "@litespace/ui/hooks/common";
+import { useRender } from "@litespace/headless/common";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Landing } from "@litespace/utils/routes";
