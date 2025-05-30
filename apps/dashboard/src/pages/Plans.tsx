@@ -1,13 +1,15 @@
 import PageTitle from "@/components/Common/PageTitle";
 import List from "@/components/Plans/List";
 import ManagePlan from "@/components/Plans/ManagePlan";
+import { router } from "@/lib/route";
 import AddCircle from "@litespace/assets/AddCircle";
 import { usePlans } from "@litespace/headless/plans";
-import { IPlan } from "@litespace/types";
+import { IPlan, IShortUrl } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { useRender } from "@litespace/ui/hooks/common";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
+import { Landing } from "@litespace/utils/routes";
 import cn from "classnames";
 import React, { useState } from "react";
 
@@ -19,13 +21,18 @@ export const Plans: React.FC = () => {
 
   return (
     <div
-      className={cn("w-full flex flex-col gap-6 max-w-screen-2xl mx-auto p-6")}
+      className={cn("w-full flex flex-col gap-6 max-w-screen-3xl mx-auto p-6")}
     >
       <header className="flex items-center justify-between">
         <PageTitle
           title={intl("dashboard.plans.title")}
           count={plans.query.data?.total}
           fetching={plans.query.isFetching && !plans.query.isLoading}
+          url={router.landing({
+            route: Landing.ShortUrl,
+            name: IShortUrl.Id.ManagePlansVideo,
+            full: true,
+          })}
         />
         <Button
           size="large"
