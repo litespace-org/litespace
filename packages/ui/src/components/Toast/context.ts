@@ -3,7 +3,7 @@ import { ToastId, ToastType } from "@/components/Toast/types";
 
 export type ToastAction = {
   label: string;
-  onClick?: () => void;
+  onClick?: () => boolean | void;
   loading?: boolean;
   disabled?: boolean;
 };

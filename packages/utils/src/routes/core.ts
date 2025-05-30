@@ -1,4 +1,4 @@
-import { Dashboard, Landing, Web } from "@/routes/route";
+import { Dashboard, Landing, StudentSettingsTabId, Web } from "@/routes/route";
 import { Env, IPlan, ISession, IShortUrl } from "@litespace/types";
 import { clients } from "@/routes/clients";
 import { asRegex } from "@/routes/utils";
@@ -86,6 +86,12 @@ type WebPayload =
       query?: BaseQuery;
     }
   | {
+      route: Web.StudentSettings;
+      query?: {
+        tab?: StudentSettingsTabId;
+      };
+    }
+  | {
       route: Exclude<
         Web,
         | Web.TutorProfile
@@ -93,6 +99,7 @@ type WebPayload =
         | Web.Register
         | Web.Session
         | Web.Checkout
+        | Web.StudentSettings
       >;
       query?: BaseQuery;
     };

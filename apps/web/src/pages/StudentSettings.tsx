@@ -3,16 +3,16 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Content from "@/components/StudentSettings/Content";
-import { TabId } from "@/components/StudentSettings/types";
 import { isValidTab } from "@/components/StudentSettings/utils";
 import { useUser } from "@litespace/headless/context/user";
+import { StudentSettingsTabId } from "@litespace/utils/routes";
 
 const StudentSettings: React.FC = () => {
   const intl = useFormatMessage();
   const [params, setParams] = useSearchParams();
   const { user, fetching } = useUser();
 
-  const tab: TabId = useMemo(() => {
+  const tab: StudentSettingsTabId = useMemo(() => {
     const tab = params.get("tab");
     if (!tab || !isValidTab(tab)) return "personal";
     return tab;

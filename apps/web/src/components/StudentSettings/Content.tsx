@@ -8,12 +8,13 @@ import PersonalDetails from "@/components/Settings/PersonalDetails";
 import TopicSelection from "@/components/Settings/TopicSelection";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import { IUser } from "@litespace/types";
-import { Tab, TabId } from "@/components/StudentSettings/types";
+import { Tab } from "@/components/StudentSettings/types";
 import { isPersonalInfoIncomplete } from "@/components/Settings/utils";
+import { StudentSettingsTabId } from "@litespace/utils/routes";
 
 const Content: React.FC<{
-  tab: TabId;
-  setTab: (tab: TabId) => void;
+  tab: StudentSettingsTabId;
+  setTab: (tab: StudentSettingsTabId) => void;
   user: IUser.Self;
 }> = ({ tab, setTab, user }) => {
   const intl = useFormatMessage();

@@ -770,6 +770,7 @@
   "payment.methods.wallet": "المحافظ الإلكترونة",
   "payment.methods.cards": "البطاقات",
   "payment.methods.fawry": "الدفع عن طريق فوري",
+  "labels.enable-notifications": "تفعيل الإشعارات",
   "labels.percent": "{value}%",
   "labels.hash-value": "{value}#",
   "labels.currency.egp": "{value} ج.م",

@@ -1,7 +1,7 @@
-export type TabId = "personal" | "password" | "notifications" | "topics";
+import { StudentSettingsTabId } from "@litespace/utils/routes";
 
 export type Tab = {
-  id: TabId;
+  id: StudentSettingsTabId;
   label: string;
   important?: boolean;
 };

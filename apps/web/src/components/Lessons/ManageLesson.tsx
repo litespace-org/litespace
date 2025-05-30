@@ -18,6 +18,7 @@ import { useUser } from "@litespace/headless/context/user";
 import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
 import { useRender } from "@litespace/headless/common";
+import { useEnableNotificationsToastAction } from "@/hooks/notification";
 
 type Base = {
   close: Void;
@@ -70,19 +71,29 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     before: now.current.utc().add(2, "week").toISOString(),
   });
   const { query: tutor } = useFindTutorInfo(tutorId);
+  const enableNotifications = useEnableNotificationsToastAction();
 
   // book lesson
   const onCreateSuccess = useCallback(() => {
     if (tutor.data?.name)
       toast.success({
         title: intl("book-lesson.success", { tutor: tutor.data.name }),
+        actions: enableNotifications.show ? [enableNotifications.action] : [],
       });
     invalidate([QueryKey.FindAvailabilitySlots]);
     invalidate([QueryKey.FindLesson]);
     invalidate([QueryKey.FindInfiniteLessons]);
     invalidate([QueryKey.FindTutors]);
     close();
-  }, [close, tutor.data?.name, toast, intl, invalidate]);
+  }, [
+    intl,
+    toast,
+    tutor.data?.name,
+    enableNotifications.show,
+    enableNotifications.action,
+    invalidate,
+    close,
+  ]);
 
   const onCreateError = useOnError({
     type: "mutation",
@@ -104,13 +115,22 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     if (tutor.data?.name)
       toast.success({
         title: intl("update-lesson.success", { tutor: tutor.data.name }),
+        actions: enableNotifications.show ? [enableNotifications.action] : [],
       });
     invalidate([QueryKey.FindAvailabilitySlots]);
     invalidate([QueryKey.FindLesson]);
     invalidate([QueryKey.FindInfiniteLessons]);
     invalidate([QueryKey.FindTutors]);
     close();
-  }, [close, tutor.data?.name, toast, intl, invalidate]);
+  }, [
+    intl,
+    toast,
+    tutor.data?.name,
+    enableNotifications.show,
+    enableNotifications.action,
+    invalidate,
+    close,
+  ]);
 
   const onUpdateError = useOnError({
     type: "mutation",
