@@ -55,7 +55,7 @@ const ManagePlan: React.FC<{
   const intl = useFormatMessage();
   const toast = useToast();
 
-  // ============ Form Control ==================
+  // ============ form ==================
   const validators = useMakeValidators<Form>({
     weeklyMinutes: {
       required: true,
@@ -80,25 +80,25 @@ const ManagePlan: React.FC<{
     defaults: {
       weeklyMinutes: plan?.weeklyMinutes || 0,
       baseMonthlyPrice: price.unscale(plan?.baseMonthlyPrice || 0),
-      monthDiscount: price.unscale(plan?.monthDiscount || 0),
-      quarterDiscount: price.unscale(plan?.quarterDiscount || 0),
-      yearDiscount: price.unscale(plan?.yearDiscount || 0),
+      monthDiscount: percentage.unscale(plan?.monthDiscount || 0),
+      quarterDiscount: percentage.unscale(plan?.quarterDiscount || 0),
+      yearDiscount: percentage.unscale(plan?.yearDiscount || 0),
     },
     validators,
     onSubmit(data) {
-      if (plan) {
-        const updatePayload: IPlan.UpdateApiPayload = {
-          weeklyMinutes: data.weeklyMinutes,
-          baseMonthlyPrice: price.scale(data.baseMonthlyPrice), // scaled
-          monthDiscount: percentage.scale(data.monthDiscount), // scaled
-          quarterDiscount: percentage.scale(data.quarterDiscount), // scaled
-          yearDiscount: percentage.scale(data.yearDiscount),
-        };
-        updatePlan.mutate({ id: plan.id, payload: updatePayload });
-        return;
-      }
+      if (plan)
+        return updatePlan.mutate({
+          id: plan.id,
+          payload: {
+            weeklyMinutes: data.weeklyMinutes,
+            baseMonthlyPrice: price.scale(data.baseMonthlyPrice), // scaled
+            monthDiscount: percentage.scale(data.monthDiscount), // scaled
+            quarterDiscount: percentage.scale(data.quarterDiscount), // scaled
+            yearDiscount: percentage.scale(data.yearDiscount),
+          },
+        });
 
-      const createPayload: IPlan.CreatePayload = {
+      createPlan.mutate({
         weeklyMinutes: data.weeklyMinutes,
         baseMonthlyPrice: price.scale(data.baseMonthlyPrice), // scaled
         monthDiscount: percentage.scale(data.monthDiscount), // scaled
@@ -106,8 +106,7 @@ const ManagePlan: React.FC<{
         yearDiscount: percentage.scale(data.yearDiscount),
         active: false,
         forInvitesOnly: false,
-      };
-      createPlan.mutate(createPayload);
+      });
     },
   });
 

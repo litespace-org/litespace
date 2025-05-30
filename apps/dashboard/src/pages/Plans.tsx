@@ -15,7 +15,7 @@ export const Plans: React.FC = () => {
   const intl = useFormatMessage();
   const render = useRender();
   const plans = usePlans();
-  const [selectedPlan, setSelectedPlan] = useState<IPlan.Self | null>(null);
+  const [plan, setPlan] = useState<IPlan.Self | null>(null);
 
   return (
     <div
@@ -37,17 +37,15 @@ export const Plans: React.FC = () => {
           </Typography>
         </Button>
 
-        {selectedPlan || render.open ? (
-          <ManagePlan
-            open={true}
-            plan={selectedPlan}
-            close={() => {
-              render.hide();
-              setSelectedPlan(null);
-            }}
-            refetch={plans.query.refetch}
-          />
-        ) : null}
+        <ManagePlan
+          open={render.open}
+          plan={plan}
+          close={() => {
+            render.hide();
+            setPlan(null);
+          }}
+          refetch={plans.query.refetch}
+        />
       </header>
 
       <List
@@ -61,7 +59,10 @@ export const Plans: React.FC = () => {
         fetching={plans.query.isFetching}
         loading={plans.query.isLoading}
         refetch={plans.query.refetch}
-        editPlan={setSelectedPlan}
+        editPlan={(plan: IPlan.Self) => {
+          setPlan(plan);
+          render.show();
+        }}
       />
     </div>
   );

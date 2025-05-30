@@ -13,14 +13,14 @@ import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo } from "react";
 import { PLAN_PERIOD_LITERAL_TO_MONTH_COUNT } from "@litespace/utils";
 import { Switch } from "@litespace/ui/Switch";
-import MessageEdit from "@litespace/assets/MessageEdit";
+import Edit from "@litespace/assets/Edit";
 
 const List: React.FC<
   {
     list?: IPlan.FindApiResponse["list"];
     error: boolean;
     refetch: Void;
-    editPlan: (plan: IPlan.Self) => void;
+    editPlan(plan: IPlan.Self): void;
   } & TableNaviationProps
 > = ({ list, refetch, error, editPlan, fetching, loading, ...naviation }) => {
   const intl = useFormatMessage();
@@ -172,8 +172,8 @@ const List: React.FC<
           <Menu
             actions={[
               {
-                label: intl("dashboard.plans.actions.edit-plans"),
-                icon: <MessageEdit />,
+                label: intl("dashboard.plans.actions.edit-plan"),
+                icon: <Edit />,
                 onClick: () => editPlan(info.row.original),
               },
             ]}

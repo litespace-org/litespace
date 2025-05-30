@@ -20,6 +20,23 @@ export function useForm<T extends object>(config: Config<T>) {
   const [errors, setErrors] = useState<ErrorMap<T>>({});
   const [submitted, setSubmitted] = useState<boolean>(false);
 
+  const validate = useCallback(() => {
+    const errors: ErrorMap<T> = {};
+
+    for (const [key, value] of entries(state)) {
+      const safeKey = key as keyof T;
+      const safeValue = value as T[keyof T];
+      const validate = config.validators?.[safeKey];
+      if (!validate) continue;
+      const valid = validate(safeValue, state);
+      if (valid !== true) errors[safeKey] = valid;
+    }
+
+    setErrors(errors);
+    const valid = isEmpty(errors);
+    return valid;
+  }, [config.validators, state]);
+
   const set = useCallback(
     <K extends keyof T>(key: K, value: T[K]) => {
       const cloned = structuredClone(state);
@@ -47,23 +64,6 @@ export function useForm<T extends object>(config: Config<T>) {
     setErrors({});
   }, [config.defaults]);
 
-  const validate = useCallback(() => {
-    const errors: ErrorMap<T> = {};
-
-    for (const [key, value] of entries(state)) {
-      const safeKey = key as keyof T;
-      const safeValue = value as T[keyof T];
-      const validate = config.validators?.[safeKey];
-      if (!validate) continue;
-      const valid = validate(safeValue, state);
-      if (valid !== true) errors[safeKey] = valid;
-    }
-
-    setErrors(errors);
-    const valid = isEmpty(errors);
-    return valid;
-  }, [config.validators, state]);
-
   const submit = useCallback(() => {
     setSubmitted(true);
     const valid = validate();
@@ -89,10 +89,17 @@ export function useForm<T extends object>(config: Config<T>) {
     [config.validators, state]
   );
 
+  // re-run validators when validation deps changes.
   useEffect(() => {
     if (config.validationDeps && submitted) validate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(config.validationDeps)]);
+
+  // override current state incase the defaults got updated.
+  useEffect(() => {
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(config.defaults)]);
 
   return {
     state,

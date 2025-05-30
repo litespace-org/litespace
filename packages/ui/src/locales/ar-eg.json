@@ -340,7 +340,7 @@
   "dashboard.plans.created-at": "تاريخ الإنشاء",
   "dashboard.plans.state": "الحالة",
   "dashboard.plans.actions": "الإجراءات",
-  "dashboard.plans.actions.edit-plans": "الإجراءات",
+  "dashboard.plans.actions.edit-plan": "تعديل",
   "dashboard.plans.weekly-minutes": "الدقائق الأسبوعية",
   "dashboard.plans.full-month-price": "السعر الشهري",
   "dashboard.plans.full-quarter-price": "سعر ال 3 شهور",
