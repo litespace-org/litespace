@@ -60,12 +60,6 @@ export type PopulatedMemberWithStatus = PopulatedMember & { online: boolean };
 
 export type RoomMap = Record<number, PopulatedMember[]>;
 
-export type FindUserRoomsApiQuery = IFilter.Pagination & {
-  pinned?: boolean;
-  muted?: boolean;
-  keyword?: string;
-};
-
 export type FindUserRoomsApiRecord = {
   roomId: number;
   settings: {
@@ -85,9 +79,22 @@ export type FindUserRoomsApiRecord = {
   };
 };
 
+export type CreateRoomApiPayload = {
+  userId: number;
+  message?: string;
+};
+
 export type CreateRoomApiResponse = { roomId: number };
 
+export type FindUserRoomsApiQuery = IFilter.Pagination & {
+  pinned?: boolean;
+  muted?: boolean;
+  keyword?: string;
+};
+
 export type FindUserRoomsApiResponse = Paginated<FindUserRoomsApiRecord>;
+
+export type FindRoomByMembersApiPayload = { members: number[] };
 
 export type FindRoomByMembersApiResponse = { room: number };
 
@@ -106,3 +113,5 @@ export type RoomSettings = {
 export type UpdateRoomPayload = RoomSettings;
 
 export type UpdateRoomApiPayload = RoomSettings;
+
+export type UpdateRoomApiResponse = Member;

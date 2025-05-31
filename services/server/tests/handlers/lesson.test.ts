@@ -12,9 +12,17 @@ import {
   subscriptionRequired,
   noEnoughMinutes,
 } from "@/lib/error";
-import { dayjs, nameof, safe } from "@litespace/utils";
+import { dayjs, getSubSlots, nameof, safe } from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";
 import { lessons, subscriptions } from "@litespace/models";
+import { first, last } from "lodash";
+
+const findLessons = mockApi<
+  object,
+  object,
+  ILesson.FindLessonsApiQuery,
+  ILesson.FindUserLessonsApiResponse
+>(handlers.findLessons);
 
 const createLesson = mockApi<ILesson.CreateApiPayload>(
   handlers.create(mockApiContext())
@@ -22,6 +30,10 @@ const createLesson = mockApi<ILesson.CreateApiPayload>(
 
 const updateLesson = mockApi<ILesson.UpdateApiPayload>(
   handlers.update(mockApiContext())
+);
+
+const cancelLesson = mockApi<object, { lessonId: number }>(
+  handlers.cancel(mockApiContext())
 );
 
 describe("/api/v1/lesson/", () => {
@@ -36,6 +48,70 @@ describe("/api/v1/lesson/", () => {
   beforeEach(async () => {
     await db.flush();
     await cache.flush();
+  });
+
+  describe("GET /api/v1/lesson/list", () => {
+    it("should filter lessons using the `after` and `before` flag", async () => {
+      const tutor = await db.tutorUser();
+
+      const date = dayjs.utc().add(1, "hour").startOf("hour");
+      const lessonsCount = 10;
+
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: date.toISOString(),
+        end: date.add(lessonsCount / 2, "hour").toISOString(),
+      });
+
+      const subslots = getSubSlots(slot, 30);
+
+      for (const subslot of subslots) {
+        await db.lesson({
+          start: subslot.start,
+          slot: slot.id,
+          duration: 30,
+          tutor: tutor.id,
+        });
+      }
+
+      const tests = [
+        {
+          after: first(subslots)?.start,
+          before: last(subslots)?.end,
+          total: lessonsCount,
+        },
+        {
+          after: first(subslots)?.start,
+          before: first(subslots)?.end,
+          total: 1,
+        },
+        // skip first two lessons
+        {
+          after: subslots[2].start,
+          before: last(subslots)?.end,
+          total: lessonsCount - 2,
+        },
+        // skip last two lessons
+        {
+          after: subslots[0].start,
+          before: subslots[subslots.length - 2].start,
+          total: lessonsCount - 2,
+        },
+      ];
+
+      for (const test of tests) {
+        const found = await findLessons({
+          user: tutor,
+          query: {
+            users: [tutor.id],
+            after: test.after,
+            before: test.before,
+          },
+        });
+        expect(found).to.not.be.instanceof(Error);
+        expect(found.body!.total).to.be.eq(test.total);
+      }
+    });
   });
 
   describe(nameof(createLesson), () => {
@@ -589,6 +665,67 @@ describe("/api/v1/lesson/", () => {
       expect(res).to.not.be.instanceof(Error);
       const updated = await lessons.findById(lesson.id);
       expect(updated?.start).to.eq(date.add(1, "hour").toISOString());
+    });
+  });
+
+  describe("DELETE /api/v1/lesson/:lessonId", () => {
+    it("should respond with not found status in case the lesson does not exist.", async () => {
+      const student = await db.student();
+      const res = await cancelLesson({
+        user: student,
+        params: { lessonId: 4321 },
+      });
+      expect(res).to.deep.eq(notfound.lesson());
+    });
+
+    it("should respond with forbidden status in case the requester is not one of the members.", async () => {
+      const tutor = await db.tutor();
+      const student = await db.student();
+
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().add(10, "days").toISOString(),
+      });
+
+      const { lesson } = await db.lesson({
+        tutor: tutor.id,
+        student: student.id,
+        timing: "future",
+        slot: slot.id,
+      });
+
+      const res = await cancelLesson({
+        user: await db.student(),
+        params: { lessonId: lesson.id },
+      });
+
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should respond with 200 status code in case the lesson is cancelled and update the cache.", async () => {
+      const tutor = await db.tutor();
+      const student = await db.student();
+
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().add(10, "days").toISOString(),
+      });
+
+      const { lesson } = await db.lesson({
+        tutor: tutor.id,
+        student: student.id,
+        timing: "future",
+        slot: slot.id,
+      });
+
+      const res = await cancelLesson({
+        user: student,
+        params: { lessonId: lesson.id },
+      });
+
+      expect(res).to.be.not.instanceOf(Error);
     });
   });
 });

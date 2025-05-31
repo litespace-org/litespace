@@ -117,7 +117,8 @@ async function set(req: Request, res: Response, next: NextFunction) {
   const allowed = isTutor(user);
   if (!allowed) return next(forbidden());
 
-  const payload = setPayload.parse(req.body);
+  const payload: IAvailabilitySlot.SetAvailabilitySlotsApiPayload =
+    setPayload.parse(req.body);
 
   const creates = payload.actions.filter(
     (slot) => slot.type === "create"

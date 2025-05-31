@@ -31,7 +31,7 @@ describe("/api/v1/topic/", () => {
     return await db.flush();
   });
 
-  describe("POST /api/v1/topic/user", () => {
+  describe("POST /api/v1/topic/of/user", () => {
     it("should respond with 403 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const res = await safe(() =>
         addUserTopics({ body: { topicIds: [1] }, user: IUser.Role.SuperAdmin })
@@ -108,7 +108,7 @@ describe("/api/v1/topic/", () => {
     });
   });
 
-  describe("DELETE /api/v1/topic/user", () => {
+  describe("DELETE /api/v1/topic/of/user", () => {
     it("should respond with 403 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const res = await safe(() =>
         deleteUserTopics({
@@ -176,7 +176,7 @@ describe("/api/v1/topic/", () => {
     });
   });
 
-  describe("GET /api/v1/topic/user", () => {
+  describe("GET /api/v1/topic/of/user", () => {
     it("should respond with 403 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const res = await safe(() =>
         findUserTopics({ user: IUser.Role.SuperAdmin })
