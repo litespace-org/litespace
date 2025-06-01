@@ -346,6 +346,13 @@ export default {
         4: "4",
         5: "5",
       },
+      borderColor: {
+        "button-main-default": "var(--border-button-main-primary-default)",
+        "button-main-active": "var(--border-button-main-primary-active)",
+        "button-natural-default":
+          "var(--border-button-natural-primary-default)",
+        "button-natural-active": "var(--border-button-natural-primary-active)",
+      },
     },
     boxShadow: {
       "ls-x-small": "0px 6px 20px 0px rgba(0, 0, 0, 0.08)",

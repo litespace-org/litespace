@@ -45,37 +45,32 @@ export const Toast: React.FC<{
       onOpenChange={onOpenChange}
       onSwipeEnd={(e) => e.preventDefault()}
       className={cn(
-        "py-2 px-2 font-cairo rounded-lg shadow-toast overflow-hidden",
+        "p-4 font-cairo rounded-lg shadow-toast overflow-hidden",
         "border border-natural-100",
         "bg-natural-50 dark:bg-secondary-950",
         "data-[state=open]:animate-slide-in",
-        "flex flex-col gap-1",
+        "flex flex-col",
         "w-[calc(100vw-32px)] sm:w-[250px] md:w-[350px]",
         "focus:outline-none focus-visible:ring focus:ring-2 focus:ring-secondary-600",
         description ? "items-start" : "items-center"
       )}
     >
       <Title className="flex gap-2 items-center justify-center w-full">
-        <div
+        <Typography
+          tag="span"
           className={cn(
-            "flex items-center justify-center shrink-0",
-            "self-start py-0.5"
+            "font-bold flex-1 text-body text-natural-950 select-text relative"
           )}
+          style={{ textIndent: "28px" }}
         >
           <Icon
-            className={cn("w-5 h-5", {
+            className={cn("w-5 h-5 absolute top-0.5", {
               "[&>*]:stroke-brand-600": type === "success",
               "[&>*>*]:stroke-destructive-600": type === "error",
               "[&>*>*]:stroke-secondary-600": type === "info",
             })}
           />
-        </div>
-        <Typography
-          tag="span"
-          className={cn(
-            "font-bold flex-1 text-body text-natural-950 select-text"
-          )}
-        >
+
           {title}
         </Typography>
 
@@ -89,30 +84,32 @@ export const Toast: React.FC<{
         </Close>
       </Title>
 
-      {description ? (
-        <Description className="ms-7">
-          <Typography
-            tag="p"
-            className="text-natural-600 font-semibold dark:text-natural-50 text-caption select-text"
-          >
-            {description}
-          </Typography>
-        </Description>
-      ) : null}
+      <Description
+        data-show={!!description}
+        className="hidden data-[show=true]:block mt-2"
+      >
+        <Typography
+          tag="p"
+          className="text-natural-600 font-semibold dark:text-natural-50 text-caption select-text"
+        >
+          {description}
+        </Typography>
+      </Description>
 
       {actions && !isEmpty(actions) ? (
-        <div className="flex flex-row gap-4 ms-7 w-full">
+        <div className="flex flex-row items-center justify-normal gap-2 w-full mt-4">
           {actions.map((action, idx) => (
             <Button
               key={idx}
-              variant="tertiary"
+              variant="primary"
+              type="natural"
+              loading={action.loading}
+              disabled={action.disabled}
               onClick={() => {
                 const shouldClose = action.onClick?.();
                 if (shouldClose) onOpenChange?.(false);
               }}
-              loading={action.loading}
-              disabled={action.disabled}
-              type="main"
+              className="min-w-20"
             >
               <Typography
                 tag="span"

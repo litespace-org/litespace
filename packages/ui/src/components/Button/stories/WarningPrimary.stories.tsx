@@ -1,7 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "@/components/Button";
-import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import Home from "@litespace/assets/Home";
 import { faker } from "@faker-js/faker/locale/ar";
 
@@ -10,87 +9,48 @@ type Component = typeof Button;
 const meta: Meta<Component> = {
   title: "Button/Warning/Primary",
   component: Button,
-  parameters: { layout: "centered" },
-  argTypes: {
-    children: { control: "text" },
-  },
-  decorators: [DarkStoryWrapper],
-};
-
-export const Small: StoryObj<typeof Button> = {
   args: {
     children: faker.lorem.words({ min: 1, max: 4 }),
-    type: "warning",
-    variant: "primary",
-    size: "small",
-  },
-};
-
-export const Medium: StoryObj<typeof Button> = {
-  args: {
-    children: faker.lorem.words({ min: 1, max: 4 }),
-    type: "warning",
-    variant: "primary",
-    size: "medium",
-  },
-};
-
-export const Large: StoryObj<typeof Button> = {
-  args: {
-    children: faker.lorem.words({ min: 1, max: 4 }),
-    type: "warning",
-    variant: "primary",
     size: "large",
+    type: "warning",
+    variant: "primary",
   },
 };
 
-export const Disabled: StoryObj<typeof Button> = {
-  args: {
-    children: faker.lorem.words({ min: 1, max: 4 }),
-    type: "warning",
-    variant: "primary",
-    size: "small",
-    disabled: true,
-  },
+type Story = StoryObj<Component>;
+
+export const Small: Story = {
+  render: (args) => <Button {...args} size="small" />,
 };
 
-export const Loading: StoryObj<typeof Button> = {
-  args: {
-    children: faker.lorem.words({ min: 1, max: 4 }),
-    type: "warning",
-    variant: "primary",
-    size: "large",
-    loading: true,
-  },
+export const Medium: Story = {
+  render: (args) => <Button {...args} size="medium" />,
 };
 
-export const WithStargIcon: StoryObj<typeof Button> = {
-  args: {
-    children: faker.lorem.words({ min: 1, max: 4 }),
-    startIcon: <Home className="[&>*]:stroke-natural-50" />,
-    type: "warning",
-    variant: "primary",
-    size: "small",
-  },
+export const Large: Story = {
+  render: (args) => <Button {...args} />,
 };
 
-export const WithEndIcon: StoryObj<typeof Button> = {
-  args: {
-    children: faker.lorem.words({ min: 1, max: 4 }),
-    startIcon: <Home className="[&>*]:stroke-natural-50" />,
-    type: "warning",
-    variant: "primary",
-    size: "small",
-  },
+export const Disabled: Story = {
+  render: (args) => <Button {...args} disabled />,
 };
 
-export const WithOnlyIcon: StoryObj<typeof Button> = {
-  args: {
-    startIcon: <Home className="[&>*]:stroke-natural-50" />,
-    type: "warning",
-    variant: "primary",
-    size: "small",
-  },
+export const Loading: Story = {
+  render: (args) => <Button {...args} loading />,
+};
+
+export const WithStargIcon: Story = {
+  render: (args) => <Button {...args} startIcon={<Home className="icon" />} />,
+};
+
+export const WithEndIcon: Story = {
+  render: (args) => <Button {...args} endIcon={<Home className="icon" />} />,
+};
+
+export const WithOnlyIcon: Story = {
+  render: (args) => (
+    <Button {...args} children={null} endIcon={<Home className="icon" />} />
+  ),
 };
 
 export default meta;

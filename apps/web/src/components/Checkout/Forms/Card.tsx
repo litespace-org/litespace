@@ -267,8 +267,8 @@ const Payment: React.FC<{
             }}
             post={
               <Button
-                type="main"
-                variant="tertiary"
+                type="natural"
+                variant="primary"
                 size="large"
                 htmlType="button"
                 startIcon={<AddCard className="icon" />}

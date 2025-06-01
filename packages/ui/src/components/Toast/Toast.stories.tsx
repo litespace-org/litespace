@@ -24,7 +24,7 @@ export const Success: Story = {
     return (
       <Direction>
         <ToastProvider>
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-end">
             <Button
               onClick={() =>
                 toast.success({
@@ -167,7 +167,7 @@ export const Info: Story = {
     const toast = useToast();
     return (
       <Direction>
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-end gap-2">
           <Button
             onClick={() =>
               toast.info({
@@ -279,7 +279,7 @@ export const Warning: Story = {
     const toast = useToast();
     return (
       <Direction>
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-end gap-2">
           <Button
             onClick={() =>
               toast.warning({
@@ -392,7 +392,7 @@ export const Error: Story = {
     return (
       <Direction>
         <ToastProvider>
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-end gap-2">
             <Button
               onClick={() =>
                 toast.error({
@@ -492,6 +492,23 @@ export const Error: Story = {
               }
             >
               Title Only with actions
+            </Button>
+            <Button
+              onClick={() =>
+                toast.error({
+                  title: faker.lorem.words(10),
+                  actions: [
+                    {
+                      label: faker.lorem.word(),
+                      disabled: false,
+                      loading: false,
+                      onClick: () => true,
+                    },
+                  ],
+                })
+              }
+            >
+              Title only with one action
             </Button>
           </div>
         </ToastProvider>

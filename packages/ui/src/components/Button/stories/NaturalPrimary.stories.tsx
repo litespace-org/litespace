@@ -1,19 +1,22 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "@/components/Button";
 import Home from "@litespace/assets/Home";
+import type { Meta, StoryObj } from "@storybook/react";
 import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Button;
 
 const meta: Meta<Component> = {
-  title: "Button/Warning/Secondary",
+  title: "Button/Natural/Primary",
   component: Button,
   args: {
     children: faker.lorem.words({ min: 1, max: 4 }),
     size: "large",
-    type: "warning",
-    variant: "secondary",
+    type: "natural",
+    variant: "primary",
+  },
+  argTypes: {
+    children: { control: "text" },
   },
 };
 
@@ -39,7 +42,7 @@ export const Loading: Story = {
   render: (args) => <Button {...args} loading />,
 };
 
-export const WithStargIcon: Story = {
+export const WithStartIcon: Story = {
   render: (args) => <Button {...args} startIcon={<Home className="icon" />} />,
 };
 
@@ -50,6 +53,17 @@ export const WithEndIcon: Story = {
 export const WithOnlyIcon: Story = {
   render: (args) => (
     <Button {...args} children={null} endIcon={<Home className="icon" />} />
+  ),
+};
+
+export const LocadingIconOnly: Story = {
+  render: (args) => (
+    <Button
+      {...args}
+      children={null}
+      loading
+      endIcon={<Home className="icon" />}
+    />
   ),
 };
 

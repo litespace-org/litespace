@@ -19,16 +19,21 @@ const Decorator = (Story: React.FC) => {
       <Direction>
         <ToastProvider>
           <MediaQueryProvider>
-            <div dir="rtl" className="font-cairo">
-              <div className="mb-4">
-                <Button onClick={toggle} size={"small"}>
-                  Toggle Theme
-                </Button>
-              </div>
-              <MemoryRouter initialEntries={["/"]}>
+            <MemoryRouter initialEntries={["/"]}>
+              <div className="bg-natural-50 p-6 rounded-md">
+                <div className="mb-4">
+                  <Button
+                    onClick={toggle}
+                    size="small"
+                    type="natural"
+                    variant="secondary"
+                  >
+                    Toggle Theme
+                  </Button>
+                </div>
                 <Story />
-              </MemoryRouter>
-            </div>
+              </div>
+            </MemoryRouter>
           </MediaQueryProvider>
         </ToastProvider>
       </Direction>

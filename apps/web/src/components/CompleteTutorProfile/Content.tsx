@@ -240,8 +240,8 @@ const Content: React.FC<{
                   ) : (
                     <Button
                       className="flex-shrink-0 ms-2"
-                      type="main"
-                      variant="tertiary"
+                      type="natural"
+                      variant="primary"
                       size="large"
                       htmlType="button"
                       onClick={verifyPhoneDialog.show}
@@ -279,8 +279,8 @@ const Content: React.FC<{
                   ) : (
                     <Button
                       className="flex-shrink-0 ms-2"
-                      type="main"
-                      variant="tertiary"
+                      type="natural"
+                      variant="primary"
                       size="large"
                       htmlType="button"
                       onClick={verifyEmailDialog.show}

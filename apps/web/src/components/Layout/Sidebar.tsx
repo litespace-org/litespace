@@ -40,7 +40,7 @@ type LinkInfo = {
 const Sidebar: React.FC<{
   hide: Void;
 }> = ({ hide }) => {
-  const { md, lg } = useMediaQuery();
+  const { md } = useMediaQuery();
   const intl = useFormatMessage();
 
   const onMouseDown = useCallback(
@@ -65,20 +65,7 @@ const Sidebar: React.FC<{
         "flex flex-col gap-6 md:gap-10"
       )}
     >
-      <Link
-        to={Web.Root}
-        className="flex justify-start md:justify-center lg:justify-start items-center gap-1 md:gap-2"
-      >
-        <Logo className="h-6 md:h-10 md:w-10 md:my-[5px] lg:my-0" />
-        {lg || !md ? (
-          <Typography
-            tag="h1"
-            className="inline-block text-brand-500 text-tiny lg:text-subtitle-2 font-bold"
-          >
-            {intl("labels.litespace")}
-          </Typography>
-        ) : null}
-      </Link>
+      <Header />
 
       <div className="flex flex-col gap-2 md:gap-1.5">
         <Typography
@@ -344,7 +331,7 @@ const SidebarItem: React.FC<{
         "flex flex-row justify-start md:justify-center lg:justify-start gap-2 lg:gap-4 px-[14px] py-2 items-center ",
         "rounded-lg transition-colors duration-200 group",
         {
-          "bg-brand-700": active,
+          "bg-brand-500": active,
           "bg-transparent hover:bg-natural-100": !active,
         }
       )}
@@ -404,6 +391,26 @@ const LogoutButton: React.FC<{ hide: Void }> = ({ hide }) => {
         </Typography>
       ) : null}
     </button>
+  );
+};
+
+const Header: React.FC = () => {
+  const { md, lg } = useMediaQuery();
+  const intl = useFormatMessage();
+  return (
+    <Link
+      to={Web.Root}
+      className="flex flex-col justify-center items-center gap-1 md:gap-2"
+    >
+      <Logo className="h-6 md:h-10 md:w-10" />
+      <Typography
+        data-show={lg || !md}
+        tag="p"
+        className="text-brand-500 text-tiny hidden data-[show=true]:block text-xl font-bold"
+      >
+        {intl("labels.litespace")}
+      </Typography>
+    </Link>
   );
 };
 
