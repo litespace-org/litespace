@@ -61,7 +61,7 @@ export const Primary: Story = {
   },
 };
 
-export const WithBookedSlots: Story = {
+export const DepletedSubscription: Story = {
   args: {
     open: true,
     close: identity,
@@ -70,6 +70,7 @@ export const WithBookedSlots: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     isVerified: true,
     hasBookedLessons: false,
+    depletedSubscription: true,
     slots: [
       {
         id: 1,
@@ -91,6 +92,44 @@ export const WithBookedSlots: Story = {
         parent: 1,
         start: dayjs.utc().startOf("day").add(1, "hour").toISOString(),
         end: dayjs.utc().startOf("day").add(1.5, "hours").toISOString(),
+      },
+    ],
+    onSubmit() {
+      alert("Lesson booked!!");
+    },
+  },
+};
+
+export const WithBookedSlots: Story = {
+  args: {
+    open: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    isVerified: true,
+    hasBookedLessons: false,
+    slots: [
+      {
+        id: 1,
+        start: dayjs().toISOString(),
+        end: dayjs().add(4, "hours").toISOString(),
+        createdAt: faker.date.past().toISOString(),
+        updatedAt: faker.date.past().toISOString(),
+        deleted: false,
+        userId: 4,
+      },
+    ],
+    bookedSlots: [
+      {
+        parent: 1,
+        start: dayjs.utc().toISOString(),
+        end: dayjs.utc().add(30, "minutes").toISOString(),
+      },
+      {
+        parent: 1,
+        start: dayjs.utc().add(1, "hour").toISOString(),
+        end: dayjs.utc().add(1.5, "hours").toISOString(),
       },
     ],
     onSubmit() {
