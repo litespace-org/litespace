@@ -75,7 +75,7 @@ export const DepletedSubscription: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     isVerified: true,
     hasBookedLessons: false,
-    depletedSubscription: true,
+    remainingWeeklyMinutes: 0,
     slots: [
       {
         id: 1,
@@ -124,6 +124,7 @@ export const WithBookedSlots: Story = {
         updatedAt: faker.date.past().toISOString(),
         deleted: false,
         userId: 4,
+        purpose: IAvailabilitySlot.Purpose.Lesson,
       },
     ],
     bookedSlots: [
@@ -303,7 +304,6 @@ export const ErrorSchedule: Story = {
       alert("Lesson booked!!");
     },
     error: true,
-    retry: () => {},
   },
 };
 
