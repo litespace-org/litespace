@@ -1,9 +1,16 @@
-import type { Type as WithdrawMethod } from "@/withdrawMethod";
 import { ExtractObjectKeys, Paginated } from "@/utils";
 import { IFilter } from "@/index";
 
+// todo: should be moved to utils pkg.
 export const ReceiptFileKey = "receipt";
 
+export enum WithdrawMethod {
+  Wallet = 0,
+  Bank = 1,
+  Instapay = 2,
+}
+
+// todo: remove
 export const BANKS = [
   "CIB",
   "ALEX",
@@ -13,6 +20,7 @@ export const BANKS = [
   "MASHREQ",
   "AAIB",
 ] as const;
+
 export type Bank = (typeof BANKS)[number];
 
 export enum Status {

@@ -7,7 +7,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { withdrawMethodsIntlMap } from "@/components/utils/invoice";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
-import { BANKS, IInvoice, IWithdrawMethod } from "@litespace/types";
+import { BANKS, IInvoice } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";
 import {
   useFindInvoices,
@@ -19,9 +19,9 @@ import {
 } from "@/components/utils/invoice";
 
 const DEFAULT_METHODS_FILTER = [
-  IWithdrawMethod.Type.Bank,
-  IWithdrawMethod.Type.Instapay,
-  IWithdrawMethod.Type.Wallet,
+  IInvoice.WithdrawMethod.Bank,
+  IInvoice.WithdrawMethod.Instapay,
+  IInvoice.WithdrawMethod.Wallet,
 ];
 
 const DEFAULT_STATUSES_FILTER = [
@@ -55,7 +55,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
   const { query, ...pagination } = useFindInvoices(filter);
 
   const makeMethodOption = useCallback(
-    (method: IWithdrawMethod.Type) => ({
+    (method: IInvoice.WithdrawMethod) => ({
       id: method,
       label: intl(withdrawMethodsIntlMap[method]),
       checked:
@@ -160,9 +160,9 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
               setMethods(DEFAULT_METHODS_FILTER);
             },
           },
-          makeMethodOption(IWithdrawMethod.Type.Bank),
-          makeMethodOption(IWithdrawMethod.Type.Instapay),
-          makeMethodOption(IWithdrawMethod.Type.Wallet),
+          makeMethodOption(IInvoice.WithdrawMethod.Bank),
+          makeMethodOption(IInvoice.WithdrawMethod.Instapay),
+          makeMethodOption(IInvoice.WithdrawMethod.Wallet),
         ],
       },
       {

@@ -1,5 +1,5 @@
 import { sanitizeMessage } from "@/chat";
-import { HTML_TAGS_REGEX } from "@/constants";
+import { HTML_TAGS_REGEX, MILLISECONDS_IN_SECOND } from "@/constants";
 import { isEmpty } from "lodash";
 
 export function optional<T>(value: T): NonNullable<T> | undefined {
@@ -59,11 +59,8 @@ export function joinUrl(base: string, route: string) {
   return new URL(route, base).href;
 }
 
-/**
- * Simple function that come in handy in unit tests
- */
 export function wait(seconds: number) {
   return new Promise((resolve) =>
-    setTimeout(() => resolve(seconds), seconds * 1000)
+    setTimeout(() => resolve(seconds), seconds * MILLISECONDS_IN_SECOND)
   );
 }

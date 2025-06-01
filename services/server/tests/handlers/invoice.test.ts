@@ -1,7 +1,7 @@
 import { mockApi, mockApiContext } from "@fixtures/mockApi";
 import db from "@fixtures/db";
 import handlers from "@/handlers/invoice";
-import { FieldError, IInvoice, IUser, IWithdrawMethod } from "@litespace/types";
+import { FieldError, IInvoice, IUser } from "@litespace/types";
 import { expect } from "chai";
 import { invoices, lessons } from "@litespace/models";
 import {
@@ -51,7 +51,7 @@ describe("/api/v1/invoice/", () => {
 
       const res1 = await createInvoice({
         body: {
-          method: IWithdrawMethod.Type.Wallet,
+          method: IInvoice.WithdrawMethod.Wallet,
           receiver: "01199999999",
           amount: 100,
         },
@@ -59,7 +59,7 @@ describe("/api/v1/invoice/", () => {
       });
       const res2 = await createInvoice({
         body: {
-          method: IWithdrawMethod.Type.Wallet,
+          method: IInvoice.WithdrawMethod.Wallet,
           receiver: "01199999999",
           amount: 100,
         },
@@ -67,7 +67,7 @@ describe("/api/v1/invoice/", () => {
       });
       const res3 = await createInvoice({
         body: {
-          method: IWithdrawMethod.Type.Wallet,
+          method: IInvoice.WithdrawMethod.Wallet,
           receiver: "01199999999",
           amount: 100,
         },
@@ -85,7 +85,7 @@ describe("/api/v1/invoice/", () => {
 
       const res = await createInvoice({
         body: {
-          method: IWithdrawMethod.Type.Wallet,
+          method: IInvoice.WithdrawMethod.Wallet,
           receiver: "01199999999",
           amount: acquired + 1,
         },
@@ -109,7 +109,7 @@ describe("/api/v1/invoice/", () => {
 
       const res = await createInvoice({
         body: {
-          method: IWithdrawMethod.Type.Bank,
+          method: IInvoice.WithdrawMethod.Bank,
           receiver: "invalid:123321",
           amount: lesson.lesson.price,
         },
@@ -131,7 +131,7 @@ describe("/api/v1/invoice/", () => {
 
       const res = await createInvoice({
         body: {
-          method: IWithdrawMethod.Type.Wallet,
+          method: IInvoice.WithdrawMethod.Wallet,
           receiver: "12321423441",
           amount: lesson.lesson.price,
         },
@@ -153,7 +153,7 @@ describe("/api/v1/invoice/", () => {
 
       const res = await createInvoice({
         body: {
-          method: IWithdrawMethod.Type.Instapay,
+          method: IInvoice.WithdrawMethod.Instapay,
           receiver: "test@NOTinstapay",
           amount: lesson.lesson.price,
         },
@@ -175,7 +175,7 @@ describe("/api/v1/invoice/", () => {
 
       const res = await createInvoice({
         body: {
-          method: IWithdrawMethod.Type.Wallet,
+          method: IInvoice.WithdrawMethod.Wallet,
           // NOTE: this is invalid; by convention it's just the username before the @
           receiver: "01099999999",
           amount: lesson.price,
@@ -223,7 +223,7 @@ describe("/api/v1/invoice/", () => {
 
       const invoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@instapay",
         amount: lesson.price,
       });
@@ -249,7 +249,7 @@ describe("/api/v1/invoice/", () => {
 
       const invoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@instapay",
         amount: lesson.price,
       });
@@ -276,7 +276,7 @@ describe("/api/v1/invoice/", () => {
 
       const invoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@instapay",
         amount: lesson.price,
       });
@@ -302,7 +302,7 @@ describe("/api/v1/invoice/", () => {
 
       const invoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@instapay",
         amount: lesson.price,
       });
@@ -332,7 +332,7 @@ describe("/api/v1/invoice/", () => {
 
       const invoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@isntapay",
         amount: lesson.price,
       });
@@ -363,7 +363,7 @@ describe("/api/v1/invoice/", () => {
 
       const invoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@isntapay",
         amount: lesson.price,
       });
@@ -402,7 +402,7 @@ describe("/api/v1/invoice/", () => {
       });
       const invoice1 = await invoices.create({
         userId: tutor1.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@instapay",
         amount: lesson.price,
       });
@@ -416,7 +416,7 @@ describe("/api/v1/invoice/", () => {
       });
       await invoices.create({
         userId: tutor2.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@isntapay",
         amount: lesson2.price,
       });
@@ -441,7 +441,7 @@ describe("/api/v1/invoice/", () => {
       });
       const invoice1 = await invoices.create({
         userId: tutor1.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@instapay",
         amount: lesson.price,
       });
@@ -455,7 +455,7 @@ describe("/api/v1/invoice/", () => {
       });
       const invoice2 = await invoices.create({
         userId: tutor2.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@instapay",
         amount: lesson2.price,
       });
@@ -481,7 +481,7 @@ describe("/api/v1/invoice/", () => {
       });
       const invoice1 = await invoices.create({
         userId: tutor1.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "user@instapay",
         amount: lesson.price,
       });
@@ -577,13 +577,13 @@ describe("/api/v1/invoice/", () => {
       await invoices.create({
         userId: tutor.id,
         amount: 1000,
-        method: IWithdrawMethod.Type.Wallet,
+        method: IInvoice.WithdrawMethod.Wallet,
         receiver: "01099999999",
       });
       const invoice2 = await invoices.create({
         userId: tutor.id,
         amount: 500,
-        method: IWithdrawMethod.Type.Wallet,
+        method: IInvoice.WithdrawMethod.Wallet,
         receiver: "01099999999",
       });
       await invoices.update(invoice2.id, {

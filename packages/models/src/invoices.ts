@@ -47,7 +47,7 @@ export class Invoices {
       .returning("*");
 
     const row = first(rows);
-    if (!row) throw new Error("Invoice not found; should never happen");
+    if (!row) throw new Error("invoice not found; should never happen");
     return this.from(row);
   }
 
@@ -111,9 +111,7 @@ export class Invoices {
     );
 
     if (status) builder.whereIn(this.column("status"), status);
-
     if (users) builder.whereIn(this.column("user_id"), users);
-
     const row = await builder.first();
     return row ? zod.coerce.number().parse(row.amount) : 0;
   }

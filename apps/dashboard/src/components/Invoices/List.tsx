@@ -1,4 +1,4 @@
-import { IInvoice, IWithdrawMethod, Paginated, Void } from "@litespace/types";
+import { IInvoice, Paginated, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Table } from "@/components/Common/Table";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -47,7 +47,7 @@ const List: React.FC<{
       columnHelper.accessor("method", {
         header: intl("dashboard.invoices.method"),
         cell: (info) => {
-          const status = info.getValue() as IWithdrawMethod.Type;
+          const status = info.getValue() as IInvoice.WithdrawMethod;
           const value = withdrawMethodsIntlMap[status];
           return intl(value);
         },

@@ -33,7 +33,6 @@ export * as IMessenger from "@/messenger";
 export * as IKafka from "@/kafka";
 export * as IFawry from "@/fawry";
 export * as ITransaction from "@/transaction";
-export * as IWithdrawMethod from "@/withdrawMethod";
 
 export * from "@/api";
 export * from "@/utils";

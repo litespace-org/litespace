@@ -10,7 +10,6 @@ import {
   IFilter,
   ISession,
   IPlan,
-  IWithdrawMethod,
 } from "@litespace/types";
 import zod, { ZodLiteral } from "zod";
 
@@ -93,7 +92,7 @@ export const interviewStatus = zod.coerce.number(
   zod.nativeEnum(IInterview.Status)
 );
 
-export const withdrawMethod = zod.nativeEnum(IWithdrawMethod.Type);
+export const withdrawMethod = zod.nativeEnum(IInvoice.WithdrawMethod);
 
 export const invoiceStatus = zod.nativeEnum(IInvoice.Status);
 

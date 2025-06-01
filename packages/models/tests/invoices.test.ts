@@ -1,7 +1,7 @@
 import fixtures from "@fixtures/db";
-import { nameof, wait } from "@litespace/utils/utils";
+import { nameof } from "@litespace/utils/utils";
 import { invoices } from "@/index";
-import { IInvoice, IWithdrawMethod } from "@litespace/types";
+import { IInvoice } from "@litespace/types";
 import { expect } from "chai";
 import { sum } from "lodash";
 
@@ -16,7 +16,7 @@ describe("Invoices", () => {
 
       const newInvoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "tutorname",
         amount: 200000,
         note: "Just a test note",
@@ -32,7 +32,7 @@ describe("Invoices", () => {
       const tutor = await fixtures.tutor();
       const newInvoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "tutorname",
         amount: 200000,
         note: "Just a test note",
@@ -50,7 +50,7 @@ describe("Invoices", () => {
       const tutor = await fixtures.tutor();
       const newInvoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "tutorname",
         amount: 200000,
         note: "Just a test note",
@@ -68,13 +68,11 @@ describe("Invoices", () => {
       const tutor = await fixtures.tutor();
       const newInvoice = await invoices.create({
         userId: tutor.id,
-        method: IWithdrawMethod.Type.Instapay,
+        method: IInvoice.WithdrawMethod.Instapay,
         receiver: "tutorname",
         amount: 200000,
         note: "Just a test note",
       });
-
-      await wait(1);
 
       await invoices.update(newInvoice.id, {
         receipt: "b0ac23sdgk23asdk",
@@ -93,25 +91,25 @@ describe("Invoices", () => {
       const newlist = await Promise.all([
         await invoices.create({
           userId: tutor1.id,
-          method: IWithdrawMethod.Type.Instapay,
+          method: IInvoice.WithdrawMethod.Instapay,
           receiver: "tutorname",
           amount: 200000,
         }),
         await invoices.create({
           userId: tutor1.id,
-          method: IWithdrawMethod.Type.Bank,
+          method: IInvoice.WithdrawMethod.Bank,
           receiver: "alex:2183921830112",
           amount: 20000,
         }),
         await invoices.create({
           userId: tutor1.id,
-          method: IWithdrawMethod.Type.Instapay,
+          method: IInvoice.WithdrawMethod.Instapay,
           receiver: "tutorname",
           amount: 350000,
         }),
         await invoices.create({
           userId: tutor2.id,
-          method: IWithdrawMethod.Type.Bank,
+          method: IInvoice.WithdrawMethod.Bank,
           receiver: "nbe:12389128390122",
           amount: 150000,
         }),
@@ -120,10 +118,10 @@ describe("Invoices", () => {
       const res1 = await invoices.find({ users: [tutor1.id] });
       const res2 = await invoices.find({
         users: [tutor1.id],
-        methods: [IWithdrawMethod.Type.Instapay],
+        methods: [IInvoice.WithdrawMethod.Instapay],
       });
       const res3 = await invoices.find({
-        methods: [IWithdrawMethod.Type.Bank],
+        methods: [IInvoice.WithdrawMethod.Bank],
       });
 
       expect(res1.total).to.eq(3);
@@ -149,25 +147,25 @@ describe("Invoices", () => {
       const newlist = await Promise.all([
         await invoices.create({
           userId: tutor1.id,
-          method: IWithdrawMethod.Type.Instapay,
+          method: IInvoice.WithdrawMethod.Instapay,
           receiver: "tutorname",
           amount: 200000,
         }),
         await invoices.create({
           userId: tutor1.id,
-          method: IWithdrawMethod.Type.Bank,
+          method: IInvoice.WithdrawMethod.Bank,
           receiver: "alex:2183921830112",
           amount: 20000,
         }),
         await invoices.create({
           userId: tutor1.id,
-          method: IWithdrawMethod.Type.Instapay,
+          method: IInvoice.WithdrawMethod.Instapay,
           receiver: "tutorname",
           amount: 350000,
         }),
         await invoices.create({
           userId: tutor2.id,
-          method: IWithdrawMethod.Type.Bank,
+          method: IInvoice.WithdrawMethod.Bank,
           receiver: "nbe:12389128390122",
           amount: 150000,
         }),
@@ -190,25 +188,25 @@ describe("Invoices", () => {
       const newlist = await Promise.all([
         await invoices.create({
           userId: tutor1.id,
-          method: IWithdrawMethod.Type.Instapay,
+          method: IInvoice.WithdrawMethod.Instapay,
           receiver: "tutorname",
           amount: 200000,
         }),
         await invoices.create({
           userId: tutor1.id,
-          method: IWithdrawMethod.Type.Bank,
+          method: IInvoice.WithdrawMethod.Bank,
           receiver: "alex:2183921830112",
           amount: 20000,
         }),
         await invoices.create({
           userId: tutor1.id,
-          method: IWithdrawMethod.Type.Instapay,
+          method: IInvoice.WithdrawMethod.Instapay,
           receiver: "tutorname",
           amount: 350000,
         }),
         await invoices.create({
           userId: tutor2.id,
-          method: IWithdrawMethod.Type.Bank,
+          method: IInvoice.WithdrawMethod.Bank,
           receiver: "nbe:12389128390122",
           amount: 150000,
         }),

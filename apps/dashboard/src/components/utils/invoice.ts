@@ -1,11 +1,12 @@
 import { LocalId } from "@litespace/ui/locales";
-import { IInvoice, IWithdrawMethod } from "@litespace/types";
+import { IInvoice } from "@litespace/types";
 
-export const withdrawMethodsIntlMap: Record<IWithdrawMethod.Type, LocalId> = {
-  [IWithdrawMethod.Type.Wallet]: "withdraw.methods.wallet",
-  [IWithdrawMethod.Type.Instapay]: "withdraw.methods.instapay",
-  [IWithdrawMethod.Type.Bank]: "withdraw.methods.bank",
-};
+export const withdrawMethodsIntlMap: Record<IInvoice.WithdrawMethod, LocalId> =
+  {
+    [IInvoice.WithdrawMethod.Wallet]: "withdraw.methods.wallet",
+    [IInvoice.WithdrawMethod.Instapay]: "withdraw.methods.instapay",
+    [IInvoice.WithdrawMethod.Bank]: "withdraw.methods.bank",
+  };
 
 export const invoiceBankIntlMap: Record<IInvoice.Bank, LocalId> = {
   ALEX: "banks.labels.alex",

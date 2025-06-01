@@ -1,4 +1,4 @@
-import { IInvoice, IWithdrawMethod } from "@litespace/types";
+import { IInvoice } from "@litespace/types";
 import React, { useMemo } from "react";
 import { getWithdrawMethodIntlId } from "@/components/utils/withdraw";
 import { useFormatMessage } from "@/hooks/intl";
@@ -20,7 +20,7 @@ export const Owner: React.FC<{ name: string | null }> = ({ name }) => {
   return name || "-";
 };
 
-export const Method: React.FC<{ method: IWithdrawMethod.Type }> = ({
+export const Method: React.FC<{ method: IInvoice.WithdrawMethod }> = ({
   method,
 }) => {
   const id = useMemo(() => getWithdrawMethodIntlId(method), [method]);
@@ -30,7 +30,7 @@ export const Method: React.FC<{ method: IWithdrawMethod.Type }> = ({
 
 export const Receiver: React.FC<{
   receiver: string;
-  method: IWithdrawMethod.Type;
+  method: IInvoice.WithdrawMethod;
 }> = ({ receiver, method }) => {
   const { instapay } = useWithdrawMethod(method);
   if (instapay) return <span dir="ltr">@{receiver}</span>;

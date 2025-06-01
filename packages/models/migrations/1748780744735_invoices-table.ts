@@ -19,6 +19,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
-  pgm.dropIndex("invoices", "id");
-  pgm.dropTable("invoices");
+  pgm.dropIndex("invoices", "id", { ifExists: true });
+  pgm.dropTable("invoices", { ifExists: true });
 }

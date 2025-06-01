@@ -1,25 +1,20 @@
 import { HTML_REGEX, INSTAPAY_REGEX, PHONE_NUMBER_REGEX } from "@/constants";
-import {
-  FieldError,
-  type Bank,
-  BANKS,
-  IWithdrawMethod,
-} from "@litespace/types";
+import { FieldError, type Bank, BANKS, IInvoice } from "@litespace/types";
 import { getSafeInnerHtmlText } from "@/utils";
 
 export function isValidInvoiceReceiver(
   receiver: string,
-  type: IWithdrawMethod.Type
+  type: IInvoice.WithdrawMethod
 ) {
-  if (type === IWithdrawMethod.Type.Wallet) {
+  if (type === IInvoice.WithdrawMethod.Wallet) {
     if (!PHONE_NUMBER_REGEX.test(receiver)) return FieldError.InvalidPhone;
     return true;
   }
-  if (type === IWithdrawMethod.Type.Instapay) {
+  if (type === IInvoice.WithdrawMethod.Instapay) {
     if (!INSTAPAY_REGEX.test(receiver)) return FieldError.InvalidInstapayIPA;
     return true;
   }
-  if (type === IWithdrawMethod.Type.Bank) {
+  if (type === IInvoice.WithdrawMethod.Bank) {
     const [bankName, bankNumber] = receiver.split(":", 2);
     if (!bankName) return FieldError.EmptyBankName;
     if (!BANKS.includes(bankName as Bank)) {
