@@ -6,6 +6,7 @@ import React, { useCallback, useState } from "react";
 import { InView } from "react-intersection-observer";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { isTutorManager } from "@litespace/utils";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -52,7 +53,7 @@ const Content: React.FC<{
         {tutors.map((tutor) => (
           <TutorCard
             key={tutor.id}
-            free={false} // todo: access user role from the tutors cache
+            free={isTutorManager(tutor)}
             id={tutor.id}
             bio={tutor.id == 49 ? tutor.bio : null}
             name={tutor.name}

@@ -10,24 +10,24 @@ import { DurationSelection } from "@/components/Lessons/ManageLesson/DurationSel
 import { TimeSelection } from "@/components/Lessons/ManageLesson/TimeSelection";
 import { Confirmation } from "@/components/Lessons/ManageLesson/Confirmation";
 import { Button } from "@/components/Button";
-import ArrowRight from "@litespace/assets/ArrowRight";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
 import { AnimatePresence, motion } from "framer-motion";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 import { concat, isEmpty } from "lodash";
 import cn from "classnames";
-import CalendarEmpty from "@litespace/assets/CalendarEmpty";
 import { Loading, LoadingError } from "@/components/Loading";
 import {
   getSubSlotsBatch as getSubSlots,
-  MIN_LESSON_DURATION,
   orderSlots,
   subtractSlotsBatch as subtractSlots,
 } from "@litespace/utils/availabilitySlots";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Block } from "@/components/Lessons/ManageLesson/Block";
+import { MIN_LESSON_DURATION } from "@litespace/utils";
 import NoMoreMinutes from "@litespace/assets/NoMoreMinutes";
+import CalendarEmpty from "@litespace/assets/CalendarEmpty";
+import ArrowLeft from "@litespace/assets/ArrowLeft";
+import ArrowRight from "@litespace/assets/ArrowRight";
 
 const LoadingWrapper: React.FC<{
   tutorName: string | null;
@@ -67,7 +67,7 @@ const Error: React.FC<{
   );
 };
 
-const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
+const BusyTutor: React.FC = () => {
   const intl = useFormatMessage();
   return (
     <div
@@ -76,11 +76,9 @@ const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
       <CalendarEmpty />
       <Typography
         tag="span"
-        className="text-brand-700 text-center font-bold text-body lg:text-subtitle-2"
+        className="text-natural-700 text-center font-bold text-body"
       >
-        {tutorName
-          ? intl("book-lesson.empty-slots", { tutor: tutorName })
-          : null}
+        {intl("book-lesson.empty-slots")}
       </Typography>
     </div>
   );
@@ -274,8 +272,9 @@ export const ManageLessonDialog: React.FC<{
   }, [selectDaySlots, date, bookedSlots]);
 
   const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
+
   const depletedSubscription = useMemo(
-    () => remainingWeeklyMinutes <= MIN_LESSON_DURATION,
+    () => remainingWeeklyMinutes < MIN_LESSON_DURATION,
     [remainingWeeklyMinutes]
   );
 
@@ -297,8 +296,6 @@ export const ManageLessonDialog: React.FC<{
       type,
     ]
   );
-
-  const canProceed = useMemo(() => canBook, [canBook]);
 
   return (
     <Dialog
@@ -342,7 +339,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {error ? (
+          {error && !loading ? (
             <Animation key="error" id="error">
               <Error retry={retry} tutorName={name} />
             </Animation>
@@ -377,11 +374,11 @@ export const ManageLessonDialog: React.FC<{
 
           {isTutorBusy && canBook ? (
             <Animation key="busy-tutor" id="busy-tutor">
-              <BusyTutor tutorName={name} />
+              <BusyTutor />
             </Animation>
           ) : null}
 
-          {step === "date-selection" && canProceed ? (
+          {step === "date-selection" && canBook ? (
             <Animation key="date-selection" id="date-selection">
               <DateSelection
                 min={dateBounds.min}
@@ -393,7 +390,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {step === "duration-selection" && canProceed ? (
+          {step === "duration-selection" && canBook ? (
             <Animation key="duration-selection" id="duration-selection">
               <DurationSelection
                 remainingWeeklyMinutes={remainingWeeklyMinutes}
@@ -403,7 +400,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {step === "time-selection" && canProceed ? (
+          {step === "time-selection" && canBook ? (
             <Animation key="time-selection" id="time-selection">
               <TimeSelection
                 slots={allSlots}
@@ -450,7 +447,7 @@ export const ManageLessonDialog: React.FC<{
         </AnimatePresence>
       </div>
 
-      {step !== "confirmation" && canProceed ? (
+      {step !== "confirmation" && canBook ? (
         <div
           className={cn(
             "flex flex-row gap-4 md:gap-[14px] w-full md:ms-auto md:w-fit px-4 md:px-0",
@@ -462,7 +459,7 @@ export const ManageLessonDialog: React.FC<{
         >
           {step !== "date-selection" ? (
             <Button
-              startIcon={<LongRightArrow className="w-4 h-4 icon" />}
+              startIcon={<ArrowRight className="w-4 h-4 icon" />}
               size="large"
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
@@ -483,7 +480,7 @@ export const ManageLessonDialog: React.FC<{
           ) : null}
 
           <Button
-            endIcon={<LongLeftArrow className="w-4 h-4 icon" />}
+            endIcon={<ArrowLeft className="w-4 h-4 icon" />}
             size="large"
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");

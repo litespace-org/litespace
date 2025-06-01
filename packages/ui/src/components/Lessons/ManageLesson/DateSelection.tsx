@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from "react";
 import { range } from "lodash";
 import cn from "classnames";
 import { Dayjs } from "dayjs";
-import dayjs from "@/lib/dayjs";
 import { Selectable } from "@/components/Lessons/ManageLesson/Selectable";
 
 const rows = 7;
@@ -18,25 +17,15 @@ function getWeekDays(date: Dayjs): DayGrid {
 export const DateSelection: React.FC<{
   onSelect: (date: Dayjs) => void;
   isSelectable: (date: Dayjs) => boolean;
-  min?: Dayjs;
-  max?: Dayjs;
+  min: Dayjs;
+  max: Dayjs;
   selected: Dayjs | null;
   disable?: boolean;
 }> = ({ onSelect, isSelectable, selected, min, max, disable }) => {
-  const value = useMemo(() => selected || dayjs(), [selected]);
-  const [date, setDate] = useState<Dayjs>(value.startOf("week"));
-
-  const today = useMemo(() => dayjs(), []);
-  const weekDays = useMemo(() => getWeekDays(date), [date]);
-
-  useEffect(() => {
-    if (selected) setDate(selected.startOf("week"));
-  }, [selected]);
-
+  const weekDays = useMemo(() => getWeekDays(min), [min]);
 
   const isOutOfRange = useCallback(
-    (date: Dayjs) =>
-      (min && date.isBefore(min, "day")) || (max && date.isAfter(max, "day")),
+    (date: Dayjs) => date.isBefore(min, "day") || date.isAfter(max, "day"),
     [max, min]
   );
 
@@ -44,7 +33,6 @@ export const DateSelection: React.FC<{
     <ul className={cn("flex flex-col gap-2 w-full")}>
       {weekDays.map((day) => {
         const isSelected = !!selected?.isSame(day, "day");
-
         return (
           <Selectable
             key={day.format("YYYY-MM-DD")}

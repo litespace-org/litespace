@@ -11,12 +11,9 @@ import {
   hashPassword,
   topics,
   availabilitySlots,
-<<<<<<< HEAD
   invoices,
-=======
   subscriptions,
   transactions,
->>>>>>> d431f49a (feat(web): implemented subscription based lesson booking)
 } from "@litespace/models";
 import {
   IAvailabilitySlot,
@@ -155,25 +152,27 @@ async function main(): Promise<void> {
   );
 
   students.forEach(async (student, idx) => {
-    const transaction = await transactions.create({
-      amount: 1200,
-      paymentMethod: ITransaction.PaymentMethod.EWallet,
-      planId: plan1.id,
-      planPeriod: IPlan.Period.Month,
-      providerRefNum: 1,
-      userId: student.id,
-      status: ITransaction.Status.Paid,
-    });
+    if (sample([true, false])) {
+      const transaction = await transactions.create({
+        amount: 1200,
+        paymentMethod: ITransaction.PaymentMethod.EWallet,
+        planId: plan1.id,
+        planPeriod: IPlan.Period.Month,
+        providerRefNum: 1,
+        userId: student.id,
+        status: ITransaction.Status.Paid,
+      });
 
-    await subscriptions.create({
-      userId: student.id,
-      planId: plan1.id,
-      start: dayjs.utc().toISOString(),
-      end: dayjs.utc().add(1, "day").toISOString(),
-      period: IPlan.Period.Month,
-      weeklyMinutes: idx * 10,
-      txId: transaction.id,
-    });
+      await subscriptions.create({
+        userId: student.id,
+        planId: plan1.id,
+        start: dayjs.utc().toISOString(),
+        end: dayjs.utc().add(1, "month").toISOString(),
+        period: IPlan.Period.Month,
+        weeklyMinutes: idx * 10,
+        txId: transaction.id,
+      });
+    }
   });
 
   // seeding studios
@@ -412,9 +411,8 @@ async function main(): Promise<void> {
 
   // seeding slots
   const seededSlots: { [tutorId: number]: IAvailabilitySlot.Self[] } = {};
-  [...addedTutors, tutorManager].forEach(async (tutor, i) => {
-    // return this to i instead of 1
-    const date = dayjs.utc().add(1, "days").startOf("day");
+  [tutorManager, ...addedTutors].forEach(async (tutor, i) => {
+    const date = dayjs.utc().add(i, "day").startOf("day");
     const slots = await availabilitySlots.create([
       {
         userId: tutor.id,
@@ -465,10 +463,12 @@ async function main(): Promise<void> {
     tutorId,
     slotId,
     start,
+    canceled,
   }: {
     tutorId: number;
     slotId: number;
     start: string;
+    canceled?: boolean;
   }) {
     return await knex.transaction(async (tx: Knex.Transaction) => {
       const duration = sample([ILesson.Duration.Short, ILesson.Duration.Long]);
@@ -484,7 +484,7 @@ async function main(): Promise<void> {
         tx,
       });
 
-      if (sample([0, 1]))
+      if (canceled || (canceled === undefined && sample([0, 1])))
         await lessons.cancel({
           ids: [lesson.id],
           canceledBy: sample([tutorId, student.id]),
@@ -497,16 +497,20 @@ async function main(): Promise<void> {
 
   // seeding lessons
   for (const tutor of addedTutors) {
+    const lastTutor = addedTutors[addedTutors.length - 1] === tutor;
     // create chat room tutor-student
     await knex.transaction(async (tx) =>
       rooms.create([tutor.id, student.id], tx)
     );
 
-    for (const slot of seededSlots[tutor.id] || []) {
+    const slotsArr = seededSlots[tutor.id];
+    for (const slot of slotsArr || []) {
+      const lastSlot = slotsArr[slotsArr.length - 1] === slot;
       await createRandomLesson({
         tutorId: tutor.id,
         slotId: slot.id,
         start: slot.start,
+        canceled: !lastSlot || !lastTutor,
       });
     }
 
@@ -529,13 +533,8 @@ async function main(): Promise<void> {
     await knex.transaction(async (tx: Knex.Transaction) => {
       const interview = await interviews.create({
         session: `interview:${randomUUID()}`,
-<<<<<<< HEAD
         intervieweeId: tutor.id,
         interviewerId: tutorManager.id,
-=======
-        interviewee: tutor.id,
-        interviewer: tutorManager2.id,
->>>>>>> d431f49a (feat(web): implemented subscription based lesson booking)
         start: randomStart(),
         slot: slot.id,
         tx,

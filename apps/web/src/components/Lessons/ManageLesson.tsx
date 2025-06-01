@@ -1,5 +1,5 @@
 import { ManageLessonDialog } from "@litespace/ui/Lessons";
-import { ILesson, Void } from "@litespace/types";
+import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
 import {
   useCreateLesson,
   useFindLessons,
@@ -56,6 +56,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   const verifyEmailDialog = useRender();
 
+  // ====== Check if user has any booked lessons =========
   const lessons = useFindLessons({
     canceled: false,
     users: user ? [user?.id] : [],
@@ -63,12 +64,15 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     userOnly: true,
     size: 1,
   });
-
-  const { info, remainingWeeklyMinutes } = useSubscription();
-
   const hasBookedLessons = useMemo(() => {
     return !!lessons.query.data && !!lessons.query.data.list.length;
   }, [lessons]);
+
+  // ====== get tutorInfo =========
+  const { query: tutor } = useFindTutorInfo(tutorId);
+
+  // ====== get subscribtion details and get the boundries you filter the availability slots on =========
+  const { info, remainingWeeklyMinutes } = useSubscription();
   const slotBoundries = useMemo(
     () =>
       asSlotBoundries({
@@ -77,16 +81,24 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
       }),
     [info]
   );
-
-  const { query: tutor } = useFindTutorInfo(tutorId);
-  const { query: tutorAvailabilitySlots } = useFindAvailabilitySlots({
+  const tutorAvailabilitySlots = useFindAvailabilitySlots({
     userId: tutorId,
     ...slotBoundries,
   });
 
-  const enableNotifications = useEnableNotificationsToastAction();
+  /**
+   * if user is subscribed use the real weakly minutes, if not, look for the tutor type
+   * isTutorManager -> user can book
+   * if not -> user can't book
+   */
+  const remainingWeeklyMins = useMemo(() => {
+    if (info) return remainingWeeklyMinutes;
+    if (isTutorManager(tutor.data)) return MAX_LESSON_DURATION;
+    return 0;
+  }, [remainingWeeklyMinutes, tutor.data, info]);
 
-  // book lesson
+  // ====== Create Lesson Mutation =========
+  const enableNotifications = useEnableNotificationsToastAction();
   const onCreateSuccess = useCallback(() => {
     if (tutor.data?.name)
       toast.success({
@@ -123,7 +135,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     onError: onCreateError,
   });
 
-  // update lesson
+  // ====== Update Lesson Mutation =========
   const onUpdateSuccess = useCallback(() => {
     if (tutor.data?.name)
       toast.success({
@@ -160,6 +172,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     onError: onUpdateError,
   });
 
+  // ====== Submit Lesson Details =========
   const onSubmit = useCallback(
     ({
       slotId,
@@ -194,17 +207,10 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     const start = dayjs.utc(payload.start);
     const end = start.add(payload.duration, "minutes");
     return tutorAvailabilitySlots.data.subslots.filter(
-      (slot) => !start.isSame(slot.start) || !end.isSame(slot.end)
+      (slot: IAvailabilitySlot.SubSlot) =>
+        !start.isSame(slot.start) || !end.isSame(slot.end)
     );
   }, [tutorAvailabilitySlots.data?.subslots, payload]);
-
-  const asRemainingWeeklyMinutes = useMemo(() => {
-    if (info) return remainingWeeklyMinutes;
-    console.log(tutor.data);
-
-    if (info && isTutorManager(tutor.data)) return MAX_LESSON_DURATION;
-    return 0;
-  }, [remainingWeeklyMinutes, tutor.data, info]);
 
   if (!user) return null;
 
@@ -212,7 +218,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     <>
       {!verifyEmailDialog.open ? (
         <ManageLessonDialog
-          remainingWeeklyMinutes={asRemainingWeeklyMinutes}
+          remainingWeeklyMinutes={remainingWeeklyMins}
           open
           type={payload.type}
           slotId={payload.type === "update" ? payload.slotId : undefined}
