@@ -10,7 +10,7 @@ export const RadioButton: React.FC<InputProps> = ({ className, ...props }) => {
       <input
         type="radio"
         className={cn(
-          "peer opacity-0 absolute inset-0 z-radio-button cursor-pointer",
+          "peer opacity-0 absolute inset-0 z-radio-button cursor-pointer disabled:cursor-not-allowed",
           className
         )}
         {...props}
@@ -19,8 +19,9 @@ export const RadioButton: React.FC<InputProps> = ({ className, ...props }) => {
       <div
         className={cn(
           "absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2",
-          "w-5 h-5 rounded-full overflow-hidden border-4 border-brand-500",
-          "peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 peer-focus-visible:ring-offset-2"
+          "w-5 h-5 rounded-full overflow-hidden border-2 border-brand-500",
+          "peer-focus-visible:ring-2 peer-focus-visible:ring-secondary-600 peer-focus-visible:ring-offset-2",
+          props.checked && "border-4"
         )}
       />
 

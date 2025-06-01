@@ -50,7 +50,7 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
             key={index}
             className="flex flex-col w-min gap-[3px] md:gap-2 flex-1"
           >
-            <div className="flex flex-row gap-1 md:gap-4 items-center">
+            <div className="flex flex-row gap-1 md:gap-2 items-center">
               <div
                 className={cn(
                   "w-5 h-5 md:w-6 md:h-6 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0",
@@ -73,9 +73,8 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
               </div>
               <div className="h-[2px] w-full md:w-[60px] bg-natural-400">
                 <div
-                  className={cn("h-full", {
-                    "w-2/3 bg-brand-500": isCurrent,
-                    "w-full bg-brand-500": isBefore,
+                  className={cn("h-full w-full", {
+                    "bg-brand-500": isCurrent || isBefore,
                     "opacity-0": isAfter,
                   })}
                 />

@@ -19,6 +19,9 @@ import { useOnError } from "@/hooks/error";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
 import { useRender } from "@litespace/headless/common";
 import { useEnableNotificationsToastAction } from "@/hooks/notification";
+import { useSubscription } from "@litespace/headless/context/subscription";
+import { asSlotBoundries } from "@/lib/lesson";
+import { isTutorManager, MAX_LESSON_DURATION } from "@litespace/utils";
 
 type Base = {
   close: Void;
@@ -61,16 +64,26 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     size: 1,
   });
 
+  const { info, remainingWeeklyMinutes } = useSubscription();
+
   const hasBookedLessons = useMemo(() => {
     return !!lessons.query.data && !!lessons.query.data.list.length;
   }, [lessons]);
+  const slotBoundries = useMemo(
+    () =>
+      asSlotBoundries({
+        start: info?.start,
+        end: info?.end,
+      }),
+    [info]
+  );
 
+  const { query: tutor } = useFindTutorInfo(tutorId);
   const tutorAvailabilitySlots = useFindAvailabilitySlots({
     userIds: [tutorId],
-    after: now.current.utc().toISOString(),
-    before: now.current.utc().add(2, "week").toISOString(),
+    ...slotBoundries,
   });
-  const { query: tutor } = useFindTutorInfo(tutorId);
+
   const enableNotifications = useEnableNotificationsToastAction();
 
   // book lesson
@@ -185,12 +198,21 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     );
   }, [tutorAvailabilitySlots.data?.subslots, payload]);
 
+  const asRemainingWeeklyMinutes = useMemo(() => {
+    if (info) return remainingWeeklyMinutes;
+    console.log(tutor.data);
+
+    if (info && isTutorManager(tutor.data)) return MAX_LESSON_DURATION;
+    return 0;
+  }, [remainingWeeklyMinutes, tutor.data, info]);
+
   if (!user) return null;
 
   return (
     <>
       {!verifyEmailDialog.open ? (
         <ManageLessonDialog
+          remainingWeeklyMinutes={asRemainingWeeklyMinutes}
           open
           type={payload.type}
           slotId={payload.type === "update" ? payload.slotId : undefined}
