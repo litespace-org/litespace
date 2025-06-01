@@ -53,9 +53,9 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
             <div className="flex flex-row gap-1 md:gap-4 items-center">
               <div
                 className={cn(
-                  "w-5 h-5 md:w-7 md:h-7 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0",
+                  "w-5 h-5 md:w-6 md:h-6 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0",
                   {
-                    "bg-brand-700": isCurrent || isBefore,
+                    "bg-brand-500": isCurrent || isBefore,
                     "bg-natural-400": isAfter,
                   }
                 )}
@@ -71,11 +71,11 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
                   <Check />
                 )}
               </div>
-              <div className="h-[2px] w-full md:w-[83px] bg-natural-400">
+              <div className="h-[2px] w-full md:w-[60px] bg-natural-400">
                 <div
                   className={cn("h-full", {
-                    "w-2/3 bg-brand-700": isCurrent,
-                    "w-full bg-brand-700": isBefore,
+                    "w-2/3 bg-brand-500": isCurrent,
+                    "w-full bg-brand-500": isBefore,
                     "opacity-0": isAfter,
                   })}
                 />
@@ -84,7 +84,7 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
             <Typography
               tag="span"
               className={cn("text-tiny md:text-start", {
-                "text-brand-700": isBefore || isCurrent,
+                "text-brand-500": isBefore || isCurrent,
                 "text-natural-400": isAfter,
               })}
             >
