@@ -118,6 +118,7 @@ const MobileLinks: React.FC = () => {
             text={intl("footer/links/contact-us")}
             route={Landing.Contact}
           />
+          <FooterLink text={intl("footer/links/about")} route={Landing.About} />
         </div>
       </div>
     </div>
