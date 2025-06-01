@@ -761,6 +761,7 @@
   "book-lesson.has-booked-lessons.description": "سوف يكون بأمكانك حجز حصة اخري بمجرد انتهائك من حصتك المحجوزة سابقا.",
   "book-lesson.has-booked-lessons.action": "موافق",
   "book-lesson.title": "إحجز حصة مع {tutor}",
+  "book-lesson.depleted-subscription": "ليس لديك أي دقائق متبقية في الباقة لهذا الأسبوع",
   "book-lesson.title.placeholder": "إحجز حصة",
   "book-lesson.steps.date-selection": "إختر تاريخ الحصة",
   "book-lesson.steps.duration-selection": "إختر مدة الحصة",

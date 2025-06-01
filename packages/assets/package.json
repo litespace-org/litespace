@@ -133,6 +133,7 @@
     "./Muted": "./dist/Muted.tsx",
     "./NewTutor": "./dist/NewTutor.tsx",
     "./NotFoundV2": "./dist/NotFoundV2.tsx",
+    "./NoMoreMinutes": "./dist/NoMoreMinutes.tsx",
     "./NotFound": "./dist/NotFound.tsx",
     "./Notification2": "./dist/Notification2.tsx",
     "./Notification": "./dist/Notification.tsx",
