@@ -89,7 +89,7 @@ services:
     environment:
       APP_URL: "https://handbook.litespace.org"
       APP_SECRET: ${DOCMOST_APP_SECRET}
-      DATABASE_URL: "postgres://${DOCMOST_DATABASE_USERNAME:-postgres}:{DOCMOST_DATABASE_PASSWORD:-litespace}@postgres:5432/docmost?schema=public"
+      DATABASE_URL: ${DOCMOST_DATABASE_URL}
       REDIS_URL: "redis://redis:6379"
       MAIL_DRIVER: "smtp"
       SMTP_HOST: "mail.litespace.org"
