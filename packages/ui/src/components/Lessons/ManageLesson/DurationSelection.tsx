@@ -1,32 +1,24 @@
-import { Select } from "@/components/Select";
 import { formatMinutes } from "@/components/utils";
-import { useFormatMessage } from "@/hooks";
 import React from "react";
+import { Selectable } from "@/components/Lessons/ManageLesson/Selectable";
+import { LESSON_DURATION_LIST } from "@litespace/utils";
 
 export const DurationSelection: React.FC<{
   value: number;
+  remainingWeeklyMinutes: number;
   onChange: (value: number) => void;
-}> = ({ value, onChange }) => {
-  const intl = useFormatMessage();
+}> = ({ value, remainingWeeklyMinutes, onChange }) => {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="w-full">
-        <Select
-          label={intl("book-lesson.pick-lesson-duration")}
-          options={[
-            {
-              label: formatMinutes(15),
-              value: 15,
-            },
-            {
-              label: formatMinutes(30),
-              value: 30,
-            },
-          ]}
-          value={value}
-          onChange={onChange}
+    <div className="flex flex-col gap-4 my-6">
+      {LESSON_DURATION_LIST.map((duration) => (
+        <Selectable
+          disabled={remainingWeeklyMinutes < duration}
+          name="duration"
+          isSelected={value === duration}
+          label={formatMinutes(duration)}
+          onSelect={() => onChange(duration)}
         />
-      </div>
+      ))}
     </div>
   );
 };
