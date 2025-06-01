@@ -110,16 +110,22 @@ services:
 
 networks:
   postgres:
+    name: postgres
     driver: bridge
   redis:
+    name: redis
     driver: bridge
 
 volumes:
   postgres:
     name: litespace_postgres
+    external: true
   pgadmin:
     name: litespace_pgadmin
+    external: true
   docmost:
     name: litespace_docmost
+    external: true
   redis:
     name: litespace_redis
+    external: true
