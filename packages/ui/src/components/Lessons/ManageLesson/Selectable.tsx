@@ -23,7 +23,12 @@ export const Selectable: React.FC<{
       onClick={onSelect}
       type="button"
     >
-      <RadioButton name={name} checked={isSelected} disabled={disabled} />
+      <RadioButton
+        name={name}
+        onChange={onSelect}
+        checked={isSelected}
+        disabled={disabled}
+      />
       <Typography tag="p" className="text-tiny font-semibold text-natural-950">
         {label}
       </Typography>

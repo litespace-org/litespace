@@ -67,20 +67,20 @@ const Error: React.FC<{
   );
 };
 
-const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
+const BusyTutor: React.FC = () => {
   const intl = useFormatMessage();
   return (
     <div
-      className={cn("flex items-center flex-col gap-8 justify-center mx-auto")}
+      className={cn(
+        "flex items-center flex-col gap-8 mt-10 justify-center mx-auto"
+      )}
     >
       <CalendarEmpty />
       <Typography
         tag="span"
-        className="text-brand-700 text-center font-bold text-body lg:text-subtitle-2"
+        className="text-natural-700 text-center font-bold text-body"
       >
-        {tutorName
-          ? intl("book-lesson.empty-slots", { tutor: tutorName })
-          : null}
+        {intl("book-lesson.empty-slots")}
       </Typography>
     </div>
   );
@@ -133,9 +133,12 @@ const DepletedSubscription: React.FC = () => {
   const intl = useFormatMessage();
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 min-w-[464px]">
-      <NoMoreMinutes />
-      <Typography tag="p" className="text-body font-bold text-natural-700">
+    <div className="flex flex-col items-center justify-center gap-8 mt-10">
+      <NoMoreMinutes className="w-[168px] h-[168px]" />
+      <Typography
+        tag="p"
+        className="text-caption sm:text-body font-bold text-natural-700"
+      >
         {intl("book-lesson.depleted-subscription")}
       </Typography>
     </div>
@@ -224,13 +227,16 @@ export const ManageLessonDialog: React.FC<{
 
   const dateBounds = useMemo(() => {
     const min = dayjs();
-    const max = dayjs().add(1, "week");
+    const max = dayjs().startOf("day").add(1, "week");
     return { min, max };
   }, []);
 
   const unbookedSlots = useMemo(
-    () => subtractSlots({ slots, subslots: bookedSlots }),
-    [slots, bookedSlots]
+    () =>
+      subtractSlots({ slots, subslots: bookedSlots }).filter((slot) =>
+        dayjs(slot.start).isBefore(dateBounds.max)
+      ),
+    [slots, bookedSlots, dateBounds.max]
   );
 
   const selectDaySlots = useCallback(
@@ -274,8 +280,9 @@ export const ManageLessonDialog: React.FC<{
   }, [selectDaySlots, date, bookedSlots]);
 
   const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
+
   const depletedSubscription = useMemo(
-    () => remainingWeeklyMinutes <= MIN_LESSON_DURATION,
+    () => remainingWeeklyMinutes < MIN_LESSON_DURATION,
     [remainingWeeklyMinutes]
   );
 
@@ -285,20 +292,9 @@ export const ManageLessonDialog: React.FC<{
       !loading &&
       isVerified &&
       !depletedSubscription &&
-      !isTutorBusy &&
       (!hasBookedLessons || type === "update"),
-    [
-      error,
-      loading,
-      isTutorBusy,
-      isVerified,
-      depletedSubscription,
-      hasBookedLessons,
-      type,
-    ]
+    [error, loading, isVerified, depletedSubscription, hasBookedLessons, type]
   );
-
-  const canProceed = useMemo(() => canBook, [canBook]);
 
   return (
     <Dialog
@@ -316,13 +312,13 @@ export const ManageLessonDialog: React.FC<{
         </Typography>
       }
       className={cn(
-        "px-0 py-4 lg:!py-6 w-[512px] [&>div:first-child]:!px-4 md:[&>div:first-child]:!px-0 lg:[&>div:first-child]:!px-0",
+        "px-0 py-4 lg:!py-6 sm:w-[512px] [&>div:first-child]:!px-4 md:[&>div:first-child]:!px-0 lg:[&>div:first-child]:!px-0",
         {
           "!left-0 right-0 translate-x-0": !sm,
         }
       )}
     >
-      {canBook ? (
+      {canBook && !isTutorBusy ? (
         <div className="mt-6 md:mt-8 px-4 md:px-0">
           <Stepper step={step} />
         </div>
@@ -342,7 +338,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {error ? (
+          {error && !loading ? (
             <Animation key="error" id="error">
               <Error retry={retry} tutorName={name} />
             </Animation>
@@ -377,11 +373,11 @@ export const ManageLessonDialog: React.FC<{
 
           {isTutorBusy && canBook ? (
             <Animation key="busy-tutor" id="busy-tutor">
-              <BusyTutor tutorName={name} />
+              <BusyTutor />
             </Animation>
           ) : null}
 
-          {step === "date-selection" && canProceed ? (
+          {step === "date-selection" && canBook && !isTutorBusy ? (
             <Animation key="date-selection" id="date-selection">
               <DateSelection
                 min={dateBounds.min}
@@ -393,7 +389,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {step === "duration-selection" && canProceed ? (
+          {step === "duration-selection" && canBook && !isTutorBusy ? (
             <Animation key="duration-selection" id="duration-selection">
               <DurationSelection
                 remainingWeeklyMinutes={remainingWeeklyMinutes}
@@ -403,7 +399,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {step === "time-selection" && canProceed ? (
+          {step === "time-selection" && canBook && !isTutorBusy ? (
             <Animation key="time-selection" id="time-selection">
               <TimeSelection
                 slots={allSlots}
@@ -450,7 +446,7 @@ export const ManageLessonDialog: React.FC<{
         </AnimatePresence>
       </div>
 
-      {step !== "confirmation" && canProceed ? (
+      {step !== "confirmation" && canBook && !isTutorBusy ? (
         <div
           className={cn(
             "flex flex-row gap-4 md:gap-[14px] w-full md:ms-auto md:w-fit px-4 md:px-0",
