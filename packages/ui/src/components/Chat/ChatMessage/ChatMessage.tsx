@@ -135,7 +135,7 @@ export const ChatMessage: React.FC<{
             }}
           >
             <div className="w-4 h-6 flex justify-center items-center">
-              <More className="[&>*]:fill-natural-800 dark:[&>*]:fill-natural-50" />
+              <More className="[&>*]:fill-natural-800 dark:[&>*]:fill-natural-50 w-4 h-1" />
             </div>
           </Menu>
         </div>

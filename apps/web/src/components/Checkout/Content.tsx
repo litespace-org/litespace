@@ -78,7 +78,7 @@ const Header: React.FC = () => {
       dir="ltr"
       className={cn(
         "flex flex-row gap-4 items-center justify-center",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary-600 rounded-md"
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 rounded-md"
       )}
     >
       <Logo className="w-14 h-14" />

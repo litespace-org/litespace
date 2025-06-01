@@ -49,7 +49,11 @@ const Header: React.FC<Props> = ({
       </div>
 
       <div className="flex flex-row gap-4 items-center justify-between md:justify-center">
-        <button onClick={prev} type="button">
+        <button
+          onClick={prev}
+          type="button"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
+        >
           <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
         </button>
         <Typography
@@ -60,7 +64,11 @@ const Header: React.FC<Props> = ({
           {" - "}
           {end.subtract(1, "day").format("DD MMMM")}
         </Typography>
-        <button onClick={next} type="button">
+        <button
+          onClick={next}
+          type="button"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
+        >
           <ArrowLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
         </button>
       </div>

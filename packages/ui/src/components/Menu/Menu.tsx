@@ -30,7 +30,7 @@ export const Menu: React.FC<{
         )}
         type="button"
       >
-        {children || <More className="[&>*]:fill-natural-800" />}
+        {children || <More className="[&>*]:fill-natural-800 w-4 h-1" />}
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
