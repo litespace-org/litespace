@@ -41,6 +41,8 @@ services:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
     volumes:
       - redis:/data
+    networks:
+      - redis
   kafka:
     container_name: kafak
     image: apache/kafka-native
@@ -78,12 +80,43 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
     depends_on:
       - kafka
+  docmost:
+    container_name: docmost
+    image: docmost/docmost:latest
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      APP_URL: "http://localhost:3006"
+      APP_SECRET: "770i6T4e01tVprQyMb/FrCnIIhgmwRJS0WrGM0IWpAI="
+      DATABASE_URL: "postgres://postgres:litespace@postgres:5432/docmost?schema=public"
+      REDIS_URL: "redis://redis:6379"
+      MAIL_DRIVER: "smtp"
+      SMTP_HOST: "mail.litespace.org"
+      SMTP_PORT: 465
+      SMTP_USERNAME: dev
+      SMTP_PASSWORD: ${DOCMOST_EMAIL_PASSOWRD}
+      SMTP_SECURE: true
+      MAIL_FROM_ADDRESS: dev@litespace.org
+      MAIL_FROM_NAME: LiteSpace Dev
+
+    ports:
+      - "3006:3000"
+    restart: unless-stopped
+    volumes:
+      - docmost:/app/data/storage
+    networks:
+      - postgres
+      - redis
 
 networks:
   postgres:
+    driver: bridge
+  redis:
     driver: bridge
 
 volumes:
   postgres:
   pgadmin:
+  docmost:
   redis:

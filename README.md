@@ -99,9 +99,9 @@ Verify pnpm installation by running `pnpm -v`. You should see no errors.
 
 Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) (recommended but feel free to use any linux distro)
 
-## Litespace Packages
+## LiteSpace Packages
 
-As Litespace is a monorepo and a large-scale project, organizing its logic is essential to maintain scalability and avoid complexity. To achieve this, we use **packages**, which group related logic for specific purposes. All packages are located under `/packages/*`.
+As LiteSpace is a monorepo and a large-scale project, organizing its logic is essential to maintain scalability and avoid complexity. To achieve this, we use **packages**, which group related logic for specific purposes. All packages are located under `/packages/*`.
 
 ### **Packages Overview**
 
@@ -126,7 +126,7 @@ To create a new package, follow these steps:
 1. **Initialize the Package**:
 
    - Run `pnpm init` in the package folder to generate a `package.json`.
-   - Add the package to the root `package.json` workspace configuration and include it in the `build:pkgs` script [(example)](https://github.com/litespace-org/litespace/blob/61eda6d54df7c7d7274a0f17cfc47e5760f28380/package.json#L68-L74).
+   - Add the package to the root `package.json` workspace configuration ([example](https://github.com/litespace-org/litespace/blob/master/package.json#L50-L70)) and include it in the [`build:pkgs`](https://github.com/litespace-org/litespace/blob/master/package.json#L8) script.
 
 2. **Install Dependencies**:
 
@@ -145,7 +145,7 @@ To create a new package, follow these steps:
        "test": "..."
      }
      ```
-     If a script is unused, it can remain empty (`"script-name": ""`).
+     If a script is unused, it can remain empty (e.g., `"test": "exit 1"`).
 
 4. **Set Up TypeScript**:
 
@@ -167,6 +167,7 @@ To create a new package, follow these steps:
 | UI storybook (vite)  | packages/ui        | 3003 |
 | Landing (next)       | apps/landing       | 3004 |
 | Emails               | packages/emails    | 3005 |
+| Docmost              | System             | 3006 |
 | API server           | services/server    | 4000 |
 | Peer server          | services/server    | 4001 |
 | Messenger            | services/messenger | 4002 |
