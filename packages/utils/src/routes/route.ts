@@ -40,6 +40,7 @@ export enum Landing {
   Contact = "/contact",
   ShortUrl = "/url/:name",
   Method = "/method",
+  About = "/about",
 }
 
 export enum Dashboard {
