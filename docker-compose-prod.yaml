@@ -116,6 +116,10 @@ networks:
 
 volumes:
   postgres:
+    name: litespace_postgres
   pgadmin:
+    name: litespace_pgadmin
   docmost:
+    name: litespace_docmost
   redis:
+    name: litespace_redis
