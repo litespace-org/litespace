@@ -274,8 +274,9 @@ export const ManageLessonDialog: React.FC<{
   }, [selectDaySlots, date, bookedSlots]);
 
   const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
+
   const depletedSubscription = useMemo(
-    () => remainingWeeklyMinutes <= MIN_LESSON_DURATION,
+    () => remainingWeeklyMinutes < MIN_LESSON_DURATION,
     [remainingWeeklyMinutes]
   );
 
@@ -297,8 +298,6 @@ export const ManageLessonDialog: React.FC<{
       type,
     ]
   );
-
-  const canProceed = useMemo(() => canBook, [canBook]);
 
   return (
     <Dialog
@@ -342,7 +341,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {error ? (
+          {error && !loading ? (
             <Animation key="error" id="error">
               <Error retry={retry} tutorName={name} />
             </Animation>
@@ -381,7 +380,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {step === "date-selection" && canProceed ? (
+          {step === "date-selection" && canBook ? (
             <Animation key="date-selection" id="date-selection">
               <DateSelection
                 min={dateBounds.min}
@@ -393,7 +392,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {step === "duration-selection" && canProceed ? (
+          {step === "duration-selection" && canBook ? (
             <Animation key="duration-selection" id="duration-selection">
               <DurationSelection
                 remainingWeeklyMinutes={remainingWeeklyMinutes}
@@ -403,7 +402,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {step === "time-selection" && canProceed ? (
+          {step === "time-selection" && canBook ? (
             <Animation key="time-selection" id="time-selection">
               <TimeSelection
                 slots={allSlots}
@@ -450,7 +449,7 @@ export const ManageLessonDialog: React.FC<{
         </AnimatePresence>
       </div>
 
-      {step !== "confirmation" && canProceed ? (
+      {step !== "confirmation" && canBook ? (
         <div
           className={cn(
             "flex flex-row gap-4 md:gap-[14px] w-full md:ms-auto md:w-fit px-4 md:px-0",

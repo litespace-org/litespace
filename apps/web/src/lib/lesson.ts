@@ -1,18 +1,18 @@
 import dayjs from "@/lib/dayjs";
 
-type AsSlotBoundriesPayload = {
+type SlotBoundriesPayload = {
   start?: string;
   end?: string;
 };
 
-type AsSlotBoundries = {
+type SlotBoundriesResponse = {
   after: string;
   before: string;
 };
 
 export function asSlotBoundries(
-  boundries: AsSlotBoundriesPayload
-): AsSlotBoundries {
+  boundries: SlotBoundriesPayload
+): SlotBoundriesResponse {
   if (boundries.start && boundries.end)
     return { after: boundries.start, before: boundries.end };
 
