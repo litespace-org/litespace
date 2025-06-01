@@ -89,3 +89,5 @@ export type FindAvailabilitySlotsApiResponse = {
   slots: Paginated<Self>;
   subslots: SubSlot[];
 };
+
+export type SetAvailabilitySlotsApiResponse = void;

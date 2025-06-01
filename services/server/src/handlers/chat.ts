@@ -247,7 +247,8 @@ async function updateRoom(req: Request, res: Response, next: NextFunction) {
     payload,
   });
 
-  res.status(200).json(updatedMember);
+  const response: IRoom.UpdateRoomApiResponse = updatedMember;
+  res.status(200).json(response);
 }
 
 export default {

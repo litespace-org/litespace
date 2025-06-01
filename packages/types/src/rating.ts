@@ -1,4 +1,4 @@
-import { IUser, Paginated } from "@/index";
+import { IFilter, IUser, Paginated } from "@/index";
 
 export type Self = {
   id: number;
@@ -62,6 +62,8 @@ export type CreateApiPayload = {
   feedback: string | null;
 };
 
+export type CreateApiResponse = Self;
+
 export type RateeRating = {
   /**
    * Rating id.
@@ -91,12 +93,20 @@ export type RateeRating = {
 
 export type UpdateApiPayload = UpdatePayload;
 
+export type UpdateApiResponse = void;
+
+export type FindRatingsApiQuery = IFilter.Pagination;
+
 export type FindRatingsApiResponse = Paginated<Self>;
 
 export type FindRaterRatingsApiResponse = Paginated<Populated>;
 
 export type FindRateeRatingsApiResponse = Paginated<Populated>;
 
+export type FindTutorRatingsApiQuery = IFilter.Pagination;
+
 export type FindTutorRatingsApiResponse = Paginated<RateeRating>;
 
 export type FindAvgRatingResult = Array<{ user: number; avg: number }>;
+
+export type FindRatingByIdApiResponse = Populated;
