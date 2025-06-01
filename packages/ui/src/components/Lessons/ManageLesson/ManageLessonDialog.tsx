@@ -10,8 +10,6 @@ import { DurationSelection } from "@/components/Lessons/ManageLesson/DurationSel
 import { TimeSelection } from "@/components/Lessons/ManageLesson/TimeSelection";
 import { Confirmation } from "@/components/Lessons/ManageLesson/Confirmation";
 import { Button } from "@/components/Button";
-import ArrowRight from "@litespace/assets/ArrowRight";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
 import { AnimatePresence, motion } from "framer-motion";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
@@ -27,6 +25,9 @@ import {
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Block } from "@/components/Lessons/ManageLesson/Block";
 import NoMoreMinutes from "@litespace/assets/NoMoreMinutes";
+import { MIN_LESSON_DURATION } from "@litespace/utils";
+import LongRightArrow from "@litespace/assets/LongRightArrow";
+import LongLeftArrow from "@litespace/assets/LongLeftArrow";
 
 const LoadingWrapper: React.FC<{
   tutorName: string | null;
@@ -35,7 +36,7 @@ const LoadingWrapper: React.FC<{
   const { md } = useMediaQuery();
 
   return (
-    <div className="md:w-[580px] flex flex-col justify-center items-center gap-8 md:mt-[81px] md:mb-[106px]">
+    <div className="w-full flex flex-col justify-center items-center gap-8 md:mt-[109px] md:mb-[110px]">
       <Loading
         size={md ? "medium" : "small"}
         text={
@@ -56,7 +57,7 @@ const Error: React.FC<{
   const { md } = useMediaQuery();
 
   return (
-    <div className="md:w-[580px] flex flex-col justify-center items-center gap-8 md:mt-[47px] md:mb-[71px]">
+    <div className="md:w-full flex flex-col justify-center items-center gap-8 md:mt-[82px] md:mb-[82px]">
       <LoadingError
         error={intl("book-lesson.error-slots", { tutor: tutorName })}
         retry={retry}
@@ -169,7 +170,7 @@ export const ManageLessonDialog: React.FC<{
   bookedSlots: IAvailabilitySlot.SubSlot[];
   isVerified: boolean;
   hasBookedLessons: boolean;
-  depletedSubscription: boolean;
+  remainingWeeklyMinutes: number;
   sendVerifyEmail?: Void;
   retry: Void;
   /**
@@ -197,7 +198,7 @@ export const ManageLessonDialog: React.FC<{
   confirmationLoading,
   isVerified,
   hasBookedLessons,
-  depletedSubscription,
+  remainingWeeklyMinutes,
   sendVerifyEmail,
   close,
   onSubmit,
@@ -232,8 +233,6 @@ export const ManageLessonDialog: React.FC<{
     [slots, bookedSlots]
   );
 
-  console.log({ unbookedSlots });
-
   const selectDaySlots = useCallback(
     (day: Dayjs | null) => {
       if (!day) return [];
@@ -242,11 +241,6 @@ export const ManageLessonDialog: React.FC<{
         (event) =>
           day.isSame(event.start, "day") || day.isSame(event.end, "day")
       );
-      console.log({
-        day: day.toISOString(),
-        slots: getSubSlots(daySlots, duration),
-        unbookedSlots,
-      });
 
       return getSubSlots(daySlots, duration);
     },
@@ -280,6 +274,10 @@ export const ManageLessonDialog: React.FC<{
   }, [selectDaySlots, date, bookedSlots]);
 
   const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
+  const depletedSubscription = useMemo(
+    () => remainingWeeklyMinutes <= MIN_LESSON_DURATION,
+    [remainingWeeklyMinutes]
+  );
 
   const canBook = useMemo(
     () =>
@@ -350,13 +348,17 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {depletedSubscription ? (
+          {depletedSubscription && !error && !loading ? (
             <Animation key="depleted-subscription" id="depleted-subscription">
               <DepletedSubscription />
             </Animation>
           ) : null}
 
-          {!isVerified && !error && !loading && type === "book" ? (
+          {!isVerified &&
+          !error &&
+          !depletedSubscription &&
+          !loading &&
+          type === "book" ? (
             <Animation key="unverified" id="unverified">
               <Block close={close} submit={sendVerifyEmail} type="unverified" />
             </Animation>
@@ -373,7 +375,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {isTutorBusy ? (
+          {isTutorBusy && canBook ? (
             <Animation key="busy-tutor" id="busy-tutor">
               <BusyTutor tutorName={name} />
             </Animation>
@@ -393,9 +395,11 @@ export const ManageLessonDialog: React.FC<{
 
           {step === "duration-selection" && canProceed ? (
             <Animation key="duration-selection" id="duration-selection">
-              <div className="px-4 md:px-0 mt-6 md:mt-14 mb-10 md:mb-[82px]">
-                <DurationSelection value={duration} onChange={setDuration} />
-              </div>
+              <DurationSelection
+                remainingWeeklyMinutes={remainingWeeklyMinutes}
+                value={duration}
+                onChange={setDuration}
+              />
             </Animation>
           ) : null}
 
@@ -458,14 +462,14 @@ export const ManageLessonDialog: React.FC<{
         >
           {step !== "date-selection" ? (
             <Button
-              startIcon={<ArrowRight className="w-6 h-6 -ms-2 -mt-1 icon" />}
+              startIcon={<LongRightArrow className="w-4 h-4 icon" />}
               size="large"
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
                 if (step === "duration-selection") setStep("date-selection");
               }}
               className={cn({
-                "flex-1 md:w-[133px]":
+                "flex-1":
                   step === "duration-selection" || step === "time-selection",
               })}
             >
@@ -479,7 +483,7 @@ export const ManageLessonDialog: React.FC<{
           ) : null}
 
           <Button
-            endIcon={<ArrowLeft className="w-6 h-6 -mt-1 icon" />}
+            endIcon={<LongLeftArrow className="w-4 h-4 icon" />}
             size="large"
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");
@@ -491,8 +495,8 @@ export const ManageLessonDialog: React.FC<{
               !isValidDate(date)
             }
             className={cn({
-              "!w-[156px] lg:w-[196px] ms-auto": step === "date-selection",
-              "flex-1 lg:w-[128px]":
+              "ms-auto": step === "date-selection",
+              "flex-1":
                 step === "duration-selection" || step === "time-selection",
             })}
           >

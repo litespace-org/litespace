@@ -45,37 +45,19 @@ export const Confirmation: React.FC<{
           </Typography>
 
           <div className="flex flex-col gap-2">
-            <div className="flex flex-row gap-2 items-center">
-              <Calendar className="h-4 w-4 md:h-6 md:w-6" />
-              <Typography
-                tag="span"
-                className="text-natural-950 text-tiny md:text-subtitle-2 font-normal md:font-semibold"
-              >
-                {dayjs(start).format("dddd, D MMMM")}
-              </Typography>
-            </div>
-
+            <Details
+              icon={<Calendar className="h-4 w-4 md:h-6 md:w-6" />}
+              label={dayjs(start).format("dddd, D MMMM")}
+            />
             <div className="flex flex-row gap-[45px] md:gap-[88px]">
-              <div className="flex flex-row gap-2 items-center">
-                <Clock className="w-4 h-4 md:h-6 md:w-6" />
-
-                <Typography
-                  tag="span"
-                  className="text-natural-950 font-normal md:font-semibold text-tiny md:text-subtitle-2"
-                >
-                  {dayjs(start).format("h:mm a")}
-                </Typography>
-              </div>
-              <div className="flex flex-row gap-2 items-center">
-                <Timer className="h-4 w-4 md:h-6 md:w-6" />
-
-                <Typography
-                  tag="span"
-                  className="text-natural-950 font-normal md:font-semibold text-tiny md:text-subtitle-2"
-                >
-                  {formatMinutes(duration)}
-                </Typography>
-              </div>
+              <Details
+                icon={<Clock className="w-4 h-4 md:h-6 md:w-6" />}
+                label={dayjs(start).format("h:mm a")}
+              />
+              <Details
+                icon={<Timer className="h-4 w-4 md:h-6 md:w-6" />}
+                label={formatMinutes(duration)}
+              />
             </div>
           </div>
         </div>
@@ -105,6 +87,24 @@ export const Confirmation: React.FC<{
           </Typography>
         </Button>
       </div>
+    </div>
+  );
+};
+
+const Details: React.FC<{ icon: React.ReactNode; label: string }> = ({
+  icon,
+  label,
+}) => {
+  return (
+    <div className="flex flex-row gap-2 items-center">
+      {icon}
+
+      <Typography
+        tag="span"
+        className="text-natural-950 font-normal md:font-semibold text-tiny md:text-body"
+      >
+        {label}
+      </Typography>
     </div>
   );
 };

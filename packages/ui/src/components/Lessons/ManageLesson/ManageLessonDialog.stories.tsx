@@ -303,6 +303,7 @@ export const ErrorSchedule: Story = {
       alert("Lesson booked!!");
     },
     error: true,
+    retry: () => {},
   },
 };
 
