@@ -1,0 +1,46 @@
+{
+  "name": "@litespace/tests",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "LiteSpace monorepo tests",
+  "main": "dist/cjs/index.js",
+  "module": "dist/index.js",
+  "files": [
+    "dist/**"
+  ],
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "build:ts": "tsc",
+    "prepare": "ts-patch install -s",
+    "clean": "rm -rf dist/",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "watch": "npm-watch build"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "ts,tsx",
+      "quiet": false
+    }
+  },
+  "dependencies": {
+    "@litespace/auth": "workspace:^",
+    "@litespace/emails": "workspace:^",
+    "@litespace/kafka": "workspace:^",
+    "@litespace/models": "workspace:^",
+    "@litespace/radio": "workspace:^",
+    "@litespace/types": "workspace:^",
+    "@litespace/utils": "workspace:^",
+    "dayjs": "^1.11.13",
+    "ts-patch": "^3.2.1",
+    "typescript": "^5.4.5",
+    "typescript-transform-paths": "^3.5.2"
+  },
+  "packageManager": "pnpm@10.11.0",
+  "devDependencies": {
+    "chai-as-promised": "^8.0.1"
+  }
+}
