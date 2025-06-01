@@ -26,6 +26,7 @@ import {
 } from "@litespace/utils/availabilitySlots";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Block } from "@/components/Lessons/ManageLesson/Block";
+import NoMoreMinutes from "@litespace/assets/NoMoreMinutes";
 
 const LoadingWrapper: React.FC<{
   tutorName: string | null;
@@ -69,9 +70,7 @@ const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   const intl = useFormatMessage();
   return (
     <div
-      className={cn(
-        "flex items-center flex-col w-[22rem] gap-8 justify-center mx-auto mt-4 md:mt-[82px] mb-6 md:mb-[142px]"
-      )}
+      className={cn("flex items-center flex-col gap-8 justify-center mx-auto")}
     >
       <CalendarEmpty />
       <Typography
@@ -93,6 +92,7 @@ const Animation: React.FC<{
     | "busy-tutor"
     | "error"
     | "has-booked-lesson"
+    | "depleted-subscription"
     | "unverified";
   children: React.ReactNode;
 }> = ({ id, children }) => {
@@ -128,6 +128,19 @@ const Animation: React.FC<{
   );
 };
 
+const DepletedSubscription: React.FC = () => {
+  const intl = useFormatMessage();
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-8 min-w-[464px]">
+      <NoMoreMinutes />
+      <Typography tag="p" className="text-body font-bold text-natural-700">
+        {intl("book-lesson.depleted-subscription")}
+      </Typography>
+    </div>
+  );
+};
+
 export const ManageLessonDialog: React.FC<{
   /**
    * Flag to show or hide the dialog
@@ -156,6 +169,7 @@ export const ManageLessonDialog: React.FC<{
   bookedSlots: IAvailabilitySlot.SubSlot[];
   isVerified: boolean;
   hasBookedLessons: boolean;
+  depletedSubscription: boolean;
   sendVerifyEmail?: Void;
   retry: Void;
   /**
@@ -183,6 +197,7 @@ export const ManageLessonDialog: React.FC<{
   confirmationLoading,
   isVerified,
   hasBookedLessons,
+  depletedSubscription,
   sendVerifyEmail,
   close,
   onSubmit,
@@ -208,7 +223,7 @@ export const ManageLessonDialog: React.FC<{
 
   const dateBounds = useMemo(() => {
     const min = dayjs();
-    const max = dayjs().add(2, "months");
+    const max = dayjs().add(1, "week");
     return { min, max };
   }, []);
 
@@ -217,13 +232,22 @@ export const ManageLessonDialog: React.FC<{
     [slots, bookedSlots]
   );
 
+  console.log({ unbookedSlots });
+
   const selectDaySlots = useCallback(
     (day: Dayjs | null) => {
       if (!day) return [];
+
       const daySlots = unbookedSlots.filter(
         (event) =>
           day.isSame(event.start, "day") || day.isSame(event.end, "day")
       );
+      console.log({
+        day: day.toISOString(),
+        slots: getSubSlots(daySlots, duration),
+        unbookedSlots,
+      });
+
       return getSubSlots(daySlots, duration);
     },
     [duration, unbookedSlots]
@@ -262,14 +286,21 @@ export const ManageLessonDialog: React.FC<{
       !error &&
       !loading &&
       isVerified &&
+      !depletedSubscription &&
+      !isTutorBusy &&
       (!hasBookedLessons || type === "update"),
-    [error, loading, isVerified, hasBookedLessons, type]
+    [
+      error,
+      loading,
+      isTutorBusy,
+      isVerified,
+      depletedSubscription,
+      hasBookedLessons,
+      type,
+    ]
   );
 
-  const canProceed = useMemo(
-    () => canBook && !isTutorBusy,
-    [canBook, isTutorBusy]
-  );
+  const canProceed = useMemo(() => canBook, [canBook]);
 
   return (
     <Dialog
@@ -287,7 +318,7 @@ export const ManageLessonDialog: React.FC<{
         </Typography>
       }
       className={cn(
-        "px-0 py-4 lg:!py-6 [&>div:first-child]:!px-4 md:[&>div:first-child]:!px-0 lg:[&>div:first-child]:!px-0",
+        "px-0 py-4 lg:!py-6 w-[512px] [&>div:first-child]:!px-4 md:[&>div:first-child]:!px-0 lg:[&>div:first-child]:!px-0",
         {
           "!left-0 right-0 translate-x-0": !sm,
         }
@@ -319,6 +350,12 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
+          {depletedSubscription ? (
+            <Animation key="depleted-subscription" id="depleted-subscription">
+              <DepletedSubscription />
+            </Animation>
+          ) : null}
+
           {!isVerified && !error && !loading && type === "book" ? (
             <Animation key="unverified" id="unverified">
               <Block close={close} submit={sendVerifyEmail} type="unverified" />
@@ -326,6 +363,7 @@ export const ManageLessonDialog: React.FC<{
           ) : null}
 
           {hasBookedLessons &&
+          !depletedSubscription &&
           isVerified &&
           !error &&
           !loading &&
@@ -335,7 +373,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {isTutorBusy && canBook ? (
+          {isTutorBusy ? (
             <Animation key="busy-tutor" id="busy-tutor">
               <BusyTutor tutorName={name} />
             </Animation>
