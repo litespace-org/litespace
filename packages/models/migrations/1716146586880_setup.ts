@@ -211,7 +211,6 @@ export function down(pgm: MigrationBuilder) {
   // tables
   pgm.dropTable("user_topics", { ifExists: true });
   pgm.dropTable("topics", { ifExists: true });
-  pgm.dropTable("withdraw_methods", { ifExists: true });
   pgm.dropTable("messages", { ifExists: true });
   pgm.dropTable("room_members", { ifExists: true });
   pgm.dropTable("rooms", { ifExists: true });

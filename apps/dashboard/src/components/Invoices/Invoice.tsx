@@ -16,14 +16,8 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
 }) => {
   const intl = useFormatMessage();
   const { bank, instapay, wallet } = useWithdrawMethod(invoice.method);
-  const {
-    pending,
-    rejected,
-    fulfilled,
-    canceledByReceiver,
-    cancellationApprovedByAdmin,
-    updatedByReceiver,
-  } = useInvoiceStatus(invoice.status);
+  const { pendingAppoval, pendingCancellation, rejected, approved, canceled } =
+    useInvoiceStatus(invoice.status);
   const [action, setAction] = useState<Action | null>(null);
   const reset = useCallback(() => setAction(null), []);
 
@@ -60,7 +54,7 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
     if (bank)
       values.push({
         id: 5,
-        value: <Invoices.Bank bank={invoice.bank as IInvoice.Bank} />,
+        value: <Invoices.Bank bank={invoice.receiver as IInvoice.Bank} />,
       });
 
     values.push(
@@ -73,7 +67,6 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
   }, [
     bank,
     invoice.amount,
-    invoice.bank,
     invoice.createdAt,
     invoice.id,
     invoice.method,
@@ -85,25 +78,19 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
       {
         id: 1,
         label: intl("invoices.process.actions.markAsFulfilled"),
-        disabled: fulfilled,
+        disabled: approved,
         onClick: () => setAction(Action.MarkAsFulfilled),
       },
       {
         id: 2,
         label: intl("invoices.process.actions.approveCancelRequest"),
-        disabled: !canceledByReceiver,
+        disabled: !pendingCancellation,
         onClick: () => setAction(Action.ApproveCancelRequest),
       },
       {
         id: 3,
         label: intl("invoices.process.actions.editNote"),
         onClick: () => setAction(Action.EditNote),
-      },
-      {
-        id: 3,
-        label: intl("invoices.process.actions.approveUpdateRequest"),
-        disabled: !updatedByReceiver,
-        onClick: () => setAction(Action.ApproveUpdateRequest),
       },
       {
         id: 4,
@@ -114,7 +101,7 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
       },
     ];
     return actions;
-  }, [canceledByReceiver, fulfilled, intl, rejected, updatedByReceiver]);
+  }, [approved, intl, rejected, pendingCancellation]);
 
   return (
     <Card className="flex flex-col w-full gap-3">
@@ -124,21 +111,14 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
         <Invoices.Actions actions={actions} />
       </Invoices.Columns>
 
-      <Invoices.Admin.Pending show={pending} />
+      <Invoices.Admin.Pending show={pendingAppoval} />
       <Invoices.Admin.CanceledByReceiver
-        show={canceledByReceiver}
+        show={pendingCancellation}
         onAccept={() => setAction(Action.ApproveCancelRequest)}
       />
-      <Invoices.Admin.UpdateRequest
-        show={updatedByReceiver}
-        invoice={invoice}
-        onAccept={() => setAction(Action.ApproveUpdateRequest)}
-      />
-      <Invoices.Admin.Fulfilled show={fulfilled} />
+      <Invoices.Admin.Fulfilled show={approved} />
       <Invoices.Admin.Rejected show={rejected} />
-      <Invoices.Admin.CancellationApprovedByAdmin
-        show={cancellationApprovedByAdmin}
-      />
+      <Invoices.Admin.CancellationApprovedByAdmin show={canceled} />
 
       <Invoices.Note
         onEdit={() => setAction(Action.EditNote)}

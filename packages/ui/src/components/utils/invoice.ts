@@ -2,8 +2,13 @@ import { LocalId } from "@/locales";
 import { IInvoice } from "@litespace/types";
 
 const bankIdMap: Record<IInvoice.Bank, LocalId> = {
-  [IInvoice.Bank.Cib]: "banks.labels.cib",
-  [IInvoice.Bank.Alex]: "banks.labels.alex",
+  CIB: "banks.labels.cib",
+  ALEX: "banks.labels.alex",
+  NBE: "banks.labels.nbe",
+  QNB: "banks.labels.qnb",
+  AAIB: "banks.labels.aaib",
+  MISR: "banks.labels.misr",
+  MASHREQ: "banks.labels.mashreq",
 };
 
 export function getBankIntlId(bank: IInvoice.Bank): LocalId {
@@ -12,12 +17,10 @@ export function getBankIntlId(bank: IInvoice.Bank): LocalId {
 
 export function destructureInvoiceStatus(status: IInvoice.Status) {
   return {
-    pending: status === IInvoice.Status.Pending,
-    canceledByReceiver: status === IInvoice.Status.CanceledByReceiver,
-    cancellationApprovedByAdmin:
-      status === IInvoice.Status.CancellationApprovedByAdmin,
-    fulfilled: status === IInvoice.Status.Fulfilled,
+    pendingAppoval: status === IInvoice.Status.PendingApproval,
+    pendingCancellation: status === IInvoice.Status.PendingCancellation,
+    canceled: status === IInvoice.Status.Canceled,
+    approved: status === IInvoice.Status.Approved,
     rejected: status === IInvoice.Status.Rejected,
-    updatedByReceiver: status === IInvoice.Status.UpdatedByReceiver,
   };
 }

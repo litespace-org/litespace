@@ -56,9 +56,9 @@ const Process: React.FC<{
 
   const update = useMutation({
     mutationFn: async (
-      payload: IInvoice.UpdateByAdminApiPayload & { receipt?: File }
+      payload: IInvoice.UpdateApiPayload & { receipt?: File }
     ) => {
-      return await api.invoice.updateByAdmin(id, payload);
+      return await api.invoice.update(id, payload);
     },
     onSuccess,
     onError,
@@ -67,7 +67,7 @@ const Process: React.FC<{
   const deleteNote = useMutation({
     mutationFn: async () => {
       // todo: update the invocie api with a "deleteNote" option
-      return await api.invoice.updateByAdmin(id, { note: "" });
+      return await api.invoice.update(id, { note: "" });
     },
     onSuccess,
     onError,
@@ -91,10 +91,9 @@ const Process: React.FC<{
   );
 
   const status = useMemo(() => {
-    if (approveCancelRequest)
-      return IInvoice.Status.CancellationApprovedByAdmin;
-    if (approveUpdateRequest) return IInvoice.Status.Pending;
-    if (markAsFulfilled) return IInvoice.Status.Fulfilled;
+    if (approveCancelRequest) return IInvoice.Status.Canceled;
+    if (approveUpdateRequest) return IInvoice.Status.PendingCancellation;
+    if (markAsFulfilled) return IInvoice.Status.Approved;
     if (markAsRejected) return IInvoice.Status.Rejected;
     return null;
   }, [

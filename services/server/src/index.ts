@@ -89,7 +89,7 @@ app.use("/api/v1/coupon", routes.coupon);
 app.use("/api/v1/invite", routes.invite);
 app.use("/api/v1/invoice", routes.invoice(context));
 app.use("/api/v1/topic", routes.topic);
-app.use("/api/v1/withdraw-method/", routes.withdrawMethod);
+app.use("/api/v1/asset", routes.asset);
 app.use("/api/v1/cache", routes.cache);
 app.use("/api/v1/asset", routes.asset);
 app.use("/api/v1/session", routes.session);

@@ -1,26 +1,29 @@
 import { LocalId } from "@litespace/ui/locales";
-import { IInvoice, IWithdrawMethod } from "@litespace/types";
+import { IInvoice } from "@litespace/types";
 
-export const withdrawMethodsIntlMap: Record<IWithdrawMethod.Type, LocalId> = {
-  [IWithdrawMethod.Type.Wallet]: "withdraw.methods.wallet",
-  [IWithdrawMethod.Type.Instapay]: "withdraw.methods.instapay",
-  [IWithdrawMethod.Type.Bank]: "withdraw.methods.bank",
-};
+export const withdrawMethodsIntlMap: Record<IInvoice.WithdrawMethod, LocalId> =
+  {
+    [IInvoice.WithdrawMethod.Wallet]: "withdraw.methods.wallet",
+    [IInvoice.WithdrawMethod.Instapay]: "withdraw.methods.instapay",
+    [IInvoice.WithdrawMethod.Bank]: "withdraw.methods.bank",
+  };
 
 export const invoiceBankIntlMap: Record<IInvoice.Bank, LocalId> = {
-  [IInvoice.Bank.Alex]: "banks.labels.alex",
-  [IInvoice.Bank.Cib]: "banks.labels.cib",
+  ALEX: "banks.labels.alex",
+  CIB: "banks.labels.cib",
+  NBE: "banks.labels.nbe",
+  QNB: "banks.labels.qnb",
+  AAIB: "banks.labels.aaib",
+  MISR: "banks.labels.misr",
+  MASHREQ: "banks.labels.mashreq",
 };
 
 export const invoiceStatusIntlMap: Record<IInvoice.Status, LocalId> = {
-  [IInvoice.Status.Pending]: "invoices.admin.status.pending",
-  [IInvoice.Status.UpdatedByReceiver]:
-    "invoices.admin.status.updated-by-receiver",
-  [IInvoice.Status.CanceledByReceiver]:
+  [IInvoice.Status.PendingApproval]: "invoices.admin.status.pending",
+  [IInvoice.Status.PendingCancellation]:
     "invoices.admin.status.canceled-by-receiver",
-  [IInvoice.Status.CancellationApprovedByAdmin]:
-    "invoices.admin.status.canceled-by-admin",
-  [IInvoice.Status.Fulfilled]: "invoices.admin.status.fulfilled",
+  [IInvoice.Status.Canceled]: "invoices.admin.status.canceled-by-admin",
+  [IInvoice.Status.Approved]: "invoices.admin.status.fulfilled",
   [IInvoice.Status.Rejected]: "invoices.admin.status.rejected",
 };
 

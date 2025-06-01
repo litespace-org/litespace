@@ -1,10 +1,4 @@
-import {
-  IFilter,
-  IInvoice,
-  IWithdrawMethod,
-  Paginated,
-  banks,
-} from "@litespace/types";
+import { IFilter, IInvoice, Paginated } from "@litespace/types";
 import {
   column,
   countRows,
@@ -17,17 +11,6 @@ import zod from "zod";
 import dayjs from "@/lib/dayjs";
 import { first, isEmpty, isUndefined } from "lodash";
 
-export const updateRequest = zod.object({
-  method: zod.enum([
-    IWithdrawMethod.Type.Wallet,
-    IWithdrawMethod.Type.Bank,
-    IWithdrawMethod.Type.Instapay,
-  ]),
-  receiver: zod.string(),
-  bank: zod.union([zod.enum(banks), zod.null()]),
-  amount: zod.coerce.number().int().positive(),
-});
-
 export class Invoices {
   readonly table = "invoices" as const;
 
@@ -36,9 +19,7 @@ export class Invoices {
     user_id: this.column("user_id"),
     method: this.column("method"),
     receiver: this.column("receiver"),
-    bank: this.column("bank"),
     amount: this.column("amount"),
-    update: this.column("update"),
     status: this.column("status"),
     note: this.column("note"),
     receipt: this.column("receipt"),
@@ -57,15 +38,16 @@ export class Invoices {
         user_id: payload.userId,
         method: payload.method,
         receiver: payload.receiver,
-        bank: payload.bank,
         amount: payload.amount,
+        note: payload.note,
+        status: IInvoice.Status.PendingApproval,
         created_at: now,
         updated_at: now,
       })
       .returning("*");
 
     const row = first(rows);
-    if (!row) throw new Error("Invoice not found; should never happen");
+    if (!row) throw new Error("invoice not found; should never happen");
     return this.from(row);
   }
 
@@ -73,29 +55,17 @@ export class Invoices {
     id: number,
     payload: IInvoice.UpdatePayload,
     tx?: Knex.Transaction
-  ): Promise<IInvoice.Self> {
+  ): Promise<void> {
     const now = dayjs.utc().toDate();
-    const rows = await this.builder(tx)
+    await this.builder(tx)
       .update({
-        update: payload.updateRequest
-          ? JSON.stringify(payload.updateRequest)
-          : null,
-        method: payload.method,
-        receiver: payload.receiver,
-        bank: payload.bank,
-        amount: payload.amount,
         status: payload.status,
-        note: payload.note,
         receipt: payload.receipt,
         addressed_by: payload.addressedBy,
+        note: payload.note,
         updated_at: now,
       })
-      .where(this.column("id"), id)
-      .returning("*");
-
-    const row = first(rows);
-    if (!row) throw new Error("Invoice not found; should never happen");
-    return this.from(row);
+      .where(this.column("id"), id);
   }
 
   async findByUser(
@@ -127,23 +97,21 @@ export class Invoices {
   }
 
   async sumAmounts({
-    pending = true,
+    status,
     users,
     tx,
   }: {
     users?: number[];
-    pending?: boolean;
+    status?: IInvoice.Status[];
     tx?: Knex.Transaction;
   }): Promise<number> {
-    const status: IInvoice.Status[] = [IInvoice.Status.Fulfilled];
-    if (pending) status.push(IInvoice.Status.Pending);
+    const builder = this.builder(tx).sum<{ amount: string }>(
+      this.column("amount"),
+      { as: "amount" }
+    );
 
-    const builder = this.builder(tx)
-      .sum<{ amount: string }>(this.column("amount"), { as: "amount" })
-      .whereIn(this.column("status"), status);
-
+    if (status) builder.whereIn(this.column("status"), status);
     if (users) builder.whereIn(this.column("user_id"), users);
-
     const row = await builder.first();
     return row ? zod.coerce.number().parse(row.amount) : 0;
   }
@@ -151,7 +119,6 @@ export class Invoices {
   async find({
     users,
     methods,
-    banks,
     statuses,
     receipt,
     page,
@@ -167,8 +134,6 @@ export class Invoices {
 
     if (methods && !isEmpty(methods))
       builder.whereIn(this.column("method"), methods);
-
-    if (banks && !isEmpty(banks)) builder.whereIn(this.column("bank"), banks);
 
     if (statuses && !isEmpty(statuses))
       builder.whereIn(this.column("status"), statuses);
@@ -197,23 +162,18 @@ export class Invoices {
   }
 
   from(row: IInvoice.Row): IInvoice.Self {
-    const update: IInvoice.Self["update"] =
-      row.update !== null ? updateRequest.parse(row.update) : null;
-
     return {
       id: row.id,
       userId: row.user_id,
       method: row.method,
       receiver: row.receiver,
-      bank: row.bank,
       amount: row.amount,
-      update,
       status: row.status,
       note: row.note,
       receipt: row.receipt,
       addressedBy: row.addressed_by,
       createdAt: row.created_at.toISOString(),
-      updatedAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
     };
   }
 }

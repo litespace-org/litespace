@@ -4,7 +4,6 @@ export * from "@/duration";
 export * from "@/value";
 export * from "@/lesson";
 export * from "@/log";
-export * from "@/withdrawMethod";
 export * from "@/chat";
 export * from "@/error";
 export * from "@/diff";

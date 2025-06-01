@@ -1,26 +1,31 @@
 import { HTML_REGEX, INSTAPAY_REGEX, PHONE_NUMBER_REGEX } from "@/constants";
-import { banks, FieldError, WithdrawMethod, type Bank } from "@litespace/types";
+import { FieldError, type Bank, BANKS, IInvoice } from "@litespace/types";
 import { getSafeInnerHtmlText } from "@/utils";
 
 export function isValidInvoiceReceiver(
   receiver: string,
-  type: WithdrawMethod,
-  bankName?: Bank
+  type: IInvoice.WithdrawMethod
 ) {
-  if (type === WithdrawMethod.Wallet) {
+  if (type === IInvoice.WithdrawMethod.Wallet) {
     if (!PHONE_NUMBER_REGEX.test(receiver)) return FieldError.InvalidPhone;
     return true;
   }
-  if (type === WithdrawMethod.Instapay) {
+  if (type === IInvoice.WithdrawMethod.Instapay) {
     if (!INSTAPAY_REGEX.test(receiver)) return FieldError.InvalidInstapayIPA;
     return true;
   }
-  if (type === WithdrawMethod.Bank) {
+  if (type === IInvoice.WithdrawMethod.Bank) {
+    const [bankName, bankNumber] = receiver.split(":", 2);
     if (!bankName) return FieldError.EmptyBankName;
-    if (!Object.values(banks).includes(bankName)) {
+    if (!BANKS.includes(bankName as Bank)) {
       return FieldError.InvalidBankName;
     }
+    if (isNaN(Number(bankNumber))) {
+      return FieldError.InvalidBankAccountNumber;
+    }
+    return true;
   }
+  return FieldError.InvalidWithdrawMethod;
 }
 
 export function isValidInvoiceAmount(
@@ -39,12 +44,13 @@ export function isValidInvoiceAmount(
 }
 
 export function isValidInvoiceNote(
-  invoiceNote: string
+  invoiceNote?: string | null
 ):
   | FieldError.EmptyInvoiceNote
   | FieldError.InvalidInvoiceNote
   | FieldError.TooLongInvoiceNote
   | true {
+  if (!invoiceNote) return true;
   const noteText = getSafeInnerHtmlText(invoiceNote);
   if (noteText.length <= 0) return FieldError.EmptyInvoiceNote;
   if (!HTML_REGEX.test(invoiceNote)) return FieldError.InvalidInvoiceNote;
