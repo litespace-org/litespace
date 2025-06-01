@@ -1,7 +1,7 @@
 import ManageLesson from "@/components/Lessons/ManageLesson";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { TutorCard } from "@/components/Tutors/TutorCard";
-import { Element, ITutor, IUser, Void } from "@litespace/types";
+import { Element, ITutor, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { InView } from "react-intersection-observer";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -11,6 +11,7 @@ import {
   isValidTutorBio,
   isValidTutorName,
 } from "@litespace/utils";
+import { isTutorManager } from "@litespace/utils";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -60,9 +61,9 @@ const Content: React.FC<{
           isValidTutorBio(tutor.bio) === true ? (
             <TutorCard
               key={tutor.id}
-              free={tutor.role === IUser.Role.TutorManager}
+              free={isTutorManager(tutor)}
               id={tutor.id}
-              bio={tutor.bio}
+              bio={tutor.id == 49 ? tutor.bio : null}
               name={tutor.name}
               rating={tutor.avgRating}
               onBook={() => openBookingDialog(tutor)}

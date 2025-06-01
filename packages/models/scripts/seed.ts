@@ -167,7 +167,7 @@ async function main(): Promise<void> {
       userId: student.id,
       planId: plan1.id,
       start: dayjs.utc().toISOString(),
-      end: dayjs.utc().add(1, "day").toISOString(),
+      end: dayjs.utc().add(1, "month").toISOString(),
       period: IPlan.Period.Month,
       weeklyMinutes: idx * 10,
       txId: transaction.id,
@@ -414,9 +414,8 @@ async function main(): Promise<void> {
 
   // seeding slots
   const seededSlots: { [tutorId: number]: IAvailabilitySlot.Self[] } = {};
-  [...addedTutors, tutorManager].forEach(async (tutor) => {
-    // return this to i instead of 1
-    const date = dayjs.utc().add(1, "days").startOf("day");
+  [tutorManager, ...addedTutors].forEach(async (tutor, i) => {
+    const date = dayjs.utc().add(i, "day").startOf("day");
     const slots = await availabilitySlots.create([
       {
         userId: tutor.id,
