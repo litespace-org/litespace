@@ -44,7 +44,7 @@ services:
     networks:
       - redis
   kafka:
-    container_name: kafak
+    container_name: kafka
     image: apache/kafka-native
     ports:
       - "127.0.0.1:9092:9092"
@@ -99,7 +99,6 @@ services:
       SMTP_SECURE: true
       MAIL_FROM_ADDRESS: dev@litespace.org
       MAIL_FROM_NAME: LiteSpace Dev
-
     ports:
       - "3006:3000"
     restart: unless-stopped
@@ -111,12 +110,18 @@ services:
 
 networks:
   postgres:
+    name: postgres
     driver: bridge
   redis:
+    name: redis
     driver: bridge
 
 volumes:
   postgres:
+    name: litespace_postgres
   pgadmin:
+    name: litespace_pgadmin
   docmost:
+    name: litespace_docmost
   redis:
+    name: litespace_redis
