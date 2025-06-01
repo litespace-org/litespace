@@ -12,13 +12,6 @@ type Story = StoryObj<Component>;
 const meta: Meta<Component> = {
   title: "AvatarV2",
   component: AvatarV2,
-  argTypes: {
-    src: { control: "text" },
-    alt: { control: "text" },
-  },
-  parameters: {
-    layout: "centered",
-  },
 };
 
 export const Primary: Story = {
@@ -40,9 +33,9 @@ export const All: Story = {
   args: {},
   render() {
     return (
-      <div className="grid grid-cols-4">
+      <div className="flex flex-wrap">
         {range(0, 22).map((i) => (
-          <div className="grid-cols-1 w-40 h-40" key={i}>
+          <div className="w-40 h-40" key={i}>
             <Tooltip
               side="top"
               content={<Typography tag="p">Index: {i}</Typography>}
@@ -62,9 +55,9 @@ export const Rounded: Story = {
   args: {},
   render() {
     return (
-      <div className="grid grid-cols-4 gap-4">
+      <div className="flex flex-wrap gap-2">
         {range(0, 20).map((i) => (
-          <div className="grid-cols-1 w-40 h-40" key={i}>
+          <div className="w-40 h-40" key={i}>
             <Tooltip
               side="top"
               content={<Typography tag="p">Index: {i}</Typography>}

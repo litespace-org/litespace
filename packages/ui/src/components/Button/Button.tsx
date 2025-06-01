@@ -65,14 +65,14 @@ export const Button: React.FC<{
       data-variant={variant}
       tabIndex={tabIndex}
       className={cn(
-        // Teneral styles
+        // base styles
         "text-center font-normal group",
         "flex items-center justify-center",
         "relative font-cairo cursor-pointer",
         "w-fit flex items-center justify-center",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         "transition-colors ease-out duration-200 rounded-lg outline-none",
-        // Background color
+        // background color
         {
           "bg-destructive-700 hover:bg-destructive-600 active:bg-destructive-700":
             is.error && is.primary,
@@ -121,17 +121,16 @@ export const Button: React.FC<{
           "px-3 h-8": is.medium,
           "px-4 h-10": is.large,
         },
-        // Border & Focus
-        // TODO: add `primary` variant borders.
-        "border focus-visible:outline-[2px] focus-visible:outline-brand-500",
+        // border & focus
+        "border focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500",
         {
           //==================== TEMP ====================
-          "border-default-brand active:border-active-brand":
+          "border-button-main-default active:border-button-main-active":
             is.main && is.primary,
           "border-destructive-700 ": is.error && is.primary,
           "border-success-500 ": is.success && is.primary,
           "border-warning-700 ": is.warning && is.primary,
-          "border-default-natural active:border-active-natural":
+          "border-button-natural-default active:border-button-natural-active":
             is.natural && is.primary,
           //==================== END ====================
           "border-brand-500": is.main && is.secondary,
@@ -156,10 +155,10 @@ export const Button: React.FC<{
         <Spinner
           className={cn({
             "text-natural-50": is.primary,
-            "text-success-700": is.secondary && is.success,
-            "text-destructive-700": is.secondary && is.error,
-            "text-brand-700": is.secondary && is.main,
-            "text-warning-700": is.secondary && is.warning,
+            "text-destructive-700": is.error && is.secondary,
+            "text-brand-700": is.main && is.secondary,
+            "text-natural-700": is.natural && is.primary,
+            "text-warning-700": is.warning && is.secondary,
             "w-5 h-5": is.small,
           })}
         />
@@ -172,8 +171,13 @@ export const Button: React.FC<{
           {
             "[&_.icon>*]:stroke-success-700 group-hover:[&_.icon>*]:stroke-success-500 [&_.icon>*]:transition-[stroke] [&_.icon>*]:duration-200 [&_.text]:text-success-700 group-hover:[&_.text]:text-success-500 [&_.text]:transition-colors":
               is.success && is.secondary,
+            "[&_.icon>*]:stroke-warning-700 [&_.icon>*]:transition-[stroke] [&_.icon>*]:duration-200 [&_.text]:transition-colors":
+              is.warning && is.secondary,
             "[&_.icon>*]:stroke-natural-50":
-              (is.main && is.primary) || (is.error && is.primary),
+              (is.main && is.primary) ||
+              (is.error && is.primary) ||
+              (is.success && is.primary) ||
+              (is.warning && is.primary),
             "[&_.icon>*]:stroke-brand-700": is.main && is.secondary,
             "[&_.icon>*]:stroke-destructive-700 group-hover:[&_.icon>*]:stroke-destructive-500 [&_.icon>*]:transition-[stroke] [&_.icon>*]:duration-200 [&_.text]:text-destructive-700 group-hover:[&_.text]:text-destructive-500 [&_.text]:transition-colors":
               is.error && is.secondary,

@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@/components/Button";
-import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import Home from "@litespace/assets/Home";
 import type { Meta, StoryObj } from "@storybook/react";
 import { faker } from "@faker-js/faker/locale/ar";
@@ -10,7 +9,6 @@ type Component = typeof Button;
 const meta: Meta<Component> = {
   title: "Button/Natural/Secondary",
   component: Button,
-  parameters: { layout: "centered" },
   args: {
     children: faker.lorem.words({ min: 1, max: 4 }),
     size: "large",
@@ -20,7 +18,6 @@ const meta: Meta<Component> = {
   argTypes: {
     children: { control: "text" },
   },
-  decorators: [DarkStoryWrapper],
 };
 
 type Story = StoryObj<Component>;

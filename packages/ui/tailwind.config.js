@@ -347,10 +347,11 @@ export default {
         5: "5",
       },
       borderColor: {
-        "default-brand": "#19245233",
-        "active-brand": "#19245280",
-        "default-natural": "#4D4D4D33",
-        "active-natural": "#4D4D4D80",
+        "button-main-default": "var(--border-button-main-primary-default)",
+        "button-main-active": "var(--border-button-main-primary-active)",
+        "button-natural-default":
+          "var(--border-button-natural-primary-default)",
+        "button-natural-active": "var(--border-button-natural-primary-active)",
       },
     },
     boxShadow: {

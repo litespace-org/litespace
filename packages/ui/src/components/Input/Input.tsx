@@ -83,7 +83,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 "h-10": inputSize === "large",
               },
               // Focused
-              "[&:has(input:focus)]:ring-2 [&:has(input:focus)]:ring-brand-600 [&:has(input:focus)]:border-brand-600",
+              "[&:has(input:focus)]:ring-1 [&:has(input:focus)]:ring-brand-600 [&:has(input:focus)]:border-brand-600",
               {
                 // default or filled
                 "border-natural-300 bg-natural-50": !state && !disabled,

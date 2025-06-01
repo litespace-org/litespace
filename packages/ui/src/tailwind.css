@@ -262,8 +262,8 @@ input[type="range"]:focus::-moz-range-thumb {
   --brand-600: #2c5bf1;
   --brand-500: #437dfa;
   --brand-400: #669ffd;
-  --brand-300: #9ac4fc; /* ✅ */
-  --brand-200: #c5d9fc; /* ✅ */
+  --brand-300: #9ac4fc;
+  --brand-200: #c5d9fc;
   --brand-100: #dfeafc;
   --brand-50: #eff6fe;
   --natural-default: #808080;
@@ -360,12 +360,6 @@ input[type="range"]:focus::-moz-range-thumb {
 
 :root {
   --helpers-os-appearance: Light;
-  --code-block-5: 14deg 80.4% 58%;
-  --code-block-4: 276.3deg 60% 52.9%;
-  --code-block-3: 83.8deg 61.6% 48%;
-  --code-block-2: 33.1deg 80% 52.9%;
-  --code-block-1: 170.6deg 43.2% 51%;
-  --secondary-default: #1b54a4; /* ✅ */
   --secondary-950: #040b16;
   --secondary-900: #07162c;
   --secondary-800: #0e2d58;
@@ -377,10 +371,6 @@ input[type="range"]:focus::-moz-range-thumb {
   --secondary-200: #a7c6f1;
   --secondary-100: #d3e2f8;
   --secondary-50: #e9f1fb;
-  --brand-link: 153.4deg 100% 36.7%; /* ✅ */
-  --brand-button: 151.8deg 47.1% 40.8%; /* ✅ */
-  --brand-default: 151deg 62% 30%; /* ✅ */
-  --brand-default: #437dfa;
   --brand-950: #192452;
   --brand-900: #233889;
   --brand-800: #223cb1;
@@ -388,11 +378,10 @@ input[type="range"]:focus::-moz-range-thumb {
   --brand-600: #2c5bf1;
   --brand-500: #437dfa;
   --brand-400: #669ffd;
-  --brand-300: #9ac4fc; /* ✅ */
-  --brand-200: #c5d9fc; /* ✅ */
+  --brand-300: #9ac4fc;
+  --brand-200: #c5d9fc;
   --brand-100: #dfeafc;
   --brand-50: #eff6fe;
-  --natural-default: #808080;
   --natural-950: #0d0d0d;
   --natural-900: #1a1a1a;
   --natural-800: #333333;
@@ -404,19 +393,17 @@ input[type="range"]:focus::-moz-range-thumb {
   --natural-200: #cccccc;
   --natural-100: #e6e6e6;
   --natural-50: #f2f2f2;
-  --success-default: #4caf4f;
-  --success-950: #081208;
-  --success-900: #0f2410;
-  --success-800: #1f4720;
-  --success-700: #2e6b30;
-  --success-600: #3e8e40;
-  --success-500: #4caf4f;
-  --success-400: #71c173;
-  --success-300: #94d196;
-  --success-200: #b8e0b9;
-  --success-100: #dbf0dc;
-  --success-50: #edf7ee;
-  --warning-default: #ffc107;
+  --success-950: #05150d;
+  --success-900: #0a291a;
+  --success-800: #145234;
+  --success-700: #1d7c4e;
+  --success-600: #27a568;
+  --success-500: #2bb572;
+  --success-400: #5ad89b;
+  --success-300: #83e2b4;
+  --success-200: #adebcd;
+  --success-100: #d6f5e6;
+  --success-50: #eafaf3;
   --warning-950: #1a1300;
   --warning-900: #332600;
   --warning-800: #664d00;
@@ -440,6 +427,10 @@ input[type="range"]:focus::-moz-range-thumb {
   --destructive-200: #ff9999;
   --destructive-100: #ffcccc;
   --destructive-50: #ffe5e5;
+  --border-button-main-primary-default: #19245233;
+  --border-button-main-primary-active: #19245280;
+  --border-button-natural-primary-default: #4d4d4d33;
+  --border-button-natural-primary-active: #4d4d4d80;
   --border-stronger: 0deg 0% 56.1%; /* ✅ */
   --border-strong: 0deg 0% 83.1%; /* ✅ */
   --border-default: 0deg 0% 87.5%; /* ✅ */
