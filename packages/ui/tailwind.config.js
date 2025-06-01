@@ -391,7 +391,7 @@ export default {
       "dark-feedback-card": "0px 4px 15px 0px rgba(255, 255, 255, 0.08)",
       "pre-call": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       "date-selection-item": "0px 4px 15px 0px rgba(0, 0, 0, 0.15)",
-      "time-selection-item": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
+      "time-selection-item": "0px 4px 15px 0px #00000008",
       "exclaimation-mark-video": "0px 4px 20px 1px rgba(204, 0, 0, 0.25)",
       "tutor-profile": "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
       "student-profile": "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",

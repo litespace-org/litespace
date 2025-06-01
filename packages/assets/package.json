@@ -109,6 +109,8 @@
     "./Linkedin": "./dist/Linkedin.tsx",
     "./LoginDark": "./dist/LoginDark.tsx",
     "./LoginLight": "./dist/LoginLight.tsx",
+    "./LongLeftArrow": "./dist/LongLeftArrow.tsx",
+    "./LongRightArrow": "./dist/LongRightArrow.tsx",
     "./LogoAvatar": "./dist/LogoAvatar.tsx",
     "./Logo": "./dist/Logo.tsx",
     "./Logout": "./dist/Logout.tsx",

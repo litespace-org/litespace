@@ -38,7 +38,7 @@ export const Block: React.FC<{
   }, [type]);
 
   return (
-    <div className="px-4 md:px-0 md:w-[580px]">
+    <div className="px-4 md:px-0 md:w-full">
       <div className="w-12 h-12 flex items-center justify-center bg-brand-50 rounded-full">
         <div className="w-7 h-7 flex items-center justify-center bg-brand-100 rounded-full ">
           {<data.icon className="[&>*]:stroke-brand-700 w-6 h-6" />}
