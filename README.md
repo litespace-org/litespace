@@ -11,6 +11,8 @@
   - `packages/UI` - Components library.
   - `packages/models` - Database models.
   - `packages/utils`- Sharable pure javascript logic that can be use on web, server, and mobile.
+  - `packages/tests`- Tests related files (mocks) and functions (mock data generators and db insertions).
+  - `packages/schemas`- Shared Zod Schemas.
 - `apps/*`
   - `apps/blog` - LiteSpace blog.
   - `apps/dashboard` - LiteSpace admin dashboard.

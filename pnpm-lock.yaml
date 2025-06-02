@@ -1112,7 +1112,7 @@ importers:
         version: 29.3.2(@babel/core@7.27.1)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.27.1))(esbuild@0.25.3)(jest@29.7.0(@types/node@22.15.17)(ts-node@10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5)))(typescript@5.4.5)
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5)
+        version: 10.9.2(@swc/core@1.11.24(@swc/helpers@0.5.15))(@types/node@22.15.17)(typescript@5.4.5)
       ts-patch:
         specifier: ^3.2.1
         version: 3.3.0
@@ -1174,6 +1174,28 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
+
+  packages/schemas:
+    dependencies:
+      '@litespace/types':
+        specifier: workspace:^
+        version: link:../types
+      ts-patch:
+        specifier: ^3.2.1
+        version: 3.3.0
+      typescript:
+        specifier: ^5.4.5
+        version: 5.8.3
+      typescript-transform-paths:
+        specifier: ^3.5.2
+        version: 3.5.5(typescript@5.8.3)
+      zod:
+        specifier: ^3.24.4
+        version: 3.24.4
+    devDependencies:
+      chai-as-promised:
+        specifier: ^8.0.1
+        version: 8.0.1(chai@5.2.0)
 
   packages/tests:
     dependencies:
@@ -1703,6 +1725,9 @@ importers:
       '@litespace/radio':
         specifier: workspace:^
         version: link:../../packages/radio
+      '@litespace/schemas':
+        specifier: workspace:^
+        version: link:../../packages/schemas
       '@litespace/tests':
         specifier: workspace:^
         version: link:../../packages/tests
@@ -1986,7 +2011,7 @@ importers:
         version: 29.3.2(@babel/core@7.27.1)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.27.1))(esbuild@0.25.3)(jest@29.7.0(@types/node@22.15.17)(ts-node@10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5)))(typescript@5.4.5)
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5)
+        version: 10.9.2(@swc/core@1.11.24(@swc/helpers@0.5.15))(@types/node@22.15.17)(typescript@5.4.5)
       ts-patch:
         specifier: ^3.2.1
         version: 3.3.0
@@ -25674,7 +25699,7 @@ snapshots:
       '@typescript-eslint/parser': 8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5)
       eslint: 9.26.0(jiti@1.21.7)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7))
+      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0)(eslint@9.26.0(jiti@1.21.7))
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-typescript@3.7.0)(eslint@9.26.0(jiti@1.21.7))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.26.0(jiti@1.21.7))
       eslint-plugin-react: 7.37.4(eslint@9.26.0(jiti@1.21.7))
@@ -25703,7 +25728,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7)):
+  eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@9.26.0(jiti@1.21.7)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.0(supports-color@5.5.0)
@@ -25719,14 +25744,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7)):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@9.26.0(jiti@1.21.7)):
     dependencies:
       debug: 3.2.7(supports-color@8.1.1)
     optionalDependencies:
       '@typescript-eslint/parser': 8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5)
       eslint: 9.26.0(jiti@1.21.7)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7))
+      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0)(eslint@9.26.0(jiti@1.21.7))
     transitivePeerDependencies:
       - supports-color
 
@@ -25741,7 +25766,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.26.0(jiti@1.21.7)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@9.26.0(jiti@1.21.7))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -32445,7 +32470,6 @@ snapshots:
       yn: 3.1.1
     optionalDependencies:
       '@swc/core': 1.11.24(@swc/helpers@0.5.15)
-    optional: true
 
   ts-node@10.9.2(@swc/core@1.11.24)(@types/node@20.17.46)(typescript@5.4.5):
     dependencies:
@@ -32486,6 +32510,7 @@ snapshots:
       yn: 3.1.1
     optionalDependencies:
       '@swc/core': 1.11.24(@swc/helpers@0.5.15)
+    optional: true
 
   ts-node@10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.8.3):
     dependencies:
@@ -32513,7 +32538,7 @@ snapshots:
       global-prefix: 4.0.0
       minimist: 1.2.8
       resolve: 1.22.10
-      semver: 7.7.0
+      semver: 7.7.2
       strip-ansi: 6.0.1
 
   ts-toolbelt@6.15.5: {}
@@ -32670,6 +32695,11 @@ snapshots:
     dependencies:
       minimatch: 9.0.5
       typescript: 5.4.5
+
+  typescript-transform-paths@3.5.5(typescript@5.8.3):
+    dependencies:
+      minimatch: 9.0.5
+      typescript: 5.8.3
 
   typescript@4.9.5: {}
 
