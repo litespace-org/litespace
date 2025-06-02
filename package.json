@@ -5,8 +5,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build:pkgs": "pnpm assets build && pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm headless build && pnpm auth build &&  pnpm ui build && pnpm radio build && pnpm kafka build && pnpm tests build",
-    "build:server:pkgs": "pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm auth build && pnpm radio build && pnpm kafka build && pnpm tests build",
+    "build:pkgs": "pnpm assets build && pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm headless build && pnpm auth build &&  pnpm ui build && pnpm radio build && pnpm kafka build && pnpm tests build && pnpm schemas build",
+    "build:server:pkgs": "pnpm types build && pnpm utils build && pnpm emails build && pnpm models build && pnpm atlas build && pnpm auth build && pnpm radio build && pnpm kafka build && pnpm tests build && pnpm schemas build",
     "watch:atlas": "pnpm atlas watch",
     "watch:auth": "pnpm auth watch",
     "watch:emails": "pnpm emails watch",
@@ -57,6 +57,7 @@
     "utils": "pnpm --filter @litespace/utils",
     "types": "pnpm --filter @litespace/types",
     "tests": "pnpm --filter @litespace/tests",
+    "schemas": "pnpm --filter @litespace/schemas",
     "radio": "pnpm --filter @litespace/radio",
     "server": "pnpm --filter @litespace/server",
     "deployer": "pnpm --filter @litespace/deployer",

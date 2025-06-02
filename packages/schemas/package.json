@@ -1,0 +1,45 @@
+{
+  "name": "@litespace/schemas",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "LiteSpace monorepo schemas",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "pnpm build:cjs && pnpm build:esm",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf dist/",
+    "watch": "npm-watch build",
+    "prepare": "ts-patch install -s",
+    "test": "jest"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "ts,tsx",
+      "quiet": false
+    }
+  },
+  "exports": {
+    "./user": {
+      "import": "./dist/esm/user.js",
+      "require": "./dist/cjs/user.js"
+    }
+  },
+  "dependencies": {
+    "@litespace/types": "workspace:^",
+    "ts-patch": "^3.2.1",
+    "typescript": "^5.4.5",
+    "typescript-transform-paths": "^3.5.2",
+    "zod": "^3.24.4"
+  },
+  "packageManager": "pnpm@10.11.0",
+  "devDependencies": {
+    "chai-as-promised": "^8.0.1"
+  }
+}
