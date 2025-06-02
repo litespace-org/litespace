@@ -28,7 +28,7 @@ export const MethodButton: React.FC<Props> = ({
       type="button"
       className={cn(
         "relative grow overflow-hidden rounded-2xl transition-colors duration-200 bg-natural-200",
-        "focus-visible:ring-secondary-600 focus-visible:ring-offset-2 focus-visible:outline-none focus-visible:ring-2",
+        "focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none focus-visible:ring-2",
         !isActive && "hover:bg-natural-300"
       )}
     >

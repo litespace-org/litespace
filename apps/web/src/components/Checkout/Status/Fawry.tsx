@@ -47,7 +47,7 @@ const Status: React.FC<{
       <button
         className={cn(
           "flex items-center p-3 gap-2.5 bg-natural-50 rounded-xl border border-natural-700",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600"
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         )}
         onClick={copy}
       >

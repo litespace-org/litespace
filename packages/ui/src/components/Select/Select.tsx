@@ -231,7 +231,7 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
           // display and dimentions
           "flex shrink-0 items-center justify-between",
           "h-[34px] p-2",
-          "cursor-pointer focus:outline-none focus:ring-inset focus:ring-1 focus:ring-secondary-600 focus:z-select-item",
+          "cursor-pointer focus:outline-none focus:ring-inset focus:ring-1 focus:ring-brand-600 focus:z-select-item",
           "data-[disabled]:cursor-not-allowed",
           className
         )}

@@ -129,7 +129,7 @@ export const OptionsMenu: React.FC<{
   return (
     <Menu actions={actions} open={open} setOpen={setOpen}>
       <div className="p-2 z-10">
-        <More className="[&>*]:fill-natural-800" />
+        <More className="[&>*]:fill-natural-800 w-4 h-1" />
       </div>
     </Menu>
   );

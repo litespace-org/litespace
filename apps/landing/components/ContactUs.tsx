@@ -21,7 +21,7 @@ const Contacts: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
     <ul className="flex flex-col gap-4">
       <li>
         <Link
-          className="flex flex-row items-center gap-4 outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 rounded-sm"
+          className="flex flex-row items-center gap-4 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
           href={LITESPACE_WHATSAPP}
           target="_blank"
         >
@@ -44,7 +44,7 @@ const Contacts: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
       {tutor ? (
         <li>
           <Link
-            className="flex flex-row items-center gap-4 outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 rounded-sm"
+            className="flex flex-row items-center gap-4 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
             href={LITESPACE_TUTORS_TELEGRAM}
             target="_blank"
           >

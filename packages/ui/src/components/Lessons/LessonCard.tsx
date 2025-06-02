@@ -192,7 +192,7 @@ export const LessonCard: React.FC<Props> = ({
     <div
       className={cn(
         "flex flex-col items-stretch gap-4 p-4 md:p-6 bg-natural-50",
-        "border rounded-2xl border-natural-200 shadow-mobile-lesson-upcoming-card md:shadow-lesson-upcoming-card"
+        "border rounded-2xl border-natural-100"
       )}
     >
       <div className="flex justify-between items-stretch gap-6">
@@ -221,7 +221,7 @@ export const LessonCard: React.FC<Props> = ({
             </Typography>
             {!canceled ? (
               <Menu actions={actions}>
-                <More className="[&>*]:fill-natural-800" />
+                <More className="[&>*]:fill-natural-800 w-4 h-1" />
               </Menu>
             ) : null}
           </>

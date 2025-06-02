@@ -23,7 +23,7 @@ export const TutorCard: React.FC<{
   return (
     <Link
       to={router.web({ route: Web.TutorProfile, id })}
-      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 @container block rounded-lg"
+      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 @container block rounded-lg"
     >
       <div className="w-full border border-natural-100 rounded-lg p-4 flex flex-col gap-4 h-full">
         <div className="w-full h-80 @sm:h-[22rem] @md:h-[26rem] @2md:h-[30rem] @lg:h-[32rem] rounded-[10px] grow overflow-hidden relative">

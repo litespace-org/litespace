@@ -127,8 +127,8 @@ export const Card: React.FC<{
   return (
     <div
       className={cn(
-        "p-3 sm:p-4 bg-natural-50 rounded-2xl shadow-ls-x-small",
-        "border border-transparent hover:border-natural-100 w-full md:max-w-[215px]",
+        "p-3 sm:p-4 bg-natural-50 rounded-2xl",
+        "border border-natural-100 w-full md:max-w-[215px]",
         "basis-full flex flex-col justify-between gap-2 relative overflow-hidden"
       )}
     >

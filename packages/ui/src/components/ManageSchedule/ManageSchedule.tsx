@@ -230,7 +230,10 @@ export const ManageSchedule: React.FC<Props> = ({
               type="button"
               onClick={prev}
               disabled={loading}
-              className="disabled:cursor-not-allowed disabled:opacity-50"
+              className={cn(
+                "disabled:cursor-not-allowed disabled:opacity-50",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
+              )}
             >
               <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
             </button>
@@ -248,7 +251,10 @@ export const ManageSchedule: React.FC<Props> = ({
               type="button"
               onClick={next}
               disabled={loading}
-              className="disabled:cursor-not-allowed disabled:opacity-50"
+              className={cn(
+                "disabled:cursor-not-allowed disabled:opacity-50",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
+              )}
             >
               <ArrowLeft className="[&>*]:stroke-brand-700 w-6 h-6" />
             </button>
