@@ -1,11 +1,17 @@
 import schedule from "node-schedule";
 import { sendLessonReminders } from "@/jobs/lesson";
+import { backupDB } from "@/jobs/db";
 
 async function main() {
-  // Run the job immediately on startup
+  // Run jobs immediately on startup
   await sendLessonReminders();
-  // Schedule the job to run every 15 minutes
+  await backupDB();
+
+  // Send lesson reminders every 10 minutes
   schedule.scheduleJob("*/15 * * * *", sendLessonReminders);
+
+  // Backup the database every friday 00:00 (12:00 AM) o'clock
+  schedule.scheduleJob({ hour: 0, minute: 0, dayOfWeek: 5 }, backupDB);
 
   process.on("SIGINT", async function () {
     await schedule.gracefulShutdown();
