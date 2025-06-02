@@ -4,7 +4,7 @@ import { exec } from "node:child_process";
 import { safePromise } from "@litespace/utils/cjs";
 import { TasksParamsMap, TasksResultMap } from "@cy/support/commands";
 import { IUser } from "@litespace/types";
-import tests from "@litespace/tests/cjs";
+import tests from "@litespace/tests";
 
 async function execute(command: string): Promise<string> {
   return await new Promise((resolve, reject) => {
