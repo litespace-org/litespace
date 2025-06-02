@@ -8,8 +8,23 @@
 - [ ] I ensured that the this pull request satisfies all the requirements in the associated task.
 - [ ] I performed a self-review.
 
----
+
+### Links 
 
 <!-- Attach the the task link. Remove it incase no associated task. -->
 
-[ClickUp](#task-link-here)
+- [ClickUp](#task-link-here)
+
+<!-- 
+The main goal of the context video is: 
+1. Provide enough context for the reviewer which might not be aware 
+   of what this pull request is all about. Try recording a video 
+   showing your work and going though the changes you made. Keep in 
+   mind that the main goal of this pull request is to make it easier 
+   for the reviewer to review your pull request so make sure to 
+   provide as much context as you can. You can upload the context 
+   video to the recording directory in our google drive.
+2. This context also work as a micro-documentation for the codebase. 
+-->
+
+- [Context Video](#context-video-here)
