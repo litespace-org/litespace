@@ -33,4 +33,13 @@ export class Lesson extends Base {
   async cancel(id: number): Promise<void> {
     return this.del({ route: `/api/v1/lesson/${id}` });
   }
+
+  /**
+   * retreive stats of attended (free/paid) lessons.
+   */
+  async stats(
+    query: ILesson.FindAttendedLessonsStatsApiResponse
+  ): Promise<ILesson.FindAttendedLessonsStatsApiQuery> {
+    return this.get({ route: `/api/v1/lesson/attended/stats`, params: query });
+  }
 }
