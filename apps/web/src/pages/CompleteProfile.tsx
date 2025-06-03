@@ -1,36 +1,22 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import React from "react";
-import Header from "@/components/Auth/Common/Header";
-import { Typography } from "@litespace/ui/Typography";
-import Aside from "@/components/Auth/Common/Aside";
+import React, { lazy } from "react";
 import Form from "@/components/CompleteProfile/Form";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import HorizontalLogo from "@/components/Common/HorizontalLogo";
+import Description from "@/components/CompleteProfile/Description";
+
+const Aside = lazy(() => import("@/components/Auth/Common/Aside"));
 
 const Complete: React.FC = () => {
-  const intl = useFormatMessage();
   const mq = useMediaQuery();
 
   return (
-    <div className="flex flex-row gap-8 h-full p-6">
-      <main className="flex flex-col gap-10 sm:gap-0 items-center flex-1 flex-shrink-0 w-full">
-        <Header />
-        <div className="flex-1 flex flex-col sm:justify-center gap-6 w-full">
-          <div className="flex flex-col gap-2 items-start sm:items-center text-start sm:text-center max-w-[645px] sm:mx-auto">
-            <Typography
-              tag="h1"
-              className="text-natural-950 font-bold sm:font-semibold text-subtitle-1 sm:text-h4"
-            >
-              {intl("complete-profile.title")}
-            </Typography>
-            <Typography
-              tag="p"
-              className="text-natural-700 font-semibold sm:font-normal text-tiny-text sm:text-body"
-            >
-              {intl("complete-profile.description")}
-            </Typography>
-          </div>
-          <Form />
+    <div className="flex flex-row justify-center lg:justify-between xl:justify-center gap-6 h-full p-6">
+      <main className="flex flex-col justify-center items-center gap-8 w-full max-w-[496px] lg:p-6">
+        <div className="flex flex-col gap-4 w-full items-center justify-center">
+          <HorizontalLogo />
+          <Description />
         </div>
+        <Form />
       </main>
       {mq.lg ? <Aside /> : null}
     </div>
