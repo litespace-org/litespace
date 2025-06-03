@@ -3,7 +3,6 @@ import { Table, TableNaviationProps } from "@/components/Common/Table";
 import Price from "@/components/Common/Price";
 import { useUpdatePlan } from "@litespace/headless/plans";
 import { IPlan, Void } from "@litespace/types";
-import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { Menu } from "@litespace/ui/Menu";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
@@ -14,6 +13,7 @@ import React, { useCallback, useMemo } from "react";
 import { PLAN_PERIOD_LITERAL_TO_MONTH_COUNT } from "@litespace/utils";
 import { Switch } from "@litespace/ui/Switch";
 import Edit from "@litespace/assets/Edit";
+import { LoadingFragment } from "../Common/LoadingFragment";
 
 const List: React.FC<
   {
@@ -184,22 +184,17 @@ const List: React.FC<
     [columnHelper, intl, mutation, editPlan]
   );
 
-  if (loading)
+  if (loading || error || !list)
     return (
-      <div className="flex justify-center items-center mt-[15vh]">
-        <Loading text={intl("dashboard.plans.loading")} size="large" />
-      </div>
-    );
-
-  if (error || !list)
-    return (
-      <div className="flex justify-center items-center mt-[15vh]">
-        <LoadingError
-          error={intl("dashboard.plans.error")}
-          retry={refetch}
-          size="medium"
-        />
-      </div>
+      <LoadingFragment
+        text={{
+          loading: intl("dashboard.plans.loading"),
+          error: intl("dashboard.plans.error"),
+        }}
+        loading={!!loading}
+        error={error}
+        refetch={refetch}
+      />
     );
 
   return (

@@ -1,7 +1,5 @@
-import Error from "@/components/Common/Error";
 import { Table } from "@/components/Common/Table";
 import UserPopover from "@/components/Common/UserPopover";
-import { Loading } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Element, IInterview, IUser, Void } from "@litespace/types";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -16,6 +14,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { Dialog } from "@litespace/ui/Dialog";
 import { UsePaginateResult } from "@/types/query";
 import { useUser } from "@litespace/headless/context/user";
+import { LoadingFragment } from "../Common/LoadingFragment";
 
 type Interviews = IInterview.FindInterviewsApiResponse["list"];
 type IndividualInterview = IInterview.FindInterviewsApiResponse["list"][number];
@@ -163,13 +162,15 @@ const List: React.FC<{
     [columnHelper, intl, user]
   );
 
-  if (query.query.isLoading) return <Loading />;
-
-  if (query.query.error)
+  if (query.query.isLoading || query.query.error)
     return (
-      <Error
-        title={intl("dashboard.error.alert.title")}
-        error={query.query.error}
+      <LoadingFragment
+        text={{
+          loading: intl("dashboard.interviews.loading"),
+          error: intl("dashboard.interviews.error"),
+        }}
+        loading={query.query.isLoading}
+        error={!!query.query.error}
         refetch={query.query.refetch}
       />
     );
