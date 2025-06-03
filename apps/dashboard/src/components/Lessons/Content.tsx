@@ -1,6 +1,5 @@
 import React from "react";
 import List from "@/components/Lessons/List";
-import Error from "@/components/Common/Error";
 import PageTitle from "@/components/Common/PageTitle";
 import { useFindLessons } from "@litespace/headless/lessons";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
@@ -118,14 +117,6 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
     [canceled, future, intl, now, past, ratified]
   );
 
-  if (query.error)
-    return (
-      <Error
-        error={query.error}
-        title={intl("dashboard.error.alert.title")}
-        refetch={query.refetch}
-      />
-    );
   return (
     <div>
       <header className="flex items-center justify-between mb-3">

@@ -1,8 +1,6 @@
-import Error from "@/components/Common/Error";
 import PageTitle from "@/components/Common/PageTitle";
 import List from "@/components/Invoices/List";
 import { isEqual } from "lodash";
-import { Loading } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { withdrawMethodsIntlMap } from "@/components/utils/invoice";
@@ -17,6 +15,7 @@ import {
   invoiceBankIntlMap,
   invoiceStatusIntlMap,
 } from "@/components/utils/invoice";
+import { LoadingFragment } from "../Common/LoadingFragment";
 
 const DEFAULT_METHODS_FILTER = [
   IInvoice.WithdrawMethod.Bank,
@@ -249,15 +248,18 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
     ]
   );
 
-  if (query.error) {
+  if (query.isLoading || query.error)
     return (
-      <Error
-        error={query.error}
-        title={intl("dashboard.error.alert.title")}
+      <LoadingFragment
+        text={{
+          loading: intl("dashboard.invoices.loading"),
+          error: intl("dashboard.invoices.error"),
+        }}
+        loading={query.isLoading}
+        error={!!query.error}
         refetch={query.refetch}
       />
     );
-  }
 
   return (
     <div className="w-full">
@@ -271,9 +273,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
           <ActionsMenu actions={actions} Icon={MixerHorizontalIcon} />
         </div>
       </header>
-      <div className="w-full">
-        {/* @TODO: update the loading view once designed in the Figma prototype. */}
-        {query.isLoading ? <Loading /> : null}
+      <div className="w-full mt-[15vh]">
         {query.data && !query.isLoading ? (
           <List data={query.data} query={query} {...pagination} />
         ) : null}

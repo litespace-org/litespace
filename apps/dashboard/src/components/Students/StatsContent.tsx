@@ -1,11 +1,10 @@
 import LablesTable, { TableLablesRow } from "@/components/Common/LabelsTable";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Loading } from "@litespace/ui/Loading";
 import { formatNumber } from "@litespace/ui/utils";
 import { Duration } from "@litespace/utils/duration";
 import { IUser, Void } from "@litespace/types";
-import ErrorElement from "@/components/Common/Error";
 import React, { useMemo } from "react";
+import { LoadingFragment } from "../Common/LoadingFragment";
 
 const StatsContent: React.FC<{
   loading: boolean;
@@ -77,13 +76,15 @@ const StatsContent: React.FC<{
     ];
   }, [data, intl]);
 
-  if (loading) return <Loading />;
-
-  if (error)
+  if (loading || error)
     return (
-      <ErrorElement
-        title={intl("stats.student.fetching.error")}
-        error={error}
+      <LoadingFragment
+        text={{
+          loading: intl("dashboard.tutors.loading"),
+          error: intl("dashboard.tutors.error"),
+        }}
+        loading={loading}
+        error={!!error}
         refetch={refetch}
       />
     );
