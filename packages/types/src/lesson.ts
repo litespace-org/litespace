@@ -63,7 +63,7 @@ export type Member = {
   lessonId: number;
 };
 
-export type PopuldatedMemberRow = {
+export type PopulatedMemberRow = {
   user_id: number;
   lesson_id: number;
   name: IUser.Row["name"];
@@ -74,7 +74,7 @@ export type PopuldatedMemberRow = {
   notification_method: IUser.Row["notification_method"];
 };
 
-export type PopuldatedMember = {
+export type PopulatedMember = {
   userId: number;
   lessonId: number;
   name: IUser.Self["name"];
@@ -147,7 +147,7 @@ export type FindLessonsApiQuery = IFilter.SkippablePagination & {
 
 export type FindUserLessonsApiResponse = Paginated<{
   lesson: Self;
-  members: PopuldatedMember[];
+  members: PopulatedMember[];
 }>;
 
 export enum Duration {
@@ -170,5 +170,5 @@ export type LessonDays = LessonDay[];
 
 export type FindLessonByIdApiResponse = {
   lesson: Self;
-  members: PopuldatedMember[];
+  members: PopulatedMember[];
 };

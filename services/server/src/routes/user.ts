@@ -35,6 +35,7 @@ export default function router(context: ApiContext) {
   router.get("/tutor/all/for/studio", user.findStudioTutors);
   router.get("/tutor/:tutorId/for/studio", user.findStudioTutor);
   router.get("/tutor/full-tutors", user.findFullTutors);
+  router.get("/tutor/tutoring-minutes", user.findTutoringMinutes);
   router.get("/student/stats/personalized", user.findPersonalizedStudentStats);
   router.get("/student/stats/:student", user.findStudentStats);
   router.get("/studio/list", user.findStudios);
