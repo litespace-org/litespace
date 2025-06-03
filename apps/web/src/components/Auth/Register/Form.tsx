@@ -17,8 +17,9 @@ import { validateEmail, validatePassword } from "@litespace/ui/lib/validate";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { Landing, Web } from "@litespace/utils/routes";
-import { useCallback, useEffect, useMemo } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Or from "@/components/Auth/Common/Or";
 
 type Form = {
   email: string;
@@ -26,31 +27,18 @@ type Form = {
   confirmPassword: string;
 };
 
-type Role = "student" | "tutor";
+type Role = IUser.Role.Student | IUser.Role.Tutor;
 
-const RegisterForm: React.FC = () => {
+const RegisterForm: React.FC<{ role?: Role }> = ({ role }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const user = useUser();
-
+  const navigate = useNavigate();
   const verifyEmailDialog = useRender();
 
-  const navigate = useNavigate();
-
   // ======== Google Registeration ============
-  const params = useParams<{ role: Role }>();
-  const role = useMemo(() => {
-    if (params.role === "student") return IUser.Role.Student;
-    if (params.role === "tutor") return IUser.Role.Tutor;
-    return null;
-  }, [params.role]);
-
-  useEffect(() => {
-    if (!role) return navigate(Web.Root);
-  }, [navigate, role]);
-
   const google = useGoogle({
-    role: role || undefined,
+    role,
   });
 
   // ========== manual registeration ============
@@ -112,6 +100,23 @@ const RegisterForm: React.FC = () => {
 
   return (
     <Form onSubmit={form.onSubmit}>
+      <Button
+        variant="secondary"
+        size="large"
+        className="w-full text"
+        endIcon={<Google />}
+        onClick={google.login}
+        htmlType="button"
+        loading={google.loading}
+        disabled={google.loading || mutation.isPending}
+      >
+        <Typography tag="span" className="text-body font-medium">
+          {intl("register.with-google")}
+        </Typography>
+      </Button>
+
+      <Or />
+
       <div className="flex flex-col gap-4 sm:gap-6">
         <div className="flex flex-col gap-2 sm:gap-4">
           <Input
@@ -156,7 +161,7 @@ const RegisterForm: React.FC = () => {
 
           <Typography
             tag="p"
-            className="text-natural-600 text-caption font-medium"
+            className="text-natural-600 text-tiny font-semibold"
           >
             {intl.rich("register.accept-terms", {
               terms: (text: string[]) => (
@@ -187,23 +192,12 @@ const RegisterForm: React.FC = () => {
             size="large"
             disabled={mutation.isPending || google.loading}
             loading={mutation.isPending}
-            className="w-full"
+            className="w-full text"
             htmlType="submit"
           >
-            {intl("register.create-account")}
-          </Button>
-
-          <Button
-            variant="secondary"
-            size="large"
-            className="w-full"
-            endIcon={<Google />}
-            onClick={google.login}
-            htmlType="button"
-            loading={google.loading}
-            disabled={google.loading || mutation.isPending}
-          >
-            {intl("register.with-google")}
+            <Typography tag="span" className="text-body font-medium">
+              {intl("register.create-account")}
+            </Typography>
           </Button>
 
           <Typography

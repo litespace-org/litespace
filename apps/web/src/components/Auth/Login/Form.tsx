@@ -20,6 +20,7 @@ import { isValidRoute, Landing, Web } from "@litespace/utils/routes";
 import { omit } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import Or from "@/components/Auth/Common/Or";
 
 type Form = {
   email: string;
@@ -102,6 +103,22 @@ const LoginForm: React.FC<{
 
   return (
     <Form onSubmit={form.onSubmit}>
+      <Button
+        variant="secondary"
+        size="large"
+        className="w-full text"
+        endIcon={<Google />}
+        onClick={google.login}
+        htmlType="button"
+        loading={google.loading}
+        disabled={google.loading || mutation.isPending}
+      >
+        <Typography tag="span" className="text-body font-medium">
+          {intl("login.with-google")}
+        </Typography>
+      </Button>
+
+      <Or />
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2 sm:gap-4">
           <Input
@@ -155,23 +172,12 @@ const LoginForm: React.FC<{
             size="large"
             disabled={mutation.isPending || google.loading}
             loading={mutation.isPending}
-            className="w-full"
+            className="w-full text"
             htmlType="submit"
           >
-            {intl("login.button.label")}
-          </Button>
-
-          <Button
-            variant="secondary"
-            size="large"
-            className="w-full"
-            endIcon={<Google />}
-            onClick={google.login}
-            htmlType="button"
-            loading={google.loading}
-            disabled={google.loading || mutation.isPending}
-          >
-            {intl("login.with-google")}
+            <Typography tag="span" className="text-body font-medium">
+              {intl("login.button.label")}
+            </Typography>
           </Button>
 
           <Typography
