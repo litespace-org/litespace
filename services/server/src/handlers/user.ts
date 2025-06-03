@@ -45,6 +45,7 @@ import {
   numericFilter,
   dateFilter,
   queryBoolean,
+  datetime,
 } from "@/validation/utils";
 import { jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, groupBy, sample } from "lodash";
@@ -54,6 +55,7 @@ import dayjs from "@/lib/dayjs";
 import {
   asTutorInfoResponseBody,
   cacheTutors,
+  getTutoringMinutes,
   joinTutorCache,
   orderTutors,
 } from "@/lib/tutor";
@@ -231,6 +233,11 @@ const findFullTutorsQuery = zod.object({
 
 const findTutorMetaQuery: ZodSchema<ITutor.FindTutorMetaApiQuery> = zod.object({
   tutorId: id,
+});
+
+const findTutoringMinutesQuery = zod.object({
+  before: datetime.optional(),
+  after: datetime.optional(),
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
@@ -534,6 +541,32 @@ async function findTutorInfo(
   const response: ITutor.FindTutorInfoApiResponse =
     await asTutorInfoResponseBody(cacheable);
   res.status(200).json(response);
+}
+
+async function findTutoringMinutes(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  if (!isAdmin(user)) return next(forbidden());
+
+  const query: ITutor.FindTutoringMinutesApiQuery =
+    findTutoringMinutesQuery.parse(req.query);
+
+  // check valid date range
+  if (dayjs.utc(query.before).isBefore(query.after)) return next(bad());
+
+  const tutorLessons = await lessons.find({
+    ...query,
+    canceled: false,
+    full: true,
+  });
+
+  const tutoringMinutes: ITutor.FindTutoringMinutesApiResponse =
+    await getTutoringMinutes(tutorLessons.list);
+
+  res.status(200).json(tutoringMinutes);
 }
 
 async function findOnboardedTutors(req: Request, res: Response) {
@@ -1203,6 +1236,7 @@ export default {
   findStudentStats: safeRequest(findStudentStats),
   findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),
   findFullTutors: safeRequest(findFullTutors),
+  findTutoringMinutes: safeRequest(findTutoringMinutes),
   uploadUserImage: safeRequest(uploadUserImage),
   uploadTutorAssets: safeRequest(uploadTutorAssets),
 };

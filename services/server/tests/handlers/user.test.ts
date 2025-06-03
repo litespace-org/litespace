@@ -1,6 +1,6 @@
 import { ITutor, IUser } from "@litespace/types";
 import { Api } from "@fixtures/api";
-import db, { faker } from "@fixtures/db";
+import db, { faker, lesson } from "@fixtures/db";
 import { expect } from "chai";
 import { mockApi, mockApiContext } from "@fixtures/mockApi";
 import { safe } from "@litespace/utils/error";
@@ -9,7 +9,7 @@ import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
 import { first, range } from "lodash";
-import { forbidden, notfound } from "@/lib/error";
+import { bad, forbidden, notfound } from "@/lib/error";
 import handlers from "@/handlers/user";
 import { nameof } from "@litespace/utils";
 
@@ -46,6 +46,13 @@ const findFullTutors = mockApi<
   ITutor.FindFullTutorsApiQuery,
   ITutor.FindFullTutorsApiResponse
 >(handlers.findFullTutors);
+
+const findTutoringMinutes = mockApi<
+  void,
+  void,
+  ITutor.FindTutoringMinutesApiQuery,
+  ITutor.FindTutoringMinutesApiResponse
+>(handlers.findTutoringMinutes);
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
@@ -880,6 +887,227 @@ describe("/api/v1/user/", () => {
 
       expect(res).to.be.instanceof(Error);
       expect(res).to.deep.eq(forbidden());
+    });
+  });
+  describe("GET /api/v1/user/tutor/tutoring-minutes", () => {
+    it("should return error due to not having admin privelages", async () => {
+      const user = await db.user({ role: IUser.Role.Student });
+
+      await Promise.all([
+        lesson({
+          timing: "past",
+          canceled: false,
+        }),
+        lesson({
+          timing: "past",
+          canceled: false,
+        }),
+      ]);
+
+      const response = await findTutoringMinutes({
+        user,
+      });
+      expect(response).to.deep.eq(forbidden());
+    });
+
+    it("should return error due to invalid date range", async () => {
+      const user = await db.user({ role: IUser.Role.RegularAdmin });
+
+      await Promise.all([
+        lesson({
+          timing: "past",
+          canceled: false,
+        }),
+        lesson({
+          timing: "past",
+          canceled: false,
+        }),
+      ]);
+
+      const response = await findTutoringMinutes({
+        user,
+        query: {
+          after: dayjs.utc().subtract(5, "day").toISOString(),
+          before: dayjs.utc().subtract(8, "day").toISOString(),
+        },
+      });
+      expect(response).to.deep.eq(bad());
+    });
+
+    it("should return empty array when no lessons exist", async () => {
+      const adminUser = await db.user({ role: IUser.Role.RegularAdmin });
+
+      const res = await findTutoringMinutes({
+        user: adminUser,
+        query: {},
+      });
+
+      expect(res.body).to.deep.eq([]);
+    });
+
+    it("should return empty array when no lessons exist in the timeframe", async () => {
+      const adminUser = await db.user({ role: IUser.Role.RegularAdmin });
+      const past = dayjs.utc().subtract(1, "day").toISOString();
+      const tutor = await db.tutor();
+
+      await Promise.all([
+        lesson({
+          tutor: tutor.id,
+          duration: 15,
+          start: past,
+          canceled: false,
+        }),
+        lesson({
+          tutor: tutor.id,
+          duration: 15,
+          start: past,
+          canceled: false,
+        }),
+      ]);
+
+      const res = await findTutoringMinutes({
+        user: adminUser,
+        query: {
+          after: dayjs.utc().subtract(2, "h").toISOString(),
+          before: dayjs.utc().toISOString(),
+        },
+      });
+
+      expect(res.body).to.deep.eq([]);
+    });
+
+    it("should return aggregated tutoring minutes", async () => {
+      const adminUser = await db.user({ role: IUser.Role.RegularAdmin });
+
+      const past1 = dayjs.utc().subtract(1, "day").toISOString();
+      const past2 = dayjs.utc().subtract(2, "day").toISOString();
+      const past3 = dayjs.utc().subtract(3, "day").toISOString();
+      const past4 = dayjs.utc().subtract(4, "day").toISOString();
+      const past5 = dayjs.utc().subtract(5, "day").toISOString();
+
+      const tutor1 = await db.tutor();
+      const tutor2 = await db.tutor();
+      const tutor3 = await db.tutor();
+
+      const lessonsConfig = [
+        // for the first tutor
+        { tutor: tutor1.id, duration: 15, start: past1, canceled: false },
+        { tutor: tutor1.id, duration: 15, start: past1, canceled: false },
+        { tutor: tutor1.id, duration: 15, start: past2, canceled: false },
+        { tutor: tutor1.id, duration: 15, start: past2, canceled: false },
+        { tutor: tutor1.id, duration: 15, start: past3, canceled: false },
+        { tutor: tutor1.id, duration: 15, start: past5, canceled: false },
+
+        // for the second tutor
+        { tutor: tutor2.id, duration: 15, start: past1, canceled: false },
+        { tutor: tutor2.id, duration: 15, start: past1, canceled: false },
+        { tutor: tutor2.id, duration: 15, start: past2, canceled: false },
+        { tutor: tutor2.id, duration: 15, start: past3, canceled: false },
+        { tutor: tutor2.id, duration: 15, start: past5, canceled: false },
+
+        // for the third tutor
+        { tutor: tutor3.id, duration: 15, start: past1, canceled: false },
+        { tutor: tutor3.id, duration: 15, start: past2, canceled: false },
+        { tutor: tutor3.id, duration: 15, start: past3, canceled: false },
+        { tutor: tutor3.id, duration: 15, start: past5, canceled: false },
+      ];
+
+      const lessons = lessonsConfig.map((l) => lesson(l));
+
+      await Promise.all(lessons);
+
+      const expectedResult = [
+        {
+          tutorId: tutor1.id,
+          tutoringMinutes: 75,
+        },
+        {
+          tutorId: tutor2.id,
+          tutoringMinutes: 60,
+        },
+        {
+          tutorId: tutor3.id,
+          tutoringMinutes: 45,
+        },
+      ];
+
+      // we call the handler directly
+      const res = await findTutoringMinutes({
+        user: adminUser,
+        query: {
+          before: dayjs.utc().toISOString(),
+          after: past4,
+        },
+      });
+
+      expect(res.body).to.deep.eq(expectedResult);
+    });
+
+    it("should return aggregated tutoring minutes, but not include canceled", async () => {
+      const adminUser = await db.user({ role: IUser.Role.RegularAdmin });
+
+      const past1 = dayjs.utc().subtract(1, "day").toISOString();
+      const past2 = dayjs.utc().subtract(2, "day").toISOString();
+      const past3 = dayjs.utc().subtract(3, "day").toISOString();
+      const past4 = dayjs.utc().subtract(4, "day").toISOString();
+      const past5 = dayjs.utc().subtract(5, "day").toISOString();
+
+      const tutor1 = await db.tutor();
+      const tutor2 = await db.tutor();
+      const tutor3 = await db.tutor();
+
+      const lessonsConfig = [
+        // for the first tutor
+        { tutor: tutor1.id, duration: 15, start: past1, canceled: false },
+        { tutor: tutor1.id, duration: 15, start: past1, canceled: false },
+        { tutor: tutor1.id, duration: 15, start: past2, canceled: true },
+        { tutor: tutor1.id, duration: 15, start: past2, canceled: false },
+        { tutor: tutor1.id, duration: 15, start: past3, canceled: false },
+        { tutor: tutor1.id, duration: 15, start: past5, canceled: false },
+
+        // for the second tutor
+        { tutor: tutor2.id, duration: 15, start: past1, canceled: false },
+        { tutor: tutor2.id, duration: 15, start: past1, canceled: true },
+        { tutor: tutor2.id, duration: 15, start: past2, canceled: false },
+        { tutor: tutor2.id, duration: 15, start: past3, canceled: false },
+        { tutor: tutor2.id, duration: 15, start: past5, canceled: false },
+
+        // for the third tutor
+        { tutor: tutor3.id, duration: 15, start: past1, canceled: false },
+        { tutor: tutor3.id, duration: 15, start: past2, canceled: true },
+        { tutor: tutor3.id, duration: 15, start: past3, canceled: false },
+        { tutor: tutor3.id, duration: 15, start: past5, canceled: false },
+      ];
+
+      const lessons = lessonsConfig.map((l) => lesson(l));
+
+      await Promise.all(lessons);
+
+      const expectedResult = [
+        {
+          tutorId: tutor1.id,
+          tutoringMinutes: 60,
+        },
+        {
+          tutorId: tutor2.id,
+          tutoringMinutes: 45,
+        },
+        {
+          tutorId: tutor3.id,
+          tutoringMinutes: 30,
+        },
+      ];
+
+      // we call the handler directly
+      const res = await findTutoringMinutes({
+        user: adminUser,
+        query: {
+          before: dayjs.utc().toISOString(),
+          after: past4,
+        },
+      });
+
+      expect(res.body).to.deep.eq(expectedResult);
     });
   });
 });

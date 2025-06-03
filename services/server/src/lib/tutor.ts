@@ -1,4 +1,4 @@
-import { ITutor, IUser } from "@litespace/types";
+import { ILesson, ITutor, IUser } from "@litespace/types";
 import { Knex } from "knex";
 import { tutors, knex, lessons, topics, ratings } from "@litespace/models";
 import { first, orderBy } from "lodash";
@@ -179,4 +179,34 @@ export async function asTutorInfoResponseBody(
     notice: ctutor.notice,
     ...assets,
   };
+}
+
+export async function getTutoringMinutes(
+  data: ILesson.Self[]
+): Promise<ITutor.FindTutoringMinutesApiResponse> {
+  // from tutorId to tutorMinutes
+  const tutoringMap = new Map<number, number>();
+
+  const lessonIds = data.map((lesson) => lesson.id);
+  const allLessonMembers = await lessons.findLessonMembers(lessonIds);
+
+  // from lessonId to tutorId
+  const lessonsTutorMap = new Map<number, number>();
+  allLessonMembers.forEach((member) => {
+    if ([IUser.Role.Tutor, IUser.Role.TutorManager].includes(member.role))
+      lessonsTutorMap.set(member.lessonId, member.userId);
+  });
+
+  for (const lesson of data) {
+    const tutor = lessonsTutorMap.get(lesson.id);
+    if (!tutor) continue;
+
+    // Accumulate tutoring minutes for each tutor
+    const currentMinutes = tutoringMap.get(tutor) || 0;
+    tutoringMap.set(tutor, currentMinutes + lesson.duration);
+  }
+
+  return Array.from(tutoringMap.entries())
+    .map(([tutorId, tutoringMinutes]) => ({ tutorId, tutoringMinutes }))
+    .sort((a, b) => b.tutoringMinutes - a.tutoringMinutes);
 }
