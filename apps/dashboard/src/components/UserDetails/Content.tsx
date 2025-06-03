@@ -1,4 +1,3 @@
-import ErrorElement from "@/components/Common/Error";
 import Detail from "@/components/Common/Detail";
 import DateField from "@/components/Common/DateField";
 import BinaryField from "@/components/Common/BinaryField";
@@ -7,11 +6,11 @@ import cn from "classnames";
 import React, { useState } from "react";
 import { Duration } from "@litespace/utils/duration";
 import { formatMinutes, formatNumber } from "@litespace/ui/utils";
-import { Loading } from "@litespace/ui/Loading";
 import { ITutor, IUser, Void } from "@litespace/types";
 import { PersonIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 import { rolesMap } from "@/components/utils/user";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { LoadingFragment } from "@/components/Common/LoadingFragment";
 
 const Content: React.FC<{
   user?: IUser.Self;
@@ -25,15 +24,15 @@ const Content: React.FC<{
   // TODO: use a hook to get the online status form the server cache
   const [onlineStatus] = useState(false);
 
-  if (loading) return <Loading />;
-  if (error)
+  if (loading || error)
     return (
-      <ErrorElement
-        title={intl("error.unexpected")}
+      <LoadingFragment
+        loading={{ size: "large" }}
+        error={{ size: "medium" }}
         refetch={refetch}
-        error={error}
       />
     );
+
   if (!user) return;
 
   return (

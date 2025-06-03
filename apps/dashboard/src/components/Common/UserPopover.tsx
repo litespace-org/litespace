@@ -3,7 +3,7 @@ import { HoverCard } from "@litespace/ui/HoverCard";
 import { Loading } from "@litespace/ui/Loading";
 import React from "react";
 import { AlertCircle, User } from "react-feather";
-import { rolesMap } from "../utils/user";
+import { rolesMap } from "@/components/utils/user";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Link } from "react-router-dom";
 import { router } from "@/lib/route";
