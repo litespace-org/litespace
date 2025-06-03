@@ -1,4 +1,3 @@
-import Header from "@/components/Auth/Common/Header";
 import Form from "@/components/Auth/Login/Form";
 import Title from "@/components/Auth/Common/Title";
 import { ForgetPassword } from "@/components/Common/ForgetPassword";
@@ -8,8 +7,7 @@ const Content: React.FC = () => {
   const forgetPasswordDialog = useRender();
   return (
     <main className="flex flex-col gap-10 sm:gap-0 items-center justify-start flex-1 flex-shrink-0 w-full">
-      <Header />
-      <div className="flex-1 flex flex-col sm:justify-center max-w-[404px] w-full">
+      <div className="flex-1 flex flex-col gap-8 sm:justify-center max-w-[344px] w-full">
         <Title type="login" />
         <Form onForgetPassword={forgetPasswordDialog.show} />
       </div>
