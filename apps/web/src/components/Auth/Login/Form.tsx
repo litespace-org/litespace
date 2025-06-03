@@ -20,6 +20,8 @@ import { isValidRoute, Landing, Web } from "@litespace/utils/routes";
 import { omit } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import Or from "@/components/Auth/Common/Or";
+import cn from "classnames";
 
 type Form = {
   email: string;
@@ -102,6 +104,20 @@ const LoginForm: React.FC<{
 
   return (
     <Form onSubmit={form.onSubmit}>
+      <Button
+        variant="secondary"
+        size="large"
+        className="w-full text text-body font-medium"
+        endIcon={<Google />}
+        onClick={google.login}
+        htmlType="button"
+        loading={google.loading}
+        disabled={google.loading || mutation.isPending}
+      >
+        {intl("login.with-google")}
+      </Button>
+
+      <Or />
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2 sm:gap-4">
           <Input
@@ -135,16 +151,14 @@ const LoginForm: React.FC<{
 
           <div className="mt-2 sm:mt-0">
             <button
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-md"
+              className={cn(
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+                "rounded-md text-brand-700 text-caption font-medium"
+              )}
               type="button"
               onClick={onForgetPassword}
             >
-              <Typography
-                tag="span"
-                className="text-brand-700 text-caption font-medium"
-              >
-                {intl("login.forget-password")}
-              </Typography>
+              {intl("login.forget-password")}
             </button>
           </div>
         </div>
@@ -155,23 +169,10 @@ const LoginForm: React.FC<{
             size="large"
             disabled={mutation.isPending || google.loading}
             loading={mutation.isPending}
-            className="w-full"
+            className="w-full text text-body font-medium"
             htmlType="submit"
           >
             {intl("login.button.label")}
-          </Button>
-
-          <Button
-            variant="secondary"
-            size="large"
-            className="w-full"
-            endIcon={<Google />}
-            onClick={google.login}
-            htmlType="button"
-            loading={google.loading}
-            disabled={google.loading || mutation.isPending}
-          >
-            {intl("login.with-google")}
           </Button>
 
           <Typography
