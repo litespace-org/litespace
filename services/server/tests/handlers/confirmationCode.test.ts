@@ -1,4 +1,4 @@
-import db from "@fixtures/db";
+import { fixtures as db, mockApi } from "@litespace/tests";
 import { confirmationCodes, users } from "@litespace/models";
 import {
   bad,
@@ -11,7 +11,6 @@ import {
 } from "@/lib/error";
 import dayjs from "@/lib/dayjs";
 import { IConfirmationCode, ITelegram, IUser } from "@litespace/types";
-import { mockApi } from "@fixtures/mockApi";
 import handlers from "@/handlers/confirmationCode";
 import { safe, safePromise } from "@litespace/utils";
 import { expect } from "chai";

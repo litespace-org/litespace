@@ -1,7 +1,7 @@
-import fixtures from "@fixtures/db";
 import { expect } from "chai";
 import { plans } from "@/plans";
 import { nameof } from "@litespace/utils";
+import { fixtures } from "@litespace/tests";
 
 describe("plans", () => {
   beforeEach(async () => {

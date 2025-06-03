@@ -1,7 +1,6 @@
-import db from "@fixtures/db";
+import { fixtures as db, mockApi } from "@litespace/tests";
 import handlers from "@/handlers/subscription";
 import { ISubscription, IUser } from "@litespace/types";
-import { mockApi } from "@fixtures/mockApi";
 import { expect } from "chai";
 import { forbidden, notfound } from "@/lib/error";
 

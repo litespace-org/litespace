@@ -1,5 +1,4 @@
-import { mockApi } from "@fixtures/mockApi";
-import db from "@fixtures/db";
+import { fixtures as db, mockApi } from "@litespace/tests";
 import { safe } from "@litespace/utils";
 import { expect } from "chai";
 import handlers from "@/handlers/contactRequest";

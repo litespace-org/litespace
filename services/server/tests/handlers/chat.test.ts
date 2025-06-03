@@ -1,10 +1,9 @@
 import { expect } from "chai";
-import db from "@fixtures/db";
-import { knex, messages, rooms } from "@litespace/models";
+import { fixtures as db, mockApi } from "@litespace/tests";
+import { messages, rooms } from "@litespace/models";
 import { range } from "lodash";
 import { IMessage, IRoom } from "@litespace/types";
 import handlers from "@/handlers/chat";
-import { mockApi } from "@fixtures/mockApi";
 import { empty, forbidden } from "@/lib/error";
 import { cache } from "@/lib/cache";
 
@@ -166,14 +165,11 @@ describe("/api/v1/chat", () => {
       for (const name of ["student-1", "student-2", "student-3"]) {
         const student = await db.student();
         const room = await db.room([tutor.id, student.id]);
-
-        await knex.transaction(async (tx) =>
-          db.message(tx, {
-            roomId: room,
-            userId: tutor.id,
-            text: `Hello, ${name}`,
-          })
-        );
+        await db.message({
+          roomId: room,
+          userId: tutor.id,
+          text: `Hello, ${name}`,
+        });
       }
 
       const tests = [

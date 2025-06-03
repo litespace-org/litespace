@@ -1,7 +1,6 @@
-import { mockApi, mockApiContext } from "@fixtures/mockApi";
 import { expect } from "chai";
 import { cache } from "@/lib/cache";
-import db from "@fixtures/db";
+import { fixtures as db, mockApi, mockApiContext } from "@litespace/tests";
 import handlers from "@/handlers/lesson";
 import {
   notfound,

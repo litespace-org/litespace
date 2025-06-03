@@ -1,6 +1,4 @@
-import { Api } from "@fixtures/api";
-import db, { flush } from "@fixtures/db";
-import { ClientSocket } from "@fixtures/wss";
+import { fixtures as db, ClientSocket, Api } from "@litespace/tests";
 import { IUser, Wss } from "@litespace/types";
 
 describe("Typing", () => {
@@ -11,7 +9,7 @@ describe("Typing", () => {
   let studentSocket: ClientSocket;
 
   beforeEach(async () => {
-    await flush();
+    await db.flush();
 
     const tutorApi = await Api.forTutor();
     tutor = await tutorApi.findCurrentUser();

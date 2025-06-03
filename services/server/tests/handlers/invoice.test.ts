@@ -1,5 +1,4 @@
-import { mockApi, mockApiContext } from "@fixtures/mockApi";
-import db from "@fixtures/db";
+import { fixtures as db, mockApi, mockApiContext } from "@litespace/tests";
 import handlers from "@/handlers/invoice";
 import { FieldError, IInvoice, IUser } from "@litespace/types";
 import { expect } from "chai";

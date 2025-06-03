@@ -21,9 +21,9 @@ module.exports = {
   globalSetup: "<rootDir>/fixtures/setup.ts",
   globalTeardown: "<rootDir>/fixtures/teardown.ts",
   setupFiles: [
-    "<rootDir>/fixtures/s3.ts",
-    "<rootDir>/fixtures/worker.ts",
-    "<rootDir>/fixtures/telegram.ts",
-    "<rootDir>/fixtures/kafka.ts",
+    "<rootDir>/fixtures/jest/s3.ts",
+    "<rootDir>/fixtures/jest/worker.ts",
+    "<rootDir>/fixtures/jest/telegram.ts",
+    "<rootDir>/fixtures/jest/kafka.ts",
   ],
 };

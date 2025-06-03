@@ -1,4 +1,4 @@
-import db, { faker } from "@fixtures/db";
+import { fixtures as db, faker } from "@litespace/tests";
 import { expect } from "chai";
 import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
