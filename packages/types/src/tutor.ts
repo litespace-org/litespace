@@ -235,3 +235,13 @@ export type FindQueryModel = IFilter.SkippablePagination & {
 export type FindFullTutorsApiQuery = FindQueryModel & Pagination;
 
 export type FindFullTutorsApiResponse = Paginated<Full>;
+
+export type FindTutoringMinutesApiQuery = {
+  before?: string;
+  after?: string;
+};
+
+export type FindTutoringMinutesApiResponse = {
+  tutorId: number;
+  tutoringMinutes: number;
+}[];

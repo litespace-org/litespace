@@ -47,6 +47,7 @@ import dayjs from "@/lib/dayjs";
 import {
   asTutorInfoResponseBody,
   cacheTutors,
+  getTutoringMinutes,
   joinTutorCache,
   orderTutors,
 } from "@/lib/tutor";
@@ -218,6 +219,11 @@ const findFullTutorsQuery = zod.object({
   createdAt: dateFilter.optional().describe("filter by tutors created at date"),
   page: zod.optional(pageNumber).default(paginationDefaults.page),
   size: zod.optional(pageSize).default(paginationDefaults.size),
+});
+
+const findTutoringMinutesQuery = zod.object({
+  before: zod.optional(string),
+  after: zod.optional(string),
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
@@ -497,6 +503,29 @@ async function findTutorInfo(
   const response: ITutor.FindTutorInfoApiResponse =
     await asTutorInfoResponseBody(cacheable);
   res.status(200).json(response);
+}
+
+async function findTutoringMinutes(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { user } = req;
+  if (!isAdmin(user)) return next(forbidden());
+
+  const query: ITutor.FindTutoringMinutesApiQuery =
+    findTutoringMinutesQuery.parse(req.query);
+
+  const tutorLessons = await lessons.find({
+    ...query,
+    canceled: false,
+    full: true,
+  });
+
+  const tutoringMinutes: ITutor.FindTutoringMinutesApiResponse =
+    await getTutoringMinutes(tutorLessons.list);
+
+  res.status(200).json(tutoringMinutes);
 }
 
 async function findOnboardedTutors(req: Request, res: Response) {
@@ -1166,6 +1195,7 @@ export default {
   findStudentStats: safeRequest(findStudentStats),
   findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),
   findFullTutors: safeRequest(findFullTutors),
+  findTutoringMinutes: safeRequest(findTutoringMinutes),
   uploadUserImage: safeRequest(uploadUserImage),
   uploadTutorAssets: safeRequest(uploadTutorAssets),
 };
