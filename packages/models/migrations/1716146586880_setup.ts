@@ -218,8 +218,6 @@ export function down(pgm: MigrationBuilder) {
   pgm.dropTable("invites", { ifExists: true });
   pgm.dropTable("coupons", { ifExists: true });
   pgm.dropTable("plans", { ifExists: true });
-  pgm.dropTable("report_replies", { ifExists: true });
-  pgm.dropTable("reports", { ifExists: true });
   pgm.dropTable("gifts", { ifExists: true });
   pgm.dropTable("ratings", { ifExists: true });
   pgm.dropTable("interviews", { ifExists: true });

@@ -19,13 +19,15 @@ export async function upload({
   data,
   key,
   type,
+  prefix = "",
 }: {
   data: Buffer;
   type?: string;
   key?: string | null;
+  prefix?: string;
 }) {
   const id = key || uuid();
-  await s3.put({ key: id, data, type });
+  await s3.put({ key: `${prefix}${id}`, data, type });
   return id;
 }
 
