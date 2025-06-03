@@ -1,20 +1,30 @@
-import Logo from "@litespace/assets/Logo";
+import HorizontalLogo from "@/components/Common/HorizontalLogo";
+import { IUser } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { LocalId } from "@litespace/ui/locales";
 import { Typography } from "@litespace/ui/Typography";
+import { useMemo } from "react";
 
-const Title: React.FC<{ type: "login" | "register" }> = ({ type }) => {
+type Role = IUser.Role.Student | IUser.Role.Tutor;
+
+const Title: React.FC<{ type: "login" | "register"; role?: Role }> = ({
+  type,
+  role,
+}) => {
   const intl = useFormatMessage();
+
+  const description: LocalId = useMemo(() => {
+    if (type === "login") return "login.welcome";
+    if (role === IUser.Role.Student) return "register.welcome.student";
+    return "register.welcome.tutor";
+  }, [role, type]);
+
   return (
-    <div className="flex flex-row items-center justify-center gap-4 mb-6 sm:mb-8">
-      <Logo className="h-[87px]" />
-      <div className="flex flex-col gap-2 items-start justify-center">
-        <Typography tag="h1" className="text-brand-500 text-h3 font-bold">
-          {intl("labels.litespace")}
-        </Typography>
-        <Typography tag="span" className="text-natural-700 text-body">
-          {intl(type === "login" ? "login.welcome" : "register.welcome")}
-        </Typography>
-      </div>
+    <div className="flex flex-col gap-4 items-center text-center justify-center">
+      <HorizontalLogo />
+      <Typography tag="h2" className="text-natural-700 text-body">
+        {intl(description)}
+      </Typography>
     </div>
   );
 };
