@@ -3,6 +3,7 @@ import {
   busyTutorManager,
   conflictingInterview,
   forbidden,
+  illegal,
   interviewAlreadySigned,
   notfound,
 } from "@/lib/error";
@@ -27,7 +28,7 @@ import {
   string,
   withNamedId,
 } from "@/validation/utils";
-import { IInterview } from "@litespace/types";
+import { IAvailabilitySlot, IInterview } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
@@ -98,6 +99,8 @@ async function createInterview(
 
   const slot = await availabilitySlots.findById(slotId);
   if (!slot) return next(notfound.slot());
+  if (slot.purpose !== IAvailabilitySlot.Purpose.Interview)
+    return next(illegal());
 
   const slotLessons = await lessons.find({
     slots: [slotId],

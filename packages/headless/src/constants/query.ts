@@ -11,7 +11,7 @@ export enum QueryKey {
   FindInvoices = "find-invoices",
   FindInterviewsPaged = "find-interviews-paged",
   FindInterviews = "find-interviews",
-  FindInterviewer = "select-interviewer",
+  FindTutorManager = "select-tutor-manager",
   FindInterviewSlots = "interviewer-slots",
   FindUserLesson = "find-user-lessons",
   FindLessons = "find-lessons",

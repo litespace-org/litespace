@@ -107,6 +107,7 @@ export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
       userId: await or.tutorId(payload?.userId),
       start: start.toISOString(),
       end: end.toISOString(),
+      purpose: payload?.purpose,
     },
   ]);
   const slot = first(slots);

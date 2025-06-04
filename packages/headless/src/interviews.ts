@@ -64,20 +64,20 @@ export function useFindInfinitInterviews(
   ]);
 }
 
-export function useSelectInterviewer(): {
+export function useSelectTutorManager(): {
   query: UseQueryResult<IUser.Self, Error>;
   keys: unknown[];
 } {
   const api = useApi();
 
-  const selectInterviewer = useCallback(async () => {
-    return api.user.selectInterviewer();
+  const selectTutorManager = useCallback(async () => {
+    return api.user.selectTutorManager();
   }, [api.user]);
 
-  const keys = useMemo(() => [QueryKey.FindInterviewer], []);
+  const keys = useMemo(() => [QueryKey.FindTutorManager], []);
 
   const query = useQuery({
-    queryFn: selectInterviewer,
+    queryFn: selectTutorManager,
     queryKey: keys,
   });
 
