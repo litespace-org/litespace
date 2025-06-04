@@ -1,5 +1,5 @@
 import { subscriptions } from "@/subscriptions";
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { nameof } from "@litespace/utils/utils";
 import { expect } from "chai";
 

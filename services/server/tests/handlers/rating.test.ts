@@ -1,10 +1,9 @@
 import { exists, forbidden, notfound } from "@/lib/error";
-import db, { flush } from "@fixtures/db";
+import { fixtures as db, mockApi } from "@litespace/tests";
 import { ratings } from "@litespace/models";
 import { expect } from "chai";
 import { first } from "lodash";
 import handlers from "@/handlers/rating";
-import { mockApi } from "@fixtures/mockApi";
 import { IRating } from "@litespace/types";
 
 const findRaterRatings = mockApi<
@@ -55,7 +54,7 @@ const deleteRating = mockApi<object, { id: number }, object, object>(
 
 describe("/api/v1/rating/", () => {
   beforeEach(async () => {
-    await flush();
+    await db.flush();
   });
 
   describe("GET /api/v1/rating", () => {

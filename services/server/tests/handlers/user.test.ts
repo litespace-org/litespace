@@ -1,8 +1,6 @@
 import { ITutor, IUser } from "@litespace/types";
-import { Api } from "@fixtures/api";
-import db, { faker } from "@fixtures/db";
+import { fixtures as db, Api, faker, mockApi } from "@litespace/tests";
 import { expect } from "chai";
-import { mockApi } from "@fixtures/mockApi";
 import { safe } from "@litespace/utils/error";
 import { cacheTutors } from "@/lib/tutor";
 import dayjs from "@/lib/dayjs";

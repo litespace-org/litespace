@@ -1,6 +1,4 @@
-import { Api } from "@fixtures/api";
-import db from "@fixtures/db";
-import { ClientSocket } from "@fixtures/wss";
+import { fixtures as db, ClientSocket, Api } from "@litespace/tests";
 import { IUser, Wss } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { expect } from "chai";

@@ -1,7 +1,6 @@
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { sessionEvents, knex } from "@/index";
 import { ISessionEvent, IUser } from "@litespace/types";
-import db from "@fixtures/db";
 import { expect } from "chai";
 
 describe("Events", () => {
@@ -10,7 +9,7 @@ describe("Events", () => {
   });
 
   it("should successfully create new event records and retrieve a record with its id", async () => {
-    const user = await db.user({ role: IUser.Role.Tutor });
+    const user = await fixtures.user({ role: IUser.Role.Tutor });
 
     const event = await knex.transaction((tx) => {
       return sessionEvents.create(
@@ -29,8 +28,8 @@ describe("Events", () => {
   });
 
   it("should find a list of events for a specific userId", async () => {
-    const user1 = await db.user({ role: IUser.Role.Tutor });
-    const user2 = await db.user({ role: IUser.Role.TutorManager });
+    const user1 = await fixtures.user({ role: IUser.Role.Tutor });
+    const user2 = await fixtures.user({ role: IUser.Role.TutorManager });
 
     await knex.transaction((tx) => {
       return sessionEvents.createMany(

@@ -2,7 +2,7 @@ import { calculateRemainingWeeklyMinutesOfCurrentWeekByUserId } from "@/lib/subs
 import time from "@fixtures/time";
 import { nameof } from "@litespace/utils";
 import { expect } from "@fixtures/chai";
-import db from "@fixtures/db";
+import { fixtures as db } from "@litespace/tests";
 import { subscriptions } from "@litespace/models";
 
 describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {

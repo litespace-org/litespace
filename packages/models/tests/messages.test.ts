@@ -1,5 +1,5 @@
 import { knex, messages, rooms } from "@/index";
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { nameof } from "@litespace/utils";
 import { expect } from "chai";
 

@@ -1,11 +1,10 @@
-import db from "@fixtures/db";
+import { fixtures as db, mockApi } from "@litespace/tests";
 import dayjs from "@/lib/dayjs";
 import { expect } from "chai";
 import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error";
 import { availabilitySlots, lessons } from "@litespace/models";
 import { first } from "lodash";
 import handlers from "@/handlers/availabilitySlot";
-import { mockApi } from "@fixtures/mockApi";
 import { IAvailabilitySlot } from "@litespace/types";
 
 const findSlot = mockApi<

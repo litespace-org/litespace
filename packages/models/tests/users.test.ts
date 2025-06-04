@@ -1,4 +1,4 @@
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { nameof } from "@litespace/utils/utils";
 import { hashPassword, users } from "@/index";
 import { expect } from "chai";
@@ -146,7 +146,6 @@ describe("Users", () => {
       const created = await fixtures.user({
         role: IUser.Role.TutorManager,
         password,
-        withPassword: true,
       });
       const hash = await users.findUserPasswordHash(created.id);
       expect(hash).to.be.eq(hashPassword(password));

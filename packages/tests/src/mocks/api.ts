@@ -13,6 +13,7 @@ type MockRequest<Body = object, Params = object, Query = object> = {
   params?: Params;
   query?: Query;
   user?: IUser.Self | IUser.Role;
+  files?: Record<string, Express.Multer.File[]> | Express.Multer.File[];
 };
 
 class MockResponse<T> {
@@ -57,6 +58,12 @@ export function mockApi<
   return async (
     request: MockRequest<Body, Params, Query>
   ): Promise<{ status: number | null; body: Res | null }> => {
+    // these assigns avoids absurd errors while using
+    // the mockApi in test suites
+    if (!request.body) request.body = {} as Body;
+    if (!request.query) request.query = {} as Query;
+    if (!request.params) request.params = {} as Params;
+
     if (typeof request.user === "number")
       request.user = await db.user({ role: request.user });
 

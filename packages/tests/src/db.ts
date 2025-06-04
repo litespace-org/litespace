@@ -16,6 +16,7 @@ import {
   confirmationCodes,
   plans,
   subscriptions,
+  invoices,
 } from "@litespace/models";
 import {
   IInterview,
@@ -34,7 +35,7 @@ import {
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
 import { Knex } from "knex";
-import { Time } from "@litespace/utils/time";
+import { Time } from "@litespace/utils";
 export { faker } from "@faker-js/faker/locale/ar";
 import { randomInt, randomUUID } from "crypto";
 import { percentage, price } from "@litespace/utils";
@@ -48,6 +49,7 @@ export async function flush() {
     await subscriptions.builder(tx).del();
     await transactions.builder(tx).del();
     await plans.builder(tx).del();
+    await invoices.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
@@ -64,6 +66,51 @@ export async function flush() {
     await users.builder(tx).del();
     await contactRequests.builder(tx).del();
   });
+}
+
+export function gender(): IUser.Gender {
+  return sample([IUser.Gender.Male, IUser.Gender.Female])!;
+}
+
+export function duration(): number {
+  return sample([15, 30])!;
+}
+
+export function time() {
+  const times = range(0, 24).map((hour) =>
+    [hour.toString().padStart(2, "0"), "00"].join(":")
+  );
+  return Time.from(sample(times)!).utc().format();
+}
+
+export async function user(payload?: Partial<IUser.CreatePayload>) {
+  return await users.create({
+    email: payload?.email || faker.internet.email(),
+    gender: payload?.gender || gender(),
+    name: payload?.name || faker.internet.username(),
+    password: hashPassword(payload?.password || "Password@8"),
+    birthYear: payload?.birthYear || faker.number.int({ min: 2000, max: 2024 }),
+    role: or.role(payload?.role),
+    verifiedEmail: payload?.verifiedEmail || false,
+  });
+}
+
+export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
+  const start = dayjs.utc(payload?.start || faker.date.future());
+  const end = payload?.end
+    ? dayjs.utc(payload.end)
+    : start.add(faker.number.int(8), "hours");
+
+  const newSlots = await availabilitySlots.create([
+    {
+      userId: await or.tutorId(payload?.userId),
+      start: start.toISOString(),
+      end: end.toISOString(),
+    },
+  ]);
+  const res = first(newSlots);
+  if (!res) throw Error("error: couldn't insert new slot.");
+  return res;
 }
 
 const or = {
@@ -131,51 +178,6 @@ const or = {
   },
 } as const;
 
-export function gender(): IUser.Gender {
-  return sample([IUser.Gender.Male, IUser.Gender.Female])!;
-}
-
-export function duration(): number {
-  return sample([15, 30])!;
-}
-
-export function time() {
-  const times = range(0, 24).map((hour) =>
-    [hour.toString().padStart(2, "0"), "00"].join(":")
-  );
-  return Time.from(sample(times)!).utc().format();
-}
-
-export async function user(payload?: Partial<IUser.CreatePayload>) {
-  return await users.create({
-    email: payload?.email || faker.internet.email(),
-    gender: payload?.gender || gender(),
-    name: payload?.name || faker.internet.username(),
-    password: hashPassword(payload?.password || "Password@8"),
-    birthYear: payload?.birthYear || faker.number.int({ min: 2000, max: 2024 }),
-    role: or.role(payload?.role),
-    verifiedEmail: payload?.verifiedEmail || false,
-  });
-}
-
-export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
-  const start = dayjs.utc(payload?.start || faker.date.future());
-  const end = payload?.end
-    ? dayjs.utc(payload.end)
-    : start.add(faker.number.int(8), "hours");
-
-  const newSlots = await availabilitySlots.create([
-    {
-      userId: payload?.userId || 1,
-      start: start.toISOString(),
-      end: end.toISOString(),
-    },
-  ]);
-  const res = first(newSlots);
-  if (!res) throw Error("error: couldn't insert new slot.");
-  return res;
-}
-
 type LessonReturn = {
   lesson: ILesson.Self;
   members: ILesson.Member[];
@@ -222,7 +224,7 @@ export async function interview(payload: Partial<IInterview.CreatePayload>) {
     interviewer: await or.tutorManagerId(payload.interviewer),
     interviewee: await or.tutorId(payload.interviewee),
     session: await or.sessionId("interview"),
-    slot: await or.slotId(payload.slot, payload.interviewer),
+    slot: await or.slotId(payload.slot),
     start: or.start(payload.start),
   });
 }
@@ -237,48 +239,43 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
 }
 
 async function tutor(
-  userPayload?: Partial<IUser.CreatePayload>,
+  userPayload?: Partial<IUser.UpdatePayloadModel>,
   tutorPayload?: Partial<ITutor.UpdatePayload>
 ) {
-  const info = await user({ ...userPayload, role: IUser.Role.Tutor });
+  const info = await user({ role: IUser.Role.Tutor });
   const tutor = await tutors.create(info.id);
   await tutors.update(tutor.id, tutorPayload || {});
-  return tutor;
-}
-
-async function onboardedTutor() {
-  const newTutor = await tutor();
-
-  await users.update(newTutor.id, {
-    phone: "01012345678",
-    image: "/image.jpg",
-    verifiedEmail: true,
-    verifiedPhone: true,
-  });
-
-  await tutors.update(newTutor.id, {
-    about: faker.lorem.paragraphs(),
-    bio: faker.person.bio(),
-    activated: true,
-    video: "/video.mp4",
-    notice: 10,
-  });
-
-  return newTutor;
+  await users.update(tutor.id, userPayload || {});
+  const data = await tutors.findById(tutor.id);
+  if (!data) throw new Error("tutor not found");
+  return data;
 }
 
 function student() {
   return user({ role: IUser.Role.Student });
 }
 
-async function tutorManager(
+async function tutorUser(
   userPayload?: Partial<IUser.CreatePayload>,
   tutorPayload?: Partial<ITutor.UpdatePayload>
 ) {
-  const info = await user({ ...userPayload, role: IUser.Role.TutorManager });
+  const info = await user({ ...userPayload, role: IUser.Role.Tutor });
   const tutor = await tutors.create(info.id);
   await tutors.update(tutor.id, tutorPayload || {});
-  return tutor;
+  return info;
+}
+
+async function tutorManager(
+  tutorPayload?: Partial<ITutor.UpdatePayload>,
+  userPayload?: Partial<IUser.UpdatePayloadModel>
+) {
+  const info = await user({ role: IUser.Role.TutorManager });
+  const tutor = await tutors.create(info.id);
+  await tutors.update(tutor.id, tutorPayload || {});
+  await users.update(tutor.id, userPayload || {});
+  const data = await tutors.findById(tutor.id);
+  if (!data) throw new Error("tutor not found");
+  return data;
 }
 
 async function students(count: number) {
@@ -310,6 +307,7 @@ async function makeLessons({
   canceled,
   duration,
   price,
+  slot,
 }: {
   tutor: number;
   students: number[];
@@ -321,6 +319,7 @@ async function makeLessons({
     future: number[];
     past: number[];
   };
+  slot: number;
 }): Promise<MakeLessonsReturn> {
   const result: MakeLessonsReturn = [];
 
@@ -333,6 +332,7 @@ async function makeLessons({
 
     const create = async (start: string) => {
       return await lesson({
+        slot,
         tutor,
         student,
         start,
@@ -421,18 +421,11 @@ async function makeLessons({
 }
 
 export async function makeRating(payload?: Partial<IRating.CreatePayload>) {
-  const raterId: number =
-    payload?.raterId ||
-    (await user({ role: IUser.Role.Student }).then((user) => user.id));
-  const rateeId: number =
-    payload?.rateeId ||
-    (await user({ role: IUser.Role.Tutor }).then((user) => user.id));
-
   return await ratings.create({
-    rateeId,
-    raterId,
+    raterId: await or.studentId(payload?.raterId),
+    rateeId: await or.tutorId(payload?.rateeId),
     value: payload?.value || faker.number.int({ min: 0, max: 5 }),
-    feedback: faker.lorem.words(20),
+    feedback: payload?.feedback || faker.lorem.words(20),
   });
 }
 
@@ -460,19 +453,16 @@ export async function makeRatings({
 }
 
 async function makeRoom(payload?: [number, number]) {
+  const [firstUserId, secondUserId]: [number, number] = payload || [
+    await tutor().then((user) => user.id),
+    await student().then((user) => user.id),
+  ];
   return await knex.transaction(async (tx) => {
-    const [firstUserId, secondUserId]: [number, number] = payload || [
-      await tutor().then((user) => user.id),
-      await student().then((user) => user.id),
-    ];
     return await rooms.create([firstUserId, secondUserId], tx);
   });
 }
 
-async function makeMessage(
-  _: Knex.Transaction,
-  payload?: Partial<IMessage.CreatePayload>
-) {
+async function makeMessage(payload?: Partial<IMessage.CreatePayload>) {
   const roomId: number = await or.roomId(payload?.roomId);
   const userId: number =
     payload?.userId ||
@@ -509,15 +499,9 @@ async function makeInterviews(payload: {
         interviewee,
       });
 
-      if (status)
-        await interviews.update(interviewObj.ids.self, {
-          status,
-        });
+      if (status) await interviews.update(interviewObj.ids.self, { status });
 
-      if (level)
-        await interviews.update(interviewObj.ids.self, {
-          level,
-        });
+      if (level) await interviews.update(interviewObj.ids.self, { level });
     }
   }
 }
@@ -526,8 +510,8 @@ async function transaction(
   payload?: Partial<ITransaction.CreatePayload>
 ): Promise<ITransaction.Self> {
   return await transactions.create({
-    userId: await or.studentId(payload?.userId),
-    amount: payload?.amount || randomInt(1000),
+    userId: payload?.userId || (await user({})).id,
+    amount: payload?.amount || randomInt(1, 1000),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
     planId: await or.planId(payload?.planId),
@@ -539,7 +523,7 @@ async function plan(
   payload?: Partial<IPlan.CreatePayload>
 ): Promise<IPlan.Self> {
   return await plans.create({
-    weeklyMinutes: payload?.weeklyMinutes || randomInt(1000),
+    weeklyMinutes: payload?.weeklyMinutes || randomInt(1, 1000),
     baseMonthlyPrice: payload?.baseMonthlyPrice || randomPrice(),
     monthDiscount: payload?.monthDiscount || randomDiscount(),
     quarterDiscount: payload?.quarterDiscount || randomDiscount(),
@@ -550,11 +534,11 @@ async function plan(
 }
 
 function randomPrice() {
-  return price.scale(randomInt(5000));
+  return price.scale(randomInt(1, 5000));
 }
 
 function randomDiscount() {
-  return percentage.scale(randomInt(100));
+  return percentage.scale(randomInt(1, 100));
 }
 
 async function subscription(
@@ -564,9 +548,9 @@ async function subscription(
   return await subscriptions.create({
     userId,
     planId: await or.planId(payload?.planId),
-    txId: await or.txId(payload?.txId, userId),
+    txId: payload?.txId || (await transaction({ userId })).id,
     period: or.planPeriod(payload?.period),
-    weeklyMinutes: payload?.weeklyMinutes || sample([120, 150, 180]),
+    weeklyMinutes: payload?.weeklyMinutes || randomInt(1, 1000),
     start: payload?.start || faker.date.future().toISOString(),
     end: payload?.end || faker.date.future().toISOString(),
   });
@@ -575,7 +559,7 @@ async function subscription(
 export default {
   user,
   tutor,
-  onboardedTutor,
+  tutorUser,
   student,
   tutorManager,
   students,
@@ -584,16 +568,17 @@ export default {
   flush,
   topic,
   slot,
-  transaction,
   plan,
+  transaction,
   subscription,
   room: makeRoom,
+  rating: makeRating,
   message: makeMessage,
   make: {
     lessons: makeLessons,
     interviews: makeInterviews,
     tutors: makeTutors,
-    rating: makeRating,
     ratings: makeRatings,
+    room: makeRoom,
   },
 };

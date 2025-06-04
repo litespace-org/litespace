@@ -1,5 +1,5 @@
 import { transactions } from "@/transactions";
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { IPlan, ITransaction } from "@litespace/types";
 import { nameof } from "@litespace/utils/utils";
 import { expect } from "chai";

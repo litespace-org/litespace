@@ -1,5 +1,5 @@
 import { confirmationCodes } from "@/confirmationCodes";
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { nameof } from "@litespace/utils/utils";
 import { IConfirmationCode } from "@litespace/types";
 import { use, expect } from "chai";

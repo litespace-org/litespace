@@ -1,6 +1,5 @@
 import { empty, forbidden, notfound } from "@/lib/error";
-import { mockApi } from "@fixtures/mockApi";
-import db, { faker } from "@fixtures/db";
+import { fixtures as db, faker, mockApi } from "@litespace/tests";
 import { topics } from "@litespace/models";
 import { MAX_TOPICS_COUNT, safe } from "@litespace/utils";
 import { expect } from "chai";

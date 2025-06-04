@@ -1,5 +1,5 @@
 import { availabilitySlots } from "@/availabilitySlots";
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { dayjs, nameof, safe } from "@litespace/utils";
 import { expect } from "chai";
 import { first } from "lodash";

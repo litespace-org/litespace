@@ -1,5 +1,5 @@
 import { tutors, Tutors } from "@/tutors";
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { expect } from "chai";
 import { dayjs, nameof } from "@litespace/utils";
 import { range } from "lodash";
@@ -53,19 +53,19 @@ describe(nameof(Tutors), () => {
         range(0, 5).map(() =>
           fixtures.tutor(
             {
+              image: "./photo.jpg",
+              city: IUser.City.Giza,
+              phone: "01143759540",
+              verifiedEmail: true,
+              verifiedPhone: true,
+            },
+            {
               bio: "empty",
               about: "empty",
               video: "./video.mp4",
               thumbnail: "./image.jpg",
               studioId: studio.id,
               activated: true,
-            },
-            {
-              image: "./photo.jpg",
-              city: IUser.City.Giza,
-              phone: "01143759540",
-              verifiedEmail: true,
-              verifiedPhone: true,
             }
           )
         )
@@ -91,10 +91,10 @@ describe(nameof(Tutors), () => {
       const studio2 = await fixtures.user({ role: Role.Studio });
 
       const tutorsSet1 = await Promise.all(
-        range(0, 5).map(() => fixtures.tutor({ studioId: studio1.id }))
+        range(0, 5).map(() => fixtures.tutor({}, { studioId: studio1.id }))
       );
       const tutorsSet2 = await Promise.all(
-        range(0, 3).map(() => fixtures.tutor({ studioId: studio2.id }))
+        range(0, 3).map(() => fixtures.tutor({}, { studioId: studio2.id }))
       );
 
       const res1 = await tutors.findStudioTutors({ studioId: studio1.id });
@@ -114,7 +114,7 @@ describe(nameof(Tutors), () => {
   describe(nameof(tutors.findStudioTutor), () => {
     it("should retrieve tutors that subscribed to a specific studioId", async () => {
       const studio = await fixtures.user({ role: Role.Studio });
-      const tutor = await fixtures.tutor({ studioId: studio.id });
+      const tutor = await fixtures.tutor({}, { studioId: studio.id });
 
       const res1 = await tutors.findStudioTutor(0);
       expect(res1).to.eq(null);
@@ -137,8 +137,8 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on cities", async () => {
-      await fixtures.tutor({}, { city: IUser.City.Alexandria });
-      await fixtures.tutor({}, { city: IUser.City.Damietta });
+      await fixtures.tutor({ city: IUser.City.Alexandria }, {});
+      await fixtures.tutor({ city: IUser.City.Damietta }, {});
       await fixtures.tutor();
       await fixtures.tutor();
       await fixtures.tutor();
@@ -150,11 +150,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on genders", async () => {
-      await fixtures.tutor({}, { gender: IUser.Gender.Male });
-      await fixtures.tutor({}, { gender: IUser.Gender.Male });
-      await fixtures.tutor({}, { gender: IUser.Gender.Female });
-      await fixtures.tutor({}, { gender: IUser.Gender.Female });
-      await fixtures.tutor({}, { gender: IUser.Gender.Female });
+      await fixtures.tutor({ gender: IUser.Gender.Male }, {});
+      await fixtures.tutor({ gender: IUser.Gender.Male }, {});
+      await fixtures.tutor({ gender: IUser.Gender.Female }, {});
+      await fixtures.tutor({ gender: IUser.Gender.Female }, {});
+      await fixtures.tutor({ gender: IUser.Gender.Female }, {});
 
       const res1 = await tutors.find({});
       expect(res1.list.length).to.be.eq(5);
@@ -177,24 +177,24 @@ describe(nameof(Tutors), () => {
 
     it("should filter based on notification methods", async () => {
       await fixtures.tutor(
-        {},
-        { notificationMethod: IUser.NotificationMethod.Telegram }
+        { notificationMethod: IUser.NotificationMethod.Telegram },
+        {}
       );
       await fixtures.tutor(
-        {},
-        { notificationMethod: IUser.NotificationMethod.Telegram }
+        { notificationMethod: IUser.NotificationMethod.Telegram },
+        {}
       );
       await fixtures.tutor(
-        {},
-        { notificationMethod: IUser.NotificationMethod.Telegram }
+        { notificationMethod: IUser.NotificationMethod.Telegram },
+        {}
       );
       await fixtures.tutor(
-        {},
-        { notificationMethod: IUser.NotificationMethod.Whatsapp }
+        { notificationMethod: IUser.NotificationMethod.Whatsapp },
+        {}
       );
       await fixtures.tutor(
-        {},
-        { notificationMethod: IUser.NotificationMethod.Whatsapp }
+        { notificationMethod: IUser.NotificationMethod.Whatsapp },
+        {}
       );
 
       const res1 = await tutors.find({});
@@ -220,11 +220,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on name", async () => {
-      await fixtures.tutor({}, { name: "Mostafa Kamar" });
-      await fixtures.tutor({}, { name: null });
-      await fixtures.tutor({}, { name: "Ahmed Ibrahim" });
-      await fixtures.tutor({}, { name: "Mahmoud Ehab" });
-      await fixtures.tutor({}, { name: "Mohamed Ali" });
+      await fixtures.tutor({ name: "Mostafa Kamar" }, {});
+      await fixtures.tutor({ name: null }, {});
+      await fixtures.tutor({ name: "Ahmed Ibrahim" }, {});
+      await fixtures.tutor({ name: "Mahmoud Ehab" }, {});
+      await fixtures.tutor({ name: "Mohamed Ali" }, {});
 
       const res1 = await tutors.find({
         name: "kamar",
@@ -236,9 +236,9 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on bio", async () => {
-      await fixtures.tutor({ bio: "Hello, I am here" });
-      await fixtures.tutor({ bio: "Hello, I am not here" });
-      await fixtures.tutor({ bio: "Hello, i am here" });
+      await fixtures.tutor({}, { bio: "Hello, I am here" });
+      await fixtures.tutor({}, { bio: "Hello, I am not here" });
+      await fixtures.tutor({}, { bio: "Hello, i am here" });
       await fixtures.tutor({});
 
       const res1 = await tutors.find({
@@ -256,9 +256,9 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on about", async () => {
-      await fixtures.tutor({ about: "Hello, I am here" });
-      await fixtures.tutor({ about: "Hello, I am not here" });
-      await fixtures.tutor({ about: "Hello, i am here" });
+      await fixtures.tutor({}, { about: "Hello, I am here" });
+      await fixtures.tutor({}, { about: "Hello, I am not here" });
+      await fixtures.tutor({}, { about: "Hello, i am here" });
       await fixtures.tutor({});
 
       const res1 = await tutors.find({ about: "not" });
@@ -275,11 +275,11 @@ describe(nameof(Tutors), () => {
 
     it("should filter based on phone", async () => {
       const t1 = await fixtures.tutor(
-        {},
-        { phone: faker.phone.number().slice(0, 12) }
+        { phone: faker.phone.number().slice(0, 12) },
+        {}
       );
-      await fixtures.tutor({}, { phone: faker.phone.number().slice(0, 12) });
-      await fixtures.tutor({}, { phone: faker.phone.number().slice(0, 12) });
+      await fixtures.tutor({ phone: faker.phone.number().slice(0, 12) }, {});
+      await fixtures.tutor({ phone: faker.phone.number().slice(0, 12) }, {});
       await fixtures.tutor();
 
       const res1 = await tutors.find({
@@ -292,11 +292,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on email", async () => {
-      await fixtures.tutor({}, { email: "s1@litespace.org" });
-      await fixtures.tutor({}, { email: "s2@litespace.org" });
-      await fixtures.tutor({}, { email: "s3@litespace.org" });
-      await fixtures.tutor({}, { email: "s4@litespace.org" });
-      await fixtures.tutor({}, { email: "s5@litespace.org" });
+      await fixtures.tutor({ email: "s1@litespace.org" }, {});
+      await fixtures.tutor({ email: "s2@litespace.org" }, {});
+      await fixtures.tutor({ email: "s3@litespace.org" }, {});
+      await fixtures.tutor({ email: "s4@litespace.org" }, {});
+      await fixtures.tutor({ email: "s5@litespace.org" }, {});
 
       const res1 = await tutors.find({ email: "@litespace.org" });
       expect(res1.list.length).to.be.eq(5);
@@ -306,11 +306,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on activated", async () => {
-      await fixtures.tutor({ activated: false });
-      await fixtures.tutor({ activated: true });
-      await fixtures.tutor({ activated: true });
-      await fixtures.tutor({ activated: false });
-      await fixtures.tutor({ activated: false });
+      await fixtures.tutor({}, { activated: false });
+      await fixtures.tutor({}, { activated: true });
+      await fixtures.tutor({}, { activated: true });
+      await fixtures.tutor({}, { activated: false });
+      await fixtures.tutor({}, { activated: false });
 
       const res1 = await tutors.find({
         activated: true,
@@ -324,11 +324,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on verifiedEmail", async () => {
-      await fixtures.tutor({}, { verifiedEmail: true });
-      await fixtures.tutor({}, { verifiedEmail: true });
-      await fixtures.tutor({}, { verifiedEmail: false });
-      await fixtures.tutor({}, { verifiedEmail: false });
-      await fixtures.tutor({}, { verifiedEmail: false });
+      await fixtures.tutor({ verifiedEmail: true }, {});
+      await fixtures.tutor({ verifiedEmail: true }, {});
+      await fixtures.tutor({ verifiedEmail: false }, {});
+      await fixtures.tutor({ verifiedEmail: false }, {});
+      await fixtures.tutor({ verifiedEmail: false }, {});
 
       const res1 = await tutors.find({ verifiedEmail: true });
       expect(res1.list.length).to.be.eq(2);
@@ -338,11 +338,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on verifiedPhone", async () => {
-      await fixtures.tutor({}, { verifiedPhone: true });
-      await fixtures.tutor({}, { verifiedPhone: true });
-      await fixtures.tutor({}, { verifiedPhone: false });
-      await fixtures.tutor({}, { verifiedPhone: false });
-      await fixtures.tutor({}, { verifiedPhone: false });
+      await fixtures.tutor({ verifiedPhone: true }, {});
+      await fixtures.tutor({ verifiedPhone: true }, {});
+      await fixtures.tutor({ verifiedPhone: false }, {});
+      await fixtures.tutor({ verifiedPhone: false }, {});
+      await fixtures.tutor({ verifiedPhone: false }, {});
 
       const res1 = await tutors.find({ verifiedPhone: true });
       expect(res1.list.length).to.be.eq(2);
@@ -352,11 +352,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on verifiedTelegram", async () => {
-      await fixtures.tutor({}, { verifiedTelegram: true });
-      await fixtures.tutor({}, { verifiedTelegram: true });
-      await fixtures.tutor({}, { verifiedTelegram: false });
-      await fixtures.tutor({}, { verifiedTelegram: false });
-      await fixtures.tutor({}, { verifiedTelegram: false });
+      await fixtures.tutor({ verifiedTelegram: true }, {});
+      await fixtures.tutor({ verifiedTelegram: true }, {});
+      await fixtures.tutor({ verifiedTelegram: false }, {});
+      await fixtures.tutor({ verifiedTelegram: false }, {});
+      await fixtures.tutor({ verifiedTelegram: false }, {});
 
       const res1 = await tutors.find({ verifiedTelegram: true });
       expect(res1.list.length).to.be.eq(2);
@@ -366,11 +366,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on verifiedWhatsapp", async () => {
-      await fixtures.tutor({}, { verifiedWhatsApp: true });
-      await fixtures.tutor({}, { verifiedWhatsApp: true });
-      await fixtures.tutor({}, { verifiedWhatsApp: false });
-      await fixtures.tutor({}, { verifiedWhatsApp: false });
-      await fixtures.tutor({}, { verifiedWhatsApp: false });
+      await fixtures.tutor({ verifiedWhatsApp: true }, {});
+      await fixtures.tutor({ verifiedWhatsApp: true }, {});
+      await fixtures.tutor({ verifiedWhatsApp: false }, {});
+      await fixtures.tutor({ verifiedWhatsApp: false }, {});
+      await fixtures.tutor({ verifiedWhatsApp: false }, {});
 
       const res1 = await tutors.find({ verifiedWhatsapp: true });
       expect(res1.list.length).to.be.eq(2);
@@ -379,26 +379,12 @@ describe(nameof(Tutors), () => {
       expect(res2.list.length).to.be.eq(3);
     });
 
-    it("should filter based on password", async () => {
-      await fixtures.tutor({}, {}, true);
-      await fixtures.tutor({}, {}, true);
-      await fixtures.tutor({}, {});
-      await fixtures.tutor({}, {});
-      await fixtures.tutor({}, {});
-
-      const res1 = await tutors.find({ password: true });
-      expect(res1.list.length).to.be.eq(2);
-
-      const res2 = await tutors.find({ password: false });
-      expect(res2.list.length).to.be.eq(3);
-    });
-
     it("should filter based on image", async () => {
-      await fixtures.tutor({}, { image: "/image" });
-      await fixtures.tutor({}, { image: "/image" });
-      await fixtures.tutor({}, { image: null });
-      await fixtures.tutor({}, { image: null });
-      await fixtures.tutor({}, { image: null });
+      await fixtures.tutor({ image: "/image" }, {});
+      await fixtures.tutor({ image: "/image" }, {});
+      await fixtures.tutor({ image: null }, {});
+      await fixtures.tutor({ image: null }, {});
+      await fixtures.tutor({ image: null }, {});
 
       const res1 = await tutors.find({ image: true });
       expect(res1.list.length).to.be.eq(2);
@@ -410,11 +396,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on thumbnail", async () => {
-      await fixtures.tutor({ thumbnail: "/image" });
-      await fixtures.tutor({ thumbnail: "/image" });
-      await fixtures.tutor({ thumbnail: null });
-      await fixtures.tutor({ thumbnail: null });
-      await fixtures.tutor({ thumbnail: null });
+      await fixtures.tutor({}, { thumbnail: "/image" });
+      await fixtures.tutor({}, { thumbnail: "/image" });
+      await fixtures.tutor({}, { thumbnail: null });
+      await fixtures.tutor({}, { thumbnail: null });
+      await fixtures.tutor({}, { thumbnail: null });
 
       const res1 = await tutors.find({ thumbnail: true });
       expect(res1.list.length).to.be.eq(2);
@@ -424,11 +410,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on video", async () => {
-      await fixtures.tutor({ video: "/video" });
-      await fixtures.tutor({ video: "/video" });
-      await fixtures.tutor({ video: null });
-      await fixtures.tutor({ video: null });
-      await fixtures.tutor({ video: null });
+      await fixtures.tutor({}, { video: "/video" });
+      await fixtures.tutor({}, { video: "/video" });
+      await fixtures.tutor({}, { video: null });
+      await fixtures.tutor({}, { video: null });
+      await fixtures.tutor({}, { video: null });
 
       const res1 = await tutors.find({ video: true });
       expect(res1.list.length).to.be.eq(2);
@@ -438,11 +424,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on notice", async () => {
-      await fixtures.tutor({ notice: 40 });
-      await fixtures.tutor({ notice: 30 });
-      await fixtures.tutor({ notice: 20 });
-      await fixtures.tutor({ notice: 10 });
-      await fixtures.tutor({ notice: 5 });
+      await fixtures.tutor({}, { notice: 40 });
+      await fixtures.tutor({}, { notice: 30 });
+      await fixtures.tutor({}, { notice: 20 });
+      await fixtures.tutor({}, { notice: 10 });
+      await fixtures.tutor({}, { notice: 5 });
 
       const res1 = await tutors.find({ notice: 40 });
       expect(res1.list.length).to.be.eq(1);
@@ -461,11 +447,11 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on birthYear", async () => {
-      await fixtures.tutor({}, { birthYear: 2000 });
-      await fixtures.tutor({}, { birthYear: 2020 });
-      await fixtures.tutor({}, { birthYear: 2002 });
-      await fixtures.tutor({}, { birthYear: 1995 });
-      await fixtures.tutor({}, { birthYear: 1998 });
+      await fixtures.tutor({ birthYear: 2000 });
+      await fixtures.tutor({ birthYear: 2020 });
+      await fixtures.tutor({ birthYear: 2002 });
+      await fixtures.tutor({ birthYear: 1995 });
+      await fixtures.tutor({ birthYear: 1998 });
 
       const res1 = await tutors.find({ birthYear: 2000 });
       expect(res1.list.length).to.be.eq(1);

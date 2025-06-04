@@ -65,6 +65,7 @@
   },
   "dependencies": {
     "@litespace/types": "workspace:^",
+    "@litespace/tests": "workspace:^",
     "dayjs": "^1.11.13"
   },
   "peerDependencies": {

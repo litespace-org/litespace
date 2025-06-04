@@ -1,4 +1,4 @@
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { nameof } from "@litespace/utils/utils";
 import { invoices } from "@/index";
 import { IInvoice } from "@litespace/types";

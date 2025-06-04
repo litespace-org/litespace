@@ -1,6 +1,4 @@
-import { Api } from "@fixtures/api";
-import db from "@fixtures/db";
-import { ClientSocket } from "@fixtures/wss";
+import { fixtures as db, ClientSocket, Api } from "@litespace/tests";
 import { knex, messages, rooms } from "@litespace/models";
 import { Wss } from "@litespace/types";
 import { expect } from "chai";

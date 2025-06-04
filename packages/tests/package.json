@@ -4,18 +4,20 @@
   "license": "MIT",
   "description": "LiteSpace monorepo tests",
   "main": "dist/cjs/index.js",
-  "module": "dist/index.js",
+  "module": "dist/esm/index.js",
   "files": [
     "dist/**"
   ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "build:ts": "tsc",
-    "prepare": "ts-patch install -s",
+    "build": "pnpm build:cjs && pnpm build:esm",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "check": "tsc --noEmit",
     "clean": "rm -rf dist/",
-    "check": "tsc -p tsconfig.json --noEmit",
-    "watch": "npm-watch build"
+    "watch": "npm-watch build",
+    "prepare": "ts-patch install -s",
+    "test": "jest"
   },
   "watch": {
     "build": {
@@ -35,6 +37,8 @@
     "@litespace/types": "workspace:^",
     "@litespace/utils": "workspace:^",
     "dayjs": "^1.11.13",
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
     "ts-patch": "^3.2.1",
     "typescript": "^5.4.5",
     "typescript-transform-paths": "^3.5.2"
@@ -42,5 +46,11 @@
   "packageManager": "pnpm@10.11.0",
   "devDependencies": {
     "chai-as-promised": "^8.0.1"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
+    }
   }
 }

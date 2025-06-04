@@ -1,4 +1,4 @@
-import fixtures from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { nameof } from "@litespace/utils/utils";
 import { knex, rooms } from "@/index";
 import { expect } from "chai";

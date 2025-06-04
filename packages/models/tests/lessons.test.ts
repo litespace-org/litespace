@@ -1,6 +1,6 @@
 import { lessons } from "@/index";
 import { expect } from "chai";
-import fixtures, { MakeLessonsReturn } from "@fixtures/db";
+import { fixtures } from "@litespace/tests";
 import { ILesson, ITutor } from "@litespace/types";
 import { price } from "@litespace/utils/value";
 import { nameof } from "@litespace/utils/utils";
@@ -240,7 +240,7 @@ describe("Lessons", () => {
 
   describe("Lessons Duration Sum, Lessons Count, Lesson Days, and Price", () => {
     let tutor: ITutor.Self;
-    let tutorLessons: MakeLessonsReturn;
+    let tutorLessons: Awaited<ReturnType<typeof fixtures.make.lessons>>;
     const futureLessons = 8;
     const pastLessons = 13;
     const canceledFutureLessons = 3;
