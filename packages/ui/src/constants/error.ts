@@ -34,8 +34,6 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.ReportNotFound]: "error.api.report-not-found",
   [ApiError.InterviewNotFound]: "error.api.interview-not-found",
   [ApiError.TopicNotFound]: "error.api.topic-not-found",
-  [ApiError.InterviewAlreadySigned]: "error.api.interview-already-signed",
-  [ApiError.ReportReplyNotFound]: "error.api.report-reply-not-found",
   [ApiError.WidthdrawMethodNotFound]: "error.api.withdraw-method-not-found",
   [ApiError.SubscriptionNotFound]: "error.api.subscription-not-found",
   [ApiError.EmailAlreadyVerified]: "error.api.email-already-verified",

@@ -64,3 +64,13 @@ export function wait(seconds: number) {
     setTimeout(() => resolve(seconds), seconds * MILLISECONDS_IN_SECOND)
   );
 }
+
+/**
+ * Type-safe utility mapping funnction.
+ */
+export function map<T extends object, K extends keyof T>(
+  list: T[],
+  key: K
+): T[K][] {
+  return list.map((item) => item[key]);
+}

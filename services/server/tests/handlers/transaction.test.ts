@@ -6,7 +6,9 @@ import { expect } from "chai";
 import { forbidden, notfound } from "@/lib/error";
 
 const find = mockApi<ITransaction.FindQueryApi>(handlers.find);
-const findById = mockApi<object, { id: number }, object>(handlers.findById);
+const findById = mockApi<object, { id: number }, object, IUser.Self>(
+  handlers.findById
+);
 
 describe("/api/v1/tx/", () => {
   beforeEach(async () => {
@@ -52,7 +54,7 @@ describe("/api/v1/tx/", () => {
       const s1 = await db.user({ role: IUser.Role.Student });
       const tx = await db.transaction({ userId: s1.id });
 
-      const res = await findById<ITransaction.Self>({
+      const res = await findById({
         user: s1,
         params: { id: tx.id },
       });

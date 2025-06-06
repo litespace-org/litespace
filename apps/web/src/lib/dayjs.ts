@@ -11,4 +11,5 @@ dayjs.extend(timezone);
 dayjs.extend(relative);
 dayjs.extend(isBetween);
 
+export { dayjs };
 export default dayjs;

@@ -4,7 +4,7 @@ import { IInterview } from "@litespace/types";
 export class Interview extends Base {
   public async create(
     payload: IInterview.CreateApiPayload
-  ): Promise<IInterview.Self> {
+  ): Promise<IInterview.CreateApiResponse> {
     return await this.post({
       route: `/api/v1/interview`,
       payload,
@@ -12,25 +12,24 @@ export class Interview extends Base {
   }
 
   public async update(
-    id: number,
     payload: IInterview.UpdateApiPayload
-  ): Promise<IInterview.Self> {
-    return await this.put({
-      route: `/api/v1/interview/${id}`,
+  ): Promise<IInterview.UpdateApiResponse> {
+    return await this.patch({
+      route: `/api/v1/interview`,
       payload,
     });
   }
 
-  public async findInterviews(
-    query: IInterview.FindInterviewsApiQuery
-  ): Promise<IInterview.FindInterviewsApiResponse> {
+  public async find(
+    query: IInterview.FindApiQuery
+  ): Promise<IInterview.FindApiResponse> {
     return this.get({
       route: "/api/v1/interview/list/",
       params: query,
     });
   }
 
-  public async findInterviewById(id: number): Promise<IInterview.Self> {
-    return this.get({ route: `/api/v1/interview/${id}` });
+  public async selectInterviewer(): Promise<IInterview.SelectInterviewerApiResponse> {
+    return this.get({ route: "/api/v1/interview/select" });
   }
 }

@@ -23,7 +23,7 @@ import {
   getSubSlotsBatch as getSubSlots,
   orderSlots,
   subtractSlotsBatch as subtractSlots,
-} from "@litespace/utils";
+} from "@litespace/utils/availabilitySlots";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Block } from "@/components/Lessons/ManageLesson/Block";
 
@@ -238,7 +238,7 @@ export const ManageLessonDialog: React.FC<{
   );
 
   /**
-   * List of all slots including booked and not-yet-booked slots.
+   * List of all slots including booked and unbooked slots.
    */
   const allSlots = useMemo(() => {
     const availableSlots = selectDaySlots(date).map((slot) => ({

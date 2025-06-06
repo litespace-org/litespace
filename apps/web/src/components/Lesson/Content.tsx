@@ -1,11 +1,8 @@
 import React, { useMemo } from "react";
 import { useOnError } from "@/hooks/error";
 import { useFindLesson } from "@litespace/headless/lessons";
-import { useGetSessionToken } from "@litespace/headless/sessions";
 import { IUser } from "@litespace/types";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
-import { optional } from "@litespace/utils";
 import Session from "@/components/Session";
 import { RemoteMember } from "@/components/Session/types";
 import { asRateLessonQuery } from "@/lib/query";
@@ -18,22 +15,12 @@ const Content: React.FC<{
   self: IUser.Self;
 }> = ({ lessonId, self }) => {
   const navigate = useNavigate();
-  const intl = useFormatMessage();
-  const { query: lessonQuery, keys: lessonQueryKeys } = useFindLesson(lessonId);
-  const { query: tokenQuery, keys: tokenQueryKeys } = useGetSessionToken(
-    optional(lessonQuery.data?.lesson.sessionId)
-  );
+  const lessonQuery = useFindLesson(lessonId);
 
   useOnError({
     type: "query",
     error: lessonQuery.error,
-    keys: lessonQueryKeys,
-  });
-
-  useOnError({
-    type: "query",
-    error: tokenQuery.error,
-    keys: tokenQueryKeys,
+    keys: lessonQuery.keys,
   });
 
   const member = useMemo((): RemoteMember | null => {
@@ -48,47 +35,30 @@ const Content: React.FC<{
     return {
       id: member.userId,
       name: member.name,
-      gender: IUser.Gender.Male,
       role: member.role,
       image: member.image,
     };
   }, [lessonQuery.data, self.id]);
 
-  if (lessonQuery.isPending || tokenQuery.isPending)
+  if (lessonQuery.isPending)
     return (
       <div className="mt-[15vh]">
         <Loading size="large" />
       </div>
     );
 
-  if (
-    lessonQuery.isError ||
-    !lessonQuery.data ||
-    tokenQuery.isError ||
-    !tokenQuery.data ||
-    !member
-  )
+  if (lessonQuery.isError || !lessonQuery.data || !member)
     return (
       <div className="mt-[15vh] max-w-fit mx-auto">
-        <LoadingError
-          size="small"
-          retry={() => {
-            if (lessonQuery.isError || !lessonQuery.data)
-              return lessonQuery.refetch();
-
-            if (tokenQuery.isError || !tokenQuery.data)
-              return tokenQuery.refetch();
-          }}
-          error={intl("lesson.loading-error")}
-        />
+        <LoadingError size="small" retry={lessonQuery.refetch} />
       </div>
     );
 
   return (
     <Session
       type="lesson"
+      sessionId={lessonQuery.data.lesson.sessionId}
       localMember={self}
-      token={tokenQuery.data.token}
       remoteMember={member}
       onLeave={() => {
         if (!lessonQuery.data) return;

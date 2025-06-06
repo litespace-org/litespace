@@ -19,7 +19,7 @@ export type ErrorPayload = {
 type QueryPayload = {
   type: "query";
   error: unknown;
-  keys: unknown[];
+  keys: unknown[] | readonly unknown[];
   handler?: Handler | null;
 };
 type MutationPayload = { type: "mutation"; handler?: Handler | null };

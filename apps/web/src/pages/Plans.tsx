@@ -4,7 +4,7 @@ import { usePlans } from "@litespace/headless/plans";
 import { useOnError } from "@/hooks/error";
 
 const Plans: React.FC = () => {
-  const { query, keys } = usePlans({
+  const { query } = usePlans({
     active: true,
     forInvitesOnly: false,
     full: true,
@@ -13,7 +13,7 @@ const Plans: React.FC = () => {
   useOnError({
     type: "query",
     error: query.error,
-    keys,
+    keys: query.keys,
   });
 
   return (

@@ -1,37 +1,18 @@
 import { useApi } from "@/api/index";
-import { IInterview, Void, IUser, IFilter, Element } from "@litespace/types";
-import { useCallback, useMemo } from "react";
-import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import { IInterview, IFilter } from "@litespace/types";
+import { useCallback } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
-import { usePaginate, UsePaginateResult } from "@/pagination";
-import {
-  useInfinitePaginationQuery,
-  UseInfinitePaginationQueryResult,
-} from "@/query";
+import { usePaginate } from "@/pagination";
+import { OnError, OnSuccess } from "@/types/query";
+import { useExtendedQuery } from "@/query";
 
-type OnSuccess = Void;
-type OnError = (error: Error) => void;
-
-export type UseFindInterviewsPayload = Omit<
-  IInterview.FindInterviewsApiQuery,
-  "page" | "size"
-> & {
-  userOnly?: boolean;
-};
-
-export function useFindInterviews(
-  filter?: UseFindInterviewsPayload
-): UsePaginateResult<Element<IInterview.FindInterviewsApiResponse["list"]>> {
+export function useFindInterviews(filter?: IInterview.FindApiQuery) {
   const api = useApi();
 
   const findInterviews = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
-      if (filter?.userOnly && !filter?.users) return { list: [], total: 0 };
-      return api.interview.findInterviews({
-        page,
-        size,
-        ...filter,
-      });
+      return api.interview.find({ page, size, ...filter });
     },
     [api.interview, filter]
   );
@@ -39,57 +20,25 @@ export function useFindInterviews(
   return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged, filter]);
 }
 
-export function useFindInfinitInterviews(
-  user?: number
-): UseInfinitePaginationQueryResult<
-  Element<IInterview.FindInterviewsApiResponse["list"]>
-> {
-  const api = useApi();
-
-  const findInterviews = useCallback(
-    async ({ page }: { page: number }) => {
-      if (!user) return { list: [], total: 0 };
-      return api.interview.findInterviews({
-        users: user ? [user] : [],
-        size: 10,
-        page,
-      });
-    },
-    [api.interview, user]
-  );
-
-  return useInfinitePaginationQuery(findInterviews, [
-    QueryKey.FindInterviewsPaged,
-    user,
-  ]);
-}
-
-export function useSelectInterviewer(): {
-  query: UseQueryResult<IUser.Self, Error>;
-  keys: unknown[];
-} {
+export function useSelectInterviewer() {
   const api = useApi();
 
   const selectInterviewer = useCallback(async () => {
-    return api.user.selectInterviewer();
-  }, [api.user]);
+    return api.interview.selectInterviewer();
+  }, [api.interview]);
 
-  const keys = useMemo(() => [QueryKey.FindInterviewer], []);
-
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: selectInterviewer,
-    queryKey: keys,
+    queryKey: [QueryKey.SelectInterviewer],
   });
-
-  return { query, keys };
 }
 
 export function useCreateInterview({
   onSuccess,
   onError,
 }: {
-  onSuccess: OnSuccess;
-  onError: OnError;
+  onSuccess?: OnSuccess<IInterview.CreateApiResponse>;
+  onError?: OnError;
 }) {
   const api = useApi();
 
@@ -112,26 +61,20 @@ export function useUpdateInterview({
   onSuccess,
   onError,
 }: {
-  onSuccess: OnSuccess;
-  onError: OnError;
+  onSuccess?: OnSuccess<IInterview.UpdateApiResponse>;
+  onError?: OnError;
 }) {
   const api = useApi();
 
-  const updateInterview = useCallback(
-    async ({
-      id,
-      payload,
-    }: {
-      id: number;
-      payload: IInterview.UpdateApiPayload;
-    }) => {
-      return api.interview.update(id, payload);
+  const update = useCallback(
+    async (payload: IInterview.UpdateApiPayload) => {
+      return api.interview.update(payload);
     },
     [api.interview]
   );
 
   return useMutation({
-    mutationFn: updateInterview,
+    mutationFn: update,
     onSuccess: onSuccess,
     onError: onError,
     mutationKey: [MutationKey.UpdateInterview],

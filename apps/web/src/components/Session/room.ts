@@ -13,30 +13,20 @@ import {
 } from "@livekit/track-processors";
 import {
   createLocalTracks,
-  isAudioTrack,
   isLocalTrack,
-  isVideoTrack,
   LocalAudioTrack,
   LocalVideoTrack,
   MediaDeviceFailure,
-  Room,
   RoomEvent,
-  Track,
+  Room,
 } from "livekit-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller } from "@/components/Session/Controllers";
+import { isLocalAudioTrack, isLocalVideoTrack } from "@/lib/livekit";
 
 const serverUrl = sockets.livekit[env.server];
 
-export function isLocalVideoTrack(track: Track): track is LocalVideoTrack {
-  return isLocalTrack(track) && isVideoTrack(track);
-}
-
-export function isLocalAudioTrack(track: Track): track is LocalAudioTrack {
-  return isLocalTrack(track) && isAudioTrack(track);
-}
-
-export function useRoom(token: string) {
+export function useRoom(token?: string) {
   const [connected, setConnected] = useState<boolean>(false);
   const [publised, setPublished] = useState<boolean>(false);
   const room = useMemo(() => {
@@ -81,7 +71,7 @@ export function useRoom(token: string) {
   ]);
 
   useEffect(() => {
-    if (connected) return;
+    if (connected || !token) return;
     room.connect(serverUrl, token).then(() => setConnected(true));
   }, [connected, room, token]);
 

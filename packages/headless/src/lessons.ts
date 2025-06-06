@@ -1,10 +1,14 @@
 import { Element, IFilter, ILesson } from "@litespace/types";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useApi } from "@/api/index";
 import { MutationKey, QueryKey } from "@/constants";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { UsePaginateResult, usePaginate } from "@/pagination";
-import { InfiniteQueryHandler, useInfinitePaginationQuery } from "@/query";
+import {
+  InfiniteQueryHandler,
+  useExtendedQuery,
+  useInfinitePaginationQuery,
+} from "@/query";
 import { OnError, OnSuccess } from "@/types/query";
 
 export function useFindLessons({
@@ -154,12 +158,9 @@ export function useFindLesson(id?: number) {
     return api.lesson.findLesson(id);
   }, [api.lesson, id]);
 
-  const keys = useMemo(() => [QueryKey.FindLesson, id], [id]);
-
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: findLessonById,
-    queryKey: keys,
+    queryKey: [QueryKey.FindLesson, id],
+    enabled: !!id,
   });
-
-  return { query, keys };
 }

@@ -13,9 +13,9 @@ import {
 } from "@litespace/types";
 import zod, { ZodLiteral } from "zod";
 
-export const id = zod.coerce.number({ message: "Invalid id" }).positive();
+export const id = zod.coerce.number().positive().int();
 
-export const ids = zod.array(id);
+export const ids = id.array();
 
 export const sessionId = zod.custom<ISession.Id>(
   (value) => typeof value === "string" && isSessionId(value)
@@ -150,6 +150,8 @@ export const dateFilter = zod.union([
     lt: zod.string().optional(),
   }),
 ]);
+
+export const nullableString = zod.union([zod.string(), zod.null()]);
 
 export const queryBoolean = zod
   .custom<

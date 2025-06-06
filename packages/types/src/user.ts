@@ -92,6 +92,10 @@ export type Row = {
   updated_at: Date;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type Credentials = {
   email: string;
   password: string;
@@ -192,14 +196,21 @@ export type FindCurrentUserApiResponse = Self;
 
 export type RefreshAuthTokenApiResponse = string;
 
-export type FindUsersQuery = IFilter.SkippablePagination & {
+export type FindModelQuery<T extends Field = Field> =
+  IFilter.SkippablePagination & {
+    role?: Role;
+    verified?: boolean;
+    gender?: Gender;
+    city?: City;
+    select?: T[];
+  };
+
+export type FindUsersApiQuery = IFilter.SkippablePagination & {
   role?: Role;
   verified?: boolean;
   gender?: Gender;
   city?: City;
 };
-
-export type FindUsersApiQuery = FindUsersQuery;
 
 export type FindStudentStatsApiResponse = {
   lessonCount: {

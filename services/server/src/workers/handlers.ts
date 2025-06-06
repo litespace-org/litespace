@@ -9,7 +9,7 @@ import { cache } from "@/lib/cache";
 import { isOnboard } from "@litespace/utils/tutor";
 import dayjs from "@/lib/dayjs";
 import { producer } from "@/lib/kafka";
-import { NOTIFICATION_METHOD_TO_KAFKA_TOPIC } from "@litespace/utils";
+import { NOTIFICATION_METHOD_TO_KAFKA_TOPIC } from "@litespace/utils/constants";
 
 export async function sendForgetPasswordCodeEmail({
   email,

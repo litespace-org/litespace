@@ -1,4 +1,4 @@
-import { IUser } from "@litespace/types";
+import { ISession, IUser } from "@litespace/types";
 import React, { useEffect, useMemo } from "react";
 import Preview from "@/components/Session/Preview";
 import { usePreview } from "@/components/Session/room";
@@ -9,6 +9,7 @@ import { useTracks } from "@livekit/components-react";
 import { TrackReference } from "@/components/Session/types";
 
 const PreSession: React.FC<{
+  type: ISession.Type;
   start: string;
   duration: number;
   localMemberId: number;
@@ -17,6 +18,7 @@ const PreSession: React.FC<{
   remoteMemberId: number;
   remoteMemberRole: IUser.Role;
 }> = ({
+  type,
   localMemberId,
   localMemberName,
   localMemberImage,
@@ -120,6 +122,7 @@ const PreSession: React.FC<{
       <div>
         <div className="md:h-[calc(100%-24px-40px)] flex items-center justify-center">
           <Ready
+            type={type}
             start={sessionStart}
             duration={sessionDuration}
             join={join}

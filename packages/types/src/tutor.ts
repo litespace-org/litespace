@@ -184,7 +184,15 @@ export type ActivityScoreMap = Record<
 
 export type FindTutorActivityScores = ActivityScoreMap;
 
-export type FindTutorMetaApiResponse = Self;
+export type FindTutorMetaApiQuery = {
+  tutorId: number;
+};
+
+export type FindTutorMetaApiResponse = Self & {
+  passedIntroVideo: boolean;
+  passedInterview: boolean;
+  passedDemoSession: boolean;
+};
 
 export type FindPersonalizedTutorStatsApiResponse = {
   /**
@@ -209,7 +217,7 @@ export type FindUncontactedTutors = Paginated<UncontactedTutorInfo>;
 export type FindFullUncontactedTutorsApiResponse =
   Paginated<FullUncontactedTutorInfo>;
 
-export type FindQueryModel = IFilter.SkippablePagination & {
+export type FindModelQuery = IFilter.SkippablePagination & {
   bio?: string | null;
   about?: string | null;
   name?: string | null;
@@ -230,8 +238,9 @@ export type FindQueryModel = IFilter.SkippablePagination & {
   notificationMethod?: IUser.NotificationMethod[];
   city?: IUser.City[];
   gender?: IUser.Gender[];
+  role?: Array<IUser.Role.TutorManager | IUser.Role.Tutor>;
 };
 
-export type FindFullTutorsApiQuery = FindQueryModel & Pagination;
+export type FindFullTutorsApiQuery = FindModelQuery & Pagination;
 
 export type FindFullTutorsApiResponse = Paginated<Full>;

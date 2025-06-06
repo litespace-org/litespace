@@ -217,12 +217,14 @@ export async function lesson(
   });
 }
 
-export async function interview(payload: Partial<IInterview.CreatePayload>) {
+export async function interview(
+  payload: Partial<IInterview.CreateModelPayload>
+) {
   return await interviews.create({
-    interviewer: await or.tutorManagerId(payload.interviewer),
-    interviewee: await or.tutorId(payload.interviewee),
+    interviewerId: await or.tutorManagerId(payload.interviewerId),
+    intervieweeId: await or.tutorId(payload.intervieweeId),
     session: await or.sessionId("interview"),
-    slot: await or.slotId(payload.slot, payload.interviewer),
+    slot: await or.slotId(payload.slot, payload.interviewerId),
     start: or.start(payload.start),
   });
 }
@@ -495,28 +497,22 @@ async function makeInterviews(payload: {
       interviewer: number;
       interviewees: number[];
       statuses: IInterview.Status[];
-      levels: IInterview.Self["level"][];
     },
   ];
 }) {
-  for (const { interviewer, interviewees, statuses, levels } of payload.data) {
+  for (const { interviewer, interviewees, statuses } of payload.data) {
     for (const [key, interviewee] of entries(interviewees)) {
       const index = Number(key);
       const status = statuses[index];
-      const level = levels[index];
-      const interviewObj = await interview({
-        interviewer,
-        interviewee,
+      const interviewData = await interview({
+        interviewerId: interviewer,
+        intervieweeId: interviewee,
       });
 
       if (status)
-        await interviews.update(interviewObj.ids.self, {
+        await interviews.update({
+          id: interviewData.id,
           status,
-        });
-
-      if (level)
-        await interviews.update(interviewObj.ids.self, {
-          level,
         });
     }
   }

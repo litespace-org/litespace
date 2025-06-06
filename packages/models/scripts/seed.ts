@@ -53,7 +53,7 @@ async function main(): Promise<void> {
   const stdout = logger("seed");
   const password = hashPassword("Password@8");
 
-  const admin = await users.create({
+  await users.create({
     email: "admin@litespace.org",
     name: faker.person.fullName(),
     role: IUser.Role.SuperAdmin,
@@ -128,6 +128,45 @@ async function main(): Promise<void> {
     name: faker.person.fullName(),
     birthYear: birthYear(),
     password,
+  });
+
+  // tutorx: tutor who completed his profile information but didn't start the
+  // onboarding flow.
+  await knex.transaction(async (tx) => {
+    const user = await users.create(
+      {
+        email: "tutorx@litespace.org",
+        role: IUser.Role.Tutor,
+        password,
+      },
+      tx
+    );
+
+    await users.update(
+      user.id,
+      {
+        city: IUser.City.Cairo,
+        phone: phone(),
+        name: faker.person.fullName(),
+        birthYear: birthYear(),
+        verifiedEmail: true,
+        verifiedPhone: true,
+        gender: IUser.Gender.Male,
+      },
+      tx
+    );
+
+    await tutors.create(user.id, tx);
+
+    await tutors.update(
+      user.id,
+      {
+        about: faker.lorem.paragraph(5),
+        activated: false,
+        bio: faker.person.bio(),
+      },
+      tx
+    );
   });
 
   const addedTutors: IUser.Self[] = await knex.transaction(async (tx) => {
@@ -405,27 +444,20 @@ async function main(): Promise<void> {
     await knex.transaction(async (tx: Knex.Transaction) => {
       const interview = await interviews.create({
         session: `interview:${randomUUID()}`,
-        interviewee: tutor.id,
-        interviewer: tutorManager.id,
+        intervieweeId: tutor.id,
+        interviewerId: tutorManager.id,
         start: randomStart(),
         slot: slot.id,
         tx,
       });
 
-      await interviews.update(
-        interview.ids.self,
-        {
-          feedback: {
-            interviewee: faker.lorem.paragraphs(),
-            interviewer: faker.lorem.paragraphs(),
-          },
-          status: IInterview.Status.Passed,
-          level: 5,
-          note: faker.lorem.paragraphs(),
-          signer: admin.id,
-        },
-        tx
-      );
+      await interviews.update({
+        id: interview.id,
+        intervieweeFeedback: faker.lorem.paragraphs(),
+        interviewerFeedback: faker.lorem.paragraphs(),
+        status: IInterview.Status.Passed,
+        tx,
+      });
     });
   }
 

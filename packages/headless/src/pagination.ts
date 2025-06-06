@@ -1,20 +1,16 @@
 import { IFilter, Paginated, Void } from "@litespace/types";
-import {
-  keepPreviousData,
-  useQuery,
-  UseQueryResult,
-} from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { usePageSize } from "@/config";
+import { UseExtendedQueryResult, useExtendedQuery } from "@/query";
 
 export type UsePaginateResult<T> = {
-  query: UseQueryResult<Paginated<T>, Error>;
+  query: UseExtendedQueryResult<Paginated<T>, Error>;
   next: Void;
   prev: Void;
   goto: (pageNumber: number) => void;
   page: number;
   totalPages: number;
-  keys: unknown[];
 };
 
 export function usePaginate<T, K>(
@@ -29,7 +25,7 @@ export function usePaginate<T, K>(
     [callback, page, pageSize.value]
   );
 
-  const query = useQuery({
+  const query = useExtendedQuery({
     queryFn: find,
     queryKey: [...keys, page, pageSize.value],
     placeholderData: keepPreviousData,
@@ -58,5 +54,5 @@ export function usePaginate<T, K>(
     [totalPages]
   );
 
-  return { query, next, prev, goto, page, totalPages, keys };
+  return { query, next, prev, goto, page, totalPages };
 }

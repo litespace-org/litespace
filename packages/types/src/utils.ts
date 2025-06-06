@@ -18,6 +18,11 @@ export type EmptyObject = Record<never, never>;
 
 export type OmitProp<T extends object, K extends keyof T> = Omit<T, K>;
 
+export type OptionalPick<T extends object, K extends keyof T = keyof T> = Pick<
+  T,
+  K
+>;
+
 export type Identity<T> = { [P in keyof T]: T[P] };
 
 export type Replace<T, K extends keyof T, V> = Identity<
@@ -31,6 +36,12 @@ export type ExtractObjectKeys<T extends object, K extends keyof T> = Extract<
   keyof T,
   K
 >;
+
+export type ObjectKey = string | number | symbol;
+
+export type SwapEntries<T extends Record<ObjectKey, ObjectKey>> = {
+  [K in keyof T as T[K]]: K;
+};
 
 export type Event = {
   /**

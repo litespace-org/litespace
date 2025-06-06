@@ -1,12 +1,43 @@
 import React from "react";
-import { IUser, Void } from "@litespace/types";
+import { ISession, IUser, Void } from "@litespace/types";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
 import { useMemo } from "react";
 import dayjs from "dayjs";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { LocalId } from "@litespace/ui/locales";
+import {
+  isRegularTutorRole,
+  isStudentRole,
+  isTutorManagerRole,
+  isTutorRole,
+} from "@litespace/utils";
+
+const SESSION_TO_MESSAGE_IDS: Record<
+  ISession.Type,
+  {
+    startedSince: LocalId;
+    endedSince: LocalId;
+    willStartIn: LocalId;
+    join: LocalId;
+  }
+> = {
+  lesson: {
+    startedSince: "session.ready.lesson.started-since",
+    endedSince: "session.ready.lesson.ended-since",
+    willStartIn: "session.ready.lesson.will-start-in",
+    join: "session.ready.lesson.join",
+  },
+  interview: {
+    startedSince: "session.ready.interview.started-since",
+    endedSince: "session.ready.interview.ended-since",
+    willStartIn: "session.ready.interview.will-start-in",
+    join: "session.ready.interview.join",
+  },
+} as const;
 
 export const Ready: React.FC<{
+  type: ISession.Type;
   remoteMember: {
     id: number;
     role: IUser.Role;
@@ -18,52 +49,87 @@ export const Ready: React.FC<{
   join: Void;
   loading?: boolean;
   disabled?: boolean;
-}> = ({ remoteMember, join, start, duration, loading, disabled }) => {
+}> = ({ type, remoteMember, join, start, duration, loading, disabled }) => {
   const intl = useFormatMessage();
+  const messageIds = useMemo(() => SESSION_TO_MESSAGE_IDS[type], [type]);
 
-  const explaination = useMemo(() => {
-    const isRemoteMemberTutor =
-      remoteMember.role === IUser.Role.TutorManager ||
-      remoteMember.role === IUser.Role.Tutor;
-
-    if (isRemoteMemberTutor && remoteMember.gender === IUser.Gender.Male)
-      return intl("session.ready.explaination.full.male-tutor");
-
-    if (isRemoteMemberTutor && remoteMember.gender !== IUser.Gender.Male)
-      return intl("session.ready.explaination.full.female-tutor");
-
+  const waiting = useMemo(() => {
     if (
-      remoteMember.role === IUser.Role.Student &&
+      type === "interview" &&
+      isTutorManagerRole(remoteMember.role) &&
       remoteMember.gender === IUser.Gender.Male
     )
-      return intl("session.ready.explaination.full.male-student");
-    if (
-      remoteMember.role === IUser.Role.Student &&
-      remoteMember.gender !== IUser.Gender.Male
-    )
-      return intl("session.ready.explaination.full.female-student");
-  }, [remoteMember.role, remoteMember.gender, intl]);
+      return intl("session.ready.male-interviewer-waiting");
 
-  const sessionStartMessage = useMemo(() => {
+    if (
+      type === "interview" &&
+      isTutorManagerRole(remoteMember.role) &&
+      remoteMember.gender === IUser.Gender.Male
+    )
+      return intl("session.ready.female-interviewer-waiting");
+
+    if (
+      type === "interview" &&
+      isRegularTutorRole(remoteMember.role) &&
+      remoteMember.gender === IUser.Gender.Male
+    )
+      return intl("session.ready.male-tutor-waiting");
+
+    if (
+      type === "interview" &&
+      isRegularTutorRole(remoteMember.role) &&
+      remoteMember.gender === IUser.Gender.Male
+    )
+      return intl("session.ready.male-tutor-waiting");
+
+    if (
+      type === "lesson" &&
+      isTutorRole(remoteMember.role) &&
+      remoteMember.gender === IUser.Gender.Female
+    )
+      return intl("session.ready.female-tutor-waiting");
+
+    if (
+      type === "lesson" &&
+      isStudentRole(remoteMember.role) &&
+      remoteMember.gender === IUser.Gender.Male
+    )
+      return intl("session.ready.male-student-waiting");
+
+    if (
+      type === "lesson" &&
+      isStudentRole(remoteMember.role) &&
+      remoteMember.gender === IUser.Gender.Female
+    )
+      return intl("session.ready.female-student-waiting");
+
+    throw new Error("unsupported session or user role, should never happen");
+  }, [remoteMember.role, remoteMember.gender, type, intl]);
+
+  const timing = useMemo(() => {
     const now = dayjs();
     const sessionStart = dayjs(start);
     const end = sessionStart.add(duration, "minutes");
 
     if (now.isBefore(start))
-      return intl("session.ready.session-will-start-in", {
+      return intl(messageIds.willStartIn, {
         time: sessionStart.fromNow(true),
       });
 
-    if (now.isAfter(end)) {
-      return intl("session.ready.session-ended-since", {
-        time: end.fromNow(true),
-      });
-    }
+    if (now.isAfter(end))
+      return intl(messageIds.endedSince, { time: end.fromNow(true) });
 
-    return intl("session.ready.session-started-since", {
+    return intl(messageIds.startedSince, {
       time: sessionStart.fromNow(true),
     });
-  }, [start, duration, intl]);
+  }, [
+    start,
+    duration,
+    intl,
+    messageIds.willStartIn,
+    messageIds.endedSince,
+    messageIds.startedSince,
+  ]);
 
   return (
     <div className="flex flex-col items-center justify-center md:justify-start lg:justify-center lg:h-full lg:w-full text-center gap-4 md:gap-6">
@@ -74,20 +140,20 @@ export const Ready: React.FC<{
         >
           {intl("session.ready.title")}
         </Typography>
-        {remoteMember.joined ? (
-          <Typography
-            tag="p"
-            className="text-natural-800 font-semibold text-caption"
-          >
-            {explaination}
-          </Typography>
-        ) : null}
+
+        <Typography
+          tag="p"
+          data-show={remoteMember.joined}
+          className="text-natural-800 font-semibold text-caption hidden data-[show=true]:block"
+        >
+          {waiting}
+        </Typography>
 
         <Typography
           tag="p"
           className="text-caption font-simibold text-natural-800"
         >
-          {sessionStartMessage}
+          {timing}
         </Typography>
       </div>
       <Button

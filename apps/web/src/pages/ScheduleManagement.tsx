@@ -53,7 +53,7 @@ const ScheduleManagement: React.FC = () => {
     severity: "normal",
   });
 
-  const { query: slotsQuery } = useFindAvailabilitySlots({
+  const slotsQuery = useFindAvailabilitySlots({
     userId: user?.id || 0,
     after: start.toISOString(),
     before: end.toISOString(),

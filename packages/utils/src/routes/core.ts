@@ -58,7 +58,7 @@ type GenericPayload = {
 
 type WebPayload =
   | {
-      route: Web.Lesson;
+      route: Web.Lesson | Web.Interview | Web.DemoSession;
       id: number;
       query?: BaseQuery;
     }
@@ -100,6 +100,8 @@ type WebPayload =
         | Web.Session
         | Web.Checkout
         | Web.StudentSettings
+        | Web.Interview
+        | Web.DemoSession
       >;
       query?: BaseQuery;
     };

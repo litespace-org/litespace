@@ -67,9 +67,6 @@ export const invalidVerificationCode = () =>
 
 export const wrongPassword = () => error(ApiError.WrongPassword, 400);
 
-export const interviewAlreadySigned = () =>
-  error(ApiError.InterviewAlreadySigned, 400);
-
 export const fawryError = (msg?: string) =>
   error(ApiError.FawryError, 500, msg);
 
@@ -104,7 +101,6 @@ export const notfound = {
   invoice: () => error(ApiError.InvoiceNotFound, 404),
   plan: () => error(ApiError.PlanNotFound, 404),
   report: () => error(ApiError.ReportNotFound, 404),
-  reportReply: () => error(ApiError.ReportReplyNotFound, 404),
   withdrawMethod: () => error(ApiError.WidthdrawMethodNotFound, 404),
   topic: () => error(ApiError.TopicNotFound, 404),
 } as const;

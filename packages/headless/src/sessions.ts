@@ -19,6 +19,7 @@ import {
   useEchoSocket,
   ClientMessageType,
 } from "@/echo";
+import { useExtendedQuery } from "@/query";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -2441,18 +2442,11 @@ export function useGetSessionToken(sessionId?: ISession.Id) {
     return api.session.getToken({ sessionId });
   }, [api.session, sessionId]);
 
-  const keys = useMemo(
-    () => [QueryKey.GetSessionToken, sessionId],
-    [sessionId]
-  );
-
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: getSessionToken,
-    queryKey: keys,
+    queryKey: [QueryKey.GetSessionToken, sessionId],
     enabled: !!sessionId,
   });
-
-  return { query, keys };
 }
 
 export function useUserMediaV2(): UseUserMediaReturn {

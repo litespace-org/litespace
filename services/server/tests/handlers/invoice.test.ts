@@ -35,7 +35,7 @@ const getMockFile = (): Express.Multer.File => ({
   stream: new Readable(),
   destination: "empty",
   path: "/tmp",
-  buffer: Buffer.from(new ArrayBuffer()),
+  buffer: Buffer.from([]),
 });
 
 describe("/api/v1/invoice/", () => {
