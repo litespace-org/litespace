@@ -5,7 +5,7 @@ import {
   isIntersecting,
   isSuperSlot,
 } from "@litespace/utils";
-import { IAvailabilitySlot } from "@litespace/types";
+import { IAvailabilitySlot, IInterview } from "@litespace/types";
 import { Knex } from "knex";
 import { isEmpty, uniqBy } from "lodash";
 import dayjs from "@/lib/dayjs";
@@ -42,8 +42,8 @@ export async function deleteSlots({
       tx,
     }),
     interviews.cancel({
-      ids: slotInterviews.list.map((lesson) => lesson.ids.self),
-      canceledBy: userId,
+      ids: slotInterviews.list.map((interview) => interview.id),
+      status: IInterview.Status.CanceledByInterviewer,
       tx,
     }),
     availabilitySlots.markAsDeleted({ ids: ids, tx }),
@@ -95,8 +95,8 @@ export async function updateSlot({
       tx,
     }),
     interviews.cancel({
-      ids: toBeCancelledInterviews.map((interview) => interview.ids.self),
-      canceledBy: userId,
+      ids: toBeCancelledInterviews.map((interview) => interview.id),
+      status: IInterview.Status.CanceledByInterviewer,
       tx,
     }),
     // update the slot dates in the database

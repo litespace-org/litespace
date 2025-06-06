@@ -1,16 +1,11 @@
 import { useCallback, useMemo } from "react";
 import { useApi } from "@/api";
-import {
-  UseMutationResult,
-  UseQueryResult,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { IFilter, IInterview, ITutor, IUser, Void } from "@litespace/types";
-import { MutationKey, QueryKey } from "@/constants";
+import { UseQueryResult, useMutation, useQuery } from "@tanstack/react-query";
+import { IFilter, ITutor, IUser, Void } from "@litespace/types";
+import { QueryKey } from "@/constants";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useInfinitePaginationQuery } from "@/query";
+import { useExtendedQuery, useInfinitePaginationQuery } from "@/query";
 import { usePaginate } from "@/pagination";
 
 dayjs.extend(utc);
@@ -132,26 +127,6 @@ export function useFindTutorActivityScore(id: number | null): {
   return { query, keys };
 }
 
-export function useShareFeedback(
-  interviewId: number
-): UseMutationResult<IInterview.Self, Error, string, unknown> {
-  const api = useApi();
-
-  const share = useCallback(
-    async (feedback: string) => {
-      return await api.interview.update(interviewId, {
-        feedback: { interviewee: feedback },
-      });
-    },
-    [api.interview, interviewId]
-  );
-
-  return useMutation({
-    mutationFn: share,
-    mutationKey: [MutationKey.ShareFeedback],
-  });
-}
-
 type IForm = {
   bio: string;
   about: string;
@@ -187,25 +162,19 @@ export function useIntroduceTutor({
   });
 }
 
-export function useFindTutorMeta(id?: number): {
-  query: UseQueryResult<ITutor.Self | null>;
-  keys: unknown[];
-} {
+export function useFindTutorMeta(id?: number) {
   const api = useApi();
 
   const findTutorMeta = useCallback(async () => {
     if (!id) return null;
-    return await api.user.findTutorMeta(id);
+    return await api.user.findTutorMeta({ tutorId: id });
   }, [api.user, id]);
 
-  const keys = useMemo(() => [QueryKey.FindTutorMeta, id], [id]);
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: findTutorMeta,
-    queryKey: keys,
+    queryKey: [QueryKey.FindTutorMeta, id],
     enabled: !!id,
   });
-
-  return { query, keys };
 }
 
 export function useFindTutorInfo(id: number | null) {

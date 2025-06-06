@@ -1,9 +1,10 @@
 import { ITopic, IUser } from "@litespace/types";
 import { useApi } from "@/api";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useCallback, useRef, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
 import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
+import { useExtendedQuery } from "@/query";
 
 export function useLoginUser(
   payload?: BaseMutationPayload<IUser.LoginApiResponse>
@@ -99,15 +100,11 @@ export function useCurrentUser(enabled: boolean = true) {
     return api.user.findCurrentUser();
   }, [api.user]);
 
-  const keys = useMemo(() => [QueryKey.FindCurrentUser], []);
-
-  const query = useQuery({
-    queryKey: keys,
+  return useExtendedQuery({
+    queryKey: [QueryKey.FindCurrentUser],
     queryFn: findCurrentUser,
     enabled,
   });
-
-  return { query, keys };
 }
 
 export function useUploadUserImage({

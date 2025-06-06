@@ -3,7 +3,7 @@ import { createContext, useContext } from "react";
 
 export type Context = {
   user: IUser.Self | null;
-  meta: ITutor.Self | null;
+  meta: ITutor.FindTutorMetaApiResponse | null;
   loading: boolean;
   isError: boolean;
   error: unknown | null;
@@ -11,7 +11,7 @@ export type Context = {
   refetch: { user: Void; meta: Void };
   set: (payload: {
     user?: IUser.Self;
-    meta?: ITutor.Self;
+    meta?: ITutor.FindTutorMetaApiResponse;
     token?: string;
     remember?: boolean;
   }) => void;

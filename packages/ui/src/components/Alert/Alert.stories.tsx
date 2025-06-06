@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Alert } from "@/components/Alert";
-import ar from "@/locales/ar-eg.json";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Alert;
 
@@ -14,45 +14,23 @@ const meta: Meta<Component> = {
 
 export const Primary: StoryObj<Component> = {
   args: {
-    title: ar["global.notify.schedule.update.success"],
-    children: ar["page.tutor.onboarding.steps.third.description"],
+    title: faker.lorem.words(5),
+    children: faker.lorem.paragraph(),
     action: {
-      label: ar["page.schedule.list.actions.delete"],
+      label: faker.lorem.word(),
     },
   },
 };
 
 export const ErrorTitleOnly: StoryObj<Component> = {
   args: {
-    title: ar["global.notify.schedule.update.success"],
+    title: faker.lorem.words(5),
   },
 };
 
 export const ErrorDescriptionOnly: StoryObj<Component> = {
   args: {
-    children: ar["page.tutor.onboarding.steps.third.description"],
-  },
-};
-
-export const ErrorLoading: StoryObj<Component> = {
-  args: {
-    title: ar["global.notify.schedule.update.success"],
-    children: ar["page.tutor.onboarding.steps.third.description"],
-    action: {
-      label: ar["page.schedule.list.actions.delete"],
-      loading: true,
-    },
-  },
-};
-
-export const ErrrorDisalbed: StoryObj<Component> = {
-  args: {
-    title: ar["global.notify.schedule.update.success"],
-    children: ar["page.tutor.onboarding.steps.third.description"],
-    action: {
-      label: ar["page.schedule.list.actions.delete"],
-      disabled: true,
-    },
+    children: faker.lorem.words(5),
   },
 };
 
