@@ -184,7 +184,15 @@ export type ActivityScoreMap = Record<
 
 export type FindTutorActivityScores = ActivityScoreMap;
 
-export type FindTutorMetaApiResponse = Self;
+export type FindTutorMetaApiQuery = {
+  tutorId: number;
+};
+
+export type FindTutorMetaApiResponse = Self & {
+  passedIntroVideo: boolean;
+  passedInterview: boolean;
+  passedDemoSession: boolean;
+};
 
 export type FindPersonalizedTutorStatsApiResponse = {
   /**

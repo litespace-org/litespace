@@ -3,9 +3,8 @@ import interview from "@/handlers/interview";
 
 const router = Router();
 
-router.post("/", interview.createInterview);
-router.get("/list", interview.findInterviews);
-router.get("/:interviewId", interview.findInterviewById);
-router.put("/:interviewId", interview.updateInterview);
+router.post("/", interview.create);
+router.get("/list", interview.find);
+router.patch("/", interview.update);
 
 export default router;

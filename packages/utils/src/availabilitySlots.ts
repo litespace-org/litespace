@@ -198,7 +198,7 @@ export function asSlot<T extends ILesson.Self | IInterview.Self>(
   item: T
 ): IAvailabilitySlot.Slot {
   return {
-    id: "ids" in item ? item.ids.slot : item.slotId,
+    id: "ids" in item ? item.slotId : item.slotId,
     start: item.start,
     end: dayjs(item.start)
       .add("duration" in item ? item.duration : INTERVIEW_DURATION)
@@ -216,7 +216,7 @@ export function asSubSlot<T extends ILesson.Self | IInterview.Self>(
   item: T
 ): IAvailabilitySlot.SubSlot {
   return {
-    parent: "ids" in item ? item.ids.slot : item.slotId,
+    parent: "ids" in item ? item.slotId : item.slotId,
     start: item.start,
     end: dayjs(item.start)
       .add("duration" in item ? item.duration : INTERVIEW_DURATION, "minute")

@@ -18,7 +18,7 @@ export enum Web {
   TutorProfileSettings = "/t/profile-settings",
   StudentSettings = "/s/settings",
   Plans = "/plans",
-  TutorOnboarding = "/tutor/onboarding",
+  TutorOnboarding = "/t/onboarding",
   Tutors = "/tutors",
   TutorProfile = "/t/:id",
   UpcomingLessons = "/upcoming-lessons",

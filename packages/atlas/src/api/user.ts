@@ -98,8 +98,10 @@ export class User extends Base {
       .then((response) => response.data);
   }
 
-  async findTutorMeta(tutorId: number): Promise<ITutor.Self> {
-    return await this.get({ route: `/api/v1/user/tutor/meta/${tutorId}` });
+  async findTutorMeta(
+    query: ITutor.FindTutorMetaApiQuery
+  ): Promise<ITutor.FindTutorMetaApiResponse> {
+    return await this.get({ route: `/api/v1/user/tutor/meta`, params: query });
   }
 
   async findTutorInfo(id: number): Promise<ITutor.FindTutorInfoApiResponse> {

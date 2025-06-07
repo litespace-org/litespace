@@ -129,6 +129,35 @@ export function withDateFilter<R extends object, T>(
 ): Knex.QueryBuilder<R, T> {
   const exact = typeof value === "string";
 
+  // exact equality
+  if (exact) builder.where(column, "=", dayjs.utc(value).toDate());
+
+  if (!exact && value?.gt)
+    builder.where(column, ">", dayjs.utc(value.gt).toDate());
+
+  if (!exact && value?.gte)
+    builder.where(column, ">=", dayjs.utc(value.gte).toDate());
+
+  if (!exact && value?.lt)
+    builder.where(column, "<", dayjs.utc(value.lt).toDate());
+
+  if (!exact && value?.lte)
+    builder.where(column, "<=", dayjs.utc(value.lte).toDate());
+
+  if (!exact && value?.noeq)
+    builder.where(column, "!=", dayjs.utc(value.noeq).toDate());
+
+  return builder;
+}
+
+export function withRawDateFilter<R extends object, T>(
+  builder: Knex.QueryBuilder<R, T>,
+  column: Knex.Raw,
+  value?: IFilter.Date
+): Knex.QueryBuilder<R, T> {
+  const exact = typeof value === "string";
+
+  // exact equality
   if (exact) builder.where(column, "=", dayjs.utc(value).toDate());
 
   if (!exact && value?.gt)
@@ -197,11 +226,16 @@ export function withNullableFilter<R extends object, T>(
 
 export function withListFilter<R extends object, T, V extends string | number>(
   builder: Knex.QueryBuilder<R, T>,
-  column: string,
+  column: string | string[],
   values?: V[]
 ): Knex.QueryBuilder<R, T> {
   if (!values || isEmpty(values)) return builder;
-  return builder.whereIn(column, values);
+  if (typeof column == "string") return builder.whereIn(column, values);
+  return builder.where((builder) => {
+    column.forEach((column) => {
+      builder.orWhereIn(column, values);
+    });
+  });
 }
 
 export async function count(table: string): Promise<number> {

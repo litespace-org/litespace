@@ -56,6 +56,7 @@ export default {
         "calendar-hour": "1",
         "landing-ellipse": "1",
         "iframe-dialog-overlay": "1",
+        "onboarding-flow-step-order": "1",
         navbar: "1",
         "stream-v2-avatar": "1",
         "stream-v2-mute-icon": "2",

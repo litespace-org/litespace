@@ -40,6 +40,7 @@
     "./Loading": "./dist/components/Loading/index.js",
     "./Lessons": "./dist/components/Lessons/index.js",
     "./Menu": "./dist/components/Menu/index.js",
+    "./Menu": "./dist/components/MonthlyCalendar/index.js",
     "./Movable": "./dist/components/Movable/index.js",
     "./MultiSelect": "./dist/components/MultiSelect/index.js",
     "./ManageSchedule": "./dist/components/ManageSchedule/index.js",

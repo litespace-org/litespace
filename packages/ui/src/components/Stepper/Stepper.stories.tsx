@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Stepper } from "@/components/Stepper";
 import { Direction } from "@/components/Direction";
-import ar from "@/locales/ar-eg.json";
 import React from "react";
 
 type Component = typeof Stepper;
@@ -25,11 +24,7 @@ const meta: Meta<Component> = {
 
 export const Primary: StoryObj<Component> = {
   args: {
-    steps: [
-      { label: ar["page.tutor.onboarding.steps.first"], value: 1 },
-      { label: ar["page.tutor.onboarding.steps.second"], value: 2 },
-      { label: ar["page.tutor.onboarding.steps.third"], value: 3 },
-    ],
+    steps: [],
     value: 2,
   },
 };

@@ -25,7 +25,7 @@ export default function router(context: ApiContext) {
     ]),
     user.uploadTutorAssets
   );
-  router.get("/tutor/meta/:tutorId", user.findTutorMeta);
+  router.get("/tutor/meta", user.findTutorMeta);
   router.get("/tutor/info/:tutorId", user.findTutorInfo);
   router.get("/tutor/list/onboarded", user.findOnboardedTutors);
   router.get("/tutor/stats/personalized", user.findPersonalizedTutorStats);

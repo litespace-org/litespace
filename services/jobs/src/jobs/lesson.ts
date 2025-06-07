@@ -2,14 +2,15 @@ import dayjs from "@/lib/dayjs";
 import { router } from "@/lib/router";
 import { producer } from "@/lib/kafka";
 import { lessons } from "@litespace/models";
-import { IKafka, ILesson, IUser } from "@litespace/types";
+import { IKafka, IUser } from "@litespace/types";
 import { Web } from "@litespace/utils/routes";
 import { isEmpty } from "lodash";
-import { safePromise } from "@litespace/utils";
+import {
+  AFRICA_CAIRO_TIMEZONE,
+  MAX_LESSON_DURATION,
+  safePromise,
+} from "@litespace/utils";
 import { msg } from "@/lib/bot";
-
-const TIMEZONE = "Africa/Cairo";
-const MAX_LESSON_DURATION_MINUTES = ILesson.Duration.Long;
 
 async function send<T extends IKafka.TopicType>(
   topic: T,
@@ -25,10 +26,7 @@ async function send<T extends IKafka.TopicType>(
 async function sendReminders() {
   const { list } = await lessons.find({
     after: dayjs.utc().toISOString(),
-    before: dayjs
-      .utc()
-      .add(MAX_LESSON_DURATION_MINUTES, "minutes")
-      .toISOString(),
+    before: dayjs.utc().add(MAX_LESSON_DURATION, "minutes").toISOString(),
     strict: true,
     full: true,
     canceled: false,
@@ -59,7 +57,7 @@ async function sendReminders() {
     const start = dayjs(lesson.start);
     // Skip lessons that are already started
     if (start.isBefore(now)) continue;
-    const tz = start.tz(TIMEZONE);
+    const tz = start.tz(AFRICA_CAIRO_TIMEZONE);
 
     for (const member of members) {
       if (!member.notificationMethod || !member.phone || !member.verifiedPhone)
