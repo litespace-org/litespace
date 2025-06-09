@@ -12,7 +12,6 @@ export type LocalMember = IUser.Self;
 export type RemoteMember = {
   id: number;
   name: string | null;
-  gender: IUser.Gender;
   role: IUser.Role;
   image: string | null;
 };

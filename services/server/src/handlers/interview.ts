@@ -1,103 +1,114 @@
 import {
   bad,
   busyTutorManager,
-  conflictingInterview,
+  empty,
   forbidden,
-  interviewAlreadySigned,
   notfound,
+  unexpected,
 } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
 import {
   interviews,
-  users,
   knex,
   rooms,
   availabilitySlots,
   lessons,
+  tutors,
+  users,
 } from "@litespace/models";
 import {
+  dateFilter,
   datetime,
   id,
   ids,
-  interviewStatus,
-  jsonBoolean,
-  number,
+  nullableString,
   pageNumber,
   pageSize,
-  string,
-  withNamedId,
+  sessionId,
 } from "@/validation/utils";
-import { IInterview } from "@litespace/types";
+import { IInterview, IUser } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import {
   isAdmin,
   isTutorManager,
-  isSuperAdmin,
   isTutor,
   isRegularTutor,
 } from "@litespace/utils/user";
-import { concat, isEqual } from "lodash";
+import { concat, first, groupBy } from "lodash";
 import {
+  AFRICA_CAIRO_TIMEZONE,
   asSubSlots,
   canBook,
+  destructureInterviewStatus,
   genSessionId,
   INTERVIEW_DURATION,
+  map,
 } from "@litespace/utils";
+import { sendNotificationMessage } from "@/lib/kafka";
+import dayjs from "dayjs";
+import { withImageUrl, withImageUrls } from "@/lib/user";
 
-const createInterviewPayload = zod.object({
-  interviewerId: id,
+const createPayload: ZodSchema<IInterview.CreateApiPayload> = zod.object({
   start: datetime,
   slotId: id,
 });
 
-const updateInterviewPayload = zod.object({
-  feedback: zod.optional(
-    zod.object({
-      interviewer: zod.optional(string),
-      interviewee: zod.optional(string),
-    })
-  ),
-  interviewerNote: zod.optional(string),
-  score: zod.optional(number),
-  status: zod.optional(interviewStatus),
-  sign: zod.optional(zod.literal(true)),
+const findQuery = zod.object({
+  ids: ids.describe("filter by interview id").optional(),
+  userss: ids.describe("filter by user ids").optional(),
+  interviewers: ids.describe("filter by interviewer ids").optional(),
+  interviewees: ids.describe("filter by interviewee ids").optional(),
+  interviewerFeedback: nullableString
+    .describe("filter by interviewer feedback")
+    .optional(),
+  intervieweeFeedback: nullableString
+    .describe("filter by the interviewee feedback")
+    .optional(),
+  slots: ids.describe("filter by slot ids").optional(),
+  sessions: sessionId.array().describe("filter by session ids").optional(),
+  statuses: zod
+    .nativeEnum(IInterview.Status)
+    .array()
+    .describe("filter by interview statuses")
+    .optional(),
+  start: dateFilter.describe("filter by interview start time").optional(),
+  end: dateFilter.describe("filter by interview end time").optional(),
+  createdAt: dateFilter
+    .describe("filter by the interview creation date")
+    .optional(),
+  page: pageNumber.optional(),
+  size: pageSize.optional(),
 });
 
-const findInterviewsQuery = zod.object({
-  users: zod.optional(ids),
-  statuses: zod.optional(zod.array(interviewStatus)),
-  levels: zod.optional(zod.array(zod.coerce.number().int().positive())),
-  signed: zod.optional(jsonBoolean),
-  signers: zod.optional(ids),
-  page: zod.optional(pageNumber),
-  size: zod.optional(pageSize),
+const updatePayload: ZodSchema<IInterview.UpdateApiPayload> = zod.object({
+  id,
+  interviewerFeedback: zod.string().optional(),
+  intervieweeFeedback: zod.string().optional(),
+  status: zod.nativeEnum(IInterview.Status).optional(),
 });
 
-async function createInterview(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+async function create(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isRegularTutor(user);
   if (!allowed) return next(forbidden());
 
-  const intervieweeId = user.id;
-  const { interviewerId, start, slotId }: IInterview.CreateApiPayload =
-    createInterviewPayload.parse(req.body);
-
-  const interviewer = await users.findById(interviewerId);
-  if (!interviewer) return next(notfound.user());
-  if (!isTutorManager(interviewer)) return next(bad());
-
-  const list = await interviews.findByInterviewee(intervieweeId);
-  const interviewable = canBeInterviewed(list);
-  if (!interviewable) return next(conflictingInterview());
+  const { start, slotId } = createPayload.parse(req.body);
 
   const slot = await availabilitySlots.findById(slotId);
   if (!slot) return next(notfound.slot());
+
+  const intervieweeId = user.id;
+  const interviewer = await tutors.findById(slot.userId);
+  if (!interviewer) return next(notfound.user());
+  // only activated tutor managers can accept interviews
+  if (!isTutorManager(interviewer) || !interviewer.activated)
+    return next(bad());
+
+  const interview = await interviews.findOne({ interviewees: [intervieweeId] });
+  const interviewable = canBeInterviewed(interview);
+  if (!interviewable) return next(bad());
 
   const slotLessons = await lessons.find({
     slots: [slotId],
@@ -105,12 +116,16 @@ async function createInterview(
     canceled: false, // ignore canceled lessons
   });
 
-  const slotInterviews = await interviews.findBySlotId(slotId);
+  const slotInterviews = await interviews.find({
+    slots: [slotId],
+    full: true,
+    canceled: false,
+  });
 
   const canBookInterview = canBook({
     bookedSubslots: concat(
       asSubSlots(slotLessons.list),
-      asSubSlots(slotInterviews)
+      asSubSlots(slotInterviews.list)
     ),
     slot: slot,
     bookInfo: {
@@ -123,12 +138,12 @@ async function createInterview(
   const members = [interviewer.id, intervieweeId];
   const room = await rooms.findRoomByMembers(members);
 
-  const interview = await knex.transaction(async (tx) => {
+  await knex.transaction(async (tx) => {
     if (!room) await rooms.create(members, tx);
 
     const interview = await interviews.create({
-      interviewer: interviewerId,
-      interviewee: intervieweeId,
+      interviewerId: interviewer.id,
+      intervieweeId,
       session: genSessionId("interview"),
       slot: slot.id,
       start,
@@ -138,121 +153,230 @@ async function createInterview(
     return interview;
   });
 
-  res.status(200).json(interview);
+  // notify the tutor manager that an interview was booked with him
+
+  if (interviewer.notificationMethod && interviewer.phone) {
+    const date = dayjs(start)
+      .tz(AFRICA_CAIRO_TIMEZONE)
+      .format("ddd D MMM hh:mm A");
+
+    await sendNotificationMessage({
+      method: interviewer.notificationMethod,
+      phone: interviewer.phone,
+      message: `A new interview has be booked at ${date}`,
+    });
+  }
+
+  res.sendStatus(200);
 }
 
-async function findInterviews(req: Request, res: Response, next: NextFunction) {
+async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const query: IInterview.FindInterviewsApiQuery = findInterviewsQuery.parse(
-    req.query
-  );
-  const owner = isTutor(user) && isEqual(query.users, [user.id]);
-  const allowed = owner || isAdmin(user);
+  const allowed = isTutor(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { list: userInterviews, total } = await interviews.find({
-    users: query.users,
-    statuses: query.statuses,
-    levels: query.levels,
-    signed: query.signed,
-    signers: query.signers,
-    page: query.page,
-    size: query.size,
+  const {
+    users: userIds,
+    interviewers,
+    interviewees,
+    interviewerFeedback,
+    intervieweeFeedback,
+    slots,
+    sessions,
+    statuses,
+    createdAt,
+    start,
+    end,
+    page,
+    size,
+  }: IInterview.FindApiQuery = findQuery.parse(req.query);
+
+  const result = await interviews.find({
+    // incase of a regular tutor or tutor manager we should retrict the query
+    // result to just their ids otherwise they will access data they are not
+    // allowed to see. This done by overriding these query.
+    users: isTutor(user) ? [user.id] : userIds,
+    interviewers,
+    interviewees,
+    interviewerFeedback,
+    intervieweeFeedback,
+    slots,
+    sessions,
+    statuses,
+    createdAt,
+    start,
+    end,
+    page,
+    size,
   });
 
-  const result: IInterview.FindInterviewsApiResponse = {
-    list: userInterviews,
-    total,
+  const { list } = await users.find({
+    select: ["id", "name", "image", "role"],
+    full: true,
+  });
+
+  const usersMapById = groupBy(await withImageUrls(list), (user) => user.id);
+
+  const response: IInterview.FindApiResponse = {
+    list: result.list.map((interview) => {
+      const interviewer = first(usersMapById[interview.interviewerId]);
+      const interviewee = first(usersMapById[interview.intervieweeId]);
+      if (!interviewer || !interviewee)
+        throw new Error("user not found, should never happen");
+      return {
+        ...interview,
+        interviewer,
+        interviewee,
+      };
+    }),
+    total: result.total,
   };
 
-  res.status(200).json(result);
+  res.status(200).json(response);
 }
 
-async function findInterviewById(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+async function update(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = isTutor(user) || isAdmin(user) || isTutorManager(user);
+  const allowed = isTutor(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { interviewId } = withNamedId("interviewId").parse(req.params);
-  const interview = await interviews.findById(interviewId);
-  if (!interview) return next(notfound.interview());
+  const {
+    id,
+    intervieweeFeedback,
+    interviewerFeedback,
+    status,
+  }: IInterview.UpdateApiPayload = updatePayload.parse(req.body);
 
+  const interview = await interviews.findOne({ ids: [id] });
+  if (!interview) return next(notfound.interview());
+  const interviewStatus = destructureInterviewStatus(interview.status);
+
+  // verify membership
   if (
-    (isRegularTutor(user) && user.id !== interview.ids.interviewee) ||
-    (isTutorManager(user) && user.id !== interview.ids.interviewer)
+    (isRegularTutor(user) && user.id !== interview.intervieweeId) ||
+    (isTutorManager(user) && user.id !== interview.interviewerId)
   )
     return next(forbidden());
 
-  res.status(200).json(interview);
-}
-
-async function updateInterview(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const user = req.user;
-  const allowed =
-    isSuperAdmin(user) || isTutorManager(user) || isRegularTutor(user);
-  if (!allowed) return next(forbidden());
-
-  const { interviewId } = withNamedId("interviewId").parse(req.params);
-  const payload: IInterview.UpdateApiPayload = updateInterviewPayload.parse(
-    req.body
-  );
-  const interview = await interviews.findById(interviewId);
-  if (!interview) return next(notfound.interview());
-
+  // regular tutors must provide at least one of two fileds: feedback or status
   if (
-    (isRegularTutor(user) && user.id !== interview.ids.interviewee) ||
-    (isTutorManager(user) && user.id !== interview.ids.interviewer)
-  )
-    return next(forbidden());
-
-  // Tutor can only update the feedback of the interview
-  const isPermissionedInterviewee =
     isRegularTutor(user) &&
-    isEqual(Object.keys(payload), ["feedback"]) &&
-    payload.feedback?.interviewee &&
-    !payload.feedback?.interviewer;
+    intervieweeFeedback === undefined &&
+    status === undefined
+  )
+    return next(empty());
 
-  const isPermissionedInterviewer =
+  // regular tutors can only update the status to `CanceledByInterviewee`. No
+  // other status is allowed.
+  if (
+    isRegularTutor(user) &&
+    status !== undefined &&
+    status !== IInterview.Status.CanceledByInterviewee
+  )
+    return next(bad());
+
+  // regular tutors can no longer update the interview incase it was canceled.
+  if (
+    isRegularTutor(user) &&
+    (interviewStatus.canceledByInterviewee ||
+      interviewStatus.canceledByInterviewer)
+  )
+    return next(bad());
+
+  // once the tutor is accepted or rejected, he can no longer update the status
+  // (aka cancel the interview!). He can only provide the feedback.
+  if (
+    isRegularTutor(user) &&
+    (interviewStatus.rejected || interviewStatus.passed) &&
+    (status !== undefined || intervieweeFeedback === undefined)
+  )
+    return next(bad());
+
+  // regular tutors are not allowed to update the interviewer feedback
+  if (isRegularTutor(user) && interviewerFeedback !== undefined)
+    return next(forbidden());
+
+  // regular tutors cannot provide feedback incase the interview is canceled or
+  // still in the pending status.
+  if (
+    isRegularTutor(user) &&
+    (interviewStatus.pending || interviewStatus.canceled) &&
+    intervieweeFeedback !== undefined
+  )
+    return next(bad());
+
+  // tutor managers must provide at least one of two fileds: feedback or status
+  if (
     isTutorManager(user) &&
-    !Object.keys(payload)
-      .map((key: string) =>
-        ["feedback", "note", "level", "status"].includes(key)
-      )
-      .includes(false) &&
-    !payload.feedback?.interviewee;
+    (interviewerFeedback === undefined || status === undefined)
+  )
+    return next(empty());
 
-  const isPermissionedAdmin = isSuperAdmin(user) && payload.sign === true;
+  // tutor managers are not allowed to update the interviewee feedback
+  if (isTutorManager(user) && intervieweeFeedback !== undefined)
+    return next(forbidden());
 
-  const isPermissioned =
-    isPermissionedInterviewee ||
-    isPermissionedInterviewer ||
-    isPermissionedAdmin;
-  if (!isPermissioned) return next(forbidden());
-
-  if (payload.sign && interview.signer) return next(interviewAlreadySigned());
-
-  const signer = payload.sign ? user.id : undefined;
-  const updated = await interviews.update(interviewId, {
-    feedback: payload.feedback,
-    note: payload.note,
-    level: payload.level,
-    status: payload.status,
-    signer,
+  await interviews.update({
+    id,
+    status,
+    intervieweeFeedback,
+    interviewerFeedback,
   });
-  res.status(200).json(updated);
+
+  res.sendStatus(200);
+}
+
+async function selectInterviewer(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isRegularTutor(user);
+  if (!allowed) return next(forbidden());
+
+  const interview = await interviews.findOne({ interviewees: [user.id] });
+  const interviewable = canBeInterviewed(interview);
+  if (!interviewable) return next(bad());
+
+  const { list: tutorManagers } = await tutors.find({
+    role: [IUser.Role.TutorManager],
+    activated: true,
+    full: true,
+  });
+
+  // @note: leave this query like this for now until the logic is ready.
+  // Interviewer Selection Alogrithm:
+  // 1. find all "active" tutor managers
+  // 2. fetch all slots with the purpose "interview" or "general"
+  // 3. find all lessons or interviews associated with these slots.
+  // 4. unpack all slots using its lessons and interviews
+  // 5. find the first available slot
+  // 6. select its owner as the interviewer
+  // 7. select a random tutor manager as a fallback in case the selection logic
+  //    failed.
+  await availabilitySlots.find({
+    after: dayjs.utc().toISOString(),
+    users: map(tutorManagers, "id"),
+    deleted: false,
+    full: true,
+  });
+
+  const tutorManager = first(tutorManagers);
+  if (!tutorManager) return next(unexpected());
+
+  const response: IInterview.SelectInterviewerApiResponse = await withImageUrl({
+    id: tutorManager.id,
+    name: tutorManager.name,
+    image: tutorManager.image,
+  });
+
+  res.status(200).json(response);
 }
 
 export default {
-  createInterview: safeRequest(createInterview),
-  findInterviews: safeRequest(findInterviews),
-  updateInterview: safeRequest(updateInterview),
-  findInterviewById: safeRequest(findInterviewById),
+  create: safeRequest(create),
+  find: safeRequest(find),
+  update: safeRequest(update),
+  selectInterviewer: safeRequest(selectInterviewer),
 };

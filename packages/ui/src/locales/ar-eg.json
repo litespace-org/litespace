@@ -125,11 +125,20 @@
   "forget-password-dialog.password.placeholder": "ادخل كلمة المرور",
   "forget-password-dialog.submit": "إرسال الكود",
   "forget-password-dialog.email": "ادخل رمز التحقق المؤقت المرسل الي {email}",
-  "page.tutor.onboarding.steps.first": "حدد موعد مقابلتك",
-  "page.tutor.onboarding.steps.second": "زورنا في يلا استب",
-  "page.tutor.onboarding.steps.third": "قدم نفسك لطلابك",
-  "page.tutor.onboarding.steps.third.description": "علشان انت تعرف نفسك أكثر من أي حد تاني، حاول توصف نفسك في كلمات معدوده...",
-  "page.tutor.onboarding.book.interview.success.title": "تم حجز مقابلتك بنجاح",
+  "tutor-onboarding.steps.support.desc": "للحصول على دعم فوري وموارد تعليمية، انضم إلى مجموعة المعلمين على تيليجرام.",
+  "tutor-onboarding.steps.support.join-telegram-group": "انضم الأن",
+  "tutor-onboarding.steps.intro-video.title": "الفديو التعريفي",
+  "tutor-onboarding.steps.intro-video.desc": "قم بتسجيل فديو تعريفي قصير باللغة الانجليزية",
+  "tutor-onboarding.steps.interview.title": "مقابله اللغة الانجليزية",
+  "tutor-onboarding.steps.interview.desc": "حدد موعدًا لمقابلة فردية عبر الإنترنت لمدة 30 دقيقة مع أحد معلمينا.",
+  "tutor-onboarding.steps.demo-session.title": "جلسة تجربية",
+  "tutor-onboarding.steps.demo-session.desc": "احجز جلسة تجربية عبر الإنترنت لمدة 30 دقيقة مع أحد معلمينا",
+  "tutor-onboarding.steps.photo-session.title": "الصورة الشخصية و الفيديو",
+  "tutor-onboarding.steps.photo-session.desc": "لتجعلك تبدو أنيقا، نوفر لك جلسة تصوير احترافية مجانية تمامًا، تتضمن صورًا ومقاطع فيديو إحترافية لعرضها في ملفك الشخصي.",
+  "tutor-onboarding.step.interview.title": "مقابله اللغة الانجليزية",
+  "tutor-onboarding.step.interview.desc": "حدد موعدًا لمقابلة فردية عبر الإنترنت لمدة 30 دقيقة لمناقشة مستواك في اللغة الإنجليزية مع {name} معلمنا للغة الإنجليزية.",
+  "tutor-onboarding.step.interview.timing-selection.title": "حدد تاريخ مقابله اللغة اللغة الانجليزية",
+  "tutor-onboarding.step.interview.confirm-error": "حدثت مشكلة أثناء حجز المقابلة",
   "tutor.rate.error": "عفوًا! حدث خطأ أثناء إرسال تقييمك",
   "tutor.rate.delete.title": "إزالة تقييم المعلم",
   "tutor.rate.delete.titleWarning": "أنت على وشك إزالة تقييمك للمعلم",
@@ -154,7 +163,6 @@
   "rating-dialog.rate-tutor.header": "كيف كانت تجربتك مع {tutor}؟",
   "rating-dialog.rate-tutor.description": "نود سماع رأيك! تقييمك مهم لنا لمساعدتنا في تحسين تجربتك وتجربة الآخرين. من فضلك، شارك تقييمك للمعلم بعد الجلسة لنتمكن من تقديم خدمة أفضل في المستقبل",
   "lesson.loading": "جاري التحميل...",
-  "lesson.loading-error": "نأسف، حدث مشكلة في تحميل بيانات الحصة. يرجى المحاولة مرة أخرى بعد قليل.",
   "session.device-not-found-error.mic-and-cam.title": "خطأ في الوصول إلى جهاز الكاميرا أو الميكروفون",
   "session.device-not-found-error.mic-and-cam.desc": "لم يتم العثور على كاميرا أو ميكروفون متصل بجهازك أو أن أحدهما أو كلاهما مُعطل. يرجى التأكد من توصيل/تفعيل الكاميرا والميكروفون وتمكينهما في إعدادات جهازك.",
   "session.not-readable-error.title": "الكاميرا أو الميكروفون قيد الاستخدام بالفعل",
@@ -165,17 +173,22 @@
   "session.not-allowed.desc": "تم رفض طلب الوصول إلى الكاميرا أو الميكروفون. ربما قمت برفض هذا الإذن سابقًا.يرجى التحقق من إعدادات أذونات الموقع والكاميرا/الميكروفون في المتصفح الخاص بك. قد تحتاج إيضا الي مراجعة إعدادات جهازك (نظام التشغيل) من اجل التاكد ان المتصفح لديه التصاريح الكافية للوصلو الي الكامير او الميكروفون.",
   "session.unexpected-error.title": "خطاء في الوصول الي الميكروفون او الكاميرا",
   "session.unexpected-error.desc": "حدث خطاء غير متوقع أثناء محاولة الوصول إلي الكاميرا او الميكروفون.",
-  "session.will-start-in": "ستبدأ الحصة في غضون {duration}",
-  "session.ended-since": "انتهت الحصة منذ {duration}",
   "session.ready.title": "هل أنت جاهز للإنضمام؟",
-  "session.ready.explaination.full.male-tutor": "المعلم ينتظرك الاّن داخل الحصة",
-  "session.ready.explaination.full.female-tutor": "المعلمة تنتظرك الاّن داخل الحصة",
-  "session.ready.explaination.full.male-student": "الطالب ينتظرك الاّن داخل الحصة",
-  "session.ready.explaination.full.female-student": "الطالبة تنتظرك الاّن داخل الحصة",
-  "session.ready.session-started-since": "بدأت الحصة منذ {time}",
-  "session.ready.session-ended-since": "الحصة انتهت منذ {time}",
-  "session.ready.session-will-start-in": "ستبدأ الحصة في خلال {time}",
-  "session.ready.join": "انضم للحصة الاّن",
+  "session.ready.join": "انضم الان",
+  "session.ready.male-tutor-waiting": "المعلم ينتظرك الاّن",
+  "session.ready.female-tutor-waiting": "المعلمة تنتظرك الاّن",
+  "session.ready.male-student-waiting": "الطالب ينتظرك الاّن",
+  "session.ready.female-student-waiting": "الطالبة نتظرك الاّن",
+  "session.ready.male-interviewer-waiting": "المحاور ينتظرك الاّن",
+  "session.ready.female-interviewer-waiting": "المحاورة نتظرك الاّن",
+  "session.ready.lesson.started-since": "بدأت الحصة منذ {time}",
+  "session.ready.lesson.ended-since": "انتهت الحصة منذ {time}",
+  "session.ready.lesson.will-start-in": "ستبداء الحصة خلال {time}",
+  "session.ready.interview.started-since": "بدأت المقابلة منذ {time}",
+  "session.ready.interview.ended-since": "انتهت المقابلة منذ {time}",
+  "session.ready.interview.will-start-in": "ستبداء المقابلة خلال {time}",
+  "session.ready.lesson.join": "انضم للحصة الاّن",
+  "session.ready.interview.join": "انضم للمقابلة الاّن",
   "session.rating.title": "قيم تجربتك",
   "session.rating.question": "كيف كانت حصتك مع {tutor} ؟",
   "session.rating.question.description": "تقييمك يساهم في جعل تجربتك التعليمية أكثر تميزًا. أخبرنا عن انطباعك لتقديم تجربة تتناسب مع احتياجاتك",
@@ -234,7 +247,6 @@
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
   "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
   "page.error.button.label": "الرجوع للخلف",
-  "page.schedule.list.actions.delete": "حذف",
   "schedule.lesson.edit": "تعديل الموعد",
   "schedule.lesson.cancel": "الغاء الحصة",
   "schedule.lesson.rebook": "حجز حصة اخري",
@@ -399,21 +411,11 @@
   "dashboard.invoices.addressedBy": "تم المعالجة بواسطة",
   "dashboard.invoices.createdAt": "تاريخ الإنشاء",
   "dashboard.invoices.updatedAt": "تاريخ التحديث",
-  "dashboard.interviews.title": "المقابلات",
-  "dashboard.interview.ids": "المحاور/الممتحن",
-  "dashboard.interview.level": "المستوي",
-  "dashboard.interview.call.start": "الموعد",
-  "dashboard.interview.canceled": "تم الإلغاء",
   "dashboard.interview.status": "الحالة",
   "dashboard.interview.status.pending": "قيد الانتظار",
   "dashboard.interview.status.passed": "تم الإجتياز بنجاح",
   "dashboard.interview.status.rejected": "تم الرفض",
   "dashboard.interview.status.canceled": "تم الإلغاء",
-  "dashboard.interview.signer": "موقعه من",
-  "dashboard.interview.actions.sign": "توقيع علي المقابلة",
-  "dashboard.interview.actions.sign.fullfilled": "تم توقيع المقابلة بنجاح",
-  "dashboard.interview.actions.sign.rejected": "حدث خطاء أثناء توقيع المقابلة",
-  "dashboard.interview.sign.label": "بتوقيعك الان، فإنك تقر بأن المدرس {tutor} اجتاز المقابلة بنجاح، ويستطيع الانتقال إلى المرحلة القادمة.",
   "dashboard.lessons.title": "الحصص",
   "dashboard.lessons.members": "الاعضاء",
   "dashboard.lessons.price": "السعر",
@@ -431,9 +433,6 @@
   "dashboard.lessons.filter.date.future": "عرض الحصص المستقبلية",
   "dashboard.lessons.filter.date.past": "عرض الحصص الماضية",
   "dashboard.lessons.filter.date.now": "تحدث الأن",
-  "dashboard.filter.order-direction": "الترتيب",
-  "dashboard.filter.order-direction.asc": "الأقدم أولاً",
-  "dashboard.filter.order-direction.desc": "الأحدث أولاً",
   "dashboard.settings.title": "التخزين المؤقت",
   "dashboard.settings.cache.alert.title": "حذف التخزين المؤقت",
   "dashboard.settings.cache.alert.description": "يمكنك حذف التخزين المؤقت في حالة عدم توفر RAM كافية او وجود حمل زايد علي السيرفر او ظهور بيانات غير محدثة للمستخدمين، قد يؤدي هذا الي بطء في السيرفر بعض الشيء حتي يتكون المخزون المؤفت من جديد، يجب العلم انه لا يمكن التراجع عن هذا الفعل بمجر تنفيذه.",
@@ -486,8 +485,6 @@
   "dashboard.labels.price-diff": "الفرق: {value} ج.م",
   "dashboard.labels.price-discount": "الخصم: {value}",
   "dashboard.labels.price-with-discount": "{price} ج.م ({discount})",
-  "layout.banner.complete-profile": "استكمل ملفك الشخصي الآن لتعزيز ظهورك وزيادة فرصك في جذب الطلاب!",
-  "layout.banner.complete-profile.action": "استكمل الأن",
   "webrtc-check.title": "تنبيه: متصفحك لا يدعم تقنيه  WebRTC",
   "webrtc-check.description": "بعض وظائف المنصة تتطلب تقنيه WebRTC و التي لا يدعمها متصفحك الحالي، للحصول علي افضل تجربة نوصي باستخدام متصفح مثل Chrome او Firefox او Safari او Edge باحدث اصداراته.",
   "webrtc-check.confirm": "تحميل كروم",
@@ -780,6 +777,8 @@
   "labels.hash-value": "{value}#",
   "labels.currency.egp": "{value} ج.م",
   "labels.next": "التالي",
+  "labels.prev": "السابق",
+  "labels.confirm": "تأكيد",
   "labels.report": "إبلاغ",
   "labels.name": "الاسم",
   "labels.gender": "الهوية",
@@ -789,7 +788,6 @@
   "labels.gender.female-student": "طالبة",
   "labels.gender.male-tutor": "معلم",
   "labels.gender.female-tutor": "معلمه",
-  "labels.confirm": "تأكيد",
   "labels.name.placeholder": "محمد حمزة",
   "labels.phone.placeholder": "010 1234 5678",
   "labels.city.placeholder": "الجيزة",
@@ -924,7 +922,7 @@
   "global.gender.male": "ذكر",
   "global.gender.female": "أنثي",
   "global.goto": "إلي صفحة {name}",
-  "global.sure": "هل أنت متأكد؟",
+  "error.loading-error": "تعذر تحميل البيانات. يُرجى المحاولة مرة أخرى.",
   "error.invlaid-cvv": "رقم التحقق من البطاقة غير صالح، برجاء التحقق من البيانات",
   "error.alert": "حدث خطأ ما",
   "error.required": "مطلوب",
@@ -960,8 +958,6 @@
   "error.api.report-not-found": "التقرير غير موجود، برجاء التحقق من البيانات.",
   "error.api.interview-not-found": "المقابلة غير موجودة، برجاء التحقق من البيانات.",
   "error.api.topic-not-found": "الموضوع غير موجود، برجاء التحقق من البيانات.",
-  "error.api.interview-already-signed": "تم توقيع المقابلة بالفعل، لا يمكن تعديلها.",
-  "error.api.report-reply-not-found": "التعليق علي التقرير غير موجود، برجاء التحقق من بيانات التقرير.",
   "error.api.withdraw-method-not-found": "طريقة السحب غير موجودة، برجاء المحاولة مرة أخرى.",
   "error.api.subscription-not-found": "الاشتراك غير موجود، برجاء التحقق من البيانات.",
   "error.api.email-already-verified": "تم التحقق من البريد الإلكتروني بالفعل، يمكنك الاستمتاع بالمنصة الان.",

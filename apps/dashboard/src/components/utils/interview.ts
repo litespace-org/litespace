@@ -5,5 +5,8 @@ export const interviewStatusMap: Record<IInterview.Status, LocalId> = {
   [IInterview.Status.Pending]: "dashboard.interview.status.pending",
   [IInterview.Status.Passed]: "dashboard.interview.status.passed",
   [IInterview.Status.Rejected]: "dashboard.interview.status.rejected",
-  [IInterview.Status.Canceled]: "dashboard.interview.status.canceled",
+  [IInterview.Status.CanceledByInterviewee]:
+    "dashboard.interview.status.canceled",
+  [IInterview.Status.CanceledByInterviewer]:
+    "dashboard.interview.status.canceled",
 };

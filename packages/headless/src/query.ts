@@ -80,7 +80,7 @@ export function useInfinitePaginationQuery<T, K>(
   return { query, list, more, hasMore, keys, total };
 }
 
-type UseExtendedQueryResult<
+export type UseExtendedQueryResult<
   T,
   E,
   K extends QueryKey = QueryKey,

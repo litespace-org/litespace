@@ -2,12 +2,23 @@ import { Pool } from "pg";
 import { IFilter, NumericString } from "@litespace/types";
 import init, { Knex } from "knex";
 import zod from "zod";
-import { isEmpty } from "lodash";
+import { entries, invert, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 
 export type WithOptionalTx<T> = T & { tx?: Knex.Transaction };
 export type WithTx<T> = T & { tx: Knex.Transaction };
 export type withPaginationObj<T> = T & IFilter.Pagination;
+export type AsColumns<
+  T extends string | number | symbol,
+  M extends Record<T, unknown>,
+> = {
+  [K in T]: M[K];
+}[T];
+export type Select<
+  T extends object,
+  K extends string | number | symbol,
+  M extends Record<K, keyof T>,
+> = Pick<T, AsColumns<K, M>>;
 
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_SIZE = 10;
@@ -117,7 +128,7 @@ export function withPagination<Row extends object, Result = Row[]>(
 export function withSkippablePagination<Row extends object, Result = Row[]>(
   builder: Knex.QueryBuilder<Row, Result>,
   pagination: IFilter.SkippablePagination = {}
-) {
+): Knex.QueryBuilder<Row, Result> {
   if (pagination.full) return builder;
   return withPagination(builder, pagination);
 }
@@ -129,6 +140,35 @@ export function withDateFilter<R extends object, T>(
 ): Knex.QueryBuilder<R, T> {
   const exact = typeof value === "string";
 
+  // exact equality
+  if (exact) builder.where(column, "=", dayjs.utc(value).toDate());
+
+  if (!exact && value?.gt)
+    builder.where(column, ">", dayjs.utc(value.gt).toDate());
+
+  if (!exact && value?.gte)
+    builder.where(column, ">=", dayjs.utc(value.gte).toDate());
+
+  if (!exact && value?.lt)
+    builder.where(column, "<", dayjs.utc(value.lt).toDate());
+
+  if (!exact && value?.lte)
+    builder.where(column, "<=", dayjs.utc(value.lte).toDate());
+
+  if (!exact && value?.noeq)
+    builder.where(column, "!=", dayjs.utc(value.noeq).toDate());
+
+  return builder;
+}
+
+export function withRawDateFilter<R extends object, T>(
+  builder: Knex.QueryBuilder<R, T>,
+  column: Knex.Raw,
+  value?: IFilter.Date
+): Knex.QueryBuilder<R, T> {
+  const exact = typeof value === "string";
+
+  // exact equality
   if (exact) builder.where(column, "=", dayjs.utc(value).toDate());
 
   if (!exact && value?.gt)
@@ -197,11 +237,16 @@ export function withNullableFilter<R extends object, T>(
 
 export function withListFilter<R extends object, T, V extends string | number>(
   builder: Knex.QueryBuilder<R, T>,
-  column: string,
+  column: string | string[],
   values?: V[]
 ): Knex.QueryBuilder<R, T> {
   if (!values || isEmpty(values)) return builder;
-  return builder.whereIn(column, values);
+  if (typeof column == "string") return builder.whereIn(column, values);
+  return builder.where((builder) => {
+    column.forEach((column) => {
+      builder.orWhereIn(column, values);
+    });
+  });
 }
 
 export async function count(table: string): Promise<number> {
@@ -249,4 +294,32 @@ export function addSqlMinutes<Row extends object>(
   minutes: string
 ): Knex.Raw<Row> {
   return knex.raw("?? + ??", [start, asSqlInterval(minutes, "minutes")]);
+}
+
+export function fromRow<
+  Row extends object,
+  Self extends object,
+  Field extends keyof Self,
+  Map extends Record<keyof Self, keyof Row>,
+>(
+  row: Select<Row, Field, Map>,
+  map: Map,
+  transform?: {
+    [K in keyof Self]?: (value: Row[Map[K]]) => Self[K];
+  }
+): Pick<Self, Field> {
+  const inverted = invert(map) as Record<keyof Row, keyof Self>;
+  const self: Partial<Record<keyof Self, unknown>> = {};
+
+  for (const [key, value] of entries(row)) {
+    const safeKey = key as keyof Row;
+    const safeValue = value as Row[keyof Row];
+    const field: keyof Self = inverted[safeKey];
+    if (transform?.[field])
+      self[field] = transform?.[field]?.(safeValue as Row[Map[keyof Self]]);
+    else if (value instanceof Date) self[field] = value.toISOString();
+    else self[field] = value;
+  }
+
+  return self as Pick<Self, Field>;
 }

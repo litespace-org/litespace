@@ -1,4 +1,3 @@
-import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
 import { router } from "@/lib/routes";
@@ -57,17 +56,38 @@ const Root: React.FC = () => {
 
     const role = destructureRole(user.role);
 
-    // tutor redirect
+    // ============ tutor redirect ========
     const tutor = role.tutor || role.tutorManager;
     const settings =
       router.match(Web.TutorProfileSettings, location.pathname) ||
       router.match(Web.TutorAccountSettings, location.pathname);
     const completedProfile = !!meta && isProfileComplete({ ...user, ...meta });
+
     if (tutor && completedProfile && root) return navigate(Web.TutorDashboard);
+
+    // @note: avoid redirecting the tutor to the complete tutor profile page in
+    // case he was visiting a public route or his settings page.
+    // @note: tutor should automatically be directed to
     if (tutor && !completedProfile && !settings && !publicRoute)
       return navigate(Web.CompleteTutorProfile);
 
-    // student redirect
+    // @note: tutor should automatically be directed to the onboarding page
+    // incase he didn't passed one or more of the onboarding flow steps. tutor
+    // should only be redirected if his profile is completed.
+    if (
+      tutor &&
+      completedProfile &&
+      meta &&
+      !settings &&
+      !publicRoute &&
+      !router.match(Web.Interview, location.pathname) &&
+      (!meta.passedIntroVideo ||
+        !meta.passedInterview ||
+        !meta.passedDemoSession)
+    )
+      return navigate(Web.TutorOnboarding);
+
+    // ============ student redirect ========
     if (role.student && root) return navigate(Web.StudentDashboard);
   }, [navigate, location.pathname, user, publicRoute, meta]);
 
@@ -82,6 +102,9 @@ const Root: React.FC = () => {
       Web.CardAdded,
       Web.Checkout,
       Web.CompleteTutorProfile,
+      Web.TutorOnboarding,
+      Web.Interview,
+      Web.DemoSession,
     ];
     const match = routes.some((route) =>
       router.match(route, location.pathname)
@@ -124,7 +147,6 @@ const Root: React.FC = () => {
           }
         )}
       >
-        <CompleteProfileBanner />
         <WebrtcCheckDialog />
         {showNavigation ? (
           <Navbar toggleSidebar={() => setShowMobileSidebar((prev) => !prev)} />

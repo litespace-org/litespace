@@ -2,28 +2,25 @@ import { IAvailabilitySlot } from "@litespace/types";
 import { useApi } from "@/api";
 import { useCallback } from "react";
 import { MutationKey, QueryKey } from "@/constants";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { OnError, OnSuccess } from "@/types/query";
 import { ResponseError } from "@litespace/utils";
+import { useExtendedQuery } from "@/query";
 
 export function useFindAvailabilitySlots(
-  apiQuery: IAvailabilitySlot.FindAvailabilitySlotsApiQuery
+  query: IAvailabilitySlot.FindAvailabilitySlotsApiQuery
 ) {
   const api = useApi();
 
   const findSlots = useCallback(
-    () => api.availabilitySlot.find(apiQuery),
-    [api.availabilitySlot, apiQuery]
+    () => api.availabilitySlot.find(query),
+    [api.availabilitySlot, query]
   );
 
-  const keys = [QueryKey.FindAvailabilitySlots, apiQuery];
-
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: findSlots,
-    queryKey: keys,
+    queryKey: [QueryKey.FindAvailabilitySlots, query],
   });
-
-  return { query, keys };
 }
 
 export function useSetAvailabilitySlots({

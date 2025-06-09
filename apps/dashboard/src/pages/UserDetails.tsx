@@ -1,6 +1,5 @@
 import Lessons from "@/components/Lessons/Content";
 import BackLink from "@/components/Common/BackLink";
-import Interviews from "@/components/Interviews/Content";
 import StudentStats from "@/components/Students/Stats";
 import TutorStats from "@/components/Tutor/Stats";
 import InvoicesContent from "@/components/Invoices/Content";
@@ -35,12 +34,12 @@ const UserDetails = () => {
     return destructureRole(query.data.role);
   }, [query.data]);
 
-  const { query: tutorQuery } = useFindTutorMeta(
-    role?.tutor && id ? id : undefined
-  );
+  const tutorQuery = useFindTutorMeta(role?.tutor && id ? id : undefined);
+
   const { query: teachingTutorStats } = useFindTutorStats(
     role?.tutor && id ? id : null
   );
+
   const { query: financialTutorStats } = useFindInvoiceStats(
     role?.tutor && id ? id : undefined
   );
@@ -77,11 +76,6 @@ const UserDetails = () => {
       {role?.tutor ? (
         <div className="mt-4">
           <TutorStats stats={financialTutorStats} />
-        </div>
-      ) : null}
-      {(role?.tutor || role?.tutorManager) && id ? (
-        <div className="mt-4">
-          <Interviews user={id} />
         </div>
       ) : null}
 

@@ -15,6 +15,7 @@ export const MINUTES_IN_WEEK = 60 * 24 * 7;
 export const MIN_AGE = 10;
 export const MAX_AGE = 70;
 export const DAYS_IN_WEEK = 7;
+export const DAYS_IN_MONTH = 30;
 export const MIN_USER_NAME_LENGTH = 2;
 export const MAX_USER_NAME_LENGTH = 30;
 export const MIN_INTERVIEW_LEVEL = 1;
@@ -75,6 +76,8 @@ export const MIN_CONTACT_REQUEST_MESSAGE_LENGTH = 10;
 export const MAX_CONTACT_REQUEST_MESSAGE_LENGTH = 1000;
 export const TELEGRAM_NUMBER = "010-2001-7777";
 export const LITESPACE_NOTIFY_URL = "https://t.me/litespace_notify";
+export const LITESPACE_TUTORS_TELEGRAM_GROUP_URL =
+  "https://t.me/litespace_tutors";
 
 // All users except tutors and tutor-managers can have their names in either Arabic or English or both.
 // https://regex101.com/r/ER7McY/1
@@ -86,9 +89,12 @@ export const TUTOR_NAME_REGEX = /^[\u0600-\u06ff\s]+$/;
  * Interview duration in minutes.
  */
 export const INTERVIEW_DURATION = 30;
+export const INTERVIEW_MIN_RETRY_PERIOD_IN_DAYS = 3 * DAYS_IN_MONTH;
 
 export const CONFIRMATION_CODE_DIGIT_COUNT = 5;
 export const CONFIRMATION_CODE_VALIDITY_MINUTES = 15;
+
+export const AFRICA_CAIRO_TIMEZONE = "Africa/Cairo";
 
 export const NOTIFICATION_METHOD_TO_PURPOSE: Record<
   IUser.NotificationMethod,

@@ -116,6 +116,21 @@ describe("Users", () => {
       expect(result.list[1].id).to.be.eq(manager2.id);
       expect(result.list[0].id).to.be.eq(manager3.id);
     });
+
+    it("should select user fields", async () => {
+      const u1 = await fixtures.user({ name: "u1" });
+      const u2 = await fixtures.user({ name: "u2" });
+
+      const { list } = await users.find({
+        select: ["id", "name"],
+      });
+
+      expect(list).to.be.deep.eq([
+        // recent users will be at the top of the list
+        { id: u2.id, name: "u2" },
+        { id: u1.id, name: "u1" },
+      ]);
+    });
   });
 
   describe(nameof(users.findOneBy), () => {

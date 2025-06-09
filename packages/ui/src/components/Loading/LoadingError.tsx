@@ -12,7 +12,7 @@ import { safePromise } from "@litespace/utils";
 
 export const LoadingError: React.FC<{
   retry: Void;
-  error: string;
+  error?: string;
   size?: "small" | "medium" | "large";
 }> = ({ retry, error, size = "small" }) => {
   const intl = useFormatMessage();
@@ -53,7 +53,7 @@ export const LoadingError: React.FC<{
           "text-caption font-semibold": size !== "small",
         })}
       >
-        {error}
+        {error || intl("error.loading-error")}
       </Typography>
       <div className="flex flex-row items-center justify-center gap-4 w-full">
         <Button

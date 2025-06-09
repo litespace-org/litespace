@@ -1,11 +1,64 @@
-import { column, countRows, knex, withSkippablePagination } from "@/query";
-import { first, isEmpty } from "lodash";
+import {
+  AsColumns,
+  column,
+  countRows,
+  fromRow,
+  knex,
+  Select,
+  WithOptionalTx,
+  withSkippablePagination,
+} from "@/query";
+import { first, isEmpty, pick } from "lodash";
 import { IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 
+const FIELD_TO_COLUMN = {
+  id: "id",
+  email: "email",
+  password: "password",
+  name: "name",
+  image: "image",
+  address: "address",
+  birthYear: "birth_year",
+  gender: "gender",
+  role: "role",
+  verifiedEmail: "verified_email",
+  verifiedPhone: "verified_phone",
+  verifiedWhatsApp: "verified_whatsapp",
+  verifiedTelegram: "verified_telegram",
+  creditScore: "credit_score",
+  city: "city",
+  phone: "phone",
+  notificationMethod: "notification_method",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+} satisfies Record<IUser.Field, IUser.Column>;
+
 export class Users {
   public readonly table = "users" as const;
+
+  public readonly columns: Record<IUser.Column, string> = {
+    id: this.column("id"),
+    email: this.column("email"),
+    password: this.column("password"),
+    name: this.column("name"),
+    image: this.column("image"),
+    address: this.column("address"),
+    birth_year: this.column("birth_year"),
+    gender: this.column("gender"),
+    role: this.column("role"),
+    verified_email: this.column("verified_email"),
+    verified_phone: this.column("verified_phone"),
+    verified_whatsapp: this.column("verified_whatsapp"),
+    verified_telegram: this.column("verified_telegram"),
+    credit_score: this.column("credit_score"),
+    city: this.column("city"),
+    phone: this.column("phone"),
+    notification_method: this.column("notification_method"),
+    created_at: this.column("created_at"),
+    updated_at: this.column("updated_at"),
+  };
 
   async create(
     user: IUser.CreatePayload,
@@ -64,12 +117,12 @@ export class Users {
       .returning("*");
 
     const row = first(rows);
-    if (!row) throw new Error("User not found; should never happen.");
+    if (!row) throw new Error("user not found, should never happen");
     return this.from(row);
   }
 
   async delete(id: number): Promise<void> {
-    await knex<IUser.Row>("users").where("id", id).del();
+    await knex<IUser.Row>("users").where(this.column("id"), id).del();
   }
 
   async findOneBy<T extends keyof IUser.Row>(
@@ -104,16 +157,17 @@ export class Users {
     return !isEmpty(rows);
   }
 
-  async find({
+  async find<T extends IUser.Field = IUser.Field>({
     tx,
     role,
     verified,
     gender,
     city,
+    select,
     ...pagination
-  }: IUser.FindUsersQuery & {
-    tx?: Knex.Transaction;
-  }): Promise<Paginated<IUser.Self>> {
+  }: WithOptionalTx<IUser.FindModelQuery<T>>): Promise<
+    Paginated<Pick<IUser.Self, T>>
+  > {
     const base = this.builder(tx);
 
     if (role) base.andWhere(this.column("role"), role);
@@ -128,10 +182,22 @@ export class Users {
 
     const query = base
       .clone()
-      .select()
-      .orderBy(this.column("created_at"), "desc");
-    const rows = await withSkippablePagination(query, pagination);
-    const users = rows.map((row) => this.from(row));
+      .select(this.select(select))
+      .orderBy([
+        {
+          column: this.column("created_at"),
+          order: "desc",
+        },
+        {
+          column: this.column("id"),
+          order: "desc",
+        },
+      ]);
+
+    const rows = await withSkippablePagination(query, pagination).then(
+      (rows) => rows as Select<IUser.Row, T, typeof FIELD_TO_COLUMN>[]
+    );
+    const users = rows.map((row) => this.from<T>(row));
 
     return { list: users, total };
   }
@@ -160,32 +226,29 @@ export class Users {
     return this.from(row);
   }
 
-  from(row: IUser.Row): IUser.Self {
-    return {
-      id: row.id,
-      email: row.email,
-      password: row.password !== null,
-      name: row.name,
-      image: row.image,
-      address: row.address,
-      birthYear: row.birth_year,
-      gender: row.gender,
-      role: row.role,
-      verifiedEmail: row.verified_email,
-      verifiedPhone: row.verified_phone,
-      verifiedWhatsApp: row.verified_whatsapp,
-      verifiedTelegram: row.verified_telegram,
-      creditScore: row.credit_score,
-      phone: row.phone,
-      city: row.city,
-      notificationMethod: row.notification_method,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
+  from<T extends IUser.Field>(
+    row: Select<IUser.Row, T, typeof FIELD_TO_COLUMN>
+  ): Pick<IUser.Self, T> {
+    return fromRow<IUser.Row, IUser.Self, T, typeof FIELD_TO_COLUMN>(
+      row,
+      FIELD_TO_COLUMN,
+      { password: (value) => value !== null }
+    );
+  }
+
+  select<T extends IUser.Field>(
+    fields?: T[]
+  ): Pick<Record<IUser.Column, string>, AsColumns<T, typeof FIELD_TO_COLUMN>> {
+    if (!fields) return this.columns;
+    return pick(
+      this.columns,
+      fields.map((field) => FIELD_TO_COLUMN[field])
+    );
   }
 
   builder(tx?: Knex.Transaction) {
-    return tx ? tx<IUser.Row>(this.table) : knex<IUser.Row>(this.table);
+    const builder = tx || knex;
+    return builder<IUser.Row>(this.table);
   }
 
   column(value: keyof IUser.Row) {

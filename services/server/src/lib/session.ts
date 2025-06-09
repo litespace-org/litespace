@@ -28,11 +28,10 @@ export async function canAccessSession({
   }
 
   if (type === "interview") {
-    const interview = await interviews.findBySessionId(sessionId);
+    const interview = await interviews.findOne({ sessions: [sessionId] });
     if (!interview) return false;
     const isMember =
-      interview.ids.interviewer === userId ||
-      interview.ids.interviewee === userId;
+      interview.interviewerId === userId || interview.intervieweeId === userId;
     if (isMember) return true;
   }
 

@@ -65,7 +65,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     return !!lessons.query.data && !!lessons.query.data.list.length;
   }, [lessons]);
 
-  const { query: tutorAvailabilitySlots } = useFindAvailabilitySlots({
+  const tutorAvailabilitySlots = useFindAvailabilitySlots({
     userId: tutorId,
     after: now.current.utc().toISOString(),
     before: now.current.utc().add(2, "week").toISOString(),

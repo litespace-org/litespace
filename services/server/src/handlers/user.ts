@@ -4,8 +4,15 @@ import {
   knex,
   lessons,
   confirmationCodes,
+  interviews,
 } from "@litespace/models";
-import { IConfirmationCode, ILesson, ITutor, IUser } from "@litespace/types";
+import {
+  IConfirmationCode,
+  IInterview,
+  ILesson,
+  ITutor,
+  IUser,
+} from "@litespace/types";
 import {
   apierror,
   bad,
@@ -41,7 +48,7 @@ import {
 } from "@/validation/utils";
 import { jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, groupBy, sample } from "lodash";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import {
@@ -61,6 +68,7 @@ import {
   isSuperAdmin,
   isTutor,
   isTutorManager,
+  isRegularTutor,
 } from "@litespace/utils/user";
 import { encodeAuthJwt } from "@litespace/auth";
 import { cache } from "@/lib/cache";
@@ -218,6 +226,10 @@ const findFullTutorsQuery = zod.object({
   createdAt: dateFilter.optional().describe("filter by tutors created at date"),
   page: zod.optional(pageNumber).default(paginationDefaults.page),
   size: zod.optional(pageSize).default(paginationDefaults.size),
+});
+
+const findTutorMetaQuery: ZodSchema<ITutor.FindTutorMetaApiQuery> = zod.object({
+  tutorId: id,
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
@@ -459,11 +471,29 @@ async function selectInterviewer(
 }
 
 async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
-  const { tutorId } = withNamedId("tutorId").parse(req.params);
-  const tutor = await tutors.findSelfById(tutorId);
+  const { tutorId } = findTutorMetaQuery.parse(req.query);
+  const user = req.user;
+  const allowed = isAdmin(user) || (isTutor(user) && user.id === tutorId);
+  if (!allowed) return next(forbidden());
 
+  const tutor = await tutors.findSelfById(tutorId);
   if (!tutor) return next(notfound.tutor());
-  const response: ITutor.FindTutorMetaApiResponse = await withImageUrl(tutor);
+
+  const interview = isRegularTutor(user)
+    ? await interviews.findOne({
+        interviewees: [tutorId],
+      })
+    : null;
+
+  const response: ITutor.FindTutorMetaApiResponse = await withImageUrl({
+    ...tutor,
+    passedIntroVideo: isTutorManager(user),
+    passedInterview: isTutorManager(user)
+      ? true
+      : interview?.status === IInterview.Status.Passed,
+    passedDemoSession: isTutorManager(user),
+  });
+
   res.status(200).json(response);
 }
 

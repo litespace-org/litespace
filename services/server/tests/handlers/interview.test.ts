@@ -8,91 +8,33 @@ import {
   busyTutorManager,
   conflictingInterview,
   forbidden,
-  interviewAlreadySigned,
   notfound,
 } from "@/lib/error";
 import dayjs from "dayjs";
 import { interviews } from "@litespace/models";
 import { genSessionId } from "@litespace/utils";
 
-const findInterviewById = mockApi<object, { interviewId: number }, object>(
-  handlers.findInterviewById
-);
-
 const findInterviews = mockApi<
   object,
   object,
-  IInterview.FindInterviewsApiQuery
->(handlers.findInterviews);
+  IInterview.FindApiQuery,
+  IInterview.FindApiResponse
+>(handlers.find);
 
-const createInterview = mockApi<IInterview.CreateApiPayload>(
-  handlers.createInterview
+const createInterview = mockApi<IInterview.CreateApiPayload, void, void, void>(
+  handlers.create
 );
 
 const updateInterview = mockApi<
   IInterview.UpdateApiPayload,
-  { interviewId: number }
->(handlers.updateInterview);
+  void,
+  void,
+  IInterview.UpdateApiResponse
+>(handlers.update);
 
 describe.skip("/api/v1/interview/", () => {
   beforeEach(async () => {
     await db.flush();
-  });
-
-  describe("GET /api/v1/interview/:interviewId", () => {
-    it("should respond with forbidden if the requester is not allowed", async () => {
-      const student = await db.user({ role: IUser.Role.Student });
-      const foreignTutor = await db.user({ role: IUser.Role.Tutor });
-      const foreignTutorManager = await db.user({
-        role: IUser.Role.TutorManager,
-      });
-
-      const tutorManager = await db.tutorManager();
-      const tutor = await db.tutor();
-
-      const interview = await db.interview({
-        interviewer: tutorManager.id,
-        interviewee: tutor.id,
-      });
-
-      const res1 = await findInterviewById({
-        params: { interviewId: interview.ids.self },
-        user: student,
-      });
-
-      const res2 = await findInterviewById({
-        params: { interviewId: interview.ids.self },
-        user: foreignTutor,
-      });
-
-      const res3 = await findInterviewById({
-        params: { interviewId: interview.ids.self },
-        user: foreignTutorManager,
-      });
-
-      expect(res1).to.deep.eq(forbidden());
-      expect(res2).to.deep.eq(forbidden());
-      expect(res3).to.deep.eq(forbidden());
-    });
-
-    it("should respond with a specific interview info by its id", async () => {
-      const admin = await db.user({ role: IUser.Role.RegularAdmin });
-      const tutorManager = await db.tutorManager();
-      const tutor = await db.tutor();
-
-      const interview = await db.interview({
-        interviewer: tutorManager.id,
-        interviewee: tutor.id,
-      });
-
-      const res = await findInterviewById({
-        params: { interviewId: interview.ids.self },
-        user: admin,
-      });
-
-      expect(res.status).to.eq(200);
-      expect(res.body).to.deep.eq(interview);
-    });
   });
 
   describe("GET /api/v1/interview/list", () => {
@@ -114,8 +56,8 @@ describe.skip("/api/v1/interview/", () => {
       await Promise.all(
         tutorsList.map((tutor) =>
           db.interview({
-            interviewer: tutorManager.id,
-            interviewee: tutor.id,
+            interviewerId: tutorManager.id,
+            intervieweeId: tutor.id,
           })
         )
       );
@@ -153,8 +95,8 @@ describe.skip("/api/v1/interview/", () => {
       const interviewList = await Promise.all(
         tutorsList.map((tutor) =>
           db.interview({
-            interviewer: tutorManager.id,
-            interviewee: tutor.id,
+            interviewerId: tutorManager.id,
+            intervieweeId: tutor.id,
           })
         )
       );
@@ -167,9 +109,9 @@ describe.skip("/api/v1/interview/", () => {
       });
 
       expect(res.status).to.eq(200);
-      const body = res.body as IInterview.FindInterviewsApiResponse;
+      const body = res.body;
       for (const interview of interviewList) {
-        expect(body.list).to.deep.contain(interview);
+        expect(body?.list).to.deep.contain(interview);
       }
     });
   });
@@ -184,7 +126,6 @@ describe.skip("/api/v1/interview/", () => {
       const res = await createInterview({
         user: admin,
         body: {
-          interviewerId: tutorManager.id,
           slotId: slot.id,
           start: slot.start,
         },
@@ -199,7 +140,6 @@ describe.skip("/api/v1/interview/", () => {
       const res = await createInterview({
         user: tutor,
         body: {
-          interviewerId: 12345,
           slotId: 1,
           start: dayjs().toISOString(),
         },
@@ -211,12 +151,12 @@ describe.skip("/api/v1/interview/", () => {
     it("should respond with bad in case the interviewerId is a tutor id", async () => {
       const tutor = await db.user({ role: IUser.Role.Tutor });
       const interviewer = await db.tutor();
+      const slot = await db.slot({ userId: interviewer.id });
 
       const res = await createInterview({
         user: tutor,
         body: {
-          interviewerId: interviewer.id,
-          slotId: 1,
+          slotId: slot.id,
           start: dayjs().toISOString(),
         },
       });
@@ -233,7 +173,6 @@ describe.skip("/api/v1/interview/", () => {
       const res = await createInterview({
         user: tutor,
         body: {
-          interviewerId: tutorManager.id,
           slotId: slot.id,
           start: slot.start,
         },
@@ -254,14 +193,13 @@ describe.skip("/api/v1/interview/", () => {
           .toISOString(),
         session: genSessionId("interview"),
         slot: slot.id,
-        interviewer: tutorManager.id,
-        interviewee: tutor.id,
+        interviewerId: tutorManager.id,
+        intervieweeId: tutor.id,
       });
 
       const res = await createInterview({
         user: tutor,
         body: {
-          interviewerId: tutorManager.id,
           slotId: slot.id,
           start: slot.start,
         },
@@ -278,18 +216,18 @@ describe.skip("/api/v1/interview/", () => {
         start: slot.start,
         session: genSessionId("interview"),
         slot: slot.id,
-        interviewer: tutorManager.id,
-        interviewee: tutor.id,
+        interviewerId: tutorManager.id,
+        intervieweeId: tutor.id,
       });
 
-      await interviews.update(interview.ids.self, {
+      await interviews.update({
+        id: interview.id,
         status: IInterview.Status.Passed,
       });
 
       const res = await createInterview({
         user: tutor,
         body: {
-          interviewerId: tutorManager.id,
           slotId: slot.id,
           start: slot.start,
         },
@@ -304,7 +242,6 @@ describe.skip("/api/v1/interview/", () => {
       await createInterview({
         user: tutor,
         body: {
-          interviewerId: tutorManager.id,
           slotId: slot.id,
           start: slot.start,
         },
@@ -313,7 +250,6 @@ describe.skip("/api/v1/interview/", () => {
       const res = await createInterview({
         user: tutor,
         body: {
-          interviewerId: tutorManager.id,
           slotId: slot.id,
           start: slot.start,
         },
@@ -332,7 +268,6 @@ describe.skip("/api/v1/interview/", () => {
       await createInterview({
         user: tutor1,
         body: {
-          interviewerId: tutorManager.id,
           slotId: slot.id,
           start: slot.start,
         },
@@ -341,7 +276,6 @@ describe.skip("/api/v1/interview/", () => {
       const res = await createInterview({
         user: tutor2,
         body: {
-          interviewerId: tutorManager.id,
           slotId: slot.id,
           start: slot.start,
         },
@@ -362,23 +296,20 @@ describe.skip("/api/v1/interview/", () => {
       const tutorManager = await db.tutorManager();
       const tutor = await db.tutor();
       const interview = await db.interview({
-        interviewer: tutorManager.id,
-        interviewee: tutor.id,
+        interviewerId: tutorManager.id,
+        intervieweeId: tutor.id,
       });
 
       const res1 = await updateInterview({
-        params: { interviewId: interview.ids.self },
-        body: { status: IInterview.Status.Pending },
+        body: { id: interview.id, status: IInterview.Status.Pending },
         user: requesters.student,
       });
       const res2 = await updateInterview({
-        params: { interviewId: interview.ids.self },
-        body: { status: IInterview.Status.Pending },
+        body: { id: interview.id, status: IInterview.Status.Pending },
         user: requesters.tutor,
       });
       const res3 = await updateInterview({
-        params: { interviewId: interview.ids.self },
-        body: { status: IInterview.Status.Pending },
+        body: { id: interview.id, status: IInterview.Status.Pending },
         user: requesters.tutorManager,
       });
 
@@ -391,8 +322,7 @@ describe.skip("/api/v1/interview/", () => {
       const admin = await db.user({ role: IUser.Role.SuperAdmin });
 
       const res = await updateInterview({
-        params: { interviewId: 12345 },
-        body: { status: IInterview.Status.Pending },
+        body: { id: 12345, status: IInterview.Status.Pending },
         user: admin,
       });
 
@@ -403,20 +333,19 @@ describe.skip("/api/v1/interview/", () => {
       const tutorManager = await db.tutorManager();
       const tutor = await db.user({ role: IUser.Role.Tutor });
       const interview = await db.interview({
-        interviewer: tutorManager.id,
-        interviewee: tutor.id,
+        interviewerId: tutorManager.id,
+        intervieweeId: tutor.id,
       });
 
       const res1 = await updateInterview({
-        params: { interviewId: interview.ids.self },
-        body: { feedback: { interviewee: "empty" } },
+        body: { id: interview.id, intervieweeFeedback: "empty" },
         user: tutor,
       });
 
       const res2 = await updateInterview({
-        params: { interviewId: interview.ids.self },
         body: {
-          feedback: { interviewee: "empty" },
+          id: interview.id,
+          intervieweeFeedback: "empty",
           status: IInterview.Status.Passed,
         },
         user: tutor,
@@ -424,52 +353,6 @@ describe.skip("/api/v1/interview/", () => {
 
       expect(res1.status).to.eq(200);
       expect(res2).to.deep.eq(forbidden());
-    });
-
-    it("should successfully update the interview data", async () => {
-      const admin = await db.user({ role: IUser.Role.SuperAdmin });
-
-      const tutorManager = await db.tutorManager();
-      const tutor = await db.tutor();
-      const interview = await db.interview({
-        interviewer: tutorManager.id,
-        interviewee: tutor.id,
-      });
-
-      const res = await updateInterview({
-        params: { interviewId: interview.ids.self },
-        body: { sign: true },
-        user: admin,
-      });
-
-      expect(res.status).to.eq(200);
-      const body = res.body as IInterview.Self;
-      expect(body.ids.self).to.eq(interview.ids.self);
-    });
-
-    it("should respond with 'interview already signed' error response", async () => {
-      const admin = await db.user({ role: IUser.Role.SuperAdmin });
-
-      const tutorManager = await db.tutorManager();
-      const tutor = await db.tutor();
-      const interview = await db.interview({
-        interviewer: tutorManager.id,
-        interviewee: tutor.id,
-      });
-
-      await updateInterview({
-        params: { interviewId: interview.ids.self },
-        body: { sign: true },
-        user: admin,
-      });
-
-      const res = await updateInterview({
-        params: { interviewId: interview.ids.self },
-        body: { sign: true },
-        user: admin,
-      });
-
-      expect(res).to.deep.eq(interviewAlreadySigned());
     });
   });
 });

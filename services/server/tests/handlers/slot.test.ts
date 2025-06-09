@@ -48,7 +48,7 @@ async function genMockData(tutorId: number, datetime: dayjs.Dayjs) {
   });
 
   const interview1 = await db.interview({
-    interviewer: tutorId,
+    interviewerId: tutorId,
     start: datetime.add(1, "hour").toISOString(),
     slot: slot1.id,
   });

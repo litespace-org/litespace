@@ -19,7 +19,7 @@ const Tutor: React.FC = () => {
     return Number(id);
   }, [params.id]);
 
-  const { query: slotsQuery } = useFindAvailabilitySlots({
+  const slotsQuery = useFindAvailabilitySlots({
     userId: tutorId || 0,
     after: start.toISOString(),
     before: end.toISOString(),

@@ -3,7 +3,6 @@ import { UserContext, Context } from "@/user/context";
 import { useCurrentUser } from "@/user";
 import { LocalStorage } from "@/storage/local";
 import { CacheKey } from "@/constants";
-import { ITutor, IUser } from "@litespace/types";
 import { useFindTutorMeta } from "@/tutor";
 import { useServer } from "@/server";
 import dayjs from "@/lib/dayjs";
@@ -12,8 +11,8 @@ import { TokenType } from "@litespace/atlas";
 import { isTutor } from "@litespace/utils";
 
 type Data = {
-  user: IUser.Self | null;
-  meta: ITutor.Self | null;
+  user: Context["user"];
+  meta: Context["meta"];
 };
 
 const defaultData: Data = {
@@ -36,7 +35,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const { token, tokenPayload, tokenExpired, setBearerToken, removeToken } =
     useServer();
 
-  //=================== Refersh token =====================
+  // =================== refersh token =====================
 
   const refershToken = useRefreshAuthToken({
     onSuccess: (token) => {
@@ -81,50 +80,56 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [removeToken]);
 
   //=================== User data (and tutor's metadata) =====================
-  const { query: user } = useCurrentUser(!tokenExpired && !!token);
+  const userQuery = useCurrentUser(!tokenExpired && !!token);
 
   const tutorId = useMemo(() => {
     if (!isTutor(userData.user)) return;
     return userData.user.id;
   }, [userData.user]);
 
-  const { query: meta } = useFindTutorMeta(tutorId);
+  const metaQuery = useFindTutorMeta(tutorId);
 
   useEffect(() => {
-    if (!user.data || user.isLoading || user.isFetching) return;
-    setData({ user: user.data });
-  }, [user.data, user.isFetching, user.isLoading, setBearerToken, setData]);
+    if (!userQuery.data || userQuery.isLoading || userQuery.isFetching) return;
+    setData({ user: userQuery.data });
+  }, [
+    setBearerToken,
+    setData,
+    userQuery.data,
+    userQuery.isLoading,
+    userQuery.isFetching,
+  ]);
 
   useEffect(() => {
-    if (!meta.data || meta.isLoading || meta.isFetching) return;
-    setData({ meta: meta.data });
-  }, [meta.data, meta.isFetching, meta.isLoading, setData]);
+    if (!metaQuery.data || metaQuery.isLoading || metaQuery.isFetching) return;
+    setData({ meta: metaQuery.data });
+  }, [metaQuery.data, metaQuery.isFetching, metaQuery.isLoading, setData]);
 
   const context = useMemo((): Context => {
     return {
       user: userData.user,
       meta: userData.meta,
-      loading: user.isLoading || meta.isLoading,
-      fetching: user.isFetching || meta.isFetching,
-      isError: user.isError || meta.isError,
-      error: user.error || meta.error,
-      refetch: { user: user.refetch, meta: meta.refetch },
+      loading: userQuery.isLoading || metaQuery.isLoading,
+      fetching: userQuery.isFetching || metaQuery.isFetching,
+      isError: userQuery.isError || metaQuery.isError,
+      error: userQuery.error || metaQuery.error,
+      refetch: { user: userQuery.refetch, meta: metaQuery.refetch },
       set: setData,
       logout,
     };
   }, [
     userData.user,
     userData.meta,
-    user.isLoading,
-    user.isFetching,
-    user.isError,
-    user.error,
-    user.refetch,
-    meta.isLoading,
-    meta.isFetching,
-    meta.isError,
-    meta.error,
-    meta.refetch,
+    userQuery.isLoading,
+    userQuery.isFetching,
+    userQuery.isError,
+    userQuery.error,
+    userQuery.refetch,
+    metaQuery.isLoading,
+    metaQuery.isFetching,
+    metaQuery.isError,
+    metaQuery.error,
+    metaQuery.refetch,
     setData,
     logout,
   ]);

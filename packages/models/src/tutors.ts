@@ -144,6 +144,7 @@ export class Tutors {
     verifiedPhone,
     verifiedTelegram,
     verifiedWhatsapp,
+    role,
     birthYear,
     notice,
     createdAt,
@@ -151,7 +152,7 @@ export class Tutors {
     gender,
     notificationMethod,
     ...pagination
-  }: WithOptionalTx<ITutor.FindQueryModel>): Promise<Paginated<ITutor.Full>> {
+  }: WithOptionalTx<ITutor.FindModelQuery>): Promise<Paginated<ITutor.Full>> {
     const builder = this.builder(tx)
       .from<IUser.Row>(users.table)
       .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"));
@@ -187,6 +188,7 @@ export class Tutors {
     // ============== numerical fileds ========
     withNumericFilter(builder, users.column("birth_year"), birthYear);
     withNumericFilter(builder, this.column("notice"), notice);
+
     // ============== date fields ========
     withDateFilter(builder, users.column("created_at"), createdAt);
 
@@ -198,6 +200,7 @@ export class Tutors {
       notificationMethod
     );
     withListFilter(builder, users.column("gender"), gender);
+    withListFilter(builder, users.column("role"), role);
 
     const total = await countRows(builder.clone(), { distinct: true });
     const query = builder

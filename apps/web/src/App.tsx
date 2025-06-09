@@ -31,6 +31,9 @@ const Invoices = lazy(() => import("@/pages/Invoices"));
 const CardAdded = lazy(() => import("@/pages/CardAdded"));
 const Checkout = lazy(() => import("@/pages/Checkout"));
 const CompleteTutorProfile = lazy(() => import("@/pages/CompleteTutorProfile"));
+const TutorOnboarding = lazy(() => import("@/pages/TutorOnboarding"));
+const Interview = lazy(() => import("@/pages/Interview"));
+const DemoSession = lazy(() => import("@/pages/DemoSession"));
 
 const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
@@ -68,6 +71,9 @@ const router = createRouter([
       { path: Web.CardAdded, element: <CardAdded /> },
       { path: Web.Checkout, element: <Checkout /> },
       { path: Web.CompleteTutorProfile, element: <CompleteTutorProfile /> },
+      { path: Web.TutorOnboarding, element: <TutorOnboarding /> },
+      { path: Web.Interview, element: <Interview /> },
+      { path: Web.DemoSession, element: <DemoSession /> },
     ]),
     errorElement: <Splash children={<Crash screen />} />,
   },
