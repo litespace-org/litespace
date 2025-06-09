@@ -218,7 +218,7 @@ export const Select = <T extends string | number>({
   );
 };
 
-const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
+export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
   ({ children, className, ...props }, ref) => {
     return (
       <Item

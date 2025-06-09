@@ -8,10 +8,10 @@ export default {
   darkMode: "class",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
-    fontFamily: {
-      cairo: ["Cairo", "sans-serif"],
-    },
     extend: {
+      fontFamily: {
+        cairo: ["Cairo", "sans-serif"],
+      },
       width: {
         "spinner-x": "1.5rem",
         "spinner-2x": "2rem",

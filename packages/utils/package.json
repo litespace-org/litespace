@@ -116,6 +116,10 @@
     "./plan": {
       "import": "./dist/esm/plan.js",
       "require": "./dist/cjs/plan.js"
+    },
+    "./filterQuery": {
+      "import": "./dist/esm/filterQuery/index.js",
+      "require": "./dist/cjs/filterQuery/index.js"
     }
   },
   "react-native": {

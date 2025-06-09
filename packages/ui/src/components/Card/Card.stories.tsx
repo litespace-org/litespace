@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "@/components/Card";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
-import ar from "@/locales/ar-eg.json";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Card;
 
@@ -14,7 +14,7 @@ const meta: Meta<Component> = {
 
 export const Primary: StoryObj<Component> = {
   args: {
-    children: ar["global.notify.schedule.update.success"],
+    children: faker.lorem.paragraphs(5),
   },
 };
 

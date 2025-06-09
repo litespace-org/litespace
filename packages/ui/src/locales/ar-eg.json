@@ -480,6 +480,7 @@
   "dashboard.tutor.form.create.success": "تم إنشاء معلم بنجاح 🎉",
   "dashboard.tutor.form.create.error": "نأسف، حدث خطأ أثناء إنشاء معلم",
   "dashboard.tutor.form.email.label": "البريد الإلكتروني",
+  "dashboard.query-filter.dialog-title": "قائمة عوامل التصفية",
   "dashboard.labels.price-before-discount": "قبل الخصم: {value} ج.م",
   "dashboard.labels.price-after-discount": "بعد الخصم: {value} ج.م",
   "dashboard.labels.price-diff": "الفرق: {value} ج.م",
