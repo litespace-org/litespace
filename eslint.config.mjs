@@ -24,7 +24,6 @@ export default [
       "**/tailwind.config.js",
       "**/src-tauri",
       "**/ecosystem.config.js",
-      // "**/apps/web",
       "**/apps/dashboard",
       "**/apps/mobile",
       "**/apps/blog",

@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       script: "pnpm start",
-      name: "deployer",
+      name: "jobs",
     },
   ],
 };
