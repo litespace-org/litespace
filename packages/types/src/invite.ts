@@ -52,3 +52,7 @@ export type UpdatePayload = Partial<Omit<CreatePayload, "createdBy">> & {
 export type CreateApiPayload = Omit<CreatePayload, "createdBy">;
 
 export type UpdateApiPayload = Omit<UpdatePayload, "updatedBy">;
+
+export type FindByEmailApiPayload = {
+  email: string;
+};

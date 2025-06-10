@@ -3,7 +3,7 @@ import { IConfirmationCode } from "@litespace/types";
 
 export class ConfirmationCode extends Base {
   async sendVerifyPhoneCode(
-    payload: IConfirmationCode.SendVerifyPhoneCodePayload
+    payload: IConfirmationCode.SendVerifyPhoneCodeApiPayload
   ): Promise<void> {
     return await this.post({
       route: `/api/v1/confirmation-code/phone/send`,
@@ -12,7 +12,7 @@ export class ConfirmationCode extends Base {
   }
 
   async verifyPhoneCode(
-    payload: IConfirmationCode.VerifyPhoneCodePayload
+    payload: IConfirmationCode.VerifyPhoneCodeApiPayload
   ): Promise<void> {
     return await this.post({
       route: `/api/v1/confirmation-code/phone/verify`,
@@ -21,7 +21,7 @@ export class ConfirmationCode extends Base {
   }
 
   async confirmVerificationEmailCode(
-    payload: IConfirmationCode.VerifyEmailPayload
+    payload: IConfirmationCode.VerifyEmailApiPayload
   ): Promise<void> {
     await this.post({
       route: "/api/v1/confirmation-code/email/confirm",
@@ -36,7 +36,7 @@ export class ConfirmationCode extends Base {
   }
 
   async confirmForgetPasswordCode(
-    payload: IConfirmationCode.ConfirmForgetPasswordCodePayload
+    payload: IConfirmationCode.ConfirmForgetPasswordCodeApiPayload
   ): Promise<IConfirmationCode.ConfirmPasswordCodeApiResponse> {
     await this.post({
       route: "/api/v1/confirmation-code/password/confirm",
@@ -45,7 +45,7 @@ export class ConfirmationCode extends Base {
   }
 
   async sendForgetPasswordCode(
-    payload: IConfirmationCode.SendForgetPasswordEmailPayload
+    payload: IConfirmationCode.SendForgetPasswordEmailApiPayload
   ): Promise<void> {
     await this.post({
       route: "/api/v1/confirmation-code/password/send",

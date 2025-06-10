@@ -22,7 +22,7 @@ import { invoices, lessons } from "@litespace/models";
 import { IInvoice, IUser, Wss } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import {
   isValidInvoiceAmount,
   isValidInvoiceNote,
@@ -30,14 +30,14 @@ import {
 } from "@litespace/utils";
 import bytes from "bytes";
 
-const createPayload = zod.object({
+const createPayload: ZodSchema<IInvoice.CreateApiPayload> = zod.object({
   method: withdrawMethod,
   receiver: zod.string(),
   amount: zod.coerce.number().int().positive(),
   note: zod.optional(zod.string()),
 });
 
-const updatePayload = zod.object({
+const updatePayload: ZodSchema<IInvoice.UpdateApiPayload> = zod.object({
   status: zod.optional(zod.nativeEnum(IInvoice.Status)),
   note: zod.optional(zod.string()),
 });
@@ -48,7 +48,7 @@ const orderByOptions = [
   "amount",
 ] as const satisfies Array<IInvoice.FindInvoicesQuery["orderBy"]>;
 
-const findPayload = zod.object({
+const findQuery: ZodSchema<IInvoice.FindInvoicesQuery> = zod.object({
   users: zod.optional(ids),
   methods: zod.optional(zod.array(withdrawMethod)),
   statuses: zod.optional(zod.array(invoiceStatus)),
@@ -229,7 +229,7 @@ function update(context: ApiContext) {
 
 async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const query: IInvoice.FindInvoicesQuery = findPayload.parse(req.query);
+  const query: IInvoice.FindInvoicesQuery = findQuery.parse(req.query);
   const itsTutor = isRegularTutor(user);
   const allowed = itsTutor || isAdmin(user);
   if (!allowed) return next(forbidden());

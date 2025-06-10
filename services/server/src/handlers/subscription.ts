@@ -1,4 +1,4 @@
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import { IPlan, ISubscription } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
@@ -16,7 +16,7 @@ import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
 import { calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription } from "@/lib/subscription";
 
-const findQuery = zod.object({
+const findQuery: ZodSchema<ISubscription.FindApiQuery> = zod.object({
   ids: id.array().optional(),
   users: id.array().optional(),
   plans: id.array().optional(),
@@ -48,9 +48,10 @@ const findQuery = zod.object({
   size: pageSize.optional().default(10),
 });
 
-const findUserSubscriptionQuery = zod.object({
-  userId: id,
-});
+const findUserSubscriptionQuery: ZodSchema<ISubscription.FindUserSubscriptionApiQuery> =
+  zod.object({
+    userId: id,
+  });
 
 async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;

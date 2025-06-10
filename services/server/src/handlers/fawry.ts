@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 
 import {
   isAdmin,
@@ -51,7 +51,7 @@ const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "year",
 ]);
 
-const payWithCardPayload = zod.object({
+const payWithCardPayload: ZodSchema<IFawry.PayWithCardPayload> = zod.object({
   planId: id,
   cardToken: zod.string(),
   period: planPeroid,
@@ -59,51 +59,60 @@ const payWithCardPayload = zod.object({
   phone: zod.string().optional(),
 });
 
-const payWithRefNumPayload = zod.object({
-  planId: id,
-  period: planPeroid,
-  phone: zod.string().optional(),
-});
+const payWithRefNumPayload: ZodSchema<IFawry.PayWithRefNumPayload> = zod.object(
+  {
+    planId: id,
+    period: planPeroid,
+    phone: zod.string().optional(),
+  }
+);
 
-const payWithEWalletPayload = zod.object({
-  planId: id,
-  period: planPeroid,
-  wallet: zod.string(),
-  phone: zod.string().optional(),
-});
+const payWithEWalletPayload: ZodSchema<IFawry.PayWithEWalletPayload> =
+  zod.object({
+    planId: id,
+    period: planPeroid,
+    wallet: zod.string(),
+    phone: zod.string().optional(),
+  });
 
-const payWithBankInstallmentsPayload = zod.object({
-  planId: zod.number(),
-  amount: zod.number(),
-  cardToken: zod.string(),
-  cvv: zod.number(),
-  returnUrl: zod.string(),
-});
+const payWithBankInstallmentsPayload: ZodSchema<IFawry.PayWithBankInstallmentsPayload> =
+  zod.object({
+    planId: zod.number(),
+    amount: zod.number(),
+    cardToken: zod.string(),
+    cvv: zod.number(),
+    returnUrl: zod.string(),
+  });
 
-const cancelUnpaidOrderPayload = zod.object({
-  transactionId: id,
-});
+const cancelUnpaidOrderPayload: ZodSchema<IFawry.CancelUnpaidOrderPayload> =
+  zod.object({
+    transactionId: id,
+  });
 
-const syncPaymentPayload = zod.object({ transactionId: id });
+const syncPaymentPayload: ZodSchema<IFawry.SyncPaymentStatusPayload> =
+  zod.object({ transactionId: id });
 
-const refundPayload = zod.object({
+const refundPayload: ZodSchema<IFawry.RefundPayload> = zod.object({
   orderRefNum: zod.string(),
   refundAmount: zod.number(),
   reason: zod.string().optional(),
 });
 
-const findCardTokensQueryPayload = zod.object({
-  userId: id,
-});
+const findCardTokensQuery: ZodSchema<IFawry.FindCardTokensApiQuery> =
+  zod.object({
+    userId: id,
+  });
 
-const deleteCardTokenPayload = zod.object({
-  cardToken: zod.string(),
-  userId: id,
-});
+const deleteCardTokenPayload: ZodSchema<IFawry.DeleteCardTokenPayload> =
+  zod.object({
+    cardToken: zod.string(),
+    userId: id,
+  });
 
-const getPaymentStatusPayload = zod.object({
-  transactionId: id,
-});
+const getPaymentStatusPayload: ZodSchema<IFawry.GetPaymentStatusPayload> =
+  zod.object({
+    transactionId: id,
+  });
 
 const setPaymentStatusPayload = zod.object({
   requestId: zod.string(),
@@ -491,8 +500,9 @@ async function findCardTokens(req: Request, res: Response, next: NextFunction) {
   const allowed = isStudent(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { userId }: IFawry.FindCardTokensApiQuery =
-    findCardTokensQueryPayload.parse(req.query);
+  const { userId }: IFawry.FindCardTokensApiQuery = findCardTokensQuery.parse(
+    req.query
+  );
   if (isStudent(user) && userId !== user.id) return next(forbidden());
 
   const result = await fawry.findCardTokens(userId);

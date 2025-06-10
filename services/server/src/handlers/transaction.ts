@@ -1,4 +1,4 @@
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import { ITransaction } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
@@ -8,7 +8,7 @@ import { isAdmin, isStudent } from "@litespace/utils/user";
 import { transactions } from "@litespace/models";
 import { first } from "lodash";
 
-const findPayload = zod.object({
+const findPayload: ZodSchema<ITransaction.FindApiQuery> = zod.object({
   ids: id.array().optional(),
   users: id.array().optional(),
   amount: zod.number().min(0).optional(),
@@ -26,7 +26,7 @@ async function find(req: Request, res: Response, next: NextFunction) {
   const allowed = isAdmin(user) || isStudent(user);
   if (!allowed) return next(forbidden());
 
-  const payload: ITransaction.FindQueryApi = findPayload.parse(req.body);
+  const payload = findPayload.parse(req.body);
 
   const response: ITransaction.FindApiResponse = await transactions.find({
     ...payload,

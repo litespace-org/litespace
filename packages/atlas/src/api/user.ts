@@ -109,7 +109,7 @@ export class User extends Base {
   }
 
   async findOnboardedTutors(
-    params?: ITutor.FindOnboardedTutorsParams
+    params?: ITutor.FindOnboardedTutorsQuery
   ): Promise<ITutor.FindOnboardedTutorsApiResponse> {
     return await this.get({
       route: `/api/v1/user/tutor/list/onboarded`,

@@ -55,7 +55,7 @@ const createPayload: ZodSchema<IInterview.CreateApiPayload> = zod.object({
   slotId: id,
 });
 
-const findQuery = zod.object({
+const findQuery: ZodSchema<IInterview.FindApiQuery> = zod.object({
   ids: ids.describe("filter by interview id").optional(),
   userss: ids.describe("filter by user ids").optional(),
   interviewers: ids.describe("filter by interviewer ids").optional(),

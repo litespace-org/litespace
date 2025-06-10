@@ -50,9 +50,14 @@ export type CreateUserTopicsPayload = {
   topics: number[];
 };
 
-export type CreateApiPayload = {
+export type CreateTopicApiPayload = {
   arabicName: string;
   englishName: string;
+};
+
+export type UpdateTopicApiPayload = {
+  arabicName?: string;
+  englishName?: string;
 };
 
 /**

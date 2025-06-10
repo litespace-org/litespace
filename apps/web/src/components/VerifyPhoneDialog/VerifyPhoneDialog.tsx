@@ -13,11 +13,11 @@ type Props = {
   open: boolean;
   close: Void;
   phone: string | null;
-  sendCode(payload: IConfirmationCode.SendVerifyPhoneCodePayload): void;
+  sendCode(payload: IConfirmationCode.SendVerifyPhoneCodeApiPayload): void;
   sendingCode: boolean;
   sentCode: boolean;
   unresolvedPhone: boolean;
-  verifyCode(payload: IConfirmationCode.VerifyPhoneCodePayload): void;
+  verifyCode(payload: IConfirmationCode.VerifyPhoneCodeApiPayload): void;
   verifyingCode: boolean;
 };
 
