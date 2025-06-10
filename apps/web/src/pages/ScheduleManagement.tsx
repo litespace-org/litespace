@@ -22,6 +22,7 @@ import { IAvailabilitySlot } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isEmpty } from "lodash";
 import { useCalendarController } from "@/hooks/calendar";
+import { Optional } from "@litespace/ui/Optional";
 
 const ScheduleManagement: React.FC = () => {
   const { md } = useMediaQuery();
@@ -173,26 +174,28 @@ const ScheduleManagement: React.FC = () => {
         />
       </div>
 
-      <ManageSchedule
-        initialSlots={manageScheduleProps.initialSlots}
-        date={manageScheduleProps.date}
-        open={manageScheduleProps.open}
-        next={next}
-        prev={prev}
-        save={(actions) => mutateSlots.mutate(actions)}
-        retry={() => slotsQuery.refetch()}
-        close={() =>
-          setManageScheduleProps((prev) => ({
-            ...prev,
-            open: false,
-            initialSlots: [], // for better user experience
-          }))
-        }
-        loading={slotsQuery.isFetching}
-        error={!!slotsQuery.error}
-        singleDay={manageScheduleProps.singleDay}
-        saving={mutateSlots.isPending}
-      />
+      <Optional unmount show={manageScheduleProps.open}>
+        <ManageSchedule
+          initialSlots={manageScheduleProps.initialSlots}
+          date={manageScheduleProps.date}
+          open={manageScheduleProps.open}
+          next={next}
+          prev={prev}
+          save={(actions) => mutateSlots.mutate(actions)}
+          retry={slotsQuery.refetch}
+          close={() =>
+            setManageScheduleProps((prev) => ({
+              ...prev,
+              open: false,
+              initialSlots: [], // for better user experience
+            }))
+          }
+          loading={slotsQuery.isFetching}
+          error={!!slotsQuery.error}
+          singleDay={manageScheduleProps.singleDay}
+          saving={mutateSlots.isPending}
+        />
+      </Optional>
 
       <DeleteSlotDialog
         slotId={deleteDialogProps.slotId}

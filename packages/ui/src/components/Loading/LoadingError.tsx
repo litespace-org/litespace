@@ -6,7 +6,6 @@ import { Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
 import { useLogger } from "@litespace/headless/logger";
-import { useUser } from "@litespace/headless/context/user";
 import { useToast } from "@/components/Toast";
 import { safePromise } from "@litespace/utils";
 
@@ -18,13 +17,11 @@ export const LoadingError: React.FC<{
   const intl = useFormatMessage();
   const logger = useLogger();
   const toast = useToast();
-  const { user } = useUser();
   const [saving, setSaving] = useState<boolean>(false);
 
   const save = useCallback(async () => {
-    const context = `[context] user=${user?.id || "??"}, url=${window.location.href}`;
     setSaving(true);
-    const result = await safePromise(logger.save(context));
+    const result = await safePromise(logger.save());
     setSaving(false);
     // todo: show a toast error to the user
     if (result instanceof Error)
@@ -33,7 +30,7 @@ export const LoadingError: React.FC<{
       title: intl("logs.export.title"),
       description: intl("logs.export.desc"),
     });
-  }, [intl, logger, toast, user?.id]);
+  }, [intl, logger, toast]);
 
   return (
     <div className="flex flex-col items-center justify-center w-[226px]">

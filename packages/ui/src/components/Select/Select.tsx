@@ -113,7 +113,7 @@ export const Select = <T extends string | number>({
               "bg-natural-50 transition-colors duration-200",
               "transition-colors duration-200",
               "disabled:cursor-not-allowed disabled:bg-natural-100 disabled:border-natural-200",
-              "focus-visible:outline-none focus-visible:ring-2 focus:ring-brand-600",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
               "border",
               {
                 // default or filled
@@ -231,7 +231,7 @@ export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
           // display and dimentions
           "flex shrink-0 items-center justify-between",
           "h-[34px] p-2",
-          "cursor-pointer focus:outline-none focus:ring-inset focus:ring-1 focus:ring-secondary-600 focus:z-select-item",
+          "cursor-pointer focus:outline-none focus:ring-inset focus:ring-1 focus:ring-brand-500 focus:z-select-item",
           "data-[disabled]:cursor-not-allowed",
           className
         )}

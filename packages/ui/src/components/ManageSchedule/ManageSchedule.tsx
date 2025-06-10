@@ -12,8 +12,9 @@ import { IAvailabilitySlot, Void } from "@litespace/types";
 import cn from "classnames";
 import { concat, isEmpty, range, unionBy } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { Dayjs } from "dayjs";
+import { Optional } from "@/components/Optional";
 
 const WEEK_DAYS = 7;
 
@@ -39,34 +40,6 @@ export type Props = {
 function randomSlotId(): number {
   return -Math.floor(Math.random() * 1_000_000);
 }
-
-const Animate: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
-  return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        height: 0,
-      }}
-      animate={{
-        opacity: 1,
-        height: "auto",
-        transition: {
-          type: "spring",
-          stiffness: 900,
-          damping: 40,
-        },
-      }}
-      exit={{
-        opacity: 0,
-        height: 0,
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-};
 
 export const ManageSchedule: React.FC<Props> = ({
   date,
@@ -220,150 +193,216 @@ export const ManageSchedule: React.FC<Props> = ({
           {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
         </Typography>
       }
-      className="overflow-y-auto w-full md:w-[565px]"
+      className="overflow-y-auto w-full md:w-[548px]"
       position={md ? "center" : "bottom"}
     >
-      {!singleDay ? (
-        <div className="pt-4 lg:pt-6 pb-4">
-          <div className="flex items-center justify-center gap-4 mb-4 lg:mb-6">
-            <button
-              type="button"
-              onClick={prev}
-              disabled={loading}
-              className="disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
-            </button>
+      <Optional show={!singleDay}>
+        <Header
+          weekStart={weekStart}
+          loading={loading}
+          prev={prev}
+          next={next}
+        />
+      </Optional>
 
-            <Typography
-              tag="span"
-              className="text-natural-950 text-caption lg:text-body font-semibold lg:font-bold"
-            >
-              {weekStart.format("D MMMM")}
-              {" - "}
-              {weekStart.add(6, "days").format("D MMMM")}
-            </Typography>
+      <Content
+        singleDay={singleDay}
+        loading={loading}
+        saving={saving}
+        error={error}
+        addSlot={addSlot}
+        removeSlot={removeSlot}
+        updateSlot={updateSlot}
+        days={days}
+        retry={retry}
+        today={today}
+      />
 
-            <button
-              type="button"
-              onClick={next}
-              disabled={loading}
-              className="disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <ArrowLeft className="[&>*]:stroke-brand-700 w-6 h-6" />
-            </button>
-          </div>
-
-          <Typography
-            tag="span"
-            className="text-natural-950 mb-4 mt-6 font-semibold lg:font-bold text-caption lg:text-body"
-          >
-            {intl("manage-schedule.manage-dialog.available-days")}
-          </Typography>
-        </div>
-      ) : null}
-
-      <div
-        className={cn(
-          "flex flex-col gap-4 mb-6",
-          /**
-           * 160px - the vertical space that should be around the dialog (80 at
-           * the top and 80 at the bottom).
-           *
-           * 190px - the sum of the rest of the dialog elements (e.g., dialog title, dates, ...).
-           */
-          "max-h-[calc(100vh-160px-190px)] overflow-y-auto",
-          "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent",
-          { "mt-6": singleDay }
-        )}
-      >
-        <AnimatePresence initial={false} mode="wait">
-          {loading ? (
-            <Animate key="loading">
-              <div className="md:w-[304px] lg:w-[517px] mt-[42px] mb-[72px] flex justify-center items-center">
-                <Loading
-                  size="medium"
-                  text={intl("manage-schedule.manage-dialog.loading.message")}
-                />
-              </div>
-            </Animate>
-          ) : null}
-
-          {error ? (
-            <Animate key="error">
-              <div className="md:w-[342px] mx-[103px] mt-[42px] mb-[72px] flex justify-center items-center">
-                <LoadingError
-                  size="medium"
-                  error={intl("manage-schedule.manage-dialog.error.message")}
-                  retry={retry}
-                />
-              </div>
-            </Animate>
-          ) : null}
-
-          {!loading && !error ? (
-            <Animate key="days">
-              <div className="flex flex-col gap-4 overflow-y-auto scrollbar-thin w-full">
-                {days.map(({ day, slots }) => {
-                  const iso = day.toISOString();
-                  const isDisabled = saving || day.isBefore(today, "day");
-
-                  return (
-                    <div className="flex gap-6 md:gap-2 lg:gap-8" key={iso}>
-                      <Typography
-                        tag="span"
-                        className="inline-block shrink-0 text-natural-950 w-[76px] lg:w-[88px] font-medium text-tiny lg:text-caption"
-                      >
-                        {day.format("dddd M/D")}
-                      </Typography>
-
-                      <DaySlots
-                        slots={slots}
-                        iso={iso}
-                        add={addSlot}
-                        update={updateSlot}
-                        remove={removeSlot}
-                        disabled={isDisabled}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </Animate>
-          ) : null}
-        </AnimatePresence>
-      </div>
-
-      <div className="flex gap-6 mt-auto">
-        <Button
-          className="grow basis-1/2"
-          onClick={() => save(slotActions)}
-          size="large"
-          disabled={isEmpty(slotActions) || invalidSlots || saving}
-          loading={saving}
-        >
-          <Typography
-            tag="span"
-            className="text-natural-50 font-medium lg:font-semibold text-body"
-          >
-            {intl("manage-schedule.save")}
-          </Typography>
-        </Button>
-        <Button
-          onClick={onClose}
-          variant="secondary"
-          size="large"
-          className="grow basis-1/2"
-          disabled={saving}
-        >
-          <Typography
-            tag="span"
-            className="text-brand-700 font-medium lg:font-semibold text-body"
-          >
-            {intl("global.labels.cancel")}
-          </Typography>
-        </Button>
-      </div>
+      <Actions
+        disabled={isEmpty(slotActions) || invalidSlots || saving}
+        save={() => save(slotActions)}
+        saving={saving}
+        close={onClose}
+      />
     </Dialog>
+  );
+};
+
+const Header: React.FC<{
+  loading?: boolean;
+  prev: Void;
+  next: Void;
+  weekStart: Dayjs;
+}> = ({ loading, prev, next, weekStart }) => {
+  const intl = useFormatMessage();
+  return (
+    <div className="pt-4 lg:pt-6 pb-3">
+      <div className="flex items-center justify-center gap-4 mb-4 lg:mb-6">
+        <Button
+          type="natural"
+          variant="secondary"
+          endIcon={<ArrowRight className="icon" />}
+          htmlType="button"
+          disabled={loading}
+          onClick={prev}
+        />
+
+        <Typography
+          tag="span"
+          className="text-natural-950 text-caption lg:text-body font-semibold lg:font-bold"
+        >
+          {weekStart.format("D MMMM")}
+          {" - "}
+          {weekStart.add(6, "days").format("D MMMM")}
+        </Typography>
+
+        <Button
+          type="natural"
+          variant="secondary"
+          endIcon={<ArrowLeft className="icon" />}
+          htmlType="button"
+          disabled={loading}
+          onClick={next}
+        />
+      </div>
+
+      <Typography
+        tag="span"
+        className="text-natural-950 mb-4 mt-6 font-semibold lg:font-bold text-caption lg:text-body"
+      >
+        {intl("manage-schedule.manage-dialog.available-days")}
+      </Typography>
+    </div>
+  );
+};
+
+const Content: React.FC<{
+  singleDay?: boolean;
+  loading?: boolean;
+  saving?: boolean;
+  error?: boolean;
+  retry: Void;
+  days: Array<{
+    day: dayjs.Dayjs;
+    slots: Slot[];
+  }>;
+  updateSlot(payload: { id: number; start?: string; end?: string }): void;
+  addSlot(payload: { day: string; start?: string; end?: string }): void;
+  removeSlot(id: number): void;
+  today: Dayjs;
+}> = ({
+  singleDay,
+  loading,
+  error,
+  retry,
+  days,
+  updateSlot,
+  addSlot,
+  removeSlot,
+  saving,
+  today,
+}) => {
+  const intl = useFormatMessage();
+  return (
+    <div
+      className={cn(
+        "flex flex-col gap-4 mb-6",
+        /**
+         * 160px - the vertical space that should be around the dialog (80 at
+         * the top and 80 at the bottom).
+         *
+         * 190px - the sum of the rest of the dialog elements (e.g., dialog title, dates, ...).
+         */
+        "max-h-[min(calc(100vh-160px-190px),350px)] overflow-y-auto",
+        "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent",
+        { "mt-6": singleDay }
+      )}
+    >
+      <Optional show={!!loading}>
+        <div className="mt-[42px] mb-[72px] flex justify-center items-center">
+          <Loading size="large" />
+        </div>
+      </Optional>
+
+      <Optional show={!!error}>
+        <div className="mt-[42px] mb-[72px] flex justify-center items-center">
+          <LoadingError
+            size="medium"
+            error={intl("manage-schedule.manage-dialog.error.message")}
+            retry={retry}
+          />
+        </div>
+      </Optional>
+
+      <Optional show={!loading && !error}>
+        <div className="flex flex-col gap-2 overflow-y-auto scrollbar-thin w-full">
+          {days.map(({ day, slots }) => {
+            const iso = day.toISOString();
+            const isDisabled = saving || day.isBefore(today, "day");
+
+            return (
+              <div className="flex gap-2" key={iso}>
+                <Typography
+                  tag="span"
+                  className="inline-block shrink-0 text-natural-950 w-[76px] lg:w-[88px] font-medium text-tiny lg:text-caption py-1"
+                >
+                  {day.format("dddd M/D")}
+                </Typography>
+
+                <DaySlots
+                  slots={slots}
+                  iso={iso}
+                  add={addSlot}
+                  update={updateSlot}
+                  remove={removeSlot}
+                  disabled={isDisabled}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </Optional>
+    </div>
+  );
+};
+
+const Actions: React.FC<{
+  save: Void;
+  saving?: boolean;
+  disabled?: boolean;
+  close: Void;
+}> = ({ save, saving, disabled, close }) => {
+  const intl = useFormatMessage();
+  return (
+    <div className="flex gap-6 mt-auto">
+      <Button
+        className="grow basis-1/2"
+        onClick={save}
+        size="large"
+        disabled={disabled}
+        loading={saving}
+      >
+        <Typography
+          tag="span"
+          className="text-natural-50 font-medium lg:font-semibold text-body"
+        >
+          {intl("manage-schedule.save")}
+        </Typography>
+      </Button>
+      <Button
+        onClick={close}
+        variant="secondary"
+        size="large"
+        className="grow basis-1/2"
+        disabled={saving}
+      >
+        <Typography
+          tag="span"
+          className="text-brand-700 font-medium lg:font-semibold text-body"
+        >
+          {intl("global.labels.cancel")}
+        </Typography>
+      </Button>
+    </div>
   );
 };
