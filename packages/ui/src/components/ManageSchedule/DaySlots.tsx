@@ -5,7 +5,6 @@ import { subtractSlots } from "@litespace/utils";
 import { optional } from "@litespace/utils/utils";
 import { IAvailabilitySlot } from "@litespace/types";
 import cn from "classnames";
-import { AnimatePresence, motion } from "framer-motion";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 
@@ -20,56 +19,12 @@ function asSubSlots(slots: Slot[]) {
   return subslots;
 }
 
-const Animate: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
-  return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        height: 0,
-      }}
-      animate={{
-        opacity: 1,
-        height: "auto",
-        transition: {
-          duration: 0.5,
-          type: "spring",
-        },
-      }}
-      exit={{
-        opacity: 0,
-        height: 0,
-      }}
-      className="overflow-hidden"
-    >
-      {children}
-    </motion.div>
-  );
-};
-
 const DaySlots: React.FC<{
   slots: Slot[];
   iso: string;
   disabled?: boolean;
-  add: ({
-    day,
-    start,
-    end,
-  }: {
-    day: string;
-    start?: string;
-    end?: string;
-  }) => void;
-  update: ({
-    id,
-    start,
-    end,
-  }: {
-    id: number;
-    start?: string;
-    end?: string;
-  }) => void;
+  add: (payload: { day: string; start?: string; end?: string }) => void;
+  update: (payload: { id: number; start?: string; end?: string }) => void;
   remove: (id: number) => void;
 }> = ({ slots, iso, disabled, add, update, remove }) => {
   const asFreeSubSlots = useCallback(
@@ -92,38 +47,33 @@ const DaySlots: React.FC<{
 
   return (
     <div className={cn("flex flex-col gap-2 grow")}>
-      <AnimatePresence initial={false}>
-        {slots.map((slot, idx) => {
-          const last = slots.length - 1 === idx;
-          const filled = !!slot.start && !!slot.end;
-          const partial = !!slot.start || !!slot.end;
-          return (
-            <Animate key={idx}>
-              <SlotRow
-                start={optional(slot.start)}
-                end={optional(slot.end)}
-                add={last && filled ? () => add({ day: iso }) : undefined}
-                remove={partial ? () => remove(slot.id) : undefined}
-                onFromChange={(start) => update({ id: slot.id, start })}
-                onToChange={(end) => update({ id: slot.id, end })}
-                freeSubSlots={asFreeSubSlots(slot.id)}
-                disabled={disabled}
-              />
-            </Animate>
-          );
-        })}
+      {slots.map((slot, idx) => {
+        const last = slots.length - 1 === idx;
+        const filled = !!slot.start && !!slot.end;
+        const partial = !!slot.start || !!slot.end;
+        return (
+          <SlotRow
+            key={slot.id}
+            start={optional(slot.start)}
+            end={optional(slot.end)}
+            add={last && filled ? () => add({ day: iso }) : undefined}
+            remove={partial ? () => remove(slot.id) : undefined}
+            onFromChange={(start) => update({ id: slot.id, start })}
+            onToChange={(end) => update({ id: slot.id, end })}
+            freeSubSlots={asFreeSubSlots(slot.id)}
+            disabled={disabled}
+          />
+        );
+      })}
 
-        {isEmpty(slots) ? (
-          <Animate key={0}>
-            <SlotRow
-              onFromChange={(value: string) => add({ day: iso, start: value })}
-              onToChange={(value: string) => add({ day: iso, end: value })}
-              freeSubSlots={asFreeSubSlots()}
-              disabled={disabled}
-            />
-          </Animate>
-        ) : null}
-      </AnimatePresence>
+      {isEmpty(slots) ? (
+        <SlotRow
+          onFromChange={(value: string) => add({ day: iso, start: value })}
+          onToChange={(value: string) => add({ day: iso, end: value })}
+          freeSubSlots={asFreeSubSlots()}
+          disabled={disabled}
+        />
+      ) : null}
     </div>
   );
 };

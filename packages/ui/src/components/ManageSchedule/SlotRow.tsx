@@ -3,7 +3,7 @@ import { IAvailabilitySlot, Void } from "@litespace/types";
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import Close from "@litespace/assets/Close";
-import AddCircleFilled from "@litespace/assets/AddCircleFilled";
+import AddCircleFilled from "@litespace/assets/AddCircle";
 import { Typography } from "@/components/Typography";
 import { Select, SelectList } from "@/components/Select";
 import { motion } from "framer-motion";
@@ -84,8 +84,8 @@ const SlotRow: React.FC<{
   }, [farthestEnd, start, subslots]);
 
   return (
-    <div className="flex items-center gap-1 lg:gap-6 lg:w-full">
-      <div className="w-full flex items-center justify-center md:justify-start gap-2 lg:gap-4">
+    <div className="flex items-center gap-1 lg:w-full py-1 ps-2">
+      <div className="w-full flex items-center justify-center md:justify-start gap-2">
         <div className="w-full min-w-[76px] lg:min-w-[135px]">
           <Select
             value={start}
@@ -94,6 +94,7 @@ const SlotRow: React.FC<{
             placeholder={intl("placeholders.from")}
             onChange={onFromChange}
             disabled={disabled}
+            size="medium"
           />
         </div>
         <Typography tag="span" className="text-natural-500 text-base font-bold">
@@ -107,6 +108,7 @@ const SlotRow: React.FC<{
             placeholder={intl("placeholders.to")}
             onChange={onToChange}
             disabled={disabled}
+            size="medium"
           />
         </div>
       </div>
@@ -114,11 +116,12 @@ const SlotRow: React.FC<{
       <div className="flex gap-1 lg:gap-2">
         <motion.div style={{ visibility: remove ? "visible" : "hidden" }}>
           <Button
-            size="small"
-            variant="primary"
+            size="medium"
+            variant="secondary"
             type="natural"
             onClick={remove}
             startIcon={<Close className="icon" />}
+            disabled={disabled}
           />
         </motion.div>
 
@@ -126,9 +129,14 @@ const SlotRow: React.FC<{
           className="flex items-center justify-center"
           style={{ visibility: add ? "visible" : "hidden" }}
         >
-          <button type="button" onClick={add}>
-            <AddCircleFilled className="w-4 h-4 lg:w-6 lg:h-6 [&>*]:fill-brand-700" />
-          </button>
+          <Button
+            size="medium"
+            variant="secondary"
+            type="natural"
+            onClick={add}
+            endIcon={<AddCircleFilled className="icon" />}
+            disabled={disabled}
+          />
         </motion.div>
       </div>
     </div>

@@ -17,6 +17,7 @@ import { Tooltip } from "@litespace/ui/Tooltip";
 import { ProfileInfo, SubscriptionQuota } from "@/components/Navbar";
 import { useSaveLogs } from "@/hooks/logger";
 import { useSubscription } from "@litespace/headless/context/subscription";
+import { isTutorRole } from "@litespace/utils";
 
 const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   const { md } = useMediaQuery();
@@ -51,6 +52,7 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
 };
 
 const Subscription: React.FC = () => {
+  const { user } = useUser();
   const { info, remainingWeeklyMinutes, loading } = useSubscription();
   const intl = useFormatMessage();
 
@@ -59,7 +61,7 @@ const Subscription: React.FC = () => {
     [info]
   );
 
-  if (loading) return null;
+  if (loading || !user || isTutorRole(user.role)) return null;
 
   if (!info || ended)
     return (
