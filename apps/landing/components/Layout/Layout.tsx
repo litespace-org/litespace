@@ -5,8 +5,10 @@ import cn from "classnames";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
 import Footer from "@/components/Layout/Footer";
+import Conversion from "@/components/Analytics/Conversion";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 import { usePathname } from "next/navigation";
+import { IAnalytics } from "@litespace/types";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -27,6 +29,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {showSidebar ? <Sidebar hide={() => setShowSidebar(false)} /> : null}
       {children}
       <Footer />
+      <Conversion eventName={IAnalytics.EventName.PageView} />
     </body>
   );
 };
