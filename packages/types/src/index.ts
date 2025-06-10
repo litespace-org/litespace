@@ -1,3 +1,4 @@
+export * as IAnalytics from "@/analytics";
 export * as IContactRequest from "@/contactRequest";
 export * as IConfirmationCode from "@/confirmationCode";
 export * as ISessionEvent from "@/sessionEvent";

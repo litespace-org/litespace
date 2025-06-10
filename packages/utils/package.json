@@ -118,6 +118,10 @@
       "import": "./dist/esm/plan.js",
       "require": "./dist/cjs/plan.js"
     },
+    "./analytics": {
+      "import": "./dist/esm/analytics.js",
+      "require": "./dist/cjs/analytics.js"
+    },
     "./filterQuery": {
       "import": "./dist/esm/filterQuery/index.js",
       "require": "./dist/cjs/filterQuery/index.js"
