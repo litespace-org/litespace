@@ -17,13 +17,14 @@ import { isRegularUser, isSuperAdmin, isUser } from "@litespace/utils/user";
 import zod from "zod";
 
 const number = zod.number().int().positive().gt(0);
+const discount = zod.number().int().gte(0).default(0);
 
 const createPlanPayload = zod.object({
   weeklyMinutes: number,
   baseMonthlyPrice: number,
-  monthDiscount: number,
-  quarterDiscount: number,
-  yearDiscount: number,
+  monthDiscount: discount,
+  quarterDiscount: discount,
+  yearDiscount: discount,
   forInvitesOnly: boolean,
   active: boolean,
 });
