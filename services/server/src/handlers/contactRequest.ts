@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import { string } from "@/validation/utils";
 import safeRequest from "express-async-handler";
 import { IContactRequest } from "@litespace/types";
@@ -15,12 +15,13 @@ import {
 } from "@litespace/utils";
 import { apierror } from "@/lib/error";
 
-const createPayload = zod.object({
-  name: string,
-  phone: string,
-  title: string,
-  message: string,
-});
+const createPayload: ZodSchema<IContactRequest.CreateContactRequestApiPayload> =
+  zod.object({
+    name: string,
+    phone: string,
+    title: string,
+    message: string,
+  });
 
 async function create(req: Request, res: Response, next: NextFunction) {
   const payload: IContactRequest.CreatePayload = createPayload.parse(req.body);

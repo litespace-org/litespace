@@ -71,7 +71,7 @@ export type FindFilterModel = {
 
 export type FindQueryModel = IFilter.SkippablePagination & FindFilterModel;
 
-export type FindQueryApi = FindQueryModel;
+export type FindApiQuery = FindQueryModel;
 
 export type FindApiResponse = Paginated<Self>;
 

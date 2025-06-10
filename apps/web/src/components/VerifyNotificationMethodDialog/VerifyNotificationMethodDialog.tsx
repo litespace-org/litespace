@@ -13,10 +13,10 @@ type Props = {
   close: Void;
   method: IUser.NotificationMethodLiteral | null;
   phone: string | null;
-  sendCode: (payload: IConfirmationCode.SendVerifyPhoneCodePayload) => void;
+  sendCode: (payload: IConfirmationCode.SendVerifyPhoneCodeApiPayload) => void;
   sendingCode: boolean;
   sentCode: boolean;
-  verifyCode: (payload: IConfirmationCode.VerifyPhoneCodePayload) => void;
+  verifyCode: (payload: IConfirmationCode.VerifyPhoneCodeApiPayload) => void;
   verifing: boolean;
   unresolvedPhone: boolean;
 };

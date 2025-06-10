@@ -7,7 +7,7 @@ export class Transaction extends Base {
   }
 
   async find(
-    payload?: ITransaction.FindQueryApi
+    payload?: ITransaction.FindApiQuery
   ): Promise<ITransaction.FindApiResponse> {
     return this.get({ route: `/api/v1/tx/list`, payload: payload });
   }
