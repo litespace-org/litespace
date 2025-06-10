@@ -66,22 +66,26 @@ export const ChatMessageGroup: React.FC<{
     >
       <div
         className={cn(
-          "hidden lg:block overflow-hidden rounded-full flex-shrink-0",
-          inSession ? "w-8 h-8" : "w-14 h-14"
+          "hidden md:block overflow-hidden rounded-full flex-shrink-0",
+          inSession ? "md:w-14 md:h-14 lg:w-8 lg:h-8" : "w-14 h-14"
         )}
       >
         <AvatarV2 alt={name} src={image} id={userId} />
       </div>
       <div>
         <div
-          className={cn("hidden lg:flex gap-6 items-center", {
+          className={cn("hidden md:flex items-center gap-6", {
+            "lg:gap-4": inSession,
             "flex-row-reverse": !owner,
             "flex-row": owner,
           })}
         >
           <Typography
             tag="h6"
-            className="font-semibold text-body text-natural-950 dark:text-natural-50"
+            className={cn(
+              "font-semibold text-natural-950 dark:text-natural-50",
+              inSession ? "text-body lg:text-caption" : "text-body"
+            )}
           >
             {owner ? intl("chat.message.title.you") : name}
           </Typography>
@@ -93,7 +97,7 @@ export const ChatMessageGroup: React.FC<{
           </Typography>
         </div>
         <div
-          className={cn("flex flex-col lg:mt-2 gap-y-2", {
+          className={cn("flex flex-col mt-2 gap-y-2", {
             "items-end": !owner,
             "items-start": owner,
           })}
@@ -144,6 +148,7 @@ export const ChatMessageGroup: React.FC<{
                     messageState={message.messageState}
                     firstMessage={index === 0}
                     message={message}
+                    inSession={inSession}
                     pending={message.messageState === "pending"}
                     error={message.messageState === "error"}
                     owner={owner}
