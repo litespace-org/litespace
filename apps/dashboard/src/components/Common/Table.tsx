@@ -10,8 +10,8 @@ import type { TableOptions } from "@tanstack/react-table";
 import { useMemo } from "react";
 import cn from "classnames";
 import { usePageSize } from "@litespace/headless/config";
-import ArrowRight from "@litespace/assets/ArrowRight";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
+import ChevronRight from "@litespace/assets/ChevronRight";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
 import ChevronDoubleRight from "@litespace/assets/ChevronDoubleRight";
 import ChevronDoubleLeft from "@litespace/assets/ChevronDoubleLeft";
 
@@ -137,7 +137,7 @@ export const Table = <T extends object>({
             variant="primary"
             onClick={prev}
             disabled={page <= 1 || loading || fetching}
-            startIcon={<ArrowRight className="icon" />}
+            startIcon={<ChevronRight className="icon" />}
           />
           <Button
             size="large"
@@ -145,7 +145,7 @@ export const Table = <T extends object>({
             variant="primary"
             onClick={next}
             disabled={page >= totalPages || loading || fetching}
-            startIcon={<ArrowLeft className="icon" />}
+            startIcon={<ChevronLeft className="icon" />}
           />
           <Button
             size="large"

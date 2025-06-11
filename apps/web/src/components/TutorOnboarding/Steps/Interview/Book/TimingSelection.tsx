@@ -5,8 +5,8 @@ import { MonthlyCalendar } from "@litespace/ui/MonthlyCalendar";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
 import { Button } from "@litespace/ui/Button";
-import LongRightArrow from "@litespace/assets/LongRightArrow";
-import LongLeftArrow from "@litespace/assets/LongLeftArrow";
+import ArrowRight from "@litespace/assets/ArrowRight";
+import ArrowLeft from "@litespace/assets/ArrowLeft";
 import { IAvailabilitySlot, Void } from "@litespace/types";
 import {
   getSubSlotsBatch as getSubSlots,
@@ -178,7 +178,7 @@ const Actions: React.FC<{
   return (
     <div className="mt-10 w-full flex flex-row gap-3">
       <Button
-        endIcon={<LongLeftArrow className="icon" />}
+        endIcon={<ArrowLeft className="icon" />}
         className={cn(
           "min-w-32",
           step === "date-selection" ? "block" : "hidden"
@@ -190,7 +190,7 @@ const Actions: React.FC<{
         {intl("labels.next")}
       </Button>
       <Button
-        startIcon={<LongRightArrow className="icon" />}
+        startIcon={<ArrowRight className="icon" />}
         className={cn(
           "min-w-32",
           step === "time-selection" ? "block" : "hidden"

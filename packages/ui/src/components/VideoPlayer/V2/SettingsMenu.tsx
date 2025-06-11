@@ -95,7 +95,7 @@ export const SettingsMenu: React.FC<{
                     <Typography
                       tag="span"
                       className={cn(
-                        "text-natural-800 font-semibold max-w-24 font-semibold text-tiny"
+                        "text-natural-800 max-w-24 font-semibold text-tiny"
                       )}
                     >
                       {intl("media.video.playback-speed")}

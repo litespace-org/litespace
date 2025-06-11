@@ -1,6 +1,6 @@
 import { MultiSelectOption } from "@/components/MultiSelect/types";
 import { Typography } from "@/components/Typography";
-import ArrowDown from "@litespace/assets/ArrowDown";
+import ChevronDown from "@litespace/assets/ChevronDown";
 import SearchIcon from "@litespace/assets/Search";
 import {
   Content,
@@ -130,7 +130,7 @@ export const MultiSelect = <T,>({
                 })
               )}
             </div>
-            <ArrowDown
+            <ChevronDown
               data-open={open}
               className={cn(
                 "h-6 w-6 justify-self-end",

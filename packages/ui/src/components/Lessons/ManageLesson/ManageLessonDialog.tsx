@@ -10,8 +10,8 @@ import { DurationSelection } from "@/components/Lessons/ManageLesson/DurationSel
 import { TimeSelection } from "@/components/Lessons/ManageLesson/TimeSelection";
 import { Confirmation } from "@/components/Lessons/ManageLesson/Confirmation";
 import { Button } from "@/components/Button";
-import LongRightArrow from "@litespace/assets/LongRightArrow";
-import LongLeftArrow from "@litespace/assets/LongLeftArrow";
+import ArrowRight from "@litespace/assets/ArrowRight";
+import ArrowLeft from "@litespace/assets/ArrowLeft";
 import { AnimatePresence, motion } from "framer-motion";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
@@ -420,9 +420,7 @@ export const ManageLessonDialog: React.FC<{
         >
           {step !== "date-selection" ? (
             <Button
-              startIcon={
-                <LongRightArrow className="w-6 h-6 -ms-2 -mt-1 icon" />
-              }
+              startIcon={<ArrowRight className="w-6 h-6 -ms-2 -mt-1 icon" />}
               size="large"
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
@@ -443,7 +441,7 @@ export const ManageLessonDialog: React.FC<{
           ) : null}
 
           <Button
-            endIcon={<LongLeftArrow className="w-6 h-6 -mt-1 icon" />}
+            endIcon={<ArrowLeft className="w-6 h-6 -mt-1 icon" />}
             size="large"
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");

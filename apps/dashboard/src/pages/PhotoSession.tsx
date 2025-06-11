@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Dashboard } from "@litespace/utils/routes";
-import ArrowRight from "@litespace/assets/ArrowRight";
+import ChevronRight from "@litespace/assets/ChevronRight";
 import { useFindStudioTutor } from "@litespace/headless/tutor";
 import {
   AvatarSection,
@@ -27,7 +27,7 @@ const PhotoSession = () => {
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6 mb-10">
       <div className="flex items-center w-full gap-6 mb-6">
         <Link to={Dashboard.PhotoSessions}>
-          <ArrowRight className="w-6 h-6 stroke-brand-700" />
+          <ChevronRight className="w-6 h-6 stroke-brand-700" />
         </Link>
         {tutorQuery.data?.name ? (
           <Typography tag="h1" className="text-subtitle-2 font-bold">

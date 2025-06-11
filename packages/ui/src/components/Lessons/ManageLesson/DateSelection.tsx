@@ -3,8 +3,8 @@ import { flatten, range } from "lodash";
 import cn from "classnames";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
-import ArrowRight from "@litespace/assets/ArrowRight";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
+import ChevronRight from "@litespace/assets/ChevronRight";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
 import { Typography } from "@/components/Typography";
 
 const rows = 6;
@@ -71,7 +71,7 @@ export const DateSelection: React.FC<{
           onClick={prevMonth}
           className="disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
+          <ChevronRight className="[&>*]:stroke-brand-700 w-6 h-6" />
         </button>
         <Typography
           tag="span"
@@ -85,7 +85,7 @@ export const DateSelection: React.FC<{
           onClick={nextMonth}
           className="disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ArrowLeft className="[&>*]:stroke-brand-700 w-6 h-6" />
+          <ChevronLeft className="[&>*]:stroke-brand-700 w-6 h-6" />
         </button>
       </div>
 

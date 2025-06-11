@@ -7,8 +7,8 @@ import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 import Calendar from "@litespace/assets/Calendar";
-import ArrowRight from "@litespace/assets/ArrowRight";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
+import ChevronRight from "@litespace/assets/ChevronRight";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 interface Props {
@@ -50,7 +50,7 @@ const Header: React.FC<Props> = ({
 
       <div className="flex flex-row gap-4 items-center justify-between md:justify-center">
         <button onClick={prev} type="button">
-          <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
+          <ChevronRight className="[&>*]:stroke-brand-700 w-6 h-6" />
         </button>
         <Typography
           tag="span"
@@ -61,7 +61,7 @@ const Header: React.FC<Props> = ({
           {end.subtract(1, "day").format("DD MMMM")}
         </Typography>
         <button onClick={next} type="button">
-          <ArrowLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
+          <ChevronLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
         </button>
       </div>
 

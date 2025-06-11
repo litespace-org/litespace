@@ -1,6 +1,6 @@
 import React from "react";
 import cn from "classnames";
-import ArrowDown from "@litespace/assets/ArrowDown";
+import ChevronDown from "@litespace/assets/ChevronDown";
 import {
   Root,
   Item,
@@ -48,7 +48,7 @@ export const Accordion: React.FC<{
               >
                 {item.title}
               </Typography>
-              <ArrowDown
+              <ChevronDown
                 className="shrink-0 w-[30px] h-6 [&>*]:stroke-brand-500 icon mt-1 text-brand-500"
                 aria-hidden
               />

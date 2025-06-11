@@ -6,7 +6,7 @@ import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
 import { IUser, Void } from "@litespace/types";
-import ArrowRightLong from "@litespace/assets/ArrowRightLong";
+import ArrowRight from "@litespace/assets/ArrowRight";
 
 export const ChatHeader: React.FC<{
   name: string | null;
@@ -32,7 +32,7 @@ export const ChatHeader: React.FC<{
           onClick={back}
           className="w-6 h-6 lg:hidden cursor-pointer"
         >
-          <ArrowRightLong />
+          <ArrowRight />
         </button>
         <div
           className={cn(
