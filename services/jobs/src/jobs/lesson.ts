@@ -10,7 +10,11 @@ import {
   MAX_LESSON_DURATION,
   safePromise,
 } from "@litespace/utils";
-import { msg } from "@/lib/bot";
+import { msg as base } from "@/lib/bot";
+
+async function msg(text: string) {
+  return base("lesson", text);
+}
 
 async function send<T extends IKafka.TopicType>(
   topic: T,
@@ -33,7 +37,6 @@ async function sendReminders() {
   });
 
   const empty = isEmpty(list);
-  msg("lesson", empty ? `found no lesson` : `found ${list.length} lesson(s)`);
   if (empty) return;
 
   const lessonIds = list.map((lesson) => lesson.id);
@@ -55,7 +58,7 @@ async function sendReminders() {
 
     const now = dayjs().utc();
     const start = dayjs(lesson.start);
-    // Skip lessons that are already started
+    // skip lessons that are already started
     if (start.isBefore(now)) continue;
     const tz = start.tz(AFRICA_CAIRO_TIMEZONE);
 
@@ -81,21 +84,12 @@ async function sendReminders() {
 
   await send("whatsapp", whatsappMessages);
   await send("telegram", telegramMessages);
-
-  msg(
-    "lesson",
-    `done. ${whatsappMessages.length} via WhatsApp. ${telegramMessages.length} vai Telegram`
-  );
 }
 
 async function start() {
-  msg("lesson", "starting.");
   const result = await safePromise(sendReminders());
   if (result instanceof Error)
-    msg(
-      "lesson",
-      `lesson reminders error: ${result.message}\n\n${result.stack}`
-    );
+    msg(`lesson reminders error: ${result.message}\n\n${result.stack}`);
 }
 
 export default {
