@@ -18,32 +18,34 @@ import { knex, topics } from "@litespace/models";
 import { ITopic } from "@litespace/types";
 import { isValidTopicName } from "@litespace/utils/validation";
 import safeRequest from "express-async-handler";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import { Knex } from "knex";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
 import { isEmpty } from "lodash";
 import { sendBackgroundMessage } from "@/workers";
 
-const createTopicPayload = zod.object({
+const createTopicPayload: ZodSchema<ITopic.CreateTopicApiPayload> = zod.object({
   arabicName: string,
   englishName: string,
 });
 
-const updateTopicPayload = zod.object({
+const updateTopicPayload: ZodSchema<ITopic.UpdateTopicApiPayload> = zod.object({
   arabicName: zod.optional(string),
   englishName: zod.optional(string),
 });
 
-const generalUserTopicsPayload = zod.object({
-  topicIds: zod.array(zod.number()),
-});
+const addUserTopicsPayload: ZodSchema<ITopic.AddUserTopicsApiPayload> =
+  zod.object({
+    topicIds: zod.array(zod.number()),
+  });
 
-const replaceUserTopicsPayload = zod.object({
-  removeTopics: zod.array(id),
-  addTopics: zod.array(id),
-});
+const replaceUserTopicsPayload: ZodSchema<ITopic.ReplaceUserTopicsApiPayload> =
+  zod.object({
+    removeTopics: zod.array(id),
+    addTopics: zod.array(id),
+  });
 
-const findTopicsQuery = zod.object({
+const findTopicsQuery: ZodSchema<ITopic.FindTopicsApiQuery> = zod.object({
   name: zod.string().optional(),
   page: pageNumber.optional(),
   size: pageSize.optional(),
@@ -54,7 +56,7 @@ async function createTopic(req: Request, res: Response, next: NextFunction) {
   const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const payload: ITopic.CreateApiPayload = createTopicPayload.parse(req.body);
+  const payload = createTopicPayload.parse(req.body);
   const validArabicName = isValidTopicName(payload.arabicName);
   const validEnglishName = isValidTopicName(payload.englishName);
 
@@ -140,8 +142,7 @@ async function addUserTopics(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
-  const { topicIds }: ITopic.AddUserTopicsApiPayload =
-    generalUserTopicsPayload.parse(req.body);
+  const { topicIds } = addUserTopicsPayload.parse(req.body);
 
   // filter passed topics to ignore the ones that does already exist
   const userTopics = await topics.findUserTopics({ users: [user.id] });
@@ -234,8 +235,7 @@ async function deleteUserTopics(
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
-  const { topicIds }: ITopic.DeleteUserTopicsApiPayload =
-    generalUserTopicsPayload.parse(req.body);
+  const { topicIds } = addUserTopicsPayload.parse(req.body);
 
   if (topicIds.length === 0) return next(bad());
 

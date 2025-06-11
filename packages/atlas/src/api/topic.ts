@@ -3,7 +3,7 @@ import { ITopic } from "@litespace/types";
 
 export class Topic extends Base {
   async create(
-    payload: ITopic.CreateApiPayload
+    payload: ITopic.CreateTopicApiPayload
   ): Promise<ITopic.CreateTopicApiResponse> {
     return await this.post({ route: "/api/v1/topic/", payload });
   }
