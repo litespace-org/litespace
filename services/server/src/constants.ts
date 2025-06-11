@@ -168,3 +168,8 @@ export const livekitConfig = {
     .trim()
     .parse(process.env.LIVEKIT_API_SECRET),
 };
+
+export const conversionApiConfig = {
+  apiUrl: zod.string().url().trim().parse(process.env.CONVERSION_API_URL),
+  token: zod.string().trim().parse(process.env.CONVERSION_API_ACCESS_TOKEN),
+};
