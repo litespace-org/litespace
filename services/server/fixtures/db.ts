@@ -201,7 +201,8 @@ export async function lesson(
             ? faker.date.past().toISOString()
             : payload?.start || faker.date.soon().toISOString(),
       duration: payload?.duration || sample([15, 30]),
-      price: payload?.price || faker.number.int(500),
+      price:
+        payload?.price !== undefined ? payload?.price : faker.number.int(500),
       slot: await or.slotId(payload?.slot, tutor),
       student,
       tutor,

@@ -41,7 +41,7 @@ import {
 } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
-import { first, isEmpty, isEqual } from "lodash";
+import { first, isEmpty, isEqual, sum } from "lodash";
 import { genSessionId } from "@litespace/utils";
 import { withImageUrls } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
@@ -75,6 +75,11 @@ const findLessonsQuery = zod.object({
   after: zod.optional(zod.string().datetime()),
   before: zod.optional(zod.string().datetime()),
   full: zod.optional(jsonBoolean),
+});
+
+const findAttendedLessonsStatsQuery = zod.object({
+  after: zod.string().datetime(),
+  before: zod.string().datetime(),
 });
 
 function create(context: ApiContext) {
@@ -372,6 +377,60 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(result);
 }
 
+async function findAttendedLessonsStats(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const { after, before }: ILesson.FindAttendedLessonsStatsApiQuery =
+    findAttendedLessonsStatsQuery.parse(req.query);
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  if (dayjs(after).isAfter(before)) return next(bad());
+
+  const { list } = await lessons.find({
+    after: dayjs(after).startOf("day").toISOString(),
+    before: dayjs(before).startOf("day").toISOString(),
+  });
+
+  const dayLessonsCollection: Record<
+    string,
+    {
+      paid: Array<ILesson.Self>;
+      free: Array<ILesson.Self>;
+    }
+  > = {};
+
+  for (const lesson of list) {
+    const day = dayjs(lesson.start).format("YYYY-MM-DD");
+    if (!dayLessonsCollection[day]) {
+      dayLessonsCollection[day] = { paid: [], free: [] };
+    }
+    if (lesson.price > 0) dayLessonsCollection[day].paid.push(lesson);
+    else dayLessonsCollection[day].free.push(lesson);
+  }
+
+  const result: ILesson.FindAttendedLessonsStatsApiResponse = [];
+
+  for (const day in dayLessonsCollection) {
+    result.push({
+      date: day,
+
+      paidLessonCount: dayLessonsCollection[day].paid.length,
+      paidTutoringMinutes:
+        sum(dayLessonsCollection[day].paid.map((l) => l.duration)) || 0,
+
+      freeLessonCount: dayLessonsCollection[day].free.length,
+      freeTutoringMinutes:
+        sum(dayLessonsCollection[day].free.map((l) => l.duration)) || 0,
+    });
+  }
+
+  res.status(200).json(result);
+}
+
 async function findLessonById(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isUser(user);
@@ -456,4 +515,5 @@ export default {
   update,
   findLessons: safeRequest(findLessons),
   findLessonById: safeRequest(findLessonById),
+  findAttendedLessonsStats: safeRequest(findAttendedLessonsStats),
 };
