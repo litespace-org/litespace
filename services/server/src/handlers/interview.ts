@@ -154,15 +154,16 @@ async function create(req: Request, res: Response, next: NextFunction) {
   });
 
   // notify the tutor manager that an interview was booked with him
-
   if (interviewer.notificationMethod && interviewer.phone) {
     const date = dayjs(start)
       .tz(AFRICA_CAIRO_TIMEZONE)
       .format("ddd D MMM hh:mm A");
+    const expiresAt = dayjs.utc(start).toISOString();
 
     await sendNotificationMessage({
       method: interviewer.notificationMethod,
       phone: interviewer.phone,
+      expiresAt,
       message: `A new interview has be booked at ${date}`,
     });
   }
