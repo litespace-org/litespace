@@ -1,11 +1,14 @@
 import schedule from "node-schedule";
-import { sendLessonReminders } from "@/jobs/lesson";
+import lesson from "@/jobs/lesson";
+import keepAlive from "@/jobs/keepAlive";
 
 async function main() {
-  // Run the job immediately on startup
-  await sendLessonReminders();
-  // Schedule the job to run every 15 minutes
-  schedule.scheduleJob("*/15 * * * *", sendLessonReminders);
+  // run jobs immediately on startup
+  await lesson.start();
+
+  // setup cron jobs
+  schedule.scheduleJob("*/15 * * * *", lesson.start);
+  schedule.scheduleJob("*/5 * * * *", keepAlive.start);
 
   process.on("SIGINT", async function () {
     await schedule.gracefulShutdown();

@@ -88,7 +88,7 @@ async function sendReminders() {
   );
 }
 
-export async function sendLessonReminders() {
+async function start() {
   msg("lesson", "starting.");
   const result = await safePromise(sendReminders());
   if (result instanceof Error)
@@ -97,3 +97,7 @@ export async function sendLessonReminders() {
       `lesson reminders error: ${result.message}\n\n${result.stack}`
     );
 }
+
+export default {
+  start,
+};
