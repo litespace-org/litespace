@@ -255,7 +255,7 @@ async function main(): Promise<void> {
   const addedTutorManagers: IUser.Self[] = await knex.transaction(
     async (tx) => {
       return await Promise.all(
-        range(1, 3).map(async (idx) => {
+        range(1, 6).map(async (idx) => {
           const email = `tutor-manager-${idx}@litespace.org`;
           const tutor = await users.create(
             {
