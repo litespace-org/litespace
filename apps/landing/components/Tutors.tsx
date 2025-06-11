@@ -11,7 +11,7 @@ export const Tutors: React.FC = async () => {
   const tutors = await api.user
     .findOnboardedTutors({
       page: 1,
-      size: 2,
+      size: 4,
     })
     .catch(() => {
       return { list: [], total: 0 };
