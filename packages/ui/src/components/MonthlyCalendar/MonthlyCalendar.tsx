@@ -130,7 +130,7 @@ const WeekDays: React.FC<{ date: Dayjs }> = ({ date }) => {
   const weekDays = useMemo(() => makeWeekDays(date), [date]);
 
   return (
-    <ul className="flex flex-row justify-around">
+    <ul className="grid grid-cols-7 gap-0.5">
       {weekDays.map((day) => (
         <Typography
           tag="li"
