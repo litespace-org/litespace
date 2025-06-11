@@ -7,8 +7,10 @@ type GetUpdatesApiResponse = {
   ok: boolean;
   result: Array<Update>;
 };
+
 const token = process.env.TELEGRAM_API_TOKEN;
 const chat = -4520756689;
+
 const client = axios.create({
   baseURL: `https://api.telegram.org/bot${token}`,
 });
