@@ -5,7 +5,7 @@ import { safePromise } from "@litespace/utils";
 
 export const telegramBot = new TelegramBot(config.telegram.token);
 
-export async function msg(job: "main" | "lesson", text: string) {
+export async function msg(job: "main" | "lesson" | "keepAlive", text: string) {
   const result = await safePromise(
     telegramBot.sendMessage({
       chat: config.telegram.chat,

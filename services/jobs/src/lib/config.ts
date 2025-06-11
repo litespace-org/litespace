@@ -10,6 +10,7 @@ const schema = zod.object({
     zod.literal("staging"),
     zod.literal("production"),
   ]),
+  adminPhoneNumber: zod.string().length(11),
 });
 
 type ConfigSchema = Zod.infer<typeof schema>;
@@ -20,4 +21,5 @@ export const config: ConfigSchema = schema.parse({
     chat: process.env.TELEGRAM_CHAT,
   },
   env: process.env.ENVIRONMENT,
+  adminPhoneNumber: process.env.ADMIN_PHONE_NUMBER,
 });

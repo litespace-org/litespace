@@ -106,6 +106,7 @@ export class WhatsApp {
     if (!this.socket) throw new Error("Socket is not initialized");
 
     this.socket.ev.on("connection.update", (update) => {
+      if (update.connection) console.log(update.connection);
       this.connection = update.connection || "close";
       if (update.qr) this.qr = update.qr;
 
