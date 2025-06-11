@@ -4,6 +4,7 @@ export type Topics =
       value: {
         to: string;
         message: string;
+        expiryTime?: string;
       };
     }
   | {
@@ -11,6 +12,7 @@ export type Topics =
       value: {
         to: string;
         message: string;
+        expiryTime?: string;
       };
     };
 
