@@ -5,6 +5,7 @@ import keepAlive from "@/jobs/keepAlive";
 async function main() {
   // run jobs immediately on startup
   await lesson.start();
+  await keepAlive.start();
 
   // setup cron jobs
   schedule.scheduleJob("*/15 * * * *", lesson.start);
