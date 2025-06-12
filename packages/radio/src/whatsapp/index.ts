@@ -106,8 +106,8 @@ export class WhatsApp {
     if (!this.socket) throw new Error("Socket is not initialized");
 
     this.socket.ev.on("connection.update", (update) => {
-      if (update.connection) console.log(update.connection);
-      this.connection = update.connection || "close";
+      console.log(update);
+      if (update.connection) this.connection = update.connection || "close";
       if (update.qr) this.qr = update.qr;
 
       if (
@@ -136,8 +136,7 @@ export class WhatsApp {
   ) {
     if (!this.socket) throw new Error("Socket is not initialized");
     if (this.connection !== "open")
-      throw new Error("Connection is not stablished");
-
+      throw new Error(`invalid connection state: ${this.connection}`);
     return await this.socket.sendMessage(id, content, options);
   }
 
