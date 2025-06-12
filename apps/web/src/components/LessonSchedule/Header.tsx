@@ -1,5 +1,5 @@
-import ArrowLeft from "@litespace/assets/ArrowLeft";
-import ArrowRight from "@litespace/assets/ArrowRight";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
+import ChevronRight from "@litespace/assets/ChevronRight";
 import Calendar from "@litespace/assets/Calendar";
 import Categories from "@litespace/assets/Categories";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
@@ -82,7 +82,7 @@ const Header: React.FC<Props> = ({
           ) : null}
           <div className="w-full flex flex-row sm:gap-4 items-center justify-between sm:justify-center">
             <button onClick={prevWeek} type="button">
-              <ArrowRight className="w-6 h-6 [&>*]:stroke-brand-700" />
+              <ChevronRight className="w-6 h-6 [&>*]:stroke-brand-700" />
             </button>
             <Typography
               tag="span"
@@ -93,7 +93,7 @@ const Header: React.FC<Props> = ({
               {date.endOf("week").format("DD MMMM")}
             </Typography>
             <button onClick={nextWeek} type="button">
-              <ArrowLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
+              <ChevronLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
             </button>
           </div>
         </div>

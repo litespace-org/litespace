@@ -3,7 +3,7 @@ import { Loading, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import EmptyUpcomingLessons from "@litespace/assets/EmptyUpcomingLessons";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 import React from "react";
@@ -151,7 +151,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                 </div>
               </div>
               <div className="mr-auto">
-                <ArrowLeft className="w-6 h-6 [&>*]:stroke-natural-950" />
+                <ChevronLeft className="w-6 h-6 [&>*]:stroke-natural-950" />
               </div>
             </Link>
           ))}

@@ -5,8 +5,8 @@ import DaySlots from "@/components/ManageSchedule/DaySlots";
 import { Slot } from "@/components/ManageSchedule/types";
 import { Typography } from "@/components/Typography";
 import dayjs from "@/lib/dayjs";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
-import ArrowRight from "@litespace/assets/ArrowRight";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
+import ChevronRight from "@litespace/assets/ChevronRight";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IAvailabilitySlot, Void } from "@litespace/types";
 import cn from "classnames";
@@ -241,7 +241,7 @@ const Header: React.FC<{
         <Button
           type="natural"
           variant="secondary"
-          endIcon={<ArrowRight className="icon" />}
+          endIcon={<ChevronRight className="icon" />}
           htmlType="button"
           disabled={loading}
           onClick={prev}
@@ -259,7 +259,7 @@ const Header: React.FC<{
         <Button
           type="natural"
           variant="secondary"
-          endIcon={<ArrowLeft className="icon" />}
+          endIcon={<ChevronLeft className="icon" />}
           htmlType="button"
           disabled={loading}
           onClick={next}

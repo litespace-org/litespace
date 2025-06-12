@@ -4,9 +4,9 @@ import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots"
 import dayjs from "@/lib/dayjs";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { AvailabilitySlotProps, Calendar } from "@litespace/ui/Calendar";
-import ArrowRight from "@litespace/assets/ArrowRight";
+import ChevronRight from "@litespace/assets/ChevronRight";
 import { Typography } from "@litespace/ui/Typography";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
 
 const Tutor: React.FC = () => {
   const [start, setStart] = useState(dayjs().startOf("week"));
@@ -78,7 +78,7 @@ const Tutor: React.FC = () => {
             onClick={() => setStart(start.subtract(1, "week"))}
             type="button"
           >
-            <ArrowRight className="[&>*]:stroke-brand-700 w-6 h-6" />
+            <ChevronRight className="[&>*]:stroke-brand-700 w-6 h-6" />
           </button>
 
           <Typography
@@ -91,7 +91,7 @@ const Tutor: React.FC = () => {
           </Typography>
 
           <button onClick={() => setStart(start.add(1, "week"))} type="button">
-            <ArrowLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
+            <ChevronLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
           </button>
         </div>
       </div>

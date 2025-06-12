@@ -3,8 +3,8 @@ import { flatten, range } from "lodash";
 import cn from "classnames";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
-import ArrowRight from "@litespace/assets/ArrowRight";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
+import ChevronRight from "@litespace/assets/ChevronRight";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
 import { Typography } from "@/components/Typography";
 import { Button } from "@/components/Button";
 import { Void } from "@litespace/types";
@@ -103,7 +103,7 @@ const Navigation: React.FC<{
       <Button
         type="natural"
         variant="secondary"
-        endIcon={<ArrowRight className="icon" />}
+        endIcon={<ChevronRight className="icon" />}
         htmlType="button"
         disabled={!canGoBack || disabled}
         onClick={prevMonth}
@@ -117,7 +117,7 @@ const Navigation: React.FC<{
       <Button
         type="natural"
         variant="secondary"
-        endIcon={<ArrowLeft className="icon" />}
+        endIcon={<ChevronLeft className="icon" />}
         htmlType="button"
         disabled={!canGoNext || disabled}
         onClick={nextMonth}

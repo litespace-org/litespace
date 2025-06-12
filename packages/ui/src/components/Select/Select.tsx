@@ -12,7 +12,7 @@ import {
   ItemText,
   SelectItemProps,
 } from "@radix-ui/react-select";
-import ArrowDown from "@litespace/assets/ArrowDown";
+import ChevronDown from "@litespace/assets/ChevronDown";
 import { Typography } from "@/components/Typography";
 import { SelectProps } from "@/components/Select/types";
 import { motion, AnimatePresence } from "framer-motion";
@@ -147,7 +147,7 @@ export const Select = <T extends string | number>({
 
             {showDropdownIcon ? (
               <Icon className="arrow-down">
-                <ArrowDown
+                <ChevronDown
                   data-open={open}
                   className={cn(
                     "w-4 h-4",

@@ -3,7 +3,7 @@ import Logo from "@litespace/assets/Logo";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Link } from "react-router-dom";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
 import { router } from "@/lib/routes";
 import { Landing } from "@litespace/utils/routes";
 
@@ -29,7 +29,7 @@ const Header: React.FC = () => {
           {intl("labels.back-to-site")}
         </Typography>
 
-        <ArrowLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
+        <ChevronLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
       </Link>
     </div>
   );
