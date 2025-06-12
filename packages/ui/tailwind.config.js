@@ -303,6 +303,7 @@ export default {
         },
         natural: {
           DEFAULT: "var(--natural-default)",
+          0: "var(--natural-0)",
           50: "var(--natural-50)",
           100: "var(--natural-100)",
           200: "var(--natural-200)",

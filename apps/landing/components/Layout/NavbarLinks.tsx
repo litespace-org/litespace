@@ -11,13 +11,7 @@ import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { track } from "@/lib/ga";
 
-export function NavbarLinks({
-  scrolled,
-  toggleSidebar,
-}: {
-  scrolled: boolean;
-  toggleSidebar: Void;
-}) {
+export function NavbarLinks({ toggleSidebar }: { toggleSidebar: Void }) {
   const intl = useFormatMessage();
 
   return (
@@ -41,8 +35,7 @@ export function NavbarLinks({
             <Typography
               tag="span"
               className={cn(
-                "transition-colors duration-300 text-caption font-semibold",
-                scrolled ? "text-natural-950" : "text-natural-50"
+                "transition-colors duration-300 text-caption font-semibold text-natural-950"
               )}
             >
               {intl(page.title)}

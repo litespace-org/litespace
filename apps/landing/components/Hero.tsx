@@ -1,4 +1,3 @@
-import Ellipse from "@/components/Ellipse";
 import { useFormatMessage } from "@/hooks/intl";
 import { router } from "@/lib/routes";
 import { Button } from "@litespace/ui/Button";
@@ -6,7 +5,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import Link from "@/components/Common/Link";
-import React from "react";
+import { LottieAnimate } from "@/components/Common/LottieAnimate";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
@@ -14,20 +13,26 @@ const Hero: React.FC = () => {
   return (
     <div
       className={cn(
-        "relative flex items-center justify-center gap-12 bg-brand-900 overflow-hidden h-[480px] sm:h-[520px] md:h-[max(80vh,860px)] pt-[72px]"
+        "relative flex flex-col lg:flex-row items-center justify-center gap-10 bg-natural-0 overflow-hidden h-[75vh] lg:min-h-[720px] pt-[72px] mt-14 sm:mt-16 lg:mt-0 lg:px-20"
       )}
     >
-      <Ellipse className="flex flex-col items-center text-center gap-6 md:gap-12 px-4 md:px-0 z-landing-ellipses">
-        <div className="mx-auto flex flex-col items-center text-center gap-4 max-w-[328px] sm:max-w-[770px] md:max-w-[808px]">
+      <div className="flex flex-col text-center justify-center gap-6 px-4 md:px-0 w-full">
+        <div className="mx-auto flex flex-col items-center gap-4 lg:text-right max-w-[328px] sm:max-w-[770px] md:max-w-[808px]">
           <Typography
             tag="h1"
-            className="text-natural-50 text-subtitle-1 sm:text-h2 font-bold"
+            className="text-natural-950 text-subtitle-1 sm:text-h2 font-bold lg:w-full"
           >
-            {intl("home/hero/title")}
+            {intl.rich("home/hero/title", {
+              highlight: (chunks) => (
+                <Typography tag="span" className="text-brand-500">
+                  {chunks}
+                </Typography>
+              ),
+            })}
           </Typography>
           <Typography
             tag="p"
-            className="text-natural-50 text-body sm:text-subtitle-1 font-medium"
+            className="text-natural-700 text-body sm:text-subtitle-2 font-medium lg:w-full"
           >
             {intl("home/hero/description")}
           </Typography>
@@ -41,18 +46,22 @@ const Hero: React.FC = () => {
               action: "link",
             },
           }}
-          className="mb-14"
+          className="flex justify-center lg:justify-start"
         >
-          <Button size="large" className="h-auto w-auto py-4 px-8">
+          <Button size="large" className="py-2 px-4">
             <Typography
               tag="span"
-              className="text-natural-50 text-body font-bold"
+              className="text-natural-50 text-body font-medium"
             >
               {intl("home/hero/start-your-journey")}
             </Typography>
           </Button>
         </Link>
-      </Ellipse>
+      </div>
+
+      <div className="h-full w-3/4 lg:w-full">
+        <LottieAnimate animation="hero" />
+      </div>
     </div>
   );
 };
