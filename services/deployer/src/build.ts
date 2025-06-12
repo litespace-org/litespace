@@ -12,7 +12,7 @@ const workspaceBuildCommand: Record<Workspace, string[]> = {
   "@litespace/web": ["pnpm web build"],
   "@litespace/dashboard": ["pnpm dashboard build"],
   "@litespace/landing": ["pnpm landing build", "pm2 reload landing"],
-  // "@litespace/blog": ["pnpm blog build"],
+  "@litespace/jobs": ["pnpm jobs build", "pm2 reload jobs"],
 };
 
 function getWorkspaceBuildCommand(workspaces: Workspace[] | "all"): string[] {
