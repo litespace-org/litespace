@@ -6,7 +6,7 @@ import AstroStudent1 from "@litespace/assets/AstroStudent1";
 import AstroStudent2 from "@litespace/assets/AstroStudent2";
 import AstroStudent3 from "@litespace/assets/AstroStudent3";
 import AstroStudent4 from "@litespace/assets/AstroStudent4";
-import LongLeftArrow from "@litespace/assets/LongLeftArrow";
+import LongLeftArrow from "@litespace/assets/ArrowLeft";
 import Link from "@/components/Common/Link";
 import { Button } from "@litespace/ui/Button";
 import { router } from "@/lib/routes";
