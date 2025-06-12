@@ -7,7 +7,6 @@ describe("registration", () => {
     cy.get("input[id=password]").clear();
     cy.get("input[id=confirmPassword]").clear();
   });
-  
 
   it("should display the registration form", () => {
     cy.url().should("include", Web.Register.replace(":role", "student"));
@@ -17,7 +16,6 @@ describe("registration", () => {
     cy.get("button[type=submit]").should("be.visible");
   });
 
-
   it("should register with all 3 fields empty", () => {
     cy.get("form").submit();
 
@@ -25,7 +23,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 3);
     cy.get("input[id=email]").should("have.attr", "data-state", "error");
     cy.get("input[id=password]").should("have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with email filled and other 2 empty", () => {
@@ -36,7 +38,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 2);
     cy.get("input[id=email]").should("not.have.attr", "data-state", "error");
     cy.get("input[id=password]").should("have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with only password filled and other 2 empty", () => {
@@ -47,7 +53,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 2);
     cy.get("input[id=email]").should("have.attr", "data-state", "error");
     cy.get("input[id=password]").should("not.have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with only confirm password filled and other 2 empty", () => {
@@ -58,7 +68,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 2);
     cy.get("input[id=email]").should("have.attr", "data-state", "error");
     cy.get("input[id=password]").should("have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("not.have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "not.have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with email and password filled, confirm password empty", () => {
@@ -70,7 +84,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 1);
     cy.get("input[id=email]").should("not.have.attr", "data-state", "error");
     cy.get("input[id=password]").should("not.have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with email and confirm password filled, password empty", () => {
@@ -82,7 +100,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 1);
     cy.get("input[id=email]").should("not.have.attr", "data-state", "error");
     cy.get("input[id=password]").should("have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("not.have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "not.have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with password and confirm password filled, email empty", () => {
@@ -94,7 +116,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 1);
     cy.get("input[id=email]").should("have.attr", "data-state", "error");
     cy.get("input[id=password]").should("not.have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("not.have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "not.have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with incorrect email format", () => {
@@ -107,7 +133,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 1);
     cy.get("input[id=email]").should("have.attr", "data-state", "error");
     cy.get("input[id=password]").should("not.have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("not.have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "not.have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with very short password", () => {
@@ -120,7 +150,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 1);
     cy.get("input[id=email]").should("not.have.attr", "data-state", "error");
     cy.get("input[id=password]").should("have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("not.have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "not.have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with password without numbers", () => {
@@ -133,7 +167,11 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 1);
     cy.get("input[id=email]").should("not.have.attr", "data-state", "error");
     cy.get("input[id=password]").should("have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("not.have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "not.have.attr",
+      "data-state",
+      "error"
+    );
   });
 
   it("should register with password without capital letters", () => {
@@ -146,7 +184,10 @@ describe("registration", () => {
     cy.get("input[data-state=error]").should("have.length", 1);
     cy.get("input[id=email]").should("not.have.attr", "data-state", "error");
     cy.get("input[id=password]").should("have.attr", "data-state", "error");
-    cy.get("input[id=confirmPassword]").should("not.have.attr", "data-state", "error");
+    cy.get("input[id=confirmPassword]").should(
+      "not.have.attr",
+      "data-state",
+      "error"
+    );
   });
-  
 });
