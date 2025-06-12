@@ -32,6 +32,7 @@
     "./AddCircle": "./dist/AddCircle.tsx",
     "./AlertCircle": "./dist/AlertCircle.tsx",
     "./AllMessages": "./dist/AllMessages.tsx",
+    "./ArrowDown": "./dist/ArrowDown.tsx",
     "./ArrowLeft": "./dist/ArrowLeft.tsx",
     "./ArrowRight": "./dist/ArrowRight.tsx",
     "./ArrowUp": "./dist/ArrowUp.tsx",
