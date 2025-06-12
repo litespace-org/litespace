@@ -393,6 +393,7 @@ input[type="range"]:focus::-moz-range-thumb {
   --natural-200: #cccccc;
   --natural-100: #e6e6e6;
   --natural-50: #f2f2f2;
+  --natural-0: #ffffff;
   --success-950: #05150d;
   --success-900: #0a291a;
   --success-800: #145234;
