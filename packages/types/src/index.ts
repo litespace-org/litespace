@@ -28,7 +28,7 @@ export * as Env from "@/env";
 export * as IWhatsapp from "@/whatsapp";
 export * as ITelegram from "@/telegram";
 export * as IEcho from "@/echo";
-export * as IShortUrl from "@/ShortUrl";
+export * as IShortUrl from "@/shortUrl";
 export * as IMessenger from "@/messenger";
 export * as IKafka from "@/kafka";
 export * as IFawry from "@/fawry";
