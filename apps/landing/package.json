@@ -15,6 +15,7 @@
     "@litespace/ui": "workspace:^",
     "@litespace/utils": "workspace:^",
     "@microsoft/clarity": "^1.0.0",
+    "@rive-app/react-canvas": "^4.21.3",
     "classnames": "^2.5.1",
     "framer-motion": "^11.2.6",
     "lodash": "^4.17.21",
