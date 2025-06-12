@@ -98,6 +98,7 @@
     "./Grid": "./dist/Grid.tsx",
     "./Home": "./dist/Home.tsx",
     "./Illustration": "./dist/Illustration.tsx",
+    "./Illustration1": "./dist/Illustration1.tsx",
     "./InfoCircle": "./dist/InfoCircle.tsx",
     "./Info": "./dist/Info.tsx",
     "./Instagram": "./dist/Instagram.tsx",
