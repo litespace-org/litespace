@@ -9,6 +9,8 @@ import { formatNumber } from "@litespace/ui/utils";
 import { Link } from "react-router-dom";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import cn from "classnames";
+import { Optional } from "@litespace/ui/Optional";
 
 export const TutorCard: React.FC<{
   id: number;
@@ -23,10 +25,20 @@ export const TutorCard: React.FC<{
   return (
     <Link
       to={router.web({ route: Web.TutorProfile, id })}
-      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 @container block rounded-lg"
+      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 @container block rounded-lg"
     >
       <div className="w-full border border-natural-100 rounded-lg p-4 flex flex-col gap-4 h-full">
-        <div className="w-full h-80 @sm:h-[22rem] @md:h-[26rem] @2md:h-[30rem] @lg:h-[32rem] rounded-[10px] grow overflow-hidden relative">
+        <div
+          className={cn(
+            "w-full h-80 max-h-80 @sm:h-[22rem] @sm:max-h-[22rem]",
+            "@md:h-[26rem] @md:max-h-[26rem]",
+            "@2md:h-[30rem] @2md:max-h-[30rem]",
+            "@lg:h-[32rem] @lg:max-h-[32rem]",
+            "@xl:h-[34rem] @xl:max-h-[34rem]",
+            "@2xl:h-[37rem] @xl:max-h-[37rem]",
+            "rounded-[10px] grow overflow-hidden relative"
+          )}
+        >
           {free ? <Free /> : null}
           <AvatarV2 src={image} alt={name} id={id} object="cover" />
         </div>
@@ -40,17 +52,19 @@ export const TutorCard: React.FC<{
             </Typography>
             {rating ? <Rating rating={rating} /> : null}
           </div>
-          <Typography
-            tag="p"
-            className="text-tiny text-natural-800 line-clamp-1"
-          >
-            {bio}
-          </Typography>
+          <Optional show={!!bio}>
+            <Typography
+              tag="p"
+              className="text-tiny text-natural-800 line-clamp-1"
+            >
+              {bio}
+            </Typography>
+          </Optional>
         </div>
 
         <Button
           htmlType="button"
-          className="w-full"
+          className="w-full mt-auto"
           size="large"
           onClick={(event) => {
             event.preventDefault();
@@ -86,7 +100,7 @@ const Rating: React.FC<{ rating: number }> = ({ rating }) => {
         tag="span"
       >
         {formatNumber(rating, {
-          maximumFractionDigits: 2,
+          maximumFractionDigits: 1,
         })}
       </Typography>
       <Star className="w-[15px] h-[15px] [&>*]:fill-warning-500" />
