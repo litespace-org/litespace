@@ -178,6 +178,15 @@ export class User extends Base {
     });
   }
 
+  async findTutoringMinutes(
+    query: ITutor.FindTutoringMinutesApiQuery
+  ): Promise<ITutor.FindTutoringMinutesApiResponse> {
+    return await this.get({
+      route: `/api/v1/user/tutor/tutoring-minutes`,
+      params: query,
+    });
+  }
+
   async findStudios(
     query?: IFilter.Pagination
   ): Promise<IUser.FindStudiosApiResponse> {
