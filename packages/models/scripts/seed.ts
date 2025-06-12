@@ -11,10 +11,12 @@ import {
   hashPassword,
   topics,
   availabilitySlots,
+  invoices,
 } from "@litespace/models";
 import {
   IAvailabilitySlot,
   IInterview,
+  IInvoice,
   ILesson,
   IUser,
 } from "@litespace/types";
@@ -215,6 +217,29 @@ async function main(): Promise<void> {
       })
     );
   });
+
+  // seed invoices for each tutor
+  for (const tutor of addedTutors) {
+    await Promise.all(
+      range(faker.number.int(10)).map(() =>
+        invoices.create({
+          userId: tutor.id,
+          method: sample([
+            IInvoice.WithdrawMethod.Bank,
+            IInvoice.WithdrawMethod.Wallet,
+            IInvoice.WithdrawMethod.Instapay,
+          ]),
+          receiver: sample([
+            "bank:123321123321123",
+            "01010101010",
+            "example@instapay.com",
+          ]),
+          amount: faker.number.int({ min: 100, max: 1000 }),
+          note: sample([faker.lorem.sentence(10), undefined]),
+        })
+      )
+    );
+  }
 
   // assigning random tutors to studios
   await Promise.all(
