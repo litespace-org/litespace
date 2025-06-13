@@ -17,6 +17,7 @@ import {
   plans,
   subscriptions,
   invoices,
+  reports,
 } from "@litespace/models";
 import {
   IInterview,
@@ -31,6 +32,7 @@ import {
   ITransaction,
   ISubscription,
   IPlan,
+  IReport,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -46,6 +48,7 @@ dayjs.extend(utc);
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await reports.builder(tx).del();
     await subscriptions.builder(tx).del();
     await transactions.builder(tx).del();
     await plans.builder(tx).del();
@@ -575,6 +578,18 @@ async function subscription(
   });
 }
 
+export async function report(payload?: Partial<IReport.CreatePayload>) {
+  const report = await reports.create({
+    userId: await or.studentId(payload?.userId),
+    title: payload?.title || faker.lorem.words(5),
+    description: payload?.description || faker.lorem.words(25),
+    screenshot: payload?.screenshot,
+    log: payload?.log,
+  });
+  if (!report) throw new Error("Slot not found; should never happen");
+  return report;
+}
+
 export default {
   user,
   tutor,
@@ -591,6 +606,7 @@ export default {
   transaction,
   plan,
   subscription,
+  report,
   room: makeRoom,
   message: makeMessage,
   make: {

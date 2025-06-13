@@ -22,6 +22,8 @@ export const noEnoughMinutes = () => error(ApiError.NoEnoughMinutes, 403);
 export const bad = (message?: string) =>
   error(ApiError.BadRequest, 400, message);
 
+export const largeFileSize = () => error(ApiError.LargeFileSize, 400);
+
 export const conflictingInterview = () =>
   error(ApiError.ConflictingInterview, 409);
 

@@ -12,7 +12,6 @@ export * as IPlan from "@/plan";
 export * as ICoupon from "@/coupon";
 export * as IInvite from "@/invite";
 export * as IReport from "@/report";
-export * as IReportReply from "@/reportReply";
 export * as IToken from "@/token";
 export * as IFilter from "@/filter";
 export * as IInterview from "@/interview";

@@ -1,3 +1,5 @@
+import { entries } from "lodash";
+
 export function safeFormData<
   T extends { [key: string]: string | Blob | undefined },
 >() {
@@ -9,4 +11,14 @@ export function safeFormData<
   };
 
   return { append, done: () => formData };
+}
+
+export function asFormData<T extends object>(data: T) {
+  const form = new FormData();
+
+  for (const [key, value] of entries(data)) {
+    form.append(key, value);
+  }
+
+  return form;
 }
