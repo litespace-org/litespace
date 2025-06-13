@@ -3,28 +3,15 @@ import safeRequest from "express-async-handler";
 import { decodeAuthJwt } from "@/jwt";
 import { users } from "@litespace/models";
 import { safe } from "@litespace/utils/error";
-import { asGhost } from "@litespace/utils/ghost";
 import { isAdmin } from "@litespace/utils/user";
 
-export function authMiddleware({
-  jwtSecret,
-  ghostPassword,
-}: {
-  jwtSecret: string;
-  ghostPassword: string;
-}) {
+export function authMiddleware({ jwtSecret }: { jwtSecret: string }) {
   return safeRequest(
     async (req: Request, _res: Response, next: NextFunction) => {
       const header = req.headers.authorization || req.headers["Authorization"];
       if (!header || typeof header !== "string") return next();
 
       const [type, token] = header.split(" ");
-
-      if (type === "Basic") {
-        const data = Buffer.from(token, "base64").toString("utf-8");
-        const [username, password] = data.split(":");
-        if (password === ghostPassword) req.user = asGhost(username);
-      }
 
       if (type === "Bearer") {
         const id = await safe(async () => decodeAuthJwt(token, jwtSecret));

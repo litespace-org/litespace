@@ -105,14 +105,6 @@ export const spaceConfig = {
     .parse(process.env.SPACES_SECRET_ACCESS_KEY),
 } as const;
 
-export const ghostConfig = {
-  password: zod
-    .string({
-      message: "Missing or invalid ghost password",
-    })
-    .parse(process.env.GHOST_PASSWORD),
-} as const;
-
 export const platformConfig = {
   /**
    * Tutor hourly rate scaled in EGP price (scaled).
