@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import express, { json } from "express";
 import routes from "@/routes";
-import { ghostConfig, jwtSecret, serverConfig } from "@/constants";
+import { jwtSecret, serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
 import { wssHandler } from "@/wss";
 import bodyParser from "body-parser";
@@ -75,7 +75,7 @@ app.use(
 app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(authMiddleware({ jwtSecret, ghostPassword: ghostConfig.password }));
+app.use(authMiddleware({ jwtSecret }));
 app.use("/api/v1/auth", routes.auth);
 app.use("/api/v1/contact-request", routes.contactRequest);
 app.use("/api/v1/user", routes.user(context));
