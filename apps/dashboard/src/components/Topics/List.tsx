@@ -5,7 +5,7 @@ import DateField from "@/components/Common/DateField";
 import Error from "@/components/Common/Error";
 import { Loading } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Table } from "@/components/Common/Table";
+import { Table } from "@litespace/ui/Table";
 import { Menu } from "@litespace/ui/Menu";
 import DeleteTopic from "@/components/Topics/DeleteTopic";
 import TopicDialog from "@/components/Topics/TopicDialog";

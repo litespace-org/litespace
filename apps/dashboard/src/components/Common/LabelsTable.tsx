@@ -1,6 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
-import { Table } from "@/components/Common/Table";
+import { Table } from "@litespace/ui/Table";
 
 export type TableLablesRow = {
   label: React.ReactNode;

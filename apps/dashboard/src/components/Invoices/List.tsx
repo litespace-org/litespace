@@ -1,6 +1,6 @@
 import { IInvoice, Paginated, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
-import { Table } from "@/components/Common/Table";
+import { Table } from "@litespace/ui/Table";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { formatCurrency } from "@litespace/ui/utils";
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";
@@ -26,7 +26,7 @@ const List: React.FC<{
   goto: (pageNumber: number) => void;
   page: number;
   totalPages: number;
-}> = ({ data, query, next, prev, goto, page, totalPages }) => {
+}> = ({ data, query, ...pagination }) => {
   const intl = useFormatMessage();
   const columnHelper = createColumnHelper<IInvoice.Self>();
   const [action, setAction] = useState<Action | null>(null);
@@ -151,13 +151,9 @@ const List: React.FC<{
       <Table
         columns={columns}
         data={data.list}
-        goto={goto}
-        prev={prev}
-        next={next}
         fetching={query.isFetching}
         loading={query.isLoading}
-        totalPages={totalPages}
-        page={page}
+        {...pagination}
       />
       {action !== null && invoice ? (
         <Process
