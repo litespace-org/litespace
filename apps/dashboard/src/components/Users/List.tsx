@@ -6,7 +6,7 @@ import { IUser, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
-import { Table } from "@/components/Common/Table";
+import { Table } from "@litespace/ui/Table";
 import BooleanField from "@/components/Common/BooleanField";
 import DateField from "@/components/Common/DateField";
 import TruncateField from "@/components/Common/TruncateField";
@@ -100,7 +100,7 @@ const List: React.FC<{
               },
               {
                 id: 2,
-                label: intl("global.labels.delete"),
+                label: intl("labels.delete"),
                 danger: true,
                 onClick() {
                   alert("Delete user!!!");

@@ -32,6 +32,7 @@ export { Timeline, type TimelineItem } from "@/components/Timeline";
 export { Alert, AlertType } from "@/components/Alert";
 export { Switch } from "@/components/Switch";
 export { Stepper } from "@/components/Stepper";
+export { Table } from "@/components/Table";
 export { TextEditor } from "@/components/TextEditor";
 export { LessonCard, EmptyLessons } from "@/components/Lessons";
 export { ErrorPage } from "@/components/ErrorPage";

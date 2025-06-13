@@ -1,17 +1,11 @@
 import { useApi } from "@/api";
 import { MutationKey, QueryKey } from "@/constants";
 import { UsePaginateResult, usePaginate } from "@/pagination";
-import { useInfinitePaginationQuery } from "@/query";
-import { IFilter, IInvoice, Paginated, Void } from "@litespace/types";
-import {
-  InfiniteData,
-  UseInfiniteQueryResult,
-  UseQueryResult,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
 import { OnError } from "@/types/query";
+import { IFilter, IInvoice, Paginated, Void } from "@litespace/types";
+import { Pagination } from "@litespace/types/dist/esm/filter";
+import { UseQueryResult, useMutation, useQuery } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
 
 type OnSuccess = Void;
 
@@ -34,37 +28,19 @@ export function useFindInvoices(
   return usePaginate(findInvoices, [QueryKey.FindInvoices, filter]);
 }
 
-type useFindInvoicesByUserProps = {
-  query: UseInfiniteQueryResult<
-    InfiniteData<Paginated<IInvoice.Self>, unknown>,
-    Error
-  >;
-  list: IInvoice.Self[] | null;
-  more: Void;
-};
-
 export function useFindInvoicesByUser(
-  filter: { userOnly?: boolean } & Omit<
-    IInvoice.FindInvoicesQuery,
-    "page" | "size"
-  >
-): useFindInvoicesByUserProps {
+  id?: number
+): UsePaginateResult<IInvoice.Self> {
   const api = useApi();
-  const findInvoices = useCallback(
-    async ({ page }: { page: number }): Promise<Paginated<IInvoice.Self>> => {
-      if (filter.userOnly && !filter.users) return { list: [], total: 0 };
-      return await api.invoice.find({
-        page,
-        users: filter.users,
-        ...filter,
-      });
+
+  const findInvoicesById = useCallback(
+    async ({ page, size }: Pagination): Promise<Paginated<IInvoice.Self>> => {
+      return await api.invoice.find({ page, size, users: id ? [id] : [] });
     },
-    [api.invoice, filter]
+    [api.invoice, id]
   );
-  return useInfinitePaginationQuery(findInvoices, [
-    QueryKey.FindInvoicesByUser,
-    filter,
-  ]);
+
+  return usePaginate(findInvoicesById, [QueryKey.FindInvoicesByUser, id]);
 }
 
 type Query = UseQueryResult<IInvoice.StatsApiResponse | null, Error>;
@@ -110,6 +86,32 @@ export function useCreateInvoice({
   return useMutation({
     mutationFn: createUserInvoice,
     mutationKey: [MutationKey.CreateInvoice],
+    onSuccess,
+    onError,
+  });
+}
+
+export function useRequestInvoiceCancelation({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess;
+  onError: OnError;
+}) {
+  const api = useApi();
+
+  const cancelInvoice = useCallback(
+    async (id: number) => {
+      return await api.invoice.update(id, {
+        status: IInvoice.Status.PendingCancellation,
+      });
+    },
+    [api.invoice]
+  );
+
+  return useMutation({
+    mutationFn: cancelInvoice,
+    mutationKey: [MutationKey.RequestInvoiceCancellation],
     onSuccess,
     onError,
   });

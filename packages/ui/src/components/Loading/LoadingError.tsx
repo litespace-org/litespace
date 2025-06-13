@@ -33,7 +33,7 @@ export const LoadingError: React.FC<{
   }, [intl, logger, toast]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-[226px]">
+    <div className="flex flex-col items-center justify-center w-[226px] mx-auto">
       <div
         className={cn("flex items-center justify-center rounded-full", {
           "w-8 h-8": size === "small",

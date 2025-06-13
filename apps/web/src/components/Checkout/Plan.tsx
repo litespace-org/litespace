@@ -65,8 +65,8 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
             tag="span"
             className="text-caption lg:text-body font-semibold md:font-normal"
           >
-            {intl("checkout.plan.price", {
-              price: formatNumber(price.unscale(data.baseMonthlyPrice)),
+            {intl("labels.currency.egp", {
+              value: formatNumber(price.unscale(data.baseMonthlyPrice)),
             })}
           </Typography>
         </div>
@@ -81,8 +81,8 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
             tag="span"
             className="text-caption lg:text-body font-semibold md:font-normal"
           >
-            {intl("checkout.plan.price", {
-              price: formatNumber(
+            {intl("labels.currency.egp", {
+              value: formatNumber(
                 calculateTotalPriceBeforeDiscount(data.baseMonthlyPrice, period)
               ),
             })}
@@ -101,8 +101,8 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
           tag="span"
           className="text-caption lg:text-body font-semibold md:font-bold"
         >
-          {intl("checkout.plan.price", {
-            price: formatNumber(calculateTotalPriceAfterDiscount(data, period)),
+          {intl("labels.currency.egp", {
+            value: formatNumber(calculateTotalPriceAfterDiscount(data, period)),
           })}
         </Typography>
       </div>

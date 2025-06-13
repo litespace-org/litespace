@@ -4,7 +4,7 @@ export enum MutationKey {
   UpdateInterview = "update-interview",
   CreateInvoice = "create-invoice",
   EditInvoice = "edit-invoice",
-  CancelInvoice = "cancel-invoice",
+  RequestInvoiceCancellation = "request-invoice-cancellation",
   ResetPassword = "reset-password",
   ForgetPassword = "forget-password",
   VerifyEmail = "verify-email",
