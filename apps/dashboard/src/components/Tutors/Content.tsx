@@ -1,4 +1,4 @@
-import { Table } from "@/components/Common/Table";
+import { Table } from "@litespace/ui/Table";
 import dayjs from "@/lib/dayjs";
 import Calendar from "@litespace/assets/Calendar";
 import InfoCircle from "@litespace/assets/InfoCircle";

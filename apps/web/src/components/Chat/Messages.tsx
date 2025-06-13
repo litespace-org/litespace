@@ -448,8 +448,11 @@ const Messages: React.FC<{
             onClick: confirmDelete,
           },
           secondary: {
-            label: intl("chat.message.delete.cancel"),
-            onClick: close,
+            label: intl("labels.go-back"),
+            onClick: () => {
+              if (close) close();
+              discardDelete();
+            },
           },
         }}
         close={discardDelete}

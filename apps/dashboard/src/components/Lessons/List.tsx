@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ILesson, Void } from "@litespace/types";
-import { Table } from "@/components/Common/Table";
+import { Table } from "@litespace/ui/Table";
 import { UseQueryResult } from "@tanstack/react-query";
 import { formatCurrency } from "@litespace/ui/utils";
 import { Duration } from "@litespace/utils/duration";
