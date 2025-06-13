@@ -43,7 +43,7 @@ const Cache: React.FC = () => {
       </div>
 
       <Button size={"small"} type={"error"} onClick={() => setOpen(true)}>
-        {intl("global.labels.delete")}
+        {intl("labels.delete")}
       </Button>
       <Dialog
         open={open}

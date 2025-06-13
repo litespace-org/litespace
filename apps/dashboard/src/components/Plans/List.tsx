@@ -1,5 +1,5 @@
 import DateField from "@/components/Common/DateField";
-import { Table, TableNaviationProps } from "@/components/Common/Table";
+import { Table, TableNaviationProps } from "@litespace/ui/Table";
 import Price from "@/components/Common/Price";
 import { useUpdatePlan } from "@litespace/headless/plans";
 import { IPlan, Void } from "@litespace/types";
