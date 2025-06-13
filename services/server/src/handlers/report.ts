@@ -22,7 +22,6 @@ import {
   upload,
   withFileUrls,
 } from "@/lib/assets";
-import { v4 as uuid } from "uuid";
 
 const createReportPayload = zod.object({
   title: string,
@@ -55,8 +54,6 @@ async function create(req: Request, res: Response, next: NextFunction) {
   const { title, description }: IReport.CreateApiPayload =
     createReportPayload.parse(req.body);
 
-  const key = uuid();
-
   // upload the screenshot if exists
   const screenshot = getRequestFile(
     req.files,
@@ -67,26 +64,15 @@ async function create(req: Request, res: Response, next: NextFunction) {
     return next(largeFileSize());
 
   const screenshotKey = screenshot
-    ? await upload({
-        data: screenshot.buffer,
-        type: screenshot.mimetype,
-        prefix: "reports/screenshots/",
-        key,
-      })
+    ? await upload({ data: screenshot.buffer, type: screenshot.mimetype })
     : undefined;
 
   // upload the log file if exists
   const log = getRequestFile(req.files, IReport.AssetFileName.Log);
-
   if (log && exceedsSizeLimit(log.size, 1)) return next(largeFileSize());
 
   const logKey = log
-    ? await upload({
-        data: log.buffer,
-        type: log.mimetype,
-        prefix: "reports/logs/",
-        key,
-      })
+    ? await upload({ data: log.buffer, type: log.mimetype })
     : undefined;
 
   await reports.create({
