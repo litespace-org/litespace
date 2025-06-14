@@ -59,6 +59,7 @@ export async function flush() {
     await lessons.builder(tx).lessons.del();
     await interviews.builder(tx).del();
     await ratings.builder(tx).del();
+    await introVideos.builder(tx).del();
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await confirmationCodes.builder(tx).del();
@@ -508,13 +509,13 @@ async function plan(
   });
 }
 
-async function introVideo(payload: {
-  src?: string;
-  tutorId: number;
-}): Promise<IIntroVideo.Self> {
+async function introVideo(
+  payload?: Partial<IIntroVideo.CreatePayloadModel>
+): Promise<IIntroVideo.Self> {
   return await introVideos.create({
-    src: payload.src || randomVideo(),
-    tutorId: payload.tutorId,
+    src: payload?.src || randomVideo(),
+    tutorId: payload?.tutorId || (await tutor()).id,
+    reviewerId: payload?.reviewerId || (await tutorManager()).id,
   });
 }
 

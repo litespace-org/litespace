@@ -20,7 +20,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     },
     reviewer_id: {
       type: "INT",
-      default: null,
+      notNull: true,
       references: "tutors(id)",
     },
     state: { type: "intro_video_state", default: "pending" },

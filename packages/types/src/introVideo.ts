@@ -1,3 +1,5 @@
+import { Paginated } from "@/utils";
+
 export type Self = {
   id: number;
   /***
@@ -29,6 +31,7 @@ export type State = "approved" | "rejected" | "pending";
 export type CreatePayloadModel = {
   src: string;
   tutorId: number;
+  reviewerId: number;
 };
 
 export type UpdatePayloadModel = {
@@ -38,6 +41,7 @@ export type UpdatePayloadModel = {
 
 export type FindPayloadModel = {
   tutorIds?: number[];
+  videoIds?: number[];
   reviewerIds?: number[];
   state?: State;
   after?: string;
@@ -46,3 +50,5 @@ export type FindPayloadModel = {
   size?: number;
   full?: boolean;
 };
+
+export type FindModelResponse = Paginated<Self>;
