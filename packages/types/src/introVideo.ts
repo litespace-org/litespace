@@ -38,6 +38,7 @@ export type UpdatePayloadModel = {
 
 export type FindPayloadModel = {
   tutorIds?: number[];
+  videoIds?: number[];
   reviewerIds?: number[];
   state?: State;
   after?: string;

@@ -7,7 +7,6 @@ import {
   withListFilter,
   WithOptionalTx,
   withSkippablePagination,
-  withStringFilter,
 } from "@/query";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
@@ -81,19 +80,19 @@ export class IntroVideos {
     before,
     reviewerIds,
     tutorIds,
+    videoIds,
     ...pagination
   }: WithOptionalTx<IIntroVideo.FindPayloadModel>): Promise<
     Paginated<IIntroVideo.Self>
   > {
     const builder = this.builder(tx);
 
-    // ==============  String fileds ========
-    withStringFilter(builder, this.column("state"), state);
-
     // ==============  list-based fileds ========
     withListFilter(builder, this.column("tutor_id"), tutorIds);
     withListFilter(builder, this.column("reviewer_id"), reviewerIds);
+    withListFilter(builder, this.column("id"), videoIds);
 
+    if (state) builder.where("state", state);
     if (after) builder.where("created_at", ">=", dayjs.utc(after).toDate());
     if (before) builder.where("created_at", "<=", dayjs.utc(before).toDate());
 

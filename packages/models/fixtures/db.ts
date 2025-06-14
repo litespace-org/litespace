@@ -59,6 +59,7 @@ export async function flush() {
     await lessons.builder(tx).lessons.del();
     await interviews.builder(tx).del();
     await ratings.builder(tx).del();
+    await introVideos.builder(tx).del();
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await confirmationCodes.builder(tx).del();
