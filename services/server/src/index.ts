@@ -51,11 +51,7 @@ const io = new Server<Wss.ClientEventsMap, Wss.ServerEventsMap>(server, {
 });
 const context: ApiContext = { io };
 
-io.engine.use(
-  onlyForHandshake(
-    authMiddleware({ jwtSecret, ghostPassword: ghostConfig.password })
-  )
-);
+io.engine.use(onlyForHandshake(authMiddleware({ jwtSecret })));
 io.engine.use(onlyForHandshake(authorizeSocket));
 io.on("connection", wssHandler);
 
