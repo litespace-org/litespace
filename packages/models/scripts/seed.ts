@@ -16,6 +16,7 @@ import {
 import {
   IAvailabilitySlot,
   IInterview,
+  IIntroVideo,
   IInvoice,
   ILesson,
   IUser,
@@ -495,13 +496,17 @@ async function main(): Promise<void> {
         "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
       ]),
       tutorId: tutor.id,
+      reviewerId: tutorManager.id,
     });
 
     // if there is a reviewer, the video is rejected or approved otherwise it's in pending state
-    const reviewerId = sample([tutorManager.id, undefined]);
-    await introVideos.update(video.id, {
-      reviewerId,
-      state: reviewerId ? sample(["approved", "rejected"]) : "pending",
+    await introVideos.update({
+      id: video.id,
+      state: sample([
+        IIntroVideo.State.Approved,
+        IIntroVideo.State.Pending,
+        IIntroVideo.State.Rejected,
+      ]),
     });
   }
 

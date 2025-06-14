@@ -1,3 +1,6 @@
+import { Paginated } from "@/utils";
+import { IFilter } from "@/index";
+
 export type Self = {
   id: number;
   /***
@@ -24,25 +27,30 @@ export type Row = {
   updated_at: Date;
 };
 
-export type State = "approved" | "rejected" | "pending";
+export enum State {
+  Pending = 1,
+  Rejected = 2,
+  Approved = 3,
+}
 
-export type CreatePayloadModel = {
+export type CreateModelPayload = {
   src: string;
   tutorId: number;
+  reviewerId: number;
 };
 
-export type UpdatePayloadModel = {
+export type UpdateModelPayload = {
+  id: number;
   state?: State;
   reviewerId?: number;
 };
 
-export type FindPayloadModel = {
+export type FindModelPayload = IFilter.SkippablePagination & {
   tutorIds?: number[];
+  videoIds?: number[];
   reviewerIds?: number[];
+  createdAt?: IFilter.Date;
   state?: State;
-  after?: string;
-  before?: string;
-  page?: number;
-  size?: number;
-  full?: boolean;
 };
+
+export type FindModelResponse = Paginated<Self>;
