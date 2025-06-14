@@ -300,7 +300,7 @@ function update(_: ApiContext) {
         const newEmail = email && email !== target.email;
         const newPhone = phone && phone !== target.phone;
 
-        const updateUserPayload: IUser.UpdatePayloadModel = {
+        const updateUserPayload: IUser.UpdateModelPayload = {
           city,
           name,
           gender,

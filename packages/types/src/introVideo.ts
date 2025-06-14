@@ -1,3 +1,5 @@
+import { Paginated } from "@/utils";
+
 export type Self = {
   id: number;
   /***
@@ -24,20 +26,27 @@ export type Row = {
   updated_at: Date;
 };
 
-export type State = "approved" | "rejected" | "pending";
+export enum State {
+  Pending = 1,
+  Rejected = 2,
+  Approved = 3,
+}
 
-export type CreatePayloadModel = {
+export type CreateModelPayload = {
   src: string;
   tutorId: number;
+  reviewerId: number;
 };
 
-export type UpdatePayloadModel = {
+export type UpdateModelPayload = {
+  id: number;
   state?: State;
   reviewerId?: number;
 };
 
-export type FindPayloadModel = {
+export type FindModelPayload = {
   tutorIds?: number[];
+  videoIds?: number[];
   reviewerIds?: number[];
   state?: State;
   after?: string;
@@ -46,3 +55,5 @@ export type FindPayloadModel = {
   size?: number;
   full?: boolean;
 };
+
+export type FindModelResponse = Paginated<Self>;

@@ -114,7 +114,7 @@ export type CreatePayload = {
   notificationMethod?: NotificationMethod | null;
 };
 
-export type UpdatePayloadModel = {
+export type UpdateModelPayload = {
   email?: string;
   password?: string;
   name?: string | null;

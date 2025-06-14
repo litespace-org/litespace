@@ -1,4 +1,4 @@
-import { IIntroVideo, Paginated } from "@litespace/types";
+import { IIntroVideo } from "@litespace/types";
 import { Knex } from "knex";
 import {
   column,
@@ -7,7 +7,6 @@ import {
   withListFilter,
   WithOptionalTx,
   withSkippablePagination,
-  withStringFilter,
 } from "@/query";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
@@ -16,33 +15,32 @@ export class IntroVideos {
   table = "intro_videos" as const;
 
   async create(
-    payload: IIntroVideo.CreatePayloadModel
+    payload: IIntroVideo.CreateModelPayload
   ): Promise<IIntroVideo.Self> {
     const now = dayjs.utc();
     const rows = await knex<IIntroVideo.Row>(this.table).insert(
       {
         src: payload.src,
         tutor_id: payload.tutorId,
-        state: "pending",
-        reviewer_id: null,
+        state: IIntroVideo.State.Pending,
+        reviewer_id: payload.reviewerId,
         created_at: now.toDate(),
         updated_at: now.toDate(),
       },
       "*"
     );
-
     const row = first(rows);
 
-    if (!row) throw new Error("IntroVideo not found: Should never happen");
+    if (!row) throw new Error("Intro video not found: Should never happen");
     return this.from(row);
   }
 
-  async update(
-    id: number,
-    payload: IIntroVideo.UpdatePayloadModel
-  ): Promise<IIntroVideo.Self> {
+  async update({
+    tx,
+    ...payload
+  }: WithOptionalTx<IIntroVideo.UpdateModelPayload>): Promise<void> {
     const now = dayjs.utc();
-    const rows = await knex<IIntroVideo.Row>(this.table)
+    await this.builder(tx)
       .update(
         {
           reviewer_id: payload.reviewerId,
@@ -51,15 +49,11 @@ export class IntroVideos {
         },
         "*"
       )
-      .where("id", id);
-    const row = first(rows);
-
-    if (!row) throw new Error("IntroVideo not found: Should never happen");
-    return this.from(row);
+      .where("id", payload.id);
   }
 
-  async delete(id: number): Promise<void> {
-    await knex<IIntroVideo.Row>(this.table).delete().where("id", id);
+  async delete(id: number, tx?: Knex.Transaction): Promise<void> {
+    await this.builder(tx).delete().where("id", id);
   }
 
   async findById(
@@ -81,19 +75,17 @@ export class IntroVideos {
     before,
     reviewerIds,
     tutorIds,
+    videoIds,
     ...pagination
-  }: WithOptionalTx<IIntroVideo.FindPayloadModel>): Promise<
-    Paginated<IIntroVideo.Self>
-  > {
+  }: WithOptionalTx<IIntroVideo.FindModelPayload>): Promise<IIntroVideo.FindModelResponse> {
     const builder = this.builder(tx);
-
-    // ==============  String fileds ========
-    withStringFilter(builder, this.column("state"), state);
 
     // ==============  list-based fileds ========
     withListFilter(builder, this.column("tutor_id"), tutorIds);
     withListFilter(builder, this.column("reviewer_id"), reviewerIds);
+    withListFilter(builder, this.column("id"), videoIds);
 
+    if (state) builder.where("state", state);
     if (after) builder.where("created_at", ">=", dayjs.utc(after).toDate());
     if (before) builder.where("created_at", "<=", dayjs.utc(before).toDate());
 

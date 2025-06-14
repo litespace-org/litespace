@@ -2,7 +2,7 @@ import { interviews } from "@/interviews";
 import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/utils/utils";
 import { expect } from "chai";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 describe("Interviews", () => {
   beforeEach(async () => {
