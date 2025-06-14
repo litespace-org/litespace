@@ -13,6 +13,7 @@ import {
   availabilitySlots,
   contactRequests,
   invoices,
+  introVideos,
 } from "@/index";
 import {
   IInterview,
@@ -27,6 +28,7 @@ import {
   ITransaction,
   ISubscription,
   IPlan,
+  IIntroVideo,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -57,6 +59,7 @@ export async function flush() {
     await lessons.builder(tx).lessons.del();
     await interviews.builder(tx).del();
     await ratings.builder(tx).del();
+    await introVideos.builder(tx).del();
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await confirmationCodes.builder(tx).del();
@@ -506,6 +509,23 @@ async function plan(
   });
 }
 
+async function introVideo(payload: {
+  src?: string;
+  tutorId: number;
+}): Promise<IIntroVideo.Self> {
+  return await introVideos.create({
+    src: payload.src || randomVideo(),
+    tutorId: payload.tutorId,
+  });
+}
+
+function randomVideo() {
+  return sample([
+    "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+  ]);
+}
+
 function randomPrice() {
   return price.scale(randomInt(1, 5000));
 }
@@ -538,6 +558,7 @@ export default {
   interview,
   lesson,
   flush,
+  introVideo,
   topic,
   slot,
   plan,
