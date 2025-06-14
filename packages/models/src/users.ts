@@ -77,7 +77,7 @@ export class Users extends Model<
 
   async update(
     id: number,
-    payload: IUser.UpdatePayloadModel,
+    payload: IUser.UpdateModelPayload,
     tx?: Knex.Transaction
   ): Promise<IUser.Self> {
     const now = dayjs.utc().toDate();

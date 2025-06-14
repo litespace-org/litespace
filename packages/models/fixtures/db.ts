@@ -62,6 +62,7 @@ export async function flush() {
     await lessons.builder(tx).lessons.del();
     await interviews.builder(tx).del();
     await ratings.builder(tx).del();
+    await introVideos.builder(tx).del();
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await confirmationCodes.builder(tx).del();
@@ -243,7 +244,7 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
 
 async function tutor(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
-  userPayload?: Partial<IUser.UpdatePayloadModel>,
+  userPayload?: Partial<IUser.UpdateModelPayload>,
   withPassword?: boolean
 ) {
   const info = await user({ role: IUser.Role.Tutor, withPassword });
@@ -261,7 +262,7 @@ function student() {
 
 async function tutorManager(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
-  userPayload?: Partial<IUser.UpdatePayloadModel>
+  userPayload?: Partial<IUser.UpdateModelPayload>
 ) {
   const info = await user({ role: IUser.Role.TutorManager });
   const tutor = await tutors.create(info.id);
@@ -523,13 +524,13 @@ async function plan(
   });
 }
 
-async function introVideo(payload: {
-  src?: string;
-  tutorId: number;
-}): Promise<IIntroVideo.Self> {
+async function introVideo(
+  payload?: Partial<IIntroVideo.CreateModelPayload>
+): Promise<IIntroVideo.Self> {
   return await introVideos.create({
-    src: payload.src || randomVideo(),
-    tutorId: payload.tutorId,
+    src: payload?.src || randomVideo(),
+    tutorId: await or.tutorId(payload?.tutorId),
+    reviewerId: await or.tutorManagerId(payload?.reviewerId),
   });
 }
 

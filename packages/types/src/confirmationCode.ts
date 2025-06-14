@@ -32,7 +32,7 @@ export type CreatePayload = {
   expiresAt: string;
 };
 
-export type FindPayloadModel = {
+export type FindModelPayload = {
   code?: number;
   userId?: number;
   purpose?: Purpose;
