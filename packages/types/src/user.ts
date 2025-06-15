@@ -155,6 +155,7 @@ export type UpdateApiPayload = {
   studioId?: number | null;
   notificationMethod?: NotificationMethod | null;
   activated?: boolean;
+  bypassOnboarding?: boolean;
 };
 
 export enum NotificationMethod {

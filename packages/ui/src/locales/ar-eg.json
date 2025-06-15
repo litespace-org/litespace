@@ -474,6 +474,7 @@
   "dashboard.tutors.table.account": "الحساب",
   "dashboard.tutors.table.created-at": "تاريخ التسجيل",
   "dashboard.tutors.table.account-state": "حالة الحساب",
+  "dashboard.tutors.table.bypass-onboarding-flag": "مضاف يدويا",
   "dashboard.tutors.loading": "برجاء الانتظار... جاري تحميل بيانات المعلمين!",
   "dashboard.tutors.error": "عذرًا، حدث خطأ أثناء تحميل بيانات المعلمين. برجاء المحاولة مرة أخرى",
   "dashboard.tutors.change-tutor-state.error": "عذرا، حدث خطأ أثناء تعديل حالة المعلم",
