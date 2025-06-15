@@ -10,10 +10,10 @@ export const PAGES: Array<{ title: LocalId; route: string }> = [
     title: "navbar/pricing",
     route: Landing.Pricing,
   },
-  // {
-  //   title: "navbar/be-a-tutor",
-  //   route: Landing.Tutor,
-  // },
+  {
+    title: "navbar/be-a-tutor",
+    route: Landing.Tutor,
+  },
 ];
 
 export const SMALL_SCREEN_SIDEBAR_WIDTH_PX = 166;
