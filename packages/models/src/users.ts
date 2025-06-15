@@ -84,6 +84,7 @@ export class Users {
     );
 
     const row = first(rows);
+    /* c8 ignore next */
     if (!row) throw new Error("User not found; should never happen");
     return this.from(row);
   }
@@ -117,6 +118,7 @@ export class Users {
       .returning("*");
 
     const row = first(rows);
+    /* c8 ignore next */
     if (!row) throw new Error("user not found, should never happen");
     return this.from(row);
   }

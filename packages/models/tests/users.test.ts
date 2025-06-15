@@ -1,6 +1,6 @@
 import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/utils/utils";
-import { hashPassword, users } from "@/index";
+import { knex, hashPassword, users } from "@/index";
 import { expect } from "chai";
 import dayjs from "@/lib/dayjs";
 import { IUser } from "@litespace/types";
@@ -15,14 +15,22 @@ describe("Users", () => {
     it("should create new user", async () => {
       const name = faker.person.fullName();
       const email = faker.internet.email();
-      const user = await users.create({
-        name: name,
-        role: IUser.Role.Student,
-        email: email,
-        password: "password",
-        birthYear: 2001,
-        gender: IUser.Gender.Male,
-      });
+
+      // NOTE: transaction is used here for coverage tests;
+      // In order to cover tx line in the builder method.
+      const user = await knex.transaction((tx) =>
+        users.create(
+          {
+            name: name,
+            role: IUser.Role.Student,
+            email: email,
+            password: "password",
+            birthYear: 2001,
+            gender: IUser.Gender.Male,
+          },
+          tx
+        )
+      );
 
       expect(user.name).to.be.eq(name);
       expect(user.role).to.be.eq(IUser.Role.Student);
@@ -78,6 +86,24 @@ describe("Users", () => {
         dayjs.utc(created.updatedAt).toISOString()
       );
     });
+
+    // NOTE: this unit test is to accomplish 100% coverage test
+    it("should update user's name", async () => {
+      const created = await fixtures.user({ role: IUser.Role.Student });
+      expect(await users.findById(created.id)).to.exist;
+      const updated = await users.update(created.id, {
+        name: "Mostafa Kamar Edit",
+      });
+      expect(updated.name).to.be.eq(created.name);
+    });
+  });
+
+  describe(nameof(users.exists), () => {
+    it("should return true if the user exists", async () => {
+      const created = await fixtures.user({ role: IUser.Role.Student });
+      const exists = await users.exists(created.id);
+    });
+    it("should return false if the user does NOT exists", async () => {});
   });
 
   describe(nameof(users.delete), () => {
@@ -165,6 +191,11 @@ describe("Users", () => {
       });
       const hash = await users.findUserPasswordHash(created.id);
       expect(hash).to.be.eq(hashPassword(password));
+    });
+
+    it("should return null if id not found", async () => {
+      const hash = await users.findUserPasswordHash(3847932);
+      expect(hash).to.be.null;
     });
   });
 
