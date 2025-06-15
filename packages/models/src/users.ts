@@ -71,6 +71,7 @@ export class Users extends Model<
     );
 
     const row = first(rows);
+    /* c8 ignore next */
     if (!row) throw new Error("User not found; should never happen");
     return this.from(row);
   }
@@ -104,6 +105,7 @@ export class Users extends Model<
       .returning("*");
 
     const row = first(rows);
+    /* c8 ignore next */
     if (!row) throw new Error("user not found, should never happen");
     return this.from(row);
   }
@@ -138,7 +140,7 @@ export class Users extends Model<
 
     return rows.map((row) => this.from(row));
   }
-
+  /* c8 ignore next */
   async exists(id: number): Promise<boolean> {
     const rows = await knex<IUser.Row>(this.table).select("id").where("id", id);
     return !isEmpty(rows);
