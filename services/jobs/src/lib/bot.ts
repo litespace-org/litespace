@@ -4,7 +4,10 @@ import { safePromise } from "@litespace/utils";
 
 export const telegramBot = new TelegramBot(config.telegram.token);
 
-export async function msg(job: "main" | "lesson" | "keepAlive", text: string) {
+export async function msg(
+  job: "main" | "lesson" | "keepAlive" | "backup",
+  text: string
+) {
   const message = `[jobs/${config.env}/${job}]: ${text}`;
   console.log(message);
 
