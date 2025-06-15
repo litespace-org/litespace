@@ -83,6 +83,7 @@ import {
   isEmptyObject,
 } from "@litespace/utils";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
+import { isUserSubscribed } from "@/lib/subscription";
 
 const createUserPayload = zod.object({
   role,
@@ -531,7 +532,7 @@ async function findTutorInfo(
 
 async function findOnboardedTutors(req: Request, res: Response) {
   const query: ITutor.FindOnboardedTutorsParams =
-    findOnboardedTutorsQuery.parse(req.query);
+    findOnboardedTutorsQuery.parse(req.query || {});
 
   const isTutorsCached = await cache.tutors.exists();
 
@@ -560,6 +561,8 @@ async function findOnboardedTutors(req: Request, res: Response) {
   const ordered = orderTutors({
     tutors: filtered,
     userGender,
+    subscribed:
+      isUser(user) && user.id ? await isUserSubscribed(user.id) : false,
   });
 
   // paginate the ordered (tutors) list

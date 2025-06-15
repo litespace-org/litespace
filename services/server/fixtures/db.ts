@@ -263,21 +263,66 @@ async function tutorUser(
   return info;
 }
 
-async function onboardedTutor() {
-  const newTutor = await tutor();
+async function onboardedTutor(
+  userPayload?: Partial<IUser.CreatePayload>,
+  tutorPayload?: Partial<ITutor.UpdatePayload>
+) {
+  const newTutor = await tutor(userPayload, tutorPayload);
+  const studio = await student();
 
   await users.update(newTutor.id, {
     phone: "01012345678",
     image: "/image.jpg",
     verifiedEmail: true,
     verifiedPhone: true,
+    city: IUser.City.Giza,
   });
 
   await tutors.update(newTutor.id, {
+    studioId: studio.id,
+    video: "/video.mp4",
+    thumbnail: "/thumbnail.jpg",
     about: faker.lorem.paragraphs(),
     bio: faker.person.bio(),
     activated: true,
+    notice: 10,
+  });
+
+  return newTutor;
+}
+
+async function tutorManager(
+  userPayload?: Partial<IUser.CreatePayload>,
+  tutorPayload?: Partial<ITutor.UpdatePayload>
+) {
+  const info = await user({ ...userPayload, role: IUser.Role.TutorManager });
+  const tutor = await tutors.create(info.id);
+  await tutors.update(tutor.id, tutorPayload || {});
+  return tutor;
+}
+
+async function onboardedTutorManager(
+  userPayload?: Partial<IUser.CreatePayload>,
+  tutorPayload?: Partial<ITutor.UpdatePayload>
+) {
+  const newTutor = await tutorManager(userPayload, tutorPayload);
+  const studio = await student();
+
+  await users.update(newTutor.id, {
+    phone: "01012345678",
+    image: "/image.jpg",
+    verifiedEmail: true,
+    verifiedPhone: true,
+    city: IUser.City.Giza,
+  });
+
+  await tutors.update(newTutor.id, {
+    studioId: studio.id,
     video: "/video.mp4",
+    thumbnail: "/thumbnail.jpg",
+    about: faker.lorem.paragraphs(),
+    bio: faker.person.bio(),
+    activated: true,
     notice: 10,
   });
 
@@ -590,11 +635,25 @@ export async function report(payload?: Partial<IReport.CreatePayload>) {
   return report;
 }
 
+function validSubscription(
+  userId: number,
+  period?: "day" | "week" | "month"
+): Promise<ISubscription.Self> {
+  return subscription({
+    userId,
+    start: dayjs().toISOString(),
+    end: dayjs()
+      .add(1, period || "day")
+      .toISOString(),
+  });
+}
+
 export default {
   user,
   tutor,
   tutorUser,
   onboardedTutor,
+  onboardedTutorManager,
   student,
   tutorManager,
   students,
@@ -607,6 +666,7 @@ export default {
   plan,
   subscription,
   report,
+  validSubscription,
   room: makeRoom,
   message: makeMessage,
   make: {
