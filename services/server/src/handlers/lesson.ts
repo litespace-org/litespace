@@ -48,6 +48,7 @@ import dayjs from "@/lib/dayjs";
 import { sendBackgroundMessage } from "@/workers";
 import { calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription } from "@/lib/subscription";
 import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
+import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -75,6 +76,11 @@ const findLessonsQuery = zod.object({
   after: zod.optional(zod.string().datetime()),
   before: zod.optional(zod.string().datetime()),
   full: zod.optional(jsonBoolean),
+});
+
+const findAttendedLessonsStatsQuery = zod.object({
+  after: zod.string().datetime(),
+  before: zod.string().datetime(),
 });
 
 function create(context: ApiContext) {
@@ -372,6 +378,30 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(result);
 }
 
+async function findAttendedLessonsStats(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const { after, before }: ILesson.FindAttendedLessonsStatsApiQuery =
+    findAttendedLessonsStatsQuery.parse(req.query);
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  if (dayjs(after).isAfter(before)) return next(bad());
+
+  const { list } = await lessons.find({
+    after: dayjs(after).startOf("day").toISOString(),
+    before: dayjs(before).startOf("day").toISOString(),
+  });
+
+  const map = getDayLessonsMap(list);
+  const result: ILesson.FindAttendedLessonsStatsApiResponse =
+    inflateDayLessonsMap(map);
+  res.status(200).json(result);
+}
+
 async function findLessonById(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isUser(user);
@@ -456,4 +486,5 @@ export default {
   update,
   findLessons: safeRequest(findLessons),
   findLessonById: safeRequest(findLessonById),
+  findAttendedLessonsStats: safeRequest(findAttendedLessonsStats),
 };

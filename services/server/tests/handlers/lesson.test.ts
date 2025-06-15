@@ -36,6 +36,13 @@ const cancelLesson = mockApi<object, { lessonId: number }>(
   handlers.cancel(mockApiContext())
 );
 
+const findAttendedLessonsStats = mockApi<
+  object,
+  object,
+  ILesson.FindAttendedLessonsStatsApiQuery,
+  ILesson.FindAttendedLessonsStatsApiResponse
+>(handlers.findAttendedLessonsStats);
+
 describe("/api/v1/lesson/", () => {
   beforeAll(async () => {
     await cache.connect();
@@ -726,6 +733,125 @@ describe("/api/v1/lesson/", () => {
       });
 
       expect(res).to.be.not.instanceOf(Error);
+    });
+  });
+
+  describe(nameof(findAttendedLessonsStats), () => {
+    it("should respond with forbidden if the user is not an admin.", async () => {
+      const tutorManager = await db.user({ role: IUser.Role.TutorManager });
+      const start = dayjs().startOf("day");
+      const res = await findAttendedLessonsStats({
+        user: tutorManager,
+        query: {
+          after: start.toISOString(),
+          before: start.add(1, "day").toISOString(),
+        },
+      });
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should respond with bad if the user entered an invalid date range.", async () => {
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+      const start = dayjs().startOf("day");
+      const res = await findAttendedLessonsStats({
+        user: admin,
+        query: {
+          after: start.add(1, "day").toISOString(),
+          before: start.toISOString(),
+        },
+      });
+      expect(res).to.deep.eq(bad());
+    });
+
+    it("should respond with attended-lessons-info correctly.", async () => {
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+
+      // insert mock data
+      const start = dayjs().startOf("day");
+      await Promise.all([
+        db.lesson({
+          start: start.toISOString(),
+          duration: ILesson.Duration.Long,
+          price: 100,
+        }),
+        db.lesson({
+          start: start.add(1, "hour").toISOString(),
+          duration: ILesson.Duration.Long,
+          price: 0,
+        }),
+        db.lesson({
+          start: start.add(1, "day").toISOString(),
+          duration: ILesson.Duration.Long,
+          price: 100,
+        }),
+        db.lesson({
+          start: start.add(2, "day").toISOString(),
+          duration: ILesson.Duration.Long,
+          price: 100,
+        }),
+        db.lesson({
+          start: start.add(3, "day").toISOString(),
+          duration: ILesson.Duration.Long,
+          price: 100,
+        }),
+      ]);
+
+      const res1 = await findAttendedLessonsStats({
+        user: admin,
+        query: {
+          after: start.toISOString(),
+          before: start.add(1, "day").toISOString(),
+        },
+      });
+      expect(res1).to.not.be.instanceof(Error);
+      expect(res1.body).to.deep.eq([
+        {
+          date: start.format("YYYY-MM-DD"),
+          paidLessonCount: 1,
+          paidTutoringMinutes: 30,
+          freeLessonCount: 1,
+          freeTutoringMinutes: 30,
+        },
+      ]);
+
+      const res2 = await findAttendedLessonsStats({
+        user: admin,
+        query: {
+          after: start.toISOString(),
+          before: start.add(4, "day").toISOString(),
+        },
+      });
+      expect(res2).to.not.be.instanceof(Error);
+      expect(res2.body).to.deep.members([
+        {
+          date: start.add(3, "day").format("YYYY-MM-DD"),
+          paidLessonCount: 1,
+          paidTutoringMinutes: 30,
+          freeLessonCount: 0,
+          freeTutoringMinutes: 0,
+        },
+        {
+          date: start.add(2, "day").format("YYYY-MM-DD"),
+          paidLessonCount: 1,
+          paidTutoringMinutes: 30,
+          freeLessonCount: 0,
+          freeTutoringMinutes: 0,
+        },
+        {
+          date: start.add(1, "day").format("YYYY-MM-DD"),
+          paidLessonCount: 1,
+          paidTutoringMinutes: 30,
+          freeLessonCount: 0,
+          freeTutoringMinutes: 0,
+        },
+        {
+          date: start.format("YYYY-MM-DD"),
+          paidLessonCount: 1,
+          paidTutoringMinutes: 30,
+          freeLessonCount: 1,
+          freeTutoringMinutes: 30,
+        },
+      ]);
     });
   });
 });
