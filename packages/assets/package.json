@@ -34,6 +34,7 @@
     "./AllMessages": "./dist/AllMessages.tsx",
     "./ArrowLeft": "./dist/ArrowLeft.tsx",
     "./ArrowRight": "./dist/ArrowRight.tsx",
+    "./ArrowUp": "./dist/ArrowUp.tsx",
     "./AstroStudent1": "./dist/AstroStudent1.tsx",
     "./AstroStudent2": "./dist/AstroStudent2.tsx",
     "./AstroStudent3": "./dist/AstroStudent3.tsx",

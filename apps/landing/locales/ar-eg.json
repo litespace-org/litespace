@@ -311,8 +311,8 @@
   "footer/links/contact-us": "تواصل معنا",
   "footer/description": "تجربتك التعليمية عن بُعد والمصممة خصيصًا لمساعدتك في تطوير مهاراتك في اللغة الانجليزية وثقتك بنفسك من خلال جلسات خاصة تفاعلية مع معلمين تم اختيارهم بعناية فائقة.",
   "footer/follow-us/title": "تابعنا على",
-  "footer/follow-us/description": "تابعنا عبر منصات التواصل",
-  "footer/copyrights": "LiteSpace Foundation © {year}",
+  "footer/follow-us/description": "تواصل معنا",
+  "footer/copyrights": "Copyright © {year} For LiteSpace",
 
   "labels/send": "إرسال",
   "labels/litespace": "LiteSpace",
