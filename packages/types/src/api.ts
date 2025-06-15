@@ -51,6 +51,7 @@ export enum ApiError {
   ReachedBookingLimit = "reached-booking-limit",
   ServiceUnavailable = "service-unavailable",
   FawryError = "fawry-error",
+  LargeFileSize = "large-file-size",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

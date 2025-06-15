@@ -3,6 +3,7 @@ import { Request } from "express";
 import { isArray } from "lodash";
 import { v4 as uuid } from "uuid";
 import multer from "multer";
+import bytes from "bytes";
 
 export function getRequestFile(
   files: Request["files"],
@@ -19,16 +20,54 @@ export async function upload({
   data,
   key,
   type,
+  prefix = "",
 }: {
   data: Buffer;
   type?: string;
   key?: string | null;
+  prefix?: string;
 }) {
   const id = key || uuid();
-  await s3.put({ key: id, data, type });
+  await s3.put({ key: `${prefix}${id}`, data, type });
   return id;
 }
 
 export const uploadMiddleware = multer({
   storage: multer.memoryStorage(),
 });
+
+/**
+ * Check if a file size exceeds a certain limit.
+ * @param size: the size of the file in bytes.
+ * @param max: the max size of the file in megabytes.
+ */
+export function exceedsSizeLimit(size: number, max: number): boolean {
+  const limit = bytes(`${max}mb`);
+  if (!limit) throw new Error(`invalid size: ${max}mb`);
+  return size > limit;
+}
+
+export async function withFileUrl<T extends object>(
+  data: T,
+  files: Array<keyof T>
+) {
+  const cloned = structuredClone(data);
+
+  for (const file of files) {
+    const key = data[file];
+    if (typeof key !== "string") continue;
+
+    const url = await s3.get(key);
+
+    (cloned[file] as string) = url;
+  }
+
+  return cloned;
+}
+
+export async function withFileUrls<T extends object>(
+  objs: T[],
+  files: Array<keyof T>
+) {
+  return await Promise.all(objs.map((objs) => withFileUrl(objs, files)));
+}

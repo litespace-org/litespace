@@ -51,6 +51,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.ExpiredVerificationCode]: "error.api.expired-verification-code",
   [ApiError.InvalidVerificationCode]: "error.api.invalid-verification-code",
   [ApiError.FawryError]: "error.api.fawry-error",
+  [ApiError.LargeFileSize]: "error.api.large-file-size",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
   [FieldError.ShortPassword]: "error.field.short-password",
   [FieldError.LongPassword]: "error.field.long-password",
