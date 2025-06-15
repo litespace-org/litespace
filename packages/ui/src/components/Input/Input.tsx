@@ -117,6 +117,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               type={type}
               value={value}
               disabled={disabled}
+              data-state={state}
               className={cn(
                 "grow bg-inherit focus-within:outline-none font-medium text-caption leading-[150%] h-full",
                 // placeholder
