@@ -1,9 +1,12 @@
 import { Base } from "@/lib/base";
+import { asFormData } from "@/lib/form";
 import { IReport } from "@litespace/types";
 
 export class Report extends Base {
-  async create(payload: IReport.CreateApiPayload): Promise<void> {
-    return this.post({ route: "/api/v1/report", payload });
+  async create(
+    payload: IReport.CreateApiPayload & IReport.CreateApiFiles
+  ): Promise<void> {
+    return this.post({ route: "/api/v1/report", payload: asFormData(payload) });
   }
 
   async update(payload: IReport.UpdateApiPayload): Promise<void> {

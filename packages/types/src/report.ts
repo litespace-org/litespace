@@ -60,6 +60,11 @@ export type CreateApiPayload = {
   description: string;
 };
 
+export type CreateApiFiles = {
+  screenshot?: Blob;
+  log?: Blob;
+};
+
 export type UpdateApiPayload = {
   id: number;
   resolved: boolean;

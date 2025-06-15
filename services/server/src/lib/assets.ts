@@ -20,15 +20,13 @@ export async function upload({
   data,
   key,
   type,
-  prefix = "",
 }: {
   data: Buffer;
   type?: string;
   key?: string | null;
-  prefix?: string;
 }) {
   const id = key || uuid();
-  await s3.put({ key: `${prefix}${id}`, data, type });
+  await s3.put({ key: id, data, type });
   return id;
 }
 
@@ -51,23 +49,19 @@ export async function withFileUrl<T extends object>(
   data: T,
   files: Array<keyof T>
 ) {
-  const cloned = structuredClone(data);
-
   for (const file of files) {
     const key = data[file];
     if (typeof key !== "string") continue;
-
     const url = await s3.get(key);
-
-    (cloned[file] as string) = url;
+    data[file] = url as T[keyof T];
   }
 
-  return cloned;
+  return data;
 }
 
 export async function withFileUrls<T extends object>(
-  objs: T[],
+  items: T[],
   files: Array<keyof T>
 ) {
-  return await Promise.all(objs.map((objs) => withFileUrl(objs, files)));
+  return await Promise.all(items.map((item) => withFileUrl(item, files)));
 }
