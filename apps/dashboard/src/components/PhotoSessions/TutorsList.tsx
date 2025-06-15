@@ -2,7 +2,7 @@ import React from "react";
 import { InView } from "react-intersection-observer";
 import TutorCard from "@/components/PhotoSessions/TutorCard";
 import { ITutor, Void } from "@litespace/types";
-import { Loading, LoadingError } from "@litespace/ui/Loading";
+import { LoadingFragment } from "@/components/Common/LoadingFragment";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 const TutorsList: React.FC<{
@@ -42,13 +42,25 @@ const TutorsList: React.FC<{
         />
       ) : null}
 
-      {loading ? <Loading /> : null}
-
-      {error ? (
-        <LoadingError
-          size="large"
-          retry={more}
-          error={intl("error.api.unexpected")}
+      {loading || error ? (
+        <LoadingFragment
+          loading={
+            loading
+              ? {
+                  text: intl("dashboard.photo-sessions.loading"),
+                  size: "large",
+                }
+              : undefined
+          }
+          error={
+            error
+              ? {
+                  text: intl("dashboard.photo-sessions.error"),
+                  size: "medium",
+                }
+              : undefined
+          }
+          refetch={more}
         />
       ) : null}
     </>
