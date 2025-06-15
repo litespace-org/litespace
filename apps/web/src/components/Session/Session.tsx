@@ -5,7 +5,7 @@ import {
   useTracks,
 } from "@livekit/components-react";
 import { ConnectionState, Track } from "livekit-client";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   LocalMember,
   RemoteMember,
@@ -24,6 +24,8 @@ import {
   useBlurController,
   useVideoController,
 } from "@/components/Session/room";
+import { SessionChat } from "@/components/Session/SessionChat";
+import { useSearchParams } from "react-router-dom";
 
 const Session: React.FC<{
   localMember: LocalMember;
@@ -31,6 +33,9 @@ const Session: React.FC<{
   leave: Void;
 }> = ({ localMember, remoteMember, leave }) => {
   const mq = useMediaQuery();
+  const [chat, setChat] = useState(false);
+  const [_, setParams] = useSearchParams();
+
   const videoTracks = useTracks([Track.Source.Camera]);
   const localParticipant = useLocalParticipant();
   const remoteParticipant = useRemoteParticipant(remoteMember.id.toString());
@@ -61,9 +66,17 @@ const Session: React.FC<{
     return "mobile";
   }, [mq.sm, mq.xl]);
 
+  // set nav to remove the nav and sidebars
+  useEffect(() => {
+    setParams({ nav: "false" });
+    return () => {
+      setParams({ nav: "true" });
+    };
+  }, [setParams]);
+
   return (
     <div className="h-full flex flex-col gap-10">
-      <div className="h-[calc(100%-40px)]">
+      <div className="h-[calc(100%-80px)] flex gap-6">
         <VideoStreams
           selfTrackRef={videoTrackRef.local}
           selfId={localMember.id}
@@ -87,9 +100,19 @@ const Session: React.FC<{
         />
 
         <AudioStreams />
+        <SessionChat
+          close={() => setChat(false)}
+          enabled={chat}
+          memberId={remoteMember.id}
+          selfId={localMember.id}
+        />
       </div>
 
       <Controllers
+        chat={{
+          enabled: chat,
+          toggle: () => setChat((prev) => !prev),
+        }}
         leave={leave}
         audio={audioController}
         video={videoController}

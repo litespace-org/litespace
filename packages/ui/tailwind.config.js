@@ -79,6 +79,7 @@ export default {
         toast: "16",
         "stream-avatar": "16",
         "stream-chat": "18",
+        "stream-chat-options": "19",
       },
       screens: {
         "3xl": "1600px",

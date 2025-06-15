@@ -41,7 +41,7 @@ const VideoStreams: React.FC<{
   const ref = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="h-full flex flex-col gap-4">
+    <div className="flex grow-[3] flex-col gap-4 h-full">
       <div
         className="flex-1 relative flex flex-col items-center justify-center gap-4"
         ref={ref}
@@ -77,7 +77,7 @@ const VideoStreams: React.FC<{
             container={ref}
             className="absolute bottom-4 right-4 z-session-movable-stream shadow-session-movable-stream rounded-lg"
           >
-            <div className="w-32 md:w-60 lg:w-72 aspect-mobile md:aspect-desktop">
+            <div className="w-32 sm:w-60 lg:w-72 aspect-mobile md:aspect-desktop">
               <Stream
                 trackRef={selfTrackRef}
                 userId={selfId}
