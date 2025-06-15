@@ -82,15 +82,17 @@ async function sendVerifyPhoneCode(
     purposes: [purpose],
   });
 
+  const expiryTime = dayjs
+    .utc()
+    .add(CONFIRMATION_CODE_VALIDITY_MINUTES, "minutes")
+    .toISOString();
+
   // Store the new code in the db
   const code = await confirmationCodes.create({
     userId: user.id,
     purpose,
     code: generateConfirmationCode(),
-    expiresAt: dayjs
-      .utc()
-      .add(CONFIRMATION_CODE_VALIDITY_MINUTES, "minutes")
-      .toISOString(),
+    expiresAt: expiryTime,
   });
 
   // If the method is telegram; we need to resolve the number first with telegram Api
@@ -109,6 +111,7 @@ async function sendVerifyPhoneCode(
       {
         value: {
           to: phone,
+          expiryTime,
           message: `LiteSpace here! Your verification code: ${code.code}. Please note this code is only valid for the next ${CONFIRMATION_CODE_VALIDITY_MINUTES} minutes. If you didn't ask for this, no action is needed.`,
         },
       },
