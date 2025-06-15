@@ -156,6 +156,31 @@ export const Content: React.FC<{
           />
         ),
       }),
+      columnHelper.accessor("bypassOnboarding", {
+        header: () => (
+          <div className="flex gap-[10px]">
+            <InfoCircle className="w-6 h-6 [&>*]:stroke-natural-950" />
+            <Typography
+              tag="h6"
+              className="text-body text-natural-950 font-bold"
+            >
+              {intl("dashboard.tutors.table.bypass-onboarding-flag")}
+            </Typography>
+          </div>
+        ),
+        cell: (info) => (
+          <Switch
+            checked={info.getValue()}
+            disabled={update.isPending}
+            onChange={(bypassOnboarding) =>
+              update.mutate({
+                id: info.row.original.id,
+                payload: { bypassOnboarding },
+              })
+            }
+          />
+        ),
+      }),
     ],
     [columnHelper, intl, update]
   );
