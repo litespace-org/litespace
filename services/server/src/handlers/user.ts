@@ -115,6 +115,7 @@ const updateUserPayload = zod.object({
   activated: zod.boolean().optional(),
   notice: zod.number().positive().int().optional(),
   studioId: id.optional(),
+  bypassOnboarding: zod.boolean().optional(),
 });
 
 const findUsersQuery = zod.object({
@@ -313,6 +314,7 @@ function update(_: ApiContext) {
         city,
         notificationMethod,
         activated,
+        bypassOnboarding,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
       // return forbidden if the current user is neither admin nor studio and
@@ -329,6 +331,10 @@ function update(_: ApiContext) {
 
       // non-admins cannot update tutor `activet` status.
       if (!isAdmin(user) && activated !== undefined) return next(forbidden());
+
+      // non-admins cannot update tutor `bypassOnboarding` status.
+      if (!isAdmin(user) && bypassOnboarding !== undefined)
+        return next(forbidden());
 
       if (password) {
         const expectedPasswordHash = await users.findUserPasswordHash(
@@ -389,6 +395,7 @@ function update(_: ApiContext) {
           video,
           thumbnail,
           activated,
+          bypassOnboarding,
         };
 
         if (!isEmptyObject(updateTutorPayload))
