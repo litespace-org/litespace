@@ -35,6 +35,16 @@ describe(nameof(Tutors), () => {
       expect(foundTutor?.bio).to.eq("my new bio");
     });
 
+    it("should update tutor onboarding field in the database", async () => {
+      const user = await fixtures.user({ role: IUser.Role.Tutor });
+      const created = await tutors.create(user.id);
+      expect(created.bypassOnboarding).to.be.false;
+
+      await tutors.update(user.id, { bypassOnboarding: true });
+      const updated = await tutors.findById(user.id);
+      expect(updated?.bypassOnboarding).to.be.true;
+    });
+
     it("should delete tutor from the database", async () => {
       const user = await fixtures.user({ role: IUser.Role.Tutor });
       await tutors.create(user.id);

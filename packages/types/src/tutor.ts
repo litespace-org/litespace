@@ -13,6 +13,7 @@ export type Self = {
    * The period that be available before booking any lesson with the tutor.
    */
   notice: number;
+  bypassOnboarding: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -58,6 +59,7 @@ export type Row = {
   activated: boolean;
   studio_id: number | null;
   thumbnail: string | null;
+  bypass_onboarding: boolean;
   created_at: Date;
   updated_at: Date;
 };
@@ -78,6 +80,7 @@ export type UpdatePayload = {
   studioId?: number | null;
   notice?: number;
   activated?: boolean;
+  bypassOnboarding?: boolean;
 };
 
 export type Assets = {
@@ -110,10 +113,7 @@ export type FindOnboardedTutorsParams = IFilter.Pagination & {
 };
 
 export type CreateApiPayload = IUser.Credentials & { name: string };
-export type UpdateApiPayload = UpdatePayload & {
-  dropPhoto?: boolean;
-  dropVideo?: boolean;
-};
+export type UpdateApiPayload = UpdatePayload;
 
 export type FindTutorInfoApiResponse = {
   id: number;

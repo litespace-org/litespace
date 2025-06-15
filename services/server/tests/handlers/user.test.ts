@@ -2,7 +2,7 @@ import { ITutor, IUser } from "@litespace/types";
 import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
-import { mockApi } from "@fixtures/mockApi";
+import { mockApi, mockApiContext } from "@fixtures/mockApi";
 import { safe } from "@litespace/utils/error";
 import { cacheTutors } from "@/lib/tutor";
 import dayjs from "@/lib/dayjs";
@@ -11,6 +11,7 @@ import { tutors, users } from "@litespace/models";
 import { first, range } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
 import handlers from "@/handlers/user";
+import { nameof } from "@litespace/utils";
 
 const createUser = mockApi<
   IUser.CreateApiPayload,
@@ -18,6 +19,13 @@ const createUser = mockApi<
   void,
   IUser.LoginApiResponse
 >(handlers.create);
+
+const updateUser = mockApi<
+  IUser.UpdateApiPayload & ITutor.UpdateApiPayload,
+  { id: number },
+  void,
+  IUser.UpdateUserApiResponse
+>(handlers.update(mockApiContext()));
 
 const findPersonalizedStudentStats = mockApi<
   void,
@@ -62,6 +70,34 @@ describe("/api/v1/user/", () => {
     });
   });
 
+  describe(nameof(updateUser), () => {
+    it("should respond with forbidden in case a non-admin user tries to update a tutor's onboarding flag", async () => {
+      const tutor = await db.tutorUser();
+      const res = await updateUser({
+        user: tutor,
+        params: { id: tutor.id },
+        body: { bypassOnboarding: true },
+      });
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should successfully update tutor onboarding flag", async () => {
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+      const tutor = await db.tutor();
+      expect(tutor.bypassOnboarding).to.be.false;
+
+      const res = await updateUser({
+        user: admin,
+        params: { id: tutor.id },
+        body: { bypassOnboarding: true },
+      });
+      expect(res).to.not.be.instanceof(Error);
+
+      const updated = await tutors.findById(tutor.id);
+      expect(updated?.bypassOnboarding).to.be.true;
+    });
+  });
+
   describe.skip("/api/v1/user/:id", () => {
     describe("GET /api/v1/user/:id", () => {
       it("should be able to find a user by id", async () => {
@@ -77,24 +113,6 @@ describe("/api/v1/user/", () => {
         const adminApi = await Api.forSuperAdmin();
         const result = await safe(async () => adminApi.api.user.findById(100));
         expect(result).to.be.deep.eq(new Error("User not found"));
-      });
-    });
-
-    describe("PUT /api/v1/user/:id", () => {
-      it("should update a user", async () => {
-        const userApi = await Api.forStudent();
-        const u0 = await userApi.api.user.findCurrentUser();
-        await userApi.api.user.update(u0.id, {
-          name: "updated-1",
-        });
-
-        const u1 = await userApi.api.user.findCurrentUser();
-        await userApi.api.user.update(u0.id, {
-          name: "updated-2",
-        });
-        const u2 = await userApi.api.user.findCurrentUser();
-        expect(u1.name).to.be.eq("updated-1");
-        expect(u2.name).to.be.eq("updated-2");
       });
     });
 

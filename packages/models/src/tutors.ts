@@ -53,6 +53,7 @@ const fullTutorFields: FullTutorFieldsMap = {
   thumbnail: tutorColumn("thumbnail"),
   notice: tutorColumn("notice"),
   activated: tutorColumn("activated"),
+  bypass_onboarding: tutorColumn("bypass_onboarding"),
 } as const;
 
 export class Tutors {
@@ -87,6 +88,7 @@ export class Tutors {
         thumbnail: payload.thumbnail,
         activated: payload.activated,
         studio_id: payload.studioId,
+        bypass_onboarding: payload.bypassOnboarding,
         updated_at: now,
       })
       .where(this.column("id"), id);
@@ -468,6 +470,7 @@ export class Tutors {
       studioId: row.studio_id,
       notice: row.notice,
       activated: row.activated,
+      bypassOnboarding: row.bypass_onboarding,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
@@ -504,6 +507,7 @@ export class Tutors {
       studioId: row.studio_id,
       notice: row.notice,
       activated: row.activated,
+      bypassOnboarding: row.bypass_onboarding,
       meta: {
         createdAt: row.tutor_created_at.toISOString(),
         updatedAt: row.tutor_updated_at.toISOString(),
