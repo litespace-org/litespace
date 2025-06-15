@@ -102,7 +102,7 @@ export type FullUncontactedTutorInfo = UncontactedTutorInfo & {
   online: boolean;
 };
 
-export type FindOnboardedTutorsParams = IFilter.Pagination & {
+export type FindOnboardedTutorsQuery = IFilter.Pagination & {
   /**
    * Search keyword to filter out tutors and topics.
    */

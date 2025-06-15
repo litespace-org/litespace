@@ -24,6 +24,8 @@ export type OrderStatus =
   | "PARTIAL_REFUNDED"
   | "FAILED";
 
+export type PaymentMethod = "CARD" | "MWALLET" | "PAYATFAWRY" | "Mobile Wallet";
+
 export type PayWithCardPayload = {
   phone?: string;
   planId: number;

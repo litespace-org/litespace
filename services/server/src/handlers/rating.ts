@@ -18,15 +18,15 @@ import {
   isTutor,
   isUser,
 } from "@litespace/utils/user";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 
-const createRatingPayload = zod.object({
+const createRatingPayload: ZodSchema<IRating.CreateApiPayload> = zod.object({
   rateeId: id,
   value: rating,
   feedback: zod.union([zod.null(), zod.string()]),
 });
 
-const updateRatingPayload = zod.object({
+const updateRatingPayload: ZodSchema<IRating.UpdateApiPayload> = zod.object({
   value: zod.optional(rating),
   feedback: zod.optional(string),
 });
