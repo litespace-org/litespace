@@ -7,13 +7,13 @@ import UserTag from "@litespace/assets/UserTag";
 import { useUpdateUser } from "@litespace/headless/user";
 import { Element, ITutor, Void } from "@litespace/types";
 import { AvatarV2 as Avatar } from "@litespace/ui/Avatar";
-import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { Switch } from "@litespace/ui/Switch";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo } from "react";
+import { LoadingFragment } from "@/components/Common/LoadingFragment";
 
 export const Content: React.FC<{
   refetch: Void;
@@ -160,22 +160,27 @@ export const Content: React.FC<{
     [columnHelper, intl, update]
   );
 
-  if (loading)
+  if (loading || error || !tutors)
     return (
-      <div className="h-[40vh] flex items-center justify-center">
-        <Loading size="medium" text={intl("dashboard.tutors.loading")} />
-      </div>
-    );
-
-  if (error || !tutors)
-    return (
-      <div className="h-[40vh] flex items-center justify-center">
-        <LoadingError
-          size="medium"
-          error={intl("dashboard.tutors.error")}
-          retry={refetch}
-        />
-      </div>
+      <LoadingFragment
+        loading={
+          loading
+            ? {
+                text: intl("dashboard.tutors.loading"),
+                size: "large",
+              }
+            : undefined
+        }
+        error={
+          error
+            ? {
+                text: intl("dashboard.tutors.error"),
+                size: "medium",
+              }
+            : undefined
+        }
+        refetch={refetch}
+      />
     );
 
   return (

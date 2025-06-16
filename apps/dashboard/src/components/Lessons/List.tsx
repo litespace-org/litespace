@@ -6,12 +6,11 @@ import { Table } from "@litespace/ui/Table";
 import { UseQueryResult } from "@tanstack/react-query";
 import { formatCurrency } from "@litespace/ui/utils";
 import { Duration } from "@litespace/utils/duration";
-import { Loading } from "@litespace/ui/Loading";
-import Error from "@/components/Common/Error";
 import { price } from "@litespace/utils/value";
 import UserPopover from "@/components/Common/UserPopover";
 import DateField from "@/components/Common/DateField";
 import { dayjs } from "@/lib/dayjs";
+import { LoadingFragment } from "@/components/Common/LoadingFragment";
 
 const List: React.FC<{
   query: UseQueryResult<ILesson.FindUserLessonsApiResponse, Error>;
@@ -98,12 +97,25 @@ const List: React.FC<{
     ];
   }, [columnHelper, intl]);
 
-  if (query.isLoading) return <Loading />;
-  if (query.error)
+  if (query.isLoading || query.error)
     return (
-      <Error
-        title={intl("dashboard.error.alert.title")}
-        error={query.error}
+      <LoadingFragment
+        loading={
+          query.isLoading
+            ? {
+                text: intl("dashboard.lessons.loading"),
+                size: "large",
+              }
+            : undefined
+        }
+        error={
+          query.error
+            ? {
+                text: intl("dashboard.lessons.error"),
+                size: "medium",
+              }
+            : undefined
+        }
         refetch={query.refetch}
       />
     );

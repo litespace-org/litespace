@@ -1,5 +1,4 @@
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";
-import { Loading } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { rolesMap } from "@/components/utils/user";
 import { IUser, Void } from "@litespace/types";
@@ -10,9 +9,9 @@ import { Table } from "@litespace/ui/Table";
 import BooleanField from "@/components/Common/BooleanField";
 import DateField from "@/components/Common/DateField";
 import TruncateField from "@/components/Common/TruncateField";
-import Error from "@/components/Common/Error";
 import { Link } from "react-router-dom";
 import ImageField from "@/components/Common/ImageField";
+import { LoadingFragment } from "@/components/Common/LoadingFragment";
 
 const List: React.FC<{
   query: UseQueryResult<IUser.FindUsersApiResponse, Error>;
@@ -114,15 +113,15 @@ const List: React.FC<{
     [columnHelper, intl]
   );
 
-  if (query.isLoading) return <Loading />;
-  if (query.error)
+  if (query.isLoading || query.error)
     return (
-      <Error
-        title={intl("dashboard.error.alert.title")}
-        error={query.error}
+      <LoadingFragment
+        loading={{ size: "large" }}
+        error={{ size: "medium" }}
         refetch={query.refetch}
       />
     );
+
   if (!query.data) return null;
 
   return (

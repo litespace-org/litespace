@@ -122,7 +122,7 @@ const findUsersQuery = zod.object({
   verified: queryBoolean.optional(),
   gender: gender.optional(),
   online: queryBoolean.optional(),
-  city: zod.nativeEnum(IUser.City),
+  city: zod.nativeEnum(IUser.City).optional(),
   page: pageNumber.optional(),
   size: pageSize.optional(),
 });

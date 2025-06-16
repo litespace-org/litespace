@@ -2,8 +2,6 @@ import { Element, ITopic, Void } from "@litespace/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 import DateField from "@/components/Common/DateField";
-import Error from "@/components/Common/Error";
-import { Loading } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Table } from "@litespace/ui/Table";
 import { Menu } from "@litespace/ui/Menu";
@@ -12,6 +10,7 @@ import TopicDialog from "@/components/Topics/TopicDialog";
 import { UseQueryResult } from "@tanstack/react-query";
 import Edit from "@litespace/assets/Edit";
 import Trash from "@litespace/assets/Trash";
+import { LoadingFragment } from "@/components/Common/LoadingFragment";
 
 type Topics = ITopic.FindTopicsApiResponse["list"];
 type Topic = Element<Topics>;
@@ -91,13 +90,25 @@ const List: React.FC<{
     [columnHelper, intl]
   );
 
-  if (query.isLoading) return <Loading />;
-
-  if (query.error)
+  if (query.isLoading || query.error)
     return (
-      <Error
-        error={query.error}
-        title={intl("dashboard.error.alert.title")}
+      <LoadingFragment
+        loading={
+          query.isLoading
+            ? {
+                text: intl("dashboard.topics.loading"),
+                size: "large",
+              }
+            : undefined
+        }
+        error={
+          query.error
+            ? {
+                text: intl("dashboard.topics.error"),
+                size: "medium",
+              }
+            : undefined
+        }
         refetch={query.refetch}
       />
     );

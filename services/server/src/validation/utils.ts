@@ -92,9 +92,11 @@ export const interviewStatus = zod.coerce.number(
   zod.nativeEnum(IInterview.Status)
 );
 
-export const withdrawMethod = zod.nativeEnum(IInvoice.WithdrawMethod);
+export const withdrawMethod = zod.coerce.number(
+  zod.nativeEnum(IInvoice.WithdrawMethod)
+);
 
-export const invoiceStatus = zod.nativeEnum(IInvoice.Status);
+export const invoiceStatus = zod.coerce.number(zod.nativeEnum(IInvoice.Status));
 
 export const banks = zod.enum(BANKS);
 
