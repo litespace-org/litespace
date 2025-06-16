@@ -16,8 +16,8 @@ export const OverviewCard: React.FC<{
   return (
     <div
       className={cn(
-        "p-3 md:p-4 bg-natural-50 rounded-lg md:rounded-2xl shadow-ls-x-small",
-        "border border-transparent hover:border-natural-100",
+        "p-3 md:p-4 bg-natural-50 rounded-lg md:rounded-2xl",
+        "border border-natural-100",
         "basis-full flex flex-col justify-between gap-[10px] md:gap-2 relative overflow-hidden",
         className
       )}

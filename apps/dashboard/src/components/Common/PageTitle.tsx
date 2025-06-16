@@ -17,7 +17,7 @@ const PageTitle: React.FC<{
       <Link
         data-url={!!url}
         to={url || "#"}
-        className="hidden data-[url=true]:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 rounded-md"
+        className="hidden data-[url=true]:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-md"
         target="_blank"
       >
         <Info className="[&>*]:stroke-natural-950 w-6 h-6" />
