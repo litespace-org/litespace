@@ -18,6 +18,8 @@ export type Row = {
   updated_at: Date;
 };
 
+export type Column = keyof Row;
+
 export type Self = {
   id: number;
   userId: number | null;
@@ -29,6 +31,8 @@ export type Self = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type Field = keyof Self;
 
 export type CreateModelPayload = {
   userId: number;
@@ -43,7 +47,7 @@ export type UpdateModelPayload = {
   resolved: boolean;
 };
 
-export type FindModelQuery = IFilter.SkippablePagination & {
+export type FindModelQuery<T extends Field> = IFilter.SkippablePagination & {
   ids?: number[];
   users?: number[];
   title?: string;
@@ -53,6 +57,7 @@ export type FindModelQuery = IFilter.SkippablePagination & {
   resolved?: boolean;
   createdAt?: IFilter.Date;
   updatedAt?: IFilter.Date;
+  select?: T[];
 };
 
 export type CreateApiPayload = {
@@ -70,6 +75,6 @@ export type UpdateApiPayload = {
   resolved: boolean;
 };
 
-export type FindApiPayload = FindModelQuery;
+export type FindApiPayload = FindModelQuery<Field>;
 
 export type FindApiResponse = Paginated<Self>;

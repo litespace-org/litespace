@@ -1,8 +1,11 @@
 import { IReport, Paginated } from "@litespace/types";
 import {
+  AsColumns,
   column,
   countRows,
+  fromRow,
   knex,
+  Select,
   withBooleanFilter,
   withDateFilter,
   withListFilter,
@@ -11,12 +14,36 @@ import {
   withSkippablePagination,
   withStringFilter,
 } from "@/query";
-import { first } from "lodash";
+import { first, pick } from "lodash";
 import { Knex } from "knex";
 import dayjs from "dayjs";
 
+const FIELD_TO_COLUMN = {
+  id: "id",
+  userId: "user_id",
+  title: "title",
+  description: "description",
+  screenshot: "screenshot",
+  log: "log",
+  resolved: "resolved",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+} satisfies Record<IReport.Field, IReport.Column>;
+
 export class Reports {
-  table = "reports";
+  public readonly table = "reports";
+
+  public readonly columns: Record<IReport.Column, string> = {
+    id: this.column("id"),
+    user_id: this.column("user_id"),
+    title: this.column("title"),
+    description: this.column("description"),
+    screenshot: this.column("screenshot"),
+    log: this.column("log"),
+    resolved: this.column("resolved"),
+    created_at: this.column("created_at"),
+    updated_at: this.column("updated_at"),
+  };
 
   async create(
     payload: WithOptionalTx<IReport.CreateModelPayload>
@@ -52,7 +79,7 @@ export class Reports {
       .where(this.column("id"), payload.id);
   }
 
-  async find({
+  async find<T extends IReport.Field = IReport.Field>({
     tx,
     ids,
     users,
@@ -63,8 +90,11 @@ export class Reports {
     resolved,
     createdAt,
     updatedAt,
+    select,
     ...pagination
-  }: WithOptionalTx<IReport.FindModelQuery>): Promise<Paginated<IReport.Self>> {
+  }: WithOptionalTx<IReport.FindModelQuery<T>>): Promise<
+    Paginated<Pick<IReport.Self, T>>
+  > {
     const builder = this.builder(tx).from<IReport.Row>(this.table);
 
     // ============== string fields ========
@@ -87,7 +117,7 @@ export class Reports {
     withListFilter(builder, this.column("user_id"), users);
 
     const total = await countRows(builder.clone(), { distinct: true });
-    const query = builder.select<IReport.Row[]>("*").orderBy([
+    const query = builder.select(this.select(select)).orderBy([
       {
         column: this.column("created_at"),
         order: "desc",
@@ -97,8 +127,10 @@ export class Reports {
         order: "desc",
       },
     ]);
-    const rows = await withSkippablePagination(query, pagination);
-    const list = rows.map((row) => this.from(row));
+    const rows = (await withSkippablePagination(query, pagination)) as Array<
+      Select<IReport.Row, T, typeof FIELD_TO_COLUMN>
+    >;
+    const list = rows.map((row) => this.from<T>(row));
 
     return { list, total };
   }
@@ -123,18 +155,26 @@ export class Reports {
     return rows.map((row) => this.from(row));
   }
 
-  from(row: IReport.Row): IReport.Self {
-    return {
-      id: row.id,
-      userId: row.user_id,
-      title: row.title,
-      description: row.description,
-      screenshot: row.screenshot,
-      log: row.log,
-      resolved: row.resolved,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
+  from<T extends IReport.Field>(
+    row: Select<IReport.Row, T, typeof FIELD_TO_COLUMN>
+  ): Pick<IReport.Self, T> {
+    return fromRow<IReport.Row, IReport.Self, T, typeof FIELD_TO_COLUMN>(
+      row,
+      FIELD_TO_COLUMN
+    );
+  }
+
+  select<T extends keyof IReport.Self>(
+    fields?: T[]
+  ): Pick<
+    Record<keyof IReport.Row, string>,
+    AsColumns<T, typeof FIELD_TO_COLUMN>
+  > {
+    if (!fields) return this.columns;
+    return pick(
+      this.columns,
+      fields.map((field) => FIELD_TO_COLUMN[field])
+    );
   }
 
   builder(tx?: Knex.Transaction) {

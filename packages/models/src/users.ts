@@ -195,7 +195,7 @@ export class Users {
       ]);
 
     const rows = await withSkippablePagination(query, pagination).then(
-      (rows) => rows as Select<IUser.Row, T, typeof FIELD_TO_COLUMN>[]
+      (rows) => rows as Array<Select<IUser.Row, T, typeof FIELD_TO_COLUMN>>
     );
     const users = rows.map((row) => this.from<T>(row));
 
