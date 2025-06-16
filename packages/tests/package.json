@@ -6,6 +6,7 @@
   "files": [
     "dist/**"
   ],
+  "types": "dist/index.d.ts",
   "scripts": {
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
@@ -25,7 +26,11 @@
     "./cjs": {
       "default": "./dist/cjs/index.js",
       "types": "./dist/cjs/index.d.ts"
-    }
+    },
+    "./mocks/global/s3": "./dist/mocks/global/s3.js",
+    "./mocks/global/kafka": "./dist/mocks/global/kafka.js",
+    "./mocks/global/telegram": "./dist/mocks/global/telegram.js",
+    "./mocks/global/worker": "./dist/mocks/global/worker.js"
   },
   "watch": {
     "build": {
@@ -49,8 +54,8 @@
     "typescript": "^5.4.5",
     "typescript-transform-paths": "^3.5.2"
   },
-  "packageManager": "pnpm@10.11.0",
-  "devDependencies": {
-    "chai-as-promised": "^8.0.1"
+  "peerDependencies": {
+    "@aws-sdk/client-s3": "^3.782.0",
+    "@aws-sdk/s3-request-presigner": "^3.782.0"
   }
 }
