@@ -1,7 +1,7 @@
 import { IInterview, IUser } from "@litespace/types";
 import { router } from "@/lib/router";
 import { Web } from "@litespace/utils/routes";
-import { ValidInterivewMember } from "@/types/interview";
+import { ValidInterviewMember } from "@/types/interview";
 
 export function formatMorningMessage(
   interview: IInterview.Self,
@@ -41,10 +41,8 @@ export function formateImmediateReminderMessage(
 
 export function isValidInterviewMember(
   member: IUser.Self
-): member is ValidInterivewMember {
+): member is ValidInterviewMember {
   return (
-    member.notificationMethod !== undefined &&
-    member.phone !== null &&
-    member.verifiedPhone !== undefined
+    !!member.notificationMethod && !!member.phone && !!member.verifiedPhone
   );
 }

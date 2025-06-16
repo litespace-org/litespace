@@ -1,6 +1,6 @@
 import dayjs from "@/lib/dayjs";
 import { interviews, users } from "@litespace/models";
-import { IKafka, IUser } from "@litespace/types";
+import { IInterview, IKafka, IUser } from "@litespace/types";
 import {
   AFRICA_CAIRO_TIMEZONE,
   INTERVIEW_DURATION,
@@ -14,8 +14,13 @@ import {
 import { send, msg } from "@/lib/message";
 import { Interview, Reminder } from "@/types/interview";
 
-async function getInterviews(includeInterviewer?: boolean): Promise<Interview> {
+async function getInterviewList(includeInterviewer?: boolean) {
   const now = dayjs.utc();
+  /**
+   * end range for the find function, if we includeInterviewer then it's immediate reminder
+   * so we need to just get the interviews for the next 30 minutes.
+   * if not then it's morning reminder so we get the whole day interviews.
+   */
   const end = {
     lte: includeInterviewer
       ? now.add(INTERVIEW_DURATION, "minutes").toISOString()
@@ -29,6 +34,13 @@ async function getInterviews(includeInterviewer?: boolean): Promise<Interview> {
     canceled: false,
   });
 
+  return interviewsList;
+}
+
+async function getInterviewsMembers(
+  interviewsList: IInterview.Self[],
+  includeInterviewer?: boolean
+) {
   const membersIds: number[] = [];
   for (const interview of interviewsList) {
     membersIds.push(interview.intervieweeId);
@@ -38,7 +50,13 @@ async function getInterviews(includeInterviewer?: boolean): Promise<Interview> {
   const { list: membersList } = await users.find({
     ids: membersIds,
   });
+  return membersList;
+}
 
+async function asInterviewData(
+  interviewsList: IInterview.Self[],
+  membersList: IUser.Self[]
+) {
   const result: Interview = [];
   for (const interview of interviewsList) {
     const members = membersList.filter((user) =>
@@ -52,6 +70,16 @@ async function getInterviews(includeInterviewer?: boolean): Promise<Interview> {
   }
 
   return result;
+}
+
+async function getInterviews(includeInterviewer?: boolean): Promise<Interview> {
+  const interviewsList = await getInterviewList(includeInterviewer);
+  const membersList = await getInterviewsMembers(
+    interviewsList,
+    includeInterviewer
+  );
+
+  return asInterviewData(interviewsList, membersList);
 }
 
 async function getMessageQueue(interviews: Interview, type: Reminder) {

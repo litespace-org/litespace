@@ -17,8 +17,6 @@ export function isValidMember(
   member: ILesson.PopuldatedMember
 ): member is ValidLessonMember {
   return (
-    member.notificationMethod !== undefined &&
-    member.phone !== null &&
-    member.verifiedPhone !== undefined
+    !!member.notificationMethod && !!member.phone && !!member.verifiedPhone
   );
 }
