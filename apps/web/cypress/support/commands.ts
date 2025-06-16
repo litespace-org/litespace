@@ -1,5 +1,9 @@
 /// <reference types="cypress" />
 
+import { router } from "@cy/lib/router";
+import { InputProps } from "@litespace/ui/Input";
+import { Web } from "@litespace/utils/routes";
+
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -26,13 +30,38 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      login(email: string, password: string): Chainable<void>;
+      checkInputState(
+        selector: string,
+        state?: InputProps["state"] | "idle"
+      ): Chainable<void>;
+      checkErroredInputsCount(count: number): Chainable<void>;
+    }
+  }
+}
+
+Cypress.Commands.add("login", (email: string, password: string) => {
+  cy.visit(router.web({ route: Web.Login }));
+  cy.get("input[id=email]").type(email);
+  cy.get("input[id=password]").type(password);
+  cy.get("form").submit();
+});
+
+Cypress.Commands.add(
+  "checkInputState",
+  (selector: string, state?: InputProps["state"] | "idle") => {
+    if (!state || state === "idle")
+      cy.get(selector).should("not.have.attr", "data-state");
+    else cy.get(selector).should("have.attr", "data-state", state);
+  }
+);
+
+Cypress.Commands.add("checkErroredInputsCount", (count: number) => {
+  cy.get("input[data-state=error]").should("have.length", count);
+});
+
+export {};
