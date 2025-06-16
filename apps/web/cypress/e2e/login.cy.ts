@@ -1,6 +1,6 @@
 import { Web } from "@litespace/utils/routes";
 
-describe("login", () => {
+describe("login page", () => {
   beforeEach(() => {
     cy.visit(Web.Login);
     cy.get("input[id=email]").clear();
@@ -8,7 +8,7 @@ describe("login", () => {
   });
 
   it("should login as a student", () => {
-    cy.get("input[id=email]").type("student-1@litespace.org");
+    cy.get("input[id=email]").type("student@litespace.org");
     cy.get("input[id=password]").type("Password@8");
     cy.get("form").submit();
   });
@@ -35,7 +35,7 @@ describe("login", () => {
   });
 
   it("should handle login with non-existent user", () => {
-    cy.get("input[id=email]").type("galal@email");
+    cy.get("input[id=email]").type("x@test.com");
     cy.get("input[id=password]").type("ValidPassword@123");
     cy.get("form").submit();
     cy.url().should("include", Web.Login);
