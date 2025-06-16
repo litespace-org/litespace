@@ -5,7 +5,8 @@
     "build": "tsc -p tsconfig.build.json",
     "start": "env-cmd node dist/index.js",
     "prepare": "ts-patch install -s",
-    "psql": "env-cmd ts-node src/scripts/psql.ts"
+    "psql": "env-cmd node dist/scripts/psql.js",
+    "cli": "env-cmd node dist/scripts/cli.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.806.0",

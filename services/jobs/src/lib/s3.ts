@@ -4,17 +4,18 @@ import {
   GetObjectCommand,
   ListObjectsV2Command,
   DeleteObjectCommand,
+  _Object,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { spaceConfig } from "@/lib/config";
+import { config } from "@/lib/config";
 
 const s3 = new S3Client({
   endpoint: "https://fra1.digitaloceanspaces.com",
   forcePathStyle: false, // Configures to use subdomain/virtual calling format.
   region: "fra1",
   credentials: {
-    accessKeyId: spaceConfig.accessKeyId,
-    secretAccessKey: spaceConfig.secretAccessKey,
+    accessKeyId: config.s3.accessKeyId,
+    secretAccessKey: config.s3.secretAccessKey,
   },
 });
 
@@ -29,7 +30,7 @@ async function put({
 }) {
   await s3.send(
     new PutObjectCommand({
-      Bucket: spaceConfig.bucketName,
+      Bucket: config.s3.bucketName,
       Key: key,
       Body: data,
       ContentType: type,
@@ -40,7 +41,7 @@ async function put({
 async function get(key: string, expiresIn?: number): Promise<string> {
   const command = new GetObjectCommand({
     Key: key,
-    Bucket: spaceConfig.bucketName,
+    Bucket: config.s3.bucketName,
   });
 
   const url = await getSignedUrl(s3, command, {
@@ -49,28 +50,29 @@ async function get(key: string, expiresIn?: number): Promise<string> {
   return url;
 }
 
-async function getBackupList(of: "psql"): Promise<Array<string>> {
+async function list(prefix: string): Promise<_Object[]> {
   const res = await s3.send(
     new ListObjectsV2Command({
-      Prefix: `backups/${of}/`,
-      Bucket: spaceConfig.bucketName,
+      Prefix: prefix,
+      Bucket: config.s3.bucketName,
     })
   );
-  return res.Contents?.map((c) => c.Key || "") || [];
+
+  return res.Contents || [];
 }
 
 async function drop(key: string) {
   await s3.send(
     new DeleteObjectCommand({
-      Bucket: spaceConfig.bucketName,
+      Bucket: config.s3.bucketName,
       Key: key,
     })
   );
 }
 
 export default {
-  getBackupList,
   get,
   put,
   drop,
+  list,
 };

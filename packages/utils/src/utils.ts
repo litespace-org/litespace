@@ -74,3 +74,25 @@ export function map<T extends object, K extends keyof T>(
 ): T[K][] {
   return list.map((item) => item[key]);
 }
+
+/**
+ * @returns a function that execut all the provided functions in order.
+ */
+export function composeSerial(...fns: Array<() => unknown>) {
+  return () => {
+    fns.map((fn) => fn());
+  };
+}
+
+/**
+ * @returns async function that execut all the provided functions in order.
+ */
+export function composeSerialAsync(
+  ...fns: Array<() => unknown | Promise<unknown>>
+) {
+  return async function compose() {
+    for (const fn of fns) {
+      await fn();
+    }
+  };
+}
