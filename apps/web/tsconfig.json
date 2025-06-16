@@ -18,7 +18,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@sb/*": ["./.storybook/*"],
-      "@cy/*": ["./cypress/*"]
+      "@cy/*": ["./cypress/*"],
+      "@packages/*": ["../../packages/*"]
     },
     /* Linting */
     "strict": true,
