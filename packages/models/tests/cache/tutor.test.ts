@@ -14,6 +14,7 @@ const getMockTutorCache = (id: number) => ({
   city: faker.number.int({ min: 1, max: 15 }),
   phone: faker.string.numeric({ length: 11 }),
   bio: faker.lorem.words(30),
+  role: sample([IUser.Role.Tutor, IUser.Role.TutorManager]),
   about: faker.lorem.sentence(5),
   gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
   notice: faker.number.int(),

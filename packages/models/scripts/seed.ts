@@ -12,12 +12,16 @@ import {
   topics,
   availabilitySlots,
   invoices,
+  subscriptions,
+  transactions,
 } from "@litespace/models";
 import {
   IAvailabilitySlot,
   IInterview,
   IInvoice,
   ILesson,
+  IPlan,
+  ITransaction,
   IUser,
 } from "@litespace/types";
 import dayjs from "dayjs";
@@ -64,6 +68,37 @@ async function main(): Promise<void> {
     birthYear: birthYear(),
   });
 
+  // Creating Plans
+  const [plan1] = await Promise.all([
+    plans.create({
+      weeklyMinutes: 2.5 * 60,
+      forInvitesOnly: false,
+      baseMonthlyPrice: price.scale(2500),
+      monthDiscount: percentage.scale(10),
+      quarterDiscount: percentage.scale(20),
+      yearDiscount: percentage.scale(30),
+      active: true,
+    }),
+    plans.create({
+      weeklyMinutes: 5 * 60,
+      forInvitesOnly: false,
+      baseMonthlyPrice: price.scale(4000),
+      monthDiscount: percentage.scale(15),
+      quarterDiscount: percentage.scale(20),
+      yearDiscount: percentage.scale(30),
+      active: true,
+    }),
+    plans.create({
+      weeklyMinutes: 8 * 60,
+      forInvitesOnly: false,
+      baseMonthlyPrice: price.scale(6000),
+      monthDiscount: percentage.scale(20),
+      quarterDiscount: percentage.scale(25),
+      yearDiscount: percentage.scale(30),
+      active: true,
+    }),
+  ]);
+
   const student = await knex.transaction(async (tx) => {
     const student = await users.create(
       {
@@ -80,6 +115,7 @@ async function main(): Promise<void> {
     return student;
   });
 
+  // Creating full students with subscriptions
   const students = await Promise.all(
     range(20).map(
       async (idx) =>
@@ -114,6 +150,30 @@ async function main(): Promise<void> {
         })
     )
   );
+
+  students.forEach(async (student, idx) => {
+    if (sample([true, false])) {
+      const transaction = await transactions.create({
+        amount: 1200,
+        paymentMethod: ITransaction.PaymentMethod.EWallet,
+        planId: plan1.id,
+        planPeriod: IPlan.Period.Month,
+        providerRefNum: 1,
+        userId: student.id,
+        status: ITransaction.Status.Paid,
+      });
+
+      await subscriptions.create({
+        userId: student.id,
+        planId: plan1.id,
+        start: dayjs.utc().toISOString(),
+        end: dayjs.utc().add(1, "month").toISOString(),
+        period: IPlan.Period.Month,
+        weeklyMinutes: idx * 10,
+        txId: transaction.id,
+      });
+    }
+  });
 
   // seeding studios
   const studio1 = await users.create({
@@ -303,7 +363,8 @@ async function main(): Promise<void> {
   if (!tutor) throw new Error("Tutor not found; should never happen.");
 
   const tutorManager = first(addedTutorManagers);
-  if (!tutorManager)
+  const tutorManager2 = addedTutorManagers[1];
+  if (!tutorManager || !tutorManager2)
     throw new Error("TutorManager not found; should never happen.");
 
   // seeding ratings data
@@ -350,11 +411,8 @@ async function main(): Promise<void> {
 
   // seeding slots
   const seededSlots: { [tutorId: number]: IAvailabilitySlot.Self[] } = {};
-  addedTutors.forEach(async (tutor, i) => {
-    const date = dayjs
-      .utc()
-      .add(i * 4, "days")
-      .startOf("day");
+  [tutorManager, ...addedTutors].forEach(async (tutor, i) => {
+    const date = dayjs.utc().add(i, "day").startOf("day");
     const slots = await availabilitySlots.create([
       {
         userId: tutor.id,
@@ -405,10 +463,12 @@ async function main(): Promise<void> {
     tutorId,
     slotId,
     start,
+    canceled,
   }: {
     tutorId: number;
     slotId: number;
     start: string;
+    canceled?: boolean;
   }) {
     return await knex.transaction(async (tx: Knex.Transaction) => {
       const duration = sample([ILesson.Duration.Short, ILesson.Duration.Long]);
@@ -424,7 +484,7 @@ async function main(): Promise<void> {
         tx,
       });
 
-      if (sample([0, 1]))
+      if (canceled || (canceled === undefined && sample([0, 1])))
         await lessons.cancel({
           ids: [lesson.id],
           canceledBy: sample([tutorId, student.id]),
@@ -437,16 +497,20 @@ async function main(): Promise<void> {
 
   // seeding lessons
   for (const tutor of addedTutors) {
+    const lastTutor = addedTutors[addedTutors.length - 1] === tutor;
     // create chat room tutor-student
     await knex.transaction(async (tx) =>
       rooms.create([tutor.id, student.id], tx)
     );
 
-    for (const slot of seededSlots[tutor.id] || []) {
+    const slotsArr = seededSlots[tutor.id];
+    for (const slot of slotsArr || []) {
+      const lastSlot = slotsArr[slotsArr.length - 1] === slot;
       await createRandomLesson({
         tutorId: tutor.id,
         slotId: slot.id,
         start: slot.start,
+        canceled: !lastSlot || !lastTutor,
       });
     }
 
@@ -458,7 +522,7 @@ async function main(): Promise<void> {
   const slot = (
     await availabilitySlots.create([
       {
-        userId: tutorManager.id,
+        userId: tutorManager2.id,
         start: dayjs.utc().startOf("day").toISOString(),
         end: dayjs.utc().startOf("day").add(1, "days").toISOString(),
       },
@@ -485,36 +549,6 @@ async function main(): Promise<void> {
       });
     });
   }
-
-  await Promise.all([
-    plans.create({
-      weeklyMinutes: 2.5 * 60,
-      forInvitesOnly: false,
-      baseMonthlyPrice: price.scale(2500),
-      monthDiscount: percentage.scale(10),
-      quarterDiscount: percentage.scale(20),
-      yearDiscount: percentage.scale(30),
-      active: true,
-    }),
-    plans.create({
-      weeklyMinutes: 5 * 60,
-      forInvitesOnly: false,
-      baseMonthlyPrice: price.scale(4000),
-      monthDiscount: percentage.scale(15),
-      quarterDiscount: percentage.scale(20),
-      yearDiscount: percentage.scale(30),
-      active: true,
-    }),
-    plans.create({
-      weeklyMinutes: 8 * 60,
-      forInvitesOnly: false,
-      baseMonthlyPrice: price.scale(6000),
-      monthDiscount: percentage.scale(20),
-      quarterDiscount: percentage.scale(25),
-      yearDiscount: percentage.scale(30),
-      active: true,
-    }),
-  ]);
 
   await knex.transaction(async (tx) => {
     const roomId = await rooms.create([tutor.id, tutorManager.id], tx);
