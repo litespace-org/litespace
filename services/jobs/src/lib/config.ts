@@ -1,5 +1,12 @@
 import zod from "zod";
 
+const backupMethod = zod
+  .literal("dump")
+  .or(zod.literal("sql"))
+  .or(zod.literal("tar"));
+
+export type BackupMethod = zod.infer<typeof backupMethod>;
+
 const schema = zod.object({
   telegram: zod.object({
     token: zod.string(),
@@ -11,6 +18,12 @@ const schema = zod.object({
     zod.literal("production"),
   ]),
   adminPhoneNumber: zod.string().length(11),
+  backupMethod,
+  s3: zod.object({
+    bucketName: zod.string().trim(),
+    accessKeyId: zod.string().trim(),
+    secretAccessKey: zod.string().trim(),
+  }),
 });
 
 type ConfigSchema = Zod.infer<typeof schema>;
@@ -22,4 +35,10 @@ export const config: ConfigSchema = schema.parse({
   },
   env: process.env.ENVIRONMENT,
   adminPhoneNumber: process.env.ADMIN_PHONE_NUMBER,
+  backupMethod: process.env.BACKUP_METHOD,
+  s3: {
+    bucketName: process.env.SPACES_BUCKET_NAME,
+    accessKeyId: process.env.SPACES_ACCESS_KEY,
+    secretAccessKey: process.env.SPACES_SECRET_ACCESS_KEY,
+  },
 });
