@@ -1,16 +1,16 @@
-class Producer {
+class MockProducer {
   constructor() {}
   send() {}
   connect() {}
 }
 
-class Consumer {
+class MockConsumer {
   constructor() {}
   subscribe() {}
   run() {}
 }
 
 jest.mock("@litespace/kafka", () => ({
-  Producer,
-  Consumer,
+  Producer: MockProducer,
+  Consumer: MockConsumer,
 }));

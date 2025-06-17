@@ -1183,6 +1183,12 @@ importers:
 
   packages/tests:
     dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.782.0
+        version: 3.806.0
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.782.0
+        version: 3.806.0
       '@litespace/auth':
         specifier: workspace:^
         version: link:../auth
@@ -1216,10 +1222,6 @@ importers:
       typescript-transform-paths:
         specifier: ^3.5.2
         version: 3.5.5(typescript@5.4.5)
-    devDependencies:
-      chai-as-promised:
-        specifier: ^8.0.1
-        version: 8.0.1(chai@5.2.0)
 
   packages/types:
     devDependencies:
