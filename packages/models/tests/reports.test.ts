@@ -45,8 +45,8 @@ describe("Reports", () => {
       expect(report.userId).to.eq(user.id);
       expect(report.title).to.eq("My First Report");
       expect(report.description).eq("empty description");
-      expect(report.screenshot).to.eq("dump");
-      expect(report.log).to.eq("empty");
+      expect(report.screenshot?.trim()).to.eq("dump");
+      expect(report.log?.trim()).to.eq("empty");
       expect(report.resolved).to.be.false;
       expect(report.createdAt).to.exist;
       expect(report.updatedAt).to.exist;

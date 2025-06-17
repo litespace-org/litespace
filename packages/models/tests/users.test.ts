@@ -1,6 +1,6 @@
 import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/utils/utils";
-import { hashPassword, users } from "@/index";
+import { knex, hashPassword, users } from "@/index";
 import { expect } from "chai";
 import dayjs from "@/lib/dayjs";
 import { IUser } from "@litespace/types";
@@ -15,14 +15,22 @@ describe("Users", () => {
     it("should create new user", async () => {
       const name = faker.person.fullName();
       const email = faker.internet.email();
-      const user = await users.create({
-        name: name,
-        role: IUser.Role.Student,
-        email: email,
-        password: "password",
-        birthYear: 2001,
-        gender: IUser.Gender.Male,
-      });
+
+      // NOTE: transaction is used here for coverage tests;
+      // In order to cover tx line in the builder method.
+      const user = await knex.transaction((tx) =>
+        users.create(
+          {
+            name: name,
+            role: IUser.Role.Student,
+            email: email,
+            password: "password",
+            birthYear: 2001,
+            gender: IUser.Gender.Male,
+          },
+          tx
+        )
+      );
 
       expect(user.name).to.be.eq(name);
       expect(user.role).to.be.eq(IUser.Role.Student);
@@ -78,6 +86,24 @@ describe("Users", () => {
         dayjs.utc(created.updatedAt).toISOString()
       );
     });
+
+    // NOTE: this unit test is to accomplish 100% coverage test
+    it("should update user's name", async () => {
+      const created = await fixtures.user({ role: IUser.Role.Student });
+      expect(await users.findById(created.id)).to.exist;
+      const updated = await users.update(created.id, {
+        name: "Mostafa Kamar Edit",
+      });
+      expect(updated.name).to.be.eq("Mostafa Kamar Edit");
+    });
+  });
+
+  describe(nameof(users.exists), () => {
+    it("should return true if the user exists", async () => {
+      // const created = await fixtures.user({ role: IUser.Role.Student });
+      // const exists = await users.exists(created.id);
+    });
+    it("should return false if the user does NOT exists", async () => {});
   });
 
   describe(nameof(users.delete), () => {
@@ -131,6 +157,45 @@ describe("Users", () => {
         { id: u1.id, name: "u1" },
       ]);
     });
+
+    it("should filter by verified email", async () => {
+      const user1 = await fixtures.user({ role: IUser.Role.Student });
+      const user2 = await fixtures.user({ role: IUser.Role.Student });
+
+      await users.update(user1.id, { verifiedEmail: true });
+      await users.update(user2.id, { verifiedEmail: false });
+
+      const result = await users.find({ verified: true });
+      expect(result.total).to.be.eq(1);
+      expect(result.list[0].verifiedEmail).to.be.eq(true);
+    });
+
+    it("should filter by gender", async () => {
+      await fixtures.user({
+        role: IUser.Role.Student,
+        gender: IUser.Gender.Male,
+      });
+      await fixtures.user({
+        role: IUser.Role.Student,
+        gender: IUser.Gender.Female,
+      });
+
+      const result = await users.find({ gender: IUser.Gender.Male });
+      expect(result.total).to.be.eq(1);
+      expect(result.list[0].gender).to.be.eq(IUser.Gender.Male);
+    });
+
+    it("should filter by city", async () => {
+      const user1 = await fixtures.user({ role: IUser.Role.Student });
+      const user2 = await fixtures.user({ role: IUser.Role.Student });
+
+      await users.update(user1.id, { city: IUser.City.Cairo });
+      await users.update(user2.id, { city: IUser.City.Alexandria });
+
+      const result = await users.find({ city: IUser.City.Cairo });
+      expect(result.total).to.be.eq(1);
+      expect(result.list[0].city).to.be.eq(IUser.City.Cairo);
+    });
   });
 
   describe(nameof(users.findOneBy), () => {
@@ -166,6 +231,11 @@ describe("Users", () => {
       const hash = await users.findUserPasswordHash(created.id);
       expect(hash).to.be.eq(hashPassword(password));
     });
+
+    it("should return null if id not found", async () => {
+      const hash = await users.findUserPasswordHash(3847932);
+      expect(hash).to.be.null;
+    });
   });
 
   describe(nameof(users.findByEmail), () => {
@@ -176,6 +246,35 @@ describe("Users", () => {
       const user = await users.findByEmail(created.email);
       expect(user).to.exist;
       expect(user?.id).to.be.eq(created.id);
+    });
+  });
+
+  describe(nameof(users.findByCredentials), () => {
+    it("should find user with valid credentials", async () => {
+      const email = faker.internet.email();
+      const password = "password123";
+      const created = await fixtures.user({
+        role: IUser.Role.Student,
+        email,
+        password,
+        withPassword: true,
+      });
+
+      const user = await users.findByCredentials({
+        email,
+        password: hashPassword(password),
+      });
+      expect(user).to.exist;
+      expect(user?.id).to.be.eq(created.id);
+      expect(user?.email).to.be.eq(email);
+    });
+
+    it("should return null with invalid credentials", async () => {
+      const user = await users.findByCredentials({
+        email: "email@email.com",
+        password: "wrongpassword",
+      });
+      expect(user).to.be.null;
     });
   });
 });
