@@ -59,6 +59,14 @@ describe("/api/v1/user/", () => {
     await db.flush();
   });
 
+  beforeAll(async () => {
+    await cache.connect();
+  });
+
+  afterAll(async () => {
+    await cache.disconnect();
+  });
+
   describe("POST /api/v1/user", () => {
     it("should create a student", async () => {
       const email = "student@example.com";
@@ -124,19 +132,6 @@ describe("/api/v1/user/", () => {
     });
 
     describe("GET /api/v1/user/tutor/list/onboarded", () => {
-      beforeAll(async () => {
-        await cache.connect();
-      });
-
-      afterAll(async () => {
-        await cache.disconnect();
-      });
-
-      beforeEach(async () => {
-        await db.flush();
-        await cache.flush();
-      });
-
       it("should successfully load onboard tutors from db to cache", async () => {
         expect(await cache.tutors.exists()).to.eql(false);
 
@@ -304,10 +299,6 @@ describe("/api/v1/user/", () => {
   });
 
   describe.skip("GET /api/v1/user/tutor/list/uncontacted", () => {
-    beforeEach(async () => {
-      await db.flush();
-    });
-
     it("should successfully retrieve list of tutors with which the student has not chat room yet.", async () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
@@ -333,19 +324,6 @@ describe("/api/v1/user/", () => {
   });
 
   describe.skip("/api/v1/user/tutor/info/:tutorId", () => {
-    beforeAll(async () => {
-      await cache.connect();
-    });
-
-    afterAll(async () => {
-      await cache.disconnect();
-    });
-
-    beforeEach(async () => {
-      await db.flush();
-      await cache.flush();
-    });
-
     it("should retrieve tutor info successfully", async () => {
       const newTutor = await db.tutor();
 
@@ -418,10 +396,6 @@ describe("/api/v1/user/", () => {
   });
 
   describe.skip("GET /api/v1/user/tutor/stats/personalized", () => {
-    beforeEach(async () => {
-      await db.flush();
-    });
-
     it("should retrieve tutor stats by current logged-in user id.", async () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();

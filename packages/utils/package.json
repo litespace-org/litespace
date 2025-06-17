@@ -55,7 +55,8 @@
     },
     "./error": {
       "import": "./dist/esm/error.js",
-      "require": "./dist/cjs/error.js"
+      "require": "./dist/cjs/error.js",
+      "node": "./dist/cjs/error.js"
     },
     "./interview": {
       "import": "./dist/esm/interview.js",
@@ -120,6 +121,10 @@
     "./filterQuery": {
       "import": "./dist/esm/filterQuery/index.js",
       "require": "./dist/cjs/filterQuery/index.js"
+    },
+    "./cjs": {
+      "node": "./dist/cjs/index.js",
+      "types": "./dist/cjs/index.d.ts"
     }
   },
   "react-native": {

@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "license": "MIT",
   "description": "LiteSpace monorepo tests",
-  "main": "dist/cjs/index.js",
-  "module": "dist/index.js",
   "files": [
     "dist/**"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build": "pnpm build:cjs && pnpm build:esm",
     "build:ts": "tsc",
     "prepare": "ts-patch install -s",
     "clean": "rm -rf dist/",
@@ -18,8 +18,13 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/esm/index.d.ts"
+    },
+    "./cjs": {
+      "default": "./dist/cjs/index.js",
+      "types": "./dist/cjs/index.d.ts"
     }
   },
   "watch": {

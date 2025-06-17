@@ -3,5 +3,5 @@ export const WORKSPACES = [
   "@litespace/web",
   "@litespace/dashboard",
   "@litespace/landing",
-  // "@litespace/blog",
+  "@litespace/jobs",
 ] as const;
