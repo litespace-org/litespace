@@ -15,7 +15,7 @@ type Props = {
   resending: boolean;
   verifing: boolean;
   method: IUser.NotificationMethodLiteral;
-  verifyCode: (payload: IConfirmationCode.VerifyPhoneCodePayload) => void;
+  verifyCode: (payload: IConfirmationCode.VerifyPhoneCodeApiPayload) => void;
   close: Void;
 };
 

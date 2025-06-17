@@ -10,10 +10,10 @@ import {
 import { ICoupon } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import { isAdmin } from "@litespace/utils/user";
 
-const createCouponPayload = zod.object({
+const createCouponPayload: ZodSchema<ICoupon.CreateApiPayload> = zod.object({
   code: string,
   planId: number,
   fullMonthDiscount: number,
@@ -23,7 +23,7 @@ const createCouponPayload = zod.object({
   expiresAt: datetime,
 });
 
-const updateCouponPayload = zod.object({
+const updateCouponPayload: ZodSchema<ICoupon.UpdateApiPayload> = zod.object({
   code: zod.optional(string),
   planId: zod.optional(number),
   fullMonthDiscount: zod.optional(number),

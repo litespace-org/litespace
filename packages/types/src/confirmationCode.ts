@@ -38,31 +38,31 @@ export type FindPayloadModel = {
   purpose?: Purpose;
 };
 
-export type SendVerifyPhoneCodePayload = {
+export type SendVerifyPhoneCodeApiPayload = {
   phone?: string;
   method: IUser.NotificationMethodLiteral;
 };
 
-export type VerifyPhoneCodePayload = {
+export type VerifyPhoneCodeApiPayload = {
   code: number;
   method: IUser.NotificationMethodLiteral;
 };
 
-export type SendForgetPasswordEmailPayload = {
+export type SendForgetPasswordEmailApiPayload = {
   email: string;
 };
 
-export type SendVerifyEmailPayload = {
+export type SendVerifyEmailApiPayload = {
   email: string;
 };
 
-export type ConfirmForgetPasswordCodePayload = {
+export type ConfirmForgetPasswordCodeApiPayload = {
   password: string;
   code: number;
 };
 
 export type ConfirmPasswordCodeApiResponse = void;
 
-export type VerifyEmailPayload = {
+export type VerifyEmailApiPayload = {
   code: number;
 };

@@ -2,7 +2,7 @@ import { knex, messages, rooms, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { isEmpty } from "lodash";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import {
   id,
   pagination,
@@ -24,12 +24,17 @@ import { asFindUserRoomsApiRecord } from "@/lib/chat";
 import { cache } from "@/lib/cache";
 import { withImageUrls } from "@/lib/user";
 
-const createRoomPayload = zod.object({
+const createRoomPayload: ZodSchema<IRoom.CreateRoomApiPayload> = zod.object({
   userId: id,
   message: zod.optional(zod.string()),
 });
-const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
-const findUserRoomsQuery = zod.object({
+
+const findRoomByMembersPayload: ZodSchema<IRoom.FindRoomByMembersApiPayload> =
+  zod.object({
+    members: zod.array(id),
+  });
+
+const findUserRoomsQuery: ZodSchema<IRoom.FindUserRoomsApiQuery> = zod.object({
   page: zod.optional(pageNumber),
   size: zod.optional(pageSize),
   pinned: zod.optional(jsonBoolean),
@@ -37,7 +42,7 @@ const findUserRoomsQuery = zod.object({
   keyword: zod.optional(zod.string()),
 });
 
-const updateRoomPayload = zod.object({
+const updateRoomPayload: ZodSchema<IRoom.UpdateRoomApiPayload> = zod.object({
   pinned: zod.optional(zod.boolean()),
   muted: zod.optional(zod.boolean()),
 });

@@ -18,7 +18,7 @@ import {
   safePromise,
 } from "@litespace/utils";
 import { NextFunction, Request, Response } from "express";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import dayjs from "@/lib/dayjs";
 import safeRequest from "express-async-handler";
 import { first } from "lodash";
@@ -34,26 +34,30 @@ const method = unionOfLiterals<IUser.NotificationMethodLiteral>([
   "telegram",
 ]);
 
-const sendVerifyNotificationMethodCodePayload = zod.object({
-  phone: zod.string().optional(),
-  method,
-});
+const sendVerifyPhoneCodePayload: ZodSchema<IConfirmationCode.SendVerifyPhoneCodeApiPayload> =
+  zod.object({
+    phone: zod.string().optional(),
+    method,
+  });
 
-const verifyNotificationMethodCodePayload = zod.object({
-  code: zod.number(),
-  method,
-});
+const verifyPhoneCodePayload: ZodSchema<IConfirmationCode.VerifyPhoneCodeApiPayload> =
+  zod.object({
+    code: zod.number(),
+    method,
+  });
 
 const sendCodePayload = zod.object({ email });
 
-const confirmPasswordCodePayload = zod.object({
-  password,
-  code: zod.number(),
-});
+const confirmForgetPasswordCodePayload: ZodSchema<IConfirmationCode.ConfirmForgetPasswordCodeApiPayload> =
+  zod.object({
+    password,
+    code: zod.number(),
+  });
 
-const verifyEmailPayload = zod.object({
-  code: zod.number(),
-});
+const verifyEmailPayload: ZodSchema<IConfirmationCode.VerifyEmailApiPayload> =
+  zod.object({
+    code: zod.number(),
+  });
 
 async function sendVerifyPhoneCode(
   req: Request,
@@ -64,8 +68,7 @@ async function sendVerifyPhoneCode(
   const allowed = isUser(user);
   if (!allowed) return next(forbidden());
 
-  const payload: IConfirmationCode.SendVerifyPhoneCodePayload =
-    sendVerifyNotificationMethodCodePayload.parse(req.body);
+  const payload = sendVerifyPhoneCodePayload.parse(req.body);
 
   const { update, valid, phone } = selectPhone(user.phone, payload.phone);
   if (!valid || !phone) return next(bad("invalid or missing phone number"));
@@ -126,8 +129,7 @@ async function verifyPhoneCode(
   const user = req.user;
   if (!isUser(user)) return next(forbidden());
 
-  const { code, method }: IConfirmationCode.VerifyPhoneCodePayload =
-    verifyNotificationMethodCodePayload.parse(req.body);
+  const { code, method } = verifyPhoneCodePayload.parse(req.body);
 
   const confirmationCodeList = await confirmationCodes.find({
     code,
@@ -176,8 +178,7 @@ async function sendForgetPasswordCode(
   res: Response,
   next: NextFunction
 ) {
-  const { email }: IConfirmationCode.SendForgetPasswordEmailPayload =
-    sendCodePayload.parse(req.body);
+  const { email } = sendCodePayload.parse(req.body);
 
   const user = await users.findByEmail(email);
   if (!user) return next(notfound.user());
@@ -213,8 +214,7 @@ async function confirmForgetPasswordCode(
   res: Response,
   next: NextFunction
 ) {
-  const { password, code }: IConfirmationCode.ConfirmForgetPasswordCodePayload =
-    confirmPasswordCodePayload.parse(req.body);
+  const { password, code } = confirmForgetPasswordCodePayload.parse(req.body);
 
   const list = await confirmationCodes.find({
     code,
@@ -294,12 +294,11 @@ async function confirmEmailVerificationCode(
   if (user.verifiedEmail) return next(emailAlreadyVerified());
 
   // get the code from the payload and verify it
-  const { code }: IConfirmationCode.VerifyEmailPayload =
-    verifyEmailPayload.parse(req.body);
+  const { code } = verifyEmailPayload.parse(req.body);
 
   const list = await confirmationCodes.find({
-    userId: user.id,
     purpose: IConfirmationCode.Purpose.VerifyEmail,
+    userId: user.id,
     code,
   });
 

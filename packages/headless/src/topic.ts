@@ -19,7 +19,7 @@ export function useCreateTopic({
   const api = useApi();
 
   const createTopic = useCallback(
-    async (payload: ITopic.CreateApiPayload) => {
+    async (payload: ITopic.CreateTopicApiPayload) => {
       return api.topic.create(payload);
     },
     [api.topic]

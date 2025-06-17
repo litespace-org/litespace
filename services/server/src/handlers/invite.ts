@@ -9,22 +9,25 @@ import {
 } from "@/validation/utils";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import { isAdmin, isStudent } from "@litespace/utils/user";
+import { IInvite } from "@litespace/types";
 
-const createInvitePayload = zod.object({
+const createInvitePayload: ZodSchema<IInvite.CreateApiPayload> = zod.object({
   email,
   planId: id,
   expiresAt: datetime,
 });
 
-const updateInvitePayload = zod.object({
+const updateInvitePayload: ZodSchema<IInvite.UpdateApiPayload> = zod.object({
   email: zod.optional(email),
   planId: zod.optional(id),
   expiresAt: zod.optional(datetime),
 });
 
-const findByEmailPayload = zod.object({ email: email });
+const findByEmailPayload: ZodSchema<IInvite.FindByEmailApiPayload> = zod.object(
+  { email: email }
+);
 
 async function createInvite(req: Request, res: Response, next: NextFunction) {
   const user = req.user;

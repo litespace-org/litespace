@@ -39,9 +39,11 @@ export const number = zod.coerce.number();
 
 export const boolean = zod.boolean();
 
-export const jsonBoolean = zod
+// NOTE: the type is coerced to ZodBoolean as the transform function
+// doesn't mutate the type as supposed to.
+export const jsonBoolean: zod.ZodBoolean = zod
   .custom<"true" | "false">((value) => value === "true" || value === "false")
-  .transform((value) => value === "true");
+  .transform((value) => value === "true") as unknown as zod.ZodBoolean;
 
 export const orderDirection = unionOfLiterals<IFilter.Direction>([
   "acs",
@@ -140,6 +142,7 @@ export const numericFilter = zod.union([
     lte: zod.coerce.number().optional(),
     gt: zod.coerce.number().optional(),
     lt: zod.coerce.number().optional(),
+    noeq: zod.coerce.number().optional(),
   }),
 ]);
 
@@ -150,13 +153,18 @@ export const dateFilter = zod.union([
     lte: zod.string().optional(),
     gt: zod.string().optional(),
     lt: zod.string().optional(),
+    noeq: zod.string().optional(),
   }),
 ]);
 
 export const nullableString = zod.union([zod.string(), zod.null()]);
 
-export const queryBoolean = zod
+// NOTE: the type is coerced to ZodBoolean as the transform function
+// doesn't mutate the type as supposed to.
+export const queryBoolean: zod.ZodBoolean = zod
   .custom<
     "true" | "false" | true | false
   >((value) => value === "true" || value === "false" || value === true || value === false)
-  .transform((value) => value === "true" || value === true);
+  .transform(
+    (value) => value === "true" || value === true
+  ) as unknown as zod.ZodBoolean;
