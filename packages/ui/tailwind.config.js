@@ -81,6 +81,7 @@ export default {
         "stream-chat": "18",
       },
       screens: {
+        xs: "480px",
         "3xl": "1600px",
       },
       containers: {
