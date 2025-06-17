@@ -13,9 +13,10 @@
     "test": "jest",
     "storybook:dev": "storybook dev -p 3002",
     "storybook:build": "storybook build",
-    "e2e": "cypress run --headless",
-    "e2e:open": "cypress open",
-    "e2e:headed": "cypress run --headed"
+    "e2e:base": "env-cmd -f .env.test cypress",
+    "e2e": "pnpm e2e:base run --headless",
+    "e2e:open": "pnpm e2e:base open",
+    "e2e:headed": "pnpm e2e:base run --headed"
   },
   "dependencies": {
     "@litespace/assets": "workspace:^",
@@ -57,6 +58,7 @@
   },
   "devDependencies": {
     "@litespace/tests": "workspace:^",
+    "@litespace/models": "workspace:^",
     "@babel/core": "^7.24.9",
     "@babel/preset-env": "^7.25.0",
     "@babel/preset-react": "^7.26.3",

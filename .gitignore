@@ -7,17 +7,17 @@ dist/
 vercel-urls.json
 .DS_Store
 
-# ui 
+# ui
 ui/src/index.css
 storybook-static/
 
-# server 
+# server
 services/server/*.pem
 services/server/uploads/
 services/server/coverage/
 .vercel
 
-# deployer 
+# deployer
 config.json
 
 # radio
@@ -31,3 +31,6 @@ services/studio/session.json
 
 # models
 packages/models/coverage/
+
+# web
+apps/web/cypress/screenshots/

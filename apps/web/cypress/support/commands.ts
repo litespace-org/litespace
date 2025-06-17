@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 import { router } from "@cy/lib/router";
+import { IUser, Paginated } from "@litespace/types";
 import { InputProps } from "@litespace/ui/Input";
 import { Web } from "@litespace/utils/routes";
 
@@ -30,6 +31,19 @@ import { Web } from "@litespace/utils/routes";
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
+
+export type TasksParamsMap = {
+  "users:find": IUser.FindModelQuery;
+  "users:create": IUser.CreatePayload;
+  "db:flush": void;
+};
+
+export type TasksResultMap = {
+  "users:find": Paginated<IUser.Self>;
+  "users:create": IUser.Self;
+  "db:flush": null;
+};
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
@@ -40,14 +54,19 @@ declare global {
         state?: InputProps["state"] | "idle"
       ): Chainable<void>;
       checkErroredInputsCount(count: number): Chainable<void>;
+      execute<T extends keyof TasksParamsMap>(
+        event: T,
+        params: TasksParamsMap[T]
+      ): Chainable<TasksResultMap[T]>;
+      flush(): Chainable<void>;
     }
   }
 }
 
 Cypress.Commands.add("login", (email: string, password: string) => {
   cy.visit(router.web({ route: Web.Login }));
-  cy.get("input[id=email]").type(email);
-  cy.get("input[id=password]").type(password);
+  cy.get("input[id=email]").clear().type(email);
+  cy.get("input[id=password]").clear().type(password);
   cy.get("form").submit();
 });
 
@@ -62,6 +81,14 @@ Cypress.Commands.add(
 
 Cypress.Commands.add("checkErroredInputsCount", (count: number) => {
   cy.get("input[data-state=error]").should("have.length", count);
+});
+
+Cypress.Commands.add("execute", (task, payload) => {
+  cy.task(task, payload);
+});
+
+Cypress.Commands.add("flush", () => {
+  cy.execute("db:flush", undefined);
 });
 
 export {};

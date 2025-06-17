@@ -1,7 +1,9 @@
+import { IUser } from "@litespace/types";
 import { Web } from "@litespace/utils/routes";
 
 describe("login page", () => {
   beforeEach(() => {
+    cy.flush();
     cy.visit(Web.Login);
     cy.get("input[id=email]").clear();
     cy.get("input[id=password]").clear();
@@ -55,5 +57,15 @@ describe("login page", () => {
     cy.get("input[id=password]").type("Password@8");
     cy.get("form").submit();
     cy.url().should("include", Web.Login);
+  });
+
+  it("should login using a user that was just created", () => {
+    cy.execute("users:create", {
+      role: IUser.Role.Student,
+      email: "test@litespace.org",
+      password: "Password@9",
+    });
+    cy.login("test@litespace.org", "Password@9");
+    cy.url().should("include", Web.StudentDashboard);
   });
 });
