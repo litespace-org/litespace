@@ -172,3 +172,25 @@ export type FindLessonByIdApiResponse = {
   lesson: Self;
   members: PopulatedMember[];
 };
+
+export type FindAttendedLessonsStatsApiQuery = {
+  /**
+   * an iso datetime string
+   */
+  after: string;
+  /**
+   * an iso date in format YYYY-MM-DD
+   */
+  before: string;
+};
+
+export type FindAttendedLessonsStatsApiResponse = Array<{
+  /**
+   * an iso date in format YYYY-MM-DD
+   */
+  date: string;
+  paidTutoringMinutes: number;
+  freeTutoringMinutes: number;
+  paidLessonCount: number;
+  freeLessonCount: number;
+}>;
