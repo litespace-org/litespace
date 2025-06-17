@@ -21,9 +21,9 @@ module.exports = {
   globalSetup: "<rootDir>/fixtures/setup.ts",
   globalTeardown: "<rootDir>/fixtures/teardown.ts",
   setupFiles: [
-    "@litespace/tests/mocks/global/s3",
-    "@litespace/tests/mocks/global/worker",
-    "@litespace/tests/mocks/global/telegram",
-    "@litespace/tests/mocks/global/kafka",
+    "<rootDir>/../../packages/tests/dist/cjs/mocks/global/s3",
+    "<rootDir>/../../packages/tests/dist/cjs/mocks/global/worker",
+    "<rootDir>/../../packages/tests/dist/cjs/mocks/global/telegram",
+    "<rootDir>/../../packages/tests/dist/cjs/mocks/global/kafka",
   ],
 };

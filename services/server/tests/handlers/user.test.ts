@@ -986,9 +986,9 @@ describe("/api/v1/user/", () => {
         { tutor: tutor3.id, duration: 15, start: past5, canceled: false },
       ];
 
-      const lessons = lessonsConfig.map((l) => lesson(l));
-
-      await Promise.all(lessons);
+      for (const l of lessonsConfig) {
+        await lesson(l);
+      }
 
       const expectedResult = [
         {
@@ -1053,9 +1053,9 @@ describe("/api/v1/user/", () => {
         { tutor: tutor3.id, duration: 15, start: past5, canceled: false },
       ];
 
-      const lessons = lessonsConfig.map((l) => lesson(l));
-
-      await Promise.all(lessons);
+      for (const l of lessonsConfig) {
+        await lesson(l);
+      }
 
       const expectedResult = [
         {
