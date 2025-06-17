@@ -9,11 +9,13 @@ import safeRequest from "express-async-handler";
 import { AccessToken } from "livekit-server-sdk";
 import { livekitConfig } from "@/constants";
 import { sessionId } from "@/validation/utils";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 
-const findSessionMembersParams = zod.object({ sessionId });
+const findSessionMembersParams: ZodSchema<ISession.FindSessionMembersApiParams> =
+  zod.object({ sessionId });
 
-const getSessionTokenQuery = zod.object({ sessionId });
+const getSessionTokenQuery: ZodSchema<ISession.GetSessionTokenApiQuery> =
+  zod.object({ sessionId });
 
 async function findSessionMembers(
   req: Request,

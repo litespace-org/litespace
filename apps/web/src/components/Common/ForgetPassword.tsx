@@ -4,7 +4,7 @@ import {
   useConfirmForgetPasswordCode,
   useSendForgetPasswordCode,
 } from "@litespace/headless/confirmationCode";
-import { ApiError, Void } from "@litespace/types";
+import { Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { ForgetPasswordDialog } from "@litespace/ui/ForgetPasswordDialog";
@@ -43,8 +43,8 @@ export const ForgetPassword: React.FC<Props> = ({ open, close }) => {
     type: "mutation",
     handler: ({ messageId, errorCode }) => {
       if (
-        errorCode === ApiError.InvalidVerificationCode ||
-        errorCode === ApiError.ExpiredVerificationCode
+        errorCode === "invalid-verification-code" ||
+        errorCode === "expired-verification-code"
       )
         sendMutation.reset();
 

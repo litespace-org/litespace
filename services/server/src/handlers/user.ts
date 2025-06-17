@@ -86,13 +86,13 @@ import {
 } from "@litespace/utils";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
 
-const createUserPayload = zod.object({
+const createUserPayload: ZodSchema<IUser.CreateApiPayload> = zod.object({
   role,
   password,
   email,
 });
 
-const updateUserPayload = zod.object({
+const updateUserPayload: ZodSchema<IUser.UpdateApiPayload> = zod.object({
   email: email.optional(),
   password: zod
     .object({
@@ -120,7 +120,7 @@ const updateUserPayload = zod.object({
   bypassOnboarding: zod.boolean().optional(),
 });
 
-const findUsersQuery = zod.object({
+const findUsersQuery: ZodSchema<IUser.FindUsersApiQuery> = zod.object({
   role: role.optional(),
   verified: queryBoolean.optional(),
   gender: gender.optional(),
@@ -130,39 +130,33 @@ const findUsersQuery = zod.object({
   size: pageSize.optional(),
 });
 
-const findOnboardedTutorsQuery = zod.object({
-  search: zod.optional(string),
-  page: zod.optional(pageNumber).default(paginationDefaults.page),
-  size: zod.optional(pageSize).default(paginationDefaults.size),
-});
+const findOnboardedTutorsQuery: ZodSchema<ITutor.FindOnboardedTutorsQuery> =
+  zod.object({
+    search: zod.optional(string),
+    page: zod.optional(pageNumber).default(paginationDefaults.page),
+    size: zod.optional(pageSize).default(paginationDefaults.size),
+  });
 
-const findUncontactedTutorsQuery = zod.object({
-  page: zod.optional(pageNumber).default(paginationDefaults.page),
-  size: zod.optional(pageSize).default(paginationDefaults.size),
-});
-
-const uploadUserImageQuery = zod.object({
+const uploadUserImageQuery: ZodSchema<IUser.UploadUserImageQuery> = zod.object({
   forUser: zod.optional(id),
 });
 
-const uploadTutorAssetsQuery = zod.object({
-  tutorId: id,
-});
+const uploadTutorAssetsQuery: ZodSchema<IUser.UploadTutorAssetsQuery> =
+  zod.object({
+    tutorId: id,
+  });
 
-const findStudiosQuery = zod.object({
-  page: zod.optional(pageNumber).default(paginationDefaults.page),
-  size: zod.optional(pageSize).default(paginationDefaults.size),
-});
+const findStudioTutorParams: ZodSchema<ITutor.FindStudioTutorParams> =
+  zod.object({
+    tutorId: id,
+  });
 
-const findStudioTutorParams = zod.object({
-  tutorId: id,
-});
-
-const findStudioTutorsQuery = zod.object({
-  studioId: zod.optional(id),
-  pagination: zod.optional(pagination),
-  search: zod.optional(string),
-});
+const findStudioTutorsQuery: ZodSchema<ITutor.FindStudioTutorsQuery> =
+  zod.object({
+    studioId: zod.optional(id),
+    pagination: zod.optional(pagination),
+    search: zod.optional(string),
+  });
 
 const findFullTutorsQuery = zod.object({
   bio: zod
@@ -570,8 +564,7 @@ async function findTutoringMinutes(
 }
 
 async function findOnboardedTutors(req: Request, res: Response) {
-  const query: ITutor.FindOnboardedTutorsParams =
-    findOnboardedTutorsQuery.parse(req.query);
+  const query = findOnboardedTutorsQuery.parse(req.query);
 
   const isTutorsCached = await cache.tutors.exists();
 
@@ -630,7 +623,7 @@ async function findStudios(req: Request, res: Response, next: NextFunction) {
   const allowed = isTutor(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { size, page } = findStudiosQuery.parse(req.query);
+  const { size, page } = pagination.parse(req.query);
 
   const { list, total } = await users.find({
     role: IUser.Role.Studio,
@@ -1042,11 +1035,11 @@ async function findUncontactedTutors(
   const allowed = isStudent(user);
   if (!allowed) return next(forbidden());
 
-  const pagination = findUncontactedTutorsQuery.parse(req.query);
+  const { page, size } = pagination.parse(req.query);
   const { list, total }: ITutor.FindUncontactedTutors =
     await tutors.findUncontactedTutorsForStudent({
       student: user.id,
-      pagination,
+      pagination: { page, size },
     });
 
   const onlineStatuses = await cache.onlineStatus.isOnlineBatch(

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import {
   datetime,
   duration,
@@ -50,21 +50,21 @@ import { calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription } from "@/li
 import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
 import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
 
-const createLessonPayload = zod.object({
+const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
   slotId: id,
   start: datetime,
   duration,
 });
 
-const updateLessonPayload = zod.object({
+const updateLessonPayload: ZodSchema<ILesson.UpdateApiPayload> = zod.object({
   lessonId: id,
   slotId: id,
   start: datetime,
   duration: duration,
 });
 
-const findLessonsQuery = zod.object({
+const findLessonsQuery: ZodSchema<ILesson.FindLessonsApiQuery> = zod.object({
   users: zod.optional(zod.array(id)),
   page: zod.optional(pageNumber),
   size: zod.optional(pageSize),

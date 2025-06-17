@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { first } from "lodash";
 import { ZodError } from "zod";
 import { DatabaseError } from "pg";
-import { ApiErrorCode, ApiError, IUser } from "@litespace/types";
+import { ApiErrorCode, IUser } from "@litespace/types";
 import { S3ServiceException } from "@aws-sdk/client-s3";
 import { doc } from "@/lib/telegram";
 import { createHash } from "node:crypto";
@@ -34,7 +34,7 @@ export function errorHandler(
 
   let statusCode = 400;
   let message = "Unexpected error, please retry";
-  let errorCode: ApiErrorCode = ApiError.Unexpected;
+  let errorCode: ApiErrorCode = "unexpected" as ApiErrorCode;
   let caption: string | null = null;
 
   if (error instanceof ResponseError) {

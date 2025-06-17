@@ -19,7 +19,59 @@ export async function safePromise<T>(promise: Promise<T>): Promise<T | Error> {
 export function isApiError(value: unknown): value is ApiError {
   return (
     typeof value === "string" &&
-    Object.values(ApiError).includes(value as ApiError)
+    [
+      "unauthenticated",
+      "forbidden",
+      "bad-request",
+      "room-exists",
+      "user-exists",
+      "rating-exists",
+      "subscription-exists",
+      "subscription-required",
+      "no-enough-minutes",
+      "busy-tutor",
+      "busy-tutor-manager",
+      "unexpected",
+      "not-found",
+      "session-not-found",
+      "transaction-not-found",
+      "user-not-found",
+      "tutor-not-found",
+      "student-not-found",
+      "lesson-not-found",
+      "slot-not-found",
+      "rating-not-found",
+      "coupon-not-found",
+      "asset-not-found",
+      "invite-not-found",
+      "invoice-not-found",
+      "plan-not-found",
+      "room-not-found",
+      "room-members-not-found",
+      "report-not-found",
+      "interview-not-found",
+      "topic-not-found",
+      "withdraw-method-not-found",
+      "subscription-not-found",
+      "email-already-verified",
+      "phone-already-verified",
+      "unresolved-phone",
+      "invalid-phone",
+      "incorrect-phone",
+      "expired-verification-code",
+      "invalid-verification-code",
+      "illegal-invoice-update",
+      "empty-request",
+      "user-already-verified",
+      "wrong-password",
+      "conflicting-lessons",
+      "conflicting-interview",
+      "conflicting-schedule",
+      "reached-booking-limit",
+      "service-unavailable",
+      "fawry-error",
+      "large-file-size",
+    ].includes(value as ApiError)
   );
 }
 
@@ -34,7 +86,7 @@ export function isFieldError(value: unknown): value is FieldError {
 export function isForbidden(error: unknown) {
   return (
     error instanceof ResponseError &&
-    (error.statusCode === 401 || error.errorCode === ApiError.Forbidden)
+    (error.statusCode === 401 || error.errorCode === "forbidden")
   );
 }
 

@@ -15,7 +15,7 @@ export function useSendPhoneCode({
   const api = useApi();
 
   const sendPhoneCode = useCallback(
-    (payload: IConfirmationCode.SendVerifyPhoneCodePayload) =>
+    (payload: IConfirmationCode.SendVerifyPhoneCodeApiPayload) =>
       api.confirmationCode.sendVerifyPhoneCode(payload),
     [api]
   );
@@ -38,7 +38,7 @@ export function useVerifyPhoneCode({
   const api = useApi();
 
   const verifyPhoneCode = useCallback(
-    (payload: IConfirmationCode.VerifyPhoneCodePayload) =>
+    (payload: IConfirmationCode.VerifyPhoneCodeApiPayload) =>
       api.confirmationCode.verifyPhoneCode(payload),
     [api]
   );
@@ -61,7 +61,7 @@ export function useSendForgetPasswordCode({
   const api = useApi();
 
   const sendCode = useCallback(
-    (payload: IConfirmationCode.SendForgetPasswordEmailPayload) => {
+    (payload: IConfirmationCode.SendForgetPasswordEmailApiPayload) => {
       return api.confirmationCode.sendForgetPasswordCode(payload);
     },
     [api.confirmationCode]
@@ -85,7 +85,7 @@ export function useConfirmForgetPasswordCode({
   const api = useApi();
 
   const send = useCallback(
-    (payload: IConfirmationCode.ConfirmForgetPasswordCodePayload) => {
+    (payload: IConfirmationCode.ConfirmForgetPasswordCodeApiPayload) => {
       return api.confirmationCode.confirmForgetPasswordCode(payload);
     },
     [api.confirmationCode]

@@ -12,7 +12,7 @@ import { availabilitySlots, knex } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 import { isEmpty } from "lodash";
 import {
   deleteSlots,
@@ -22,36 +22,38 @@ import {
 } from "@/lib/availabilitySlot";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
 
-const findPayload = zod.object({
-  userId: id,
-  after: datetime.optional(),
-  before: datetime.optional(),
-  page: pageNumber.optional(),
-  size: pageSize.optional(),
-  full: jsonBoolean.optional(),
-});
+const findQuery: ZodSchema<IAvailabilitySlot.FindAvailabilitySlotsApiQuery> =
+  zod.object({
+    userId: id,
+    after: datetime.optional(),
+    before: datetime.optional(),
+    page: pageNumber.optional(),
+    size: pageSize.optional(),
+    full: jsonBoolean.optional(),
+  });
 
-const setPayload = zod.object({
-  actions: zod.array(
-    zod.union([
-      zod.object({
-        type: zod.literal("create"),
-        start: datetime,
-        end: datetime,
-      }),
-      zod.object({
-        type: zod.literal("update"),
-        id: id,
-        start: datetime.optional(),
-        end: datetime.optional(),
-      }),
-      zod.object({
-        type: zod.literal("delete"),
-        id: id,
-      }),
-    ])
-  ),
-});
+const setPayload: ZodSchema<IAvailabilitySlot.SetAvailabilitySlotsApiPayload> =
+  zod.object({
+    actions: zod.array(
+      zod.union([
+        zod.object({
+          type: zod.literal("create"),
+          start: datetime,
+          end: datetime,
+        }),
+        zod.object({
+          type: zod.literal("update"),
+          id: id,
+          start: datetime.optional(),
+          end: datetime.optional(),
+        }),
+        zod.object({
+          type: zod.literal("delete"),
+          id: id,
+        }),
+      ])
+    ),
+  });
 
 async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
@@ -64,7 +66,7 @@ async function find(req: Request, res: Response, next: NextFunction) {
     page,
     size,
     full,
-  }: IAvailabilitySlot.FindAvailabilitySlotsApiQuery = findPayload.parse(
+  }: IAvailabilitySlot.FindAvailabilitySlotsApiQuery = findQuery.parse(
     req.query
   );
 

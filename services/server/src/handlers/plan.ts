@@ -14,12 +14,12 @@ import { IPlan } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { isRegularUser, isSuperAdmin, isUser } from "@litespace/utils/user";
-import zod from "zod";
+import zod, { ZodSchema } from "zod";
 
 const number = zod.number().int().positive().gt(0);
-const discount = zod.number().int().gte(0).default(0);
+const discount = zod.number().int().gte(0);
 
-const createPlanPayload = zod.object({
+const createPlanPayload: ZodSchema<IPlan.CreateApiPayload> = zod.object({
   weeklyMinutes: number,
   baseMonthlyPrice: number,
   monthDiscount: discount,
@@ -29,7 +29,7 @@ const createPlanPayload = zod.object({
   active: boolean,
 });
 
-const updatePlanPayload = zod.object({
+const updatePlanPayload: ZodSchema<IPlan.UpdateApiPayload> = zod.object({
   weeklyMinutes: zod.optional(number),
   baseMonthlyPrice: zod.optional(number),
   monthDiscount: zod.optional(number),
@@ -39,7 +39,7 @@ const updatePlanPayload = zod.object({
   active: zod.optional(boolean),
 });
 
-const findPlansQuery = zod.object({
+const findPlansQuery: ZodSchema<IPlan.FindApiQuery> = zod.object({
   ids: id.array().optional().describe("fild plans by ids"),
   weeklyMinutes: numericFilter
     .optional()
