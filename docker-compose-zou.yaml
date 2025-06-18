@@ -1,0 +1,44 @@
+name: zou
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-zou}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zou}
+      POSTGRES_DB: zou
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis/redis-stack-server:latest
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+    volumes:
+      - redis:/data
+    networks:
+      - redis
+
+networks:
+  postgres:
+    name: postgres
+    driver: bridge
+  redis:
+    name: redis
+    driver: bridge
+
+volumes:
+  postgres:
+    name: postgres
+  redis:
+    name: redis
