@@ -1,4 +1,4 @@
-import { lessons } from "@/index";
+import { users, lessons } from "@/index";
 import { expect } from "chai";
 import fixtures, { MakeLessonsReturn } from "@fixtures/db";
 import { ILesson, ITutor } from "@litespace/types";
@@ -275,7 +275,7 @@ describe("Lessons", () => {
     });
 
     describe(nameof(lessons.sumPrice), () => {
-      it("should return empty result if not lessons", async () => {
+      it("should return zero result if no lessons exists", async () => {
         const tutor = await fixtures.tutor();
         expect(await lessons.sumPrice({ users: [tutor.id] })).to.be.eq(0);
       });
@@ -554,6 +554,26 @@ describe("Lessons", () => {
 
       expect(result.list).to.be.of.length(total);
       expect(result.total).to.be.eq(total);
+    });
+
+    it("should find lessons in a specific slot", async () => {
+      const slot1 = await fixtures.slot();
+      const expected = await Promise.all([
+        fixtures.lesson({ slot: slot1.id }),
+        fixtures.lesson({ slot: slot1.id }),
+      ]);
+
+      const slot2 = await fixtures.slot();
+      await Promise.all([
+        fixtures.lesson({ slot: slot2.id }),
+        fixtures.lesson({ slot: slot2.id }),
+        fixtures.lesson({ slot: slot2.id }),
+      ]);
+
+      const result = await lessons.find({ slots: [slot1.id] });
+
+      expect(result.list).to.be.of.length(2);
+      expect(result.list).to.deep.members(expected.map((item) => item.lesson));
     });
 
     it("should find all lessons in the database (with pagination)", async () => {
@@ -994,10 +1014,10 @@ describe("Lessons", () => {
       });
 
       const startDate = dayjs.utc().add(2, "days").toISOString();
-      await lessons.update(lesson.id, {
-        start: startDate,
-        duration: ILesson.Duration.Short,
-      });
+
+      // @NOTE: this uglyness just for reaching 100% coverage tests
+      await lessons.update(lesson.id, { start: startDate });
+      await lessons.update(lesson.id, { duration: ILesson.Duration.Short });
 
       const updated = await lessons.findById(lesson.id);
 
@@ -1010,6 +1030,100 @@ describe("Lessons", () => {
       expect(updated?.slotId).to.eq(lesson.slotId);
       expect(updated?.canceledAt).to.eq(lesson.canceledAt);
       expect(updated?.canceledBy).to.eq(lesson.canceledBy);
+    });
+  });
+
+  describe(nameof(lessons.findBySessionId), () => {
+    it("should return null if the id doesn't exist", async () => {
+      const res = await lessons.findBySessionId("lesson:4321");
+      expect(res).to.be.null;
+    });
+
+    it("should return lesson data of the provided id", async () => {
+      const { lesson } = await fixtures.lesson();
+      const res = await lessons.findBySessionId(lesson.sessionId);
+      expect(res).to.deep.eq(lesson);
+    });
+  });
+
+  describe(nameof(lessons.findLessonMembers), () => {
+    it("should return empty list if lesson ids don't exist", async () => {
+      const res = await lessons.findLessonMembers([1234, 2345, 3456]);
+      expect(res).to.be.empty;
+    });
+
+    it("should return a list of members of the passed lesson ids ", async () => {
+      const lesson1 = await fixtures.lesson();
+      const lesson2 = await fixtures.lesson();
+      await fixtures.lesson();
+
+      const members = await lessons.findLessonMembers([
+        lesson1.lesson.id,
+        lesson2.lesson.id,
+      ]);
+      expect(members).to.have.lengthOf(4);
+    });
+
+    it("should return valid populated member data", async () => {
+      const { lesson } = await fixtures.lesson();
+
+      const res = await lessons.findLessonMembers([lesson.id]);
+
+      const expected = [
+        await users.findById(res[0].userId),
+        await users.findById(res[1].userId),
+      ];
+
+      for (let i = 0; i < 2; i++) {
+        expect(res[i]).to.deep.eq({
+          userId: expected[i]?.id,
+          lessonId: lesson.id,
+          name: expected[i]?.name,
+          image: expected[i]?.image,
+          role: expected[i]?.role,
+          phone: expected[i]?.phone,
+          notificationMethod: expected[i]?.notificationMethod,
+          verifiedPhone: expected[i]?.verifiedPhone,
+        });
+      }
+    });
+  });
+
+  describe(nameof(lessons.countLessonsBatch), () => {
+    it("should return lesson counts for multiple users", async () => {
+      const [tutor1, tutor2, noLessonsTutor] = await fixtures.make.tutors(3);
+      const students = await fixtures.students(2);
+      const slot1 = await fixtures.slot({ userId: tutor1.id });
+      const slot2 = await fixtures.slot({ userId: tutor2.id });
+
+      // Tutor 1 has 8 lessons total
+      await fixtures.make.lessons({
+        tutor: tutor1.id,
+        students: [students[0].id],
+        past: [3],
+        future: [5],
+        canceled: { future: [], past: [] },
+        slot: slot1.id,
+      });
+
+      // Tutor 2 has 2 lessons total
+      await fixtures.make.lessons({
+        tutor: tutor2.id,
+        students: [students[1].id],
+        past: [2],
+        future: [0],
+        canceled: { future: [], past: [] },
+        slot: slot2.id,
+      });
+
+      const res = await lessons.countLessonsBatch({
+        users: [tutor1.id, tutor2.id, noLessonsTutor.id],
+      });
+
+      expect(res).to.have.deep.members([
+        { userId: tutor1.id, count: 8 },
+        { userId: tutor2.id, count: 2 },
+      ]);
     });
   });
 });

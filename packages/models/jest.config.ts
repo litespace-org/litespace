@@ -12,4 +12,5 @@ export default {
   },
   globalSetup: "<rootDir>/fixtures/setup.ts",
   globalTeardown: "<rootDir>/fixtures/teardown.ts",
+  coverageProvider: "v8",
 };
