@@ -512,6 +512,26 @@ describe("Lessons", () => {
         expect(data).to.be.of.length(pastLessons - canceledPastLessons);
         expect(data).to.include.deep.members(test);
       });
+
+      it("should return only future lessons when future=true and past=false", async () => {
+        const test = tutorLessons.reduce(
+          (list: ILesson.LessonDay[], lessons) => {
+            const current = concat(lessons.future).map(({ lesson }) => ({
+              start: lesson.start,
+              duration: lesson.duration,
+            }));
+            return concat(list, current);
+          },
+          []
+        );
+        const data = await lessons.findLessonDays({
+          users: [tutor.id],
+          future: true,
+          past: false,
+        });
+        expect(data).to.be.of.length(futureLessons);
+        expect(data).to.include.deep.members(test);
+      });
     });
   });
 
@@ -781,6 +801,25 @@ describe("Lessons", () => {
       ).to.be.of.length(0);
     });
 
+    it("should correctly filter lessons using the `before` option", async () => {
+      // A lesson that is fully before the time
+      await fixtures.lesson({ start: imin(10), duration: 10 });
+      // A lesson that starts before but ends after
+      await fixtures.lesson({ start: imin(25), duration: 10 });
+      // A lesson that is fully after the time
+      await fixtures.lesson({ start: imin(40), duration: 10 });
+
+      // With default `strict: false`, it includes lessons starting before the time.
+      const nonStrictResults = await lessons.find({ before: imin(30) });
+      expect(nonStrictResults.list).to.be.of.length(2);
+
+      const strictResults = await lessons.find({
+        before: imin(30),
+        strict: true,
+      });
+      expect(strictResults.list).to.be.of.length(1);
+    });
+
     it("should filter lessons that all totally or partially after `before` when providing the `strict` flag", async () => {
       await fixtures.lesson({ start: imin(0), duration: 30 });
       await fixtures.lesson({ start: imin(15), duration: 30 });
@@ -1012,4 +1051,5 @@ describe("Lessons", () => {
       expect(updated?.canceledBy).to.eq(lesson.canceledBy);
     });
   });
+
 });

@@ -14,8 +14,10 @@ import {
 } from "@/lib/error";
 import { dayjs, getSubSlots, nameof, safe } from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";
-import { lessons, subscriptions } from "@litespace/models";
+import { lessons, subscriptions, knex } from "@litespace/models";
 import { first, last } from "lodash";
+import { genSessionId } from "@litespace/utils";
+import { Knex } from "knex";
 
 const findLessons = mockApi<
   object,
@@ -852,6 +854,48 @@ describe("/api/v1/lesson/", () => {
           freeTutoringMinutes: 30,
         },
       ]);
+    });
+  });
+  describe("Lessons Model Coverage", () => {
+    it("should properly map lesson rows in create method", async () => {
+      // This test targets line 123: this.from(lesson)
+      const tutor = await db.tutor();
+      const student = await db.student();
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: dayjs().add(1, "day").toISOString(),
+        end: dayjs().add(2, "day").toISOString(),
+      }); 
+      const result = await knex.transaction(async (tx: Knex.Transaction) => {
+        return await lessons.create({
+          tutor: tutor.id,
+          student: student.id,
+          start: dayjs().add(1, "day").toISOString(),
+          duration: ILesson.Duration.Short,
+          slot: slot.id,
+          session: genSessionId("lesson"),
+          price: 100,
+          tx, 
+        });
+      });
+
+      // Verify the lesson was created and mapped correctly
+      expect(result.lesson).to.not.be.null;
+      expect(result.lesson.id).to.be.a("number");
+      expect(result.lesson.duration).to.eq(ILesson.Duration.Short);
+      expect(result.lesson.price).to.eq(100);
+      expect(result.lesson.slotId).to.eq(slot.id);
+      expect(result.members).to.have.length(2);
+
+      // Verify the members were created correctly
+      const tutorMember = result.members.find(
+        (m: ILesson.Member) => m.userId === tutor.id
+      );
+      const studentMember = result.members.find(
+        (m: ILesson.Member) => m.userId === student.id
+      );
+      expect(tutorMember).to.not.be.undefined;
+      expect(studentMember).to.not.be.undefined;
     });
   });
 });
