@@ -1,33 +1,17 @@
 import dayjs from "@/lib/dayjs";
-import { router } from "@/lib/router";
-import { producer } from "@/lib/kafka";
 import { lessons } from "@litespace/models";
 import { IKafka, IUser } from "@litespace/types";
-import { Web } from "@litespace/utils/routes";
 import { isEmpty } from "lodash";
 import {
   AFRICA_CAIRO_TIMEZONE,
   MAX_LESSON_DURATION,
   safePromise,
 } from "@litespace/utils";
-import { msg as base } from "@/lib/bot";
+import { LessonData } from "@/types/lesson";
+import { formatMessage, isValidMember } from "@/lib/lesson";
+import { send, msg } from "@/lib/message";
 
-async function msg(text: string) {
-  return base("lesson", text);
-}
-
-async function send<T extends IKafka.TopicType>(
-  topic: T,
-  messages: IKafka.ValueOf<T>[]
-) {
-  if (isEmpty(messages)) return;
-  await producer.send({
-    topic,
-    messages: messages.map((message) => ({ value: message })),
-  });
-}
-
-async function sendReminders() {
+async function getLessonData(): Promise<LessonData> {
   const { list } = await lessons.find({
     after: dayjs.utc().toISOString(),
     before: dayjs.utc().add(MAX_LESSON_DURATION, "minutes").toISOString(),
@@ -37,41 +21,33 @@ async function sendReminders() {
   });
 
   const empty = isEmpty(list);
-  if (empty) return;
+  if (empty) return { lessons: [], lessonMembers: [] };
 
   const lessonIds = list.map((lesson) => lesson.id);
   const lessonMembers = await lessons.findLessonMembers(lessonIds);
 
+  return { lessons: list, lessonMembers };
+}
+
+async function getMessageQueue({ lessonMembers, lessons }: LessonData) {
   const whatsappMessages: Array<IKafka.ValueOf<"whatsapp">> = [];
   const telegramMessages: Array<IKafka.ValueOf<"telegram">> = [];
 
-  for (const lesson of list) {
+  for (const lesson of lessons) {
+    const now = dayjs.utc();
+    const start = dayjs.utc(lesson.start);
+    // skip lessons that are already started
+    if (start.isBefore(now)) continue;
+
+    const tz = start.tz(AFRICA_CAIRO_TIMEZONE);
+    const message = formatMessage(lesson, tz.fromNow());
+
     const members = lessonMembers.filter(
       (member) => member.lessonId === lesson.id
     );
-    const tutor = members.find((member) => member.role !== IUser.Role.Student);
-    const student = members.find(
-      (member) => member.role === IUser.Role.Student
-    );
-
-    if (!tutor || !student) continue;
-
-    const now = dayjs().utc();
-    const start = dayjs(lesson.start);
-    // skip lessons that are already started
-    if (start.isBefore(now)) continue;
-    const tz = start.tz(AFRICA_CAIRO_TIMEZONE);
-
     for (const member of members) {
-      if (!member.notificationMethod || !member.phone || !member.verifiedPhone)
-        continue;
+      if (!isValidMember(member)) continue;
 
-      const url = router.web({
-        route: Web.Lesson,
-        id: lesson.id,
-        full: true,
-      });
-      const message = `Your lesson will start ${tz.fromNow()}. Join here ${url}`;
       const notificationMethod = member.notificationMethod;
 
       if (notificationMethod === IUser.NotificationMethod.Whatsapp)
@@ -81,9 +57,19 @@ async function sendReminders() {
         telegramMessages.push({ to: member.phone, message });
     }
   }
+  return { whatsappMessages, telegramMessages };
+}
 
-  await send("whatsapp", whatsappMessages);
-  await send("telegram", telegramMessages);
+async function sendReminders() {
+  const lessonData = await getLessonData();
+
+  const { whatsappMessages, telegramMessages } =
+    await getMessageQueue(lessonData);
+
+  await Promise.all([
+    send("whatsapp", whatsappMessages),
+    send("telegram", telegramMessages),
+  ]);
 }
 
 async function start() {

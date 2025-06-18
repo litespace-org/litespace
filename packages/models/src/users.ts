@@ -5,6 +5,7 @@ import {
   fromRow,
   knex,
   Select,
+  withListFilter,
   WithOptionalTx,
   withSkippablePagination,
 } from "@/query";
@@ -163,6 +164,7 @@ export class Users {
     verified,
     gender,
     city,
+    ids,
     select,
     ...pagination
   }: WithOptionalTx<IUser.FindModelQuery<T>>): Promise<
@@ -174,6 +176,8 @@ export class Users {
     if (verified) base.andWhere(this.column("verified_email"), verified);
     if (gender) base.andWhere(this.column("gender"), gender);
     if (city) base.andWhere(this.column("city"), city);
+
+    withListFilter(base, this.column("id"), ids);
 
     const total = await countRows(base.clone(), {
       column: this.column("id"),

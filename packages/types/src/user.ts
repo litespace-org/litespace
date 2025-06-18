@@ -201,6 +201,7 @@ export type FindModelQuery<T extends Field = Field> =
   IFilter.SkippablePagination & {
     role?: Role;
     verified?: boolean;
+    ids?: number[];
     gender?: Gender;
     city?: City;
     select?: T[];
