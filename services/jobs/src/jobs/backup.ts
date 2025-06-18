@@ -41,8 +41,7 @@ async function backup() {
     -d litespace >> ${filepath}`
   );
 
-  // remove outdated backup files
-  await cleanBackup();
+  await removeOutdatedBackups();
 
   // upload file to s3
   await upload(
@@ -54,7 +53,7 @@ async function backup() {
   fs.rmSync(filepath);
 }
 
-async function cleanBackup() {
+async function removeOutdatedBackups() {
   const list = await s3.list(LITESPACE_DATABASE_S3_BACKUP_PATH);
   const keys = list
     .filter((object) => typeof object.Key === "string")
@@ -72,7 +71,7 @@ async function cleanBackup() {
   );
 
   while (ordered.length > MAX_BACKUPS - 1) {
-    const oldest = keys.shift();
+    const oldest = ordered.shift();
     if (!oldest) break;
     await s3.drop(oldest);
   }

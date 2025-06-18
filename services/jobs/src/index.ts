@@ -4,7 +4,6 @@ import keepAlive from "@/jobs/keepAlive";
 import backup from "@/jobs/backup";
 
 async function main() {
-  // setup cron jobs
   schedule.scheduleJob("*/15 * * * *", lesson.start);
   schedule.scheduleJob("*/15 * * * *", keepAlive.start);
   schedule.scheduleJob("0 0 * * *", backup.start);
