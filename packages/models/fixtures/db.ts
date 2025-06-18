@@ -14,6 +14,7 @@ import {
   contactRequests,
   invoices,
   reports,
+  introVideos,
 } from "@/index";
 import {
   IInterview,
@@ -29,6 +30,7 @@ import {
   ISubscription,
   IPlan,
   IReport,
+  IIntroVideo,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -60,6 +62,7 @@ export async function flush() {
     await lessons.builder(tx).lessons.del();
     await interviews.builder(tx).del();
     await ratings.builder(tx).del();
+    await introVideos.builder(tx).del();
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await confirmationCodes.builder(tx).del();
@@ -241,7 +244,7 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
 
 async function tutor(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
-  userPayload?: Partial<IUser.UpdatePayloadModel>,
+  userPayload?: Partial<IUser.UpdateModelPayload>,
   withPassword?: boolean
 ) {
   const info = await user({ role: IUser.Role.Tutor, withPassword });
@@ -259,7 +262,7 @@ function student() {
 
 async function tutorManager(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
-  userPayload?: Partial<IUser.UpdatePayloadModel>
+  userPayload?: Partial<IUser.UpdateModelPayload>
 ) {
   const info = await user({ role: IUser.Role.TutorManager });
   const tutor = await tutors.create(info.id);
@@ -521,6 +524,23 @@ async function plan(
   });
 }
 
+async function introVideo(
+  payload?: Partial<IIntroVideo.CreateModelPayload>
+): Promise<IIntroVideo.Self> {
+  return await introVideos.create({
+    src: payload?.src || randomVideo(),
+    tutorId: await or.tutorId(payload?.tutorId),
+    reviewerId: await or.tutorManagerId(payload?.reviewerId),
+  });
+}
+
+function randomVideo() {
+  return sample([
+    "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+  ]);
+}
+
 function randomPrice() {
   return price.scale(randomInt(1, 5000));
 }
@@ -553,6 +573,7 @@ export default {
   interview,
   lesson,
   flush,
+  introVideo,
   topic,
   slot,
   plan,

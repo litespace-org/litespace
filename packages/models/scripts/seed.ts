@@ -16,6 +16,7 @@ import {
 import {
   IAvailabilitySlot,
   IInterview,
+  IIntroVideo,
   IInvoice,
   ILesson,
   IUser,
@@ -31,6 +32,7 @@ import { faker } from "@faker-js/faker/locale/ar";
 import { faker as fakerEn } from "@faker-js/faker/locale/en";
 import "colors";
 import { randomUUID } from "crypto";
+import { introVideos } from "@/introVideos";
 
 dayjs.extend(utc);
 
@@ -483,6 +485,28 @@ async function main(): Promise<void> {
         status: IInterview.Status.Passed,
         tx,
       });
+    });
+  }
+
+  // adding introVideos to each tutor
+  for (const tutor of addedTutors) {
+    const video = await introVideos.create({
+      src: sample([
+        "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      ]),
+      tutorId: tutor.id,
+      reviewerId: tutorManager.id,
+    });
+
+    // if there is a reviewer, the video is rejected or approved otherwise it's in pending state
+    await introVideos.update({
+      id: video.id,
+      state: sample([
+        IIntroVideo.State.Approved,
+        IIntroVideo.State.Pending,
+        IIntroVideo.State.Rejected,
+      ]),
     });
   }
 

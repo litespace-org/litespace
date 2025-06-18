@@ -20,6 +20,7 @@ export * as IAvailabilitySlot from "@/availabilitySlot";
 export * as IDate from "@/date";
 export * as ILesson from "@/lesson";
 export * as IInvoice from "@/invoice";
+export * as IIntroVideo from "@/introVideo";
 export * as IAsset from "@/asset";
 export * as ITopic from "@/topic";
 export * as Server from "@/server";

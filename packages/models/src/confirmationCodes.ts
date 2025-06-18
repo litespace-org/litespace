@@ -60,7 +60,7 @@ export class ConfirmationCodes {
     code,
     purpose,
     userId,
-  }: WithOptionalTx<IConfirmationCode.FindPayloadModel>): Promise<
+  }: WithOptionalTx<IConfirmationCode.FindModelPayload>): Promise<
     IConfirmationCode.Self[]
   > {
     const baseBuilder = this.builder(tx);
