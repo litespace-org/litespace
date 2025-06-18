@@ -61,6 +61,7 @@ const Main: React.FC<{
           localMemberName={
             localMember.name || getEmailUserName(localMember.email)
           }
+          localMemberRole={localMember.role}
           localMemberImage={localMember.image}
           remoteMemberId={remoteMember.id}
           remoteMemberRole={remoteMember.role}
