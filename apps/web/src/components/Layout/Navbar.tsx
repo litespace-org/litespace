@@ -128,7 +128,7 @@ const User: React.FC = () => {
 
   return (
     <button
-      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 focus-visible:ring-offset-4 rounded-md"
+      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 rounded-md"
       onClick={async () => {
         if (counter < 2) return setCounter(counter + 1);
         setCounter(0);

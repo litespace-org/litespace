@@ -135,7 +135,7 @@ const LoginForm: React.FC<{
 
           <div className="mt-2 sm:mt-0">
             <button
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 focus-visible:ring-offset-2 rounded-md"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-md"
               type="button"
               onClick={onForgetPassword}
             >

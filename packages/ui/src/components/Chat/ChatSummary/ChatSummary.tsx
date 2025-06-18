@@ -59,7 +59,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
   return (
     <div
       className={cn(
-        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50 flex flex-col h-full"
+        "border border-natural-100 rounded-lg p-4 sm:p-6 bg-natural-50 flex flex-col h-full"
       )}
     >
       <Typography
@@ -98,7 +98,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                     <Link
                       to={room.url}
                       key={room.id}
-                      className="group w-full flex gap-2 p-1"
+                      className="group w-full flex gap-2 p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg"
                     >
                       <div className="min-w-[43px] min-h-[43px] w-[43px] h-[43px] rounded-lg overflow-hidden">
                         <AvatarV2
@@ -153,7 +153,11 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
             )}
           </div>
           {!isEmpty(rooms) ? (
-            <Link to={chatsUrl} className="intline-block w-full mt-auto">
+            <Link
+              to={chatsUrl}
+              className="intline-block w-full mt-auto"
+              tabIndex={-1}
+            >
               <Button className="w-full" size="large">
                 <Typography
                   tag="span"

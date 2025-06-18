@@ -294,8 +294,8 @@ const AccountPromotion: React.FC = () => {
           {intl("sidebar.account-promotion.description")}
         </Typography>
       </div>
-      <Link to={Web.Plans}>
-        <Button size="small" htmlType="button">
+      <Link to={Web.Plans} tabIndex={-1}>
+        <Button size="large" htmlType="button">
           <Typography
             tag="span"
             className="text-natural-50 text-caption font-semibold"
@@ -328,8 +328,9 @@ const SidebarItem: React.FC<{
   return (
     <Link
       className={cn(
-        "flex flex-row justify-start md:justify-center lg:justify-start gap-2 lg:gap-4 px-[14px] py-2 items-center ",
+        "flex flex-row justify-start md:justify-center lg:justify-start gap-2 lg:gap-4 px-[14px] py-2 items-center",
         "rounded-lg transition-colors duration-200 group",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-500",
         {
           "bg-brand-500": active,
           "bg-transparent hover:bg-natural-100": !active,
@@ -378,7 +379,8 @@ const LogoutButton: React.FC<{ hide: Void }> = ({ hide }) => {
         "flex flex-row justify-start md:justify-center lg:justify-start gap-2 md:gap-0 lg:gap-4 px-[14px] py-2 rounded-lg",
         "hover:text-destructive-400 hover:bg-destructive-100",
         "active:bg-destructive-400 [&_*]:active:text-natural-50",
-        "[&_*]:active:stroke-natural-50 transition-all duration-200"
+        "[&_*]:active:stroke-natural-50 transition-all duration-200",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-500"
       )}
     >
       <Logout className="h-4 w-4 md:h-6 md:w-6" />
@@ -400,7 +402,10 @@ const Header: React.FC = () => {
   return (
     <Link
       to={Web.Root}
-      className="flex flex-col justify-center items-center gap-1 md:gap-2"
+      className={cn(
+        "flex flex-col justify-center items-center gap-1 md:gap-2",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-500 rounded-lg"
+      )}
     >
       <Logo className="h-6 md:h-10 md:w-10" />
       <Typography

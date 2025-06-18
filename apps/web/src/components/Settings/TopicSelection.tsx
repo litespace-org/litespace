@@ -393,13 +393,12 @@ const TopicBadge: React.FC<{ onRemove: Void; label: string }> = ({
   return (
     <Typography
       tag="span"
-      className="bg-brand-200 border border-brand-700 items-center flex text-brand-700 p-3 md:px-3 md:py-2 rounded-[24px] text-caption font-normal"
+      className="bg-brand-50 border border-brand-700 items-center flex text-brand-700 p-3 md:px-3 md:py-2 rounded-[24px] text-caption font-normal"
     >
-      <button onClick={onRemove} className="cursor-pointer block">
-        <Close2 className="w-6 h-6 ml-[2px] [&>*]:fill-brand-700" />
-      </button>
-
       {label}
+      <button onClick={onRemove} className="cursor-pointer block">
+        <Close2 className="w-6 h-6 ms-[2px] [&>*]:fill-brand-700" />
+      </button>
     </Typography>
   );
 };

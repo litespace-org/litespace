@@ -176,7 +176,7 @@ export const ChatRoom: React.FC<Props> = ({
           <Menu className="translate-x-4 lg:translate-x-4" actions={actions}>
             <div className="p-2 ">
               <More
-                className={cn("cursor-pointer w-6 h-[5px] lg:w-3 lg:h-[3px]", {
+                className={cn("cursor-pointer w-4 h-1", {
                   "[&>*]:fill-natural-800 dark:[&>*]:fill-natural-50": !active,
                   "[&>*]:fill-natural-50 dark:[&>*]:fill-natural-50": active,
                 })}

@@ -191,8 +191,9 @@ const TopicBadge: React.FC<{
         "rounded-full p-3 md:py-2 md:px-3 transition-colors duration-200 border",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         {
-          "bg-natural-100 text-natural-950 border-transparent": !selected,
-          "bg-brand-200 border-brand-700 text-brand-700": !!selected,
+          "bg-natural-100 hover:bg-natural-200 active:bg-brand-200 text-natural-950 border-transparent":
+            !selected,
+          "bg-brand-50 border-brand-700 text-brand-700": !!selected,
         }
       )}
       onClick={() => onSelect(topic.id)}

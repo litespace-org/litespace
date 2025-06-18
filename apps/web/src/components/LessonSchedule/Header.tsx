@@ -67,6 +67,7 @@ const Header: React.FC<Props> = ({
                   whileHover={{ scale: 1.05 }}
                   key={viewOption}
                   onClick={() => setView(viewOption)}
+                  className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 rounded-sm"
                 >
                   <Icon
                     className={cn(
@@ -81,7 +82,11 @@ const Header: React.FC<Props> = ({
             </div>
           ) : null}
           <div className="w-full flex flex-row sm:gap-4 items-center justify-between sm:justify-center">
-            <button onClick={prevWeek} type="button">
+            <button
+              onClick={prevWeek}
+              type="button"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
+            >
               <ChevronRight className="w-6 h-6 [&>*]:stroke-brand-700" />
             </button>
             <Typography
@@ -92,7 +97,11 @@ const Header: React.FC<Props> = ({
               {" - "}
               {date.endOf("week").format("DD MMMM")}
             </Typography>
-            <button onClick={nextWeek} type="button">
+            <button
+              onClick={nextWeek}
+              type="button"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
+            >
               <ChevronLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
             </button>
           </div>

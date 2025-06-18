@@ -1,11 +1,9 @@
 import React from "react";
 import { Dayjs } from "dayjs";
 import { Void } from "@litespace/types";
-
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-
 import Calendar from "@litespace/assets/Calendar";
 import ChevronRight from "@litespace/assets/ChevronRight";
 import ChevronLeft from "@litespace/assets/ChevronLeft";
@@ -49,7 +47,11 @@ const Header: React.FC<Props> = ({
       </div>
 
       <div className="flex flex-row gap-4 items-center justify-between md:justify-center">
-        <button onClick={prev} type="button">
+        <button
+          onClick={prev}
+          type="button"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
+        >
           <ChevronRight className="[&>*]:stroke-brand-700 w-6 h-6" />
         </button>
         <Typography
@@ -60,7 +62,11 @@ const Header: React.FC<Props> = ({
           {" - "}
           {end.subtract(1, "day").format("DD MMMM")}
         </Typography>
-        <button onClick={next} type="button">
+        <button
+          onClick={next}
+          type="button"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
+        >
           <ChevronLeft className="w-6 h-6 [&>*]:stroke-brand-700" />
         </button>
       </div>

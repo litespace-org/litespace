@@ -171,7 +171,7 @@ export const ConfirmationDialog: React.FC<{
               disabled={!closable}
               className={cn(
                 "rounded-full flex items-center justify-center",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                 { "cursor-not-allowed opacity-50": !closable }
               )}
             >

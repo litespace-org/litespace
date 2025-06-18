@@ -137,7 +137,7 @@ export const Table = <T extends object>({
             variant="primary"
             onClick={prev}
             disabled={page <= 1 || loading || fetching}
-            startIcon={<ChevronRight className="icon" />}
+            startIcon={<ChevronRight className="icon w-4 h-4" />}
           />
           <Button
             size="large"
@@ -145,7 +145,7 @@ export const Table = <T extends object>({
             variant="primary"
             onClick={next}
             disabled={page >= totalPages || loading || fetching}
-            startIcon={<ChevronLeft className="icon" />}
+            startIcon={<ChevronLeft className="icon w-4 h-4" />}
           />
           <Button
             size="large"
