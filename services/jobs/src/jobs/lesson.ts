@@ -62,6 +62,8 @@ async function sendReminders() {
     if (start.isBefore(now)) continue;
     const tz = start.tz(AFRICA_CAIRO_TIMEZONE);
 
+    const expiresAt = dayjs.utc(lesson.start).toISOString();
+
     for (const member of members) {
       if (!member.notificationMethod || !member.phone || !member.verifiedPhone)
         continue;
@@ -75,10 +77,18 @@ async function sendReminders() {
       const notificationMethod = member.notificationMethod;
 
       if (notificationMethod === IUser.NotificationMethod.Whatsapp)
-        whatsappMessages.push({ to: member.phone, message });
+        whatsappMessages.push({
+          to: member.phone,
+          message,
+          expiresAt,
+        });
 
       if (notificationMethod === IUser.NotificationMethod.Telegram)
-        telegramMessages.push({ to: member.phone, message });
+        telegramMessages.push({
+          to: member.phone,
+          message,
+          expiresAt,
+        });
     }
   }
 

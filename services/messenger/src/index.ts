@@ -11,6 +11,7 @@ import routes from "@/routes";
 import { PORT } from "@/lib/constants";
 import { errorHandler } from "@/middleware/error";
 import auth from "@/middleware/auth";
+import { isExpired } from "@/lib/message";
 
 // Global error handling. This is needed to prevent the server process from
 // exit.
@@ -72,6 +73,11 @@ async function main() {
   await whatsappConsumer.run({
     async eachMessage({ topic, value }) {
       if (!value) return;
+
+      // check if message has expired
+      const expired = await isExpired({ value, platform: "whatsapp" });
+      if (expired) return;
+
       console.log(`[${topic}]: processing mesage`);
       const id = whatsapp.asWhatsAppId(value.to);
       const result = await safePromise(
@@ -85,8 +91,13 @@ async function main() {
 
   await telegramConsumer.run({
     async eachMessage({ topic, value }) {
-      console.log(`[${topic}]: processing mesage`, value);
       if (!value) return;
+
+      // check if message has expired
+      const expired = await isExpired({ value, platform: "telegram" });
+      if (expired) return;
+
+      console.log(`[${topic}]: processing mesage`);
 
       const phone = telegram.asPhoneNumber(value.to);
       const user = await safePromise(telegram.resolvePhone(phone));

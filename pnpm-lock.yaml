@@ -1699,6 +1699,9 @@ importers:
       '@litespace/utils':
         specifier: workspace:^
         version: link:../../packages/utils
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13(patch_hash=aa81ceb75c492cff223134948ee626fc02bb04b49873a531b674f73099fd868b)
       express:
         specifier: ^4.19.2
         version: 4.21.2
