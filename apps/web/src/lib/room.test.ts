@@ -36,7 +36,12 @@ describe(nameof(asOtherMember), () => {
   };
 
   it("should map room member to other member object", () => {
-    expect(asOtherMember(current.id, [current, other])).to.be.deep.eq({
+    expect(
+      asOtherMember({
+        currentUserId: current.id,
+        roomMembers: [current, other],
+      })
+    ).to.be.deep.eq({
       id: other.id,
       name: other.name,
       image: other.image,
@@ -48,6 +53,11 @@ describe(nameof(asOtherMember), () => {
   });
 
   it("should return null if another member is not found", () => {
-    expect(asOtherMember(current.id, [current])).to.be.deep.eq(null);
+    expect(
+      asOtherMember({
+        currentUserId: current.id,
+        roomMembers: [current],
+      })
+    ).to.be.deep.eq(null);
   });
 });
