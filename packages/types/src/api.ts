@@ -1,57 +1,56 @@
 import { FieldError } from "@/validation";
 
-export enum ApiError {
-  Unauthenticated = "unauthenticated",
-  Forbidden = "forbidden",
-  BadRequest = "bad-request",
-  RoomExists = "room-exists",
-  UserExists = "user-exists",
-  RatingExists = "rating-exists",
-  SubscriptionExists = "subscription-exists",
-  SubscriptionRequired = "subscription-required",
-  NoEnoughMinutes = "no-enough-minutes",
-  BusyTutor = "busy-tutor",
-  BusyTutorManager = "busy-tutor-manager",
-  Unexpected = "unexpected",
-  NotFound = "not-found",
-  SessionNotFound = "session-not-found",
-  TransactionNotFound = "transaction-not-found",
-  UserNotFound = "user-not-found",
-  TutorNotFound = "tutor-not-found",
-  StudentNotFound = "student-not-found",
-  LessonNotFound = "lesson-not-found",
-  SlotNotFound = "slot-not-found",
-  RatingNotFound = "rating-not-found",
-  CouponNotFound = "coupon-not-found",
-  AssetNotFound = "asset-not-found",
-  InviteNotFound = "invite-not-found",
-  InvoiceNotFound = "invoice-not-found",
-  PlanNotFound = "plan-not-found",
-  RoomNotFound = "room-not-found",
-  RoomMembersNotFound = "room-members-not-found",
-  ReportNotFound = "report-not-found",
-  InterviewNotFound = "interview-not-found",
-  TopicNotFound = "topic-not-found",
-  WidthdrawMethodNotFound = "withdraw-method-not-found",
-  SubscriptionNotFound = "subscription-not-found",
-  EmailAlreadyVerified = "email-already-verified",
-  PhoneAlreadyVerified = "phone-already-verified",
-  UnresolvedPhone = "unresolved-phone",
-  InvalidPhone = "invalid-phone",
-  IncorrectPhone = "incorrect-phone",
-  ExpiredVerificationCode = "expired-verification-code",
-  InvalidVerificationCode = "invalid-verification-code",
-  IllegalInvoiceUpdate = "illegal-invoice-update",
-  EmptyRequest = "empty-request",
-  UserAlreadyVerified = "user-already-verified",
-  WrongPassword = "wrong-password",
-  ConflictingLessons = "conflicting-lessons",
-  ConflictingInterview = "conflicting-interview",
-  ConflictingSchedule = "conflicting-schedule",
-  ReachedBookingLimit = "reached-booking-limit",
-  ServiceUnavailable = "service-unavailable",
-  FawryError = "fawry-error",
-  LargeFileSize = "large-file-size",
-}
+export type ApiError =
+  | "unauthenticated"
+  | "forbidden"
+  | "bad-request"
+  | "room-exists"
+  | "user-exists"
+  | "rating-exists"
+  | "subscription-exists"
+  | "subscription-required"
+  | "no-enough-minutes"
+  | "busy-tutor"
+  | "busy-tutor-manager"
+  | "unexpected"
+  | "not-found"
+  | "session-not-found"
+  | "transaction-not-found"
+  | "user-not-found"
+  | "tutor-not-found"
+  | "student-not-found"
+  | "lesson-not-found"
+  | "slot-not-found"
+  | "rating-not-found"
+  | "coupon-not-found"
+  | "asset-not-found"
+  | "invite-not-found"
+  | "invoice-not-found"
+  | "plan-not-found"
+  | "room-not-found"
+  | "room-members-not-found"
+  | "report-not-found"
+  | "interview-not-found"
+  | "topic-not-found"
+  | "withdraw-method-not-found"
+  | "subscription-not-found"
+  | "email-already-verified"
+  | "phone-already-verified"
+  | "unresolved-phone"
+  | "invalid-phone"
+  | "incorrect-phone"
+  | "expired-verification-code"
+  | "invalid-verification-code"
+  | "illegal-invoice-update"
+  | "empty-request"
+  | "user-already-verified"
+  | "wrong-password"
+  | "conflicting-lessons"
+  | "conflicting-interview"
+  | "conflicting-schedule"
+  | "reached-booking-limit"
+  | "service-unavailable"
+  | "fawry-error"
+  | "large-file-size";
 
 export type ApiErrorCode = ApiError | FieldError;
