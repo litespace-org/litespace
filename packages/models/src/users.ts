@@ -1,17 +1,14 @@
 import {
-  AsColumns,
-  column,
   countRows,
-  fromRow,
   knex,
-  Select,
   WithOptionalTx,
   withSkippablePagination,
 } from "@/query";
-import { first, isEmpty, pick } from "lodash";
+import { first, isEmpty } from "lodash";
 import { IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
+import { Base } from "@/base";
 
 const FIELD_TO_COLUMN = {
   id: "id",
@@ -35,30 +32,39 @@ const FIELD_TO_COLUMN = {
   updatedAt: "updated_at",
 } satisfies Record<IUser.Field, IUser.Column>;
 
-export class Users {
-  public readonly table = "users" as const;
-
-  public readonly columns: Record<IUser.Column, string> = {
-    id: this.column("id"),
-    email: this.column("email"),
-    password: this.column("password"),
-    name: this.column("name"),
-    image: this.column("image"),
-    address: this.column("address"),
-    birth_year: this.column("birth_year"),
-    gender: this.column("gender"),
-    role: this.column("role"),
-    verified_email: this.column("verified_email"),
-    verified_phone: this.column("verified_phone"),
-    verified_whatsapp: this.column("verified_whatsapp"),
-    verified_telegram: this.column("verified_telegram"),
-    credit_score: this.column("credit_score"),
-    city: this.column("city"),
-    phone: this.column("phone"),
-    notification_method: this.column("notification_method"),
-    created_at: this.column("created_at"),
-    updated_at: this.column("updated_at"),
-  };
+export class Users extends Base<IUser.Row, IUser.Self, typeof FIELD_TO_COLUMN> {
+  constructor() {
+    super({
+      columns: {
+        id: "id",
+        email: "email",
+        password: "password",
+        name: "name",
+        image: "image",
+        address: "address",
+        birth_year: "birth_year",
+        gender: "gender",
+        role: "role",
+        verified_email: "verified_email",
+        verified_phone: "verified_phone",
+        verified_whatsapp: "verified_whatsapp",
+        verified_telegram: "verified_telegram",
+        credit_score: "credit_score",
+        city: "city",
+        phone: "phone",
+        notification_method: "notification_method",
+        created_at: "created_at",
+        updated_at: "updated_at",
+      },
+      table: "users",
+      fieldColumnMap: FIELD_TO_COLUMN,
+      transform: {
+        password: (value?: string | null) => value !== null,
+        createdAt: (value?: Date) => value?.toISOString() ?? "",
+        updatedAt: (value?: Date) => value?.toISOString() ?? "",
+      },
+    });
+  }
 
   async create(
     user: IUser.CreatePayload,
@@ -194,10 +200,8 @@ export class Users {
         },
       ]);
 
-    const rows = await withSkippablePagination(query, pagination).then(
-      (rows) => rows as Array<Select<IUser.Row, T, typeof FIELD_TO_COLUMN>>
-    );
-    const users = rows.map((row) => this.from<T>(row));
+    const rows = await withSkippablePagination(query, pagination);
+    const users = rows.map((row) => this.from(row));
 
     return { list: users, total };
   }
@@ -224,35 +228,6 @@ export class Users {
     const row = first(rows);
     if (!row) return null;
     return this.from(row);
-  }
-
-  from<T extends IUser.Field>(
-    row: Select<IUser.Row, T, typeof FIELD_TO_COLUMN>
-  ): Pick<IUser.Self, T> {
-    return fromRow<IUser.Row, IUser.Self, T, typeof FIELD_TO_COLUMN>(
-      row,
-      FIELD_TO_COLUMN,
-      { password: (value) => value !== null }
-    );
-  }
-
-  select<T extends IUser.Field>(
-    fields?: T[]
-  ): Pick<Record<IUser.Column, string>, AsColumns<T, typeof FIELD_TO_COLUMN>> {
-    if (!fields) return this.columns;
-    return pick(
-      this.columns,
-      fields.map((field) => FIELD_TO_COLUMN[field])
-    );
-  }
-
-  builder(tx?: Knex.Transaction) {
-    const builder = tx || knex;
-    return builder<IUser.Row>(this.table);
-  }
-
-  column(value: keyof IUser.Row) {
-    return column(value, this.table);
   }
 }
 
