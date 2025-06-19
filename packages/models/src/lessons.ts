@@ -121,6 +121,7 @@ export class Lessons {
       .returning("*");
 
     const lesson = first(lessons.map((lesson) => this.from(lesson)));
+    /* c8 ignore next */
     if (!lesson) throw new Error("Lesson not found; should never happen");
 
     const members = await builder.members
@@ -154,6 +155,7 @@ export class Lessons {
       .returning("*");
 
     const row = first(rows);
+    /* c8 ignore next */
     if (!row) throw new Error("Lesson not found; should never happen");
     return this.from(row);
   }
@@ -241,7 +243,6 @@ export class Lessons {
     canceled = true,
     future = true,
     past = true,
-    now = false,
     after,
     before,
     slots,
@@ -256,7 +257,6 @@ export class Lessons {
       ratified,
       future,
       past,
-      now,
       after,
       before,
       slots,
@@ -313,7 +313,10 @@ export class Lessons {
       .first()
       .then();
 
-    return row ? zod.coerce.number().parse(row.total) : 0;
+    /* c8 ignore next */
+    if (!row) return 0;
+
+    return zod.coerce.number().parse(row.total);
   }
 
   async countLessons(params: BaseAggregateParams) {
@@ -476,7 +479,6 @@ export class Lessons {
       canceled = true,
       future = true,
       past = true,
-      now = false,
       strict = false,
       after,
       before,
@@ -512,11 +514,7 @@ export class Lessons {
     const start = this.columns.lessons("start");
     const end = addSqlMinutes(start, this.columns.lessons("duration"));
 
-    if (now) {
-      builder
-        .where(this.columns.lessons("start"), ">=", nowDate)
-        .andWhere(end, "<=", nowDate);
-    } else if (futureOnly) {
+    if (futureOnly) {
       builder.where(this.columns.lessons("start"), ">=", nowDate);
     } else if (pastOnly) {
       builder.where(end, "<=", nowDate);
