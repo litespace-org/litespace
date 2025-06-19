@@ -18,6 +18,7 @@ import { msg } from "@/lib/telegram";
 import "colors";
 import { Wss } from "@litespace/types";
 import { isAxiosError } from "axios";
+import { ApiRoutesManager } from "@litespace/utils/routes";
 
 // global error handling
 // this is needed to prevent the server process from exit.
@@ -55,6 +56,8 @@ io.engine.use(onlyForHandshake(authMiddleware({ jwtSecret })));
 io.engine.use(onlyForHandshake(authorizeSocket));
 io.on("connection", wssHandler);
 
+const apiRoutes = new ApiRoutesManager();
+
 app.use(
   logger(function (tokens, req, res) {
     return [
@@ -68,32 +71,220 @@ app.use(
     ].join(" ");
   })
 );
+
 app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authMiddleware({ jwtSecret }));
-app.use("/api/v1/auth", routes.auth);
-app.use("/api/v1/contact-request", routes.contactRequest);
-app.use("/api/v1/user", routes.user(context));
-app.use("/api/v1/lesson", routes.lesson(context));
-app.use("/api/v1/interview", routes.interview);
-app.use("/api/v1/availability-slot", routes.availabilitySlot);
-app.use("/api/v1/rating", routes.rating);
-app.use("/api/v1/chat", routes.chat);
-app.use("/api/v1/plan", routes.plan);
-app.use("/api/v1/coupon", routes.coupon);
-app.use("/api/v1/invite", routes.invite);
-app.use("/api/v1/invoice", routes.invoice(context));
-app.use("/api/v1/topic", routes.topic);
-app.use("/api/v1/asset", routes.asset);
-app.use("/api/v1/cache", routes.cache);
-app.use("/api/v1/asset", routes.asset);
-app.use("/api/v1/session", routes.session);
-app.use("/api/v1/fawry", routes.fawry(context));
-app.use("/api/v1/tx", routes.transaction);
-app.use("/api/v1/sub", routes.subscription);
-app.use("/api/v1/confirmation-code", routes.confirmationCode);
-app.use("/api/v1/report", routes.report);
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "auth",
+    },
+    type: "base",
+  }),
+  routes.auth
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "contactRequest",
+    },
+    type: "base",
+  }),
+  routes.contactRequest
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "user",
+    },
+    type: "base",
+  }),
+  routes.user(context)
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "lesson",
+    },
+    type: "base",
+  }),
+  routes.lesson(context)
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "interview",
+    },
+    type: "base",
+  }),
+  routes.interview
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "availabilitySlot",
+    },
+    type: "base",
+  }),
+  routes.availabilitySlot
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "rating",
+    },
+    type: "base",
+  }),
+  routes.rating
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "chat",
+    },
+    type: "base",
+  }),
+  routes.chat
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "plan",
+    },
+    type: "base",
+  }),
+  routes.plan
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "coupon",
+    },
+    type: "base",
+  }),
+  routes.coupon
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "invite",
+    },
+    type: "base",
+  }),
+  routes.invite
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "invoice",
+    },
+    type: "base",
+  }),
+  routes.invoice(context)
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "topic",
+    },
+    type: "base",
+  }),
+  routes.topic
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "asset",
+    },
+    type: "base",
+  }),
+  routes.asset
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "cache",
+    },
+    type: "base",
+  }),
+  routes.cache
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "session",
+    },
+    type: "base",
+  }),
+  routes.session
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "fawry",
+    },
+    type: "base",
+  }),
+  routes.fawry(context)
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "transaction",
+    },
+    type: "base",
+  }),
+  routes.transaction
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "subscription",
+    },
+    type: "base",
+  }),
+  routes.subscription
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "confirmationCode",
+    },
+    type: "base",
+  }),
+  routes.confirmationCode
+);
+
+app.use(
+  apiRoutes.generateUrl({
+    route: {
+      base: "report",
+    },
+    type: "base",
+  }),
+  routes.report
+);
 
 app.use(errorHandler);
 
