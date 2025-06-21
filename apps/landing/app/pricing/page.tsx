@@ -1,20 +1,22 @@
 import Hero from "@/components/Common/Hero";
-import Plans from "@/components/Plans/Plans";
-import { Tab } from "@/types/plans";
+import { Selector } from "@/components/Plans";
+import { api } from "@/lib/api";
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: {
-    tab: Tab;
-  };
-}) {
-  const { tab } = searchParams;
+export default async function Page() {
+  const plans = await api.plan
+    .find({
+      active: true,
+      forInvitesOnly: false,
+      full: true,
+    })
+    .catch(() => {
+      return { list: [], total: 0 };
+    });
 
   return (
     <main>
       <Hero title="pricing/title" description="pricing/description" />
-      <Plans activeTab={tab || "annual"} />
+      <Selector plans={plans.list} />
     </main>
   );
 }
