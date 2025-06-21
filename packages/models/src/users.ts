@@ -8,7 +8,7 @@ import { first, isEmpty } from "lodash";
 import { IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { Base } from "@/base";
+import { Model } from "@/lib/model";
 
 const FIELD_TO_COLUMN = {
   id: "id",
@@ -32,36 +32,17 @@ const FIELD_TO_COLUMN = {
   updatedAt: "updated_at",
 } satisfies Record<IUser.Field, IUser.Column>;
 
-export class Users extends Base<IUser.Row, IUser.Self, typeof FIELD_TO_COLUMN> {
+export class Users extends Model<
+  IUser.Row,
+  IUser.Self,
+  typeof FIELD_TO_COLUMN
+> {
   constructor() {
     super({
-      columns: {
-        id: "id",
-        email: "email",
-        password: "password",
-        name: "name",
-        image: "image",
-        address: "address",
-        birth_year: "birth_year",
-        gender: "gender",
-        role: "role",
-        verified_email: "verified_email",
-        verified_phone: "verified_phone",
-        verified_whatsapp: "verified_whatsapp",
-        verified_telegram: "verified_telegram",
-        credit_score: "credit_score",
-        city: "city",
-        phone: "phone",
-        notification_method: "notification_method",
-        created_at: "created_at",
-        updated_at: "updated_at",
-      },
       table: "users",
       fieldColumnMap: FIELD_TO_COLUMN,
       transform: {
-        password: (value?: string | null) => value !== null,
-        createdAt: (value?: Date) => value?.toISOString() ?? "",
-        updatedAt: (value?: Date) => value?.toISOString() ?? "",
+        password: (value: string | null) => value !== null,
       },
     });
   }
@@ -202,7 +183,6 @@ export class Users extends Base<IUser.Row, IUser.Self, typeof FIELD_TO_COLUMN> {
 
     const rows = await withSkippablePagination(query, pagination);
     const users = rows.map((row) => this.from(row));
-
     return { list: users, total };
   }
 

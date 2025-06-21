@@ -1,6 +1,7 @@
 import { sanitizeMessage } from "@/chat";
 import { HTML_TAGS_REGEX, MILLISECONDS_IN_SECOND } from "@/constants";
-import { isEmpty } from "lodash";
+import { ObjectKey } from "@litespace/types";
+import { isEmpty, invert as invertBase } from "lodash";
 
 export function optional<T>(value: T): NonNullable<T> | undefined {
   return value || undefined;
@@ -95,4 +96,14 @@ export function composeSerialAsync(
       await fn();
     }
   };
+}
+
+export function invert<K extends ObjectKey, V extends ObjectKey>(
+  object: Record<K, V>
+): Record<V, K> {
+  return invertBase(object) as Record<V, K>;
+}
+
+export function keys<T extends object>(object: T): Array<keyof T> {
+  return Object.keys(object) as Array<keyof T>;
 }
