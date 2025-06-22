@@ -5,7 +5,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import Link from "@/components/Common/Link";
-import { LottieAnimate } from "@/components/Common/LottieAnimate";
+import { RiveAnimate } from "@/components/Common/RiveAnimate";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
@@ -59,8 +59,8 @@ const Hero: React.FC = () => {
         </Link>
       </div>
 
-      <div className="h-full w-3/4 lg:w-full">
-        <LottieAnimate animation="hero" />
+      <div className="flex justify-center items-center h-full w-3/4 lg:w-full">
+        <RiveAnimate animation="hero" state="State Machine 1" />
       </div>
     </div>
   );
