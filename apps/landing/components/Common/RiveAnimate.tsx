@@ -2,11 +2,11 @@
 import React from "react";
 import { useRive, Layout, Fit, Alignment } from "@rive-app/react-canvas";
 
-type AnimationId = "hero" | "test";
+type AnimationId = "hero" | "notification";
 
 type AnimationIdStateMap = {
   hero: "State Machine 1";
-  test: "bumpy";
+  notification: "State Machine 1";
 };
 
 type Props<T extends AnimationId> = {
@@ -17,7 +17,7 @@ type Props<T extends AnimationId> = {
 
 const animations: Record<AnimationId, string> = {
   hero: "animations/hero.riv",
-  test: "https://cdn.rive.app/animations/vehicles.riv",
+  notification: "animations/notification.riv",
 };
 
 export const RiveAnimate = <T extends AnimationId>({
@@ -29,7 +29,7 @@ export const RiveAnimate = <T extends AnimationId>({
     src: animations[animation],
     stateMachines: state,
     layout: new Layout({
-      fit: Fit.None,
+      fit: Fit.Contain,
       alignment: Alignment.Center,
     }),
     autoplay,
