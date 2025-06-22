@@ -10,6 +10,7 @@ import path from "node:path/posix";
 import fs from "node:fs";
 import { BackupMethod } from "@/lib/config";
 import { execute } from "@/lib/terminal";
+import backup from "@/jobs/backup";
 
 const listCommand = new Command()
   .name("list")
@@ -58,10 +59,16 @@ const restoreCommand = new Command()
     await execute(`docker exec postgres rm ${target}`);
   });
 
+const backupCommand = new Command()
+  .name("backup")
+  .description("Backup and upload the current database using pg_dump")
+  .action(backup.start);
+
 new Command()
   .name("psql-backup")
   .description("Manage PSQL backups")
   .version("1.0.0")
   .addCommand(listCommand)
   .addCommand(restoreCommand)
+  .addCommand(backupCommand)
   .parse();
