@@ -1,5 +1,6 @@
-import { IUser } from "@litespace/types";
 import { Web } from "@litespace/utils/routes";
+import { IUser } from "@litespace/types";
+import { wait } from "@cy/lib/utils";
 
 describe("login page", () => {
   beforeEach(() => {
@@ -59,12 +60,15 @@ describe("login page", () => {
     cy.url().should("include", Web.Login);
   });
 
-  it("should login using a user that was just created", () => {
-    cy.execute("users:create", {
-      role: IUser.Role.Student,
-      email: "test@litespace.org",
-      password: "Password@9",
-    });
+  it("should login using a user that was just created", async () => {
+    await wait(
+      cy.execute("users:create", {
+        role: IUser.Role.Student,
+        email: "test@litespace.org",
+        password: "Password@9",
+      })
+    );
+
     cy.login("test@litespace.org", "Password@9");
     cy.url().should("include", Web.StudentDashboard);
   });
