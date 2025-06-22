@@ -103,6 +103,7 @@
     "./InfoCircle": "./dist/InfoCircle.tsx",
     "./Info": "./dist/Info.tsx",
     "./Instagram": "./dist/Instagram.tsx",
+    "./LandingHomeCta": "./dist/LandingHomeCta.tsx",
     "./LeftArrowHead": "./dist/LeftArrowHead.tsx",
     "./Linkedin": "./dist/Linkedin.tsx",
     "./LoginDark": "./dist/LoginDark.tsx",

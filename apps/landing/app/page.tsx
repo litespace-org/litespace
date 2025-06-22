@@ -2,6 +2,7 @@ import FAQ from "@/components/FAQ/Content";
 import Features from "@/components/Features";
 import Hero from "@/components/Hero";
 import Tutors from "@/components/Tutors";
+import CTA from "@/components/Common/CTA";
 
 export default async function Home() {
   return (
@@ -9,6 +10,7 @@ export default async function Home() {
       <Hero />
       <Features />
       <Tutors />
+      <CTA />
       <FAQ />
     </main>
   );
