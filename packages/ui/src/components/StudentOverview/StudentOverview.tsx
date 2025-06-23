@@ -75,7 +75,10 @@ export const StudentOverview: React.FC<Props> = ({
     );
 
   return (
-    <div className="grid grid-rows-2 grid-cols-2 md:flex gap-4 md:gap-6 flex-wrap w-full">
+    <div
+      className="grid grid-rows-2 grid-cols-2 md:flex gap-4 md:gap-6 flex-wrap w-full"
+      data-test-id="student-dashboard-lessons-count-container"
+    >
       <Card
         icon={
           <Video className="[&>*]:stroke-natural-50 w-3 sm:w-4 h-3 sm:h-4" />
@@ -83,6 +86,7 @@ export const StudentOverview: React.FC<Props> = ({
         value={formatNumber(totalLessonCount)}
         color="brand"
         title="student-dashboard.overview.total-lessons"
+        data_test_id="student-dashboard-lessons-count"
       />
 
       <Card
@@ -92,6 +96,7 @@ export const StudentOverview: React.FC<Props> = ({
         value={formatNumber(completedLessonCount)}
         color="secondary"
         title="student-dashboard.overview.completed-lessons"
+        data_test_id="student-dashboard-completed-lessons-count"
       />
 
       <Card
@@ -101,6 +106,7 @@ export const StudentOverview: React.FC<Props> = ({
         value={learningTime}
         color="warning"
         title="student-dashboard.overview.total-learning-time"
+        data_test_id="student-dashboard.overview.total-learning-time"
       />
 
       <Card
@@ -110,6 +116,7 @@ export const StudentOverview: React.FC<Props> = ({
         value={formatNumber(tutorCount)}
         color="destructive"
         title="student-dashboard.overview.teachers"
+        data_test_id="student-dashboard.overview.teachers"
       />
     </div>
   );
@@ -121,7 +128,8 @@ export const Card: React.FC<{
   color: "brand" | "secondary" | "warning" | "destructive";
   title: LocalId;
   className?: string;
-}> = ({ value, icon, color, title }) => {
+  data_test_id?: string;
+}> = ({ value, icon, color, title, data_test_id }) => {
   const intl = useFormatMessage();
 
   return (
@@ -169,6 +177,7 @@ export const Card: React.FC<{
           "text-base sm:text-[2.5rem] font-bold sm:font-semibold"
         )}
         style={{ borderBottomColor: `var(--${color}-500)` }}
+        data-test-id={data_test_id}
       >
         {value}
       </Typography>

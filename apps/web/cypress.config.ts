@@ -1,10 +1,10 @@
 import { defineConfig } from "cypress";
-import { hashPassword, users } from "@litespace/models";
+import { hashPassword, knex, lessons, users } from "@litespace/models";
 import { exec } from "node:child_process";
 import { safePromise } from "@litespace/utils/cjs";
 import { TasksParamsMap, TasksResultMap } from "@cy/support/commands";
-import { IUser } from "@litespace/types";
-import tests from "@litespace/tests";
+import { ILesson, IUser } from "@litespace/types";
+import tests from "@litespace/tests/cjs";
 
 async function execute(command: string): Promise<string> {
   return await new Promise((resolve, reject) => {
@@ -31,6 +31,10 @@ const tasks: {
     await tests.db.flush();
     return null;
   },
+  "db:tutor": async ({ tutorPayload, userPayload }) =>
+    tests.db.tutor(userPayload, tutorPayload),
+  "db:student": tests.db.student,
+  "db:lesson": tests.db.lesson,
 };
 
 export default defineConfig({

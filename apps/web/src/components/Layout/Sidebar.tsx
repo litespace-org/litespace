@@ -206,6 +206,7 @@ const MainPages: React.FC<{ hide: Void }> = ({ hide }) => {
           Icon={Icon}
           label={label}
           active={isActive}
+          data-test-id={`sidebar-link${route.replace(/\//g, "-")}`}
         />
       ))}
     </ul>
@@ -258,6 +259,7 @@ const SettingsPages: React.FC<{ hide: Void }> = ({ hide }) => {
       Icon={page.Icon}
       label={page.label}
       active={page.isActive}
+      data-test-id={`sidebar-link${page.route.replace(/\//g, "-")}`}
     />
   ));
 };
@@ -294,7 +296,7 @@ const AccountPromotion: React.FC = () => {
           {intl("sidebar.account-promotion.description")}
         </Typography>
       </div>
-      <Link to={Web.Plans} tabIndex={-1}>
+      <Link to={Web.Plans} tabIndex={-1} data-test-id="sidebar-link-plans-promo">
         <Button size="large" htmlType="button">
           <Typography
             tag="span"
@@ -322,7 +324,8 @@ const SidebarItem: React.FC<{
   label: React.ReactNode;
   active?: boolean;
   hide: Void;
-}> = ({ to, hide, Icon, label, active }) => {
+  "data-test-id"?: string;
+}> = ({ to, hide, Icon, label, active, "data-test-id": dataTestId }) => {
   const { md, lg } = useMediaQuery();
 
   return (
@@ -338,6 +341,7 @@ const SidebarItem: React.FC<{
       )}
       to={to}
       onClick={hide}
+      data-test-id={dataTestId}
     >
       <Icon
         className={cn(
@@ -406,6 +410,7 @@ const Header: React.FC = () => {
         "flex flex-col justify-center items-center gap-1 md:gap-2",
         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-500 rounded-lg"
       )}
+      data-test-id="sidebar-link-root"
     >
       <Logo className="h-6 md:h-10 md:w-10" />
       <Typography

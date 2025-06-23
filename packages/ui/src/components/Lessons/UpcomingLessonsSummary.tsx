@@ -157,8 +157,12 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
           ))}
 
           <Link
+            data-test-id="student-dashboard-show-all-lessons-button"
+           
             to={lessonsUrl}
+           
             className="inline-block w-full mt-auto"
+          
             tabIndex={-1}
           >
             <Button size="large" className="w-full">

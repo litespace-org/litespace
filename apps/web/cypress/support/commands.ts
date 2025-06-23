@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 import { router } from "@cy/lib/router";
-import { IUser, Paginated } from "@litespace/types";
+import { ILesson, ITutor, IUser, Paginated } from "@litespace/types";
 import { InputProps } from "@litespace/ui/Input";
 import { Web } from "@litespace/utils/routes";
 
@@ -36,12 +36,27 @@ export type TasksParamsMap = {
   "users:find": IUser.FindModelQuery;
   "users:create": IUser.CreatePayload;
   "db:flush": void;
+  "db:tutor": {
+    userPayload?: Partial<IUser.CreatePayload>;
+    tutorPayload?: Partial<ITutor.UpdatePayload>;
+  };
+  "db:student": void;
+  "db:lesson": Partial<ILesson.CreatePayload> & {
+    timing?: "future" | "past";
+    canceled?: boolean;
+  };
 };
 
 export type TasksResultMap = {
   "users:find": Paginated<IUser.Self>;
   "users:create": IUser.Self;
   "db:flush": null;
+  "db:tutor": ITutor.Self;
+  "db:student": IUser.Self;
+  "db:lesson": {
+    lesson: ILesson.Self;
+    members: ILesson.Member[];
+  };
 };
 
 declare global {
