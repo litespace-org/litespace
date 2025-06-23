@@ -14,6 +14,7 @@ export enum ApiError {
   NoEnoughMinutes = "no-enough-minutes",
   BusyTutor = "busy-tutor",
   BusyTutorManager = "busy-tutor-manager",
+  InvalidEmail = "invalid-email-address",
   Unexpected = "unexpected",
   NotFound = "not-found",
   SessionNotFound = "session-not-found",
