@@ -4,7 +4,8 @@
     "module": "NodeNext",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@fixtures/*": ["fixtures/*"]
     },
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -16,6 +17,6 @@
       { "transform": "typescript-transform-paths", "afterDeclarations": true }
     ]
   },
-  "include": ["src/"],
+  "include": ["src/", "tests/", "fixtures/"],
   "exclude": ["node_modules"]
 }

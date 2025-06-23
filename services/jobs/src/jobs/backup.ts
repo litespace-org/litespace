@@ -17,13 +17,16 @@ function msg(text: string) {
   return base("backup", text);
 }
 
-async function start() {
+async function start(): Promise<boolean> {
   const result = await safePromise(backup());
 
   if (result instanceof Error) {
     console.error(result);
     msg(`database backup error: ${result.message}\n\n${result.stack}`);
+    return false;
   }
+
+  return true;
 }
 
 async function backup() {

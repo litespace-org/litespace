@@ -12,7 +12,7 @@ export async function safePromise<T>(promise: Promise<T>): Promise<T | Error> {
   try {
     return await promise;
   } catch (error) {
-    return error instanceof Error ? error : new Error("unkown");
+    return error instanceof Error ? error : new Error(String(error));
   }
 }
 
