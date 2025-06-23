@@ -41,6 +41,8 @@ export const empty = () => error(ApiError.EmptyRequest, 400);
 
 export const busyTutor = () => error(ApiError.BusyTutor, 400);
 
+export const invalidEmail = () => error(ApiError.InvalidEmail, 400);
+
 export const busyTutorManager = () => error(ApiError.BusyTutorManager, 400);
 
 export const unexpected = (msg?: string) =>
@@ -83,7 +85,7 @@ export const exists = {
 };
 
 export const already = {
-  verified: () => error(ApiError.UserAlreadyVerified, 400),
+  verified: () => error(ApiError.UserAlreadyVerified, 409),
 };
 
 export const notfound = {

@@ -18,6 +18,7 @@ import {
   bad,
   exists,
   forbidden,
+  invalidEmail,
   notfound,
   unexpected,
   wrongPassword,
@@ -45,7 +46,7 @@ import {
   queryBoolean,
   datetime,
 } from "@/validation/utils";
-import { jwtSecret, paginationDefaults } from "@/constants";
+import { environment, jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, groupBy } from "lodash";
 import zod, { ZodSchema } from "zod";
 import { Knex } from "knex";
@@ -84,6 +85,7 @@ import {
 } from "@litespace/utils";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
 import { findFullTutorsQuery } from "@litespace/schemas/user";
+import { isEmailValid } from "@/lib/validateEmail";
 
 const createUserPayload: ZodSchema<IUser.CreateApiPayload> = zod.object({
   role,
@@ -178,6 +180,12 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
   const userObject = await users.findByEmail(payload.email);
   if (userObject) return next(exists.user());
+
+  // double check the email address
+  if (environment !== "local") {
+    const validEmail = await isEmailValid(payload.email);
+    if (!validEmail) return next(invalidEmail());
+  }
 
   const user = await knex.transaction(async (tx) => {
     const user = await users.create(
