@@ -48,7 +48,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div
         className={cn(
-          "flex flex-col w-full gap-1 group",
+          "flex flex-col gap-1 w-full group",
           disabled && "cursor-not-allowed"
         )}
       >
