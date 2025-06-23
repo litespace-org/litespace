@@ -85,7 +85,7 @@ export const Select = <T extends string | number>({
       onValueChange={onValueChange}
       disabled={disabled}
     >
-      <div className={className}>
+      <div className={cn("flex flex-col w-full", className)}>
         {label ? (
           <Typography
             htmlFor={id}
@@ -109,11 +109,11 @@ export const Select = <T extends string | number>({
             role="button"
             className={cn(
               "group flex flex-row justify-between items-center",
-              "w-full rounded-lg p-2",
+              "w-full rounded-lg px-3",
               "bg-natural-50 transition-colors duration-200",
               "transition-colors duration-200",
               "disabled:cursor-not-allowed disabled:bg-natural-100 disabled:border-natural-200",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
               "border",
               {
                 // default or filled
