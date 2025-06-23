@@ -35,7 +35,13 @@ export type Self = {
   id: number;
   userId: number;
   method: WithdrawMethod;
-  receiver: string; // {bank}:{account} / phone number / instapay username
+  /**
+   * @receiver Can be one of three values:
+   * - {bank}:{account number}. e.g. MISR:4242 4242 4242 4242
+   * - {phone number}. e.g. 010 0123 3454
+   * - {instapay IPA}. e.g. user@instapay
+   */
+  receiver: string; // {bank}:{account} / phone number / instapay IPA
   amount: number;
   status: Status;
   note: string | null;

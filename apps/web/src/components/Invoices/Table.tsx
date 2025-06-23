@@ -148,14 +148,14 @@ export const Table: React.FC<{
       </div>
     );
 
-  if (error || !data)
+  if (error)
     return (
       <div className="mt-[10vh]">
         <LoadingError error={intl("invoices.table.error")} retry={refetch} />
       </div>
     );
 
-  if (isEmpty(data)) return <EmptyList />;
+  if (isEmpty(data) || !data) return <EmptyList />;
 
   return <InvoicesTable data={data} columns={columns} {...pagination} />;
 };

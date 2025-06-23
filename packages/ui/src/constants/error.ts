@@ -31,6 +31,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.AssetNotFound]: "error.api.asset-not-found",
   [ApiError.InviteNotFound]: "error.api.invite-not-found",
   [ApiError.InvoiceNotFound]: "error.api.invoice-not-found",
+  [ApiError.InvalidInvoiceMethod]: "error.api.invoice-not-valid",
   [ApiError.PlanNotFound]: "error.api.plan-not-found",
   [ApiError.RoomNotFound]: "error.api.room-not-found",
   [ApiError.RoomMembersNotFound]: "error.api.room-members-not-found",
@@ -110,7 +111,6 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
     "error.field.withdraw-max-amount-zero-or-negative",
   [FieldError.WithdrawMinAmountZeroOrNegative]:
     "error.field.withdraw-min-amount-zero-or-negative",
-  [FieldError.ZeroInvoiceAmount]: "error.field.zero-invoice-amount",
   [FieldError.InvoiceMinAmountSubceeded]:
     "error.field.invoice-min-amount-subceeded",
   [FieldError.InvoiceMaxAmountExceeded]:

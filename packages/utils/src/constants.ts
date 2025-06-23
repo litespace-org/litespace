@@ -41,6 +41,8 @@ export const MAX_FEEDBACK_TEXT_LENGTH = 1000;
 export const MIN_FEEDBACK_TEXT_LENGTH = 5;
 export const MAX_NOTE_TEXT_LENGTH = 1000;
 export const MIN_NOTE_TEXT_LENGTH = 5;
+export const MIN_INVOICE_AMOUNT = 100;
+export const MAX_INVOICE_AMOUNT = 50_000;
 
 export const MIN_LESSON_DURATION = 15;
 export const MAX_LESSON_DURATION = 30;
@@ -63,7 +65,7 @@ export const COUPON_REGEX = /[a-zA-Z0-9!@#$%^&*()_+=-}{?.,]/;
 export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export const ARABIC_LETTERS_REGEX = /^[\u0600-\u06ff\s\d.]+$/;
 export const PHONE_NUMBER_REGEX = /^01[0125]\d{8}$/;
-export const INSTAPAY_REGEX = /\w+@instapay/;
+export const INSTAPAY_REGEX = /^\w+@instapay$/;
 export const ARABIC_LETTERS_ONLY_REGEX = /^[\u0600-\u06ff\s]+$/;
 export const TOPIC_ARABIC_NAME_REGEX = /[\u0600-\u06ff\s]{3,50}/;
 export const TOPIC_ENGLISH_NAME_REGEX = /[a-zA-Z\s]{3,50}/;

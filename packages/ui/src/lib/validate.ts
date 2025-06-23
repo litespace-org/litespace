@@ -1,5 +1,6 @@
 import { LocalId } from "@/locales";
-import { FieldError } from "@litespace/types";
+import { FieldError, IInvoice } from "@litespace/types";
+import { MAX_INVOICE_AMOUNT, MIN_INVOICE_AMOUNT } from "@litespace/utils";
 import {
   isValidPhone as isValidPhoneBase,
   isValidCvv as isValidCvvBase,
@@ -14,6 +15,12 @@ import {
   validatePlanWeeklyMinutes as validatePlanWeeklyMinutesBase,
   validatePlanPrice as validatePlanPriceBase,
   validatePlanDiscount as validatePlanDiscountBase,
+  isValidInvoiceAmount,
+  isValidInvoiceReceiver,
+  isValidInstapayIPA,
+  isValidBankname,
+  isValidBankNumber,
+  isValidInvoiceMethod,
 } from "@litespace/utils/validation";
 
 export function validateText({
@@ -121,4 +128,64 @@ export function validateNotice(notice: number): LocalId | null {
   if (error === FieldError.MaxNoticeExceeded)
     return "error.field.max-notice-exceeded";
   return "error.field.invalid-notice";
+}
+
+export function validateInvoiceAmount(amount: number): LocalId | null {
+  const error = isValidInvoiceAmount(
+    amount,
+    MIN_INVOICE_AMOUNT,
+    MAX_INVOICE_AMOUNT
+  );
+  if (error === FieldError.InvoiceMinAmountSubceeded)
+    return "error.field.invoice-min-amount-subceeded";
+  if (error === FieldError.InvoiceMaxAmountExceeded)
+    return "error.field.invoice-max-amount-exceeded";
+  return null;
+}
+
+export function validateInvoiceMethod(
+  method: IInvoice.WithdrawMethod
+): LocalId | null {
+  const isValid = isValidInvoiceMethod(method);
+  if (isValid) return null;
+  return "error.field.invalid-invoice-method";
+}
+
+export function validateInvoiceReceiver(
+  receiver: string,
+  type: IInvoice.WithdrawMethod
+): LocalId | null {
+  const error = isValidInvoiceReceiver(receiver, type);
+  if (!error) return null;
+  if (error === FieldError.InvalidPhone) return "error.phone-number.invlaid";
+  if (error === FieldError.InvalidInstapayIPA)
+    return "error.field.invalid-instapay-ipa";
+  if (error === FieldError.EmptyBankName) return "error.field.empty-bank-name";
+  if (error === FieldError.InvalidBankName)
+    return "error.field.invalid-bank-name";
+  if (error === FieldError.InvalidBankAccountNumber)
+    return "error.field.invalid-bank-number";
+  return "error.field.invalid-withdraw-method";
+}
+
+export function validateInstapayIPA(ipa: string): LocalId | null {
+  const error = isValidInstapayIPA(ipa);
+  if (error === FieldError.InvalidInstapayIPA)
+    return "error.field.invalid-instapay-ipa";
+  return null;
+}
+
+export function validateBankname(name: IInvoice.Bank): LocalId | null {
+  const error = isValidBankname(name);
+  if (error === FieldError.EmptyBankName) return "error.field.empty-bank-name";
+  if (error === FieldError.InvalidBankName)
+    return "error.field.invalid-bank-name";
+  return null;
+}
+
+export function validateBankNumber(number: string): LocalId | null {
+  const error = isValidBankNumber(number);
+  if (error === FieldError.InvalidBankAccountNumber)
+    return "error.field.invalid-bank-number";
+  return null;
 }

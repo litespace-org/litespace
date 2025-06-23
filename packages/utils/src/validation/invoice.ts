@@ -33,11 +33,9 @@ export function isValidInvoiceAmount(
   minAmount: number,
   maxAmount: number
 ):
-  | FieldError.ZeroInvoiceAmount
   | FieldError.InvoiceMinAmountSubceeded
   | FieldError.InvoiceMaxAmountExceeded
   | true {
-  if (invoiceAmount <= 0) return FieldError.ZeroInvoiceAmount;
   if (invoiceAmount < minAmount) return FieldError.InvoiceMinAmountSubceeded;
   if (invoiceAmount > maxAmount) return FieldError.InvoiceMaxAmountExceeded;
   return true;
@@ -55,5 +53,41 @@ export function isValidInvoiceNote(
   if (noteText.length <= 0) return FieldError.EmptyInvoiceNote;
   if (!HTML_REGEX.test(invoiceNote)) return FieldError.InvalidInvoiceNote;
   if (noteText.length > 1000) return FieldError.TooLongInvoiceNote;
+  return true;
+}
+
+export function isValidInvoiceMethod(
+  method: IInvoice.WithdrawMethod
+): FieldError.InvalidInvoiceMethod | true {
+  if (
+    ![
+      IInvoice.WithdrawMethod.Bank,
+      IInvoice.WithdrawMethod.Instapay,
+      IInvoice.WithdrawMethod.Wallet,
+    ].includes(method)
+  )
+    return FieldError.InvalidInvoiceMethod;
+  return true;
+}
+
+export function isValidInstapayIPA(
+  ipa: string
+): FieldError.InvalidInstapayIPA | true {
+  if (!INSTAPAY_REGEX.test(ipa)) return FieldError.InvalidInstapayIPA;
+  return true;
+}
+
+export function isValidBankname(
+  bankName: string
+): FieldError.EmptyBankName | FieldError.InvalidBankName | true {
+  if (!bankName) return FieldError.EmptyBankName;
+  if (!BANKS.includes(bankName as Bank)) return FieldError.InvalidBankName;
+  return true;
+}
+
+export function isValidBankNumber(
+  bankNumber: string
+): FieldError.InvalidBankAccountNumber | true {
+  if (isNaN(Number(bankNumber))) return FieldError.InvalidBankAccountNumber;
   return true;
 }

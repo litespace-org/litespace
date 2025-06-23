@@ -29,6 +29,7 @@ export enum ApiError {
   AssetNotFound = "asset-not-found",
   InviteNotFound = "invite-not-found",
   InvoiceNotFound = "invoice-not-found",
+  InvalidInvoiceMethod = "invalid-invoice-method",
   PlanNotFound = "plan-not-found",
   RoomNotFound = "room-not-found",
   RoomMembersNotFound = "room-members-not-found",
