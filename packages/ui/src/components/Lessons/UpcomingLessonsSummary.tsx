@@ -71,7 +71,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50 h-full flex flex-col"
+        "border border-natural-100 rounded-lg p-4 sm:p-6 bg-natural-50 h-full flex flex-col"
       )}
     >
       <Typography
@@ -106,7 +106,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
             <Link
               key={i}
               to={lesson.url}
-              className="flex gap-2 items-center p-1"
+              className="flex gap-2 items-center p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg"
             >
               <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
                 <AvatarV2
@@ -156,7 +156,11 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
             </Link>
           ))}
 
-          <Link to={lessonsUrl} className="inline-block w-full mt-auto">
+          <Link
+            to={lessonsUrl}
+            className="inline-block w-full mt-auto"
+            tabIndex={-1}
+          >
             <Button size="large" className="w-full">
               <Typography
                 tag="span"
@@ -202,6 +206,7 @@ const EmptyUpcomingLessonsComponent: React.FC<{
       <Link
         to={isTutor ? scheduleUrl : tutorsUrl}
         className="intline-block w-full"
+        tabIndex={-1}
       >
         <Button className="w-full" size="large">
           <Typography

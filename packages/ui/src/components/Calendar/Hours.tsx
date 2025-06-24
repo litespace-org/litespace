@@ -50,6 +50,7 @@ export const Hours: React.FC<{
           const key = hour.toISOString();
           const last = i === hours.length - 1;
           const id = asHourId(hour.hour());
+
           return (
             <li
               key={key}
@@ -59,8 +60,10 @@ export const Hours: React.FC<{
               <Link
                 id={id}
                 to={id}
+                tabIndex={last ? -1 : 0}
                 className={cn(
-                  "absolute z-calendar-hour bottom-0 left-1/2 translate-y-1/2 -translate-x-1/2"
+                  "absolute z-calendar-hour bottom-0 left-1/2 translate-y-1/2 -translate-x-1/2",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm focus-visible:ring-offset-[2px]"
                 )}
               >
                 <Typography

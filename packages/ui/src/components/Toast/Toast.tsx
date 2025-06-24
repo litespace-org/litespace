@@ -51,7 +51,7 @@ export const Toast: React.FC<{
         "data-[state=open]:animate-slide-in",
         "flex flex-col",
         "w-[calc(100vw-32px)] sm:w-[250px] md:w-[350px]",
-        "focus:outline-none focus-visible:ring focus:ring-2 focus:ring-secondary-600",
+        "focus:outline-none focus-visible:ring focus:ring-2 focus:ring-brand-500",
         description ? "items-start" : "items-center"
       )}
     >
@@ -76,7 +76,7 @@ export const Toast: React.FC<{
 
         <Close
           className={cn(
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary-600 rounded-sm",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm",
             "self-start py-1"
           )}
         >

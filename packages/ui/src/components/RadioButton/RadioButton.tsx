@@ -20,7 +20,7 @@ export const RadioButton: React.FC<InputProps> = ({ className, ...props }) => {
         className={cn(
           "absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2",
           "w-5 h-5 rounded-full overflow-hidden border-4 border-brand-500",
-          "peer-focus-visible:ring-2 peer-focus-visible:ring-secondary-600 peer-focus-visible:ring-offset-2"
+          "peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 peer-focus-visible:ring-offset-2"
         )}
       />
 

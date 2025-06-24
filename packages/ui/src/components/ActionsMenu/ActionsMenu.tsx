@@ -84,7 +84,7 @@ export const ActionsMenu: React.FC<{
               "disabled:opacity-50 disabled:cursor-not-allowed",
               "outline-none transition-all outline-0 focus-visible:outline-2 focus-visible:outline-offset-1",
               "bg-background-alternative hover:bg-background-selection dark:bg-muted",
-              "border border-border-strong hover:border-border-stronger focus-visible:outline-brand-600 text-foreground",
+              "border border-border-strong hover:border-border-stronger focus-visible:outline-brand-500 text-foreground",
               {
                 "w-6 h-6": small,
                 "w-9 h-9": !small,

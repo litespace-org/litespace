@@ -64,7 +64,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             "rounded-md border",
             "flex flex-col gap-1 bg-natural-50",
             // focused
-            "focus-within:ring-2 focus-within:ring-secondary-600 focus-within:border-transparent",
+            "focus-within:ring-2 focus-within:ring-brand-600 focus-within:border-transparent",
             {
               // default or filled
               "border-natural-300": !state && !disabled,

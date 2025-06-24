@@ -41,7 +41,7 @@ const Tab: React.FC<{
       type="button"
       className={cn(
         "relative px-1.5 md:px-4 py-[10px] group rounded-xl w-full",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-offset-0 focus-visible:ring-secondary-600",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-offset-0 focus-visible:ring-brand-500",
         "flex items-center justify-center"
       )}
       onClick={select}
