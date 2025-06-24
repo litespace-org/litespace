@@ -535,4 +535,56 @@ describe(nameof(Tutors), () => {
       expect(res6.list.length).to.be.eq(4);
     });
   });
+
+  describe(nameof(tutors.findTutorsAccordingToIntroVideos), () => {
+    it("should find a certain number of tutorManagerIds ordered (desc) according to the number of video reviews", async () => {
+      const tutorManager1 = await fixtures.tutorManager();
+      const tutorManager2 = await fixtures.tutorManager();
+      const tutorManager3 = await fixtures.tutorManager();
+
+      await Promise.all([
+        fixtures.introVideo({ reviewerId: tutorManager1.id }),
+        fixtures.introVideo({ reviewerId: tutorManager1.id }),
+
+        fixtures.introVideo({ reviewerId: tutorManager2.id }),
+        fixtures.introVideo({ reviewerId: tutorManager2.id }),
+        fixtures.introVideo({ reviewerId: tutorManager2.id }),
+
+        fixtures.introVideo({ reviewerId: tutorManager3.id }),
+      ]);
+
+      const res = await tutors.findTutorsAccordingToIntroVideos({
+        count: 2,
+        order: "desc",
+        role: IUser.Role.TutorManager,
+      });
+
+      expect(res).to.deep.eq([tutorManager2.id, tutorManager1.id]);
+    });
+
+    it("should find a certain number of tutorIds ordered (asc) according to the number of video reviews", async () => {
+      const tutor1 = await fixtures.tutor();
+      const tutor2 = await fixtures.tutor();
+      const tutor3 = await fixtures.tutor();
+
+      await Promise.all([
+        fixtures.introVideo({ tutorId: tutor1.id }),
+        fixtures.introVideo({ tutorId: tutor1.id }),
+
+        fixtures.introVideo({ tutorId: tutor2.id }),
+        fixtures.introVideo({ tutorId: tutor2.id }),
+        fixtures.introVideo({ tutorId: tutor2.id }),
+
+        fixtures.introVideo({ tutorId: tutor3.id }),
+      ]);
+
+      const res = await tutors.findTutorsAccordingToIntroVideos({
+        count: 3,
+        order: "desc",
+        role: IUser.Role.Tutor,
+      });
+
+      expect(res).to.deep.eq([tutor2.id, tutor1.id, tutor3.id]);
+    });
+  });
 });
