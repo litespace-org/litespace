@@ -10,7 +10,7 @@ import {
   illegalInvoiceUpdate,
   notfound,
 } from "@/lib/error";
-import { Readable } from "stream";
+import { getMockFile } from "@fixtures/file";
 
 const createInvoice = mockApi<IInvoice.CreateApiPayload>(handlers.create);
 
@@ -24,19 +24,6 @@ const findInvoice = mockApi<object, object, IInvoice.FindInvoicesQuery>(
 );
 
 const findStats = mockApi<object, IInvoice.FindStatsParams>(handlers.stats);
-
-const getMockFile = (): Express.Multer.File => ({
-  filename: "mockfile",
-  fieldname: "mockfield",
-  originalname: "mockname",
-  encoding: "testing",
-  mimetype: "testing",
-  size: 1,
-  stream: new Readable(),
-  destination: "empty",
-  path: "/tmp",
-  buffer: Buffer.from([]),
-});
 
 describe("/api/v1/invoice/", () => {
   beforeEach(async () => {
