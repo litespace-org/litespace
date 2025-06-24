@@ -94,6 +94,7 @@ app.use("/api/v1/tx", routes.transaction);
 app.use("/api/v1/sub", routes.subscription);
 app.use("/api/v1/confirmation-code", routes.confirmationCode);
 app.use("/api/v1/report", routes.report);
+app.use("/api/v1/intro-video", routes.introVideo);
 
 app.use(errorHandler);
 
