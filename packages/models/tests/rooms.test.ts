@@ -33,7 +33,10 @@ describe("Rooms", () => {
       const members = await rooms.findRoomMembers({ roomIds: [created] });
 
       expect(members).to.be.an("array").with.length(2);
-      expect(members.map((m) => m.id)).to.be.deep.eq([tutor.id, student.id]);
+      expect(members.map((m) => m.id)).to.have.deep.members([
+        tutor.id,
+        student.id,
+      ]);
     });
   });
 
