@@ -8,6 +8,7 @@ export enum ApiError {
   RoomExists = "room-exists",
   UserExists = "user-exists",
   RatingExists = "rating-exists",
+  IntroVideoExists = "intro-video-exists",
   SubscriptionExists = "subscription-exists",
   SubscriptionRequired = "subscription-required",
   NoEnoughMinutes = "no-enough-minutes",

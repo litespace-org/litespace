@@ -75,10 +75,11 @@ export const fawryError = (msg?: string) =>
   error(ApiError.FawryError, 500, msg);
 
 export const exists = {
-  room: () => error(ApiError.RoomExists, 400),
-  user: () => error(ApiError.UserExists, 400),
-  rate: () => error(ApiError.RatingExists, 400),
-  subscription: () => error(ApiError.SubscriptionExists, 400),
+  room: () => error(ApiError.RoomExists, 409),
+  user: () => error(ApiError.UserExists, 409),
+  rate: () => error(ApiError.RatingExists, 409),
+  subscription: () => error(ApiError.SubscriptionExists, 409),
+  introVideo: () => error(ApiError.IntroVideoExists, 409),
 };
 
 export const already = {
