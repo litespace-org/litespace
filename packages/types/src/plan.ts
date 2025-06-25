@@ -61,6 +61,10 @@ export type Self = {
   updatedAt: string;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type FindQueryModel = IFilter.SkippablePagination & {
   ids?: number[];
   weeklyMinutes?: IFilter.Numeric;

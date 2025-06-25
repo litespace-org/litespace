@@ -1,10 +1,6 @@
 import { IReport, Paginated } from "@litespace/types";
 import {
-  AsColumns,
-  column,
   countRows,
-  fromRow,
-  knex,
   Select,
   withBooleanFilter,
   withDateFilter,
@@ -14,9 +10,9 @@ import {
   withSkippablePagination,
   withStringFilter,
 } from "@/query";
-import { first, pick } from "lodash";
-import { Knex } from "knex";
+import { first } from "lodash";
 import dayjs from "dayjs";
+import { Model } from "@/lib/model";
 
 const FIELD_TO_COLUMN = {
   id: "id",
@@ -30,20 +26,17 @@ const FIELD_TO_COLUMN = {
   updatedAt: "updated_at",
 } satisfies Record<IReport.Field, IReport.Column>;
 
-export class Reports {
-  public readonly table = "reports";
-
-  public readonly columns: Record<IReport.Column, string> = {
-    id: this.column("id"),
-    user_id: this.column("user_id"),
-    title: this.column("title"),
-    description: this.column("description"),
-    screenshot: this.column("screenshot"),
-    log: this.column("log"),
-    resolved: this.column("resolved"),
-    created_at: this.column("created_at"),
-    updated_at: this.column("updated_at"),
-  };
+export class Reports extends Model<
+  IReport.Row,
+  IReport.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "reports",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(
     payload: WithOptionalTx<IReport.CreateModelPayload>
@@ -153,37 +146,6 @@ export class Reports {
   ): Promise<IReport.Self[]> {
     const rows = await this.builder().select("*").where(key, value);
     return rows.map((row) => this.from(row));
-  }
-
-  from<T extends IReport.Field>(
-    row: Select<IReport.Row, T, typeof FIELD_TO_COLUMN>
-  ): Pick<IReport.Self, T> {
-    return fromRow<IReport.Row, IReport.Self, T, typeof FIELD_TO_COLUMN>(
-      row,
-      FIELD_TO_COLUMN
-    );
-  }
-
-  select<T extends keyof IReport.Self>(
-    fields?: T[]
-  ): Pick<
-    Record<keyof IReport.Row, string>,
-    AsColumns<T, typeof FIELD_TO_COLUMN>
-  > {
-    if (!fields) return this.columns;
-    return pick(
-      this.columns,
-      fields.map((field) => FIELD_TO_COLUMN[field])
-    );
-  }
-
-  builder(tx?: Knex.Transaction) {
-    const builder = tx || knex;
-    return builder<IReport.Row>(this.table);
-  }
-
-  column(value: keyof IReport.Row) {
-    return column(value, this.table);
   }
 }
 

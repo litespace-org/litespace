@@ -1,11 +1,33 @@
 import { IFilter, IInvite, Paginated } from "@litespace/types";
-import { column, countRows, knex, withPagination } from "@/query";
+import { countRows, knex, withPagination } from "@/query";
 import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 import { Knex } from "knex";
+import { Model } from "@/lib/model";
 
-export class Invites {
-  table = "invites" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  email: "email",
+  planId: "plan_id",
+  acceptedAt: "accepted_at",
+  expiresAt: "expires_at",
+  createdAt: "created_at",
+  createdBy: "created_by",
+  updatedAt: "updated_at",
+  updatedBy: "updated_by",
+} satisfies Record<IInvite.Field, IInvite.Column>;
+
+export class Invites extends Model<
+  IInvite.Row,
+  IInvite.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "invites",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(payload: IInvite.CreatePayload): Promise<IInvite.Self> {
     const now = new Date();
@@ -102,28 +124,6 @@ export class Invites {
       expiresAt: item.expiresAt.toISOString(),
       acceptedAt: item.acceptedAt ? item.acceptedAt.toISOString() : null,
     }));
-  }
-
-  from(row: IInvite.Row): IInvite.Self {
-    return {
-      id: row.id,
-      email: row.email,
-      planId: row.plan_id,
-      acceptedAt: row.accepted_at ? row.accepted_at.toISOString() : null,
-      expiresAt: row.expires_at.toISOString(),
-      createdAt: row.created_at.toISOString(),
-      createdBy: row.created_by,
-      updatedAt: row.updated_at.toISOString(),
-      updatedBy: row.updated_by,
-    };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    return tx ? tx<IInvite.Row>(this.table) : knex<IInvite.Row>(this.table);
-  }
-
-  column(value: keyof IInvite.Row) {
-    return column(value, this.table);
   }
 }
 

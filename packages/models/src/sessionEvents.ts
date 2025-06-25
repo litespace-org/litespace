@@ -1,11 +1,29 @@
-import { column, knex, WithOptionalTx } from "@/query";
+import { knex, WithOptionalTx } from "@/query";
 import { first, isEmpty } from "lodash";
 import { ISessionEvent } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
+import { Model } from "@/lib/model";
 
-export class SessionEvents {
-  table = "session_events";
+const FIELD_TO_COLUMN = {
+  id: "id",
+  type: "type",
+  userId: "user_id",
+  sessionId: "session_id",
+  createdAt: "created_at",
+} satisfies Record<ISessionEvent.Field, ISessionEvent.Column>;
+
+export class SessionEvents extends Model<
+  ISessionEvent.Row,
+  ISessionEvent.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "session_events",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(
     event: ISessionEvent.CreatePayload,
@@ -81,25 +99,6 @@ export class SessionEvents {
 
     const rows = await builder.then();
     return rows.map((row) => this.from(row));
-  }
-
-  from(row: ISessionEvent.Row): ISessionEvent.Self {
-    return {
-      id: row.id,
-      type: row.type,
-      userId: row.user_id,
-      sessionId: row.session_id,
-      createdAt: row.created_at.toISOString(),
-    };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    const builder = tx || knex;
-    return builder<ISessionEvent.Row>(this.table);
-  }
-
-  column(value: keyof ISessionEvent.Row) {
-    return column(value, this.table);
   }
 }
 

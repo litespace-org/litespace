@@ -56,6 +56,10 @@ export type Self = {
   updatedAt: string;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type FindFilterModel = {
   ids?: number[];
   users?: number[];

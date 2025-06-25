@@ -1,11 +1,29 @@
 import { Knex } from "knex";
-import { knex, column } from "@/query";
 import dayjs from "dayjs";
 import { isEmpty } from "lodash";
 import { IContactRequest } from "@litespace/types";
+import { Model } from "@/lib/model";
 
-export class ContactRequests {
-  table = "contact_requests" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  message: "message",
+  name: "name",
+  phone: "phone",
+  title: "title",
+  createdAt: "created_at",
+} satisfies Record<IContactRequest.Field, IContactRequest.Column>;
+
+export class ContactRequests extends Model<
+  IContactRequest.Row,
+  IContactRequest.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "contact_requests",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(
     payloads: IContactRequest.CreatePayload[],
@@ -24,27 +42,6 @@ export class ContactRequests {
         created_at: now,
       }))
     );
-  }
-
-  from(row: IContactRequest.Row): IContactRequest.Self {
-    return {
-      id: row.id,
-      name: row.name,
-      phone: row.phone,
-      title: row.title,
-      message: row.message,
-      createdAt: row.created_at.toISOString(),
-    };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    return tx
-      ? tx<IContactRequest.Row>(this.table)
-      : knex<IContactRequest.Row>(this.table);
-  }
-
-  column(value: keyof IContactRequest.Row) {
-    return column(value, this.table);
   }
 }
 

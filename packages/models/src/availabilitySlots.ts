@@ -2,13 +2,8 @@ import { IAvailabilitySlot, IFilter, Paginated } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
 import { first, isEmpty, isUndefined } from "lodash";
-import {
-  knex,
-  column,
-  countRows,
-  WithOptionalTx,
-  withSkippablePagination,
-} from "@/query";
+import { countRows, WithOptionalTx, withSkippablePagination } from "@/query";
+import { Model } from "@/lib/model";
 
 type SearchFilter = {
   /**
@@ -37,8 +32,27 @@ type SearchFilter = {
   purposes?: IAvailabilitySlot.Purpose[];
 };
 
-export class AvailabilitySlots {
-  table = "availability_slots" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  end: "end",
+  start: "start",
+  userId: "user_id",
+  deleted: "deleted",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+} satisfies Record<IAvailabilitySlot.Field, IAvailabilitySlot.Column>;
+
+export class AvailabilitySlots extends Model<
+  IAvailabilitySlot.Row,
+  IAvailabilitySlot.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "availability_slots",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(
     payloads: IAvailabilitySlot.CreatePayload[],
@@ -214,29 +228,6 @@ export class AvailabilitySlots {
     if (!isUndefined(deleted)) builder.where(this.column("deleted"), deleted);
 
     return builder;
-  }
-
-  from(row: IAvailabilitySlot.Row): IAvailabilitySlot.Self {
-    return {
-      id: row.id,
-      userId: row.user_id,
-      purpose: row.purpose,
-      deleted: row.deleted,
-      start: row.start.toISOString(),
-      end: row.end.toISOString(),
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    return tx
-      ? tx<IAvailabilitySlot.Row>(this.table)
-      : knex<IAvailabilitySlot.Row>(this.table);
-  }
-
-  column(value: keyof IAvailabilitySlot.Row) {
-    return column(value, this.table);
   }
 }
 

@@ -1,6 +1,5 @@
 import { IInterview, Paginated } from "@litespace/types";
 import {
-  column,
   countRows,
   knex,
   withDateFilter,
@@ -12,25 +11,34 @@ import {
 } from "@/query";
 import { first } from "lodash";
 import dayjs from "@/lib/dayjs";
-import { Knex } from "knex";
 import { INTERVIEW_DURATION } from "@litespace/utils";
+import { Model } from "@/lib/model";
 
-export class Interviews {
-  readonly table = "interviews" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  intervieweeFeedback: "interviewee_feedback",
+  intervieweeId: "interviewee_id",
+  interviewerFeedback: "interviewer_feedback",
+  interviewerId: "interviewer_id",
+  sessionId: "session_id",
+  slotId: "slot_id",
+  start: "start",
+  status: "status",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+} satisfies Record<IInterview.Field, IInterview.Column>;
 
-  readonly columns: Record<keyof IInterview.Row, string> = {
-    id: this.column("id"),
-    start: this.column("start"),
-    interviewer_id: this.column("interviewer_id"),
-    interviewee_id: this.column("interviewee_id"),
-    interviewer_feedback: this.column("interviewer_feedback"),
-    interviewee_feedback: this.column("interviewee_feedback"),
-    slot_id: this.column("slot_id"),
-    session_id: this.column("session_id"),
-    status: this.column("status"),
-    created_at: this.column("created_at"),
-    updated_at: this.column("updated_at"),
-  };
+export class Interviews extends Model<
+  IInterview.Row,
+  IInterview.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "interviews",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create({
     tx,
@@ -120,6 +128,7 @@ export class Interviews {
     start,
     end,
     createdAt,
+    select,
     tx,
     ...pagination
   }: WithOptionalTx<IInterview.FindModelQuery>): Promise<
@@ -177,7 +186,7 @@ export class Interviews {
 
     const queryBuilder = base
       .clone()
-      .select<IInterview.Row[]>(this.columns)
+      .select(this.select(select))
       .orderBy([
         {
           column: this.column("created_at"),
@@ -191,31 +200,6 @@ export class Interviews {
 
     const rows = await withSkippablePagination(queryBuilder, pagination);
     return { list: rows.map((row) => this.from(row)), total };
-  }
-
-  from(row: IInterview.Row): IInterview.Self {
-    return {
-      id: row.id,
-      interviewerId: row.interviewer_id,
-      intervieweeId: row.interviewee_id,
-      slotId: row.slot_id,
-      sessionId: row.session_id,
-      interviewerFeedback: row.interviewer_feedback,
-      intervieweeFeedback: row.interviewee_feedback,
-      start: row.start.toISOString(),
-      status: row.status,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    const builder = tx || knex;
-    return builder<IInterview.Row>(this.table);
-  }
-
-  column(value: keyof IInterview.Row): string {
-    return column<IInterview.Row>(value, this.table);
   }
 }
 

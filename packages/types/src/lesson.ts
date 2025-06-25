@@ -58,6 +58,10 @@ export type MemberRow = {
   lesson_id: number;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type Member = {
   userId: number;
   lessonId: number;

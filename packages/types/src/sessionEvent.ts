@@ -21,6 +21,10 @@ export type Self = {
   createdAt: string;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type CreatePayload = {
   type: EventType;
   userId: number;

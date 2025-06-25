@@ -1,7 +1,6 @@
 import { IIntroVideo } from "@litespace/types";
 import { Knex } from "knex";
 import {
-  column,
   countRows,
   knex,
   withDateFilter,
@@ -11,9 +10,29 @@ import {
 } from "@/query";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
+import { Model } from "@/lib/model";
 
-export class IntroVideos {
-  table = "intro_videos" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  reviewerId: "reviewer_id",
+  src: "src",
+  state: "state",
+  tutorId: "tutor_id",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+} satisfies Record<IIntroVideo.Field, IIntroVideo.Column>;
+
+export class IntroVideos extends Model<
+  IIntroVideo.Row,
+  IIntroVideo.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "intro_videos",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(
     payload: IIntroVideo.CreateModelPayload
@@ -106,27 +125,6 @@ export class IntroVideos {
     const list = rows.map((row) => this.from(row));
 
     return { list, total };
-  }
-
-  from(row: IIntroVideo.Row): IIntroVideo.Self {
-    return {
-      id: row.id,
-      tutorId: row.tutor_id,
-      reviewerId: row.reviewer_id,
-      state: row.state,
-      src: row.src,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    const builder = tx || knex;
-    return builder<IIntroVideo.Row>(this.table);
-  }
-
-  column(value: keyof IIntroVideo.Row) {
-    return column(value, this.table);
   }
 }
 

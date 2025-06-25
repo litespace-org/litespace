@@ -25,6 +25,10 @@ export type Self = {
   updatedAt: string;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type CreatePayload = {
   userId: number;
   expiresAt: Date;

@@ -22,6 +22,10 @@ export type CreatePayload = {
   value: number;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type UpdatePayload = Partial<Omit<CreatePayload, "sender">>;
 
 export type CreateApiPayload = Omit<CreatePayload, "senderId">;

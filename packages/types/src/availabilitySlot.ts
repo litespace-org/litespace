@@ -29,6 +29,10 @@ export type Row = {
   updated_at: Date;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type CreatePayload = {
   userId: number;
   // TODO: use purpose in all over the codebase and alter this to unoptional

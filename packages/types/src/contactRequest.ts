@@ -16,6 +16,10 @@ export type Row = {
   created_at: Date;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type CreatePayload = {
   name: string;
   phone: string;

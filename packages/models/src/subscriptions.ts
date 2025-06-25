@@ -1,17 +1,36 @@
 import { ISubscription, Paginated } from "@litespace/types";
-import {
-  column,
-  countRows,
-  knex,
-  WithOptionalTx,
-  withSkippablePagination,
-} from "@/query";
+import { countRows, WithOptionalTx, withSkippablePagination } from "@/query";
 import { first, isEmpty } from "lodash";
 import { Knex } from "knex";
 import dayjs from "dayjs";
+import { Model } from "@/lib/model";
 
-export class Subscriptions {
-  table = "subscriptions" as const;
+const FIELD_TO_COLUMN = {
+  createdAt: "created_at",
+  end: "end",
+  extendedBy: "extended_by",
+  id: "id",
+  period: "period",
+  planId: "plan_id",
+  start: "start",
+  terminatedAt: "terminated_at",
+  txId: "tx_id",
+  updatedAt: "updated_at",
+  userId: "user_id",
+  weeklyMinutes: "weekly_minutes",
+} satisfies Record<ISubscription.Field, ISubscription.Column>;
+
+export class Subscriptions extends Model<
+  ISubscription.Row,
+  ISubscription.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "subscriptions",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(
     payload: WithOptionalTx<ISubscription.CreatePayload>
@@ -96,23 +115,6 @@ export class Subscriptions {
     return subscription || null;
   }
 
-  from(row: ISubscription.Row): ISubscription.Self {
-    return {
-      id: row.id,
-      userId: row.user_id,
-      planId: row.plan_id,
-      txId: row.tx_id,
-      period: row.period,
-      weeklyMinutes: row.weekly_minutes,
-      start: row.start.toISOString(),
-      end: row.end.toISOString(),
-      extendedBy: row.extended_by,
-      terminatedAt: row.terminated_at ? row.terminated_at.toISOString() : null,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
     {
@@ -189,16 +191,6 @@ export class Subscriptions {
       builder.where(this.column("end"), "<=", dayjs.utc(end.before).toDate());
 
     return builder;
-  }
-
-  builder(tx?: Knex.Transaction) {
-    return tx
-      ? tx<ISubscription.Row>(this.table)
-      : knex<ISubscription.Row>(this.table);
-  }
-
-  column(value: keyof ISubscription.Row) {
-    return column(value, this.table);
   }
 }
 

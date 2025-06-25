@@ -1,18 +1,36 @@
 import { IFilter, IInvoice, Paginated } from "@litespace/types";
-import {
-  column,
-  countRows,
-  knex,
-  WithOptionalTx,
-  withPagination,
-} from "@/query";
+import { countRows, WithOptionalTx, withPagination } from "@/query";
 import { Knex } from "knex";
 import zod from "zod";
 import dayjs from "@/lib/dayjs";
 import { first, isEmpty, isUndefined } from "lodash";
+import { Model } from "@/lib/model";
 
-export class Invoices {
-  readonly table = "invoices" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  note: "note",
+  status: "status",
+  amount: "amount",
+  method: "method",
+  userId: "user_id",
+  receipt: "receipt",
+  receiver: "receiver",
+  updatedAt: "updated_at",
+  addressedBy: "addressed_by",
+  createdAt: "created_at",
+} satisfies Record<IInvoice.Field, IInvoice.Column>;
+
+export class Invoices extends Model<
+  IInvoice.Row,
+  IInvoice.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "invoices",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   readonly columns: Record<keyof IInvoice.Row, string> = {
     id: this.column("id"),
@@ -149,32 +167,6 @@ export class Invoices {
 
     const rows = await withPagination(query, { page, size });
     return { list: rows.map((row) => this.from(row)), total };
-  }
-
-  builder(
-    tx?: Knex.Transaction
-  ): Knex.QueryBuilder<IInvoice.Row, IInvoice.Row[]> {
-    return tx ? tx(this.table) : knex(this.table);
-  }
-
-  column(value: keyof IInvoice.Row): string {
-    return column(value, this.table);
-  }
-
-  from(row: IInvoice.Row): IInvoice.Self {
-    return {
-      id: row.id,
-      userId: row.user_id,
-      method: row.method,
-      receiver: row.receiver,
-      amount: row.amount,
-      status: row.status,
-      note: row.note,
-      receipt: row.receipt,
-      addressedBy: row.addressed_by,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
   }
 }
 

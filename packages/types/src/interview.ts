@@ -43,6 +43,10 @@ export type Row = {
   updated_at: Date;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type CreateModelPayload = {
   start: string;
   session: ISession.Id;
@@ -91,21 +95,23 @@ export type UpdateApiPayload = {
 
 export type UpdateApiResponse = void;
 
-export type FindModelQuery = IFilter.SkippablePagination & {
-  ids?: number[];
-  users?: number[];
-  interviewers?: number[];
-  interviewees?: number[];
-  interviewerFeedback?: string | null;
-  intervieweeFeedback?: string | null;
-  slots?: number[];
-  sessions?: ISession.Id[];
-  statuses?: Status[];
-  start?: IFilter.Date;
-  end?: IFilter.Date;
-  createdAt?: IFilter.Date;
-  canceled?: boolean;
-};
+export type FindModelQuery<T extends Field = Field> =
+  IFilter.SkippablePagination & {
+    ids?: number[];
+    users?: number[];
+    interviewers?: number[];
+    interviewees?: number[];
+    interviewerFeedback?: string | null;
+    intervieweeFeedback?: string | null;
+    slots?: number[];
+    sessions?: ISession.Id[];
+    statuses?: Status[];
+    start?: IFilter.Date;
+    end?: IFilter.Date;
+    createdAt?: IFilter.Date;
+    canceled?: boolean;
+    select?: T[];
+  };
 
 export type FindApiQuery = FindModelQuery;
 
