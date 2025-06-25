@@ -46,6 +46,7 @@ export enum ApiError {
   EmptyRequest = "empty-request",
   UserAlreadyVerified = "user-already-verified",
   WrongPassword = "wrong-password",
+  NoPassword = "no-password",
   ConflictingLessons = "conflicting-lessons",
   ConflictingInterview = "conflicting-interview",
   ConflictingSchedule = "conflicting-schedule",
