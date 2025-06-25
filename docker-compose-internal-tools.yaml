@@ -65,7 +65,7 @@ services:
       SMTP_HOST: "mail.litespace.org"
       SMTP_PORT: 465
       SMTP_USERNAME: "handbook"
-      SMTP_PASSWORD: "${SMTP_EMAIL_PASSOWRD}"
+      SMTP_PASSWORD: "${DOCMOST_SMTP_EMAIL_PASSOWRD}"
       SMTP_SECURE: true
       MAIL_FROM_ADDRESS: "handbook@litespace.org"
       MAIL_FROM_NAME: "LiteSpace Handbook"
@@ -97,7 +97,7 @@ services:
     volumes:
       - "mysql:/var/lib/mysql"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-p ${DB_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-p mixpost"]
       retries: 3
       timeout: 5s
     restart: unless-stopped
