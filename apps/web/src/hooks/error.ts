@@ -27,7 +27,10 @@ type OnErrorPayload = QueryPayload | MutationPayload;
 
 type Handler = (payload: ErrorPayload) => void;
 
-export function useOnError(payload: OnErrorPayload) {
+export function useOnError(
+  payload: OnErrorPayload,
+  disableAutoNavigate?: boolean
+) {
   const client = useQueryClient();
   const navigate = useNavigate();
   const handlerRef = useRef<Optional<Handler | null>>(payload.handler);
@@ -50,7 +53,7 @@ export function useOnError(payload: OnErrorPayload) {
       capture(error);
 
       // Direct the user to the login page.
-      if (isForbidden(error))
+      if (isForbidden(error) && !disableAutoNavigate)
         return navigate(
           router.web({
             route: Web.Login,
@@ -65,7 +68,7 @@ export function useOnError(payload: OnErrorPayload) {
         errorCode: error instanceof ResponseError ? error.errorCode : undefined,
       });
     },
-    [logger, navigate]
+    [logger, navigate, disableAutoNavigate]
   );
 
   useEffect(() => {

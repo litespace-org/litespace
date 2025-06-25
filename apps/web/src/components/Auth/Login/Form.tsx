@@ -64,17 +64,20 @@ const LoginForm: React.FC<{
     [navigate, redirect, user]
   );
 
-  const onError = useOnError({
-    type: "mutation",
-    handler: ({ messageId }) => {
-      toast.error({
-        title: intl("login.error"),
-        description: intl(messageId),
-      });
+  const onError = useOnError(
+    {
+      type: "mutation",
+      handler: ({ messageId }) => {
+        toast.error({
+          title: intl("login.error"),
+          description: intl(messageId),
+        });
+      },
     },
-  });
+    true
+  );
 
-  const mutation = useLoginUser({
+  const loginMutation = useLoginUser({
     onSuccess,
     onError,
   });
@@ -98,7 +101,7 @@ const LoginForm: React.FC<{
     },
     validators,
     onSubmit: (credentials) => {
-      mutation.mutate(credentials);
+      loginMutation.mutate(credentials);
     },
   });
 
@@ -112,7 +115,7 @@ const LoginForm: React.FC<{
         onClick={google.login}
         htmlType="button"
         loading={google.loading}
-        disabled={google.loading || mutation.isPending}
+        disabled={google.loading || loginMutation.isPending}
       >
         {intl("login.with-google")}
       </Button>
@@ -132,7 +135,7 @@ const LoginForm: React.FC<{
             label={intl("labels.email")}
             state={form.errors.email ? "error" : undefined}
             placeholder={intl("labels.email.placeholder")}
-            disabled={mutation.isPending || google.loading}
+            disabled={loginMutation.isPending || google.loading}
           />
 
           <Password
@@ -142,7 +145,7 @@ const LoginForm: React.FC<{
             inputSize="large"
             value={form.state.password}
             onChange={(e) => form.set("password", e.target.value)}
-            disabled={mutation.isPending || google.loading}
+            disabled={loginMutation.isPending || google.loading}
             label={intl("labels.password")}
             placeholder={intl("login.enter-password")}
             state={form.errors.password ? "error" : undefined}
@@ -167,8 +170,8 @@ const LoginForm: React.FC<{
           <Button
             type="main"
             size="large"
-            disabled={mutation.isPending || google.loading}
-            loading={mutation.isPending}
+            disabled={loginMutation.isPending || google.loading}
+            loading={loginMutation.isPending}
             className="w-full text text-body font-medium"
             htmlType="submit"
           >
