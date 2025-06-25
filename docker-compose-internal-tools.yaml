@@ -11,7 +11,7 @@ services:
     container_name: mixpost
     image: inovector/mixpost:latest
     env_file:
-      - .env.internal-tools
+      - .env.mixpost
     ports:
       - 9000:80
     volumes:
@@ -29,20 +29,20 @@ services:
     container_name: docmost
     image: docmost/docmost:latest
     env_file:
-      - .env.internal-tools
+      - .env.mixpost
     depends_on:
       - postgres
       - redis
     environment:
       APP_URL: "https://handbook.litespace.org"
-      APP_SECRET: ${DOCMOST_APP_SECRET}
-      DATABASE_URL: ${DOCMOST_DATABASE_URL}
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: "redis://redis:6379"
       MAIL_DRIVER: "smtp"
       SMTP_HOST: "mail.litespace.org"
       SMTP_PORT: 465
       SMTP_USERNAME: handbook
-      SMTP_PASSWORD: ${DOCMOST_EMAIL_PASSOWRD}
+      SMTP_PASSWORD: ${SMTP_EMAIL_PASSOWRD}
       SMTP_SECURE: true
       MAIL_FROM_ADDRESS: handbook@litespace.org
       MAIL_FROM_NAME: LiteSpace Handbook
@@ -59,7 +59,7 @@ services:
     container_name: mysql
     image: "mysql/mysql-server:8.0"
     env_file:
-      - .env.internal-tools
+      - .env.mixpost
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
@@ -77,8 +77,6 @@ services:
   postgres:
     container_name: postgres
     image: postgres
-    env_file:
-      - .env.internal-tools
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-litespace}
@@ -94,8 +92,6 @@ services:
   redis:
     container_name: redis
     image: redis/redis-stack-server:latest
-    env_file:
-      - .env.internal-tools
     ports:
       - "127.0.0.1:6379:6379"
     healthcheck:

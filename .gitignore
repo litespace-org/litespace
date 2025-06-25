@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .env
+.env.docmost
+.env.mixpost
 .vscode/
 .yarn/
 *storybook.log
