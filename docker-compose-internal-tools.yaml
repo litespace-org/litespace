@@ -29,7 +29,7 @@ services:
     container_name: docmost
     image: docmost/docmost:latest
     env_file:
-      - .env.mixpost
+      - .env.docmost
     depends_on:
       - postgres
       - redis
