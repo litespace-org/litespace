@@ -24,6 +24,10 @@ export type Self = {
   updatedBy: number;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 type SelectableSelf = { id: number; email: string; planId: number };
 
 export type Attributed = SelectableSelf &

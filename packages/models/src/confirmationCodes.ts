@@ -1,20 +1,29 @@
 import { IConfirmationCode } from "@litespace/types";
-import { column, knex, WithOptionalTx } from "@/query";
+import { knex, WithOptionalTx } from "@/query";
 import dayjs from "@/lib/dayjs";
-import { Knex } from "knex";
 import { first, isEmpty } from "lodash";
+import { Model } from "@/lib/model";
 
-export class ConfirmationCodes {
-  readonly table = "confirmation_codes" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  code: "code",
+  userId: "user_id",
+  purpose: "purpose",
+  createdAt: "created_at",
+  expiresAt: "expires_at",
+} satisfies Record<IConfirmationCode.Field, IConfirmationCode.Column>;
 
-  readonly columns: Record<keyof IConfirmationCode.Row, string> = {
-    id: this.column("id"),
-    code: this.column("code"),
-    user_id: this.column("user_id"),
-    purpose: this.column("purpose"),
-    created_at: this.column("created_at"),
-    expires_at: this.column("expires_at"),
-  };
+export class ConfirmationCodes extends Model<
+  IConfirmationCode.Row,
+  IConfirmationCode.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "confirmation_codes",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create({
     tx,
@@ -40,10 +49,11 @@ export class ConfirmationCodes {
 
   async findOneBy<T extends keyof IConfirmationCode.Row>(
     key: T,
-    value: IConfirmationCode.Row[T]
+    value: IConfirmationCode.Row[T],
+    select?: (keyof IConfirmationCode.Self)[]
   ): Promise<IConfirmationCode.Self | null> {
     const row = await knex<IConfirmationCode.Row>(this.table)
-      .select(this.columns)
+      .select(this.select(select))
       .where(this.column(key), value)
       .first();
 
@@ -60,6 +70,7 @@ export class ConfirmationCodes {
     code,
     purpose,
     userId,
+    select,
   }: WithOptionalTx<IConfirmationCode.FindModelPayload>): Promise<
     IConfirmationCode.Self[]
   > {
@@ -69,7 +80,7 @@ export class ConfirmationCodes {
     if (purpose) baseBuilder.where(this.column("purpose"), purpose);
     if (userId) baseBuilder.where(this.column("user_id"), userId);
 
-    const rows = await baseBuilder.select(this.columns);
+    const rows = await baseBuilder.select(this.select(select));
     return rows.map((row) => this.from(row));
   }
 
@@ -106,26 +117,6 @@ export class ConfirmationCodes {
     if (!isEmpty(codes)) builder.whereIn(this.column("code"), codes);
 
     await builder.delete();
-  }
-
-  builder(tx?: Knex.Transaction) {
-    const builder = tx || knex;
-    return builder<IConfirmationCode.Row>(this.table);
-  }
-
-  column(value: keyof IConfirmationCode.Row): string {
-    return column<IConfirmationCode.Row>(value, this.table);
-  }
-
-  from(row: IConfirmationCode.Row): IConfirmationCode.Self {
-    return {
-      id: row.id,
-      code: row.code,
-      userId: row.user_id,
-      purpose: row.purpose,
-      createdAt: row.created_at.toISOString(),
-      expiresAt: row.expires_at.toISOString(),
-    };
   }
 }
 

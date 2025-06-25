@@ -27,6 +27,10 @@ export type Row = {
   updated_at: Date;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export enum State {
   Pending = 1,
   Rejected = 2,

@@ -18,11 +18,26 @@ import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
 import zod from "zod";
+import { Model } from "@/lib/model";
 
 type FullTutorFields = ITutor.FullRow;
 type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
 
 const tutorColumn = (key: keyof ITutor.Row) => column(key, "tutors");
+
+const FIELD_TO_COLUMN = {
+  id: "id",
+  bio: "bio",
+  video: "video",
+  about: "about",
+  notice: "notice",
+  studioId: "studio_id",
+  thumbnail: "thumbnail",
+  activated: "activated",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+  bypassOnboarding: "bypass_onboarding",
+} satisfies Record<ITutor.Field, ITutor.Column>;
 
 const fullTutorFields: FullTutorFieldsMap = {
   id: users.column("id"),
@@ -56,8 +71,17 @@ const fullTutorFields: FullTutorFieldsMap = {
   bypass_onboarding: tutorColumn("bypass_onboarding"),
 } as const;
 
-export class Tutors {
-  table = "tutors";
+export class Tutors extends Model<
+  ITutor.Row,
+  ITutor.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "tutors",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(id: number, tx?: Knex.Transaction): Promise<ITutor.Self> {
     const now = dayjs.utc().toDate();
@@ -460,22 +484,6 @@ export class Tutors {
       .clone();
   }
 
-  from(row: ITutor.Row): ITutor.Self {
-    return {
-      id: row.id,
-      bio: row.bio,
-      about: row.about,
-      video: row.video,
-      thumbnail: row.thumbnail,
-      studioId: row.studio_id,
-      notice: row.notice,
-      activated: row.activated,
-      bypassOnboarding: row.bypass_onboarding,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
   asFull(row: ITutor.FullRow): ITutor.Full {
     return {
       ...users.from({
@@ -513,14 +521,6 @@ export class Tutors {
         updatedAt: row.tutor_updated_at.toISOString(),
       },
     };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    return tx ? tx<ITutor.Row>(this.table) : knex<ITutor.Row>(this.table);
-  }
-
-  column(key: keyof ITutor.Row) {
-    return tutorColumn(key);
   }
 }
 
