@@ -69,6 +69,8 @@ export const invalidVerificationCode = () =>
 
 export const wrongPassword = () => error(ApiError.WrongPassword, 400);
 
+export const noPassword = () => error(ApiError.NoPassword, 400);
+
 export const fawryError = (msg?: string) =>
   error(ApiError.FawryError, 500, msg);
 
