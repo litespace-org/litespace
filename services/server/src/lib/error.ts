@@ -79,7 +79,9 @@ export const invalidVerificationCode = () =>
 export const inActiveTutorManager = () =>
   error(ApiError.InvalidVerificationCode, 400);
 
-export const wrongPassword = () => error(ApiError.WrongPassword, 400);
+export const wrongPassword = () => error(ApiError.WrongPassword, 401);
+
+export const noPassword = () => error(ApiError.NoPassword, 401);
 
 export const fawryError = (msg?: string) =>
   error(ApiError.FawryError, 500, msg);
