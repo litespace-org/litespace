@@ -10,8 +10,33 @@ services:
   mixpost:
     container_name: mixpost
     image: inovector/mixpost:latest
-    env_file:
-      - .env.mixpost
+    environment:
+      # Application
+      # https://docs.mixpost.app/lite/configuration/environment-variables#database-environment-variables
+      APP_NAME: "LiteSpace"
+      # Key used to encrypt and decrypt sensitive data. Generate this using the following tool:
+      # https://mixpost.app/tools/encryption-key-generator
+      APP_KEY: ${MIXPOST_APP_KEY}
+      # Debug mode setting. Set to `false` for production environments.
+      APP_DEBUG: false
+      # App domain or subdomain, without the 'http://' or 'https://' prefix.
+      APP_DOMAIN: social.litespace.org
+      APP_URL: https://social.litespace.org
+      # MySQL
+      # https://docs.mixpost.app/lite/configuration/environment-variables#database-environment-variables
+      DB_HOST: "mysql"
+      DB_PORT: "3306"
+      DB_DATABASE: "mixpost"
+      DB_USERNAME: "mixpost"
+      DB_PASSWORD: "mixpost"
+      # Redis
+      # https://docs.mixpost.app/lite/configuration/environment-variables#redis-environment-variables
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ""
+      # Specify the email address to be used for SSL certificate registration and notifications.
+      # https://docs.mixpost.app/lite/configuration/environment-variables#ssl-environment-variables
+      SSL_EMAIL: "core@litespace.org"
     ports:
       - 9000:80
     volumes:
@@ -28,24 +53,29 @@ services:
   docmost:
     container_name: docmost
     image: docmost/docmost:latest
-    env_file:
-      - .env.docmost
     depends_on:
       - postgres
       - redis
     environment:
       APP_URL: "https://handbook.litespace.org"
-      APP_SECRET: ${APP_SECRET}
-      DATABASE_URL: ${DATABASE_URL}
+      APP_SECRET: "${DOCMOST_APP_SECRET}"
+      DATABASE_URL: "postgres://postgres:litespace@postgres:5432/docmost?schema=public"
       REDIS_URL: "redis://redis:6379"
       MAIL_DRIVER: "smtp"
       SMTP_HOST: "mail.litespace.org"
       SMTP_PORT: 465
-      SMTP_USERNAME: handbook
-      SMTP_PASSWORD: ${SMTP_EMAIL_PASSOWRD}
+      SMTP_USERNAME: "handbook"
+      SMTP_PASSWORD: "${SMTP_EMAIL_PASSOWRD}"
       SMTP_SECURE: true
-      MAIL_FROM_ADDRESS: handbook@litespace.org
-      MAIL_FROM_NAME: LiteSpace Handbook
+      MAIL_FROM_ADDRESS: "handbook@litespace.org"
+      MAIL_FROM_NAME: "LiteSpace Handbook"
+      STORAGE_DRIVER: "s3"
+      AWS_S3_ACCESS_KEY_ID: "${DOCMOST_S3_ACCESS_KEY_ID}"
+      AWS_S3_SECRET_ACCESS_KEY: "${DOCMOST_S3_SECRET_ACCESS_KEY}"
+      AWS_S3_REGION: "fra1"
+      AWS_S3_BUCKET: "litespace-staging-assets"
+      AWS_S3_ENDPOINT: "https://litespace-staging-assets.fra1.digitaloceanspaces.com"
+      AWS_S3_FORCE_PATH_STYLE: "false"
     ports:
       - "127.0.0.1:3006:3000"
     restart: unless-stopped
@@ -58,12 +88,10 @@ services:
   mysql:
     container_name: mysql
     image: "mysql/mysql-server:8.0"
-    env_file:
-      - .env.mixpost
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: "mixpost"
+      MYSQL_USER: "mixpost"
+      MYSQL_PASSWORD: "mixpost"
     networks:
       - mysql
     volumes:
