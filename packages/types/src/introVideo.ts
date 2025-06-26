@@ -53,4 +53,11 @@ export type FindModelPayload = IFilter.SkippablePagination & {
   state?: State;
 };
 
+export type FindApiPayload = IFilter.SkippablePagination & {
+  tutorIds?: number[];
+  reviewerIds?: number[];
+  approved?: boolean;
+  createdAt?: IFilter.Date;
+};
+
 export type FindModelResponse = Paginated<Self>;
