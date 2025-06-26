@@ -1,9 +1,12 @@
 import { Router } from "express";
 import availabilitySlot from "@/handlers/availabilitySlot";
+import { ApiRoutes } from "@litespace/utils/routes";
 
 const router = Router();
 
-router.get("/", availabilitySlot.find);
-router.post("/", availabilitySlot.set);
+const availabilitySlotRoutes = ApiRoutes.availabilitySlot.routes;
+
+router.get(availabilitySlotRoutes.find, availabilitySlot.find);
+router.post(availabilitySlotRoutes.set, availabilitySlot.set);
 
 export default router;
