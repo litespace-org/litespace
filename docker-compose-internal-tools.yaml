@@ -73,7 +73,7 @@ services:
       AWS_S3_ACCESS_KEY_ID: "${DOCMOST_S3_ACCESS_KEY_ID}"
       AWS_S3_SECRET_ACCESS_KEY: "${DOCMOST_S3_SECRET_ACCESS_KEY}"
       AWS_S3_REGION: "fra1"
-      AWS_S3_BUCKET: "litespace-staging-assets"
+      AWS_S3_BUCKET: "docmost"
       AWS_S3_ENDPOINT: "https://litespace-staging-assets.fra1.digitaloceanspaces.com"
       AWS_S3_FORCE_PATH_STYLE: "false"
     ports:
