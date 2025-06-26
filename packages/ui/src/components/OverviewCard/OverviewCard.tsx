@@ -10,11 +10,13 @@ export const OverviewCard: React.FC<{
   color: "brand" | "secondary" | "warning" | "destructive";
   title: LocalId;
   className?: string;
-}> = ({ value, icon, color, title, className }) => {
+  data_test_id?: string;
+}> = ({ value, icon, color, title, className, data_test_id }) => {
   const intl = useFormatMessage();
 
   return (
     <div
+      data-test-id={data_test_id}
       className={cn(
         "p-3 md:p-4 bg-natural-50 rounded-lg md:rounded-2xl",
         "border border-natural-100",

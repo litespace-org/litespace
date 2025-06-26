@@ -81,6 +81,7 @@ export const TutorOverview: React.FC<Props> = ({
         value={formatNumber(totalLessonCount)}
         color="brand"
         className="col-span-2 md:col-span-1 lg:col-span-2 xl:col-span-1"
+        data_test_id="tutor-dashboard.overview.total-lessons"
       />
 
       <Card
@@ -91,6 +92,7 @@ export const TutorOverview: React.FC<Props> = ({
         value={formatNumber(completedLessonCount)}
         color="secondary"
         className="col-span-2 md:col-span-1 lg:col-span-2 xl:col-span-1"
+        data_test_id="tutor-dashboard.overview.completed-lessons"
       />
 
       <Card
@@ -101,6 +103,7 @@ export const TutorOverview: React.FC<Props> = ({
         value={tutoringTime}
         color="warning"
         className="col-span-2 md:col-span-1 lg:col-span-2 xl:col-span-1"
+        data_test_id="tutor-dashboard.overview.tutoring-time"
       />
 
       <Card
@@ -111,6 +114,7 @@ export const TutorOverview: React.FC<Props> = ({
         title="tutor-dashboard.overview.students"
         color="destructive"
         className="col-span-2 md:col-span-1 lg:col-span-2 xl:col-span-1"
+        data_test_id="tutor-dashboard.overview.students"
       />
     </div>
   );
