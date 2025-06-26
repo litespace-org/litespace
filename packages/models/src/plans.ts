@@ -1,6 +1,5 @@
 import { IPlan, Paginated } from "@litespace/types";
 import {
-  column,
   countRows,
   knex,
   WithOptionalTx,
@@ -12,13 +11,36 @@ import {
 } from "@/query";
 import { first } from "lodash";
 import { Knex } from "knex";
+import { Model } from "@/lib/model";
 
-export class Plans {
-  table = "plans" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  active: "active",
+  yearDiscount: "year_discount",
+  weeklyMinutes: "weekly_minutes",
+  monthDiscount: "month_discount",
+  forInvitesOnly: "for_invites_only",
+  quarterDiscount: "quarter_discount",
+  baseMonthlyPrice: "base_monthly_price",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+} satisfies Record<IPlan.Field, IPlan.Column>;
+
+export class Plans extends Model<
+  IPlan.Row,
+  IPlan.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "plans",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(payload: IPlan.CreatePayload): Promise<IPlan.Self> {
     const now = new Date();
-    const rows = await knex<IPlan.Row>("plans").insert(
+    const rows = await knex<IPlan.Row>(this.table).insert(
       {
         weekly_minutes: payload.weeklyMinutes,
         base_monthly_price: payload.baseMonthlyPrice,
@@ -39,7 +61,7 @@ export class Plans {
 
   async update(id: number, payload: IPlan.UpdatePayload): Promise<IPlan.Self> {
     const now = new Date();
-    const rows = await knex<IPlan.Row>("plans")
+    const rows = await knex<IPlan.Row>(this.table)
       .update(
         {
           weekly_minutes: payload.weeklyMinutes,
@@ -62,7 +84,7 @@ export class Plans {
   }
 
   async delete(id: number): Promise<void> {
-    await knex<IPlan.Row>("plans").delete().where("id", id);
+    await knex<IPlan.Row>(this.table).delete().where("id", id);
   }
 
   async findById(
@@ -136,29 +158,6 @@ export class Plans {
     const list = rows.map((row) => this.from(row));
 
     return { list, total };
-  }
-
-  from(row: IPlan.Row): IPlan.Self {
-    return {
-      id: row.id,
-      weeklyMinutes: row.weekly_minutes,
-      baseMonthlyPrice: row.base_monthly_price,
-      monthDiscount: row.month_discount,
-      quarterDiscount: row.quarter_discount,
-      yearDiscount: row.year_discount,
-      forInvitesOnly: row.for_invites_only,
-      active: row.active,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    return tx ? tx<IPlan.Row>(this.table) : knex<IPlan.Row>(this.table);
-  }
-
-  column(value: keyof IPlan.Row) {
-    return column(value, this.table);
   }
 }
 

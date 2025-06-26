@@ -1,11 +1,36 @@
 import { ICoupon, IFilter, Paginated } from "@litespace/types";
-import { column, countRows, knex, withPagination } from "@/query";
+import { countRows, knex, withPagination } from "@/query";
 import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 import { Knex } from "knex";
+import { Model } from "@/lib/model";
 
-export class Coupons {
-  table = "coupons" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  code: "code",
+  planId: "plan_id",
+  expiresAt: "expires_at",
+  fullMonthDiscount: "full_month_discount",
+  fullQuarterDiscount: "full_quarter_discount",
+  fullYearDiscount: "full_year_discount",
+  halfYearDiscount: "half_year_discount",
+  createdAt: "created_at",
+  createdBy: "created_by",
+  updatedAt: "updated_at",
+  updatedBy: "updated_by",
+} satisfies Record<ICoupon.Field, ICoupon.Column>;
+
+export class Coupons extends Model<
+  ICoupon.Row,
+  ICoupon.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "coupons",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(payload: ICoupon.CreatePayload): Promise<ICoupon.Self> {
     const now = new Date();
@@ -119,31 +144,6 @@ export class Coupons {
     return mapAttributesQuery(list, (item) => ({
       expiresAt: item.expiresAt.toISOString(),
     }));
-  }
-
-  from(row: ICoupon.Row): ICoupon.Self {
-    return {
-      id: row.id,
-      code: row.code,
-      planId: row.plan_id,
-      fullMonthDiscount: row.full_month_discount,
-      fullQuarterDiscount: row.full_quarter_discount,
-      halfYearDiscount: row.half_year_discount,
-      fullYearDiscount: row.full_year_discount,
-      expiresAt: row.expires_at.toISOString(),
-      createdAt: row.created_at.toISOString(),
-      createdBy: row.created_by,
-      updatedAt: row.updated_at.toISOString(),
-      updatedBy: row.updated_by,
-    };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    return tx ? tx<ICoupon.Row>(this.table) : knex<ICoupon.Row>(this.table);
-  }
-
-  column(value: keyof ICoupon.Row) {
-    return column(value, this.table);
   }
 }
 

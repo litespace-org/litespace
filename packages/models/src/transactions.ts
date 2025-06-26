@@ -1,17 +1,34 @@
 import { ITransaction, Paginated } from "@litespace/types";
-import {
-  column,
-  countRows,
-  knex,
-  WithOptionalTx,
-  withSkippablePagination,
-} from "@/query";
+import { countRows, WithOptionalTx, withSkippablePagination } from "@/query";
 import { first, isEmpty } from "lodash";
 import { Knex } from "knex";
 import dayjs from "dayjs";
+import { Model } from "@/lib/model";
 
-export class Transactions {
-  table = "transactions" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  status: "status",
+  amount: "amount",
+  userId: "user_id",
+  planId: "plan_id",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+  planPeriod: "plan_period",
+  paymentMethod: "payment_method",
+  providerRefNum: "provider_ref_num",
+} satisfies Record<ITransaction.Field, ITransaction.Column>;
+
+export class Transactions extends Model<
+  ITransaction.Row,
+  ITransaction.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "transactions",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(
     payload: ITransaction.CreatePayload
@@ -70,7 +87,7 @@ export class Transactions {
   }: WithOptionalTx<ITransaction.FindQueryModel>): Promise<
     Paginated<ITransaction.Self>
   > {
-    const base = this.filter(this.builder(tx), query);
+    const base = this.applySearchFilter(this.builder(tx), query);
     const total = await countRows(base.clone(), { column: this.column("id") });
     const queryBuilder = base
       .clone()
@@ -80,22 +97,7 @@ export class Transactions {
     return { list: rows.map((row) => this.from(row)), total };
   }
 
-  from(row: ITransaction.Row): ITransaction.Self {
-    return {
-      id: row.id,
-      userId: row.user_id,
-      planId: row.plan_id,
-      planPeriod: row.plan_period,
-      amount: row.amount,
-      status: row.status,
-      paymentMethod: row.payment_method,
-      providerRefNum: row.provider_ref_num,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
-  filter<R extends object, T>(
+  applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
     {
       ids = [],
@@ -149,16 +151,6 @@ export class Transactions {
       );
 
     return builder;
-  }
-
-  builder(tx?: Knex.Transaction) {
-    return tx
-      ? tx<ITransaction.Row>(this.table)
-      : knex<ITransaction.Row>(this.table);
-  }
-
-  column(value: keyof ITransaction.Row) {
-    return column(value, this.table);
   }
 }
 

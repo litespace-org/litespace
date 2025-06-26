@@ -30,6 +30,10 @@ export type Self = {
   updatedBy: number;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 type SelectableSelf = Omit<
   Self,
   "createdAt" | "updatedAt" | "createdBy" | "updatedBy" | "expiresAt"

@@ -27,7 +27,10 @@ function asColumnMap<T extends ObjectKey>(
   return map as Record<T, string>;
 }
 
-export class Model<
+/**
+ * the class can't be an instance
+ */
+export abstract class Model<
   Row extends BaseRow,
   Self extends BaseSelf,
   FieldColumnMap extends Record<keyof Self, keyof Row>,

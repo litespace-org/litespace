@@ -25,6 +25,10 @@ export type Row = {
   expires_at: Date;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type CreatePayload = {
   userId?: number | null;
   purpose: Purpose;
@@ -32,10 +36,11 @@ export type CreatePayload = {
   expiresAt: string;
 };
 
-export type FindModelPayload = {
+export type FindModelPayload<T extends Field = Field> = {
   code?: number;
   userId?: number;
   purpose?: Purpose;
+  select?: T[];
 };
 
 export type SendVerifyPhoneCodeApiPayload = {

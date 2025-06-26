@@ -54,6 +54,10 @@ export type Self = {
   updatedAt: string;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type CreatePayload = Pick<
   Self,
   "userId" | "planId" | "txId" | "period" | "weeklyMinutes" | "start" | "end"

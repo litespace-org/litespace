@@ -1,17 +1,32 @@
-import {
-  column,
-  countRows,
-  knex,
-  WithOptionalTx,
-  withPagination,
-} from "@/query";
+import { countRows, knex, WithOptionalTx, withPagination } from "@/query";
 import { first } from "lodash";
 import { IFilter, IMessage, Paginated } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
+import { Model } from "@/lib/model";
 
-export class Messages {
-  readonly table = "messages" as const;
+const FIELD_TO_COLUMN = {
+  id: "id",
+  text: "text",
+  read: "read",
+  roomId: "room_id",
+  userId: "user_id",
+  deleted: "deleted",
+  updatedAt: "updated_at",
+  createdAt: "created_at",
+} satisfies Record<IMessage.Field, IMessage.Column>;
+
+export class Messages extends Model<
+  IMessage.Row,
+  IMessage.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "messages",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(
     payload: IMessage.CreatePayload,
@@ -161,28 +176,6 @@ export class Messages {
   }): Promise<number> {
     const builder = this.builder(tx).where(this.column("user_id"), user);
     return await countRows(builder, { column: this.column("id") });
-  }
-
-  builder(tx?: Knex.Transaction) {
-    const fn = tx || knex;
-    return fn<IMessage.Row>(this.table);
-  }
-
-  column(value: keyof IMessage.Row): string {
-    return column(value, this.table);
-  }
-
-  from(row: IMessage.Row): IMessage.Self {
-    return {
-      id: row.id,
-      userId: row.user_id,
-      roomId: row.room_id,
-      text: row.text,
-      read: row.read,
-      deleted: row.deleted,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
   }
 }
 

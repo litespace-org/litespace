@@ -21,6 +21,10 @@ export type Row = {
   updated_at: Date;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type CreatePayload = {
   userId: number;
   start: string;

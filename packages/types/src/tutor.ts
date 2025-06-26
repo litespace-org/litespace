@@ -18,6 +18,10 @@ export type Self = {
   updatedAt: string;
 };
 
+export type Column = keyof Row;
+
+export type Field = keyof Self;
+
 export type Full = IUser.Self &
   OmitProp<Self, "createdAt" | "updatedAt"> & {
     meta: {
