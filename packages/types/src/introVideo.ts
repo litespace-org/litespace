@@ -21,6 +21,8 @@ export type Self = {
   updatedAt: string;
 };
 
+export type Column = keyof Row;
+
 export type Row = {
   id: number;
   src: string;
@@ -30,6 +32,8 @@ export type Row = {
   created_at: Date;
   updated_at: Date;
 };
+
+export type Field = keyof Self;
 
 export enum State {
   Pending = 1,
@@ -73,4 +77,25 @@ export type CreateApiPayload = {
 
 export type CreateApiFiles = {
   video?: Blob;
+};
+
+export type FindApiPayload = IFilter.SkippablePagination & {
+  tutorIds?: number[];
+  reviewerIds?: number[];
+  approved?: boolean;
+  createdAt?: IFilter.Date;
+};
+
+export type FindApiResponse = {
+  /**
+   * The main paginated response object that the requester, especially
+   * admins and regular-tutors, seeks to retrieve.
+   */
+  main: Paginated<Self>;
+  /**
+   * The reviewers paginated response object that the tutor-managers may
+   * want to retrieve besides the main response.
+   * This shall be always undefined for admins and regular-tutors.
+   */
+  forReviewers?: Paginated<Self>;
 };

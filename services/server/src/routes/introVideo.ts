@@ -14,5 +14,6 @@ router.post(
 );
 
 router.put("/:id", introVideo.update);
+router.get("/list", introVideo.find);
 
 export default router;
