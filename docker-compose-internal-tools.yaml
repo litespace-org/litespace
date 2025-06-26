@@ -9,10 +9,11 @@ name: internal-tools
 services:
   mixpost:
     container_name: mixpost
-    image: inovector/mixpost:latest
+    image: inovector/mixpost-pro-team:latest
     environment:
       # Application
       # https://docs.mixpost.app/lite/configuration/environment-variables#database-environment-variables
+      LICENSE_KEY: "${MIXPOST_LICENSE_KEY}"
       APP_NAME: "LiteSpace"
       # Key used to encrypt and decrypt sensitive data. Generate this using the following tool:
       # https://mixpost.app/tools/encryption-key-generator
@@ -37,11 +38,29 @@ services:
       # Specify the email address to be used for SSL certificate registration and notifications.
       # https://docs.mixpost.app/lite/configuration/environment-variables#ssl-environment-variables
       SSL_EMAIL: "core@litespace.org"
+      # SMTP
+      # https://docs.mixpost.app/pro/configuration/environment-variables#smtp-environment-variables
+      MAIL_HOST: mail.litespace.org
+      MAIL_PORT: 475
+      MAIL_USERNAME: mixpost@litespace.org
+      MAIL_PASSWORD: "${MIXPOST_SMPT_MAIL_PASSWORD}"
+      MAIL_ENCRYPTION: tls
+      MAIL_FROM_ADDRESS: "mixpost@litespace.org"
+      MAIL_FROM_NAME: "LiteSpace Mixpost"
+      # S3
+      # https://docs.mixpost.app/pro/configuration/environment-variables#s3
+      AWS_ACCESS_KEY_ID: "${MIXPOST_AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${MIXPOST_AWS_SECRET_ACCESS}"
+      AWS_DEFAULT_REGION: "fra1"
+      AWS_BUCKET: "mixpost"
+      AWS_ENDPOINT: "https://litespace-staging-assets.fra1.digitaloceanspaces.com"
+      AWS_USE_PATH_STYLE_ENDPOINT: "false"
+
     ports:
       - 9000:80
+      - 8080:8080
     volumes:
       - storage:/var/www/html/storage/app
-      - logs:/var/www/html/storage/logs
     depends_on:
       - mysql
       - redis
@@ -149,9 +168,6 @@ volumes:
     driver: local
   storage:
     name: storage
-    driver: local
-  logs:
-    name: logs
     driver: local
   mysql:
     name: mysql
