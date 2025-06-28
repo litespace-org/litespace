@@ -11,4 +11,14 @@ export class IntroVideo extends Base {
       payload: asFormData(payload),
     });
   }
+
+  async update(
+    id: number,
+    payload: IIntroVideo.UpdateApiPayload
+  ): Promise<void> {
+    return this.put({
+      route: `/api/v1/intro-video/${id}`,
+      payload,
+    });
+  }
 }
