@@ -13,4 +13,6 @@ router.post(
   introVideo.create
 );
 
+router.put("/:id", introVideo.update);
+
 export default router;

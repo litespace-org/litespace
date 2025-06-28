@@ -52,6 +52,7 @@ export enum ApiError {
   ReachedBookingLimit = "reached-booking-limit",
   ServiceUnavailable = "service-unavailable",
   FawryError = "fawry-error",
+  IntroVideoNotFound = "intro-video-not-found",
   LargeFileSize = "large-file-size",
 }
 
