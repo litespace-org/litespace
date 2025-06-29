@@ -939,6 +939,7 @@
   "error.api.room-exists": "المحادثة موجودة بالفعل، برجاء التحقق من البيانات.",
   "error.api.user-exists": "المستخدم موجود بالفعل، برجاء استخدام بريد إلكتروني مختلف.",
   "error.api.rating-exists": "لقد قمت بتقييم هذا المعلم من قبل، بامكانك تعديل التقييم.",
+  "error.api.intro-video-exists": "يوجد فيديو بالفعل، لا يمكن رفع فيديو آخر.",
   "error.api.subscription-exists": "انت مشترك بالفعل، يمكنك حجز حصة مع مدرس الان.",
   "error.api.subscription-required": "للوصول إلى هذه الميزة، يرجى الاشتراك أولاً.",
   "error.api.no-enough-minutes": "لا توجد دقائق كافية لحجز الحصة",
