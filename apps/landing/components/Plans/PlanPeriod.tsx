@@ -145,7 +145,7 @@ export const PlanPeriod: React.FC<{
         if (!open) select();
       }}
       className={cn(
-        "border border-natural-100 bg-natural-50 rounded-2xl p-4",
+        "border border-natural-100 bg-[#FCFCFC] rounded-2xl p-4",
         !open && "cursor-pointer"
       )}
     >

@@ -76,33 +76,33 @@ export const Button: React.FC<{
         {
           "bg-destructive-700 hover:bg-destructive-600 active:bg-destructive-700":
             is.error && is.primary,
-          "bg-natural-50 hover:bg-destructive-50 active:bg-destructive-100":
+          "bg-natural-0 hover:bg-destructive-50 active:bg-destructive-100":
             is.error && is.secondary,
 
           "bg-brand-500 hover:bg-brand-400 active:bg-brand-500":
             is.main && is.primary,
-          "bg-natural-50 hover:bg-brand-50 active:bg-brand-100":
+          "bg-natural-0 hover:bg-brand-50 active:bg-brand-100":
             is.main && is.secondary,
 
           "bg-success-700 hover:bg-success-600 active:bg-success-700":
             is.success && is.primary,
-          "bg-natural-50 hover:bg-success-50 active:bg-success-100":
+          "bg-natural-0 hover:bg-success-50 active:bg-success-100":
             is.success && is.secondary,
 
           "bg-warning-700 hover:bg-warning-600 active:bg-warning-700":
             is.warning && is.primary,
-          "bg-natural-50 hover:bg-warning-50 active:bg-warning-100":
+          "bg-natural-0 hover:bg-warning-50 active:bg-warning-100":
             is.warning && is.secondary,
 
           "bg-natural-100 hover:bg-natural-200 active:bg-natural-300 focus-visible:bg-natural-100 disabled:bg-natural-200":
             is.natural && is.primary,
-          "bg-natural-50 hover:bg-natural-100 active:bg-natural-200":
+          "bg-natural-0 hover:bg-natural-100 active:bg-natural-200":
             is.natural && is.secondary,
         },
         // Text color
         {
           "text-natural-700": is.natural,
-          "text-natural-50": is.primary && !is.natural,
+          "text-natural-0": is.primary && !is.natural,
           "text-brand-500": is.secondary && is.main,
           "text-destructive-700 hover:text-destructive-500":
             is.secondary && is.error,
@@ -154,7 +154,7 @@ export const Button: React.FC<{
       >
         <Spinner
           className={cn({
-            "text-natural-50": is.primary,
+            "text-natural-0": is.primary,
             "text-destructive-700": is.error && is.secondary,
             "text-brand-700": is.main && is.secondary,
             "text-natural-700": is.natural && is.primary,
@@ -173,7 +173,7 @@ export const Button: React.FC<{
               is.success && is.secondary,
             "[&_.icon>*]:stroke-warning-700 [&_.icon>*]:transition-[stroke] [&_.icon>*]:duration-200 [&_.text]:transition-colors":
               is.warning && is.secondary,
-            "[&_.icon>*]:stroke-natural-50":
+            "[&_.icon>*]:stroke-natural-0":
               (is.main && is.primary) ||
               (is.error && is.primary) ||
               (is.success && is.primary) ||

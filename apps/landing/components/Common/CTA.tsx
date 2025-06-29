@@ -11,7 +11,7 @@ const CTA: React.FC = () => {
   const intl = useFormatMessage();
 
   return (
-    <div className="bg-[#121212] flex justify-center items-center py-40">
+    <div className="bg-[#121212] flex justify-center items-center py-40 lg:py-0 lg:h-screen">
       <div className="flex flex-col md:flex-row gap-6 lg:gap-21 w-full h-full justify-center items-center">
         <LandingHomeCta className="w-2/3 md:w-1/3" />
 
