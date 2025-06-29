@@ -1,8 +1,15 @@
 import safeRequest from "express-async-handler";
-import { bad, forbidden, notfound, serviceUnavailable } from "@/lib/error";
+import {
+  bad,
+  forbidden,
+  noPassword,
+  notfound,
+  serviceUnavailable,
+  wrongPassword,
+} from "@/lib/error";
 import { knex, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
-import { hashPassword, withImageUrl } from "@/lib/user";
+import { hashPassword, isSamePassword, withImageUrl } from "@/lib/user";
 import { IUser } from "@litespace/types";
 import { email, password, string } from "@/validation/utils";
 import { googleConfig, jwtSecret } from "@/constants";
@@ -41,8 +48,17 @@ async function loginWithPassword(
   const { email, password } = credentials.parse(req.body);
 
   const hashed = hashPassword(password);
-  const user = await users.findByCredentials({ email, password: hashed });
+  const user = await users.findByEmail(email);
   if (!user) return next(notfound.user());
+
+  const userPassword = await users.findUserPasswordHash(user.id);
+  /**
+   * the user doesn't have a password and is trying to log in with one
+   */
+  if (!userPassword) return next(noPassword());
+
+  if (!isSamePassword(hashed, userPassword)) return next(wrongPassword());
+
   const token = encodeAuthJwt(user.id, jwtSecret);
   const response: IUser.LoginApiResponse = {
     user: await withImageUrl(user),
