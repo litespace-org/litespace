@@ -71,7 +71,11 @@ export function NavbarLinks({ toggleSidebar }: { toggleSidebar: Void }) {
             track("register", { action: "link", src: "navbar" });
           }}
         >
-          <Button size="large" variant="secondary" className="w-full">
+          <Button
+            size="large"
+            variant="secondary"
+            className="w-full !bg-natural-0"
+          >
             <Typography
               tag="span"
               className="text-brand-700 text-body font-semibold"

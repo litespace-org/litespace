@@ -154,7 +154,7 @@ export const Button: React.FC<{
       >
         <Spinner
           className={cn({
-            "text-natural-50": is.primary,
+            "text-natural-0": is.primary,
             "text-destructive-700": is.error && is.secondary,
             "text-brand-700": is.main && is.secondary,
             "text-natural-700": is.natural && is.primary,
@@ -173,7 +173,7 @@ export const Button: React.FC<{
               is.success && is.secondary,
             "[&_.icon>*]:stroke-warning-700 [&_.icon>*]:transition-[stroke] [&_.icon>*]:duration-200 [&_.text]:transition-colors":
               is.warning && is.secondary,
-            "[&_.icon>*]:stroke-natural-50":
+            "[&_.icon>*]:stroke-natural-0":
               (is.main && is.primary) ||
               (is.error && is.primary) ||
               (is.success && is.primary) ||

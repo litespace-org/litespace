@@ -13,7 +13,8 @@ const Hero: React.FC = () => {
   return (
     <div
       className={cn(
-        "relative flex flex-col lg:flex-row items-center justify-center gap-10 bg-natural-0 overflow-hidden h-[75vh] lg:min-h-[720px] pt-[72px] mt-14 sm:mt-16 lg:mt-0 lg:px-[108px]"
+        "relative flex flex-col lg:flex-row items-center justify-center gap-10 bg-natural-0 overflow-hidden",
+        "h-[75vh] sm:h-auto md:h-[75vh] sm:mt-16 py-16 lg:px-[108px]"
       )}
     >
       <div className="flex flex-col text-center justify-center gap-6 px-4 md:px-0 w-full">
@@ -59,7 +60,7 @@ const Hero: React.FC = () => {
         </Link>
       </div>
 
-      <div className="flex justify-center items-center h-full w-3/4 lg:w-full">
+      <div className="flex justify-center items-center h-[200px] md:h-full w-full">
         <RiveAnimate animation="hero" state="State Machine 1" />
       </div>
     </div>

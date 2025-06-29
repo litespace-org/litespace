@@ -281,7 +281,7 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
   const questions = userQuestions.concat(sharedQuestions);
 
   return (
-    <div className="bg-secondary-50">
+    <div className="bg-natural-0 md:py-18 lg:py-24">
       <InViewTrack event="view_faq_list" src="faq-section" action="scroll" />
       <div
         className={cn(
