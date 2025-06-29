@@ -158,7 +158,7 @@ export const Footer: React.FC = () => {
   const intl = useFormatMessage();
 
   return (
-    <footer className="overflow-hidden relative text-natural-50 flex items-center justify-center p-4 md:p-8 lg:px-0 lg:pt-[72px] lg:pb-[42px]">
+    <footer className="overflow-hidden relative text-natural-50 flex items-center justify-center p-4 md:p-8 lg:px-0 lg:pt-[72px] lg:pb-[42px] bg-natural-0">
       <div className="w-full flex flex-col lg:max-w-screen-xl gap-4 z-10 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-y-6 md:gap-y-10">
           <Introduction />

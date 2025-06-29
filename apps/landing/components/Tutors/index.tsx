@@ -1,26 +1,19 @@
+"use client";
+
 import Content from "@/components/Tutors/Content";
-import { api } from "@/lib/api";
-import { formatMessage } from "@/lib/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React from "react";
 import InViewTrack from "@/components/Common/InViewTrack";
-import { isEmpty } from "lodash";
+import { useFormatMessage } from "@/hooks/intl";
+import { ITutor } from "@litespace/types";
 
-export const Tutors: React.FC = async () => {
-  const intl = await formatMessage();
-  const tutors = await api.user
-    .findOnboardedTutors({
-      page: 1,
-      size: 4,
-    })
-    .catch(() => {
-      return { list: [], total: 0 };
-    });
-
-  if (isEmpty(tutors.list)) return null;
+export const Tutors: React.FC<{
+  tutors: ITutor.FindOnboardedTutorsApiResponse;
+}> = ({ tutors }) => {
+  const intl = useFormatMessage();
 
   return (
-    <div className="bg-secondary-50 max-w-screen">
+    <div className="bg-natural-0 max-w-screen">
       <InViewTrack event="view_item_list" label="tutors" action="scroll" />
       <div className="py-14 md:py-20 lg:py-[120px] max-w-screen-3xl mx-auto px-4 md:px-8">
         <div className="mx-auto text-center flex flex-col gap-4 mb-8 md:mb-16 lg:mb-[68px] max-w-[874px]">
@@ -28,7 +21,13 @@ export const Tutors: React.FC = async () => {
             tag="h3"
             className="text-subtitle-1 md:text-h4 lg:text-h3 font-bold text-natural-950"
           >
-            {intl("home/tutors/title")}
+            {intl.rich("home/tutors/title", {
+              highlight: (chunks) => (
+                <Typography tag="span" className="text-brand-500">
+                  {chunks}
+                </Typography>
+              ),
+            })}
           </Typography>
           <Typography
             tag="h6"
@@ -37,10 +36,9 @@ export const Tutors: React.FC = async () => {
             {intl("home/tutors/description")}
           </Typography>
         </div>
+
         <Content tutors={tutors.list} />
       </div>
     </div>
   );
 };
-
-export default Tutors;

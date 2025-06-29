@@ -43,7 +43,7 @@ const PlansPanel: React.FC<{
         <div
           key={plan.id}
           className={cn(
-            "bg-natural-50 border border-natural-100 rounded-2xl shadow-plan-card-v2 p-4",
+            "bg-[#FCFCFC] border border-natural-100 rounded-2xl shadow-plan-card-v2 p-4",
             "flex flex-row gap-1 lg:gap-2 items-center cursor-pointer"
           )}
           onClick={() => setPlanId(plan.id)}
