@@ -14,7 +14,7 @@ export default async function Page() {
     });
 
   return (
-    <main>
+    <main className="bg-natural-0">
       <Hero title="pricing/title" description="pricing/description" />
       <Selector plans={plans.list} />
     </main>

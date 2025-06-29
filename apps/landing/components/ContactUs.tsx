@@ -66,7 +66,7 @@ const Contacts: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
 const ContactUs: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
   const intl = useFormatMessage();
   return (
-    <section className="flex flex-col items-center justify-center w-full h-auto bg-natural-50">
+    <section className="flex flex-col items-center justify-center w-full h-auto bg-natural-0">
       <div
         className={cn(
           "flex flex-col justify-center items-center w-full lg:w-[943px] h-full gap-8 md:gap-16 lg:gap-20",
@@ -97,7 +97,7 @@ const ContactUs: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
         <div
           className={cn(
             "flex flex-col md:flex-row w-full rounded-2xl",
-            "sm:p-6 gap-4 md:gap-6 h-full bg-natural-50 sm:shadow-header"
+            "sm:p-6 gap-4 md:gap-6 h-full bg-natural-0 border border-natural-100"
           )}
         >
           <div className="flex flex-col w-full md:w-3/5 h-auto bg-brand-700 rounded-xl sm:max-w-[502px] sm:mx-auto md:m-0">

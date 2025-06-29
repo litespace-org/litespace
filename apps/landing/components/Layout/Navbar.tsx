@@ -23,7 +23,9 @@ const Navbar: React.FC<{
 
   return (
     <header
-      className={"fixed top-0 left-0 right-0 z-50 duration-300 bg-natural-0"}
+      className={
+        "fixed top-0 left-0 right-0 z-50 duration-300 bg-natural-0 shadow-chat-header lg:shadow-[0]"
+      }
     >
       <NavbarLinks toggleSidebar={toggleSidebar} />
     </header>
