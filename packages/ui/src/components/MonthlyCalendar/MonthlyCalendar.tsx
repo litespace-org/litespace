@@ -66,7 +66,7 @@ export const MonthlyCalendar: React.FC<{
   }, [date, max]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <Navigation
         nextMonth={nextMonth}
         prevMonth={prevMonth}
@@ -75,7 +75,7 @@ export const MonthlyCalendar: React.FC<{
         disabled={disable}
         date={date}
       />
-      <div className="p-6 flex flex-col gap-5">
+      <div className="flex flex-col gap-5">
         <WeekDays date={date} />
         <MonthDays
           date={date}
@@ -105,6 +105,7 @@ const Navigation: React.FC<{
         variant="secondary"
         endIcon={<ChevronRight className="icon" />}
         htmlType="button"
+        size="medium"
         disabled={!canGoBack || disabled}
         onClick={prevMonth}
       />
@@ -119,6 +120,7 @@ const Navigation: React.FC<{
         variant="secondary"
         endIcon={<ChevronLeft className="icon" />}
         htmlType="button"
+        size="medium"
         disabled={!canGoNext || disabled}
         onClick={nextMonth}
       />
@@ -158,6 +160,7 @@ const MonthDays: React.FC<{
     <ul className="grid grid-cols-7 gap-0.5">
       {grid.map((day) => {
         const isCurrentMonth = day.isSame(date, "month");
+        const isToday = day.isSame(dayjs(), "day");
         const isSelected = selected?.isSame(day, "day") || false;
         const selectable = !isSelectable || isSelectable?.(day);
         return (
@@ -166,7 +169,7 @@ const MonthDays: React.FC<{
             disabled={disabled || isOutOfRange(day) || !selectable}
             data-selected={isSelected}
             className={cn(
-              "h-12 flex items-center justify-center rounded-md",
+              "h-[57px] w-[65px] flex items-center justify-center rounded-md",
               "data-[selected=false]:hover:bg-natural-100",
               "data-[selected=true]:bg-brand-500 data-[selected=true]:hover:bg-brand-400",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
@@ -180,12 +183,13 @@ const MonthDays: React.FC<{
               data-selected={isSelected}
               data-current-month={isCurrentMonth}
               className={cn(
-                "inline-block text-natural-950 text-tiny",
+                "inline-block text-natural-950 text-tiny relative",
                 "data-[selected=true]:data-[current-month=true]:text-natural-50",
                 "data-[current-month=false]:text-natural-200"
               )}
             >
               {day.format("D")}
+              {isToday ? <TodayPointer /> : null}
             </Typography>
           </button>
         );
@@ -193,3 +197,7 @@ const MonthDays: React.FC<{
     </ul>
   );
 };
+
+const TodayPointer: React.FC = () => (
+  <div className="w-[5px] h-[5px] absolute rounded-full mt-[2px] left-1/2 -translate-x-1/2 mx-auto bg-brand-700" />
+);

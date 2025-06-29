@@ -1,6 +1,6 @@
 import { availabilitySlots } from "@/availabilitySlots";
 import fixtures from "@fixtures/db";
-import { IUser } from "@litespace/types";
+import { IAvailabilitySlot, IUser } from "@litespace/types";
 import { dayjs, nameof, safe } from "@litespace/utils";
 import { expect } from "chai";
 import { first } from "lodash";
@@ -92,6 +92,67 @@ describe("AvailabilitySlots", () => {
 
       expect(res.total).to.eq(1);
       expect(res.list).to.deep.eq(slots.filter((s) => s.userId === user2.id));
+    });
+
+    it("should filter by slot purpose", async () => {
+      const user1 = await fixtures.user({ role: IUser.Role.Tutor });
+      const user2 = await fixtures.user({ role: IUser.Role.TutorManager });
+
+      const now = dayjs.utc();
+
+      const slots = await availabilitySlots.create([
+        {
+          userId: user1.id,
+          purpose: IAvailabilitySlot.Purpose.Lesson,
+          start: now.toISOString(),
+          end: now.add(1, "hour").toISOString(),
+        },
+        {
+          userId: user1.id,
+          purpose: IAvailabilitySlot.Purpose.Lesson,
+          start: now.add(2, "hour").toISOString(),
+          end: now.add(4, "hour").toISOString(),
+        },
+        {
+          userId: user2.id,
+          purpose: IAvailabilitySlot.Purpose.Interview,
+          start: now.add(6, "hour").toISOString(),
+          end: now.add(7, "hour").toISOString(),
+        },
+        {
+          userId: user2.id,
+          purpose: IAvailabilitySlot.Purpose.Lesson,
+          start: now.add(8, "hour").toISOString(),
+          end: now.add(9, "hour").toISOString(),
+        },
+      ]);
+
+      const after = now.add(6, "hour").toISOString();
+      const before = now.add(9, "hour").toISOString();
+
+      const res = await availabilitySlots.find({
+        purposes: [
+          IAvailabilitySlot.Purpose.General,
+          IAvailabilitySlot.Purpose.Interview,
+        ],
+        start: {
+          gte: after,
+          lt: before,
+        },
+        end: {
+          gt: after,
+          lte: before,
+        },
+      });
+
+      expect(res.total).to.eq(1);
+      expect(res.list).to.deep.eq(
+        slots.filter(
+          (s) =>
+            s.userId === user2.id &&
+            s.purpose === IAvailabilitySlot.Purpose.Interview
+        )
+      );
     });
 
     it("should retieve AvailabilitySlot rows between two dates", async () => {

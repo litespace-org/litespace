@@ -33,13 +33,17 @@ export const LoadingError: React.FC<{
   }, [intl, logger, toast]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-[226px] mx-auto">
+    // NOTE: don't specify a size for it, do it in the parent component
+    <div className="flex flex-col items-center justify-center mx-auto">
       <div
-        className={cn("flex items-center justify-center rounded-full", {
-          "w-8 h-8": size === "small",
-          "w-16 h-16": size === "medium",
-          "w-20 h-20": size === "large",
-        })}
+        className={cn(
+          "flex items-center justify-center rounded-full bg-destructive-200 p-[2.5px]",
+          {
+            "w-8 h-8": size === "small",
+            "w-16 h-16": size === "medium",
+            "w-20 h-20": size === "large",
+          }
+        )}
       >
         <ExclaimationMarkCircle />
       </div>

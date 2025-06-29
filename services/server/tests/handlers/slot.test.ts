@@ -90,6 +90,30 @@ describe("/api/v1/availability-slot/", () => {
       );
     });
 
+    it.only("should retrieve available slots filtered by the purpose", async () => {
+      const student = await db.student();
+      const tutorManager = await db.tutorManagerUser();
+
+      const slot1 = await db.slot({
+        userId: tutorManager.id,
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      });
+
+      await db.slot({
+        userId: tutorManager.id,
+        purpose: IAvailabilitySlot.Purpose.Lesson,
+      });
+
+      const res = await findSlot({
+        user: student,
+        query: { purposes: [IAvailabilitySlot.Purpose.Interview] },
+      });
+
+      expect(res).to.not.be.instanceof(Error);
+      expect(res.body!.slots.total).to.eq(1);
+      expect(res.body!.slots.list).to.deep.eq([slot1]);
+    });
+
     it("should respond with bad request if the `after` date is before the `before` date", async () => {
       const student = await db.student();
       const tutor = await db.tutor();

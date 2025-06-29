@@ -1,7 +1,7 @@
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
-export const Header: React.FC<{ tutor: string | null }> = ({ tutor }) => {
+export const Header: React.FC = () => {
   const intl = useFormatMessage();
   return (
     <div className="flex flex-col gap-2 text-center">
@@ -9,7 +9,7 @@ export const Header: React.FC<{ tutor: string | null }> = ({ tutor }) => {
         {intl("tutor-onboarding.step.interview.title")}
       </Typography>
       <Typography tag="p" className="text-tiny text-natural-700 max-w-[500px]">
-        {intl("tutor-onboarding.step.interview.desc", { name: tutor })}
+        {intl("tutor-onboarding.step.interview.desc")}
       </Typography>
     </div>
   );

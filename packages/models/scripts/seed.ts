@@ -398,6 +398,56 @@ async function main(): Promise<void> {
     return (seededSlots[tutor.id] = slots);
   });
 
+  // seeding slots for tutor managers
+  const seededSlotsForTutorManagers: {
+    [tutorId: number]: IAvailabilitySlot.Self[];
+  } = {};
+  addedTutorManagers.forEach(async (tutor, i) => {
+    const date = dayjs
+      .utc()
+      .add(i * 4, "days")
+      .startOf("day");
+    const slots = await availabilitySlots.create([
+      {
+        userId: tutor.id,
+        start: date.toISOString(),
+        end: date.add(2, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Lesson,
+      },
+      {
+        userId: tutor.id,
+        start: date.add(3, "hours").toISOString(),
+        end: date.add(7, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.General,
+      },
+      {
+        userId: tutor.id,
+        start: date.add(12, "hours").toISOString(),
+        end: date.add(20, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      },
+      {
+        userId: tutor.id,
+        start: date.add(25, "hours").toISOString(),
+        end: date.add(29, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.General,
+      },
+      {
+        userId: tutor.id,
+        start: date.add(36, "hours").toISOString(),
+        end: date.add(40, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.DemoSession,
+      },
+      {
+        userId: tutor.id,
+        start: date.add(80, "hours").toISOString(),
+        end: date.add(90, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.General,
+      },
+    ]);
+    return (seededSlotsForTutorManagers[tutor.id] = slots);
+  });
+
   function randomStart(): string {
     return dayjs
       .utc()

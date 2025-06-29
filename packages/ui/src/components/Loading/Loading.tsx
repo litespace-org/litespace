@@ -21,7 +21,10 @@ export const Loading: React.FC<{
       {text ? (
         <Typography
           tag="span"
-          className="text-natural-950 text-center text-caption font-semibold"
+          className={cn("text-natural-950 text-center", {
+            "text-caption font-semibold": size === "medium" || size === "large",
+            "text-tiny": size === "small",
+          })}
         >
           {text}
         </Typography>

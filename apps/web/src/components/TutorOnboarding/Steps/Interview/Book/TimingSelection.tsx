@@ -14,11 +14,12 @@ import {
   subtractSlotsBatch as subtractSlots,
 } from "@litespace/utils/availabilitySlots";
 import { INTERVIEW_DURATION } from "@litespace/utils/constants";
-import { concat } from "lodash";
+import { concat, isEmpty } from "lodash";
 import cn from "classnames";
 import { useCreateInterview } from "@litespace/headless/interviews";
 import { useOnError } from "@/hooks/error";
 import { useToast } from "@litespace/ui/Toast";
+import Header from "@/components/TutorOnboarding/Steps/Interview/Header";
 
 type Step = "date-selection" | "time-selection";
 
@@ -42,9 +43,8 @@ const TimingSelection: React.FC<{
 
   const selectDaySlots = useCallback(
     (day: Dayjs) => {
-      const daySlots = unbookedSlots.filter(
-        (event) =>
-          day.isSame(event.start, "day") || day.isSame(event.end, "day")
+      const daySlots = unbookedSlots.filter((event) =>
+        day.isSame(event.start, "day")
       );
       return getSubSlots(daySlots, INTERVIEW_DURATION);
     },
@@ -55,11 +55,9 @@ const TimingSelection: React.FC<{
    * List of all slots including booked and unbooked slots.
    */
   const selectedDaySlots = useMemo(() => {
-    const availableSlots = selectDaySlots(date).map((slot) => ({
-      ...slot,
-      bookable: dayjs(slot.start).isAfter(dayjs()),
-    }));
-
+    const availableSlots = selectDaySlots(date).filter((s) =>
+      dayjs(s.start).isAfter(dayjs())
+    );
     return orderSlots(
       concat(
         availableSlots,
@@ -88,13 +86,14 @@ const TimingSelection: React.FC<{
 
   return (
     <div className="flex flex-col items-center justify-center w-[564px]">
-      <Typography tag="h5" className="text-subtitle-2 font-bold mb-6">
-        {intl("tutor-onboarding.step.interview.timing-selection.title")}
-      </Typography>
+      <div className="mb-8">
+        <Header />
+      </div>
 
       {step === "date-selection" ? (
         <DateSelection selected={date} select={setDate} />
       ) : null}
+
       {step === "time-selection" ? (
         <TimeSelection
           slots={selectedDaySlots}
@@ -114,7 +113,11 @@ const TimingSelection: React.FC<{
           });
         }}
         confirming={create.isPending}
-        disabled={create.isPending || syncing}
+        disabled={
+          create.isPending ||
+          syncing ||
+          (step === "time-selection" && isEmpty(selectedDaySlots))
+        }
       />
     </div>
   );
@@ -132,20 +135,28 @@ const DateSelection: React.FC<{
 };
 
 const TimeSelection: React.FC<{
-  slots: Array<IAvailabilitySlot.SubSlot & { bookable: boolean }>;
+  slots: Array<IAvailabilitySlot.SubSlot>;
   start?: string;
   select(subslot: IAvailabilitySlot.SubSlot): void;
 }> = ({ slots, start, select }) => {
+  const intl = useFormatMessage();
+
+  if (isEmpty(slots))
+    return (
+      <Typography tag="span" className="text-sm text-semibold text-natural-700">
+        {intl("tutor-onboarding.step.interview.no-available-times")}
+      </Typography>
+    );
+
   return (
-    <ul className="flex flex-row gap-3 flex-wrap items-center justify-start">
+    <ul className="flex flex-row gap-x-3 gap-y-[10px] flex-wrap items-center justify-start">
       {slots.map((slot) => (
         <button
           type="button"
           key={slot.start}
           data-selected={start === slot.start}
-          disabled={!slot.bookable}
           className={cn(
-            "w-20 h-20 border border-natural-200 rounded-lg flex items-center justify-center",
+            "w-20 h-20 border shadow-time-selection-item border-natural-200 rounded-lg flex items-center justify-center",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
             "data-[selected=false]:hover:bg-brand-100 data-[selected=true]:bg-brand-700 data-[selected=true]:border-brand-800",
             "disabled:opacity-50 disabled:cursor-not-allowed"
@@ -176,7 +187,7 @@ const Actions: React.FC<{
 }> = ({ step, setStep, confirm, disabled, confirming }) => {
   const intl = useFormatMessage();
   return (
-    <div className="mt-10 w-full flex flex-row gap-3">
+    <div className="mt-6 w-full flex flex-row gap-3">
       <Button
         endIcon={<ArrowLeft className="icon" />}
         className={cn(
@@ -197,7 +208,7 @@ const Actions: React.FC<{
         )}
         size="large"
         onClick={() => setStep("date-selection")}
-        disabled={disabled || confirming}
+        disabled={confirming}
       >
         {intl("labels.prev")}
       </Button>

@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useFindInterviews } from "@litespace/headless/interviews";
-import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { first } from "lodash";
 import Book from "@/components/TutorOnboarding/Steps/Interview/Book";
 import dayjs from "@/lib/dayjs";
@@ -11,6 +10,10 @@ import {
 } from "@litespace/utils";
 import Pending from "@/components/TutorOnboarding/Steps/Interview/Pending";
 import Result from "@/components/TutorOnboarding/Steps/Interview/Result";
+import {
+  InterviewErrorLoading,
+  InterviewLoading,
+} from "@/components/TutorOnboarding/Steps/Interview/Loading";
 
 const Interview: React.FC<{ selfId: number }> = ({ selfId }) => {
   const { query } = useFindInterviews({
@@ -29,8 +32,7 @@ const Interview: React.FC<{ selfId: number }> = ({ selfId }) => {
     if (!interview) return "book";
     const status = destructureInterviewStatus(interview.status);
 
-    // give the tutor the option to join the interview in case it is still in
-    // progress.
+    // give the tutor the option to join the interview in case it is still in progress.
     const end = dayjs(interview.start).add(INTERVIEW_DURATION, "minutes");
     if (end.isAfter(dayjs()) && status.pending) return "pending";
 
@@ -45,22 +47,13 @@ const Interview: React.FC<{ selfId: number }> = ({ selfId }) => {
     return "result";
   }, [interview]);
 
-  if (query.isLoading)
-    return (
-      <div className="mx-auto mt-[15vh]">
-        <Loading size="large" />
-      </div>
-    );
+  if (query.isLoading) return <InterviewLoading />;
 
-  if (query.isError)
-    return (
-      <div className="mx-auto mt-[15vh]">
-        <LoadingError size="small" retry={query.refetch} />
-      </div>
-    );
+  if (query.isError) return <InterviewErrorLoading refetch={query.refetch} />;
 
   if (state === "book")
     return <Book sync={query.refetch} syncing={query.isPending} />;
+
   if (state === "pending" && interview)
     return (
       <Pending
@@ -69,7 +62,9 @@ const Interview: React.FC<{ selfId: number }> = ({ selfId }) => {
         syncing={query.isPending}
       />
     );
+
   if (state === "result") return <Result />;
+
   throw new Error("unsupported interview state, should never happen");
 };
 

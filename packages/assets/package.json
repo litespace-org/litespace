@@ -89,6 +89,7 @@
     "./Error": "./dist/Error.tsx",
     "./Etisalat": "./dist/Etisalat.tsx",
     "./ExclaimationMarkCircle": "./dist/ExclaimationMarkCircle.tsx",
+    "./ExclaimationMarkCircle1": "./dist/ExclaimationMarkCircle1.tsx",
     "./ExclamationMark": "./dist/ExclamationMark.tsx",
     "./EyeSlash": "./dist/EyeSlash.tsx",
     "./Eye": "./dist/Eye.tsx",
