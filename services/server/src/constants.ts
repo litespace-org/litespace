@@ -116,7 +116,7 @@ export const platformConfig = {
   interviewDuration: 30,
 };
 
-export const MAX_FULL_FLAG_DAYS = 14;
+export const MAX_FULL_FLAG_DAYS = 60;
 
 export const tokensExpireTime = {
   [IToken.Type.VerifyEmail]: "24h",

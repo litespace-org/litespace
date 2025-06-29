@@ -127,14 +127,16 @@ export class AvailabilitySlots extends Model<
     // ============== date fields ========
     withDateFilter(base, this.column("created_at"), createdAt);
     // @moehab TODO: refactor this; make an or utility filter function
-    base
-      .where((builder) => withDateFilter(builder, this.column("start"), start))
-      .orWhere((builder) => withDateFilter(builder, this.column("end"), end));
+    base.where((b1) =>
+      withDateFilter(b1, this.column("start"), start).orWhere((b2) =>
+        withDateFilter(b2, this.column("end"), end)
+      )
+    );
 
     // ============== boolean fields ========
     withBooleanFilter(base, this.column("deleted"), deleted);
 
-    //======= filters after joins ====== =
+    // ========= filters after joins ========
     if (roles && !isEmpty(roles)) {
       base.innerJoin(users.table, (builder) =>
         builder
@@ -162,6 +164,7 @@ export class AvailabilitySlots extends Model<
         },
       ]);
 
+    console.log(queryBuilder.toQuery());
     const rows = await withSkippablePagination(queryBuilder, pagination);
     const demoSessions = rows.map((row) => this.from(row));
     return { list: demoSessions, total };

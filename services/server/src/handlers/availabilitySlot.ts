@@ -6,6 +6,8 @@ import {
   jsonBoolean,
   pageNumber,
   pageSize,
+  role,
+  slotPurpose,
 } from "@/validation/utils";
 import { isTutor, isUser } from "@litespace/utils/user";
 import { IAvailabilitySlot } from "@litespace/types";
@@ -25,8 +27,9 @@ import { MAX_FULL_FLAG_DAYS } from "@/constants";
 
 const findQuery: ZodSchema<IAvailabilitySlot.FindAvailabilitySlotsApiQuery> =
   zod.object({
-    userIds: ids,
-    purposes: zod.nativeEnum(IAvailabilitySlot.Purpose).array().optional(),
+    userIds: ids.optional(),
+    purposes: slotPurpose.array().optional(),
+    roles: role.array().optional(),
     after: datetime.optional(),
     before: datetime.optional(),
     page: pageNumber.optional(),

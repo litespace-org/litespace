@@ -4,7 +4,8 @@ import Step from "@/components/TutorOnboarding/Step";
 import { StepId } from "@/components/TutorOnboarding/types";
 
 const Content: React.FC<{ selfId: number }> = ({ selfId }) => {
-  const [step, setStep] = useState<StepId>("intro-video");
+  // TODO: the initial step should be intro-video
+  const [step, setStep] = useState<StepId>("interview");
 
   return (
     <div className="flex flex-col lg:flex-row-reverse h-full">

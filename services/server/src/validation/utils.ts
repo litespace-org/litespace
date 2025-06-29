@@ -10,6 +10,7 @@ import {
   IFilter,
   ISession,
   IPlan,
+  IAvailabilitySlot,
 } from "@litespace/types";
 import zod, { ZodLiteral } from "zod";
 
@@ -84,7 +85,7 @@ export const birthYear = zod.coerce
 
 export const datetime = zod.coerce.string().datetime();
 
-export const role = zod.nativeEnum(IUser.Role);
+export const role = zod.coerce.number(zod.nativeEnum(IUser.Role));
 
 export const url = zod.string().url().trim();
 
@@ -92,6 +93,10 @@ export const planPeriod = zod.nativeEnum(IPlan.Period);
 
 export const interviewStatus = zod.coerce.number(
   zod.nativeEnum(IInterview.Status)
+);
+
+export const slotPurpose = zod.coerce.number(
+  zod.nativeEnum(IAvailabilitySlot.Purpose)
 );
 
 export const withdrawMethod = zod.coerce.number(

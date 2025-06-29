@@ -62,7 +62,8 @@ const Root: React.FC = () => {
     const settings =
       router.match(Web.TutorProfileSettings, location.pathname) ||
       router.match(Web.TutorAccountSettings, location.pathname);
-    const completedProfile = !!meta && isProfileComplete({ ...user, ...meta });
+    const completedProfile =
+      (!!meta && isProfileComplete({ ...user, ...meta })) || true;
 
     if (tutor && completedProfile && root) return navigate(Web.TutorDashboard);
 
