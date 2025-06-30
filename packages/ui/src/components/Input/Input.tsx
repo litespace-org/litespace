@@ -48,7 +48,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div
         className={cn(
-          "flex flex-col w-full gap-1 group",
+          "flex flex-col w-full group",
           disabled && "cursor-not-allowed"
         )}
       >
@@ -56,7 +56,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <Typography
             tag="label"
             htmlFor={props.id}
-            className={cn("text-caption font-semibold", {
+            className={cn("text-caption font-semibold mb-1", {
               "text-natural-950": !disabled,
               "text-natural-500": disabled,
             })}
@@ -148,7 +148,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <Helper>
               <Typography
                 tag="span"
-                className={cn("text-tiny font-semibold", {
+                className={cn("text-tiny font-semibold mt-1", {
                   // Default or filled
                   "text-natural-600 group-focus-within:text-natural-600":
                     !state && !disabled,
