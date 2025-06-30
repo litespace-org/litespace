@@ -135,7 +135,7 @@ const Content: React.FC<TutorProfile> = ({ ...tutor }) => {
           >
             {intl("tutor-settings.personal-info.title")}
           </Typography>
-          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 -mt-2 lg:mt-0">
+          <div className="flex flex-col md:flex-row md:items-start gap-2 md:gap-8 -mt-2 lg:mt-0">
             <Input
               id="name"
               label={intl("labels.name")}
