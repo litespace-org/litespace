@@ -12,6 +12,7 @@ import {
   topics,
   availabilitySlots,
   invoices,
+  introVideos,
 } from "@litespace/models";
 import {
   IAvailabilitySlot,
@@ -32,7 +33,6 @@ import { faker } from "@faker-js/faker/locale/ar";
 import { faker as fakerEn } from "@faker-js/faker/locale/en";
 import "colors";
 import { randomUUID } from "crypto";
-import { introVideos } from "@/introVideos";
 
 dayjs.extend(utc);
 
