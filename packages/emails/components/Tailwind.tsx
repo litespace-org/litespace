@@ -64,8 +64,8 @@ const Tailwind: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           extend: {
             colors: {
               brand: {
-                500: "#2bb572",
-                700: "#1d7c4e",
+                500: "#437dfa",
+                700: "#2247db",
               },
               natural: {
                 950: "#0d0d0d",
