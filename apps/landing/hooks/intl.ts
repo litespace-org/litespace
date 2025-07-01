@@ -1,5 +1,4 @@
 import { LocalId } from "@/locales/request";
-import { Typography } from "@litespace/ui/Typography";
 import { RichTranslationValues, useTranslations } from "next-intl";
 
 import React, { useCallback, useMemo } from "react";
@@ -20,17 +19,4 @@ export function useFormatMessage() {
       }),
     [format, intl]
   );
-}
-
-export function highlight(
-  intl: ReturnType<typeof useFormatMessage>,
-  id: LocalId
-) {
-  return intl.rich(id, {
-    highlight: (chunks) => (
-      <Typography tag="span" className="text-brand-500">
-        {chunks}
-      </Typography>
-    ),
-  });
 }
