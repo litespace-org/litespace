@@ -4,7 +4,7 @@ import Content from "@/components/Tutors/Content";
 import { Typography } from "@litespace/ui/Typography";
 import React from "react";
 import InViewTrack from "@/components/Common/InViewTrack";
-import { useFormatMessage } from "@/hooks/intl";
+import { highlight, useFormatMessage } from "@/hooks/intl";
 import { ITutor } from "@litespace/types";
 
 export const Tutors: React.FC<{
@@ -21,19 +21,13 @@ export const Tutors: React.FC<{
             tag="h3"
             className="text-subtitle-1 md:text-h4 lg:text-h3 font-bold text-natural-950"
           >
-            {intl.rich("home/tutors/title", {
-              highlight: (chunks) => (
-                <Typography tag="span" className="text-brand-500">
-                  {chunks}
-                </Typography>
-              ),
-            })}
+            {highlight(intl, "home/tutors/title")}
           </Typography>
           <Typography
             tag="h6"
             className="text-body md:text-subtitle-2 font-medium md:font-semibold  text-natural-700"
           >
-            {intl("home/tutors/description")}
+            {highlight(intl, "home/tutors/description")}
           </Typography>
         </div>
 

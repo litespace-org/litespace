@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@/hooks/intl";
+import { highlight, useFormatMessage } from "@/hooks/intl";
 import { FeatureProps } from "@/components/Features/types";
 import Feature from "@/components/Features/Feautre";
 import { LottieAnimate } from "@/components/Common/LottieAnimate";
@@ -8,7 +8,10 @@ export const Features: React.FC = () => {
   const features: Array<FeatureProps> = [
     {
       title: intl("home/features/feature/one-on-one/title"),
-      description: intl("home/features/feature/one-on-one/description"),
+      description: highlight(
+        intl,
+        "home/features/feature/one-on-one/description"
+      ),
       image: (
         <LottieAnimate animation="oneOnOne" className="w-1/2 min-w-[350px]" />
       ),
@@ -16,7 +19,7 @@ export const Features: React.FC = () => {
     },
     {
       title: intl("home/features/feature/anytime/title"),
-      description: intl("home/features/feature/anytime/description"),
+      description: highlight(intl, "home/features/feature/anytime/description"),
       image: (
         <LottieAnimate animation="anytime" className="w-1/2 min-w-[350px]" />
       ),
@@ -24,7 +27,10 @@ export const Features: React.FC = () => {
     },
     {
       title: intl("home/features/feature/novelity/title"),
-      description: intl("home/features/feature/novelity/description"),
+      description: highlight(
+        intl,
+        "home/features/feature/novelity/description"
+      ),
       image: (
         <LottieAnimate animation="novelity" className="w-1/2 min-w-[350px]" />
       ),
@@ -32,7 +38,10 @@ export const Features: React.FC = () => {
     },
     {
       title: intl("home/features/feature/time-is-yours/title"),
-      description: intl("home/features/feature/time-is-yours/description"),
+      description: highlight(
+        intl,
+        "home/features/feature/time-is-yours/description"
+      ),
       image: (
         <LottieAnimate
           animation="timeIsYours"
@@ -43,7 +52,10 @@ export const Features: React.FC = () => {
     },
     {
       title: intl("home/features/feature/all-in-english/title"),
-      description: intl("home/features/feature/all-in-english/description"),
+      description: highlight(
+        intl,
+        "home/features/feature/all-in-english/description"
+      ),
       image: (
         <LottieAnimate
           animation="allInEnglish"
@@ -54,7 +66,10 @@ export const Features: React.FC = () => {
     },
     {
       title: intl("home/features/feature/notifications/title"),
-      description: intl("home/features/feature/notifications/description"),
+      description: highlight(
+        intl,
+        "home/features/feature/notifications/description"
+      ),
       image: (
         <LottieAnimate
           animation="notifications"

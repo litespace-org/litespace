@@ -1,11 +1,11 @@
-import { useFormatMessage } from "@/hooks/intl";
+import { highlight, useFormatMessage } from "@/hooks/intl";
 import { router } from "@/lib/routes";
 import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import Link from "@/components/Common/Link";
-import { RiveAnimate } from "@/components/Common/RiveAnimate";
+import { LottieAnimate } from "@/components/Common/LottieAnimate";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
@@ -23,19 +23,13 @@ const Hero: React.FC = () => {
             tag="h1"
             className="text-natural-950 text-subtitle-1 md:text-h2 font-bold lg:w-full"
           >
-            {intl.rich("home/hero/title", {
-              highlight: (chunks) => (
-                <Typography tag="span" className="text-brand-500">
-                  {chunks}
-                </Typography>
-              ),
-            })}
+            {highlight(intl, "home/hero/title")}
           </Typography>
           <Typography
             tag="p"
             className="text-natural-700 text-body md:text-subtitle-2 font-medium lg:w-full"
           >
-            {intl("home/hero/description")}
+            {highlight(intl, "home/hero/description")}
           </Typography>
         </div>
         <Link
@@ -61,7 +55,7 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="flex justify-center items-center h-[200px] md:h-full w-full">
-        <RiveAnimate animation="hero" state="State Machine 1" />
+        <LottieAnimate animation="heroSection" />
       </div>
     </div>
   );
