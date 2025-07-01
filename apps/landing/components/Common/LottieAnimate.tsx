@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 
 type AnimationKey =
@@ -18,7 +18,8 @@ type Props = {
   width?: number;
   height?: number;
   autoplay?: boolean;
-  loop?: boolean;
+  loop?: boolean | number;
+  startingFrameAfterFirstPlay?: number;
 };
 
 export const LottieAnimate = ({
@@ -28,25 +29,34 @@ export const LottieAnimate = ({
   height,
   autoplay = true,
   loop = true,
+  startingFrameAfterFirstPlay,
 }: Props) => {
   const ref = useRef<LottieRefCurrentProps>(null);
-  const [animData, setAnimData] = useState<JSON | null>(null);
+  const [animationData, setAnimationData] = useState<JSON | null>(null);
 
   useEffect(() => {
     fetch(`/animations/${animation}.json`)
       .then((res) => res.json())
-      .then((data) => setAnimData(data));
+      .then((data) => setAnimationData(data));
   }, [animation]);
+
+  const onComplete = useCallback(() => {
+    if (!ref.current) return;
+
+    if (startingFrameAfterFirstPlay)
+      ref.current.goToAndPlay(startingFrameAfterFirstPlay, true);
+  }, [startingFrameAfterFirstPlay]);
 
   return (
     <>
-      {animData ? (
+      {animationData ? (
         <Lottie
-          animationData={animData}
+          animationData={animationData}
           autoplay={autoplay}
           loop={loop}
           lottieRef={ref}
           width={width}
+          onComplete={onComplete}
           height={height}
           className={className}
         />

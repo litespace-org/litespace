@@ -34,7 +34,12 @@ export const Features: React.FC = () => {
         <Highlight id="home/features/feature/novelity/description" />
       ),
       image: (
-        <LottieAnimate animation="novelity" className="w-1/2 min-w-[350px]" />
+        <LottieAnimate
+          animation="novelity"
+          loop={false}
+          startingFrameAfterFirstPlay={65}
+          className="w-1/2 min-w-[350px]"
+        />
       ),
       reverse: false,
     },

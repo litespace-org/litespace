@@ -1,5 +1,5 @@
 import { useFormatMessage } from "@/hooks/intl";
-import NotFoundV2 from "@litespace/assets/NotFoundV2";
+import NotFound from "@litespace/assets/404";
 import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import { Landing } from "@litespace/utils/routes";
@@ -8,9 +8,9 @@ import Link from "@/components/Common/Link";
 export const Page = () => {
   const intl = useFormatMessage();
   return (
-    <div className="mt-[72px] min-h-[calc(100vh-392px)] flex flex-col justify-center items-center gap-8 py-14 md:py-20 lg:py-[124px] px-4">
-      <NotFoundV2 className="w-[328px] h-[324px] md:w-[458px] md:h-[324px]" />
-      <div className="flex flex-col text-center gap-4 md:mt-8">
+    <div className="flex flex-col justify-center items-center gap-10 py-14 px-4">
+      <NotFound className="w-[309px] h-[248px] md:w-[492px] lg:w-[576px] md:h-[398px]" />
+      <div className="flex flex-col text-center gap-4">
         <Typography
           tag="h4"
           className="text-subtitle-1 text-natural-950 font-bold"

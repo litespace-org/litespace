@@ -1,14 +1,18 @@
 import { FooterLink } from "@/components/Common/FooterLink";
 import Link from "@/components/Common/Link";
 import {
+  LITESPACE_EMAIL_LINK,
   LITESPACE_FACEBOOK,
   LITESPACE_INSTAGRAM,
   LITESPACE_LINKEDIN,
+  LITESPACE_TIKTOK,
+  LITESPACE_WHATSAPP,
 } from "@/constants/links";
 import { PAGES } from "@/constants/ui";
 import { useFormatMessage } from "@/hooks/intl";
 import Facebook from "@litespace/assets/Facebook";
 import Instagram from "@litespace/assets/Instagram";
+import Tiktok from "@litespace/assets/Tiktok";
 import Linkedin from "@litespace/assets/Linkedin";
 import Logo from "@litespace/assets/Logo";
 import { Typography } from "@litespace/ui/Typography";
@@ -16,6 +20,9 @@ import { Landing } from "@litespace/utils/routes";
 import React, { ElementType } from "react";
 import GoUpButton from "@/components/Layout/GoUpButton";
 import cn from "classnames";
+import { router } from "@/lib/routes";
+import WhatsApp from "@litespace/assets/WhatsApp";
+import Mail from "@litespace/assets/Mail";
 
 function SocialMediaIcon({
   icon: Icon,
@@ -56,6 +63,18 @@ const SOCIAL_MEDIA: Array<{ href: string; icon: ElementType }> = [
     href: LITESPACE_LINKEDIN,
     icon: Linkedin,
   },
+  {
+    href: LITESPACE_WHATSAPP,
+    icon: WhatsApp,
+  },
+  {
+    href: LITESPACE_TIKTOK,
+    icon: Tiktok,
+  },
+  {
+    href: LITESPACE_EMAIL_LINK,
+    icon: () => <Mail className="[&>*]:stroke-natural-600 stroke-[1.5px]" />,
+  },
 ];
 
 const Links: React.FC = () => {
@@ -91,11 +110,17 @@ const Links: React.FC = () => {
         <div className="flex flex-col gap-2">
           <FooterLink
             text={intl("footer/links/tutor-guide")}
-            route={Landing.Faq}
+            route={router.landing({
+              route: Landing.FaqRole,
+              role: "tutor",
+            })}
           />
           <FooterLink
             text={intl("footer/links/student-guide")}
-            route={Landing.Faq}
+            route={router.landing({
+              route: Landing.FaqRole,
+              role: "student",
+            })}
           />
           <FooterLink text={intl("footer/links/faq")} route={Landing.Faq} />
           <FooterLink
@@ -135,13 +160,13 @@ const Introduction = () => {
   return (
     <div className="flex grow min-w-[292px] max-w-[475px] flex-col gap-2 lg:gap-4 col-span-1 md:col-span-2 lg:col-span-6">
       <div className="flex gap-2 items-center">
+        <Logo className="w-8 h-8" />
         <Typography
           tag="h4"
           className="text-brand-500 text-subtitle-2 font-bold"
         >
           {intl("labels/litespace")}
         </Typography>
-        <Logo className="w-10 h-10" />
       </div>
       <Typography
         tag="p"

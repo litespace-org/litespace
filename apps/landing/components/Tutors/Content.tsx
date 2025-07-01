@@ -20,7 +20,7 @@ const Content: React.FC<{
         return (
           <div
             key={tutor.id}
-            className="w-full sm:w-2/5 lg:flex-1 max-w-[574px] lg:max-w-[600px] justify-self-center lg:first:justify-self-end lg:last:justify-self-start"
+            className="w-full md:max-w-[276px] lg:max-h-[393px] justify-self-center lg:first:justify-self-end lg:last:justify-self-start"
           >
             <TutorCard
               id={tutor.id}

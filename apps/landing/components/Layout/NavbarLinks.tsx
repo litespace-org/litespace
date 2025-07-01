@@ -8,15 +8,20 @@ import Link from "next/link";
 import cn from "classnames";
 import { Void } from "@litespace/types";
 import { router } from "@/lib/routes";
-import { Web } from "@litespace/utils/routes";
+import { Landing, Web } from "@litespace/utils/routes";
 import { track } from "@/lib/ga";
 
 export function NavbarLinks({ toggleSidebar }: { toggleSidebar: Void }) {
   const intl = useFormatMessage();
 
   return (
-    <div className="max-w-screen-3xl mx-auto flex flex-row-reverse lg:flex-row justify-between items-center py-6 lg:py-4 px-4 md:px-8">
-      <Logo className="w-6 h-6 lg:w-10 lg:h-10 lg:me-20" />
+    <div className="max-w-screen-3xl mx-auto flex flex-row-reverse lg:flex-row justify-between items-center py-6 lg:py-4 px-4 md:px-8 lg:px-[108px]">
+      <Link
+        href={Landing.Home}
+        className="w-6 h-6 lg:min-w-10 lg:min-h-10 lg:me-20 shrink-0 flex items-center justify-center"
+      >
+        <Logo className="w-6 h-6 lg:min-w-10 lg:min-h-10 shrink-0" />
+      </Link>
       <nav
         className={cn("hidden lg:flex flex-col lg:flex-row gap-8 items-center")}
       >

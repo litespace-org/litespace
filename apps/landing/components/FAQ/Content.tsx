@@ -14,37 +14,57 @@ type Question = {
   content: string | React.ReactNode;
 };
 
-const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
+const Content: React.FC<{ role?: "student" | "tutor"; home?: boolean }> = ({
+  role,
+  home,
+}) => {
   const intl = useFormatMessage();
 
   const sharedQuestions: Question[] = [
+    {
+      title: intl("faq/body/general/q/7"),
+      content: intl("faq/body/general/q/7/answer"),
+    },
+    {
+      title: intl("faq/body/for-student/q/1"),
+      content: intl("faq/body/for-student/q/1/answer"),
+    },
+    {
+      title: intl("faq/body/for-student/q/2"),
+      content: intl.rich("faq/body/for-student/q/2/answer", {
+        here: (chunks) => (
+          <Link
+            track={{
+              event: "view_pricing_list",
+              params: { action: "link", src: "faq" },
+            }}
+            className="text-brand-700"
+            href={Landing.Pricing}
+          >
+            {chunks}
+          </Link>
+        ),
+      }),
+    },
     {
       title: intl("faq/body/general/q/1"),
       content: intl("faq/body/general/q/1/answer"),
     },
     {
-      title: intl("faq/body/general/q/2"),
-      content: intl("faq/body/general/q/2/answer"),
-    },
-    {
-      title: intl("faq/body/general/q/3"),
-      content: intl("faq/body/general/q/3/answer"),
+      title: intl("faq/body/for-student/q/3"),
+      content: intl("faq/body/for-student/q/3/answer"),
     },
     {
       title: intl("faq/body/general/q/4"),
       content: intl("faq/body/general/q/4/answer"),
     },
-    {
-      title: intl("faq/body/general/q/5"),
-      content: intl("faq/body/general/q/5/answer"),
-    },
+    // {
+    //   title: intl("faq/body/general/q/5"),
+    //   content: intl("faq/body/general/q/5/answer"),
+    // },
     {
       title: intl("faq/body/general/q/6"),
       content: intl("faq/body/general/q/6/answer"),
-    },
-    {
-      title: intl("faq/body/general/q/7"),
-      content: intl("faq/body/general/q/7/answer"),
     },
     {
       title: intl("faq/body/general/q/8"),
@@ -164,31 +184,6 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
 
   const studentQuestions: Question[] = [
     {
-      title: intl("faq/body/for-student/q/1"),
-      content: intl("faq/body/for-student/q/1/answer"),
-    },
-    {
-      title: intl("faq/body/for-student/q/2"),
-      content: intl.rich("faq/body/for-student/q/2/answer", {
-        here: (chunks) => (
-          <Link
-            track={{
-              event: "view_pricing_list",
-              params: { action: "link", src: "faq" },
-            }}
-            className="text-brand-700"
-            href={Landing.Pricing}
-          >
-            {chunks}
-          </Link>
-        ),
-      }),
-    },
-    {
-      title: intl("faq/body/for-student/q/3"),
-      content: intl("faq/body/for-student/q/3/answer"),
-    },
-    {
       title: intl("faq/body/for-student/q/4"),
       content: intl("faq/body/for-student/q/4/answer"),
     },
@@ -278,7 +273,7 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
   ];
 
   const userQuestions = role === "tutor" ? tutorQuestions : studentQuestions;
-  const questions = userQuestions.concat(sharedQuestions);
+  const questions = sharedQuestions.concat(home ? [] : userQuestions);
 
   return (
     <div className="bg-natural-0 md:py-18 lg:py-24">

@@ -6,12 +6,12 @@ import CTA from "@/components/Common/CTA";
 
 export default async function Home() {
   return (
-    <main className="flex flex-col">
+    <main className="flex flex-col overflow-x-hidden">
       <Hero />
       <Features />
       <Tutors />
       <CTA />
-      <FAQ />
+      <FAQ home={true} />
     </main>
   );
 }
