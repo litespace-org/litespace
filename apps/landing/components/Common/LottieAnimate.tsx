@@ -3,7 +3,6 @@
 import React, { useRef } from "react";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 
-import heroSection from "@/animations/motion-hero.json";
 import notifications from "@/animations/notifications.json";
 import anytime from "@/animations/anytime.json";
 import novelity from "@/animations/novelity.json";
@@ -12,7 +11,6 @@ import allInEnglish from "@/animations/all-lesson-english.json";
 import oneOnOne from "@/animations/one-and-one.json";
 
 const animations = {
-  heroSection,
   notifications,
   anytime,
   novelity,

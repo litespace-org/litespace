@@ -14,6 +14,7 @@ import {
   LITESPACE_TUTORS_TELEGRAM,
   LITESPACE_WHATSAPP,
 } from "@/constants/links";
+import { Highlight } from "@/components/Common/Highlight";
 
 const Contacts: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
   const intl = useFormatMessage();
@@ -78,13 +79,7 @@ const ContactUs: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
             tag="h1"
             className="text-natural-950 text-subtitle-2 md:text-h4 font-bold"
           >
-            {intl.rich("contact-us/title", {
-              highlight: (chunks) => (
-                <Typography tag="span" className="text-brand-500">
-                  {chunks}
-                </Typography>
-              ),
-            })}
+            <Highlight id="contact-us/title" />
           </Typography>
           <Typography
             tag="p"
