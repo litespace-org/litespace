@@ -55,7 +55,10 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="flex justify-center items-center h-[200px] md:h-full w-full">
-        <LottieAnimate animation="heroSection" />
+        <LottieAnimate
+          animation="heroSection"
+          className="w-1/2 min-w-[350px] lg:w-full"
+        />
       </div>
     </div>
   );
