@@ -147,7 +147,11 @@ export function useMakeValidators<T extends object>(validators: {
       if (!safeValue?.required && !safeValue?.validate) continue;
 
       output[safeKey] = (value, state) => {
-        if (safeValue.required && !value) return intl("error.required");
+        if (
+          safeValue.required &&
+          (value === undefined || value === null || value === "")
+        )
+          return intl("error.required");
         if (safeValue.required === false && !value) return true;
         const messageId = safeValue.validate?.(value, state);
         if (messageId) return intl(messageId);

@@ -1,5 +1,4 @@
-import InvoicesOverview from "@/components/Invoices/InvoicesOverview";
-import List from "@/components/Invoices/List";
+import { List, InvoicesOverview } from "@/components/Invoices";
 import { useUser } from "@litespace/headless/context/user";
 import React from "react";
 
