@@ -1,10 +1,11 @@
-import { highlight, useFormatMessage } from "@/hooks/intl";
+import { useFormatMessage } from "@/hooks/intl";
 import { router } from "@/lib/routes";
 import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import Link from "@/components/Common/Link";
+import { Highlight } from "@/components/Common/Highlight";
 import { LottieAnimate } from "@/components/Common/LottieAnimate";
 
 const Hero: React.FC = () => {
@@ -23,13 +24,13 @@ const Hero: React.FC = () => {
             tag="h1"
             className="text-natural-950 text-subtitle-1 md:text-h2 font-bold lg:w-full"
           >
-            {highlight(intl, "home/hero/title")}
+            <Highlight id="home/hero/title" />
           </Typography>
           <Typography
             tag="p"
             className="text-natural-700 text-body md:text-subtitle-2 font-medium lg:w-full"
           >
-            {highlight(intl, "home/hero/description")}
+            <Highlight id="home/hero/description" />
           </Typography>
         </div>
         <Link
