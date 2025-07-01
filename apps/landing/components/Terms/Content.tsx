@@ -50,6 +50,7 @@ const Content: React.FC = () => {
             intl("terms/body/payment-and-subscription/content/3"),
             intl("terms/body/payment-and-subscription/content/4"),
             intl("terms/body/payment-and-subscription/content/5"),
+            intl("terms/body/payment-and-subscription/content/6"),
           ]}
         />
       </Section>
