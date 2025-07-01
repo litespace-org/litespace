@@ -1,6 +1,6 @@
 export type FeatureProps = {
   title: string;
-  description: string;
+  description: React.ReactNode | string;
   image: React.ReactNode;
   reverse: boolean;
 };
