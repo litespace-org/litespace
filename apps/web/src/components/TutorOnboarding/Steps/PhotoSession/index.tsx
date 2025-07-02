@@ -93,9 +93,7 @@ const SessionExample: React.FC<{
       </div>
       {!showExample ? (
         <Button size="large" className="self-start" onClick={setShowExample}>
-          <Typography tag="span" className="text">
-            {intl("tutor-onboarding.step.photo-session.contact-us.btn")}
-          </Typography>
+          {intl("tutor-onboarding.step.photo-session.contact-us.btn")}
         </Button>
       ) : null}
       {showExample ? (
@@ -103,13 +101,12 @@ const SessionExample: React.FC<{
           to={MAIN_TUTOR_MANAGER_TELEGRAM_URL}
           className="self-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
-          <Button tabIndex={-1} size="large">
-            <Typography
-              tag="span"
-              className="text text-body font-medium text-natural-50"
-            >
-              {intl("tutor-onboarding.step.photo-session.book-session.btn")}
-            </Typography>
+          <Button
+            tabIndex={-1}
+            size="large"
+            className="text-body font-medium text-natural-50"
+          >
+            {intl("tutor-onboarding.step.photo-session.book-session.btn")}
           </Button>
         </Link>
       ) : null}

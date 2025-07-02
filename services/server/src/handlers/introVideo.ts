@@ -1,5 +1,4 @@
 import {
-  INTRO_VIDEO_EXPIRY_MONTHS,
   INTRO_VIDEO_MAX_FILE_SIZE,
   INTRO_VIDEO_MAX_MINUTES,
   INTRO_VIDEO_MIN_MINUTES,
@@ -37,6 +36,7 @@ import {
   isRegularTutor,
   isTutor,
   isTutorManager,
+  INTRO_VIDEO_EXPIRY_MONTHS,
 } from "@litespace/utils";
 import safeRequest from "express-async-handler";
 import zod, { ZodSchema } from "zod";

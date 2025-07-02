@@ -3,7 +3,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import Logo from "@litespace/assets/Logo";
 
-export const Pending: React.FC = () => {
+export const Rejected: React.FC = () => {
   const intl = useFormatMessage();
 
   return (
@@ -26,7 +26,7 @@ export const Pending: React.FC = () => {
                 tag="p"
                 className="text-body font-normal text-natural-700"
               >
-                {intl("tutor-onboarding.steps.intro-video.pending.desc")}
+                {intl("tutor-onboarding.steps.intro-video.rejected.desc")}
               </Typography>
             </div>
           </div>
@@ -36,4 +36,4 @@ export const Pending: React.FC = () => {
   );
 };
 
-export default Pending;
+export default Rejected;
