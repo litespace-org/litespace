@@ -191,6 +191,8 @@ async function main(): Promise<void> {
         console.log(`tutor: ${tutor.id} - ${tutor.email}`);
 
         await tutors.create(tutor.id, tx);
+        // tutors with odd id will be onboarded
+        const isOnborded = idx % 2 !== 0;
 
         await users.update(
           tutor.id,
@@ -199,9 +201,10 @@ async function main(): Promise<void> {
             phone: phone(),
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
             city: city(),
+            birthYear: isOnborded ? 2001 : undefined,
             image: uniqueId(),
-            verifiedEmail: sample([true, false]),
-            verifiedPhone: sample([true, false]),
+            verifiedEmail: isOnborded,
+            verifiedPhone: isOnborded,
           },
           tx
         );
@@ -211,7 +214,9 @@ async function main(): Promise<void> {
           {
             about: sample([faker.lorem.paragraphs(), null]),
             bio: sample([faker.lorem.words(9), null]),
-            activated: sample([true, false]),
+            activated: isOnborded,
+            video: isOnborded ? "/video.mp4" : undefined,
+            thumbnail: isOnborded ? "/thumbnail.png" : undefined,
           },
           tx
         );
