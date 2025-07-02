@@ -13,7 +13,10 @@ export const Features: React.FC = () => {
         <Highlight id="home/features/feature/one-on-one/description" />
       ),
       image: (
-        <LottieAnimate animation="oneOnOne" className="w-1/2 min-w-[350px]" />
+        <LottieAnimate
+          animation="one-and-one"
+          className="w-1/2 min-w-[350px]"
+        />
       ),
       reverse: false,
     },
@@ -42,7 +45,7 @@ export const Features: React.FC = () => {
       ),
       image: (
         <LottieAnimate
-          animation="timeIsYours"
+          animation="time-is-yours"
           className="w-1/2 min-w-[350px]"
         />
       ),
@@ -55,7 +58,7 @@ export const Features: React.FC = () => {
       ),
       image: (
         <LottieAnimate
-          animation="allInEnglish"
+          animation="all-in-english"
           className="w-1/2 min-w-[350px]"
         />
       ),

@@ -6,7 +6,7 @@ import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import Link from "@/components/Common/Link";
 import { Highlight } from "@/components/Common/Highlight";
-import { RiveAnimate } from "@/components/Common/RiveAnimate";
+import { LottieAnimate } from "@/components/Common/LottieAnimate";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
@@ -56,7 +56,10 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="flex justify-center items-center h-[200px] md:h-full w-full">
-        <RiveAnimate animation="hero" state="State Machine 1" />
+        <LottieAnimate
+          animation="motion-hero"
+          className="w-1/2 min-w-[350px] lg:w-full"
+        />
       </div>
     </div>
   );
