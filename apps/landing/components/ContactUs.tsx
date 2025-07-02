@@ -11,6 +11,7 @@ import ContactRequestForm from "@/components/ContactRequestForm";
 import { Providers } from "@/app/providers";
 import Link from "next/link";
 import {
+  LITESPACE_EMAIL,
   LITESPACE_TUTORS_TELEGRAM,
   LITESPACE_WHATSAPP,
 } from "@/constants/links";
@@ -34,13 +35,15 @@ const Contacts: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
       </li>
       <li className="flex flex-row items-center gap-4">
         <Mail className="fill-white w-6 h-6" />
-        <Typography
-          dir="ltr"
-          tag="span"
-          className="text-white text-body font-medium"
-        >
-          {intl("contacts/email")}
-        </Typography>
+        <Link href={`mailto:${LITESPACE_EMAIL}`}>
+          <Typography
+            dir="ltr"
+            tag="span"
+            className="text-white text-body font-medium"
+          >
+            {intl("contacts/email")}
+          </Typography>
+        </Link>
       </li>
       {tutor ? (
         <li>

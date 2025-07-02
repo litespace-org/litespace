@@ -24,6 +24,7 @@
       "require": "./dist/index.cjs.js",
       "types": "./dist/index.d.ts"
     },
+    "./404": "./dist/404.tsx",
     "./Categories": "./dist/Categories.tsx",
     "./Crown": "./dist/Crown.tsx",
     "./AbstractLine": "./dist/AbstractLine.tsx",
@@ -174,6 +175,7 @@
     "./Success": "./dist/Success.tsx",
     "./Switch": "./dist/Switch.tsx",
     "./Tag": "./dist/Tag.tsx",
+    "./Tiktok": "./dist/Tiktok.tsx",
     "./TelegramWithCircle": "./dist/TelegramWithCircle.tsx",
     "./TelegramWithoutCircle": "./dist/TelegramWithoutCircle.tsx",
     "./ThemeSwitchLight": "./dist/ThemeSwitchLight.tsx",

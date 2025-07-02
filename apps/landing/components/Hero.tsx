@@ -6,7 +6,7 @@ import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import Link from "@/components/Common/Link";
 import { Highlight } from "@/components/Common/Highlight";
-import { LottieAnimate } from "@/components/Common/LottieAnimate";
+import { RiveAnimate } from "@/components/Common/RiveAnimate";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
@@ -14,11 +14,11 @@ const Hero: React.FC = () => {
   return (
     <div
       className={cn(
-        "relative flex flex-col lg:flex-row items-center justify-center gap-10 bg-natural-0 overflow-hidden",
-        "h-[75vh] sm:h-auto md:h-[75vh] sm:mt-16 py-16 lg:px-[108px]"
+        "relative flex flex-col lg:flex-row items-center justify-between gap-10 bg-natural-0 overflow-hidden",
+        "h-[100vh-72px] mt-10 sm:mt-16 py-16 lg:px-[108px]"
       )}
     >
-      <div className="flex flex-col text-center justify-center gap-6 px-4 md:px-0 w-full">
+      <div className="flex flex-col text-center justify-center items-center lg:items-start gap-6 px-4 md:px-0 w-full">
         <div className="mx-auto flex flex-col items-center gap-4 lg:text-right max-w-[328px] sm:max-w-[770px] md:max-w-[808px]">
           <Typography
             tag="h1"
@@ -42,7 +42,7 @@ const Hero: React.FC = () => {
               action: "link",
             },
           }}
-          className="flex justify-center lg:justify-start"
+          className="flex justify-center lg:justify-start w-fit"
         >
           <Button size="large" className="py-2 px-4">
             <Typography
@@ -55,11 +55,8 @@ const Hero: React.FC = () => {
         </Link>
       </div>
 
-      <div className="flex justify-center items-center h-[200px] md:h-full w-full">
-        <LottieAnimate
-          animation="motion-hero"
-          className="w-1/2 min-w-[350px] lg:w-full"
-        />
+      <div className="flex justify-center items-center h-[200px] md:h-[426px] max-h-[426px] w-full">
+        <RiveAnimate animation="hero" state="State Machine 1" />
       </div>
     </div>
   );

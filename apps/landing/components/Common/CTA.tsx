@@ -1,20 +1,24 @@
 import React from "react";
-import LandingHomeCta from "@litespace/assets/LandingHomeCta";
 import { Typography } from "@litespace/ui/Typography";
 import Link from "next/link";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@/hooks/intl";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import { RiveAnimate } from "@/components/Common/RiveAnimate";
 
 const CTA: React.FC = () => {
   const intl = useFormatMessage();
 
   return (
-    <div className="bg-[#121212] flex justify-center items-center py-40 lg:py-0 lg:h-screen">
+    <div className="bg-[#121212] relative flex justify-center items-center z-[9999] py-40 lg:py-0 lg:h-[calc(100vh+60px)]">
+      <div className="absolute w-screen bg-[#121212] h-full -z-10" />
       <div className="flex flex-col md:flex-row gap-6 lg:gap-21 w-full h-full justify-center items-center">
-        <LandingHomeCta className="w-2/3 md:w-1/3" />
-
+        <RiveAnimate
+          state="main_comp"
+          animation="cta"
+          className="w-5/6 md:w-1/3 min-h-[303px] md:min-h-[259px] lg:min-h-[433px]"
+        />
         <div className="flex flex-col gap-4 justify-center text-center">
           <Typography
             tag="p"
@@ -24,7 +28,7 @@ const CTA: React.FC = () => {
           </Typography>
           <Typography
             tag="p"
-            className="text-subtitle-1 lg:text-h4 font-bold text-white"
+            className="text-subtitle-1 lg:text-h4 font-bold max-w-[500px] text-white"
           >
             {intl("home/cta/description")}
           </Typography>
@@ -34,6 +38,7 @@ const CTA: React.FC = () => {
               role: "student",
               full: true,
             })}
+            className="w-fit mx-auto"
             tabIndex={-1}
           >
             <Button size="large" className="mt-2 mx-auto" htmlType="button">

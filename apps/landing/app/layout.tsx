@@ -12,7 +12,7 @@ import "@litespace/ui/tailwind.css";
 export const metadata: Metadata = {
   title: "LiteSpace — Effortless English",
   description:
-    "Unlock your English potential with LiteSpace. Learn faster, anytime, anywhere.",
+    "تجربتك التعليمية عن بُعد والمصممة خصيصًا لمساعدتك في تطوير مهاراتك في اللغة الانجليزية وثقتك بنفسك من خلال جلسات خاصة تفاعلية مع معلمين تم اختيارهم بعناية فائقة.",
 };
 
 export default async function RootLayout({
