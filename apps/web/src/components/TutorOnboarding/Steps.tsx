@@ -16,7 +16,7 @@ import Check from "@litespace/assets/Check1";
 
 const Steps: React.FC<{ active: StepId }> = ({ active }) => {
   return (
-    <div className="border-r border-natural-100 w-[512px] p-6">
+    <div className="flex justify-center lg:justify-start border-r border-natural-100 lg:w-[512px] p-6">
       <div className="w-[368px] flex flex-col gap-10">
         <Support />
         <List active={active} />

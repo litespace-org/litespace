@@ -163,7 +163,6 @@ export const livekitConfig = {
 
 export const INTRO_VIDEO_MIN_MINUTES = 1;
 export const INTRO_VIDEO_MAX_MINUTES = 3;
-export const INTRO_VIDEO_EXPIRY_MONTHS = 3;
 
 /**
  * max size in megabytes

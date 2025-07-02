@@ -199,3 +199,5 @@ export const PLAN_PERIOD_TO_WEEK_COUNT: Record<IPlan.Period, number> = {
   [IPlan.Period.Quarter]: 12,
   [IPlan.Period.Year]: 52,
 };
+
+export const INTRO_VIDEO_EXPIRY_MONTHS = 3;

@@ -11,10 +11,11 @@ import { isEmpty } from "lodash";
 import { useCallback, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-type State = "idle" | "recording" | "preview";
+type State = "idle" | "capturing" | "recording" | "preview";
 
 export function useRecord() {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const captureRef = useRef<HTMLVideoElement>(null);
+  const recordingRef = useRef<HTMLVideoElement>(null);
   const previewRef = useRef<HTMLVideoElement>(null);
   const chunksRef = useRef<Blob[]>([]);
   const [starting, setStarting] = useState(false);
@@ -22,8 +23,9 @@ export function useRecord() {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
   const [audioTrack, setAudioTrack] = useState<LocalAudioTrack | null>(null);
   const [videoTrack, setVideoTrack] = useState<LocalVideoTrack | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
-  const record = useCallback(async () => {
+  const capture = useCallback(async () => {
     setStarting(true);
     chunksRef.current = [];
 
@@ -46,7 +48,9 @@ export function useRecord() {
     )
       return;
 
-    if (videoRef.current) videoTrack.attach(videoRef.current);
+    if (captureRef.current) videoTrack.attach(captureRef.current);
+    if (recordingRef.current) videoTrack.attach(recordingRef.current);
+    if (previewRef.current) videoTrack.attach(previewRef.current);
     await safePromise(videoTrack.setProcessor(BackgroundBlur(50)));
     const processedVideoTrack = videoTrack.getProcessor()?.processedTrack;
     if (!processedVideoTrack) return;
@@ -55,6 +59,24 @@ export function useRecord() {
       processedVideoTrack,
       ...(audioTrack.mediaStream?.getTracks() || []),
     ]);
+
+    setStream(stream);
+    setAudioTrack(audioTrack);
+    setVideoTrack(videoTrack);
+    setState("capturing");
+  }, []);
+
+  const record = useCallback(async () => {
+    chunksRef.current = [];
+
+    if (
+      !videoTrack ||
+      !audioTrack ||
+      !isLocalVideoTrack(videoTrack) ||
+      !isLocalAudioTrack(audioTrack) ||
+      !stream
+    )
+      return;
 
     const mediaRecorder = new MediaRecorder(stream, {
       mimeType: "video/webm; codecs=vp9",
@@ -71,7 +93,7 @@ export function useRecord() {
     setAudioTrack(audioTrack);
     setVideoTrack(videoTrack);
     setState("recording");
-  }, []);
+  }, [audioTrack, stream, videoTrack]);
 
   const preview = useCallback(async () => {
     await videoTrack?.stopProcessor();
@@ -110,5 +132,15 @@ export function useRecord() {
     []
   );
 
-  return { record, state, starting, videoRef, previewRef, preview, upload };
+  return {
+    capture,
+    record,
+    state,
+    starting,
+    captureRef,
+    recordingRef,
+    previewRef,
+    preview,
+    upload,
+  };
 }

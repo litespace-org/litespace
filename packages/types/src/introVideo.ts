@@ -58,6 +58,8 @@ export type UpdateApiPayload = {
   reviewerId?: number;
 };
 
+export type UpdateApiResponse = void;
+
 export type FindModelPayload = IFilter.SkippablePagination & {
   tutorIds?: number[];
   videoIds?: number[];
@@ -78,6 +80,8 @@ export type CreateApiPayload = {
 export type CreateApiFiles = {
   video?: Blob;
 };
+
+export type CreateApiResponse = void;
 
 export type FindApiPayload = IFilter.SkippablePagination & {
   tutorIds?: number[];

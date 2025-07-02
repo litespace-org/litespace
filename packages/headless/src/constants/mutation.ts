@@ -1,6 +1,7 @@
 export enum MutationKey {
   UploadUserAssets = "upload-user-assets",
   CreateInterview = "create-interview",
+  CreateIntroVideo = "create-intro-video",
   UpdateInterview = "update-interview",
   CreateInvoice = "create-invoice",
   EditInvoice = "edit-invoice",
