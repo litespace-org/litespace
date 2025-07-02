@@ -6,7 +6,7 @@ import CTA from "@/components/Common/CTA";
 
 export default async function Home() {
   return (
-    <main className="flex flex-col overflow-x-hidden">
+    <main className="flex flex-col">
       <Hero />
       <Features />
       <Tutors />
