@@ -47,20 +47,18 @@ export const LottieAnimate = ({
       ref.current.goToAndPlay(startingFrameAfterFirstPlay, true);
   }, [startingFrameAfterFirstPlay]);
 
+  if (!animationData) return null;
+
   return (
-    <>
-      {animationData ? (
-        <Lottie
-          animationData={animationData}
-          autoplay={autoplay}
-          loop={loop}
-          lottieRef={ref}
-          width={width}
-          onComplete={onComplete}
-          height={height}
-          className={className}
-        />
-      ) : null}
-    </>
+    <Lottie
+      animationData={animationData}
+      autoplay={autoplay}
+      loop={loop}
+      lottieRef={ref}
+      width={width}
+      onComplete={onComplete}
+      height={height}
+      className={className}
+    />
   );
 };
