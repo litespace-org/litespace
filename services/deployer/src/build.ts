@@ -4,15 +4,11 @@ import { flatten } from "lodash";
 import { spawn } from "node:child_process";
 
 const workspaceBuildCommand: Record<Workspace, string[]> = {
-  "@litespace/server": [
-    "pnpm models migrate up",
-    "pnpm run server build",
-    "pm2 reload api",
-  ],
+  "@litespace/server": ["pnpm models migrate up", "pnpm run server build"],
   "@litespace/web": ["pnpm web build"],
   "@litespace/dashboard": ["pnpm dashboard build"],
-  "@litespace/landing": ["pnpm landing build", "pm2 reload landing"],
-  "@litespace/jobs": ["pnpm jobs build", "pm2 reload jobs"],
+  "@litespace/landing": ["pnpm landing build"],
+  "@litespace/jobs": ["pnpm jobs build"],
 };
 
 function getWorkspaceBuildCommand(workspaces: Workspace[] | "all"): string[] {
@@ -29,11 +25,14 @@ function getWorkspaceBuildCommand(workspaces: Workspace[] | "all"): string[] {
 
 export async function build(workspaces: Workspace[] | "all") {
   const commands = [
+    `pm2 stop all`,
+    `git checkout master`,
     `git reset --hard`,
     `git pull origin ${config.branch}`,
     `pnpm install --network-concurrency=2`,
     `pnpm build:pkgs`,
     ...getWorkspaceBuildCommand(workspaces),
+    `pm2 reload all`,
   ];
 
   console.log("Commands: \n", commands.join("\t\n"));
