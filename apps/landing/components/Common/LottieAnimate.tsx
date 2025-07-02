@@ -1,26 +1,19 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 
-import notifications from "@/animations/notifications.json";
-import anytime from "@/animations/anytime.json";
-import novelity from "@/animations/novelity.json";
-import timeIsYours from "@/animations/time-is-yours.json";
-import allInEnglish from "@/animations/all-lesson-english.json";
-import oneOnOne from "@/animations/one-and-one.json";
-
-const animations = {
-  notifications,
-  anytime,
-  novelity,
-  timeIsYours,
-  allInEnglish,
-  oneOnOne,
-};
+type AnimationKey =
+  | "anytime"
+  | "notifications"
+  | "novelity"
+  | "one-and-one"
+  | "time-is-yours"
+  | "all-in-english"
+  | "motion-hero";
 
 type Props = {
-  animation: keyof typeof animations;
+  animation: AnimationKey;
   className?: string;
   width?: number;
   height?: number;
@@ -37,15 +30,27 @@ export const LottieAnimate = ({
   loop = true,
 }: Props) => {
   const ref = useRef<LottieRefCurrentProps>(null);
+  const [animData, setAnimData] = useState<JSON | null>(null);
+
+  useEffect(() => {
+    fetch(`/animations/${animation}.json`)
+      .then((res) => res.json())
+      .then((data) => setAnimData(data));
+  }, [animation]);
+
   return (
-    <Lottie
-      animationData={animations[animation]}
-      autoplay={autoplay}
-      loop={loop}
-      lottieRef={ref}
-      width={width}
-      height={height}
-      className={className}
-    />
+    <>
+      {animData ? (
+        <Lottie
+          animationData={animData}
+          autoplay={autoplay}
+          loop={loop}
+          lottieRef={ref}
+          width={width}
+          height={height}
+          className={className}
+        />
+      ) : null}
+    </>
   );
 };
