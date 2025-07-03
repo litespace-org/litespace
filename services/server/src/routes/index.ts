@@ -19,6 +19,7 @@ import transaction from "@/routes/transaction";
 import subscription from "@/routes/subscription";
 import confirmationCode from "@/routes/confirmationCode";
 import report from "@/routes/report";
+import demoSession from "@/routes/demoSession";
 
 export default {
   user,
@@ -42,4 +43,5 @@ export default {
   subscription,
   confirmationCode,
   report,
+  demoSession,
 };

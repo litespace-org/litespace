@@ -34,6 +34,13 @@ const SESSION_TO_MESSAGE_IDS: Record<
     willStartIn: "session.ready.interview.will-start-in",
     join: "session.ready.interview.join",
   },
+  // @mo @TODO: replace the LocalIds here with the right ones.
+  demo: {
+    startedSince: "session.ready.interview.started-since",
+    endedSince: "session.ready.interview.ended-since",
+    willStartIn: "session.ready.interview.will-start-in",
+    join: "session.ready.interview.join",
+  },
 } as const;
 
 export const Ready: React.FC<{

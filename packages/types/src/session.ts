@@ -1,6 +1,6 @@
 import { ISession } from ".";
 
-export type Type = "lesson" | "interview";
+export type Type = "lesson" | "interview" | "demo";
 export type Id = `${Type}:${string}`;
 
 export type FindSessionMembersApiParams = {

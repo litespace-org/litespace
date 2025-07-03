@@ -22,5 +22,5 @@ export function getSessionType(id: ISession.Id): ISession.Type {
 }
 
 export function isValidSessionType(value: unknown): value is ISession.Type {
-  return value === "lesson" || value === "interview";
+  return value === "lesson" || value === "interview" || value === "demo";
 }
