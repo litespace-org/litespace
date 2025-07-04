@@ -34,6 +34,7 @@ export * as IKafka from "@/kafka";
 export * as IFawry from "@/fawry";
 export * as ITransaction from "@/transaction";
 export * as IDemoSession from "@/demoSession";
+export * as IDocmost from "@/docmost";
 
 export * from "@/api";
 export * from "@/utils";
