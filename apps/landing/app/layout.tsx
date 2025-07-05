@@ -27,7 +27,7 @@ export default async function RootLayout({
     <html
       lang={locale.startsWith("ar") ? "ar" : "en"}
       dir={locale.startsWith("ar") ? "rtl" : "ltr"}
-      className="scrollbar-thin bg-natural-0 font-cairo relative"
+      className="scrollbar-thin bg-natural-0 font-cairo relative scroll-smooth"
     >
       <NextIntlClientProvider messages={messages}>
         <Layout>{children}</Layout>

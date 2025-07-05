@@ -6,12 +6,14 @@ import { useFormatMessage } from "@/hooks/intl";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { RiveAnimate } from "@/components/Common/RiveAnimate";
+import ScrollPivot from "./ScrollPivot";
 
 const CTA: React.FC = () => {
   const intl = useFormatMessage();
 
   return (
-    <div className="bg-[#121212] relative flex justify-center items-center z-[9999] py-40 lg:py-0 lg:h-[calc(100vh+60px)]">
+    <div id="CTA" className="bg-[#121212] relative flex justify-center items-center z-[9999] py-40 lg:py-0 lg:h-[calc(100vh+60px)]">
+      <ScrollPivot destination="CTA" margin={1000} />
       <div className="absolute w-screen bg-[#121212] h-full -z-10" />
       <div className="flex flex-col md:flex-row gap-6 lg:gap-21 w-full h-full justify-center items-center">
         <RiveAnimate
