@@ -2,6 +2,7 @@ import { WithOptionalTx } from "@/query";
 import { IDemoSession, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { Model } from "@/lib/model";
+import { dayjs } from "@litespace/utils";
 
 const FIELD_TO_COLUMN = {
   id: "id",
@@ -35,13 +36,24 @@ export class DemoSessions extends Model<
     return {} as IDemoSession.Self;
   }
 
-  // @galal @TODO: implement this model function; it should update both the status and updated_at columns
-  // for a certain demo-session row in the database.
   async update(
-    _id: number,
-    _payload: IDemoSession.UpdateModelPayload,
-    _tx?: Knex.Transaction
-  ): Promise<void> {}
+    id: number,
+    payload: IDemoSession.UpdateModelPayload,
+    tx?: Knex.Transaction
+  ): Promise<void> {
+    if (!payload.status) return;
+
+    await this.builder(tx).where(this.column("id"), id).update({
+      status: payload.status,
+      updated_at: dayjs.utc().toDate(),
+    });
+  }
+
+  async findById(id: number): Promise<IDemoSession.Self | null> {
+    const rows = await this.builder().select("*").where(this.column("id"), id);
+    const row = rows[0];
+    return row ? this.from(row) : null;
+  }
 
   // @mk @TODO: implement this model function and use the new convention the `select` parameter.
   // Notice, that tutorManagerId is not stored in the table. I've chosen this design for more

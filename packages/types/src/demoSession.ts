@@ -4,8 +4,8 @@ export enum Status {
   Pending = 1,
   Passed = 2,
   Rejected = 3,
-  CanceledByInterviewer = 4,
-  CanceledByInterviewee = 5,
+  CanceledByTutorManager = 4,
+  CanceledByTutor = 5,
 }
 
 export type Row = {
@@ -47,10 +47,6 @@ export type CreateModelPayload = {
 };
 
 export type UpdateModelPayload = {
-  /**
-   * the id of the demo-session to be updated
-   */
-  id: number;
   status?: Status;
 };
 
