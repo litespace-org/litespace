@@ -1,10 +1,5 @@
-import { useFormatMessage } from "@/hooks/intl";
-import { Button } from "@litespace/ui/Button";
 import { FeatureProps } from "@/components/Features/types";
 import cn from "classnames";
-import Link from "@/components/Common/Link";
-import { router } from "@/lib/routes";
-import { Web } from "@litespace/utils/routes";
 
 const Feature: React.FC<FeatureProps> = ({
   title,
@@ -12,8 +7,6 @@ const Feature: React.FC<FeatureProps> = ({
   image,
   reverse,
 }) => {
-  const intl = useFormatMessage();
-
   return (
     <section
       className={cn(
@@ -28,21 +21,6 @@ const Feature: React.FC<FeatureProps> = ({
         <p className="text-caption md:text-subtitle-2 font-semibold text-natural-800 md:text-right">
           {description}
         </p>
-
-        <Link
-          href={router.web({ route: Web.Root, full: true })}
-          track={{
-            event: "register",
-            params: {
-              src: "hero",
-              action: "link",
-            },
-          }}
-          className="flex justify-center lg:justify-start"
-          tabIndex={-1}
-        >
-          <Button size="large">{intl("home/features/book-lesson-now")}</Button>
-        </Link>
       </div>
 
       {image}

@@ -28,6 +28,5 @@ The main goal of the context video is:
 
 - [Context Video](#context-video-here)
 
-
-> [!IMPORTANT] 
+> [!IMPORTANT]
 > Incase you have any valuable knowledge that you think that it is worth writing down, feel free to add it to our handbook. Wounder why we are doing this? [check this guide](https://handbook.litespace.org/s/general/p/everything-should-have-a-url-QfllToC5EY).

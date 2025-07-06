@@ -10,6 +10,10 @@ export const PAGES: Array<{ title: LocalId; route: string }> = [
     title: "navbar/pricing",
     route: Landing.Pricing,
   },
+  {
+    title: "navbar/about",
+    route: Landing.About,
+  },
   /*
    * @TODO: implement be-a-tutor page
   {
