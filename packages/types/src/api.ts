@@ -53,6 +53,7 @@ export enum ApiError {
   ServiceUnavailable = "service-unavailable",
   FawryError = "fawry-error",
   LargeFileSize = "large-file-size",
+  DemoSessionNotFound = "demo-session-not-found",
 }
 
 export type ApiErrorCode = ApiError | FieldError;
