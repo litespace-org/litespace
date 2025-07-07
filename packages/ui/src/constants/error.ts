@@ -10,6 +10,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.RoomExists]: "error.api.room-exists",
   [ApiError.UserExists]: "error.api.user-exists",
   [ApiError.RatingExists]: "error.api.rating-exists",
+  [ApiError.IntroVideoExists]: "error.api.intro-video-exists",
   [ApiError.SubscriptionExists]: "error.api.subscription-exists",
   [ApiError.SubscriptionRequired]: "error.api.subscription-required",
   [ApiError.NoEnoughMinutes]: "error.api.no-enough-minutes",

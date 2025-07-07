@@ -535,4 +535,30 @@ describe(nameof(Tutors), () => {
       expect(res6.list.length).to.be.eq(4);
     });
   });
+
+  describe(nameof(tutors.findTutorManagersByIntroVideos), () => {
+    it("should find a certain number of tutorManagerIds ordered (desc) according to the number of video reviews", async () => {
+      const tutorManager1 = await fixtures.tutorManager();
+      const tutorManager2 = await fixtures.tutorManager();
+      const tutorManager3 = await fixtures.tutorManager();
+
+      await Promise.all([
+        fixtures.introVideo({ reviewerId: tutorManager1.id }),
+        fixtures.introVideo({ reviewerId: tutorManager1.id }),
+
+        fixtures.introVideo({ reviewerId: tutorManager2.id }),
+        fixtures.introVideo({ reviewerId: tutorManager2.id }),
+        fixtures.introVideo({ reviewerId: tutorManager2.id }),
+
+        fixtures.introVideo({ reviewerId: tutorManager3.id }),
+      ]);
+
+      const res = await tutors.findTutorManagersByIntroVideos({
+        size: 2,
+        order: "desc",
+      });
+
+      expect(res).to.deep.eq([tutorManager2.id, tutorManager1.id]);
+    });
+  });
 });
