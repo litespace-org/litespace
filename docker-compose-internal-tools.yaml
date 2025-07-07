@@ -95,6 +95,7 @@ services:
       AWS_S3_BUCKET: "docmost"
       AWS_S3_ENDPOINT: "https://litespace-staging-assets.fra1.digitaloceanspaces.com"
       AWS_S3_FORCE_PATH_STYLE: "false"
+      FILE_UPLOAD_SIZE_LIMIT: "250mb"
     ports:
       - "127.0.0.1:3006:3000"
     restart: unless-stopped
