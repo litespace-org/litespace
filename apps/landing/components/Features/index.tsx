@@ -3,6 +3,7 @@ import { FeatureProps } from "@/components/Features/types";
 import Feature from "@/components/Features/Feautre";
 import { LottieAnimate } from "@/components/Common/LottieAnimate";
 import { Highlight } from "@/components/Common/Highlight";
+import { Typography } from "@litespace/ui/Typography";
 
 export const Features: React.FC = () => {
   const intl = useFormatMessage();
@@ -85,7 +86,18 @@ export const Features: React.FC = () => {
   ];
 
   return (
-    <section className="flex flex-col gap-6 py-6 sm:gap-[100px] md:gap-20 px-4 md:px-8 lg:px-[108px] bg-natural-0">
+    <section className="flex flex-col gap-6 py-6 sm:gap-[100px] md:gap-20 px-4 md:px-8 lg:px-[108px] bg-natural-0 max-w-screen-3xl w-full mx-auto">
+      <div className="flex flex-col gap-4 items-center text-center">
+        <Typography tag="h2" className="text-subtitle-1 md:text-h3 font-bold ">
+          <Highlight id="home/features/title" />
+        </Typography>
+        <Typography
+          tag="p"
+          className="text-body md:text-subtitle-2 font-medium md:font-semibold text-natural-700 lg:max-w-[837px]"
+        >
+          {intl("home/features/description")}
+        </Typography>
+      </div>
       {features.map((feature, idx) => (
         <Feature key={idx} {...feature} />
       ))}

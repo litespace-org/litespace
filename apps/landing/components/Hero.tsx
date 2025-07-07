@@ -15,7 +15,7 @@ const Hero: React.FC = () => {
     <div
       className={cn(
         "relative flex flex-col lg:flex-row items-center justify-between gap-10 bg-natural-0 overflow-hidden",
-        "h-[100vh-72px] mt-10 sm:mt-16 py-16 lg:px-[108px]"
+        "h-[100vh-72px] py-16 lg:px-[108px] max-w-screen-3xl mx-auto"
       )}
     >
       <div className="flex flex-col text-center justify-center items-center lg:items-start gap-6 px-4 md:px-0 w-full">
