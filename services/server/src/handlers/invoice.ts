@@ -235,7 +235,10 @@ async function find(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const { list, total } = itsTutor
-    ? await invoices.findByUser(user.id)
+    ? await invoices.findByUser(user.id, {
+        page: query.page,
+        size: query.size,
+      })
     : await invoices.find(query);
 
   const masked = itsTutor

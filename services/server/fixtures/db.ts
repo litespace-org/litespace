@@ -35,6 +35,7 @@ import {
   IPlan,
   IReport,
   IIntroVideo,
+  IInvoice,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -607,6 +608,16 @@ export async function introVideo(
   return introVideo;
 }
 
+export async function invoice(payload?: Partial<IInvoice.CreatePayload>) {
+  return await invoices.create({
+    userId: await or.tutorId(payload?.userId),
+    method: payload?.method || IInvoice.WithdrawMethod.Wallet,
+    receiver: payload?.receiver || faker.phone.number(),
+    amount: payload?.amount || randomInt(10000),
+    note: payload?.note || faker.lorem.sentence(),
+  });
+}
+
 export default {
   user,
   tutor,
@@ -625,6 +636,7 @@ export default {
   subscription,
   report,
   introVideo,
+  invoice,
   room: makeRoom,
   message: makeMessage,
   make: {

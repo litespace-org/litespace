@@ -212,11 +212,13 @@ describe("/api/v1/interview/", () => {
 
     it("should successfully create the interview", async () => {
       const tutor = await db.user({ role: IUser.Role.Tutor });
-
+      const now = dayjs();
       const tutorManager = await db.tutorManager({}, { activated: true });
       const slot = await db.slot({
         userId: tutorManager.id,
         purpose: IAvailabilitySlot.Purpose.Interview,
+        start: now.add(1, "minute").toISOString(),
+        end: now.add(1, "hours").toISOString(),
       });
 
       const res = await createInterview({
