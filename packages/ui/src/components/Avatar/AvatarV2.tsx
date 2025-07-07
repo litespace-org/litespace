@@ -1,11 +1,10 @@
 "use client";
 
 import Logo from "@litespace/assets/LogoAvatar";
-import React, { useMemo, useCallback, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import cn from "classnames";
 import { optional } from "@litespace/utils";
-
-type Status = "loading" | "loaded" | "error";
+import { imageUrlToBase64 } from "@/lib/avatar";
 
 const COLOR_STYLES = [
   // green
@@ -41,15 +40,12 @@ export const AvatarV2: React.FC<{
   id?: number | null;
   object?: "fill" | "contain" | "cover" | "none" | "scale-down";
 }> = ({ src, alt, id, object = "cover" }) => {
-  const [status, setStatus] = useState<Status>("loading");
+  const [imgData, setImgData] = useState<string | null>(null);
 
-  const onLoad = useCallback(() => {
-    setStatus("loaded");
-  }, []);
-
-  const onError = useCallback(() => {
-    setStatus("error");
-  }, []);
+  useEffect(() => {
+    if (!src) return;
+    imageUrlToBase64(src).then((res) => setImgData(res));
+  }, [src]);
 
   const mod = useMemo(() => {
     return Math.floor((id || 0) % COLOR_STYLES.length);
@@ -58,7 +54,7 @@ export const AvatarV2: React.FC<{
   return (
     <div data-mod={mod} className="relative w-full h-full overflow-hidden">
       <img
-        data-status={status}
+        data-status={imgData ? "loaded" : "loading"}
         className={cn(
           "opacity-0 transition-opacity duration-300 ease-linear",
           "data-[status=loaded]:opacity-100 absolute w-full h-full",
@@ -70,13 +66,11 @@ export const AvatarV2: React.FC<{
             "object-scale-down": object === "scale-down",
           }
         )}
-        src={optional(src)}
+        src={optional(imgData)}
         alt={optional(alt)}
-        onLoad={onLoad}
-        onError={onError}
       />
       <div
-        data-status={status}
+        data-status={imgData ? "loaded" : "loading"}
         className={cn(
           "opacity-100 transition-opacity duration-300",
           "data-[status=loaded]:opacity-0",
