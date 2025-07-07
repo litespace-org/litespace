@@ -2,9 +2,30 @@ import { IToken } from "@litespace/types";
 import { knex } from "@/query";
 import { first } from "lodash";
 import { Knex } from "knex";
+import { Model } from "@/lib/model";
 
-export class Tokens {
-  name = "tokens";
+const FIELD_TO_COLUMN = {
+  id: "id",
+  type: "type",
+  used: "used",
+  userId: "user_id",
+  hash: "token_hash",
+  expiresAt: "expires_at",
+  updatedAt: "updated_at",
+  createdAt: "created_at",
+} satisfies Record<IToken.Field, IToken.Column>;
+
+export class Tokens extends Model<
+  IToken.Row,
+  IToken.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "tokens",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(payload: IToken.CreatePayload): Promise<IToken.Self> {
     const now = new Date();
@@ -51,23 +72,6 @@ export class Tokens {
 
   async findByHash(hash: string): Promise<IToken.Self | null> {
     return await this.findOneBy("token_hash", hash);
-  }
-
-  from(row: IToken.Row): IToken.Self {
-    return {
-      id: row.id,
-      userId: row.user_id,
-      hash: row.token_hash,
-      used: row.used,
-      type: row.type,
-      expiresAt: row.expires_at.toISOString(),
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
-  builder(tx?: Knex.Transaction) {
-    return tx ? tx<IToken.Row>(this.name) : knex<IToken.Row>(this.name);
   }
 }
 
