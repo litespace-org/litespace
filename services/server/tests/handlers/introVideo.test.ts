@@ -4,18 +4,27 @@ import {
   INTRO_VIDEO_MIN_MINUTES,
 } from "@/constants";
 import handlers from "@/handlers/introVideo";
-import { bad, exists, forbidden, largeFileSize, unexpected } from "@/lib/error";
+import {
+  bad,
+  exists,
+  forbidden,
+  inActiveTutorManager,
+  largeFileSize,
+  notfound,
+  unexpected,
+} from "@/lib/error";
 import db from "@fixtures/db";
 import { getMockFile } from "@fixtures/file";
 import { mockApi } from "@fixtures/mockApi";
-import { introVideos } from "@litespace/models";
-import { IIntroVideo } from "@litespace/types";
+import { introVideos, tutors } from "@litespace/models";
+import { IIntroVideo, IUser } from "@litespace/types";
 import { nameof } from "@litespace/utils";
 import bytes from "bytes";
 import { expect } from "chai";
 import { first } from "lodash";
 
 const createIntroVideo = mockApi<IIntroVideo.CreateApiPayload>(handlers.create);
+const updateIntroVideo = mockApi<IIntroVideo.UpdateApiPayload>(handlers.update);
 
 describe(nameof(createIntroVideo), () => {
   beforeEach(async () => {
@@ -185,5 +194,145 @@ describe(nameof(createIntroVideo), () => {
     expect(created.total).to.eq(1);
     expect(first(created.list)?.reviewerId).to.eq(reviewer3.id);
     expect(first(created.list)?.state).to.eq(IIntroVideo.State.Pending);
+  });
+});
+
+describe(nameof(updateIntroVideo), () => {
+  beforeEach(async () => {
+    return await db.flush();
+  });
+
+  it("should update state successfully", async () => {
+    const tutorManager = await db.tutorManager();
+    const introVideo = await db.introVideo({ reviewerId: tutorManager.id });
+    expect(introVideo.state).to.eq(IIntroVideo.State.Pending);
+
+    await updateIntroVideo({
+      params: {
+        id: introVideo.id,
+      },
+      user: tutorManager,
+      body: {
+        state: IIntroVideo.State.Approved,
+      },
+    });
+
+    const updated = await introVideos.findById(introVideo.id);
+
+    expect(updated?.state).to.eq(IIntroVideo.State.Approved);
+  });
+
+  it("should update reviewer successfully", async () => {
+    const admin = await db.user({ role: IUser.Role.RegularAdmin });
+    const tutorManager = await db.tutorManager();
+    await tutors.update(tutorManager.id, {
+      activated: true,
+    });
+    const introVideo = await db.introVideo();
+    expect(introVideo.reviewerId).to.not.eq(tutorManager.id);
+
+    await updateIntroVideo({
+      params: {
+        id: introVideo.id,
+      },
+      user: admin,
+      body: {
+        reviewerId: tutorManager.id,
+      },
+    });
+
+    const updated = await introVideos.findById(introVideo.id);
+    expect(updated?.state).to.eq(IIntroVideo.State.Pending);
+    expect(updated?.reviewerId).to.eq(tutorManager.id);
+  });
+
+  it("shouldn't update data because user has no access", async () => {
+    const tutor = await db.user({ role: IUser.Role.Tutor });
+    const introVideo = await db.introVideo();
+
+    const res = await updateIntroVideo({
+      params: {
+        id: introVideo.id,
+      },
+      user: tutor,
+      body: {
+        state: IIntroVideo.State.Approved,
+      },
+    });
+
+    expect(res).to.deep.eq(forbidden());
+  });
+
+  it("shouldn't update data because no video was found", async () => {
+    const admin = await db.user({ role: IUser.Role.SuperAdmin });
+
+    const res = await updateIntroVideo({
+      params: {
+        id: 4,
+      },
+      user: admin,
+      body: {
+        state: IIntroVideo.State.Approved,
+      },
+    });
+
+    expect(res).to.deep.eq(notfound.introVideo());
+  });
+
+  it("shouldn't update reviewer because tutor managers can't do so", async () => {
+    const tutorManager1 = await db.tutorManager();
+    const tutorManager2 = await db.tutorManager();
+    const introVideo = await db.introVideo();
+
+    const res = await updateIntroVideo({
+      params: {
+        id: introVideo.id,
+      },
+      user: tutorManager1,
+      body: {
+        reviewerId: tutorManager2.id,
+      },
+    });
+
+    expect(res).to.deep.eq(forbidden());
+  });
+
+  it("shouldn't update reviewer because the updated reviewer is inactive", async () => {
+    const admin = await db.user({ role: IUser.Role.RegularAdmin });
+    const tutorManager = await db.tutorManager();
+    tutors.update(tutorManager.id, {
+      activated: false,
+    });
+    const introVideo = await db.introVideo();
+
+    const res = await updateIntroVideo({
+      params: {
+        id: introVideo.id,
+      },
+      user: admin,
+      body: {
+        reviewerId: tutorManager.id,
+      },
+    });
+
+    expect(res).to.deep.eq(inActiveTutorManager());
+  });
+
+  it("shouldn't update because user isn't the assigned reviewer", async () => {
+    const tutorManager1 = await db.tutorManager();
+    const tutorManager2 = await db.tutorManager();
+    const introVideo = await db.introVideo({ reviewerId: tutorManager2.id });
+
+    const res = await updateIntroVideo({
+      params: {
+        id: introVideo.id,
+      },
+      user: tutorManager1,
+      body: {
+        state: IIntroVideo.State.Approved,
+      },
+    });
+
+    expect(res).to.deep.eq(forbidden());
   });
 });

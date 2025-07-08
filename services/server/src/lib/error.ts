@@ -71,6 +71,9 @@ export const expiredVerificationCode = () =>
 export const invalidVerificationCode = () =>
   error(ApiError.InvalidVerificationCode, 400);
 
+export const inActiveTutorManager = () =>
+  error(ApiError.InvalidVerificationCode, 400);
+
 export const wrongPassword = () => error(ApiError.WrongPassword, 400);
 
 export const fawryError = (msg?: string) =>
@@ -106,6 +109,7 @@ export const notfound = {
   invite: () => error(ApiError.InviteNotFound, 404),
   interview: () => error(ApiError.InterviewNotFound, 404),
   invoice: () => error(ApiError.InvoiceNotFound, 404),
+  introVideo: () => error(ApiError.IntroVideoNotFound, 404),
   plan: () => error(ApiError.PlanNotFound, 404),
   report: () => error(ApiError.ReportNotFound, 404),
   withdrawMethod: () => error(ApiError.WidthdrawMethodNotFound, 404),

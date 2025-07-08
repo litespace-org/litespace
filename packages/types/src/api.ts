@@ -44,6 +44,7 @@ export enum ApiError {
   IncorrectPhone = "incorrect-phone",
   ExpiredVerificationCode = "expired-verification-code",
   InvalidVerificationCode = "invalid-verification-code",
+  InactiveTutorManager = "inactive-tutor-manager",
   IllegalInvoiceUpdate = "illegal-invoice-update",
   EmptyRequest = "empty-request",
   UserAlreadyVerified = "user-already-verified",
@@ -54,6 +55,7 @@ export enum ApiError {
   ReachedBookingLimit = "reached-booking-limit",
   ServiceUnavailable = "service-unavailable",
   FawryError = "fawry-error",
+  IntroVideoNotFound = "intro-video-not-found",
   LargeFileSize = "large-file-size",
 }
 

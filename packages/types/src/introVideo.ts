@@ -49,6 +49,11 @@ export type UpdateModelPayload = {
   reviewerId?: number;
 };
 
+export type UpdateApiPayload = {
+  state?: State;
+  reviewerId?: number;
+};
+
 export type FindModelPayload = IFilter.SkippablePagination & {
   tutorIds?: number[];
   videoIds?: number[];
