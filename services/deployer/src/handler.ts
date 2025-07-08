@@ -43,40 +43,41 @@ async function handler(req: Request, res: Response) {
       : "Started a production deployment",
   });
 
-  await build(workspaces);
-  await telegram.sendMessage({
-    chat: config.telegram.chat,
-    text: [
-      staging ? "*Staging Server Update*" : "Production Server Update",
-      workspaces === "all"
-        ? `- All workspaces are up to date`
-        : "Updated workspaces: ",
-      (workspaces !== "all"
-        ? workspaces.map((workspace) => workspace.replace("@", "- "))
-        : []
-      ).join("\n"),
-      `*Links:*`,
-      staging
-        ? "- https://app.staging.litespace.org"
-        : "- https://app.litespace.org",
-      staging
-        ? "- https://landing.staging.litespace.org"
-        : "- https://litespace.org",
-      staging
-        ? "- https://dashboard.staging.litespace.org"
-        : "- https://dashboard.litespace.org",
-      staging
-        ? "- https://blog.staging.litespace.org"
-        : "- https://blog.litespace.org",
-      staging
-        ? `- https://api.staging.litespace.org`
-        : "- https://api.litespace.org",
-      staging
-        ? "- https://peer.staging.litespace.org"
-        : "- https://peer.litespace.org",
-    ]
-      .filter((line) => !!line)
-      .join("\n"),
+  build(workspaces).then(() => {
+    telegram.sendMessage({
+      chat: config.telegram.chat,
+      text: [
+        staging ? "*Staging Server Update*" : "Production Server Update",
+        workspaces === "all"
+          ? `- All workspaces are up to date`
+          : "Updated workspaces: ",
+        (workspaces !== "all"
+          ? workspaces.map((workspace) => workspace.replace("@", "- "))
+          : []
+        ).join("\n"),
+        `*Links:*`,
+        staging
+          ? "- https://app.staging.litespace.org"
+          : "- https://app.litespace.org",
+        staging
+          ? "- https://landing.staging.litespace.org"
+          : "- https://litespace.org",
+        staging
+          ? "- https://dashboard.staging.litespace.org"
+          : "- https://dashboard.litespace.org",
+        staging
+          ? "- https://blog.staging.litespace.org"
+          : "- https://blog.litespace.org",
+        staging
+          ? `- https://api.staging.litespace.org`
+          : "- https://api.litespace.org",
+        staging
+          ? "- https://peer.staging.litespace.org"
+          : "- https://peer.litespace.org",
+      ]
+        .filter((line) => !!line)
+        .join("\n"),
+    });
   });
 
   res.sendStatus(200);
