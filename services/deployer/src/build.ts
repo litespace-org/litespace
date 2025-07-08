@@ -33,6 +33,7 @@ export async function build(workspaces: Workspace[] | "all") {
     ...stopServicesCommands,
     `git reset --hard`,
     `git pull origin ${config.branch}`,
+    `git checkout ${config.branch}`,
     `pnpm install --network-concurrency=2`,
     `pnpm build:pkgs`,
     ...getWorkspaceBuildCommand(workspaces),
