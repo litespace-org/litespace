@@ -217,8 +217,8 @@ describe("/api/v1/interview/", () => {
       const slot = await db.slot({
         userId: tutorManager.id,
         purpose: IAvailabilitySlot.Purpose.Interview,
-        start: now.add(1, "minute").toISOString(),
-        end: now.add(1, "hours").toISOString(),
+        start: now.add(1, "hour").toISOString(),
+        end: now.add(2, "hours").toISOString(),
       });
 
       const res = await createInterview({
@@ -321,9 +321,12 @@ describe("/api/v1/interview/", () => {
 
     it("should respond with `busy tutor manager` error in case the interview cannot be booked", async () => {
       const tutorManager = await db.tutorManager({}, { activated: true });
+      const now = dayjs();
       const slot = await db.slot({
         userId: tutorManager.id,
         purpose: IAvailabilitySlot.Purpose.Interview,
+        start: now.add(1, "hour").toISOString(),
+        end: now.add(1, "hour").add(30, "minutes").toISOString(), // Exactly 30 minutes
       });
 
       const tutor1 = await db.user({ role: IUser.Role.Tutor });
