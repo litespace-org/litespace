@@ -72,7 +72,11 @@ async function create(req: Request, res: Response, next: NextFunction) {
   // should always find a reviewer
   if (!reviewerId) return next(unexpected());
 
-  const src = await upload({ data: video.buffer, type: video.mimetype });
+  const src = await upload({
+    data: video.buffer,
+    type: video.mimetype,
+    prefix: "tutors/intro-videos/",
+  });
   await introVideos.create({
     src,
     reviewerId,

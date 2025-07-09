@@ -1021,6 +1021,7 @@ async function uploadUserImage(
 
   const imageId = await upload({
     data: image.buffer,
+    prefix: "users/images/",
     type: image.mimetype,
     // Use the existing image name as the key. The new image will override
     // the previous onc. There is no need to remove the previous image. Also
@@ -1063,6 +1064,7 @@ async function uploadTutorAssets(
   const imageId = image
     ? await upload({
         data: image.buffer,
+        prefix: "users/images/",
         type: image.mimetype,
         // Use the existing image name as the key. The new image will override
         // the previous one. There is no need to remove the previous image. Also
@@ -1074,6 +1076,7 @@ async function uploadTutorAssets(
   const videoId = video
     ? await upload({
         data: video.buffer,
+        prefix: "tutors/videos/",
         type: video.mimetype,
         key: tutor.video,
       })
@@ -1082,6 +1085,7 @@ async function uploadTutorAssets(
   const thumbnailId = thumbnail
     ? await upload({
         data: thumbnail.buffer,
+        prefix: "tutors/thumbnails/",
         type: thumbnail.mimetype,
         key: tutor.thumbnail,
       })
