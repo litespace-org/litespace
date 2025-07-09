@@ -4,6 +4,8 @@ import { isArray } from "lodash";
 import { v4 as uuid } from "uuid";
 import multer from "multer";
 import bytes from "bytes";
+import { Directory } from "@/types/asset";
+import path from "node:path";
 
 export function getRequestFile(
   files: Request["files"],
@@ -18,14 +20,16 @@ export function getRequestFile(
 
 export async function upload({
   data,
+  prefix,
   key,
   type,
 }: {
   data: Buffer;
+  prefix: Directory;
   type?: string;
   key?: string | null;
 }) {
-  const id = key || uuid();
+  const id = path.join(prefix, key || uuid());
   await s3.put({ key: id, data, type });
   return id;
 }
