@@ -368,7 +368,6 @@ export class Tutors {
     const filtered = this.applySearchFilter<IUser.Row, Array<{ id: number }>>(
       builder,
       {
-        size,
         role: [IUser.Role.TutorManager],
         activated,
       }
@@ -383,6 +382,7 @@ export class Tutors {
       .groupBy(this.column("id"))
       .count(introVideos.column("reviewer_id"), { as: "introVideosCount" })
       .orderBy("introVideosCount", order)
+      .limit(size)
       .select<Array<{ id: number }>>(this.column("id"));
 
     return rows.map((row) => row.id);

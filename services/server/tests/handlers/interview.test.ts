@@ -214,9 +214,12 @@ describe("/api/v1/interview/", () => {
       const tutor = await db.user({ role: IUser.Role.Tutor });
 
       const tutorManager = await db.tutorManager({}, { activated: true });
+      const currentTime = dayjs();
       const slot = await db.slot({
         userId: tutorManager.id,
         purpose: IAvailabilitySlot.Purpose.Interview,
+        start: currentTime.add(1, "hour").toISOString(),
+        end: currentTime.add(2, "hours").toISOString(),
       });
 
       const res = await createInterview({
@@ -319,9 +322,12 @@ describe("/api/v1/interview/", () => {
 
     it("should respond with `busy tutor manager` error in case the interview cannot be booked", async () => {
       const tutorManager = await db.tutorManager({}, { activated: true });
+      const busyTestTime = dayjs();
       const slot = await db.slot({
         userId: tutorManager.id,
         purpose: IAvailabilitySlot.Purpose.Interview,
+        start: busyTestTime.add(1, "hour").toISOString(),
+        end: busyTestTime.add(1, "hour").add(30, "minutes").toISOString(), // Exactly 30 minutes
       });
 
       const tutor1 = await db.user({ role: IUser.Role.Tutor });
@@ -443,7 +449,7 @@ describe("/api/v1/interview/", () => {
     });
 
     it("should successfully get the TutorManager with the nearest slot (date) to do the interview", async () => {
-      const now = dayjs();
+      const interviewTime = dayjs();
 
       const tutorManager1 = await db.tutorManager({}, { activated: true });
       const tutorManager2 = await db.tutorManager({}, { activated: true });
@@ -451,29 +457,29 @@ describe("/api/v1/interview/", () => {
 
       const slot1 = await db.slot({
         userId: tutorManager1.id,
-        start: now.subtract(2, "hours").toISOString(),
-        end: now.subtract(1, "hour").toISOString(),
+        start: interviewTime.subtract(2, "hours").toISOString(),
+        end: interviewTime.subtract(1, "hour").toISOString(),
         purpose: IAvailabilitySlot.Purpose.Interview,
       });
 
       await db.slot({
         userId: tutorManager1.id,
-        start: now.subtract(30, "minutes").toISOString(),
-        end: now.toISOString(),
+        start: interviewTime.subtract(30, "minutes").toISOString(),
+        end: interviewTime.toISOString(),
         purpose: IAvailabilitySlot.Purpose.Interview,
       });
 
       const slot2 = await db.slot({
         userId: tutorManager2.id,
-        start: now.subtract(30, "minutes").toISOString(),
-        end: now.add(60, "minutes").toISOString(),
+        start: interviewTime.subtract(30, "minutes").toISOString(),
+        end: interviewTime.add(60, "minutes").toISOString(),
         purpose: IAvailabilitySlot.Purpose.Interview,
       });
 
       await db.slot({
         userId: tutorManager3.id,
-        start: now.add(2, "hours").toISOString(),
-        end: now.add(4, "hours").toISOString(),
+        start: interviewTime.add(2, "hours").toISOString(),
+        end: interviewTime.add(4, "hours").toISOString(),
         purpose: IAvailabilitySlot.Purpose.Interview,
       });
 
@@ -486,7 +492,7 @@ describe("/api/v1/interview/", () => {
           interviewerId: tutorManager2.id,
           slot: slot2.id,
           // NOTE: depends on the convention that INTERVIEW_DURATION = 30 minute
-          start: now.add(INTERVIEW_DURATION, "minute").toISOString(),
+          start: interviewTime.add(INTERVIEW_DURATION, "minute").toISOString(),
         }),
       ]);
 

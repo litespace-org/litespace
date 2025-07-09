@@ -2,6 +2,9 @@ import { WithOptionalTx } from "@/query";
 import { IDemoSession, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { Model } from "@/lib/model";
+import dayjs from "@/lib/dayjs";
+import { first } from "lodash";
+import { genSessionId } from "@/lib/utils";
 
 const FIELD_TO_COLUMN = {
   id: "id",
@@ -26,13 +29,26 @@ export class DemoSessions extends Model<
     });
   }
 
-  // @galal @TODO: implement this model function; it should create a new demo-session in the database.
-  // @NOTE: generate session_id value by the unitility function genSessionId.
   async create(
-    _payload: IDemoSession.CreateModelPayload,
-    _tx?: Knex.Transaction
+    payload: IDemoSession.CreateModelPayload,
+    tx?: Knex.Transaction
   ): Promise<IDemoSession.Self> {
-    return {} as IDemoSession.Self;
+    const now = dayjs.utc().toDate();
+    const rows = await this.builder(tx)
+      .insert({
+        session_id: genSessionId("demo"),
+        tutor_id: payload.tutorId,
+        slot_id: payload.slotId,
+        start: dayjs.utc(payload.start).toDate(),
+        status: IDemoSession.Status.Pending,
+        created_at: now,
+        updated_at: now,
+      })
+      .returning("*");
+
+    const row = first(rows);
+    if (!row) throw new Error("demo session not found; should never happen");
+    return this.from(row);
   }
 
   // @galal @TODO: implement this model function; it should update both the status and updated_at columns
