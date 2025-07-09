@@ -1,19 +1,17 @@
+export type Message = {
+  to: string;
+  message: string;
+  expiresAt?: string;
+};
+
 export type Topics =
   | {
       topic: "whatsapp";
-      value: {
-        to: string;
-        message: string;
-        expiresAt?: string;
-      };
+      value: Message;
     }
   | {
       topic: "telegram";
-      value: {
-        to: string;
-        message: string;
-        expiresAt?: string;
-      };
+      value: Message;
     };
 
 export type TopicType = Topics["topic"];
