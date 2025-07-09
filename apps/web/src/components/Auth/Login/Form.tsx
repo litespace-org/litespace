@@ -158,7 +158,9 @@ const LoginForm: React.FC<{
             className="w-full"
             htmlType="submit"
           >
-            {intl("login.button.label")}
+            <Typography tag="span" className="text-body font-medium">
+              {intl("login.button.label")}
+            </Typography>
           </Button>
 
           <Button
@@ -171,7 +173,9 @@ const LoginForm: React.FC<{
             loading={google.loading}
             disabled={google.loading || mutation.isPending}
           >
-            {intl("login.with-google")}
+            <Typography tag="span" className="text-body font-medium">
+              {intl("login.with-google")}
+            </Typography>
           </Button>
 
           <Typography
