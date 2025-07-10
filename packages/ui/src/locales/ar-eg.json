@@ -977,6 +977,7 @@
   "error.api.tutor-not-found": "المعلم غير موجود، برجاء التحقق من البيانات.",
   "error.api.student-not-found": "الطالب غير موجود، برجاء التحقق من البيانات.",
   "error.api.lesson-not-found": "الدرس غير موجود، برجاء التحقق من البيانات.",
+  "error.api.lesson-time-passed": "لقد انتهى وقت الحصة بالفعل!",
   "error.api.slot-not-found": "الوقت المتاح الذي تريد تعديله غير موجود، برجاء التحقق من البيانات.",
   "error.api.rating-not-found": "التقييم غير موجود، برجاء التحقق من البيانات.",
   "error.api.coupon-not-found": "الكوبون غير موجود، برجاء التحقق من البيانات.",

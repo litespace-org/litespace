@@ -18,6 +18,7 @@ import {
   subscriptionRequired,
   noEnoughMinutes,
   illegal,
+  lessonTimePassed,
 } from "@/lib/error";
 import { IAvailabilitySlot, ILesson, Wss } from "@litespace/types";
 import {
@@ -445,6 +446,9 @@ function cancel(_context: ApiContext) {
       const { lessonId } = withNamedId("lessonId").parse(req.params);
       const lesson = await lessons.findById(lessonId);
       if (!lesson) return next(notfound.lesson());
+
+      if (dayjs(lesson.start).add(lesson.duration, "minutes").isBefore(dayjs()))
+        return next(lessonTimePassed());
 
       const members = await lessons.findLessonMembers([lessonId]);
       const member = members.map((member) => member.userId).includes(user.id);

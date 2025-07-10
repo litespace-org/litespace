@@ -11,6 +11,7 @@ import {
   reachedBookingLimit,
   subscriptionRequired,
   noEnoughMinutes,
+  lessonTimePassed,
 } from "@/lib/error";
 import { dayjs, getSubSlots, nameof, safe } from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";
@@ -708,6 +709,31 @@ describe("/api/v1/lesson/", () => {
       });
 
       expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should respond with lessonTimePassed in case the lesson time has already passed", async () => {
+      const tutor = await db.tutor();
+      const student = await db.student();
+
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().add(10, "days").toISOString(),
+      });
+
+      const { lesson } = await db.lesson({
+        tutor: tutor.id,
+        student: student.id,
+        timing: "past",
+        slot: slot.id,
+      });
+
+      const res = await cancelLesson({
+        user: student,
+        params: { lessonId: lesson.id },
+      });
+
+      expect(res).to.deep.eq(lessonTimePassed());
     });
 
     it("should respond with 200 status code in case the lesson is cancelled and update the cache.", async () => {

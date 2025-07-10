@@ -79,7 +79,7 @@ export const WeekTable: React.FC<{
                     {!isEmpty(lessons) ? (
                       <LessonSlot
                         lessons={lessons.filter((lesson) =>
-                          hour.isSame(lesson.start)
+                          hour.isSame(dayjs(lesson.start).startOf("hour"))
                         )}
                         {...lessonActions}
                       />

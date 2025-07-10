@@ -299,7 +299,10 @@ describe("/api/v1/interview/", () => {
       const slot = await db.slot({
         userId: tutorManager.id,
         purpose: IAvailabilitySlot.Purpose.Interview,
+        start: dayjs().toISOString(),
+        end: dayjs().add(1, "day").toISOString(),
       });
+
       await createInterview({
         user: tutor,
         body: {

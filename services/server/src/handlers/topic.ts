@@ -23,6 +23,7 @@ import { Knex } from "knex";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
 import { isEmpty } from "lodash";
 import { sendBackgroundMessage } from "@/workers";
+import { cache } from "@/lib/cache";
 
 const createTopicPayload: ZodSchema<ITopic.CreateTopicApiPayload> = zod.object({
   arabicName: string,
@@ -217,6 +218,13 @@ async function replaceUserTopics(
         },
         tx
       );
+
+    if (isTutor(user)) {
+      const newTopics = await topics.findUserTopics({ tx, users: [user.id] });
+      const old = await cache.tutors.getOne(user.id);
+      if (old?.topics) old.topics = newTopics.map((t) => t.name.ar);
+      if (old) await cache.tutors.setOne(old);
+    }
   });
 
   if (isTutor(user))

@@ -9,7 +9,7 @@ import {
 import { getRateLessonQuery } from "@/lib/query";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { RatingDialog } from "@litespace/ui/RatingDialog";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@litespace/ui/Toast";
 import { first } from "lodash";
@@ -41,6 +41,7 @@ const UpcomingLessons: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   const toast = useToast();
+  const now = useRef(dayjs().toISOString());
 
   const [params, setParams] = useSearchParams();
   const [rateLessonParams, setRateLessonParams] = useState<RateLessonParams>(
@@ -62,12 +63,10 @@ const UpcomingLessons: React.FC = () => {
   });
 
   const lessons = useInfiniteLessons({
-    users: user ? [user?.id] : [],
     userOnly: true,
-    future: true,
-    past: true,
-    ratified: true,
-    canceled: true,
+    users: user ? [user?.id] : [],
+    after: now.current,
+    canceled: false,
   });
 
   useOnError({

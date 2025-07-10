@@ -25,6 +25,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.TransactionNotFound]: "error.api.not-found",
   [ApiError.StudentNotFound]: "error.api.student-not-found",
   [ApiError.LessonNotFound]: "error.api.lesson-not-found",
+  [ApiError.LessonTimePassed]: "error.api.lesson-time-passed",
   [ApiError.SlotNotFound]: "error.api.slot-not-found",
   [ApiError.RatingNotFound]: "error.api.rating-not-found",
   [ApiError.CouponNotFound]: "error.api.coupon-not-found",

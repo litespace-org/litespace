@@ -13,9 +13,11 @@ import {
   availabilitySlots,
   invoices,
   introVideos,
+  demoSessions,
 } from "@litespace/models";
 import {
   IAvailabilitySlot,
+  IDemoSession,
   IInterview,
   IIntroVideo,
   IInvoice,
@@ -173,90 +175,6 @@ async function main(): Promise<void> {
     );
   });
 
-  const addedTutors: IUser.Self[] = await knex.transaction(async (tx) => {
-    return await Promise.all(
-      range(1, 25).map(async (idx) => {
-        const email = `tutor-${idx}@litespace.org`;
-        const tutor = await users.create(
-          {
-            name: faker.person.fullName(),
-            role: IUser.Role.Tutor,
-            birthYear: birthYear(),
-            password,
-            email,
-          },
-          tx
-        );
-
-        console.log(`tutor: ${tutor.id} - ${tutor.email}`);
-
-        await tutors.create(tutor.id, tx);
-        // tutors with odd id will be onboarded
-        const isOnborded = idx % 2 !== 0;
-
-        await users.update(
-          tutor.id,
-          {
-            notificationMethod: notificationMethod(),
-            phone: phone(),
-            gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
-            city: city(),
-            birthYear: isOnborded ? 2001 : undefined,
-            image: uniqueId(),
-            verifiedEmail: isOnborded,
-            verifiedPhone: isOnborded,
-          },
-          tx
-        );
-
-        await tutors.update(
-          tutor.id,
-          {
-            about: sample([faker.lorem.paragraphs(), null]),
-            bio: sample([faker.lorem.words(9), null]),
-            activated: isOnborded,
-            video: isOnborded ? "/video.mp4" : undefined,
-            thumbnail: isOnborded ? "/thumbnail.png" : undefined,
-          },
-          tx
-        );
-        return tutor;
-      })
-    );
-  });
-
-  // seed invoices for each tutor
-  for (const tutor of addedTutors) {
-    await Promise.all(
-      range(faker.number.int(10)).map(() =>
-        invoices.create({
-          userId: tutor.id,
-          method: sample([
-            IInvoice.WithdrawMethod.Bank,
-            IInvoice.WithdrawMethod.Wallet,
-            IInvoice.WithdrawMethod.Instapay,
-          ]),
-          receiver: sample([
-            "bank:123321123321123",
-            "01010101010",
-            "example@instapay.com",
-          ]),
-          amount: faker.number.int({ min: 100, max: 1000 }),
-          note: sample([faker.lorem.sentence(10), undefined]),
-        })
-      )
-    );
-  }
-
-  // assigning random tutors to studios
-  await Promise.all(
-    addedTutors
-      .slice(0, addedTutors.length / 2)
-      .map(async (tutor) =>
-        tutors.update(tutor.id, { studioId: sample([studio1.id, studio2.id]) })
-      )
-  );
-
   const addedTutorManagers: IUser.Self[] = await knex.transaction(
     async (tx) => {
       return await Promise.all(
@@ -306,12 +224,96 @@ async function main(): Promise<void> {
     }
   );
 
-  const tutor = first(addedTutors);
-  if (!tutor) throw new Error("Tutor not found; should never happen.");
-
   const tutorManager = first(addedTutorManagers);
   if (!tutorManager)
     throw new Error("TutorManager not found; should never happen.");
+
+  const addedTutors: IUser.Self[] = await knex.transaction(async (tx) => {
+    return await Promise.all(
+      range(1, 25).map(async (idx) => {
+        const email = `tutor-${idx}@litespace.org`;
+        const tutor = await users.create(
+          {
+            name: faker.person.fullName(),
+            role: IUser.Role.Tutor,
+            birthYear: birthYear(),
+            password,
+            email,
+          },
+          tx
+        );
+
+        console.log(`tutor: ${tutor.id} - ${tutor.email}`);
+
+        await tutors.create(tutor.id, tx);
+        // tutors with odd id will be onboarded
+        const isOnboarded = idx % 2 !== 0;
+
+        await users.update(
+          tutor.id,
+          {
+            notificationMethod: notificationMethod(),
+            phone: phone(),
+            gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
+            city: city(),
+            birthYear: isOnboarded ? 2001 : undefined,
+            image: uniqueId(),
+            verifiedEmail: isOnboarded,
+            verifiedPhone: isOnboarded,
+          },
+          tx
+        );
+
+        await tutors.update(
+          tutor.id,
+          {
+            about: sample([faker.lorem.paragraphs(), null]),
+            bio: sample([faker.lorem.words(9), null]),
+            activated: isOnboarded,
+            video: isOnboarded ? "/video.mp4" : undefined,
+            thumbnail: isOnboarded ? "/thumbnail.png" : undefined,
+          },
+          tx
+        );
+        return tutor;
+      })
+    );
+  });
+
+  // seed invoices for each tutor
+  for (const tutor of addedTutors) {
+    await Promise.all(
+      range(faker.number.int(10)).map(() =>
+        invoices.create({
+          userId: tutor.id,
+          method: sample([
+            IInvoice.WithdrawMethod.Bank,
+            IInvoice.WithdrawMethod.Wallet,
+            IInvoice.WithdrawMethod.Instapay,
+          ]),
+          receiver: sample([
+            "bank:123321123321123",
+            "01010101010",
+            "example@instapay.com",
+          ]),
+          amount: faker.number.int({ min: 100, max: 1000 }),
+          note: sample([faker.lorem.sentence(10), undefined]),
+        })
+      )
+    );
+  }
+
+  // assigning random tutors to studios
+  await Promise.all(
+    addedTutors
+      .slice(0, addedTutors.length / 2)
+      .map(async (tutor) =>
+        tutors.update(tutor.id, { studioId: sample([studio1.id, studio2.id]) })
+      )
+  );
+
+  const tutor = first(addedTutors);
+  if (!tutor) throw new Error("Tutor not found; should never happen.");
 
   // seeding ratings data
   await knex.transaction(async () => {
@@ -507,11 +509,35 @@ async function main(): Promise<void> {
     // if there is a reviewer, the video is rejected or approved otherwise it's in pending state
     await introVideos.update({
       id: video.id,
-      state: sample([
-        IIntroVideo.State.Approved,
-        IIntroVideo.State.Pending,
-        IIntroVideo.State.Rejected,
-      ]),
+      state: tutor.verifiedEmail
+        ? IIntroVideo.State.Approved
+        : sample([
+            IIntroVideo.State.Approved,
+            IIntroVideo.State.Pending,
+            IIntroVideo.State.Rejected,
+          ]),
+    });
+  }
+
+  // adding demoSessions to each tutor
+  for (const tutor of addedTutors) {
+    const demo = await demoSessions.create({
+      slotId: slot.id,
+      tutorId: tutor.id,
+      start: dayjs().subtract(1, "day").toISOString(),
+    });
+
+    // if there is a reviewer, the video is rejected or approved otherwise it's in pending state
+    await demoSessions.update({
+      id: demo.id,
+      status: tutor.verifiedEmail
+        ? IDemoSession.Status.Passed
+        : sample([
+            IDemoSession.Status.Pending,
+            IDemoSession.Status.Rejected,
+            IDemoSession.Status.CanceledByInterviewee,
+            IDemoSession.Status.CanceledByInterviewer,
+          ]),
     });
   }
 

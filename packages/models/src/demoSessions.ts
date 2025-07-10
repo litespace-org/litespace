@@ -38,7 +38,6 @@ export class DemoSessions extends Model<
   // @galal @TODO: implement this model function; it should update both the status and updated_at columns
   // for a certain demo-session row in the database.
   async update(
-    _id: number,
     _payload: IDemoSession.UpdateModelPayload,
     _tx?: Knex.Transaction
   ): Promise<void> {}

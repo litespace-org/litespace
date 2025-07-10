@@ -31,6 +31,8 @@ export const illegal = () => error(ApiError.Illegal, 409);
 
 export const conflictingLessons = () => error(ApiError.ConflictingLessons, 409);
 
+export const lessonTimePassed = () => error(ApiError.LessonTimePassed, 409);
+
 export const conflictingSchedule = () =>
   error(ApiError.ConflictingSchedule, 409);
 

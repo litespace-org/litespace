@@ -116,7 +116,7 @@ export const Content: React.FC<{
   if (!list || !list.length || !user)
     return (
       <div className="mt-[15vh]">
-        <EmptyLessons tutorsPage={Web.Tutors} isStudent={isStudent(user)} />;
+        <EmptyLessons tutorsPage={Web.Tutors} isStudent={isStudent(user)} />
       </div>
     );
 

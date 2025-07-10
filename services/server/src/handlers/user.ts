@@ -5,10 +5,14 @@ import {
   lessons,
   confirmationCodes,
   interviews,
+  introVideos,
+  demoSessions,
 } from "@litespace/models";
 import {
   IConfirmationCode,
+  IDemoSession,
   IInterview,
+  IIntroVideo,
   ILesson,
   ITutor,
   IUser,
@@ -47,7 +51,7 @@ import {
   datetime,
 } from "@/validation/utils";
 import { environment, jwtSecret, paginationDefaults } from "@/constants";
-import { drop, entries, groupBy } from "lodash";
+import { drop, entries, first, groupBy } from "lodash";
 import zod, { ZodSchema } from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
@@ -414,13 +418,27 @@ async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
       })
     : null;
 
+  const introVideo = isRegularTutor(user)
+    ? await introVideos.find({
+        tutorIds: [tutorId],
+        state: IIntroVideo.State.Approved,
+      })
+    : null;
+
+  const demoSession = isRegularTutor(user)
+    ? await demoSessions.find({
+        tutorIds: [tutorId],
+        statuses: [IDemoSession.Status.Passed],
+      })
+    : null;
+
   const response: ITutor.FindTutorMetaApiResponse = await withImageUrl({
     ...tutor,
-    passedIntroVideo: isTutorManager(user),
+    passedIntroVideo: isTutorManager(user) ? true : !!first(introVideo?.list),
     passedInterview: isTutorManager(user)
       ? true
       : interview?.status === IInterview.Status.Passed,
-    passedDemoSession: isTutorManager(user),
+    passedDemoSession: isTutorManager(user) ? true : !!first(demoSession?.list),
   });
 
   res.status(200).json(response);
