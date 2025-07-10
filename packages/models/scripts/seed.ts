@@ -249,7 +249,19 @@ async function main(): Promise<void> {
         // tutors with odd id will be onboarded
         const isOnboarded = idx % 2 !== 0;
 
-        await users.update(
+        await tutors.update(
+          tutor.id,
+          {
+            about: sample([faker.lorem.paragraphs(), null]),
+            bio: sample([faker.lorem.words(9), null]),
+            activated: isOnboarded,
+            video: isOnboarded ? "/video.mp4" : undefined,
+            thumbnail: isOnboarded ? "/thumbnail.png" : undefined,
+          },
+          tx
+        );
+
+        return await users.update(
           tutor.id,
           {
             notificationMethod: notificationMethod(),
@@ -263,19 +275,6 @@ async function main(): Promise<void> {
           },
           tx
         );
-
-        await tutors.update(
-          tutor.id,
-          {
-            about: sample([faker.lorem.paragraphs(), null]),
-            bio: sample([faker.lorem.words(9), null]),
-            activated: isOnboarded,
-            video: isOnboarded ? "/video.mp4" : undefined,
-            thumbnail: isOnboarded ? "/thumbnail.png" : undefined,
-          },
-          tx
-        );
-        return tutor;
       })
     );
   });
@@ -511,11 +510,7 @@ async function main(): Promise<void> {
       id: video.id,
       state: tutor.verifiedEmail
         ? IIntroVideo.State.Approved
-        : sample([
-            IIntroVideo.State.Approved,
-            IIntroVideo.State.Pending,
-            IIntroVideo.State.Rejected,
-          ]),
+        : IIntroVideo.State.Rejected,
     });
   }
 

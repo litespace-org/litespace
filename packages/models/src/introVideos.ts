@@ -80,7 +80,7 @@ export class IntroVideos {
   }: WithOptionalTx<IIntroVideo.FindModelPayload>): Promise<IIntroVideo.FindModelResponse> {
     const builder = this.builder(tx);
 
-    if (state) builder.where("state", state);
+    if (state) builder.where(this.column("state"), state);
 
     // ==============  list-based fileds ========
     withListFilter(builder, this.column("tutor_id"), tutorIds);
@@ -88,7 +88,7 @@ export class IntroVideos {
     withListFilter(builder, this.column("id"), videoIds);
 
     // ==============  date fileds ========
-    withDateFilter(builder, "created_at", createdAt);
+    withDateFilter(builder, this.column("created_at"), createdAt);
 
     const total = await countRows(builder.clone(), { distinct: true });
     const query = builder.select().orderBy([
