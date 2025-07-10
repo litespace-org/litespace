@@ -17,6 +17,7 @@ export function isOnboard({
   phone,
   role,
   city,
+  bypassOnboarding,
 }: ITutor.Full): boolean {
   const base =
     !!verifiedEmail &&
@@ -27,8 +28,11 @@ export function isOnboard({
     !!phone &&
     !!city &&
     activated;
-  if (role === IUser.Role.TutorManager) return base;
-  return base && !!verifiedPhone && !!video && !!thumbnail && !!birthYear;
+  if (role === IUser.Role.TutorManager) return base || bypassOnboarding;
+  return (
+    (base && !!verifiedPhone && !!video && !!thumbnail && !!birthYear) ||
+    bypassOnboarding
+  );
 }
 
 export function isProfileComplete({

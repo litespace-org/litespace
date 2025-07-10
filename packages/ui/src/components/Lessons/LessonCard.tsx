@@ -196,7 +196,7 @@ export const LessonCard: React.FC<Props> = ({
       )}
     >
       <div className="flex justify-between items-stretch gap-6">
-        {dayjs().isAfter(end) ? (
+        {!canceled && dayjs().isAfter(end) ? (
           <div className="flex gap-2 items-center">
             <CheckCircle className="[&>*]:stroke-brand-700 w-6 h-6" />
             <Typography

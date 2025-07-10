@@ -16,6 +16,8 @@ import {
   confirmationCodes,
   plans,
   subscriptions,
+  introVideos,
+  demoSessions,
 } from "@litespace/models";
 import {
   IInterview,
@@ -30,6 +32,8 @@ import {
   ITransaction,
   ISubscription,
   IPlan,
+  IIntroVideo,
+  IDemoSession,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -568,6 +572,33 @@ async function subscription(
   });
 }
 
+async function introVideo(
+  payload?: Partial<IIntroVideo.CreateModelPayload>
+): Promise<IIntroVideo.Self> {
+  return await introVideos.create({
+    src: payload?.src || randomVideo(),
+    tutorId: await or.tutorId(payload?.tutorId),
+    reviewerId: await or.tutorManagerId(payload?.reviewerId),
+  });
+}
+
+async function demoSession(
+  payload?: Partial<IDemoSession.CreateModelPayload>
+): Promise<IDemoSession.Self> {
+  return demoSessions.create({
+    slotId: await or.slotId(payload?.slotId),
+    tutorId: await or.tutorId(payload?.tutorId),
+    start: or.start(payload?.start),
+  });
+}
+
+function randomVideo() {
+  return sample([
+    "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+  ]);
+}
+
 export default {
   user,
   tutor,
@@ -583,6 +614,8 @@ export default {
   transaction,
   plan,
   subscription,
+  introVideo,
+  demoSession,
   room: makeRoom,
   message: makeMessage,
   make: {

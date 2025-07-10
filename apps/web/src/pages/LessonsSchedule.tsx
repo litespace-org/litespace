@@ -45,8 +45,8 @@ const LessonsSchedule: React.FC = () => {
   const invalidate = useInvalidateQuery();
 
   const lessons = useInfiniteLessons({
-    users: user ? [user.id] : [],
     userOnly: true,
+    users: user ? [user.id] : [],
     after: date.toISOString(),
     before: date.add(1, "week").toISOString(),
     full: true,

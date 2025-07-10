@@ -1,4 +1,4 @@
-import { ratings, tutors, users } from "@litespace/models";
+import { lessons, ratings, tutors, users } from "@litespace/models";
 import { exists, forbidden, notfound } from "@/lib/error";
 import { Request, Response } from "express";
 import { NextFunction } from "express";
@@ -19,6 +19,7 @@ import {
   isUser,
 } from "@litespace/utils/user";
 import zod, { ZodSchema } from "zod";
+import dayjs from "dayjs";
 
 const createRatingPayload: ZodSchema<IRating.CreateApiPayload> = zod.object({
   rateeId: id,
@@ -38,6 +39,7 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
 
   const { rateeId, value, feedback }: IRating.CreateApiPayload =
     createRatingPayload.parse(req.body);
+
   const ratee = await users.findById(rateeId);
   if (!ratee) return next(notfound.rating());
 
@@ -45,6 +47,23 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
     (isStudent(rater) && isTutor(ratee)) || (isTutor(rater) && isStudio(ratee));
 
   if (!eligible) return next(forbidden());
+
+  // check if the student (rater) has at least one lesson with the tutor (ratee)
+  if (isStudent(rater)) {
+    const { total } = await lessons.find({
+      users: [rater.id, rateeId],
+      canceled: false,
+      before: dayjs().toISOString(),
+    });
+    if (total === 0) return next(forbidden());
+  }
+
+  // check if the tutor (rater) has at least one video with the studio (ratee)
+  if (isTutor(rater)) {
+    const tutor = await tutors.findById(rater.id);
+    if (tutor?.studioId !== rateeId || tutor.video === null)
+      return next(forbidden());
+  }
 
   const rating = await ratings.findByEntities({
     rater: rater.id,

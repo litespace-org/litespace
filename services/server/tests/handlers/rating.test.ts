@@ -5,7 +5,7 @@ import { expect } from "chai";
 import { first } from "lodash";
 import handlers from "@/handlers/rating";
 import { mockApi } from "@fixtures/mockApi";
-import { IRating } from "@litespace/types";
+import { IRating, IUser } from "@litespace/types";
 
 const findRaterRatings = mockApi<
   object,
@@ -259,30 +259,40 @@ describe("/api/v1/rating/", () => {
   describe("POST /api/v1/rating", () => {
     it("should successfully create new rating", async () => {
       const student = await db.student();
-      const newTutor = await db.tutor();
+      const tutor = await db.tutor();
+      await db.lesson({
+        student: student.id,
+        tutor: tutor.id,
+        timing: "past",
+      });
 
       await createRating({
         user: student,
         body: {
-          rateeId: newTutor.id,
+          rateeId: tutor.id,
           value: 4,
           feedback: "Very good instructor.",
         },
       });
 
-      const { list, total } = await ratings.findByRateeId(newTutor.id);
+      const { list, total } = await ratings.findByRateeId(tutor.id);
       expect(total).to.eq(1);
       expect(list[0].feedback).to.eq("Very good instructor.");
     });
 
     it("should NOT create rating twice for the same rater and ratee ids", async () => {
       const student = await db.student();
-      const newTutor = await db.tutor();
+      const tutor = await db.tutor();
+      await db.lesson({
+        student: student.id,
+        tutor: tutor.id,
+        timing: "past",
+      });
 
       await createRating({
         user: student,
         body: {
-          rateeId: newTutor.id,
+          rateeId: tutor.id,
           value: 4,
           feedback: "Very good instructor.",
         },
@@ -291,13 +301,50 @@ describe("/api/v1/rating/", () => {
       const res = await createRating({
         user: student,
         body: {
-          rateeId: newTutor.id,
+          rateeId: tutor.id,
           value: 4,
           feedback: "Very good instructor.",
         },
       });
 
       expect(res).to.deep.eq(exists.rate());
+    });
+
+    it("should NOT create rating unless the student has atleast one lesson with the tutor", async () => {
+      const student = await db.student();
+      const tutor = await db.tutor();
+      await db.lesson({
+        student: student.id,
+        tutor: tutor.id,
+        timing: "future",
+      });
+
+      const res = await createRating({
+        user: student,
+        body: {
+          rateeId: tutor.id,
+          value: 4,
+          feedback: "Very good instructor.",
+        },
+      });
+
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should NOT create rating unless the tutor has a video by the studio", async () => {
+      const tutor = await db.tutorUser();
+      const studio = await db.user({ role: IUser.Role.Studio });
+
+      const res = await createRating({
+        user: tutor,
+        body: {
+          rateeId: studio.id,
+          value: 4,
+          feedback: "Very good instructor.",
+        },
+      });
+
+      expect(res).to.deep.eq(forbidden());
     });
   });
 
