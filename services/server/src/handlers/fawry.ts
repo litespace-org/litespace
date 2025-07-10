@@ -9,6 +9,7 @@ import {
   PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD,
   PLAN_PERIOD_TO_MONTH_COUNT,
   PLAN_PERIOD_TO_WEEK_COUNT,
+  price,
   safePromise,
 } from "@litespace/utils";
 import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
@@ -44,6 +45,8 @@ import {
 } from "@/fawry/lib/ids";
 import { calculatePlanPrice } from "@/lib/plan";
 import { selectPhone } from "@/lib/user";
+import { FawryStatusEnum, FawryStatusMap } from "@/fawry/types/errors";
+import { first } from "lodash";
 
 const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "month",
@@ -452,12 +455,12 @@ async function refund(req: Request, res: Response, next: NextFunction) {
   const { statusCode, statusDescription } = await fawry.refund({
     merchantCode: fawryConfig.merchantCode,
     referenceNumber: payload.orderRefNum,
-    refundAmount: payload.refundAmount,
+    refundAmount: price.unscale(payload.refundAmount),
     reason: payload.reason,
     signature: genSignature.forRefundRequest({
       referenceNumber: payload.orderRefNum,
       reason: payload.reason,
-      refundAmount: payload.refundAmount,
+      refundAmount: price.unscale(payload.refundAmount),
     }),
   });
 
@@ -466,7 +469,18 @@ async function refund(req: Request, res: Response, next: NextFunction) {
     statusDescription,
   };
 
-  // TODO: update transaction in the database
+  if (FawryStatusMap[statusCode] === FawryStatusEnum.Ok) {
+    const { list } = await transactions.find({
+      providerRefNums: [Number(payload.orderRefNum)],
+    });
+    const tx = first(list)!;
+    await transactions.update(tx.id, {
+      status:
+        tx.amount < payload.refundAmount
+          ? ITransaction.Status.PartialRefunded
+          : ITransaction.Status.Refunded,
+    });
+  }
 
   res.json(response);
 }

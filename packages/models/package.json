@@ -25,7 +25,8 @@
     "test:local": "env-cmd -f .env.test pnpm run test",
     "test:ci": "env-cmd -f .env.test.ci pnpm run test",
     "prepare": "ts-patch install -s",
-    "psql": "docker exec -it postgres psql -U postgres"
+    "psql": "docker exec -it postgres psql -U postgres",
+    "psql:linux": "sudo docker exec -it postgres psql -U postgres"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
