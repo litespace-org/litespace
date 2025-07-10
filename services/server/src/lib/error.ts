@@ -108,6 +108,7 @@ export const notfound = {
   coupon: () => error(ApiError.CouponNotFound, 404),
   invite: () => error(ApiError.InviteNotFound, 404),
   interview: () => error(ApiError.InterviewNotFound, 404),
+  demoSession: () => error(ApiError.DemoSessionNotFound, 404),
   invoice: () => error(ApiError.InvoiceNotFound, 404),
   introVideo: () => error(ApiError.IntroVideoNotFound, 404),
   plan: () => error(ApiError.PlanNotFound, 404),

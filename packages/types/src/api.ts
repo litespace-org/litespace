@@ -58,6 +58,7 @@ export enum ApiError {
   FawryError = "fawry-error",
   IntroVideoNotFound = "intro-video-not-found",
   LargeFileSize = "large-file-size",
+  DemoSessionNotFound = "demo-session-not-found",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

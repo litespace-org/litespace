@@ -57,6 +57,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.FawryError]: "error.api.fawry-error",
   [ApiError.IntroVideoNotFound]: "error.api.intro-video-not-found",
   [ApiError.LargeFileSize]: "error.api.large-file-size",
+  [ApiError.DemoSessionNotFound]: "error.api.demo-session-not-found",
   [ApiError.InactiveTutorManager]: "error.api.inactive-tutor-manager",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
   [FieldError.ShortPassword]: "error.field.short-password",
