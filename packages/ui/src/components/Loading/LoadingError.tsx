@@ -57,14 +57,14 @@ export const LoadingError: React.FC<{
           size={size === "large" ? "medium" : "small"}
           onClick={retry}
           variant="primary"
-          className="w-full"
+          className="w-full text-tiny"
         >
           {intl("labels.retry")}
         </Button>
         <Button
           size={size === "large" ? "medium" : "small"}
           variant="secondary"
-          className="w-full"
+          className="w-full text-tiny"
           disabled={saving}
           loading={saving}
           onClick={save}

@@ -953,6 +953,7 @@
   "error.invlaid-cvv": "رقم التحقق من البطاقة غير صالح، برجاء التحقق من البيانات",
   "error.required": "مطلوب",
   "error.api.fawry-error": "خلل في بوابة الدفع",
+  "error.api.not-room-member": "عذرا لست عضوا في هذه المحادثة، برجاء المحاولة مرة أخرى",
   "error.api.inactive-tutor-manager": "عذرا، ولكن مدير المعلمين الذي اخترته غير مفعل حاليا. من فضلك اختر أحدا أخر ثم حاول مرة أخرى!",
   "error.api.intro-video-not-found": "هذا الفيديو غير موجود، برجاء التأكد من الرقم التعريفي",
   "error.api.service-unavailable": "عذرا، هذه الخدمة غير متاحة حاليا.",

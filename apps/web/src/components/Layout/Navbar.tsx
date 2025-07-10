@@ -12,7 +12,6 @@ import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useUser } from "@litespace/headless/context/user";
-
 import { Tooltip } from "@litespace/ui/Tooltip";
 import { ProfileInfo, SubscriptionQuota } from "@/components/Navbar";
 import { useSaveLogs } from "@/hooks/logger";

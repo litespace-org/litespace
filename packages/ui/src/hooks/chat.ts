@@ -1,6 +1,5 @@
 import { IRoom } from "@litespace/types";
-import { useCallback, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useState } from "react";
 
 export type UncontactedTutorRoomId = `t-${number}`;
 
@@ -14,6 +13,7 @@ export type SelectRoom = (payload: {
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"] | null;
 }) => void;
 
+/** Make be needed in future
 const ROOM_URL_PARAM = "room";
 const ROOM_CACHE_KEY = "litespace:chat::room";
 
@@ -23,7 +23,6 @@ function asRoomId(room: string | null): number | null {
   if (Number.isNaN(id)) return null;
   return id;
 }
-
 function saveRoom(room: number) {
   localStorage.setItem(ROOM_CACHE_KEY, room.toString());
   return room;
@@ -38,37 +37,19 @@ function getRoomParam(params: URLSearchParams): number | null {
   const room = params.get(ROOM_URL_PARAM);
   return asRoomId(room);
 }
+*/
 
 export function asTutorRoomId(tutorId: number): UncontactedTutorRoomId {
   return `t-${tutorId}`;
 }
 
 export function useSelectedRoom() {
-  const [params, setParams] = useSearchParams();
-
-  const preSelection = useMemo(() => {
-    const room = getRoomParam(params);
-    if (room) return saveRoom(room);
-    return getCachedRoom();
-  }, [params]);
-
   const [selected, setSelected] = useState<SelectedRoom>({
-    room: preSelection,
+    room: null,
     otherMember: null,
   });
 
-  const select: SelectRoom = useCallback(
-    (payload) => {
-      if (typeof payload?.room === "number") saveRoom(payload.room);
-      setSelected(payload);
-      if (payload.room)
-        setParams({
-          [ROOM_URL_PARAM]: payload.room.toString(),
-        });
-      else setParams({});
-    },
-    [setParams]
-  );
+  const select: SelectRoom = useCallback((payload) => setSelected(payload), []);
 
   return {
     selected,

@@ -1,6 +1,6 @@
 import Messages from "@/components/Chat/Messages";
 import RoomsPanel from "@/components/Chat/RoomsPanel";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import cn from "classnames";
 import { useSelectedRoom } from "@litespace/ui/hooks/chat";
 import { useChatStatus, useFindRoomMembers } from "@litespace/headless/chat";
@@ -9,7 +9,7 @@ import { useUser } from "@litespace/headless/context/user";
 import StartMessaging from "@litespace/assets/StartMessaging";
 import { Typography } from "@litespace/ui/Typography";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
-import { ITutor, IUser } from "@litespace/types";
+import { ApiError, ITutor, IUser } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useOnError } from "@/hooks/error";
@@ -27,6 +27,11 @@ const Chat: React.FC = () => {
   const { query: roomMembers, keys } = useFindRoomMembers(
     typeof selected.room === "number" ? selected.room : null
   );
+
+  useEffect(() => {
+    if (roomMembers.error?.message === ApiError.NotRoomMember)
+      select({ otherMember: null, room: null });
+  }, [select, roomMembers.error]);
 
   useOnError({
     type: "query",
@@ -96,7 +101,7 @@ const Chat: React.FC = () => {
   return (
     <div
       className={cn(
-        "max-w-screen-3xl w-full mx-auto flex flex-row overflow-hidden grow",
+        "w-full mx-auto flex flex-row overflow-hidden grow",
         "max-h-chat-mobile md:max-h-chat-tablet lg:max-h-chat-desktop"
       )}
     >
