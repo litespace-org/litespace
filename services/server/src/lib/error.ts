@@ -93,6 +93,8 @@ export const already = {
   verified: () => error(ApiError.UserAlreadyVerified, 409),
 };
 
+export const notRoomMember = () => error(ApiError.NotRoomMember, 403);
+
 export const notfound = {
   base: () => error(ApiError.NotFound, 404),
   user: () => error(ApiError.UserNotFound, 404),

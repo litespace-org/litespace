@@ -5,6 +5,7 @@ import { Typography } from "@/components/Typography";
 import { ChatMessage, SendInput } from "@/components/Chat";
 import { Dialog } from "@/components/Dialog";
 import { Void } from "@litespace/types";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 export const EditMessage: React.FC<{
   open: boolean;
@@ -13,9 +14,12 @@ export const EditMessage: React.FC<{
   onUpdateMessage: (value: string) => void;
 }> = ({ open, close, message, onUpdateMessage }) => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
+
   return (
     <Dialog
-      className="w-[770px]"
+      className="min-w-[320px] md:w-[745px]"
+      position={mq.md ? "center" : "bottom"}
       open={open}
       close={close}
       title={

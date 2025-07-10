@@ -59,6 +59,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.IntroVideoNotFound]: "error.api.intro-video-not-found",
   [ApiError.LargeFileSize]: "error.api.large-file-size",
   [ApiError.InactiveTutorManager]: "error.api.inactive-tutor-manager",
+  [ApiError.NotRoomMember]: "error.api.not-room-member",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
   [FieldError.ShortPassword]: "error.field.short-password",
   [FieldError.LongPassword]: "error.field.long-password",

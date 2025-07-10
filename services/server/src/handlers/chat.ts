@@ -11,7 +11,7 @@ import {
   jsonBoolean,
   pageSize,
 } from "@/validation/utils";
-import { empty, exists, forbidden, notfound } from "@/lib/error";
+import { empty, exists, forbidden, notfound, notRoomMember } from "@/lib/error";
 import {
   isAdmin,
   isTutorManager,
@@ -209,9 +209,13 @@ async function findRoomMembers(
 
   const members = await rooms.findRoomMembers({
     roomIds: [roomId],
-    excludeUsers: [user.id],
+    excludeUsers: [],
   });
+
   if (isEmpty(members)) return next(notfound.room());
+
+  const isUserMember = members.find((member) => member.id === user.id);
+  if (!isUserMember) return next(notRoomMember());
 
   const statusMap = await cache.onlineStatus.isOnlineBatch(
     members.map((member) => member.id)

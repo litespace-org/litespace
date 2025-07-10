@@ -59,6 +59,7 @@ export enum ApiError {
   IntroVideoNotFound = "intro-video-not-found",
   LargeFileSize = "large-file-size",
   LessonTimePassed = "lesson-time-passed",
+  NotRoomMember = "not-room-member",
 }
 
 export type ApiErrorCode = ApiError | FieldError;
