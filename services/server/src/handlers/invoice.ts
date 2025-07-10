@@ -208,6 +208,7 @@ function update(context: ApiContext) {
         ? await upload({
             data: receipt.buffer,
             type: receipt.mimetype,
+            prefix: "invoices/receipts/",
           })
         : undefined;
 

@@ -64,7 +64,11 @@ async function create(req: Request, res: Response, next: NextFunction) {
     return next(largeFileSize());
 
   const screenshotKey = screenshot
-    ? await upload({ data: screenshot.buffer, type: screenshot.mimetype })
+    ? await upload({
+        data: screenshot.buffer,
+        type: screenshot.mimetype,
+        prefix: "reports/screenshots/",
+      })
     : undefined;
 
   // upload the log file if exists
@@ -72,7 +76,11 @@ async function create(req: Request, res: Response, next: NextFunction) {
   if (log && exceedsSizeLimit(log.size, 1)) return next(largeFileSize());
 
   const logKey = log
-    ? await upload({ data: log.buffer, type: log.mimetype })
+    ? await upload({
+        data: log.buffer,
+        type: log.mimetype,
+        prefix: "reports/logs/",
+      })
     : undefined;
 
   await reports.create({
