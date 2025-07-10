@@ -5,7 +5,9 @@ import { useFindInvoiceStats } from "@litespace/headless/invoices";
 import React from "react";
 import { useOnError } from "@/hooks/error";
 
-const InvoicesOverview: React.FC<{ tutorId?: number }> = ({ tutorId }) => {
+export const InvoicesOverview: React.FC<{ tutorId?: number }> = ({
+  tutorId,
+}) => {
   const intl = useFormatMessage();
   const { query, keys } = useFindInvoiceStats(tutorId);
 

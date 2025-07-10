@@ -1,6 +1,10 @@
 import { Paginated } from "@/utils";
 import { IFilter } from "@/index";
 
+export enum AssetFileName {
+  Video = "video",
+}
+
 export type Self = {
   id: number;
   /***
@@ -45,6 +49,11 @@ export type UpdateModelPayload = {
   reviewerId?: number;
 };
 
+export type UpdateApiPayload = {
+  state?: State;
+  reviewerId?: number;
+};
+
 export type FindModelPayload = IFilter.SkippablePagination & {
   tutorIds?: number[];
   videoIds?: number[];
@@ -54,3 +63,14 @@ export type FindModelPayload = IFilter.SkippablePagination & {
 };
 
 export type FindModelResponse = Paginated<Self>;
+
+export type CreateApiPayload = {
+  /**
+   * video duration in minutes
+   */
+  duration: number;
+};
+
+export type CreateApiFiles = {
+  video?: Blob;
+};

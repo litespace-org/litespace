@@ -18,6 +18,7 @@ import {
   subscriptions,
   invoices,
   reports,
+  introVideos,
 } from "@litespace/models";
 import {
   IInterview,
@@ -33,6 +34,8 @@ import {
   ISubscription,
   IPlan,
   IReport,
+  IIntroVideo,
+  IInvoice,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -48,6 +51,7 @@ dayjs.extend(utc);
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await introVideos.builder(tx).del();
     await reports.builder(tx).del();
     await subscriptions.builder(tx).del();
     await transactions.builder(tx).del();
@@ -592,6 +596,28 @@ export async function report(payload?: Partial<IReport.CreateModelPayload>) {
   return report;
 }
 
+export async function introVideo(
+  payload?: Partial<IIntroVideo.CreateModelPayload>
+) {
+  const introVideo = await introVideos.create({
+    src: payload?.src || randomUUID(),
+    tutorId: await or.tutorId(payload?.tutorId),
+    reviewerId: await or.tutorId(payload?.reviewerId),
+  });
+  if (!introVideo) throw new Error("introVideo not found; should never happen");
+  return introVideo;
+}
+
+export async function invoice(payload?: Partial<IInvoice.CreatePayload>) {
+  return await invoices.create({
+    userId: await or.tutorId(payload?.userId),
+    method: payload?.method || IInvoice.WithdrawMethod.Wallet,
+    receiver: payload?.receiver || faker.phone.number(),
+    amount: payload?.amount || randomInt(10000),
+    note: payload?.note || faker.lorem.sentence(),
+  });
+}
+
 export default {
   user,
   tutor,
@@ -609,6 +635,8 @@ export default {
   plan,
   subscription,
   report,
+  introVideo,
+  invoice,
   room: makeRoom,
   message: makeMessage,
   make: {

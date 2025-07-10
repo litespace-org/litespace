@@ -11,7 +11,7 @@ export const Tutors: React.FC<{
   tutors: ITutor.FindOnboardedTutorsApiResponse;
 }> = ({ tutors }) => {
   return (
-    <div className="bg-natural-0 max-w-screen">
+    <div className="bg-natural-0 max-w-screen-3xl mx-auto w-full">
       <InViewTrack event="view_item_list" label="tutors" action="scroll" />
       <div className="py-14 md:py-20 lg:py-[120px] max-w-screen-3xl mx-auto px-4 md:px-8">
         <div className="mx-auto text-center flex flex-col gap-4 mb-6 md:mb-16 lg:mb-[60px] max-w-[874px]">

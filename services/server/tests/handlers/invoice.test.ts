@@ -10,7 +10,7 @@ import {
   illegalInvoiceUpdate,
   notfound,
 } from "@/lib/error";
-import { Readable } from "stream";
+import { getMockFile } from "@fixtures/file";
 
 const createInvoice = mockApi<IInvoice.CreateApiPayload>(handlers.create);
 
@@ -19,24 +19,14 @@ const updateInvoice = mockApi<
   IInvoice.UpdateApiParams
 >(handlers.update(mockApiContext()));
 
-const findInvoice = mockApi<object, object, IInvoice.FindInvoicesQuery>(
-  handlers.find
-);
+const findInvoice = mockApi<
+  object,
+  object,
+  IInvoice.FindInvoicesQuery,
+  IInvoice.FindInvoicesApiResponse
+>(handlers.find);
 
 const findStats = mockApi<object, IInvoice.FindStatsParams>(handlers.stats);
-
-const getMockFile = (): Express.Multer.File => ({
-  filename: "mockfile",
-  fieldname: "mockfield",
-  originalname: "mockname",
-  encoding: "testing",
-  mimetype: "testing",
-  size: 1,
-  stream: new Readable(),
-  destination: "empty",
-  path: "/tmp",
-  buffer: Buffer.from([]),
-});
 
 describe("/api/v1/invoice/", () => {
   beforeEach(async () => {
@@ -423,9 +413,8 @@ describe("/api/v1/invoice/", () => {
 
       const res = await findInvoice({ user: tutor1 });
       expect(res.status).to.eq(200);
-      const body = res.body as IInvoice.FindInvoicesApiResponse;
-      expect(body.total).to.eq(1);
-      expect(body.list).to.deep.eq([invoice1]);
+      expect(res.body?.total).to.eq(1);
+      expect(res.body?.list).to.deep.eq([invoice1]);
     });
 
     it("should get a list of invoices associated to all tutors if the requester is an admin", async () => {
@@ -461,10 +450,9 @@ describe("/api/v1/invoice/", () => {
       });
 
       const res = await findInvoice({ user: admin });
-      const body = res.body as IInvoice.FindInvoicesApiResponse;
-      expect(body.total).to.eq(2);
+      expect(res.body?.total).to.eq(2);
       for (const invoice of [invoice1, invoice2]) {
-        expect(body.list).to.deep.contain(invoice);
+        expect(res.body?.list).to.deep.contain(invoice);
       }
     });
 
@@ -498,9 +486,66 @@ describe("/api/v1/invoice/", () => {
         query: { users: [tutor1.id] },
         user: admin,
       });
-      const body = res.body as IInvoice.FindInvoicesApiResponse;
-      expect(body.total).to.eq(1);
-      expect(body.list).to.deep.contain(invoice1);
+      expect(res.body?.total).to.eq(1);
+      expect(res.body?.list).to.deep.contain(invoice1);
+    });
+
+    it("should paginate invoices correctly for tutors", async () => {
+      const tutor = await db.tutorUser();
+
+      for (let i = 0; i < 3; i++) {
+        await db.invoice({
+          userId: tutor.id,
+        });
+      }
+
+      // Test pagination
+      const page1 = await findInvoice({
+        query: { page: 1, size: 2 },
+        user: tutor,
+      });
+      const page2 = await findInvoice({
+        query: { page: 2, size: 2 },
+        user: tutor,
+      });
+
+      expect(page1.body?.total).to.eq(3);
+      expect(page1.body?.list).to.have.length(2);
+      expect(page2.body?.list).to.have.length(1);
+    });
+
+    it("should paginate invoices correctly for admins", async () => {
+      const admin = await db.user({ role: IUser.Role.SuperAdmin });
+      const tutor1 = await db.tutorUser();
+      const tutor2 = await db.tutorUser();
+
+      // Create 4 invoices across tutors
+
+      for (let i = 0; i < 2; i++) {
+        await db.invoice({
+          userId: tutor1.id,
+        });
+      }
+
+      for (let i = 0; i < 2; i++) {
+        await db.invoice({
+          userId: tutor2.id,
+        });
+      }
+
+      // Test pagination with admin
+      const res1 = await findInvoice({
+        query: { page: 1, size: 3 },
+        user: admin,
+      });
+      const res2 = await findInvoice({
+        query: { page: 2, size: 3 },
+        user: admin,
+      });
+
+      expect(res1.body?.total).to.eq(4);
+      expect(res1.body?.list).to.have.length(3);
+      expect(res2.body?.list).to.have.length(1);
     });
   });
 

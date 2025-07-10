@@ -1,5 +1,5 @@
 import { ISession, IUser } from "@litespace/types";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Preview from "@/components/Session/Preview";
 import { usePreview } from "@/components/Session/room";
 import Controllers, { Controller } from "@/components/Session/Controllers";
@@ -7,12 +7,14 @@ import { supportsBackgroundProcessors } from "@livekit/track-processors";
 import Ready from "@/components/Session/Ready";
 import { useTracks } from "@livekit/components-react";
 import { TrackReference } from "@/components/Session/types";
+import { Dialogs, DialogTypes } from "@/components/Session/Dialogs";
 
 const PreSession: React.FC<{
   type: ISession.Type;
   start: string;
   duration: number;
   localMemberId: number;
+  localMemberRole: IUser.Role;
   localMemberName: string | null;
   localMemberImage: string | null;
   remoteMemberId: number;
@@ -20,6 +22,7 @@ const PreSession: React.FC<{
 }> = ({
   type,
   localMemberId,
+  localMemberRole,
   localMemberName,
   localMemberImage,
   remoteMemberId,
@@ -44,6 +47,14 @@ const PreSession: React.FC<{
     backgroundBlurEnabled,
   } = usePreview();
 
+  const [dialog, setDialog] = useState<{
+    visible: boolean;
+    type: DialogTypes;
+  }>({
+    visible: false,
+    type: "encourage-dialog",
+  });
+
   const remoteMemberJoined = useMemo(() => {
     return !!tracks.find(
       (track) => track.participant.identity === remoteMemberId.toString()
@@ -59,8 +70,20 @@ const PreSession: React.FC<{
     const audio: Controller = {
       toggle: () => {
         if (!audioTrack) return;
-        if (audioEnabled) return audioTrack.mute();
-        if (!audioEnabled) return audioTrack.unmute();
+        // turning the mic off
+        if (audioEnabled) {
+          return audioTrack.mute();
+        }
+        // turning the mic on
+        if (!audioEnabled) {
+          if (!videoEnabled) {
+            setDialog({
+              type: "encourage-dialog",
+              visible: true,
+            });
+          }
+          return audioTrack.unmute();
+        }
       },
       enabled: audioEnabled,
       error: !audioTrack,
@@ -69,8 +92,18 @@ const PreSession: React.FC<{
     const video: Controller = {
       toggle: () => {
         if (!videoTrack) return;
-        if (videoEnabled) return videoTrack.mute();
-        if (!videoEnabled) return videoTrack.unmute();
+        // turning the cam off
+        if (videoEnabled) {
+          setDialog({
+            type: "discourage-dialog",
+            visible: true,
+          });
+          return videoTrack.mute();
+        }
+        // turning the cam on
+        if (!videoEnabled) {
+          return videoTrack.unmute();
+        }
       },
       enabled: videoEnabled,
       error: !videoTrack,
@@ -100,6 +133,25 @@ const PreSession: React.FC<{
 
   return (
     <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 md:mt-28 max-h-full">
+      {[IUser.Role.TutorManager, IUser.Role.Tutor].includes(localMemberRole) &&
+      dialog.visible ? (
+        <Dialogs
+          type={dialog.type}
+          setPermission={(perm) => {
+            if (perm === "mic-only") {
+              audioTrack?.unmute();
+            } else if (perm === "cam-only") {
+              videoTrack?.unmute();
+            } else if (perm === "mic-and-camera") {
+              audioTrack?.unmute();
+              videoTrack?.unmute();
+            }
+          }}
+          turnCamOff={() => videoTrack?.mute()}
+          close={() => setDialog((prev) => ({ ...prev, visible: false }))}
+        />
+      ) : null}
+
       <div className="flex flex-col items-center justify-center gap-6 md:w-[480px] lg:w-[640px] h-full overflow-hidden">
         <div className="w-full max-h-[calc(100%-40px)] overflow-hidden aspect-mobile md:aspect-desktop">
           <Preview

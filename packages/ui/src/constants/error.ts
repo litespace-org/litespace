@@ -10,6 +10,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.RoomExists]: "error.api.room-exists",
   [ApiError.UserExists]: "error.api.user-exists",
   [ApiError.RatingExists]: "error.api.rating-exists",
+  [ApiError.IntroVideoExists]: "error.api.intro-video-exists",
   [ApiError.SubscriptionExists]: "error.api.subscription-exists",
   [ApiError.SubscriptionRequired]: "error.api.subscription-required",
   [ApiError.NoEnoughMinutes]: "error.api.no-enough-minutes",
@@ -17,6 +18,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.BusyTutorManager]: "error.api.busy-tutor-manager",
   [ApiError.Unexpected]: "error.api.unexpected",
   [ApiError.NotFound]: "error.api.not-found",
+  [ApiError.InvalidEmail]: "error.api.invalid-email",
   [ApiError.SessionNotFound]: "error.api.session-not-found",
   [ApiError.UserNotFound]: "error.api.user-not-found",
   [ApiError.TutorNotFound]: "error.api.tutor-not-found",
@@ -29,6 +31,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.AssetNotFound]: "error.api.asset-not-found",
   [ApiError.InviteNotFound]: "error.api.invite-not-found",
   [ApiError.InvoiceNotFound]: "error.api.invoice-not-found",
+  [ApiError.InvalidInvoiceMethod]: "error.api.invoice-not-valid",
   [ApiError.PlanNotFound]: "error.api.plan-not-found",
   [ApiError.RoomNotFound]: "error.api.room-not-found",
   [ApiError.RoomMembersNotFound]: "error.api.room-members-not-found",
@@ -52,8 +55,10 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.ExpiredVerificationCode]: "error.api.expired-verification-code",
   [ApiError.InvalidVerificationCode]: "error.api.invalid-verification-code",
   [ApiError.FawryError]: "error.api.fawry-error",
+  [ApiError.IntroVideoNotFound]: "error.api.intro-video-not-found",
   [ApiError.LargeFileSize]: "error.api.large-file-size",
   [ApiError.DemoSessionNotFound]: "error.api.demo-session-not-found",
+  [ApiError.InactiveTutorManager]: "error.api.inactive-tutor-manager",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
   [FieldError.ShortPassword]: "error.field.short-password",
   [FieldError.LongPassword]: "error.field.long-password",
@@ -107,7 +112,6 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
     "error.field.withdraw-max-amount-zero-or-negative",
   [FieldError.WithdrawMinAmountZeroOrNegative]:
     "error.field.withdraw-min-amount-zero-or-negative",
-  [FieldError.ZeroInvoiceAmount]: "error.field.zero-invoice-amount",
   [FieldError.InvoiceMinAmountSubceeded]:
     "error.field.invoice-min-amount-subceeded",
   [FieldError.InvoiceMaxAmountExceeded]:

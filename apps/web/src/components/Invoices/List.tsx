@@ -5,16 +5,18 @@ import {
   useRequestInvoiceCancelation,
 } from "@litespace/headless/invoices";
 import { Button } from "@litespace/ui/Button";
-import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import { Table } from "@/components/Invoices/Table";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useCallback, useState } from "react";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import { CreateInvoiceDialog } from "@/components/Invoices";
 
 export const List: React.FC<{ userId?: number }> = ({ userId }) => {
   const intl = useFormatMessage();
   const toast = useToast();
+  const [open, setOpen] = useState<boolean>(false);
 
   const [id, setId] = useState(0);
 
@@ -29,7 +31,8 @@ export const List: React.FC<{ userId?: number }> = ({ userId }) => {
   const onSuccess = useCallback(() => {
     setId(0);
     toast.success({ title: intl("invoices.cancel-toast.success") });
-  }, [intl, toast]);
+    query.refetch();
+  }, [intl, query, toast]);
 
   const onError = useOnError({
     type: "mutation",
@@ -53,11 +56,17 @@ export const List: React.FC<{ userId?: number }> = ({ userId }) => {
         <Button
           size="large"
           endIcon={<TransactionMinus className="icon stroke-[1.5]" />}
+          onClick={() => setOpen(true)}
         >
           <Typography tag="span" className="text">
             {intl("invoices.withdrawal-request.create")}
           </Typography>
         </Button>
+        <CreateInvoiceDialog
+          open={open}
+          close={() => setOpen(false)}
+          refetch={query.refetch}
+        />
       </div>
 
       <Table

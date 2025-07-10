@@ -20,6 +20,7 @@ import subscription from "@/routes/subscription";
 import confirmationCode from "@/routes/confirmationCode";
 import report from "@/routes/report";
 import demoSession from "@/routes/demoSession";
+import introVideo from "@/routes/introVideo";
 
 export default {
   user,
@@ -44,4 +45,5 @@ export default {
   confirmationCode,
   report,
   demoSession,
+  introVideo,
 };

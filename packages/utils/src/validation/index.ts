@@ -44,6 +44,10 @@ export {
   isValidInvoiceReceiver,
   isValidInvoiceNote,
   isValidInvoiceAmount,
+  isValidInvoiceMethod,
+  isValidBankNumber,
+  isValidBankname,
+  isValidInstapayIPA,
 } from "@/validation/invoice";
 
 export { isValidTopicName } from "@/validation/topic";

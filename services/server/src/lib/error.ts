@@ -41,6 +41,8 @@ export const empty = () => error(ApiError.EmptyRequest, 400);
 
 export const busyTutor = () => error(ApiError.BusyTutor, 400);
 
+export const invalidEmail = () => error(ApiError.InvalidEmail, 400);
+
 export const busyTutorManager = () => error(ApiError.BusyTutorManager, 400);
 
 export const unexpected = (msg?: string) =>
@@ -69,20 +71,24 @@ export const expiredVerificationCode = () =>
 export const invalidVerificationCode = () =>
   error(ApiError.InvalidVerificationCode, 400);
 
+export const inActiveTutorManager = () =>
+  error(ApiError.InvalidVerificationCode, 400);
+
 export const wrongPassword = () => error(ApiError.WrongPassword, 400);
 
 export const fawryError = (msg?: string) =>
   error(ApiError.FawryError, 500, msg);
 
 export const exists = {
-  room: () => error(ApiError.RoomExists, 400),
-  user: () => error(ApiError.UserExists, 400),
-  rate: () => error(ApiError.RatingExists, 400),
-  subscription: () => error(ApiError.SubscriptionExists, 400),
+  room: () => error(ApiError.RoomExists, 409),
+  user: () => error(ApiError.UserExists, 409),
+  rate: () => error(ApiError.RatingExists, 409),
+  subscription: () => error(ApiError.SubscriptionExists, 409),
+  introVideo: () => error(ApiError.IntroVideoExists, 409),
 };
 
 export const already = {
-  verified: () => error(ApiError.UserAlreadyVerified, 400),
+  verified: () => error(ApiError.UserAlreadyVerified, 409),
 };
 
 export const notfound = {
@@ -104,6 +110,7 @@ export const notfound = {
   interview: () => error(ApiError.InterviewNotFound, 404),
   demoSession: () => error(ApiError.DemoSessionNotFound, 404),
   invoice: () => error(ApiError.InvoiceNotFound, 404),
+  introVideo: () => error(ApiError.IntroVideoNotFound, 404),
   plan: () => error(ApiError.PlanNotFound, 404),
   report: () => error(ApiError.ReportNotFound, 404),
   withdrawMethod: () => error(ApiError.WidthdrawMethodNotFound, 404),

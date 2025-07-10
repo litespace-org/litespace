@@ -1,3 +1,9 @@
+import { first, isEmpty } from "lodash";
+import zod from "zod";
+import { Knex } from "knex";
+
+import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
+
 import {
   column,
   countRows,
@@ -12,12 +18,9 @@ import {
   withNullableFilter,
   withListFilter,
 } from "@/query";
-import { first, isEmpty } from "lodash";
-import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
-import { Knex } from "knex";
-import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
-import zod from "zod";
+import { users } from "@/users";
+import { introVideos } from "@/introVideos";
 
 type FullTutorFields = ITutor.FullRow;
 type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
@@ -130,85 +133,90 @@ export class Tutors {
     return !isEmpty(rows);
   }
 
-  async find({
-    tx,
-    about,
-    bio,
-    name,
-    phone,
-    email,
-    activated,
-    password,
-    image,
-    thumbnail,
-    video,
-    verifiedEmail,
-    verifiedPhone,
-    verifiedTelegram,
-    verifiedWhatsapp,
-    role,
-    birthYear,
-    notice,
-    createdAt,
-    city,
-    gender,
-    notificationMethod,
-    ...pagination
-  }: WithOptionalTx<ITutor.FindModelQuery>): Promise<Paginated<ITutor.Full>> {
-    const builder = this.builder(tx)
-      .from<IUser.Row>(users.table)
-      .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"));
-
+  applySearchFilter<R extends object, T>(
+    builder: Knex.QueryBuilder<R, T>,
+    filter: ITutor.FindModelQuery
+  ): Knex.QueryBuilder<R, T> {
     // ============== string fields ========
-    withStringFilter(builder, this.column("bio"), bio);
-    withStringFilter(builder, this.column("about"), about);
-    withStringFilter(builder, users.column("name"), name);
-    withStringFilter(builder, users.column("phone"), phone);
-    withStringFilter(builder, users.column("email"), email);
+    withStringFilter(builder, this.column("bio"), filter.bio);
+    withStringFilter(builder, this.column("about"), filter.about);
+    withStringFilter(builder, users.column("name"), filter.name);
+    withStringFilter(builder, users.column("phone"), filter.phone);
+    withStringFilter(builder, users.column("email"), filter.email);
 
     // ============== boolean fields ========
-    withBooleanFilter(builder, this.column("activated"), activated);
-    withBooleanFilter(builder, users.column("verified_email"), verifiedEmail);
-    withBooleanFilter(builder, users.column("verified_phone"), verifiedPhone);
+    withBooleanFilter(builder, this.column("activated"), filter.activated);
+    withBooleanFilter(
+      builder,
+      users.column("verified_email"),
+      filter.verifiedEmail
+    );
+    withBooleanFilter(
+      builder,
+      users.column("verified_phone"),
+      filter.verifiedPhone
+    );
     withBooleanFilter(
       builder,
       users.column("verified_telegram"),
-      verifiedTelegram
+      filter.verifiedTelegram
     );
     withBooleanFilter(
       builder,
       users.column("verified_whatsapp"),
-      verifiedWhatsapp
+      filter.verifiedWhatsapp
     );
 
     // ============== nullable fields ========
-    withNullableFilter(builder, this.column("video"), video);
-    withNullableFilter(builder, users.column("image"), image);
-    withNullableFilter(builder, this.column("thumbnail"), thumbnail);
-    withNullableFilter(builder, users.column("password"), password);
+    withNullableFilter(builder, this.column("video"), filter.video);
+    withNullableFilter(builder, users.column("image"), filter.image);
+    withNullableFilter(builder, this.column("thumbnail"), filter.thumbnail);
+    withNullableFilter(builder, users.column("password"), filter.password);
 
     // ============== numerical fileds ========
-    withNumericFilter(builder, users.column("birth_year"), birthYear);
-    withNumericFilter(builder, this.column("notice"), notice);
+    withNumericFilter(builder, users.column("birth_year"), filter.birthYear);
+    withNumericFilter(builder, this.column("notice"), filter.notice);
 
     // ============== date fields ========
-    withDateFilter(builder, users.column("created_at"), createdAt);
+    withDateFilter(builder, users.column("created_at"), filter.createdAt);
 
     // ==============  list-based fileds ========
-    withListFilter(builder, users.column("city"), city);
+    withListFilter(builder, users.column("city"), filter.city);
     withListFilter(
       builder,
       users.column("notification_method"),
-      notificationMethod
+      filter.notificationMethod
     );
-    withListFilter(builder, users.column("gender"), gender);
-    withListFilter(builder, users.column("role"), role);
+    withListFilter(builder, users.column("gender"), filter.gender);
+    withListFilter(builder, users.column("role"), filter.role);
 
-    const total = await countRows(builder.clone(), { distinct: true });
-    const query = builder
+    return withSkippablePagination(builder, {
+      size: filter.size,
+      page: filter.page,
+      full: filter.full,
+    });
+  }
+
+  async find(
+    filter: WithOptionalTx<ITutor.FindModelQuery>
+  ): Promise<Paginated<ITutor.Full>> {
+    const builder = this.builder(filter.tx)
+      .from<IUser.Row>(users.table)
+      .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"));
+
+    const filtered = this.applySearchFilter(builder, { ...filter, full: true });
+
+    const total = await countRows(filtered.clone(), { distinct: true });
+
+    const query = filtered
       .select<ITutor.FullRow[]>(fullTutorFields)
       .orderBy(tutors.column("created_at"), "desc");
-    const rows = await withSkippablePagination(query, pagination);
+
+    const rows = await withSkippablePagination(query, {
+      size: filter.size,
+      page: filter.page,
+    });
+
     const list = rows.map((row) => this.asFull(row));
 
     return { list, total };
@@ -338,6 +346,46 @@ export class Tutors {
       .andWhereNot(users.column("gender"), null)
       .andWhere(users.column("verified_email"), true);
     return rows.map((row) => this.asFull(row));
+  }
+
+  /**
+   * retrieve a certain number of tutor-manager ids ordered by the number of introVideos
+   * they reviewed or/and will review.
+   */
+  async findTutorManagersByIntroVideos({
+    size,
+    order,
+    activated,
+  }: {
+    size: number;
+    order: "asc" | "desc";
+    activated?: boolean;
+  }): Promise<number[]> {
+    const builder = this.builder()
+      .from<IUser.Row>(users.table)
+      .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"));
+
+    const filtered = this.applySearchFilter<IUser.Row, Array<{ id: number }>>(
+      builder,
+      {
+        size,
+        role: [IUser.Role.TutorManager],
+        activated,
+      }
+    );
+
+    const rows = await filtered
+      .leftJoin(
+        introVideos.table,
+        this.column("id"),
+        introVideos.column("reviewer_id")
+      )
+      .groupBy(this.column("id"))
+      .count(introVideos.column("reviewer_id"), { as: "introVideosCount" })
+      .orderBy("introVideosCount", order)
+      .select<Array<{ id: number }>>(this.column("id"));
+
+    return rows.map((row) => row.id);
   }
 
   async findUncontactedTutorsForStudent({
