@@ -18,9 +18,16 @@ enum MenuSteps {
 export const SettingsMenu: React.FC<{
   children: React.ReactNode;
   playbackSpeed: number;
+  container?: HTMLElement;
   toggleBar: (open: boolean) => void;
   setPlaybackSpeed: (rate: number) => void;
-}> = ({ children, playbackSpeed = 1, toggleBar, setPlaybackSpeed }) => {
+}> = ({
+  children,
+  container,
+  playbackSpeed = 1,
+  toggleBar,
+  setPlaybackSpeed,
+}) => {
   const intl = useFormatMessage();
   const [step, setStep] = useState<MenuSteps>(MenuSteps.Main);
 
@@ -45,11 +52,12 @@ export const SettingsMenu: React.FC<{
         {children}
       </DropdownMenu.Trigger>
 
-      <DropdownMenu.Portal>
+      <DropdownMenu.Portal container={container}>
         <DropdownMenu.Content
+          asChild
           side="top"
           align="start"
-          className={cn("shadow-lesson-event-card rounded-lg bg-natural-50 ")}
+          className="shadow-lesson-event-card rounded-lg bg-natural-50 z-video-player-settings-menu"
         >
           <div className={cn("flex flex-col gap-1 z-[5] w-[200px] p-1")}>
             {step === MenuSteps.Main ? (

@@ -80,6 +80,7 @@ export default {
         "stream-avatar": "16",
         "stream-chat": "10",
         "stream-chat-options": "19",
+        "video-player-settings-menu": "20",
       },
       screens: {
         xs: "480px",

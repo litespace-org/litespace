@@ -5,8 +5,8 @@ import Step from "@/components/TutorOnboarding/Step";
 const Content: React.FC<{ selfId: number }> = ({ selfId }) => {
   return (
     <div className="flex rtl:flex-row-reverse ltr:flex-row  h-full">
-      <Steps active="interview" />
-      <Step step="interview" selfId={selfId} />
+      <Steps active="intro-video" />
+      <Step step="photo-session" selfId={selfId} />
     </div>
   );
 };

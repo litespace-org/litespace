@@ -11,8 +11,11 @@ import React, { useRef } from "react";
 import X from "@litespace/assets/X";
 import { Void } from "@litespace/types";
 import { Optional } from "@/components/Optional";
+import { Button } from "@/components/Button";
+import CloseIcon from "@litespace/assets/Close";
 
-export const Dialog: React.FC<{
+// @TODO: impl small screen layouts
+export const VideoDialog: React.FC<{
   container?: Element | null;
   title?: React.ReactNode;
   children?: React.ReactNode;
@@ -30,7 +33,7 @@ export const Dialog: React.FC<{
   open,
   description,
   position = "center",
-  headless = false,
+  headless = true,
   setOpen,
   close,
 }) => {
@@ -55,20 +58,34 @@ export const Dialog: React.FC<{
             const ye = y + height; // dialog y-end
             // the click event is considered within the dialog in case
             // "xc" is between [xs, xe] and "yx" is between [ys, ye]
-            const within = xc >= xs && xc <= xe && yc >= ys && yc <= ye;
+            const within =
+              (xc >= xs && xc <= xe && yc >= ys && yc <= ye) || yc < 72;
             if (!within) close();
           }}
           className="fixed inset-0 backdrop-blur-[15px] bg-overlay-dialog z-dialog-overlay"
-        />
+        >
+          <div className="px-6 absolute top-0 left-0 right-0 z-50 h-[72px] bg-natural-100 flex items-center justify-start">
+            <Button
+              size="large"
+              variant="secondary"
+              type="natural"
+              className="!bg-natural-100 hover:!bg-natural-200 active:!bg-natural-300 !border-natural-700"
+              startIcon={
+                <CloseIcon className="[&>*]:stroke-natural-700 icon w-4 h-4" />
+              }
+              onClick={close}
+            />
+          </div>
+        </Overlay>
         <Content
           ref={dialogRef}
           dir="rtl"
           aria-describedby={description}
           className={cn(
-            "fixed bg-natural-50 focus-visible:ring-brand-500",
-            "p-4 sm:p-6 z-dialog",
+            "fixed outline-none  ",
+            "z-dialog",
             {
-              "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[32px]":
+              "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded focus-visible:ring-4 focus-visible:ring-brand-500":
                 position === "center",
               "left-1/2 bottom-0 -translate-x-1/2 rounded-t-[24px]":
                 position === "bottom",
