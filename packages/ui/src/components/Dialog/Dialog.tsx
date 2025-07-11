@@ -20,6 +20,7 @@ export const Dialog: React.FC<{
   open?: boolean;
   description?: string;
   position?: "center" | "bottom";
+  headless?: boolean;
   setOpen?: (open: boolean) => void;
   close?: Void;
 }> = ({
@@ -29,6 +30,7 @@ export const Dialog: React.FC<{
   open,
   description,
   position = "center",
+  headless = false,
   setOpen,
   close,
 }) => {
@@ -74,17 +76,19 @@ export const Dialog: React.FC<{
             className
           )}
         >
-          <div className="flex justify-between items-center w-full">
-            <Title>{title}</Title>
-            <Optional show={!!close}>
-              <Close
-                className="w-6 h-6 cursor-pointer flex-shrink-0"
-                onClick={close}
-              >
-                <X />
-              </Close>
-            </Optional>
-          </div>
+          <Optional show={!headless}>
+            <div className="flex justify-between items-center w-full">
+              <Title>{title}</Title>
+              <Optional show={!!close}>
+                <Close
+                  className="w-6 h-6 cursor-pointer flex-shrink-0"
+                  onClick={close}
+                >
+                  <X />
+                </Close>
+              </Optional>
+            </div>
+          </Optional>
 
           {children}
         </Content>
