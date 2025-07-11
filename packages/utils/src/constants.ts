@@ -80,6 +80,10 @@ export const TELEGRAM_NUMBER = "010-2001-7777";
 export const LITESPACE_NOTIFY_URL = "https://t.me/litespace_notify";
 export const LITESPACE_TUTORS_TELEGRAM_GROUP_URL =
   "https://t.me/litespace_tutors";
+export const MAIN_TUTOR_MANAGER_TELEGRAM_URL =
+  "https://web.telegram.org/k/#@MahmoudNagaty";
+export const VIDEO_SESSION_EXAMPLE =
+  "https://litespace-prod-assets.fra1.cdn.digitaloceanspaces.com/4ea88b90-dc5b-4b31-9131-fa2da1475ce3";
 
 // All users except tutors and tutor-managers can have their names in either Arabic or English or both.
 // https://regex101.com/r/ER7McY/1

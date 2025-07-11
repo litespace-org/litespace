@@ -129,6 +129,7 @@ export const VideoPlayer = React.forwardRef<HTMLVideoElement, Props>(
                 }}
                 setPlaybackSpeed={setPlaybackRate}
                 playbackSpeed={playbackRate}
+                container={containerRef.current || undefined}
               >
                 <SettingsScrew />
               </SettingsMenu>
