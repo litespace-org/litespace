@@ -4,7 +4,7 @@ import { tutors, knex, lessons, topics, ratings } from "@litespace/models";
 import { first, orderBy } from "lodash";
 import { cache } from "@/lib/cache";
 import { withImageUrl } from "@/lib/user";
-import { isOnboard } from "@litespace/utils/tutor";
+import { isOnboard, isProfileComplete } from "@litespace/utils/tutor";
 
 export type TutorsCache = ITutor.Cache[];
 
@@ -18,7 +18,9 @@ export async function constructTutorsCache(): Promise<TutorsCache> {
     tutorsStudentsCount,
   ] = await knex.transaction(async (tx: Knex.Transaction) => {
     const { list } = await tutors.find({ tx, full: true });
-    const onboarded = list.filter((tutor) => isOnboard(tutor));
+    const onboarded = list.filter(
+      (tutor) => isProfileComplete(tutor) && isOnboard(tutor)
+    );
     const tutorIds = onboarded.map((tutor) => tutor.id);
 
     return await Promise.all([
