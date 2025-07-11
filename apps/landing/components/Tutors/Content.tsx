@@ -1,11 +1,11 @@
 import TutorCard from "@/components/Tutors/TutorCard";
 import { router } from "@/lib/routes";
-import { FindOnboardedTutorsApiResponse } from "@litespace/types/dist/esm/tutor";
+import { ITutor, IUser } from "@litespace/types";
 import { Web } from "@litespace/utils/routes";
 import React from "react";
 
 const Content: React.FC<{
-  tutors: FindOnboardedTutorsApiResponse["list"];
+  tutors: ITutor.FindOnboardedTutorsApiResponse["list"];
 }> = ({ tutors }) => {
   if (!tutors) return null;
   return (
@@ -29,8 +29,7 @@ const Content: React.FC<{
               rating={tutor.avgRating}
               profileUrl={profileUrl}
               imageUrl={tutor.image}
-              // @TODO: extend the cache to include the role value
-              free={true}
+              free={tutor.role === IUser.Role.TutorManager}
             />
           </div>
         );
