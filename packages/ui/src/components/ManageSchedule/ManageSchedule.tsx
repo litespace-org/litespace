@@ -8,18 +8,21 @@ import dayjs from "@/lib/dayjs";
 import ChevronLeft from "@litespace/assets/ChevronLeft";
 import ChevronRight from "@litespace/assets/ChevronRight";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { IAvailabilitySlot, Void } from "@litespace/types";
+import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
 import cn from "classnames";
 import { concat, isEmpty, range, unionBy } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Dayjs } from "dayjs";
 import { Optional } from "@/components/Optional";
+import { hasLessonBetween } from "@/lib/schedule";
+import { useToast } from "@/components/Toast";
 
 const WEEK_DAYS = 7;
 
 export type Props = {
   initialSlots: IAvailabilitySlot.Slot[];
+  scheduledLessons: ILesson.Self[];
   open: boolean;
   loading?: boolean;
   saving?: boolean;
@@ -47,6 +50,7 @@ export const ManageSchedule: React.FC<Props> = ({
   loading,
   error,
   initialSlots,
+  scheduledLessons,
   saving,
   singleDay,
   next,
@@ -56,6 +60,7 @@ export const ManageSchedule: React.FC<Props> = ({
   close,
 }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
   const [slots, setSlots] = useState<Slot[]>([]);
   const weekStart = useMemo(() => dayjs(date).startOf("week"), [date]);
   const { md } = useMediaQuery();
@@ -125,6 +130,22 @@ export const ManageSchedule: React.FC<Props> = ({
       const slot = cloned.find((slot) => slot.id === id);
 
       if (!slot) return;
+
+      if (
+        hasLessonBetween({
+          slot: { ...slot, start: start || slot.start, end: end || slot.end },
+          lessons: scheduledLessons,
+        })
+      ) {
+        toast.warning({
+          title: intl("manage-schedule.manage-dialog.has-lesson-error.title"),
+          description: intl(
+            "manage-schedule.manage-dialog.has-lesson-error.description"
+          ),
+        });
+        return;
+      }
+
       if (start) slot.start = start;
       if (end) slot.end = end;
 
@@ -140,7 +161,7 @@ export const ManageSchedule: React.FC<Props> = ({
 
       setSlots(cloned);
     },
-    [setSlots, slots]
+    [setSlots, slots, toast, intl, scheduledLessons]
   );
 
   const slotActions = useMemo(() => {
