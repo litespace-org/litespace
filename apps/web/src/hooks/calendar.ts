@@ -7,9 +7,9 @@ type CalendarView = "week" | "4-days";
 export function useCalendarController() {
   const mq = useMediaQuery();
   const view = useMemo((): CalendarView => {
-    if (mq.xl || !mq.md) return "week";
+    if (mq.xl) return "week";
     return "4-days";
-  }, [mq.xl, mq.md]);
+  }, [mq.xl]);
 
   const interval = useMemo(() => (view === "week" ? 7 : 4), [view]);
 

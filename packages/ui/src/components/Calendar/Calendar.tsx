@@ -35,7 +35,7 @@ export const Calendar: React.FC<Props> = ({
   error,
   retry,
 }) => {
-  const { xxl } = useMediaQuery();
+  const { xl } = useMediaQuery();
   const intl = useFormatMessage();
 
   if (loading)
@@ -71,7 +71,7 @@ export const Calendar: React.FC<Props> = ({
         <div
           className={cn(
             "grid w-full rounded-tl-2xl",
-            xxl ? "grid-cols-7" : "grid-cols-4"
+            xl ? "grid-cols-7" : "grid-cols-4"
           )}
         >
           <WeekTable
