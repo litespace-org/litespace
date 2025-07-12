@@ -6,7 +6,6 @@ import {
   useSetAvailabilitySlots,
 } from "@litespace/headless/availabilitySlots";
 import { useUser } from "@litespace/headless/context/user";
-
 import { AvailabilitySlotProps, Calendar } from "@litespace/ui/Calendar";
 import { DeleteSlotDialog } from "@litespace/ui/DeleteSlotDialog";
 import { ManageSchedule } from "@litespace/ui/ManageSchedule";
@@ -64,6 +63,7 @@ const ScheduleManagement: React.FC = () => {
   const lessonsQuery = useInfiniteLessons({
     users: user ? [user.id] : [],
     userOnly: true,
+    canceled: false,
     after: start.toISOString(),
     before: end.toISOString(),
     full: true,
@@ -91,6 +91,9 @@ const ScheduleManagement: React.FC = () => {
     if (!slotsQuery.data) return calendarSlots;
 
     for (const slot of slotsQuery.data.slots.list) {
+      const endOfSlotDay = dayjs(slot.start).endOf("day");
+      const isSlotTrespassing = dayjs(slot.end).isAfter(endOfSlotDay);
+
       const withinLessons =
         lessonsQuery.list?.filter((obj) => {
           const start = dayjs(obj.lesson.start);
@@ -110,12 +113,30 @@ const ScheduleManagement: React.FC = () => {
             });
         });
       });
-      calendarSlots.push({
-        id: slot.id,
-        start: slot.start,
-        end: slot.end,
-        members,
-      });
+      // in case there is a large slot outside the 24 hour mark
+      if (isSlotTrespassing) {
+        calendarSlots.push({
+          id: slot.id,
+          start: slot.start,
+          end: dayjs(slot.end).startOf("day").toISOString(),
+          members,
+        });
+        calendarSlots.push({
+          id: slot.id,
+          start: dayjs(slot.end).startOf("day").toISOString(),
+          end: slot.end,
+          members,
+        });
+      }
+
+      if (!isSlotTrespassing) {
+        calendarSlots.push({
+          id: slot.id,
+          start: slot.start,
+          end: slot.end,
+          members,
+        });
+      }
     }
 
     return calendarSlots;
@@ -177,6 +198,7 @@ const ScheduleManagement: React.FC = () => {
       <Optional unmount show={manageScheduleProps.open}>
         <ManageSchedule
           initialSlots={manageScheduleProps.initialSlots}
+          scheduledLessons={lessonsQuery.list?.map((item) => item.lesson) || []}
           date={manageScheduleProps.date}
           open={manageScheduleProps.open}
           next={next}
