@@ -17,6 +17,7 @@ import {
 import { useSaveLogs } from "@/hooks/logger";
 import { isProfileComplete } from "@litespace/utils/tutor";
 import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
+import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -131,6 +132,10 @@ const Root: React.FC = () => {
   useSaveLogs({
     enableKeyboardShortcut: true,
   });
+
+  useEffect(() => {
+    clarity.identify(getCustomeId(), sessionId, location.pathname);
+  }, [location.pathname]);
 
   return (
     <div className="flex relative w-full">

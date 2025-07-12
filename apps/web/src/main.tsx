@@ -20,6 +20,7 @@ import { logger } from "@/lib/logger";
 import App from "@/App";
 
 import "@/lib/ga";
+import "@/lib/clarity";
 import "@/lib/window";
 import "@litespace/ui/tailwind.css";
 import { SubscriptionProvider } from "@litespace/headless/context/subscription";
