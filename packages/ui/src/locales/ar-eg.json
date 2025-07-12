@@ -298,6 +298,8 @@
   "manage-schedule.manage-dialog.available-days": "أيام الأسبوع المتاحة",
   "manage-schedule.manage-dialog.loading.message": "برجاء الانتظار... جاري تحميل الجدول",
   "manage-schedule.manage-dialog.error.message": " عذرًا، حدث خطأ أثناء تحميل الجدول، برجاء المحاولة مرة أخرى",
+  "manage-schedule.manage-dialog.has-lesson-error.title": "لا يمكنك عمل هذا التغيير",
+  "manage-schedule.manage-dialog.has-lesson-error.description": "هذا التغيير سيؤدي إلى إلغاء الحصص المحجوزة في هذا الوقت، برجاء حضور الحصص أو إلغائها قبل تعديل الجدول!",
   "manage-schedule.remove-dialog.title": "حذف الجدول",
   "manage-schedule.remove-dialog.severity-normal": "هل انت متأكد من انك تريد حذف هذا الجدول ؟ هذا الفعل لا يمكن الرجوع فيه.",
   "manage-schedule.remove-dialog.severity-high": "هل انت متأكد من انك تريد حذف هذا الجدول ؟ سيؤدي هذا الي الغاء الحصص المحجوزة بالجدول و اشعار الطلاب بالغائها و الي تراجع مستوي التقييم العام الخاص بك.",

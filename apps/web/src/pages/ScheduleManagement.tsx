@@ -64,10 +64,13 @@ const ScheduleManagement: React.FC = () => {
   const lessonsQuery = useInfiniteLessons({
     users: user ? [user.id] : [],
     userOnly: true,
+    canceled: false,
     after: start.toISOString(),
     before: end.toISOString(),
     full: true,
   });
+
+  console.log({ lessons: lessonsQuery.list });
 
   const mutateSlots = useSetAvailabilitySlots({
     onSuccess() {
@@ -177,6 +180,7 @@ const ScheduleManagement: React.FC = () => {
       <Optional unmount show={manageScheduleProps.open}>
         <ManageSchedule
           initialSlots={manageScheduleProps.initialSlots}
+          scheduledLessons={lessonsQuery.list?.map((item) => item.lesson) || []}
           date={manageScheduleProps.date}
           open={manageScheduleProps.open}
           next={next}
