@@ -6,7 +6,7 @@ import { WorkerMessageOf, WorkerMessagePayloadOf } from "@/workers/types";
 import { sessionEvents, tutors } from "@litespace/models";
 import { joinTutorCache } from "@/lib/tutor";
 import { cache } from "@/lib/cache";
-import { isOnboard } from "@litespace/utils/tutor";
+import { isOnboarded } from "@litespace/utils/tutor";
 import dayjs from "@/lib/dayjs";
 import { producer } from "@/lib/kafka";
 import { NOTIFICATION_METHOD_TO_KAFKA_TOPIC } from "@litespace/utils/constants";
@@ -61,7 +61,8 @@ export async function updateTutorCache(
     if (!tutor) return;
 
     // Remove tutors from cache in case they are no longer "onboard"
-    if (!isOnboard(tutor)) return await cache.tutors.removeOne(payload.tutorId);
+    if (!isOnboarded(tutor))
+      return await cache.tutors.removeOne(payload.tutorId);
 
     const tutorCache = await cache.tutors.getOne(tutor.id);
     const joinedCache = await joinTutorCache(tutor, tutorCache);

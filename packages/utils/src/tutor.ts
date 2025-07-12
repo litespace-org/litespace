@@ -3,7 +3,7 @@ import { ITutor, IUser } from "@litespace/types";
 /*
  * check whether a tutor is activated (onboard) or not.
  */
-export function isOnboard({
+export function isOnboarded({
   activated,
   verifiedEmail,
   verifiedPhone,
@@ -11,28 +11,28 @@ export function isOnboard({
   image,
   thumbnail,
   name,
+  gender,
   birthYear,
   about,
   bio,
   phone,
   role,
   city,
-  bypassOnboarding,
 }: ITutor.Full): boolean {
   const base =
-    !!verifiedEmail &&
-    !!image &&
     !!name &&
-    !!about &&
-    !!bio &&
     !!phone &&
     !!city &&
+    !!verifiedEmail &&
+    !!gender &&
+    !!birthYear &&
+    !!bio &&
+    !!about &&
+    !!image &&
+    !!verifiedPhone &&
     activated;
-  if (role === IUser.Role.TutorManager) return base || bypassOnboarding;
-  return (
-    (base && !!verifiedPhone && !!video && !!thumbnail && !!birthYear) ||
-    bypassOnboarding
-  );
+  if (role === IUser.Role.TutorManager) return base;
+  return base && !!video && !!thumbnail;
 }
 
 export function isProfileComplete({
