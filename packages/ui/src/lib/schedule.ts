@@ -1,29 +1,34 @@
 import { Slot } from "@/components/ManageSchedule/types";
 import { ILesson } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
+import { isSuperSlot } from "@litespace/utils";
 
 /**
  * checks if a slot has lessons in it or not
- * @returns `true` if there is lessons
- * @returns `false` if there is not
+ * @returns {boolean} True if the slot has lessons within, false otherwise.
  */
-export function hasLessonBetween({
+export function isLessonsOutOfRange({
   slot,
   lessons,
 }: {
   slot: Slot;
   lessons: ILesson.Self[];
 }): boolean {
-  const start = dayjs.utc(slot.start);
-  const end = dayjs.utc(slot.end);
   for (const lesson of lessons) {
-    if (lesson.canceledBy) continue;
+    const outOfRange = !isSuperSlot(
+      {
+        id: slot.id,
+        start: slot.start,
+        end: slot.end,
+      },
+      {
+        id: lesson.slotId,
+        start: lesson.start,
+        end: dayjs(lesson.start).add(lesson.duration, "minutes").toISOString(),
+      }
+    );
 
-    if (
-      dayjs.utc(lesson.start).add(lesson.duration).isAfter(end) ||
-      dayjs.utc(lesson.start).isBefore(start)
-    )
-      return true;
+    if (outOfRange) return true;
   }
   return false;
 }

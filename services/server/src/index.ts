@@ -113,7 +113,7 @@ app.use("/api/v1/report", routes.report);
 app.use("/api/v1/demo-session", routes.demoSession);
 app.use("/api/v1/intro-video", routes.introVideo);
 
-// app.use(errorHandler);
+app.use(errorHandler);
 
 server.listen(serverConfig.port, () =>
   console.log(`Server is running on port ${serverConfig.port}`.cyan)
