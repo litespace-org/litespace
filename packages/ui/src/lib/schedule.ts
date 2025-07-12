@@ -4,10 +4,10 @@ import dayjs from "@/lib/dayjs";
 
 /**
  * checks if a slot has lessons in it or not
- * @returns `true` if there is lessons
- * @returns `false` if there is not
+ * @returns {boolean} True if there is lessons
+ * @returns {boolean} False if there is not
  */
-export function hasLessonBetween({
+export function isLessonsOutOfRange({
   slot,
   lessons,
 }: {

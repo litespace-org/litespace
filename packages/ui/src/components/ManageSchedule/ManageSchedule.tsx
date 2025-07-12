@@ -15,7 +15,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Dayjs } from "dayjs";
 import { Optional } from "@/components/Optional";
-import { hasLessonBetween } from "@/lib/schedule";
+import { isLessonsOutOfRange } from "@/lib/schedule";
 import { useToast } from "@/components/Toast";
 
 const WEEK_DAYS = 7;
@@ -132,7 +132,7 @@ export const ManageSchedule: React.FC<Props> = ({
       if (!slot) return;
 
       if (
-        hasLessonBetween({
+        isLessonsOutOfRange({
           slot: { ...slot, start: start || slot.start, end: end || slot.end },
           lessons: scheduledLessons,
         })
