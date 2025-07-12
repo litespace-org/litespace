@@ -82,7 +82,7 @@ import { isValidPassword } from "@litespace/utils/validation";
 import { getRequestFile, upload } from "@/lib/assets";
 import bytes from "bytes";
 import s3 from "@/lib/s3";
-import { isOnboard } from "@litespace/utils/tutor";
+import { isOnboarded } from "@litespace/utils/tutor";
 import {
   CONFIRMATION_CODE_VALIDITY_MINUTES,
   isEmptyObject,
@@ -464,7 +464,7 @@ async function findTutorInfo(
   const tutor = await tutors.findById(tutorId);
   if (!tutor) return next(notfound.tutor());
 
-  const onboarded = isOnboard(tutor);
+  const onboarded = isOnboarded(tutor);
   const owner = (isTutor(user) || isTutorManager(user)) && user.id === tutorId;
   const allowed = onboarded || owner;
   if (!allowed) return next(notfound.tutor());
@@ -642,7 +642,7 @@ async function findTutorStats(req: Request, res: Response, next: NextFunction) {
   const { tutor: id } = withNamedId("tutor").parse(req.params);
 
   const tutor = await tutors.findById(id);
-  if (!tutor || !isOnboard(tutor)) return next(notfound.tutor());
+  if (!tutor || !isOnboarded(tutor)) return next(notfound.tutor());
 
   // only include "past" and "fulfilled" lessons
   const filters = {
@@ -939,7 +939,7 @@ async function findTutorActivityScores(
 ) {
   const { tutor: id } = withNamedId("tutor").parse(req.params);
   const tutor = await tutors.findById(id);
-  if (!tutor || !isOnboard(tutor)) return next(notfound.tutor());
+  if (!tutor || !isOnboarded(tutor)) return next(notfound.tutor());
 
   const lessonDays = await lessons.findLessonDays({
     users: [id],
