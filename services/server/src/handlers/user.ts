@@ -526,8 +526,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
   // retrieve/set tutors and rules from/in cache (redis)
   const tutorsCache = isTutorsCached
     ? await cache.tutors.getAll()
-    : // DONE: Update the tutors cache according to the new design in (@/architecture/v1.0/tutors.md)
-      await cacheTutors();
+    : await cacheTutors();
 
   // order tutors based on time of the first event, gender of the user
   // online state, and notice.

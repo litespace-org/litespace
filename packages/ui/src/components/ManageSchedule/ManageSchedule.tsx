@@ -15,7 +15,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Dayjs } from "dayjs";
 import { Optional } from "@/components/Optional";
-import { hasLessonBetween } from "@/lib/schedule";
+import { isLessonsOutOfRange } from "@/lib/schedule";
 import { useToast } from "@/components/Toast";
 
 const WEEK_DAYS = 7;
@@ -100,12 +100,12 @@ export const ManageSchedule: React.FC<Props> = ({
   }, [close]);
 
   const addSlot = useCallback(
-    ({ day, start, end }: { day: string; start?: string; end?: string }) => {
+    ({ day, start, end }: { day: string; start: string; end: string }) => {
       const cloned = structuredClone(slots);
       const slot: Slot = {
         id: randomSlotId(),
-        start: start || null,
-        end: end || null,
+        start: start,
+        end: end,
         day: day,
         state: "created",
       };
@@ -131,10 +131,15 @@ export const ManageSchedule: React.FC<Props> = ({
 
       if (!slot) return;
 
+      if (start) slot.start = start;
+      if (end) slot.end = end;
+
       if (
-        hasLessonBetween({
-          slot: { ...slot, start: start || slot.start, end: end || slot.end },
-          lessons: scheduledLessons,
+        isLessonsOutOfRange({
+          slot,
+          lessons: scheduledLessons.filter(
+            (lesson) => dayjs(lesson.start).date() === dayjs(slot.start).date()
+          ),
         })
       ) {
         toast.warning({
@@ -145,9 +150,6 @@ export const ManageSchedule: React.FC<Props> = ({
         });
         return;
       }
-
-      if (start) slot.start = start;
-      if (end) slot.end = end;
 
       const created = slot.state === "created";
 

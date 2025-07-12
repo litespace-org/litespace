@@ -8,11 +8,11 @@ export type Slot = {
   /**
    * Slot start in ISO format.
    */
-  start: string | null;
+  start: string;
   /**
    * Slot end in ISO format.
    */
-  end: string | null;
+  end: string;
   /**
    * The day that the slot belongs to in ISO format.
    */

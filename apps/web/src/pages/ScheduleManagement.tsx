@@ -6,7 +6,6 @@ import {
   useSetAvailabilitySlots,
 } from "@litespace/headless/availabilitySlots";
 import { useUser } from "@litespace/headless/context/user";
-
 import { AvailabilitySlotProps, Calendar } from "@litespace/ui/Calendar";
 import { DeleteSlotDialog } from "@litespace/ui/DeleteSlotDialog";
 import { ManageSchedule } from "@litespace/ui/ManageSchedule";
@@ -23,6 +22,7 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isEmpty } from "lodash";
 import { useCalendarController } from "@/hooks/calendar";
 import { Optional } from "@litespace/ui/Optional";
+import { divideSlot } from "@/lib/schedule";
 
 const ScheduleManagement: React.FC = () => {
   const { md } = useMediaQuery();
@@ -111,12 +111,7 @@ const ScheduleManagement: React.FC = () => {
             });
         });
       });
-      calendarSlots.push({
-        id: slot.id,
-        start: slot.start,
-        end: slot.end,
-        members,
-      });
+      calendarSlots.push(...divideSlot(slot, members));
     }
 
     return calendarSlots;
