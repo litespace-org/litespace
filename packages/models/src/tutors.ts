@@ -190,11 +190,7 @@ export class Tutors {
     withListFilter(builder, users.column("gender"), filter.gender);
     withListFilter(builder, users.column("role"), filter.role);
 
-    return withSkippablePagination(builder, {
-      size: filter.size,
-      page: filter.page,
-      full: filter.full,
-    });
+    return builder;
   }
 
   async find(
@@ -204,7 +200,7 @@ export class Tutors {
       .from<IUser.Row>(users.table)
       .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"));
 
-    const filtered = this.applySearchFilter(builder, { ...filter, full: true });
+    const filtered = this.applySearchFilter(builder, filter);
 
     const total = await countRows(filtered.clone(), { distinct: true });
 
@@ -215,10 +211,10 @@ export class Tutors {
     const rows = await withSkippablePagination(query, {
       size: filter.size,
       page: filter.page,
+      full: filter.full,
     });
 
     const list = rows.map((row) => this.asFull(row));
-
     return { list, total };
   }
 
