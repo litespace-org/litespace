@@ -70,8 +70,6 @@ const ScheduleManagement: React.FC = () => {
     full: true,
   });
 
-  console.log({ lessons: lessonsQuery.list });
-
   const mutateSlots = useSetAvailabilitySlots({
     onSuccess() {
       setDeleteDialogProps((prev) => ({ ...prev, opened: false }));
