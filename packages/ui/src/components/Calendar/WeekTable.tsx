@@ -25,11 +25,11 @@ export const WeekTable: React.FC<{
   slots?: AvailabilitySlotProps[];
   slotActions?: SlotActions;
 }> = ({ day, lessons = [], lessonActions, slots = [], slotActions }) => {
-  const { md, xxl } = useMediaQuery();
+  const { md, xl } = useMediaQuery();
 
   const week = useMemo(() => {
     const weekStart = day;
-    const columns = xxl || !md ? DAYS_IN_WEEK : TABLET_COLUMNS_NUM;
+    const columns = xl || !md ? DAYS_IN_WEEK : TABLET_COLUMNS_NUM;
     return range(columns).map((day) => {
       const dayStart = weekStart.add(day, "day").startOf("day");
       const hours = range(HOURS_IN_DAY).map((hour) =>
@@ -37,7 +37,7 @@ export const WeekTable: React.FC<{
       );
       return { day: dayStart, hours };
     });
-  }, [day, xxl, md]);
+  }, [day, xl, md]);
 
   return (
     <>
