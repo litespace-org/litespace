@@ -368,7 +368,7 @@ export class Tutors {
       }
     );
 
-    const rows = await filtered
+    const query = filtered
       .leftJoin(
         introVideos.table,
         this.column("id"),
@@ -378,6 +378,8 @@ export class Tutors {
       .count(introVideos.column("reviewer_id"), { as: "introVideosCount" })
       .orderBy("introVideosCount", order)
       .select<Array<{ id: number }>>(this.column("id"));
+
+    const rows = await query;
 
     return rows.map((row) => row.id);
   }
