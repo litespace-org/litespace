@@ -5,6 +5,7 @@ import {
   isValidPhone as isValidPhoneBase,
   isValidCvv as isValidCvvBase,
   isValidUserName as isValidUserNameBase,
+  isValidTutorName as isValidTutorNameBase,
   isValidEmail as isValidEmailBase,
   isValidPassword as isValidPasswordBase,
   isValidUserBirthYear as isValidUserBirthYearBase,
@@ -60,6 +61,14 @@ export function validateUserName(name: string): LocalId | null {
   return "error.name.length.long";
 }
 
+export function validateTutorName(name: string): LocalId | null {
+  const valid = isValidTutorNameBase(name);
+  if (valid === true) return null;
+  if (valid === FieldError.InvalidTutorName) return "error.tutor-name.invalid";
+  if (valid === FieldError.ShortUserName) return "error.name.length.short";
+  return "error.name.length.long";
+}
+
 export function validateEmail(email: string): LocalId | null {
   const valid = isValidEmailBase(email);
   if (valid === true) return null;
@@ -84,7 +93,8 @@ export function validateTutorAbout(about: string): LocalId | null {
   const valid = isValidTutorAboutBase(about);
   if (valid === true) return null;
   if (valid === FieldError.ShortTutorAbout) return "error.text.short";
-  return "error.text.long";
+  if (valid === FieldError.LongTutorAbout) return "error.text.long";
+  return "error.field.about.invalid";
 }
 
 export function validateTutorBio(about: string): LocalId | null {

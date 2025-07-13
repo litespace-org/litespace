@@ -23,7 +23,7 @@ import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import {
   validateTutorAbout,
   validateTutorBio,
-  validateUserName,
+  validateTutorName,
 } from "@litespace/ui/lib/validate";
 
 type TutorProfile = {
@@ -91,7 +91,7 @@ const Content: React.FC<TutorProfile> = ({ ...tutor }) => {
     },
     name: {
       required: true,
-      validate: validateUserName,
+      validate: validateTutorName,
     },
   });
 

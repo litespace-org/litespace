@@ -6,8 +6,25 @@ import {
   MIN_TUTOR_BIO_LEGNTH,
   MIN_TUTOR_ABOUT_TEXT_LENGTH,
   MIN_TUTOR_NOTICE_DURATION,
+  MIN_USER_NAME_LENGTH,
+  MAX_USER_NAME_LENGTH,
+  HAS_ENGLISH_CHAR_REGEX,
 } from "@/constants";
 import { FieldError, Optional } from "@litespace/types";
+
+export function isValidTutorName(
+  name: unknown
+):
+  | FieldError.InvalidTutorName
+  | FieldError.ShortUserName
+  | FieldError.LongUserName
+  | true {
+  if (typeof name !== "string" || HAS_ENGLISH_CHAR_REGEX.test(name))
+    return FieldError.InvalidTutorName;
+  if (name.length < MIN_USER_NAME_LENGTH) return FieldError.ShortUserName;
+  if (name.length > MAX_USER_NAME_LENGTH) return FieldError.LongUserName;
+  return true;
+}
 
 export function isValidTutorBio(
   bio: unknown
@@ -17,7 +34,8 @@ export function isValidTutorBio(
   | FieldError.LongBio
   | FieldError.InvalidBio
   | true {
-  if (typeof bio !== "string") return FieldError.InvalidBio;
+  if (typeof bio !== "string" || HAS_ENGLISH_CHAR_REGEX.test(bio))
+    return FieldError.InvalidBio;
   if (!bio.length) return FieldError.EmptyBio;
   if (bio.length < MIN_TUTOR_BIO_LEGNTH) return FieldError.ShortBio;
   if (!BIO_REGEX.test(bio)) return FieldError.InvalidBio;
@@ -26,8 +44,14 @@ export function isValidTutorBio(
 }
 
 export function isValidTutorAbout(
-  about: string
-): FieldError.ShortTutorAbout | FieldError.LongTutorAbout | true {
+  about: unknown
+):
+  | FieldError.InvalidTutorAbout
+  | FieldError.ShortTutorAbout
+  | FieldError.LongTutorAbout
+  | true {
+  if (typeof about !== "string" || HAS_ENGLISH_CHAR_REGEX.test(about))
+    return FieldError.InvalidTutorAbout;
   if (about.length < MIN_TUTOR_ABOUT_TEXT_LENGTH)
     return FieldError.ShortTutorAbout;
   if (about.length > MAX_TUTOR_ABOUT_TEXT_LENGTH)

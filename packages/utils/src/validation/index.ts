@@ -7,6 +7,7 @@ export {
 } from "@/validation/user";
 
 export {
+  isValidTutorName,
   isValidTutorBio,
   isValidTutorAbout,
   validateTutorNotice,
