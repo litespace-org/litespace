@@ -18,7 +18,7 @@ export const EditMessage: React.FC<{
 
   return (
     <Dialog
-      className="min-w-[320px] md:w-[745px]"
+      className="w-full max-w-[400px] md:max-w-[650px]"
       position={mq.md ? "center" : "bottom"}
       open={open}
       close={close}

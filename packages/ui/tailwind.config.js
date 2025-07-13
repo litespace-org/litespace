@@ -78,7 +78,7 @@ export default {
         tooltip: "15",
         toast: "16",
         "stream-avatar": "16",
-        "stream-chat": "18",
+        "stream-chat": "10",
         "stream-chat-options": "19",
       },
       screens: {
