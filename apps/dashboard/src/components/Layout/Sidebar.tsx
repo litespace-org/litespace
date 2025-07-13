@@ -1,25 +1,25 @@
+import cn from "classnames";
 import React, { SVGProps, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import cn from "classnames";
 
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
+import { useUser } from "@litespace/headless/context/user";
 import { IUser } from "@litespace/types";
 import { Dashboard } from "@litespace/utils/routes";
-import { useUser } from "@litespace/headless/context/user";
 
+import Book from "@litespace/assets/Book";
 import Logo from "@litespace/assets/Logo";
 import Logout from "@litespace/assets/Logout";
 import People from "@litespace/assets/People";
+import Rate from "@litespace/assets/Rate";
+import Receipt from "@litespace/assets/Receipt";
 import Settings from "@litespace/assets/Settings";
 import Settings2 from "@litespace/assets/Settings2";
 import Tag from "@litespace/assets/Tag";
-import Receipt from "@litespace/assets/Receipt";
 import Users from "@litespace/assets/Users";
 import Video from "@litespace/assets/Video";
-import Book from "@litespace/assets/Book";
-import Rate from "@litespace/assets/Rate";
 
 import { router } from "@/lib/route";
 import { Icon } from "@/types/common";
@@ -29,6 +29,7 @@ const SidebarItem = ({
   Icon,
   label,
   active,
+  notificationsCount,
 }: {
   to: string;
   Icon: React.MemoExoticComponent<
@@ -36,12 +37,14 @@ const SidebarItem = ({
   >;
   label: React.ReactNode;
   active?: boolean;
+  notificationsCount?: number;
 }) => {
   return (
     <Link
       className={cn(
         "flex flex-row justify-center lg:justify-start gap-2 lg:gap-4 px-[14px] py-2 items-center ",
         "rounded-lg transition-colors duration-200 group",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
         {
           "bg-brand-700": active,
           "bg-transparent hover:bg-natural-100": !active,
@@ -60,11 +63,26 @@ const SidebarItem = ({
         className={cn(
           active ? "text-natural-50" : "text-natural-700",
           "text-tiny lg:text-caption font-normal lg:font-semibold",
-          "hidden lg:flex"
+          "hidden lg:flex me-auto"
         )}
       >
         {label}
       </Typography>
+      {notificationsCount && !active ? ( // @TODO: make it available for small devices.
+        <div
+          className={cn(
+            "hidden lg:block w-[21px] h-[21px] bg-brand-500 rounded-full overflow-hidden",
+            "shrink-0 flex items-center justify-center text-center"
+          )}
+        >
+          <Typography
+            tag="span"
+            className="text-caption font-medium text-natural-50"
+          >
+            {notificationsCount}
+          </Typography>
+        </div>
+      ) : null}
     </Link>
   );
 };
@@ -164,7 +182,11 @@ const Sidebar: React.FC = () => {
     >
       <Link
         to={Dashboard.Root}
-        className="flex flex-col justify-center lg:justify-start items-center gap-2"
+        className={cn(
+          "flex flex-col justify-center lg:justify-start items-center gap-2",
+          "focus-visible:outline-none focus-visible:ring-offset-2 focus-visible:ring-2 focus-visible:ring-brand-500",
+          "rounded-lg"
+        )}
       >
         <Logo className="rounded-full h-10 w-10 my-[5px] lg:my-0" />
         <Typography
@@ -190,6 +212,7 @@ const Sidebar: React.FC = () => {
               Icon={Icon}
               label={label}
               active={isActive}
+              notificationsCount={0} // @TODO: make it dynamic
             />
           ))}
         </ul>
@@ -209,6 +232,7 @@ const Sidebar: React.FC = () => {
               Icon={Settings}
               label={intl("dashboard.sidebar.user-settings")}
               active={location.pathname === Dashboard.UserSetting}
+              notificationsCount={0} // @TODO: make it dynamic
             />
           ) : null}
 
@@ -219,6 +243,7 @@ const Sidebar: React.FC = () => {
               Icon={Settings2}
               label={intl("dashboard.sidebar.platform-settings")}
               active={location.pathname === Dashboard.PlatformSettings}
+              notificationsCount={0} // @TODO: make it dynamic
             />
           ) : null}
 
@@ -229,6 +254,7 @@ const Sidebar: React.FC = () => {
             }}
             className={cn(
               "flex flex-row justify-center lg:justify-start gap-0 lg:gap-4 px-[14px] py-2 rounded-lg",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
               "hover:text-destructive-400 hover:bg-destructive-100",
               "active:bg-destructive-400 [&_*]:active:text-natural-50",
               "[&_*]:active:stroke-natural-50 transition-all duration-200"
