@@ -78,7 +78,13 @@ import {
 import { encodeAuthJwt } from "@litespace/auth";
 import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
-import { isValidPassword } from "@litespace/utils/validation";
+import {
+  isValidPassword,
+  isValidTutorAbout,
+  isValidTutorBio,
+  isValidTutorName,
+  isValidUserName,
+} from "@litespace/utils/validation";
 import { getRequestFile, upload } from "@/lib/assets";
 import bytes from "bytes";
 import s3 from "@/lib/s3";
@@ -262,6 +268,16 @@ function update(_: ApiContext) {
         activated,
         bypassOnboarding,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
+
+      // input fields validations
+      const validations = [
+        name === undefined || tutor || isValidUserName(name) === true,
+        name === undefined || !tutor || isValidTutorName(name) === true,
+        bio === undefined || !tutor || isValidTutorBio(bio) === true,
+        about === undefined || !tutor || isValidTutorAbout(about) === true,
+      ];
+
+      if (validations.includes(false)) return next(bad());
 
       // return forbidden if the current user is neither admin nor studio and
       // tring to update the data for another user.

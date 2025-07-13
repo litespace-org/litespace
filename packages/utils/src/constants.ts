@@ -84,8 +84,8 @@ export const LITESPACE_TUTORS_TELEGRAM_GROUP_URL =
 // All users except tutors and tutor-managers can have their names in either Arabic or English or both.
 // https://regex101.com/r/ER7McY/1
 export const USER_NAME_REGEX = /^[A-Za-z\u0600-\u06ff ]+$/;
-// Tutor/tutor mangers name must be in Arabic - https://regex101.com/r/Av5SGH/1
-export const TUTOR_NAME_REGEX = /^[\u0600-\u06ff\s]+$/;
+
+export const HAS_ENGLISH_CHAR_REGEX = /[a-zA-Z]+/;
 
 /**
  * Interview duration in minutes.
