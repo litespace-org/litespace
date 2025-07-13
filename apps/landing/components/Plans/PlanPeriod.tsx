@@ -53,6 +53,7 @@ const PlanDetails: React.FC<{
   discount,
 }) => {
   const intl = useFormatMessage();
+
   return (
     <div>
       <Row label={intl("plan/total-hours")}>
@@ -90,7 +91,7 @@ const PlanDetails: React.FC<{
               &nbsp;
               <Typography tag="span" className="text-tiny text-natural-500">
                 {intl.rich("plan/instead-of", {
-                  value: () => (
+                  highlight: (chunks) => (
                     <Typography
                       tag="span"
                       className={cn(
@@ -98,13 +99,14 @@ const PlanDetails: React.FC<{
                         'after:content-[""] after:absolute after:top-1/2 after:right-0 after:left-0 after:h-[1px] after:bg-destructive-600'
                       )}
                     >
-                      {intl("labels/currency/egp", {
-                        value: formatNumber(totalPriceBeforeDiscount, {
-                          maximumFractionDigits: 2,
-                        }),
-                      })}
+                      {chunks}
                     </Typography>
                   ),
+                  value: intl("labels/currency/egp", {
+                    value: formatNumber(totalPriceBeforeDiscount, {
+                      maximumFractionDigits: 2,
+                    }),
+                  }),
                 })}
               </Typography>
             </>
