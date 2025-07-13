@@ -61,7 +61,7 @@ const Sidebar: React.FC<{
     <div
       className={cn(
         "absolute md:static top-[72px] md:top-0 bottom-0 start-0 z-20 md:z-10 lg:z-sidebar",
-        "bg-natural-50 w-[166px] md:w-[98px] lg:w-60 p-4 lg:p-6 shadow-app-sidebar",
+        "bg-natural-50 w-[166px] md:w-[98px] lg:min-w-60 p-4 lg:p-6 shadow-app-sidebar",
         "flex flex-col gap-6 md:gap-10"
       )}
     >
@@ -206,6 +206,7 @@ const MainPages: React.FC<{ hide: Void }> = ({ hide }) => {
           Icon={Icon}
           label={label}
           active={isActive}
+          notificationsCount={0} // @TODO: make it dynamic
         />
       ))}
     </ul>
@@ -258,6 +259,7 @@ const SettingsPages: React.FC<{ hide: Void }> = ({ hide }) => {
       Icon={page.Icon}
       label={page.label}
       active={page.isActive}
+      notificationsCount={0} // @TODO: make it dynamic
     />
   ));
 };
@@ -322,13 +324,14 @@ const SidebarItem: React.FC<{
   label: React.ReactNode;
   active?: boolean;
   hide: Void;
-}> = ({ to, hide, Icon, label, active }) => {
+  notificationsCount?: number;
+}> = ({ to, hide, Icon, label, active, notificationsCount = 0 }) => {
   const { md, lg } = useMediaQuery();
 
   return (
     <Link
       className={cn(
-        "flex flex-row justify-start md:justify-center lg:justify-start gap-2 lg:gap-4 px-[14px] py-2 items-center",
+        "flex flex-row justify-start md:justify-center lg:justify-start ps-[14px] pe-2 py-2 items-center",
         "rounded-lg transition-colors duration-200 group",
         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-500",
         {
@@ -341,7 +344,7 @@ const SidebarItem: React.FC<{
     >
       <Icon
         className={cn(
-          "[&_*]:transition-all [&_*]:duration-200 h-4 w-4 md:h-6 md:w-6",
+          "shrink-0 [&_*]:transition-all [&_*]:duration-200 h-4 w-4 md:h-6 md:w-6",
           {
             "[&_*]:stroke-natural-50": active,
             "[&_*]:stroke-natural-700": !active,
@@ -353,11 +356,26 @@ const SidebarItem: React.FC<{
           tag="span"
           className={cn(
             active ? "text-natural-50" : "text-natural-700",
-            "text-tiny lg:text-caption font-normal lg:font-semibold"
+            "ms-2 me-auto lg:ms-4 shrink-0 text-tiny lg:text-caption font-normal lg:font-semibold"
           )}
         >
           {label}
         </Typography>
+      ) : null}
+      {notificationsCount && !active ? ( // @TODO: make it available for small devices.
+        <div
+          className={cn(
+            "hidden lg:block w-[21px] h-[21px] bg-brand-500 rounded-full overflow-hidden",
+            "shrink-0 flex items-center justify-center text-center"
+          )}
+        >
+          <Typography
+            tag="span"
+            className="text-caption font-medium text-natural-50"
+          >
+            {notificationsCount}
+          </Typography>
+        </div>
       ) : null}
     </Link>
   );
@@ -368,6 +386,7 @@ const LogoutButton: React.FC<{ hide: Void }> = ({ hide }) => {
   const { lg, md } = useMediaQuery();
   const navigate = useNavigate();
   const { logout } = useUser();
+
   return (
     <button
       onClick={() => {
@@ -399,6 +418,7 @@ const LogoutButton: React.FC<{ hide: Void }> = ({ hide }) => {
 const Header: React.FC = () => {
   const { md, lg } = useMediaQuery();
   const intl = useFormatMessage();
+
   return (
     <Link
       to={Web.Root}
