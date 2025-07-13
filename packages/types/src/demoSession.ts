@@ -52,7 +52,7 @@ export type UpdateModelPayload = {
    * the id of the demo-session to be updated
    */
   id: number;
-  status?: Status;
+  status: Status;
 };
 
 export type FindModelQuery<T extends Field = Field> =

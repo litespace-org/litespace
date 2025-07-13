@@ -51,12 +51,18 @@ export class DemoSessions extends Model<
     return this.from(row);
   }
 
-  // @galal @TODO: implement this model function; it should update both the status and updated_at columns
-  // for a certain demo-session row in the database.
   async update(
-    _payload: IDemoSession.UpdateModelPayload,
-    _tx?: Knex.Transaction
-  ): Promise<void> {}
+    payload: IDemoSession.UpdateModelPayload,
+    tx?: Knex.Transaction
+  ): Promise<void> {
+    const now = dayjs.utc().toDate();
+    await this.builder(tx)
+      .update({
+        status: payload.status,
+        updated_at: now,
+      })
+      .where(this.column("id"), payload.id);
+  }
 
   // @mk @TODO: implement this model function and use the new convention the `select` parameter.
   // Notice, that tutorManagerId is not stored in the table. I've chosen this design for more
