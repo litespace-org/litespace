@@ -12,6 +12,8 @@ export type StringLiteral<T> = T extends `${string & T}` ? T : never;
 
 export type Void = () => void;
 
+export type Size = "large" | "medium" | "small";
+
 export type Optional<T> = T | undefined;
 
 export type EmptyObject = Record<never, never>;

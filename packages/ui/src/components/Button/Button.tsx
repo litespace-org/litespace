@@ -1,11 +1,8 @@
 import React, { useMemo } from "react";
 import cn from "classnames";
-import {
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
-} from "@/components/Button/types";
+import { ButtonType, ButtonVariant } from "@/components/Button/types";
 import { Spinner } from "@/icons/Spinner";
+import { Size } from "@litespace/types";
 
 type Button = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -13,7 +10,7 @@ export const Button: React.FC<{
   children?: React.ReactNode;
   onClick?: Button["onClick"];
   type?: ButtonType;
-  size?: ButtonSize;
+  size?: Size;
   disabled?: boolean;
   variant?: ButtonVariant;
   className?: string;
