@@ -53,7 +53,7 @@
   "plan/button/buy": "شراء الخطة",
   "plan/weekly-minutes": "{value} دقيقة/أسبوع",
   "plan/discount": "{value} % خصم لفترة محدودة",
-  "plan/instead-of": "بدلا من {value}",
+  "plan/instead-of": "بدلا من <highlight>{value}</highlight>",
   "plan/price": "{value} جنية مصري",
   "plan/price-before-discount": "{value} جم",
   "plan/label/most-common": "الأكثر شهرة",
