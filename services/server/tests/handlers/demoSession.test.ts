@@ -1,11 +1,17 @@
 import { mockApi } from "@fixtures/mockApi";
 import db from "@fixtures/db";
 import handlers from "@/handlers/demoSession";
-import { IDemoSession, IUser } from "@litespace/types";
-import { nameof } from "@litespace/utils";
+import { IDemoSession, IIntroVideo, IUser } from "@litespace/types";
+import { dayjs, nameof } from "@litespace/utils";
 import { expect } from "chai";
-import { forbidden, unauthenticated } from "@/lib/error";
-import { demoSessions } from "@litespace/models";
+import {
+  bad,
+  busyTutorManager,
+  forbidden,
+  notfound,
+  unauthenticated,
+} from "@/lib/error";
+import { demoSessions, tutors } from "@litespace/models";
 import { first } from "lodash";
 
 const findDemoSession = mockApi<
@@ -42,11 +48,200 @@ describe("/api/v1/demo-session/", () => {
     });
   });
 
-  // @moehab @TODO: write test suite for this function.
   // @galal @TODO: unskip this suite and ensure it passes.
-  describe(nameof(createDemoSession), () => {
-    it("", () => {
-      expect(true);
+  describe.skip(nameof(createDemoSession), () => {
+    test("Regular tutors can create demo session with valid data", async () => {
+      const tutor = await db.tutorUser();
+      const slot = await db.slot();
+
+      await db.introVideo({
+        tutorId: tutor.id,
+        state: IIntroVideo.State.Approved,
+      });
+
+      const response = await createDemoSession({
+        user: tutor,
+        body: {
+          slotId: slot.id,
+          start: slot.start,
+        },
+      });
+
+      expect(response).to.not.be.instanceof(Error);
+
+      const found = await demoSessions.find({ tutorIds: [tutor.id] });
+      expect(first(found.list)?.status).to.eq(IDemoSession.Status.Pending);
+    });
+
+    test("Tutor cannot create demo session without approved intro video", async () => {
+      const tutor = await db.tutorUser();
+      const slot = await db.slot();
+
+      await db.introVideo({
+        tutorId: tutor.id,
+        state: IIntroVideo.State.Rejected,
+      });
+
+      const response = await createDemoSession({
+        user: tutor,
+        body: {
+          slotId: slot.id,
+          start: slot.start,
+        },
+      });
+
+      expect(response).to.deep.eq(forbidden());
+    });
+
+    test("Tutor-manager/Slot does not exist", async () => {
+      const tutor = await db.tutorUser();
+
+      await db.introVideo({
+        tutorId: tutor.id,
+        state: IIntroVideo.State.Rejected,
+      });
+
+      const response = await createDemoSession({
+        user: tutor,
+        body: {
+          slotId: 1234,
+          start: dayjs().toISOString(),
+        },
+      });
+
+      expect(response).to.deep.eq(notfound.slot());
+    });
+
+    test("Tutor-manager is inactive", async () => {
+      const tutor = await db.tutorUser();
+      const slot = await db.slot();
+
+      // ensure the tutorManager is inactive
+      await tutors.update(slot.userId, { activated: false });
+
+      await db.introVideo({
+        tutorId: tutor.id,
+        state: IIntroVideo.State.Rejected,
+      });
+
+      const response = await createDemoSession({
+        user: tutor,
+        body: {
+          slotId: slot.id,
+          start: slot.start,
+        },
+      });
+
+      expect(response).to.deep.eq(notfound.tutor());
+    });
+
+    test("Start date is in the past", async () => {
+      const tutor = await db.tutorUser();
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: dayjs().subtract(1, "hour").toISOString(),
+        end: dayjs().add(1, "day").toISOString(),
+      });
+
+      // Create demo session with start date in the past
+      const response = await createDemoSession({
+        user: tutor,
+        body: {
+          slotId: slot.id,
+          start: slot.start,
+        },
+      });
+
+      expect(response).to.deep.eq(bad());
+    });
+
+    test("Start time is outside the slot", async () => {
+      const tutor = await db.tutorUser();
+      const slot = await db.slot({ userId: tutor.id });
+
+      // Create demo session with start date in the past
+      const response = await createDemoSession({
+        user: tutor,
+        body: {
+          slotId: slot.id,
+          start: dayjs(slot.end).add(1, "hour").toISOString(),
+        },
+      });
+
+      expect(response).to.deep.eq(bad());
+    });
+
+    test("Slot has no available time", async () => {
+      const tutor = await db.tutorUser();
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: dayjs().toISOString(),
+        end: dayjs().add(10, "minute").toISOString(),
+      });
+
+      // Create demo session with start date in the past
+      const response = await createDemoSession({
+        user: tutor,
+        body: {
+          slotId: slot.id,
+          start: slot.start,
+        },
+      });
+
+      expect(response).to.deep.eq(busyTutorManager());
+    });
+
+    // Test for unauthorized access
+    describe("Unauthorized access", () => {
+      test("Unauthorized user cannot create demo session", async () => {
+        const tutor = await db.tutorUser();
+        const slot = await db.slot();
+
+        await db.introVideo({
+          tutorId: tutor.id,
+          state: IIntroVideo.State.Approved,
+        });
+
+        const response = await createDemoSession({
+          user: undefined,
+          body: {
+            slotId: slot.id,
+            start: slot.start,
+          },
+        });
+
+        expect(response).to.deep.eq(unauthenticated());
+      });
+
+      test("Unauthorized users cannot create demo sessions", async () => {
+        const tutor = await db.tutorUser();
+        const slot = await db.slot();
+
+        await db.introVideo({
+          tutorId: tutor.id,
+          state: IIntroVideo.State.Approved,
+        });
+
+        const responses = await Promise.all([
+          await createDemoSession({
+            user: await db.student(),
+            body: {
+              slotId: slot.id,
+              start: slot.start,
+            },
+          }),
+          await createDemoSession({
+            user: await db.tutorManagerUser(),
+            body: {
+              slotId: slot.id,
+              start: slot.start,
+            },
+          }),
+        ]);
+
+        for (const response of responses)
+          expect(response).to.deep.eq(forbidden());
+      });
     });
   });
 

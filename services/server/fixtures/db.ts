@@ -644,7 +644,9 @@ export async function report(payload?: Partial<IReport.CreateModelPayload>) {
 }
 
 export async function introVideo(
-  payload?: Partial<IIntroVideo.CreateModelPayload>
+  payload?: Partial<IIntroVideo.CreateModelPayload> & {
+    state?: IIntroVideo.State;
+  }
 ) {
   const introVideo = await introVideos.create({
     src: payload?.src || randomUUID(),
@@ -652,6 +654,7 @@ export async function introVideo(
     reviewerId: await or.tutorId(payload?.reviewerId),
   });
   if (!introVideo) throw new Error("introVideo not found; should never happen");
+  await introVideos.update({ id: introVideo.id, state: payload?.state });
   return introVideo;
 }
 
