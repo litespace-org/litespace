@@ -27,7 +27,6 @@ import {
   knex,
   rooms,
   availabilitySlots,
-  interviews,
   subscriptions,
 } from "@litespace/models";
 import { Knex } from "knex";
@@ -42,7 +41,6 @@ import {
   isUser,
 } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
-import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
 import { first, isEmpty, isEqual } from "lodash";
 import { genSessionId } from "@litespace/utils";
 import { withImageUrls } from "@/lib/user";
@@ -51,6 +49,7 @@ import { sendBackgroundMessage } from "@/workers";
 import { calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription } from "@/lib/subscription";
 import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
 import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
+import { isBookable } from "@/lib/session";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
@@ -153,27 +152,16 @@ function create(context: ApiContext) {
           );
 
       // Check if the new lessons intercepts any of current subslots
-      const slotLessons = await lessons.find({
-        slots: [slot.id],
-        full: true,
-        canceled: false, // Ignore canceled lessons
-      });
-
-      const slotInterviews = await interviews.find({
-        slots: [slot.id],
-        full: true,
-        canceled: false,
-      });
-
-      const canBookLesson = canBook({
-        slot,
-        bookedSubslots: asSubSlots([
-          ...slotLessons.list,
-          ...slotInterviews.list,
-        ]),
-        bookInfo: { start: payload.start, duration: payload.duration },
-      });
-      if (!canBookLesson) return next(busyTutor());
+      if (
+        !(await isBookable({
+          slot,
+          bookInfo: {
+            start: payload.start,
+            duration: payload.duration,
+          },
+        }))
+      )
+        return next(busyTutor());
 
       // create the lesson with its associated room if it doesn't exist
       const roomMembers = [user.id, tutor.id];
@@ -248,32 +236,16 @@ function update(context: ApiContext) {
       if (slot.purpose !== IAvailabilitySlot.Purpose.Lesson)
         return next(illegal());
 
-      const slotLessons = await lessons.find({
-        slots: [slot.id],
-        full: true,
-        canceled: false, // ignore canceled lessons
-      });
-
-      const slotInterviews = await interviews.find({
-        slots: [slot.id],
-        canceled: false,
-        full: true,
-      });
-
-      const canBookLesson = canBook({
-        slot,
-        bookedSubslots: asSubSlots([
-          ...slotLessons.list.filter(
-            (lesson) => lesson.id !== payload.lessonId
-          ),
-          ...slotInterviews.list,
-        ]),
-        bookInfo: {
-          start: payload.start || lesson.start,
-          duration: payload.duration || lesson.duration,
-        },
-      });
-      if (!canBookLesson) return next(busyTutor());
+      if (
+        !(await isBookable({
+          slot,
+          bookInfo: {
+            start: payload.start || lesson.start,
+            duration: payload.duration || lesson.duration,
+          },
+        }))
+      )
+        return next(busyTutor());
 
       const updated = await lessons.update(payload.lessonId, {
         start: payload.start,

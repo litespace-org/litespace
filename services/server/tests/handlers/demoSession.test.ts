@@ -2,12 +2,13 @@ import { mockApi } from "@fixtures/mockApi";
 import db from "@fixtures/db";
 import handlers from "@/handlers/demoSession";
 import { IDemoSession, IIntroVideo, IUser } from "@litespace/types";
-import { dayjs, nameof } from "@litespace/utils";
+import { dayjs, DEMO_SESSION_DURATION, nameof } from "@litespace/utils";
 import { expect } from "chai";
 import {
   bad,
   busyTutorManager,
   forbidden,
+  inActiveTutorManager,
   notfound,
   unauthenticated,
 } from "@/lib/error";
@@ -40,7 +41,6 @@ describe("/api/v1/demo-session/", () => {
     await db.flush();
   });
 
-  // @mk @TODO: unskip this suite and ensure it passes.
   describe.skip(nameof(findDemoSession), () => {
     test("Tutors can find their own demo sessions", async () => {
       const tutor = await db.tutorUser();
@@ -209,11 +209,12 @@ describe("/api/v1/demo-session/", () => {
     });
   });
 
-  // @galal @TODO: unskip this suite and ensure it passes.
-  describe.skip(nameof(createDemoSession), () => {
-    test("Regular tutors can create demo session with valid data", async () => {
-      const tutor = await db.tutorUser();
-      const slot = await db.slot();
+  describe(nameof(createDemoSession), () => {
+    // @moehab TODO: unskip this once the demo-session model find function is implemented
+    test.skip("Regular tutors can create demo session with valid data", async () => {
+      const tutor = await db.tutorUser({}, { activated: true });
+      const tutorManager = await db.tutorManager({}, { activated: true });
+      const slot = await db.slot({ userId: tutorManager.id });
 
       await db.introVideo({
         tutorId: tutor.id,
@@ -236,7 +237,8 @@ describe("/api/v1/demo-session/", () => {
 
     test("Tutor cannot create demo session without approved intro video", async () => {
       const tutor = await db.tutorUser();
-      const slot = await db.slot();
+      const tutorManager = await db.tutorManager({}, { activated: true });
+      const slot = await db.slot({ userId: tutorManager.id });
 
       await db.introVideo({
         tutorId: tutor.id,
@@ -275,7 +277,8 @@ describe("/api/v1/demo-session/", () => {
 
     test("Tutor-manager is inactive", async () => {
       const tutor = await db.tutorUser();
-      const slot = await db.slot();
+      const tutorManager = await db.tutorManager({}, { activated: false });
+      const slot = await db.slot({ userId: tutorManager.id });
 
       // ensure the tutorManager is inactive
       await tutors.update(slot.userId, { activated: false });
@@ -293,15 +296,21 @@ describe("/api/v1/demo-session/", () => {
         },
       });
 
-      expect(response).to.deep.eq(notfound.tutor());
+      expect(response).to.deep.eq(inActiveTutorManager());
     });
 
     test("Start date is in the past", async () => {
       const tutor = await db.tutorUser();
+      const tutorManager = await db.tutorManager({}, { activated: true });
       const slot = await db.slot({
-        userId: tutor.id,
+        userId: tutorManager.id,
         start: dayjs().subtract(1, "hour").toISOString(),
         end: dayjs().add(1, "day").toISOString(),
+      });
+
+      await db.introVideo({
+        tutorId: tutor.id,
+        state: IIntroVideo.State.Approved,
       });
 
       // Create demo session with start date in the past
@@ -318,7 +327,13 @@ describe("/api/v1/demo-session/", () => {
 
     test("Start time is outside the slot", async () => {
       const tutor = await db.tutorUser();
-      const slot = await db.slot({ userId: tutor.id });
+      const tutorManager = await db.tutorManager({}, { activated: true });
+      const slot = await db.slot({ userId: tutorManager.id });
+
+      await db.introVideo({
+        tutorId: tutor.id,
+        state: IIntroVideo.State.Approved,
+      });
 
       // Create demo session with start date in the past
       const response = await createDemoSession({
@@ -332,16 +347,25 @@ describe("/api/v1/demo-session/", () => {
       expect(response).to.deep.eq(bad());
     });
 
-    test("Slot has no available time", async () => {
+    // @moehab TODO: unskip this once the find model function is implemented
+    test.skip("Slot has no available time", async () => {
       const tutor = await db.tutorUser();
+      const tutorManager = await db.tutorManager({}, { activated: true });
       const slot = await db.slot({
-        userId: tutor.id,
-        start: dayjs().toISOString(),
-        end: dayjs().add(10, "minute").toISOString(),
+        userId: tutorManager.id,
+        start: dayjs().add(10, "minutes").toISOString(),
+        end: dayjs()
+          .add(10 + DEMO_SESSION_DURATION, "minute")
+          .toISOString(),
       });
 
-      // Create demo session with start date in the past
-      const response = await createDemoSession({
+      await db.introVideo({
+        tutorId: tutor.id,
+        state: IIntroVideo.State.Approved,
+      });
+
+      // Successfully create demo-session to fill the slot
+      const res1 = await createDemoSession({
         user: tutor,
         body: {
           slotId: slot.id,
@@ -349,14 +373,33 @@ describe("/api/v1/demo-session/", () => {
         },
       });
 
-      expect(response).to.deep.eq(busyTutorManager());
+      expect(res1).to.not.be.instanceof(Error);
+
+      // Create demo session with start date in the past
+      const tutor2 = await db.tutorUser();
+
+      await db.introVideo({
+        tutorId: tutor2.id,
+        state: IIntroVideo.State.Approved,
+      });
+
+      const res2 = await createDemoSession({
+        user: tutor2,
+        body: {
+          slotId: slot.id,
+          start: slot.start,
+        },
+      });
+
+      expect(res2).to.deep.eq(busyTutorManager());
     });
 
     // Test for unauthorized access
     describe("Unauthorized access", () => {
       test("Unauthorized user cannot create demo session", async () => {
         const tutor = await db.tutorUser();
-        const slot = await db.slot();
+        const tutorManager = await db.tutorManager({}, { activated: true });
+        const slot = await db.slot({ userId: tutorManager.id });
 
         await db.introVideo({
           tutorId: tutor.id,
@@ -376,7 +419,8 @@ describe("/api/v1/demo-session/", () => {
 
       test("Unauthorized users cannot create demo sessions", async () => {
         const tutor = await db.tutorUser();
-        const slot = await db.slot();
+        const tutorManager = await db.tutorManager({}, { activated: true });
+        const slot = await db.slot({ userId: tutorManager.id });
 
         await db.introVideo({
           tutorId: tutor.id,
@@ -406,7 +450,6 @@ describe("/api/v1/demo-session/", () => {
     });
   });
 
-  // @galal @TODO: unskip this suite and ensure it passes.
   describe.skip(nameof(updateDemoSession), () => {
     // Test for tutor
     describe("Tutor can update their own demo session", () => {

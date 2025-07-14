@@ -1,7 +1,12 @@
-import { IAvailabilitySlot, IInterview, ILesson } from "@litespace/types";
+import {
+  IAvailabilitySlot,
+  IDemoSession,
+  IInterview,
+  ILesson,
+} from "@litespace/types";
 import { dayjs } from "@/dayjs";
 import { flatten, isEmpty, orderBy } from "lodash";
-import { INTERVIEW_DURATION } from "@/constants";
+import { DEMO_SESSION_DURATION, INTERVIEW_DURATION } from "@/constants";
 
 /**
  * Divide list of slots into sub-slots. It is used whenever a user wants to book a lesson
@@ -229,20 +234,34 @@ export function asSlots<T extends ILesson.Self | IInterview.Self>(
   return items.map((item) => asSlot(item));
 }
 
-export function asSubSlot<T extends ILesson.Self | IInterview.Self>(
-  item: T
-): IAvailabilitySlot.SubSlot {
+export function asSubSlot<
+  T extends ILesson.Self | IInterview.Self | IDemoSession.Self,
+>(item: T): IAvailabilitySlot.SubSlot {
+  if ("duration" in item) {
+    return {
+      parent: item.slotId,
+      start: item.start,
+      end: dayjs(item.start).add(item.duration, "minute").toISOString(),
+    };
+  }
+
+  if (item.sessionId.startsWith("demo:")) {
+    return {
+      parent: item.slotId,
+      start: item.start,
+      end: dayjs(item.start).add(DEMO_SESSION_DURATION, "minute").toISOString(),
+    };
+  }
+
   return {
-    parent: "ids" in item ? item.slotId : item.slotId,
+    parent: item.slotId,
     start: item.start,
-    end: dayjs(item.start)
-      .add("duration" in item ? item.duration : INTERVIEW_DURATION, "minute")
-      .toISOString(),
+    end: dayjs(item.start).add(INTERVIEW_DURATION, "minute").toISOString(),
   };
 }
 
-export function asSubSlots<T extends ILesson.Self | IInterview.Self>(
-  items: T[]
-): IAvailabilitySlot.SubSlot[] {
+export function asSubSlots<
+  T extends ILesson.Self | IInterview.Self | IDemoSession.Self,
+>(items: T[]): IAvailabilitySlot.SubSlot[] {
   return items.map((item) => asSubSlot(item));
 }

@@ -93,6 +93,8 @@ export const TUTOR_NAME_REGEX = /^[\u0600-\u06ff\s]+$/;
 export const INTERVIEW_DURATION = 30;
 export const INTERVIEW_MIN_RETRY_PERIOD_IN_DAYS = 3 * DAYS_IN_MONTH;
 
+export const DEMO_SESSION_DURATION = 30;
+
 export const CONFIRMATION_CODE_DIGIT_COUNT = 5;
 export const CONFIRMATION_CODE_VALIDITY_MINUTES = 15;
 
