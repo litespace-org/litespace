@@ -14,11 +14,11 @@ const Hero: React.FC = () => {
   return (
     <div
       className={cn(
-        "relative flex flex-col lg:flex-row items-center justify-between gap-10 bg-natural-0 overflow-hidden",
-        "h-[100vh-72px] py-16 lg:px-[108px] max-w-screen-3xl mx-auto"
+        "relative flex flex-col lg:flex-row items-center lg:justify-between md:gap-10 lg:gap-0 bg-natural-0 overflow-hidden",
+        "md:h-[calc(100vh-72px)] py-14 md:py-16 lg:py-0 lg:px-[108px] max-w-screen-3xl mx-auto w-full"
       )}
     >
-      <div className="flex flex-col text-center justify-center items-center lg:items-start gap-6 px-4 md:px-0 w-full">
+      <div className="flex flex-col text-center justify-center items-center lg:items-start gap-6 px-4 md:px-0 min-w-[460px] max-w-[633px] w-full">
         <div className="mx-auto flex flex-col items-center gap-4 lg:text-right max-w-[328px] sm:max-w-[770px] md:max-w-[808px]">
           <Typography
             tag="h1"
@@ -55,8 +55,10 @@ const Hero: React.FC = () => {
         </Link>
       </div>
 
-      <div className="flex justify-center items-center h-[200px] md:h-[426px] max-h-[426px] w-full">
-        <RiveAnimate animation="hero" state="State Machine 1" />
+      <div className="relative w-full h-full min-h-[275px] max-w-[360px] max-h-[275px] md:max-h-[350px] md:max-w-[476px] lg:max-h-[460px] xl:max-h-[536px] lg:max-w-[735px]">
+        <div className="absolute top-0 left-0 lg:-left-24 bottom-0 right-0 flex justify-center items-center">
+          <RiveAnimate animation="hero" state="State Machine 1" />
+        </div>
       </div>
     </div>
   );
