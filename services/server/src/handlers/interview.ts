@@ -37,11 +37,10 @@ import {
   isTutor,
   isRegularTutor,
 } from "@litespace/utils/user";
-import { concat, first, groupBy, sample } from "lodash";
+import { first, groupBy, sample } from "lodash";
 import {
   AFRICA_CAIRO_TIMEZONE,
   asSubSlots,
-  canBook,
   destructureInterviewStatus,
   genSessionId,
   getFirstAvailableSlot,
@@ -50,6 +49,7 @@ import {
 import { sendNotificationMessage } from "@/lib/kafka";
 import dayjs from "dayjs";
 import { withImageUrl, withImageUrls } from "@/lib/user";
+import { isBookable } from "@/lib/session";
 
 const createPayload: ZodSchema<IInterview.CreateApiPayload> = zod.object({
   start: datetime,
@@ -119,30 +119,16 @@ async function create(req: Request, res: Response, next: NextFunction) {
   const interviewable = await canBeInterviewed(intervieweeId);
   if (!interviewable) return next(conflictingInterview());
 
-  const slotLessons = await lessons.find({
-    slots: [slotId],
-    full: true,
-    canceled: false, // ignore canceled lessons
-  });
-
-  const slotInterviews = await interviews.find({
-    slots: [slotId],
-    full: true,
-    canceled: false,
-  });
-
-  const canBookInterview = canBook({
-    bookedSubslots: concat(
-      asSubSlots(slotLessons.list),
-      asSubSlots(slotInterviews.list)
-    ),
-    slot: slot,
-    bookInfo: {
-      start: start,
-      duration: INTERVIEW_DURATION,
-    },
-  });
-  if (!canBookInterview) return next(busyTutorManager());
+  if (
+    !(await isBookable({
+      slot,
+      bookInfo: {
+        start,
+        duration: INTERVIEW_DURATION,
+      },
+    }))
+  )
+    return next(busyTutorManager());
 
   const members = [interviewer.id, intervieweeId];
   const room = await rooms.findRoomByMembers(members);

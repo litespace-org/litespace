@@ -71,7 +71,10 @@ export class DemoSessions extends Model<
   async find<T extends IDemoSession.Field = IDemoSession.Field>(
     _query: WithOptionalTx<IDemoSession.FindModelQuery<T>>
   ): Promise<Paginated<Pick<IDemoSession.Self, T>>> {
-    return {} as Paginated<Pick<IDemoSession.Self, T>>;
+    return {
+      list: [],
+      total: 0,
+    } as Paginated<Pick<IDemoSession.Self, T>>;
   }
 }
 

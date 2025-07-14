@@ -53,6 +53,7 @@ dayjs.extend(utc);
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await demoSessions.builder(tx).del();
     await introVideos.builder(tx).del();
     await reports.builder(tx).del();
     await subscriptions.builder(tx).del();
@@ -177,7 +178,7 @@ export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
 
   const newSlots = await availabilitySlots.create([
     {
-      userId: payload?.userId || 1,
+      userId: await or.tutorManagerId(payload?.userId),
       start: start.toISOString(),
       end: end.toISOString(),
       purpose: payload?.purpose,
