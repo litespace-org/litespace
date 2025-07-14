@@ -19,6 +19,7 @@ import {
   invoices,
   reports,
   introVideos,
+  demoSessions,
 } from "@litespace/models";
 import {
   IInterview,
@@ -36,6 +37,7 @@ import {
   IReport,
   IIntroVideo,
   IInvoice,
+  IDemoSession,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -339,7 +341,7 @@ function student() {
   return user({ role: IUser.Role.Student });
 }
 
-async function tutorManager(
+async function tutorManagerUser(
   userPayload?: Partial<IUser.CreatePayload>,
   tutorPayload?: Partial<ITutor.UpdatePayload>
 ) {
@@ -676,6 +678,16 @@ function validSubscription(
   });
 }
 
+async function demoSession(
+  payload: Partial<IDemoSession.CreateModelPayload>
+): Promise<IDemoSession.Self> {
+  return demoSessions.create({
+    slotId: await or.slotId(payload?.slotId),
+    tutorId: await or.tutorId(payload?.tutorId),
+    start: or.start(payload?.start),
+  });
+}
+
 export default {
   user,
   tutor,
@@ -684,6 +696,7 @@ export default {
   onboardedTutorManager,
   student,
   tutorManager,
+  tutorManagerUser,
   students,
   interview,
   lesson,
@@ -697,6 +710,7 @@ export default {
   introVideo,
   invoice,
   validSubscription,
+  demoSession,
   room: makeRoom,
   message: makeMessage,
   make: {

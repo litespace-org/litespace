@@ -92,7 +92,7 @@ describe("/api/v1/interview/", () => {
 
     it("should respond with a list of interviews of a specific tutor manager", async () => {
       const admin = await db.user({ role: IUser.Role.RegularAdmin });
-      const tutorManager = await db.tutorManager();
+      const tutorManager = await db.tutorManagerUser();
 
       const tutorsList = await Promise.all([
         await db.tutorUser(),
@@ -360,8 +360,8 @@ describe("/api/v1/interview/", () => {
     it("should respond with forbidden in case the requester is not authorized", async () => {
       const requesters = {
         student: await db.student(),
-        tutor: await db.user({ role: IUser.Role.Tutor }),
-        tutorManager: await db.tutorManager(),
+        tutor: await db.tutorUser(),
+        tutorManager: await db.tutorManagerUser(),
       };
 
       const tutorManager = await db.tutorManager();

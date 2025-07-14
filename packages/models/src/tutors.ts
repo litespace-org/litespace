@@ -190,7 +190,11 @@ export class Tutors {
     withListFilter(builder, users.column("gender"), filter.gender);
     withListFilter(builder, users.column("role"), filter.role);
 
-    return builder;
+    return withSkippablePagination(builder, {
+      size: filter.size,
+      page: filter.page,
+      full: filter.full,
+    });
   }
 
   async find(
@@ -204,15 +208,9 @@ export class Tutors {
 
     const total = await countRows(filtered.clone(), { distinct: true });
 
-    const query = filtered
+    const rows = await filtered
       .select<ITutor.FullRow[]>(fullTutorFields)
       .orderBy(tutors.column("created_at"), "desc");
-
-    const rows = await withSkippablePagination(query, {
-      size: filter.size,
-      page: filter.page,
-      full: filter.full,
-    });
 
     const list = rows.map((row) => this.asFull(row));
     return { list, total };
