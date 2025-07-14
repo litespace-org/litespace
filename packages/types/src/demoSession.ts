@@ -4,8 +4,9 @@ export enum Status {
   Pending = 1,
   Passed = 2,
   Rejected = 3,
-  CanceledByInterviewer = 4,
-  CanceledByInterviewee = 5,
+  CanceledByTutorManager = 4,
+  CanceledByTutor = 5,
+  CanceledByAdmin = 6,
 }
 
 export type Row = {
@@ -56,6 +57,7 @@ export type UpdateModelPayload = {
 
 export type FindModelQuery<T extends Field = Field> =
   IFilter.SkippablePagination & {
+    ids?: number[];
     sessionIds?: ISession.Id[];
     tutorIds?: number[];
     slotIds?: number[];

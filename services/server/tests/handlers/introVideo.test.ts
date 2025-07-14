@@ -33,7 +33,7 @@ describe(nameof(createIntroVideo), () => {
 
   it("should respond with forbidden in case the requester is not a regular tutor", async () => {
     const res = await createIntroVideo({
-      user: await db.tutorManager(),
+      user: await db.tutorManagerUser(),
       body: { duration: 3 },
     });
 
@@ -203,7 +203,7 @@ describe(nameof(updateIntroVideo), () => {
   });
 
   it("should update state successfully", async () => {
-    const tutorManager = await db.tutorManager();
+    const tutorManager = await db.tutorManagerUser();
     const introVideo = await db.introVideo({ reviewerId: tutorManager.id });
     expect(introVideo.state).to.eq(IIntroVideo.State.Pending);
 
@@ -280,8 +280,8 @@ describe(nameof(updateIntroVideo), () => {
   });
 
   it("shouldn't update reviewer because tutor managers can't do so", async () => {
-    const tutorManager1 = await db.tutorManager();
-    const tutorManager2 = await db.tutorManager();
+    const tutorManager1 = await db.tutorManagerUser();
+    const tutorManager2 = await db.tutorManagerUser();
     const introVideo = await db.introVideo();
 
     const res = await updateIntroVideo({
@@ -319,8 +319,8 @@ describe(nameof(updateIntroVideo), () => {
   });
 
   it("shouldn't update because user isn't the assigned reviewer", async () => {
-    const tutorManager1 = await db.tutorManager();
-    const tutorManager2 = await db.tutorManager();
+    const tutorManager1 = await db.tutorManagerUser();
+    const tutorManager2 = await db.tutorManagerUser();
     const introVideo = await db.introVideo({ reviewerId: tutorManager2.id });
 
     const res = await updateIntroVideo({

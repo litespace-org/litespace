@@ -530,8 +530,9 @@ async function main(): Promise<void> {
         : sample([
             IDemoSession.Status.Pending,
             IDemoSession.Status.Rejected,
-            IDemoSession.Status.CanceledByInterviewee,
-            IDemoSession.Status.CanceledByInterviewer,
+            IDemoSession.Status.CanceledByTutor,
+            IDemoSession.Status.CanceledByTutorManager,
+            IDemoSession.Status.CanceledByAdmin,
           ]),
     });
   }
