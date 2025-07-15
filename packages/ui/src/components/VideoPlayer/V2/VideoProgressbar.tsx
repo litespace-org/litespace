@@ -21,7 +21,7 @@ export const VideoProgressbar: React.FC<{
       onMouseUp={seekingHandlers.handleMouseUp}
       className="grow h-3 relative block"
     >
-      <div className="absolute top-0 left-0 opacity-40 w-full h-full border border-natural-50 " />
+      <div className="absolute top-0 left-0 opacity-40 w-full h-full border border-natural-50" />
       <motion.div // video current state
         transition={{ duration: 0.1, ease: "easeInOut" }}
         className="absolute top-[2px] left-[2px] bg-brand-500 h-2"

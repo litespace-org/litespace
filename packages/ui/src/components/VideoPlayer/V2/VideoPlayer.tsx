@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CONTAINER_ID, useVideo } from "@/components/VideoPlayer/V2/video";
 import Play from "@litespace/assets/Play";
 import Pause from "@litespace/assets/Pause";
@@ -13,12 +13,18 @@ import { VideoProgressbar } from "@/components/VideoPlayer/V2/VideoProgressbar";
 import { PlayButton } from "@/components/VideoPlayer/V2/PlayButton";
 import { Loading } from "@/components/Loading";
 import mergeRefs from "merge-refs";
+import { Maximize, Minimize } from "react-feather";
 
 type Props = React.VideoHTMLAttributes<HTMLVideoElement>;
 
 export const VideoPlayer = React.forwardRef<HTMLVideoElement, Props>(
   ({ className, ...props }, ref) => {
     const intl = useFormatMessage();
+
+    // True if something in the bar is opened e.g., settings
+    const [controllerOpened, setControllerOpened] = useState<boolean>(false);
+    // True if once the mouse hover on the video and false if out or time passed (4 seconds)
+    const [barVisibility, setBarVisibility] = useState<boolean>(false);
 
     const {
       togglePlay,
@@ -41,12 +47,27 @@ export const VideoPlayer = React.forwardRef<HTMLVideoElement, Props>(
       status,
       progressRef,
       seekingHandlers,
+      fullscreen,
+      toggleSize,
     } = useVideo();
+
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        if (barVisibility && !controllerOpened) setBarVisibility(false);
+      }, 4000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }, [barVisibility, controllerOpened]);
 
     return (
       <div
         id={CONTAINER_ID}
         ref={containerRef}
+        onMouseMove={() => setBarVisibility(true)}
+        onMouseLeave={() => setBarVisibility(false)}
+        onDoubleClick={toggleSize}
         className="relative w-full aspect-video rounded-lg overflow-hidden"
       >
         <video
@@ -77,9 +98,35 @@ export const VideoPlayer = React.forwardRef<HTMLVideoElement, Props>(
           </div>
         ) : null}
         {currentTime !== 0 ? (
-          <div className="absolute bottom-0 left-0 w-full h-[56px] flex items-center justify-center py-2 px-4 gap-2">
+          <div
+            className={cn(
+              "absolute bottom-0 left-0 w-full h-[56px] flex items-center justify-center py-2 px-4 gap-2",
+              {
+                hidden: !(barVisibility || controllerOpened),
+              }
+            )}
+          >
             <div className="grow bg-background-video py-1 px-2 h-10 rounded flex items-center gap-4">
+              <button
+                onClick={toggleSize}
+                className={cn(
+                  "outline-none focus-visible:ring-1 ring-brand-500"
+                )}
+              >
+                {fullscreen ? (
+                  <Minimize className="stroke-natural-50 w-5 h-5 outline-none" />
+                ) : (
+                  <Maximize className="stroke-natural-50 w-5 h-5 outline-none" />
+                )}
+              </button>
               <SettingsMenu
+                toggleBar={(open) => {
+                  if (open) setControllerOpened(true);
+                  if (!open) {
+                    setControllerOpened(false);
+                    setBarVisibility(true);
+                  }
+                }}
                 setPlaybackSpeed={setPlaybackRate}
                 playbackSpeed={playbackRate}
               >
