@@ -1,5 +1,3 @@
-import { ISession } from ".";
-
 export type Type = "lesson" | "interview" | "demo";
 export type Id = `${Type}:${string}`;
 
@@ -14,5 +12,5 @@ export type GetSessionTokenApiResponse = {
 };
 
 export type GetSessionTokenApiQuery = {
-  sessionId: ISession.Id;
+  sessionId: Id;
 };

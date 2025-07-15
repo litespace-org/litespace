@@ -15,6 +15,7 @@ import {
   invoices,
   reports,
   introVideos,
+  demoSessions,
 } from "@/index";
 import {
   IInterview,
@@ -46,6 +47,7 @@ import { percentage, price } from "@litespace/utils";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await demoSessions.builder(tx).del();
     await reports.builder(tx).del();
     await subscriptions.builder(tx).del();
     await transactions.builder(tx).del();

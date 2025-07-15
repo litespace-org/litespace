@@ -1,10 +1,17 @@
-import { WithOptionalTx } from "@/query";
+import {
+  countRows,
+  withDateFilter,
+  withListFilter,
+  WithOptionalTx,
+  withSkippablePagination,
+} from "@/query";
 import { IDemoSession, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { Model } from "@/lib/model";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
 import { genSessionId } from "@/lib/utils";
+import { availabilitySlots } from "./availabilitySlots";
 
 const FIELD_TO_COLUMN = {
   id: "id",
@@ -56,25 +63,77 @@ export class DemoSessions extends Model<
     tx?: Knex.Transaction
   ): Promise<void> {
     const now = dayjs.utc().toDate();
-    await this.builder(tx)
+
+    const res = await this.builder(tx)
       .update({
         status: payload.status,
         updated_at: now,
       })
       .where(this.column("id"), payload.id);
+
+    if (!res) throw Error("demo-session not found");
   }
 
-  // @mk @TODO: implement this model function and use the new convention the `select` parameter.
-  // Notice, that tutorManagerId is not stored in the table. I've chosen this design for more
-  // database integrity. To filter by tutorManagerIds left join the slots table then use the
-  // user_id column; but make sure to proceed the joining only after filtering with the ids param.
-  async find<T extends IDemoSession.Field = IDemoSession.Field>(
-    _query: WithOptionalTx<IDemoSession.FindModelQuery<T>>
-  ): Promise<Paginated<Pick<IDemoSession.Self, T>>> {
-    return {
-      list: [],
-      total: 0,
-    } as Paginated<Pick<IDemoSession.Self, T>>;
+  async find<T extends IDemoSession.Field = IDemoSession.Field>({
+    ids,
+    sessionIds,
+    tutorIds,
+    slotIds,
+    tutorManagerIds,
+    statuses,
+    start,
+    createdAt,
+    updatedAt,
+    select,
+    tx,
+    ...pagination
+  }: WithOptionalTx<IDemoSession.FindModelQuery<T>>): Promise<
+    Paginated<Pick<IDemoSession.Self, T>>
+  > {
+    const base = this.builder(tx);
+
+    // ============== list fields ========
+    withListFilter(base, this.column("id"), ids);
+    withListFilter(base, this.column("session_id"), sessionIds);
+    withListFilter(base, this.column("tutor_id"), tutorIds);
+    withListFilter(base, this.column("slot_id"), slotIds);
+    withListFilter(base, this.column("status"), statuses);
+
+    // ============== date fields ========
+    withDateFilter(base, this.column("created_at"), createdAt);
+    withDateFilter(base, this.column("updated_at"), updatedAt);
+    withDateFilter(base, this.column("start"), start);
+
+    //======= filters after joins ====== =
+    base.leftJoin(
+      availabilitySlots.table,
+      this.column("slot_id"),
+      availabilitySlots.column("id")
+    );
+    withListFilter(base, availabilitySlots.column("user_id"), tutorManagerIds);
+
+    const total = await countRows(base.clone(), {
+      column: this.column("id"),
+      distinct: true,
+    });
+
+    const queryBuilder = base
+      .clone()
+      .select(this.select(select))
+      .orderBy([
+        {
+          column: this.column("created_at"),
+          order: "desc",
+        },
+        {
+          column: this.column("id"),
+          order: "desc",
+        },
+      ]);
+
+    const rows = await withSkippablePagination(queryBuilder, pagination);
+    const demoSessions = rows.map((row) => this.from(row));
+    return { list: demoSessions, total };
   }
 }
 
