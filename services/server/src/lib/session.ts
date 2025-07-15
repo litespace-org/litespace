@@ -1,6 +1,11 @@
-import { IAvailabilitySlot, IInterview, ISession } from "@litespace/types";
+import {
+  IAvailabilitySlot,
+  IDemoSession,
+  IInterview,
+  ISession,
+} from "@litespace/types";
 import { concat, isEmpty } from "lodash";
-import { interviews, lessons } from "@litespace/models";
+import { demoSessions, interviews, lessons } from "@litespace/models";
 import { asSubSlots, canBook, getSessionType } from "@litespace/utils";
 
 // todo: impl: each tutor can have interview each 3 months.
@@ -60,21 +65,18 @@ export async function isBookable({
     full: true,
   });
 
-  // @moehab TODO: uncomment these lines once the demo-session find model function is implemented
-  /*
   const slotDemoSessions = await demoSessions.find({
     slotIds: [slot.id],
     statuses: [IDemoSession.Status.Pending],
     full: true,
   });
-  */
 
   return canBook({
     slot,
     bookedSubslots: concat(
       asSubSlots(slotLessons.list),
-      asSubSlots(slotInterviews.list)
-      //asSubSlots(slotDemoSessions.list),
+      asSubSlots(slotInterviews.list),
+      asSubSlots(slotDemoSessions.list)
     ),
     bookInfo,
   });

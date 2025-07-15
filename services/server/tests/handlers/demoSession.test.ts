@@ -41,6 +41,7 @@ describe("/api/v1/demo-session/", () => {
     await db.flush();
   });
 
+  // @moehab TODO: unskip this once the handler is implemented
   describe.skip(nameof(findDemoSession), () => {
     test("Tutors can find their own demo sessions", async () => {
       const tutor = await db.tutorUser();
@@ -210,11 +211,14 @@ describe("/api/v1/demo-session/", () => {
   });
 
   describe(nameof(createDemoSession), () => {
-    // @moehab TODO: unskip this once the demo-session model find function is implemented
-    test.skip("Regular tutors can create demo session with valid data", async () => {
+    test("Regular tutors can create demo session with valid data", async () => {
       const tutor = await db.tutorUser({}, { activated: true });
       const tutorManager = await db.tutorManager({}, { activated: true });
-      const slot = await db.slot({ userId: tutorManager.id });
+      const slot = await db.slot({
+        userId: tutorManager.id,
+        start: dayjs().add(1, "hour").toISOString(),
+        end: dayjs().add(4, "hours").toISOString(),
+      });
 
       await db.introVideo({
         tutorId: tutor.id,
@@ -231,7 +235,7 @@ describe("/api/v1/demo-session/", () => {
 
       expect(response).to.not.be.instanceof(Error);
 
-      const found = await demoSessions.find({ tutorIds: [tutor.id] });
+      const found = await demoSessions.find({ tutorManagerIds: [slot.userId] });
       expect(first(found.list)?.status).to.eq(IDemoSession.Status.Pending);
     });
 
@@ -347,8 +351,7 @@ describe("/api/v1/demo-session/", () => {
       expect(response).to.deep.eq(bad());
     });
 
-    // @moehab TODO: unskip this once the find model function is implemented
-    test.skip("Slot has no available time", async () => {
+    test("Slot has no available time", async () => {
       const tutor = await db.tutorUser();
       const tutorManager = await db.tutorManager({}, { activated: true });
       const slot = await db.slot({
