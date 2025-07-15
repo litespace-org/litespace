@@ -9,7 +9,7 @@ import { IDemoSession, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { Model } from "@/lib/model";
 import dayjs from "@/lib/dayjs";
-import { first } from "lodash";
+import { first, isEmpty } from "lodash";
 import { genSessionId } from "@/lib/utils";
 import { availabilitySlots } from "@/availabilitySlots";
 
@@ -105,12 +105,16 @@ export class DemoSessions extends Model<
     withDateFilter(base, this.column("start"), start);
 
     //======= filters after joins ====== =
-    base.leftJoin(
-      availabilitySlots.table,
-      this.column("slot_id"),
-      availabilitySlots.column("id")
-    );
-    withListFilter(base, availabilitySlots.column("user_id"), tutorManagerIds);
+    if (!isEmpty(tutorManagerIds)) {
+      base.innerJoin(availabilitySlots.table, (builder) =>
+        builder
+          .on(availabilitySlots.column("id"), this.column("slot_id"))
+          .andOnIn(
+            availabilitySlots.column("user_id"),
+            tutorManagerIds as any[]
+          )
+      );
+    }
 
     const total = await countRows(base.clone(), {
       column: this.column("id"),
