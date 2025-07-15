@@ -15,7 +15,12 @@ import {
 } from "@litespace/utils";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { introVideos, tutors, availabilitySlots } from "@litespace/models";
+import {
+  introVideos,
+  tutors,
+  availabilitySlots,
+  demoSessions,
+} from "@litespace/models";
 import { first } from "lodash";
 import Zod from "zod";
 import dayjs from "@/lib/dayjs";
@@ -72,6 +77,12 @@ async function create(req: Request, res: Response, next: NextFunction) {
     }))
   )
     return next(busyTutorManager());
+
+  await demoSessions.create({
+    tutorId: user.id,
+    slotId,
+    start,
+  });
 
   res.sendStatus(200);
 }

@@ -11,7 +11,7 @@ import { Model } from "@/lib/model";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
 import { genSessionId } from "@/lib/utils";
-import { availabilitySlots } from "./availabilitySlots";
+import { availabilitySlots } from "@/availabilitySlots";
 
 const FIELD_TO_COLUMN = {
   id: "id",
