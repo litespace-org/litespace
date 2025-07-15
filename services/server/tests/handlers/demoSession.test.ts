@@ -15,9 +15,9 @@ import { demoSessions, tutors } from "@litespace/models";
 import { first } from "lodash";
 
 const findDemoSession = mockApi<
+  void,
+  void,
   IDemoSession.FindApiPayload,
-  object,
-  object,
   IDemoSession.FindApiResponse
 >(handlers.find);
 
@@ -40,11 +40,172 @@ describe("/api/v1/demo-session/", () => {
     await db.flush();
   });
 
-  // @moehab @TODO: write test suite for this function.
   // @mk @TODO: unskip this suite and ensure it passes.
-  describe(nameof(findDemoSession), () => {
-    it("", () => {
-      expect(true);
+  describe.skip(nameof(findDemoSession), () => {
+    test("Tutors can find their own demo sessions", async () => {
+      const tutor = await db.tutorUser();
+      const slot = await db.slot();
+
+      await Promise.all([
+        db.demoSession({
+          tutorId: tutor.id,
+          slotId: slot.id,
+          start: slot.start,
+        }),
+        db.demoSession({
+          slotId: slot.id,
+          start: slot.start,
+        }),
+      ]);
+
+      const response = await findDemoSession({
+        user: tutor,
+        query: {
+          tutorIds: [tutor.id],
+        },
+      });
+
+      expect(response).to.not.be.instanceof(Error);
+      expect(response.body?.list.length).to.equal(1);
+      expect(response.body?.list[0].tutorId).to.equal(tutor.id);
+    });
+
+    test("Tutor-managers can find demo sessions for their tutors", async () => {
+      const tutorManager = await db.tutorManagerUser();
+      const slot = await db.slot({ userId: tutorManager.id });
+      const tutor = await db.tutorUser();
+
+      await Promise.all([
+        db.demoSession({
+          tutorId: tutor.id,
+          slotId: slot.id,
+          start: slot.start,
+        }),
+        db.demoSession({}),
+      ]);
+
+      const response = await findDemoSession({
+        user: tutorManager,
+        query: {
+          tutorIds: [tutor.id],
+        },
+      });
+
+      expect(response).to.not.be.instanceof(Error);
+      expect(response.body?.list.length).to.equal(1);
+      expect(response.body?.list[0].tutorId).to.equal(tutor.id);
+    });
+
+    test("Admins can find all demo sessions", async () => {
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+      const tutor1 = await db.tutorUser();
+      const tutor2 = await db.tutorUser();
+
+      await db.demoSession({ tutorId: tutor1.id });
+      await db.demoSession({ tutorId: tutor2.id });
+
+      const response = await findDemoSession({
+        user: admin,
+        query: {},
+      });
+
+      expect(response).to.not.be.instanceof(Error);
+      expect(response.body?.list.length).to.equal(2);
+      expect(response.body?.list[0].tutorId).to.equal(tutor1.id);
+      expect(response.body?.list[1].tutorId).to.equal(tutor2.id);
+    });
+
+    test("Admins can find demo sessions with filtering", async () => {
+      const admin = await db.user({ role: IUser.Role.RegularAdmin });
+      const tutor1 = await db.tutorUser();
+      const tutor2 = await db.tutorUser();
+      const tutor3 = await db.tutorUser();
+
+      await db.demoSession({ tutorId: tutor1.id });
+      await db.demoSession({ tutorId: tutor2.id });
+      await db.demoSession({ tutorId: tutor3.id });
+
+      const response = await findDemoSession({
+        user: admin,
+        query: {
+          tutorIds: [tutor1.id, tutor2.id],
+        },
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).not.to.be.null;
+      expect(response.body?.list.length).to.equal(2);
+      expect(response.body?.list[0].tutorId).to.equal(tutor1.id);
+      expect(response.body?.list[1].tutorId).to.equal(tutor2.id);
+    });
+
+    test("Tutors can find demo sessions with pagination", async () => {
+      const tutor = await db.tutorUser();
+
+      const demoSession = await db.demoSession({ tutorId: tutor.id });
+      await db.demoSession({ tutorId: tutor.id });
+
+      const response = await findDemoSession({
+        user: tutor,
+        query: {
+          tutorIds: [tutor.id],
+          size: 1,
+        },
+      });
+
+      expect(response).to.not.be.instanceof(Error);
+      expect(response.body?.list.length).to.equal(1);
+      expect(response.body?.list[0].sessionId).to.equal(demoSession.sessionId);
+    });
+
+    test("Tutor cannot access other tutor's demo sessions", async () => {
+      const tutor1 = await db.tutorUser();
+      const tutor2 = await db.tutorUser();
+
+      await db.demoSession({ tutorId: tutor1.id });
+      await db.demoSession({ tutorId: tutor2.id });
+
+      const response = await findDemoSession({
+        user: tutor1,
+        query: {
+          tutorIds: [tutor1.id, tutor2.id],
+        },
+      });
+
+      expect(response).to.deep.eq(forbidden());
+    });
+
+    test("Unauthorized user cannot find demo sessions", async () => {
+      const tutor = await db.tutorUser();
+      await db.demoSession({ tutorId: tutor.id });
+
+      const response = await findDemoSession({
+        user: undefined,
+        query: {
+          tutorIds: [tutor.id],
+          size: 1,
+          page: 1,
+        },
+      });
+
+      expect(response).to.deep.equal(unauthenticated());
+    });
+
+    test("Tutor-manager cannot access other tutor's demo sessions", async () => {
+      const tutorManager = await db.tutorManagerUser();
+      const tutor1 = await db.tutorUser();
+      const tutor2 = await db.tutorUser();
+      await db.demoSession({ tutorId: tutor1.id });
+      await db.demoSession({ tutorId: tutor2.id });
+
+      const response = await findDemoSession({
+        user: tutorManager,
+        query: {
+          tutorIds: [tutor1.id, tutor2.id],
+        },
+      });
+
+      expect(response).to.deep.equal(forbidden());
     });
   });
 
