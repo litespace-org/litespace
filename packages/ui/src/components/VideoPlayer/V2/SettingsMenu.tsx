@@ -1,12 +1,12 @@
-import React, { useCallback, useState } from "react";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Typography } from "@/components/Typography";
-import cn from "classnames";
 import { useFormatMessage } from "@/hooks";
-import RightArrowHead from "@litespace/assets/RightArrowHead";
+import Check3 from "@litespace/assets/Check3";
 import LeftArrowHead from "@litespace/assets/LeftArrowHead";
 import PlaybackSpeed from "@litespace/assets/PlaybackSpeed";
-import Check3 from "@litespace/assets/Check3";
+import RightArrowHead from "@litespace/assets/RightArrowHead";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import cn from "classnames";
+import React, { useCallback, useState } from "react";
 
 const playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const;
 
@@ -18,8 +18,9 @@ enum MenuSteps {
 export const SettingsMenu: React.FC<{
   children: React.ReactNode;
   playbackSpeed: number;
+  toggleBar: (open: boolean) => void;
   setPlaybackSpeed: (rate: number) => void;
-}> = ({ children, playbackSpeed = 1, setPlaybackSpeed }) => {
+}> = ({ children, playbackSpeed = 1, toggleBar, setPlaybackSpeed }) => {
   const intl = useFormatMessage();
   const [step, setStep] = useState<MenuSteps>(MenuSteps.Main);
 
@@ -36,7 +37,7 @@ export const SettingsMenu: React.FC<{
   );
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root onOpenChange={toggleBar}>
       <DropdownMenu.Trigger
         className={cn("focus:outline-none", !children && "p-2")}
         type="button"
