@@ -18,6 +18,7 @@ export enum ApiError {
   Unexpected = "unexpected",
   NotFound = "not-found",
   SessionNotFound = "session-not-found",
+  DemoSessionNotFound = "demo-session-not-found",
   TransactionNotFound = "transaction-not-found",
   UserNotFound = "user-not-found",
   TutorNotFound = "tutor-not-found",

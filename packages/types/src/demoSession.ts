@@ -80,9 +80,6 @@ export type CreateApiPayload = {
 export type CreateApiResponse = void;
 
 export type UpdateApiPayload = {
-  /**
-   * the id of the demo-session to be updated
-   */
   id: number;
   status: Status;
 };

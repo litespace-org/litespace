@@ -100,6 +100,7 @@ export const notfound = {
   user: () => error(ApiError.UserNotFound, 404),
   transaction: () => error(ApiError.TransactionNotFound, 404),
   slot: () => error(ApiError.SlotNotFound, 404),
+  demoSession: () => error(ApiError.DemoSessionNotFound, 404),
   tutor: () => error(ApiError.TutorNotFound, 404),
   student: () => error(ApiError.StudentNotFound, 404),
   session: () => error(ApiError.SessionNotFound, 404),
