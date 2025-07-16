@@ -48,6 +48,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.EmptyRequest]: "error.api.empty-request",
   [ApiError.UserAlreadyVerified]: "error.api.user-already-verified",
   [ApiError.WrongPassword]: "error.api.wrong-password",
+  [ApiError.NoPassword]: "error.api.no-password",
   [ApiError.ConflictingLessons]: "error.api.conflicting-lessons",
   [ApiError.ConflictingInterview]: "error.api.conflicting-interview",
   [ApiError.ConflictingSchedule]: "error.api.conflicting-schedule",
