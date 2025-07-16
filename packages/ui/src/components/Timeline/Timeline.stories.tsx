@@ -3,6 +3,7 @@ import { Timeline } from "@/components/Timeline";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { Cpu, HardDrive, Mic, User } from "react-feather";
 import { Button } from "@/components/Button";
+import React from "react";
 
 type Component = typeof Timeline;
 

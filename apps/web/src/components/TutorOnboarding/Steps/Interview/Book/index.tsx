@@ -1,14 +1,15 @@
-import { useOnError } from "@/hooks/error";
-import { useSelectInterviewer } from "@litespace/headless/interviews";
-import React, { useRef } from "react";
-import dayjs from "@/lib/dayjs";
-import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
 import TimingSelection from "@/components/TutorOnboarding/Steps/Interview/Book/TimingSelection";
-import { IAvailabilitySlot, IInterview, Void } from "@litespace/types";
 import {
   InterviewErrorLoading,
   InterviewLoading,
 } from "@/components/TutorOnboarding/Steps/Interview/Loading";
+import { useOnError } from "@/hooks/error";
+import dayjs from "@/lib/dayjs";
+import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
+import { useSelectInterviewer } from "@litespace/headless/interviews";
+import { IAvailabilitySlot, IInterview, Void } from "@litespace/types";
+import { Dayjs } from "dayjs";
+import React, { useState } from "react";
 
 const Book: React.FC<{
   sync: Void;
@@ -42,7 +43,7 @@ const Content: React.FC<{
   syncing: boolean;
   sync: Void;
 }> = ({ interviewer, sync, syncing }) => {
-  const now = useRef(dayjs());
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
 
   const slotsQuery = useFindAvailabilitySlots({
     userIds: [interviewer.id],
@@ -50,8 +51,8 @@ const Content: React.FC<{
       IAvailabilitySlot.Purpose.Interview,
       IAvailabilitySlot.Purpose.General,
     ],
-    after: now.current.toISOString(),
-    before: now.current.add(1, "month").toISOString(),
+    after: selectedDate.startOf("month").toISOString(),
+    before: selectedDate.endOf("month").toISOString(),
     full: true,
   });
 
@@ -73,6 +74,7 @@ const Content: React.FC<{
         bookedSlots={slotsQuery.data?.subslots || []}
         sync={sync}
         syncing={syncing}
+        setSelectedDate={setSelectedDate}
       />
     </div>
   );

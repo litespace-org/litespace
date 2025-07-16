@@ -11,6 +11,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.UserExists]: "error.api.user-exists",
   [ApiError.RatingExists]: "error.api.rating-exists",
   [ApiError.IntroVideoExists]: "error.api.intro-video-exists",
+  [ApiError.DemoSessionExists]: "error.api.demo-session-exists",
   [ApiError.SubscriptionExists]: "error.api.subscription-exists",
   [ApiError.SubscriptionRequired]: "error.api.subscription-required",
   [ApiError.SubscriptionUncancellable]: "error.api.subscription-uncancellable",

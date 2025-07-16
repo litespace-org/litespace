@@ -14,18 +14,23 @@ import {
   InterviewErrorLoading,
   InterviewLoading,
 } from "@/components/TutorOnboarding/Steps/Interview/Loading";
+import { IInterview, Void } from "@litespace/types";
 
-const Interview: React.FC<{ selfId: number }> = ({ selfId }) => {
+const Interview: React.FC<{ selfId: number; next: Void }> = ({
+  selfId,
+  next,
+}) => {
   const { query } = useFindInterviews({
     users: [selfId],
     page: 1,
     size: 1,
   });
 
-  const interview = useMemo(
-    () => first(query.data?.list) || null,
-    [query.data?.list]
-  );
+  const interview = useMemo(() => {
+    const interview = first(query.data?.list) || null;
+    if (interview?.status === IInterview.Status.Passed) next();
+    return interview;
+  }, [query.data?.list, next]);
 
   const state = useMemo((): "book" | "pending" | "result" => {
     // book a new interview if no existing interviews are found
