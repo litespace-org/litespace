@@ -105,14 +105,11 @@ export class DemoSessions extends Model<
     withDateFilter(base, this.column("start"), start);
 
     //======= filters after joins ====== =
-    if (!isEmpty(tutorManagerIds)) {
+    if (tutorManagerIds && !isEmpty(tutorManagerIds)) {
       base.innerJoin(availabilitySlots.table, (builder) =>
         builder
           .on(availabilitySlots.column("id"), this.column("slot_id"))
-          .andOnIn(
-            availabilitySlots.column("user_id"),
-            tutorManagerIds as any[]
-          )
+          .andOnIn(availabilitySlots.column("user_id"), tutorManagerIds)
       );
     }
 

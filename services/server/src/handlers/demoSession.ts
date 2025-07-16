@@ -6,11 +6,21 @@ import {
   notfound,
   unauthenticated,
 } from "@/lib/error";
-import { datetime, id } from "@/validation/utils";
+import {
+  dateFilter,
+  datetime,
+  id,
+  ids,
+  pageNumber,
+  pageSize,
+  sessionId,
+} from "@/validation/utils";
 import { IDemoSession, IIntroVideo } from "@litespace/types";
 import {
   DEMO_SESSION_DURATION,
+  isAdmin,
   isRegularTutor,
+  isTutor,
   isTutorManager,
 } from "@litespace/utils";
 import { NextFunction, Request, Response } from "express";
@@ -22,13 +32,28 @@ import {
   demoSessions,
 } from "@litespace/models";
 import { first } from "lodash";
-import Zod from "zod";
+import zod, { ZodSchema } from "zod";
 import dayjs from "@/lib/dayjs";
 import { isBookable } from "@/lib/session";
 
-const createDemoSessionPayload = Zod.object({
-  slotId: id,
-  start: datetime,
+const createDemoSessionPayload: ZodSchema<IDemoSession.CreateApiPayload> =
+  zod.object({
+    slotId: id,
+    start: datetime,
+  });
+
+const findDemoSessionQuery: ZodSchema<IDemoSession.FindApiQuery> = zod.object({
+  ids: zod.optional(ids),
+  sessionIds: zod.optional(sessionId.array()),
+  tutorIds: zod.optional(ids),
+  slotIds: zod.optional(ids),
+  tutorManagerIds: zod.optional(ids),
+  statuses: zod.optional(zod.nativeEnum(IDemoSession.Status).array()),
+  start: zod.optional(dateFilter),
+  createdAt: zod.optional(dateFilter),
+  updatedAt: zod.optional(dateFilter),
+  page: pageNumber.optional().default(1),
+  size: pageSize.optional().default(10),
 });
 
 async function create(req: Request, res: Response, next: NextFunction) {
@@ -92,9 +117,33 @@ async function update(_req: Request, res: Response, _next: NextFunction) {
   res.sendStatus(200);
 }
 
-// @mk @TODO: implement this handler and ensure that its test suite passes.
-async function find(_req: Request, res: Response, _next: NextFunction) {
-  res.sendStatus(200);
+async function find(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  if (!user) return next(unauthenticated());
+  const allowed = isTutor(user) || isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const payload = findDemoSessionQuery.parse(req.query);
+
+  // regular tutors are only allowed to retrieve their demo-sessions
+  if (
+    isRegularTutor(user) &&
+    (!payload.tutorIds?.includes(user.id) || payload.tutorIds.length > 1)
+  )
+    return next(forbidden());
+
+  // tutor-managers are only allowed to retrieve their demo-sessions
+  if (
+    isTutorManager(user) &&
+    (!payload.tutorManagerIds?.includes(user.id) ||
+      payload.tutorManagerIds.length > 1)
+  )
+    return next(forbidden());
+
+  const response: IDemoSession.FindApiResponse =
+    await demoSessions.find(payload);
+
+  res.status(200).json(response);
 }
 
 export default {
