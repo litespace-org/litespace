@@ -16,6 +16,7 @@ import { Topic } from "@/api/topic";
 import { AuthToken, createClient } from "@/lib/client";
 import { Cache } from "@/api/cache";
 import { Session } from "@/api/session";
+import { DemoSession } from "@/api/demoSession";
 import { ContactRequest } from "@/api/contactRequest";
 import { Fawry } from "@/api/fawry";
 import { ConfirmationCode } from "@/api/confirmationCode";
@@ -40,6 +41,7 @@ export class Api {
   public readonly cache: Cache;
   public readonly topic: Topic;
   public readonly session: Session;
+  public readonly demoSession: DemoSession;
   public readonly fawry: Fawry;
   public readonly confirmationCode: ConfirmationCode;
   public readonly subscription: Subscription;
@@ -64,6 +66,7 @@ export class Api {
     this.cache = new Cache(client);
     this.topic = new Topic(client);
     this.session = new Session(client);
+    this.demoSession = new DemoSession(client);
     this.fawry = new Fawry(client);
     this.confirmationCode = new ConfirmationCode(client);
     this.subscription = new Subscription(client);

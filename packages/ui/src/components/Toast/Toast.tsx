@@ -124,3 +124,5 @@ export const Toast: React.FC<{
     </Root>
   );
 };
+
+export default Toast;
