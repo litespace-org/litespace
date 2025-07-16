@@ -1,6 +1,7 @@
 import {
   bad,
   busyTutorManager,
+  exists,
   forbidden,
   inActiveTutorManager,
   notfound,
@@ -9,6 +10,7 @@ import {
 import {
   dateFilter,
   datetime,
+  demoSessionStatus,
   id,
   ids,
   pageNumber,
@@ -55,7 +57,7 @@ const findDemoSessionQuery: ZodSchema<IDemoSession.FindApiQuery> = zod.object({
   tutorIds: zod.optional(ids),
   slotIds: zod.optional(ids),
   tutorManagerIds: zod.optional(ids),
-  statuses: zod.optional(zod.nativeEnum(IDemoSession.Status).array()),
+  statuses: demoSessionStatus.array().optional(),
   start: zod.optional(dateFilter),
 
   createdAt: zod.optional(dateFilter),
@@ -78,7 +80,7 @@ async function create(req: Request, res: Response, next: NextFunction) {
 
   const tutorManager = await tutors.findById(slot.userId);
   if (!tutorManager) return next(notfound.tutor());
-  if (!isTutorManager(tutorManager)) return next(forbidden());
+  if (!isTutorManager(tutorManager)) return next(bad());
   if (!tutorManager.activated) return next(inActiveTutorManager());
 
   const approvedIntroVideo = await introVideos.find({
@@ -99,6 +101,18 @@ async function create(req: Request, res: Response, next: NextFunction) {
   if (startTime.isBefore(slotStart) || startTime.isAfter(slotEnd)) {
     return next(bad());
   }
+
+  // should not create more than one pending/passed demo-session
+  const pendingDemoSession = first(
+    (
+      await demoSessions.find({
+        tutorIds: [user.id],
+        statuses: [IDemoSession.Status.Pending, IDemoSession.Status.Passed],
+      })
+    ).list
+  );
+
+  if (pendingDemoSession) return next(exists.demoSession());
 
   if (
     !(await isBookable({

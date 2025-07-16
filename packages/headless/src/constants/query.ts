@@ -13,6 +13,7 @@ export enum QueryKey {
   FindInterviews = "find-interviews",
   FindInterviewSlots = "interviewer-slots",
   FindLastIntroVideo = "find-last-intro-video",
+  FindLastDemoSession = "find-last-demo-session",
   FindIntroVideos = "find-intro-videos",
   FindUserLesson = "find-user-lessons",
   FindLessons = "find-lessons",

@@ -81,7 +81,7 @@ export const DatePicker: React.FC<{
       <div
         className={cn(
           "flex flex-row items-center justify-between mb-5",
-          compact ? "gap-2 text-tiny" : "gap-10 w-[300px] "
+          compact ? "gap-2 text-tiny" : "gap-10 w-[300px]"
         )}
       >
         <div>
@@ -93,9 +93,10 @@ export const DatePicker: React.FC<{
             type={"main"}
             variant={"secondary"}
             className={cn(compact && "!p-1 !h-auto")}
-          >
-            <ChevronRight className={cn(compact && "w-[15px] h-[15px]")} />
-          </Button>
+            startIcon={
+              <ChevronRight className={cn(compact && "w-[15px] h-[15px]")} />
+            }
+          />
         </div>
         <p className="flex-1 flex items-center justify-center text-center">
           {date.format("MMMM")} {year}
@@ -109,9 +110,10 @@ export const DatePicker: React.FC<{
             type={"main"}
             variant={"secondary"}
             className={cn(compact ? "!p-1 !h-auto" : "")}
-          >
-            <ChevronLeft className={cn(compact && "w-[15px] h-[15px]")} />
-          </Button>
+            startIcon={
+              <ChevronLeft className={cn(compact && "w-[15px] h-[15px]")} />
+            }
+          />
         </div>
         {todayLabel ? (
           <div className="absolute top-0 right-1">
