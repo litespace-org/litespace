@@ -89,7 +89,8 @@ export type UpdateApiPayload = {
 
 export type UpdateApiResponse = void;
 
-export type FindApiPayload = IFilter.SkippablePagination & {
+export type FindApiQuery = IFilter.SkippablePagination & {
+  ids?: number[];
   sessionIds?: ISession.Id[];
   tutorIds?: number[];
   slotIds?: number[];
