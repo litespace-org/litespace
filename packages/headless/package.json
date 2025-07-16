@@ -28,6 +28,7 @@
     "./constants": "./dist/constants/index.js",
     "./common": "./dist/common.js",
     "./sessions": "./dist/sessions.js",
+    "./demoSession": "./dist/demoSession.js",
     "./invoices": "./dist/invoices.js",
     "./introVideos": "./dist/introVideos.js",
     "./lessons": "./dist/lessons.js",

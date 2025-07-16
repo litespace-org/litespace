@@ -28,7 +28,8 @@ const TimingSelection: React.FC<{
   bookedSlots: IAvailabilitySlot.SubSlot[];
   sync: Void;
   syncing: boolean;
-}> = ({ slots, bookedSlots, sync, syncing }) => {
+  setSelectedDate: (date: Dayjs) => void;
+}> = ({ slots, bookedSlots, sync, syncing, setSelectedDate }) => {
   const toast = useToast();
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>("date-selection");
@@ -91,7 +92,13 @@ const TimingSelection: React.FC<{
       </div>
 
       {step === "date-selection" ? (
-        <DateSelection selected={date} select={setDate} />
+        <DateSelection
+          selected={date}
+          select={(date) => {
+            setDate(date);
+            setSelectedDate(date);
+          }}
+        />
       ) : null}
 
       {step === "time-selection" ? (
@@ -105,6 +112,9 @@ const TimingSelection: React.FC<{
       <Actions
         step={step}
         setStep={setStep}
+        emptySlots={isEmpty(
+          slots.filter((slot) => dayjs(slot.start).date() === date.date())
+        )}
         confirm={() => {
           if (!selectedSubSlot) return;
           create.mutate({
@@ -143,8 +153,11 @@ const TimeSelection: React.FC<{
 
   if (isEmpty(slots))
     return (
-      <Typography tag="span" className="text-sm text-semibold text-natural-700">
-        {intl("tutor-onboarding.step.interview.no-available-times")}
+      <Typography
+        tag="p"
+        className="text-center text-caption font-semibold text-natural-700"
+      >
+        {intl("tutor-onboarding.step.interview.empty-slots")}
       </Typography>
     );
 
@@ -184,7 +197,8 @@ const Actions: React.FC<{
   confirm: Void;
   disabled: boolean;
   confirming: boolean;
-}> = ({ step, setStep, confirm, disabled, confirming }) => {
+  emptySlots?: boolean;
+}> = ({ step, setStep, confirm, disabled, confirming, emptySlots = false }) => {
   const intl = useFormatMessage();
   return (
     <div className="mt-6 w-full flex flex-row gap-3">
@@ -204,7 +218,7 @@ const Actions: React.FC<{
         startIcon={<ArrowRight className="icon" />}
         className={cn(
           "min-w-32",
-          step === "time-selection" ? "block" : "hidden"
+          step === "time-selection" && !emptySlots ? "block" : "hidden"
         )}
         size="large"
         onClick={() => setStep("date-selection")}
@@ -215,7 +229,7 @@ const Actions: React.FC<{
       <Button
         className={cn(
           "min-w-32",
-          step === "time-selection" ? "block" : "hidden"
+          step === "time-selection" && !emptySlots ? "block" : "hidden"
         )}
         size="large"
         onClick={confirm}
@@ -223,6 +237,16 @@ const Actions: React.FC<{
         loading={confirming}
       >
         {intl("labels.confirm")}
+      </Button>
+      <Button
+        className={cn(
+          "min-w-32 mx-auto",
+          step === "time-selection" && emptySlots ? "block" : "hidden"
+        )}
+        size="large"
+        onClick={() => setStep("date-selection")}
+      >
+        {intl("tutor-onboarding.steps.choose-another-time")}
       </Button>
     </div>
   );

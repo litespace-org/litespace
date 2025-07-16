@@ -83,6 +83,7 @@ const Root: React.FC = () => {
       !settings &&
       !publicRoute &&
       !router.match(Web.Interview, location.pathname) &&
+      !router.match(Web.DemoSession, location.pathname) &&
       !meta.bypassOnboarding &&
       (!meta.passedIntroVideo ||
         !meta.passedInterview ||

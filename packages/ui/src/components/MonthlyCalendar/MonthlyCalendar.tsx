@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { flatten, range } from "lodash";
+import { Button } from "@/components/Button";
+import { Typography } from "@/components/Typography";
+import dayjs from "@/lib/dayjs";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
+import ChevronRight from "@litespace/assets/ChevronRight";
+import { Void } from "@litespace/types";
 import cn from "classnames";
 import { Dayjs } from "dayjs";
-import dayjs from "@/lib/dayjs";
-import ChevronRight from "@litespace/assets/ChevronRight";
-import ChevronLeft from "@litespace/assets/ChevronLeft";
-import { Typography } from "@/components/Typography";
-import { Button } from "@/components/Button";
-import { Void } from "@litespace/types";
+import { flatten, range } from "lodash";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 const rows = 6;
 const cols = 7;
@@ -75,7 +75,7 @@ export const MonthlyCalendar: React.FC<{
         disabled={disable}
         date={date}
       />
-      <div className="flex flex-col gap-5">
+      <div className="px-6 flex flex-col gap-5">
         <WeekDays date={date} />
         <MonthDays
           date={date}
@@ -160,7 +160,6 @@ const MonthDays: React.FC<{
     <ul className="grid grid-cols-7 gap-0.5">
       {grid.map((day) => {
         const isCurrentMonth = day.isSame(date, "month");
-        const isToday = day.isSame(dayjs(), "day");
         const isSelected = selected?.isSame(day, "day") || false;
         const selectable = !isSelectable || isSelectable?.(day);
         return (
@@ -169,11 +168,11 @@ const MonthDays: React.FC<{
             disabled={disabled || isOutOfRange(day) || !selectable}
             data-selected={isSelected}
             className={cn(
-              "h-[57px] w-[65px] flex items-center justify-center rounded-md",
+              "h-12 flex flex-col gap-[2px] items-center justify-center rounded-md",
               "data-[selected=false]:hover:bg-natural-100",
               "data-[selected=true]:bg-brand-500 data-[selected=true]:hover:bg-brand-400",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-              "disabled:opacity-50"
+              "disabled:opacity-30"
             )}
             onClick={() => select?.(day)}
             type="button"
@@ -183,21 +182,26 @@ const MonthDays: React.FC<{
               data-selected={isSelected}
               data-current-month={isCurrentMonth}
               className={cn(
-                "inline-block text-natural-950 text-tiny relative",
+                "inline-block text-body font-semibold",
                 "data-[selected=true]:data-[current-month=true]:text-natural-50",
-                "data-[current-month=false]:text-natural-200"
+                "data-[current-month=false]:text-natural-200",
+                day.isSame(dayjs(), "day")
+                  ? "text-brand-700"
+                  : "text-natural-950"
               )}
             >
               {day.format("D")}
-              {isToday ? <TodayPointer /> : null}
             </Typography>
+            <div
+              className={cn(
+                "h-[5px] w-[5px] rounded-full overflow-hidden",
+                day.isSame(dayjs(), "day") ? "opacity-100" : "opacity-0",
+                isSelected ? "bg-natural-50" : "bg-brand-700"
+              )}
+            />
           </button>
         );
       })}
     </ul>
   );
 };
-
-const TodayPointer: React.FC = () => (
-  <div className="w-[5px] h-[5px] absolute rounded-full mt-[2px] left-1/2 -translate-x-1/2 mx-auto bg-brand-700" />
-);

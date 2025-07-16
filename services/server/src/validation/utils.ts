@@ -11,6 +11,7 @@ import {
   ISession,
   IPlan,
   IAvailabilitySlot,
+  IDemoSession,
 } from "@litespace/types";
 import zod, { ZodLiteral } from "zod";
 
@@ -97,6 +98,10 @@ export const interviewStatus = zod.coerce.number(
 
 export const slotPurpose = zod.coerce.number(
   zod.nativeEnum(IAvailabilitySlot.Purpose)
+);
+
+export const demoSessionStatus = zod.coerce.number(
+  zod.nativeEnum(IDemoSession.Status)
 );
 
 export const withdrawMethod = zod.coerce.number(

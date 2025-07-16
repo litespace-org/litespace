@@ -40,4 +40,7 @@ export enum MutationKey {
   SendForgetPasswordCode = "send-forget-password-code",
   ResetPasswordByCode = "reset-password-by-code",
   SendVerifyEmailCode = "send-verify-email-code",
+  FindLastDemoSession = "find-last-demo-session",
+  CreateDemoSession = "create-demo-session",
+  CancelDemoSession = "cancel-demo-session",
 }

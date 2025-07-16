@@ -92,6 +92,7 @@ export const exists = {
   rate: () => error(ApiError.RatingExists, 409),
   subscription: () => error(ApiError.SubscriptionExists, 409),
   introVideo: () => error(ApiError.IntroVideoExists, 409),
+  demoSession: () => error(ApiError.DemoSessionExists, 409),
 };
 
 export const already = {
