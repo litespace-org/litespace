@@ -169,3 +169,8 @@ export const INTRO_VIDEO_EXPIRY_MONTHS = 3;
  * max size in megabytes
  */
 export const INTRO_VIDEO_MAX_FILE_SIZE = 400;
+
+export const conversionApiConfig = {
+  apiUrl: zod.string().url().trim().parse(process.env.CONVERSION_API_URL),
+  token: zod.string().trim().parse(process.env.CONVERSION_API_ACCESS_TOKEN),
+};

@@ -21,10 +21,12 @@ import { Fawry } from "@/api/fawry";
 import { ConfirmationCode } from "@/api/confirmationCode";
 import { Subscription } from "@/api/subscription";
 import { Transaction } from "@/api/transaction";
+import { Analytics } from "@/api/analytics";
 
 export class Api {
   public readonly user: User;
   public readonly auth: Auth;
+  public readonly analytics: Analytics;
   public readonly availabilitySlot: AvailabilitySlot;
   public readonly contactRequest: ContactRequest;
   public readonly plan: Plan;
@@ -49,6 +51,7 @@ export class Api {
     const client = createClient("api", server, token);
     this.user = new User(client);
     this.auth = new Auth(client);
+    this.analytics = new Analytics(client);
     this.availabilitySlot = new AvailabilitySlot(client);
     this.contactRequest = new ContactRequest(client);
     this.plan = new Plan(client);

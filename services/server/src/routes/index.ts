@@ -21,6 +21,7 @@ import confirmationCode from "@/routes/confirmationCode";
 import report from "@/routes/report";
 import demoSession from "@/routes/demoSession";
 import introVideo from "@/routes/introVideo";
+import analytics from "@/routes/analytics";
 
 export default {
   user,
@@ -42,6 +43,7 @@ export default {
   fawry,
   transaction,
   subscription,
+  analytics,
   confirmationCode,
   report,
   demoSession,
