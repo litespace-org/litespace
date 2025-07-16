@@ -513,7 +513,7 @@ describe("/api/v1/demo-session/", () => {
     });
   });
 
-  describe.skip("DemoSession Update Handler", () => {
+  describe("DemoSession Update Handler", () => {
     describe("Tutors", () => {
       test("Tutor can cancel their own demo session", async () => {
         const tutorUser = await db.tutorUser();
@@ -668,19 +668,19 @@ describe("/api/v1/demo-session/", () => {
       });
 
       test("TutorManager cannot update a demo session to a status rather than CanceledByTutorManager, Passed, and Rejected", async () => {
-        const tutor = await db.tutorUser();
-        const demoSession = await db.demoSession({ tutorId: tutor.id });
+        const tutorManager = await db.tutorManagerUser();
+        const demoSession = await db.demoSession({ tutorId: tutorManager.id });
 
         const responses = await Promise.all([
           await updateDemoSession({
-            user: tutor,
+            user: tutorManager,
             body: {
               id: demoSession.id,
               status: IDemoSession.Status.CanceledByAdmin,
             },
           }),
           await updateDemoSession({
-            user: tutor,
+            user: tutorManager,
             body: {
               id: demoSession.id,
               status: IDemoSession.Status.CanceledByTutor,
@@ -822,6 +822,23 @@ describe("/api/v1/demo-session/", () => {
 
         for (const response of responses)
           expect(response).to.deep.eq(forbidden());
+      });
+    });
+
+    // Tests for other error types
+    describe("Not Found", () => {
+      test("DemoSession does not exist", async () => {
+        const tutorManager = await db.tutorManagerUser();
+
+        const response = await updateDemoSession({
+          user: tutorManager,
+          body: {
+            id: 9999,
+            status: IDemoSession.Status.CanceledByTutorManager,
+          },
+        });
+
+        expect(response).to.deep.eq(notfound.demoSession());
       });
     });
   });

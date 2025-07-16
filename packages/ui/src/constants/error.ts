@@ -18,6 +18,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.BusyTutorManager]: "error.api.busy-tutor-manager",
   [ApiError.Unexpected]: "error.api.unexpected",
   [ApiError.NotFound]: "error.api.not-found",
+  [ApiError.DemoSessionNotFound]: "error.api.demo-session-not-found",
   [ApiError.InvalidEmail]: "error.api.invalid-email",
   [ApiError.SessionNotFound]: "error.api.session-not-found",
   [ApiError.UserNotFound]: "error.api.user-not-found",

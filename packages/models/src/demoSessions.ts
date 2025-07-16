@@ -74,6 +74,14 @@ export class DemoSessions extends Model<
     if (!res) throw Error("demo-session not found");
   }
 
+  async findById(
+    id: number,
+    tx?: Knex.Transaction
+  ): Promise<IDemoSession.Self | null> {
+    const { list } = await this.find({ ids: [id], tx });
+    return first(list) || null;
+  }
+
   async find<T extends IDemoSession.Field = IDemoSession.Field>({
     ids,
     sessionIds,

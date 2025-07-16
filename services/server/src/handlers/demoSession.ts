@@ -17,11 +17,11 @@ import {
 } from "@/validation/utils";
 import { IDemoSession, IIntroVideo } from "@litespace/types";
 import {
-  DEMO_SESSION_DURATION,
-  isAdmin,
   isRegularTutor,
   isTutor,
   isTutorManager,
+  isAdmin,
+  DEMO_SESSION_DURATION,
 } from "@litespace/utils";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
@@ -42,14 +42,22 @@ const createDemoSessionPayload: ZodSchema<IDemoSession.CreateApiPayload> =
     start: datetime,
   });
 
+const updateDemoSessionPayload: ZodSchema<IDemoSession.UpdateApiPayload> =
+  zod.object({
+    id: id,
+    status: zod.nativeEnum(IDemoSession.Status),
+  });
+
 const findDemoSessionQuery: ZodSchema<IDemoSession.FindApiQuery> = zod.object({
   ids: zod.optional(ids),
+
   sessionIds: zod.optional(sessionId.array()),
   tutorIds: zod.optional(ids),
   slotIds: zod.optional(ids),
   tutorManagerIds: zod.optional(ids),
   statuses: zod.optional(zod.nativeEnum(IDemoSession.Status).array()),
   start: zod.optional(dateFilter),
+
   createdAt: zod.optional(dateFilter),
   updatedAt: zod.optional(dateFilter),
   page: pageNumber.optional().default(1),
@@ -112,9 +120,52 @@ async function create(req: Request, res: Response, next: NextFunction) {
   res.sendStatus(200);
 }
 
-// @galal @TODO: implement this handler and ensure that its test suite passes.
-async function update(_req: Request, res: Response, _next: NextFunction) {
-  res.sendStatus(200);
+async function update(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  if (!user) return next(unauthenticated());
+  const allowed = isTutor(user) || isTutorManager(user) || isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const { id, status }: IDemoSession.UpdateApiPayload =
+    updateDemoSessionPayload.parse(req.body);
+
+  const demoSession = await demoSessions.findById(id);
+  if (!demoSession) return next(notfound.demoSession());
+
+  const session = {
+    id: demoSession.id,
+    tutorId: demoSession.tutorId,
+    status: demoSession.status,
+  };
+
+  const isCanceled =
+    session.status === IDemoSession.Status.CanceledByTutor ||
+    session.status === IDemoSession.Status.CanceledByTutorManager ||
+    session.status === IDemoSession.Status.CanceledByAdmin;
+  if (isCanceled) return next(forbidden());
+
+  if (isRegularTutor(user) && user.id !== session.tutorId)
+    return next(forbidden());
+
+  if (isRegularTutor(user) && status !== IDemoSession.Status.CanceledByTutor)
+    return next(forbidden());
+
+  if (isTutorManager(user)) {
+    const allowedStatuses = [
+      IDemoSession.Status.CanceledByTutorManager,
+      IDemoSession.Status.Passed,
+      IDemoSession.Status.Rejected,
+    ];
+    if (!allowedStatuses.includes(status)) return next(forbidden());
+
+    // Verify the tutor manager owns the slot for this demo session
+    const slot = await availabilitySlots.findById(demoSession.slotId);
+    if (slot?.userId !== user.id) return next(forbidden());
+  }
+
+  await demoSessions.update({ id, status });
+
+  res.sendStatus(200).json(demoSession);
 }
 
 async function find(req: Request, res: Response, next: NextFunction) {
