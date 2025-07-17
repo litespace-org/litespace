@@ -380,35 +380,33 @@ describe("/api/v1/interview/", () => {
 
       const tutor = await db.tutorUser();
 
-      const created = await Promise.all([
-        db.introVideo({ tutorId: tutor.id }),
-        db.introVideo({ tutorId: tutor.id }),
-        db.introVideo({ tutorId: tutor.id }),
-      ]);
+      const created = [
+        await db.introVideo({ tutorId: tutor.id }),
+        await db.introVideo({ tutorId: tutor.id }),
+        await db.introVideo({ tutorId: tutor.id }),
+      ];
 
       await Promise.all([db.introVideo({}), db.introVideo({})]);
 
       const res = await findIntroVideo({
         user: admin,
-        body: {
-          tutorIds: [tutor.id],
-        },
+        body: { tutorIds: [tutor.id] },
       });
       expect(res).to.not.be.instanceof(Error);
 
       expect(res.body?.main.total).to.eq(created.length);
-      expect(res.body?.main.list).to.deep.members(created);
+      expect(res.body?.main.list).to.deep.members(created.reverse());
       expect(res.body?.forReviewers).to.be.undefined;
     });
 
     it("it should respond with a list of introVideos of only the regular-tutor requester", async () => {
       const tutor = await db.tutorUser();
 
-      const created = await Promise.all([
-        db.introVideo({ tutorId: tutor.id }),
-        db.introVideo({ tutorId: tutor.id }),
-        db.introVideo({ tutorId: tutor.id }),
-      ]);
+      const created = [
+        await db.introVideo({ tutorId: tutor.id }),
+        await db.introVideo({ tutorId: tutor.id }),
+        await db.introVideo({ tutorId: tutor.id }),
+      ];
 
       await Promise.all([db.introVideo({}), db.introVideo({})]);
 
@@ -419,23 +417,23 @@ describe("/api/v1/interview/", () => {
       expect(res).to.not.be.instanceof(Error);
 
       expect(res.body?.main.total).to.eq(created.length);
-      expect(res.body?.main.list).to.deep.members(created);
+      expect(res.body?.main.list).to.deep.members(created.reverse());
       expect(res.body?.forReviewers).to.be.undefined;
     });
 
     it("it should respond with the main list and the forReviewers list for tutor-managers", async () => {
-      const tutorManager = await db.tutorManager();
+      const tutorManager = await db.tutorManagerUser();
 
-      const main = await Promise.all([
-        db.introVideo({ tutorId: tutorManager.id }),
-        db.introVideo({ tutorId: tutorManager.id }),
-        db.introVideo({ tutorId: tutorManager.id }),
-      ]);
+      const main = [
+        await db.introVideo({ tutorId: tutorManager.id }),
+        await db.introVideo({ tutorId: tutorManager.id }),
+        await db.introVideo({ tutorId: tutorManager.id }),
+      ];
 
-      const forReviewers = await Promise.all([
-        db.introVideo({ reviewerId: tutorManager.id }),
-        db.introVideo({ reviewerId: tutorManager.id }),
-      ]);
+      const forReviewers = [
+        await db.introVideo({ reviewerId: tutorManager.id }),
+        await db.introVideo({ reviewerId: tutorManager.id }),
+      ];
 
       await Promise.all([db.introVideo({}), db.introVideo({})]);
 
@@ -446,10 +444,12 @@ describe("/api/v1/interview/", () => {
       expect(res).to.not.be.instanceof(Error);
 
       expect(res.body?.main.total).to.eq(main.length);
-      expect(res.body?.main.list).to.deep.members(main);
+      expect(res.body?.main.list).to.deep.members(main.reverse());
 
       expect(res.body?.forReviewers?.total).to.eq(forReviewers.length);
-      expect(res.body?.forReviewers?.list).to.deep.members(forReviewers);
+      expect(res.body?.forReviewers?.list).to.deep.members(
+        forReviewers.reverse()
+      );
     });
   });
 });

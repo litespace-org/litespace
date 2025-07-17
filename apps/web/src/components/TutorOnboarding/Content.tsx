@@ -6,7 +6,7 @@ const Content: React.FC<{ selfId: number }> = ({ selfId }) => {
   return (
     <div className="flex rtl:flex-row-reverse ltr:flex-row  h-full">
       <Steps active="intro-video" />
-      <Step step="photo-session" selfId={selfId} />
+      <Step step="intro-video" selfId={selfId} />
     </div>
   );
 };
