@@ -76,7 +76,7 @@ describe("/api/v1/availability-slot/", () => {
       const res = await findSlot({
         user: student,
         query: {
-          userId: tutor.id,
+          userIds: [tutor.id],
           after: now.toISOString(),
           before: now.add(2, "days").toISOString(),
         },
@@ -84,7 +84,7 @@ describe("/api/v1/availability-slot/", () => {
 
       expect(res).to.not.be.instanceof(Error);
       expect(res.body!.slots.total).to.eq(2);
-      expect(res.body!.slots.list).to.deep.eq(mock.slots);
+      expect(res.body!.slots.list).to.deep.eq(mock.slots.reverse());
       expect(res.body!.subslots).to.have.length(
         mock.lessons.length + mock.interviews.length
       );
@@ -98,7 +98,7 @@ describe("/api/v1/availability-slot/", () => {
       const res = await findSlot({
         user: student,
         query: {
-          userId: tutor.id,
+          userIds: [tutor.id],
           after: now.add(2, "days").toISOString(),
           before: now.toISOString(),
         },
@@ -144,7 +144,7 @@ describe("/api/v1/availability-slot/", () => {
         },
       });
 
-      const slots = await availabilitySlots.find({ users: [tutor.id] });
+      const slots = await availabilitySlots.find({ userIds: [tutor.id] });
       expect(slots.total).to.eq(1);
 
       const c1 = {
@@ -241,7 +241,7 @@ describe("/api/v1/availability-slot/", () => {
         },
       });
 
-      const slots = await availabilitySlots.find({ slots: [mock.slots[0].id] });
+      const slots = await availabilitySlots.find({ ids: [mock.slots[0].id] });
       expect(newSlotData.start).to.eq(first(slots.list)?.start);
       expect(newSlotData.end).to.eq(first(slots.list)?.end);
     });
@@ -290,7 +290,7 @@ describe("/api/v1/availability-slot/", () => {
         },
       });
 
-      const slots = await availabilitySlots.find({ slots: [mock.slots[0].id] });
+      const slots = await availabilitySlots.find({ ids: [mock.slots[0].id] });
       expect(first(slots.list)?.deleted).to.be.true;
     });
 

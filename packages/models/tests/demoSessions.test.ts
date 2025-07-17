@@ -5,7 +5,6 @@ import db from "@fixtures/db";
 import { IDemoSession } from "@litespace/types";
 import dayjs from "dayjs";
 import { first } from "lodash";
-import { safe } from "@litespace/utils";
 
 describe("DemoSessions", () => {
   beforeEach(async () => {
@@ -59,7 +58,7 @@ describe("DemoSessions", () => {
 
       // Prepare update payload
       const updatePayload: IDemoSession.UpdateModelPayload = {
-        id: demoSession.id,
+        ids: [demoSession.id],
         status: IDemoSession.Status.Passed,
       };
 
@@ -70,27 +69,15 @@ describe("DemoSessions", () => {
       const updatedDemoSession = first(
         (
           await demoSessions.find({
-            ids: [updatePayload.id],
+            ids: updatePayload.ids,
           })
         ).list
       );
 
-      expect(updatedDemoSession).to.have.property("id", updatePayload.id);
       expect(updatedDemoSession).to.have.property("tutorId", tutor.id);
       expect(updatedDemoSession).to.have.property("slotId", slot.id);
       expect(updatedDemoSession?.status).to.equal(updatePayload.status);
       expect(updatedDemoSession?.updatedAt).to.not.equal(demoSession.updatedAt);
-    });
-
-    it("should throw an error if the demo session does not exist", async () => {
-      const res = await safe(() =>
-        demoSessions.update({
-          id: 999,
-          status: IDemoSession.Status.Passed,
-        })
-      );
-
-      expect(res).to.be.instanceof(Error);
     });
   });
 

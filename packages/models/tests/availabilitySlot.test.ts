@@ -1,5 +1,6 @@
 import { availabilitySlots } from "@/availabilitySlots";
 import fixtures from "@fixtures/db";
+import { IUser } from "@litespace/types";
 import { dayjs, nameof, safe } from "@litespace/utils";
 import { expect } from "chai";
 import { first } from "lodash";
@@ -55,10 +56,44 @@ describe("AvailabilitySlots", () => {
         },
       ]);
 
-      const res = await availabilitySlots.find({ users: [user1.id, user2.id] });
+      const res = await availabilitySlots.find({
+        userIds: [user1.id, user2.id],
+      });
       expect(res.total).to.eq(3);
-      expect(res.list).to.deep.eq(slots);
+      expect(res.list).to.deep.eq(slots.reverse());
     });
+
+    it("should filter by user role", async () => {
+      const user1 = await fixtures.user({ role: IUser.Role.Tutor });
+      const user2 = await fixtures.user({ role: IUser.Role.TutorManager });
+
+      const slots = await availabilitySlots.create([
+        {
+          userId: user1.id,
+          start: dayjs.utc().toISOString(),
+          end: dayjs.utc().add(1, "hour").toISOString(),
+        },
+        {
+          userId: user1.id,
+          start: dayjs.utc().add(2, "hour").toISOString(),
+          end: dayjs.utc().add(4, "hour").toISOString(),
+        },
+        {
+          userId: user2.id,
+          start: dayjs.utc().add(6, "hour").toISOString(),
+          end: dayjs.utc().add(7, "hour").toISOString(),
+        },
+      ]);
+
+      const res = await availabilitySlots.find({
+        userIds: [user1.id, user2.id],
+        roles: [IUser.Role.TutorManager],
+      });
+
+      expect(res.total).to.eq(1);
+      expect(res.list).to.deep.eq(slots.filter((s) => s.userId === user2.id));
+    });
+
     it("should retieve AvailabilitySlot rows between two dates", async () => {
       const user = await fixtures.user({});
 
@@ -81,12 +116,50 @@ describe("AvailabilitySlots", () => {
       ]);
 
       const res = await availabilitySlots.find({
-        after: slots[0].start,
-        before: slots[1].end,
+        start: {
+          gte: slots[0].start,
+          lte: slots[1].end,
+        },
       });
 
       expect(res.total).to.eq(2);
-      expect(res.list).to.deep.eq(slots.slice(0, 2));
+      expect(res.list).to.deep.eq(slots.slice(0, 2).reverse());
+    });
+
+    it("should retieve AvailabilitySlot rows that partially contained within two dates", async () => {
+      const user = await fixtures.user({});
+
+      const slots = await availabilitySlots.create([
+        {
+          userId: user.id,
+          start: dayjs.utc().toISOString(),
+          end: dayjs.utc().add(1, "hour").toISOString(),
+        },
+        {
+          userId: user.id,
+          start: dayjs.utc().add(2, "hour").toISOString(),
+          end: dayjs.utc().add(4, "hour").toISOString(),
+        },
+        {
+          userId: user.id,
+          start: dayjs.utc().add(6, "hour").toISOString(),
+          end: dayjs.utc().add(7, "hour").toISOString(),
+        },
+      ]);
+
+      const res = await availabilitySlots.find({
+        start: {
+          gte: dayjs.utc().add(0.5, "hour").toISOString(),
+          lt: dayjs.utc().add(6.5, "hour").toISOString(),
+        },
+        end: {
+          gt: dayjs.utc().add(0.5, "hour").toISOString(),
+          lte: dayjs.utc().add(6.5, "hour").toISOString(),
+        },
+      });
+
+      expect(res.total).to.eq(3);
+      expect(res.list).to.deep.eq(slots.reverse());
     });
   });
 
@@ -109,7 +182,7 @@ describe("AvailabilitySlots", () => {
 
       const updated = await availabilitySlots.findById(slots[0].id);
 
-      const res = await availabilitySlots.find({ users: [user.id] });
+      const res = await availabilitySlots.find({ userIds: [user.id] });
       expect(first(res.list)).to.deep.eq(updated);
     });
   });
@@ -133,7 +206,7 @@ describe("AvailabilitySlots", () => {
 
       await availabilitySlots.delete(created.map((slot) => slot.id));
 
-      const res = await availabilitySlots.find({ users: [user.id] });
+      const res = await availabilitySlots.find({ userIds: [user.id] });
       expect(res.total).to.eql(0);
     });
 

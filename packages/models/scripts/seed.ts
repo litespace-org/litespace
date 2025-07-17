@@ -524,7 +524,7 @@ async function main(): Promise<void> {
 
     // if there is a reviewer, the video is rejected or approved otherwise it's in pending state
     await demoSessions.update({
-      id: demo.id,
+      ids: [demo.id],
       status: tutor.verifiedEmail
         ? IDemoSession.Status.Passed
         : sample([

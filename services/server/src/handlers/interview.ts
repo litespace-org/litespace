@@ -16,6 +16,7 @@ import {
   lessons,
   tutors,
   users,
+  demoSessions,
 } from "@litespace/models";
 import {
   dateFilter,
@@ -27,7 +28,12 @@ import {
   pageSize,
   sessionId,
 } from "@/validation/utils";
-import { IInterview, IUser, IAvailabilitySlot } from "@litespace/types";
+import {
+  IInterview,
+  IUser,
+  IAvailabilitySlot,
+  IDemoSession,
+} from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod, { ZodSchema } from "zod";
@@ -345,8 +351,9 @@ async function selectInterviewer(
 
   // 2. retrieve all slots with the purpose "interview" or "general"
   const { list: slotsList } = await availabilitySlots.find({
-    users: tutorManagers.map((tutor) => tutor.id),
-    after: now,
+    userIds: tutorManagers.map((tutor) => tutor.id),
+    start: { gte: now },
+    end: { gt: now },
     full: true,
     deleted: false,
     purposes: [
@@ -355,10 +362,10 @@ async function selectInterviewer(
     ],
   });
 
-  // 3. retrieve all lessons or interviews associated with these slots.
+  // 3. retrieve all sessions associated with these slots.
   const { list: interviewsList } = await interviews.find({
     slots: slotsList.map((slot) => slot.id),
-    createdAt: { gt: now },
+    start: { gte: now },
     statuses: [IInterview.Status.Pending],
     full: true,
   });
@@ -370,10 +377,21 @@ async function selectInterviewer(
     full: true,
   });
 
+  const { list: demoSessionsList } = await demoSessions.find({
+    ids: slotsList.map((slot) => slot.id),
+    start: { gte: now },
+    statuses: [IDemoSession.Status.Pending],
+    full: true,
+  });
+
   // 4. unpack all slots using its lessons and interviews
   const firstFreeSlot = getFirstAvailableSlot({
     slots: slotsList,
-    subslots: [...asSubSlots(interviewsList), ...asSubSlots(lessonsList)],
+    subslots: [
+      ...asSubSlots(interviewsList),
+      ...asSubSlots(lessonsList),
+      ...asSubSlots(demoSessionsList),
+    ],
   });
 
   // 5. find the first available slot

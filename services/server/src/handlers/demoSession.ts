@@ -163,9 +163,9 @@ async function update(req: Request, res: Response, next: NextFunction) {
     if (slot?.userId !== user.id) return next(forbidden());
   }
 
-  await demoSessions.update({ id, status });
+  await demoSessions.update({ ids: [id], status });
 
-  res.sendStatus(200).json(demoSession);
+  res.sendStatus(200);
 }
 
 async function find(req: Request, res: Response, next: NextFunction) {

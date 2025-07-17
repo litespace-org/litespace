@@ -59,19 +59,15 @@ export class DemoSessions extends Model<
   }
 
   async update(
-    payload: IDemoSession.UpdateModelPayload,
-    tx?: Knex.Transaction
+    payload: WithOptionalTx<IDemoSession.UpdateModelPayload>
   ): Promise<void> {
     const now = dayjs.utc().toDate();
-
-    const res = await this.builder(tx)
+    await this.builder(payload.tx)
       .update({
         status: payload.status,
         updated_at: now,
       })
-      .where(this.column("id"), payload.id);
-
-    if (!res) throw Error("demo-session not found");
+      .whereIn(this.column("id"), payload.ids);
   }
 
   async findById(

@@ -2,6 +2,7 @@ import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error";
 import {
   datetime,
   id,
+  ids,
   jsonBoolean,
   pageNumber,
   pageSize,
@@ -24,7 +25,8 @@ import { MAX_FULL_FLAG_DAYS } from "@/constants";
 
 const findQuery: ZodSchema<IAvailabilitySlot.FindAvailabilitySlotsApiQuery> =
   zod.object({
-    userId: id,
+    userIds: ids,
+    purposes: zod.nativeEnum(IAvailabilitySlot.Purpose).array().optional(),
     after: datetime.optional(),
     before: datetime.optional(),
     page: pageNumber.optional(),
@@ -60,7 +62,9 @@ async function find(req: Request, res: Response, next: NextFunction) {
   if (!isUser(user)) return next(forbidden());
 
   const {
-    userId,
+    userIds,
+    roles,
+    purposes,
     after,
     before,
     page,
@@ -81,9 +85,17 @@ async function find(req: Request, res: Response, next: NextFunction) {
   if (full && !canUseFullFlag) return next(bad());
 
   const paginatedSlots = await availabilitySlots.find({
-    users: [userId],
-    after,
-    before,
+    userIds,
+    roles,
+    purposes,
+    start: {
+      gte: after,
+      lt: before,
+    },
+    end: {
+      gt: after,
+      lte: before,
+    },
     page,
     size,
     full,
@@ -96,7 +108,7 @@ async function find(req: Request, res: Response, next: NextFunction) {
     ? []
     : await getSubslots({
         slotIds,
-        userId,
+        userIds,
         after,
         before,
       });
@@ -151,7 +163,7 @@ async function set(req: Request, res: Response, next: NextFunction) {
     // TODO: fetch only future slots @mmoehabb & @neuodev
     const userSlots = await availabilitySlots.find({
       execludeSlots: deletes.map((action) => action.id),
-      users: [user.id],
+      userIds: [user.id],
       deleted: false,
       full: true,
     });

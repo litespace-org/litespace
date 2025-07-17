@@ -55,7 +55,7 @@ const ScheduleManagement: React.FC = () => {
   });
 
   const slotsQuery = useFindAvailabilitySlots({
-    userId: user?.id || 0,
+    userIds: [user?.id || 0],
     after: start.toISOString(),
     before: end.toISOString(),
     full: true,
