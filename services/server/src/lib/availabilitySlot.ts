@@ -1,11 +1,16 @@
-import { availabilitySlots, interviews, lessons } from "@litespace/models";
+import {
+  availabilitySlots,
+  demoSessions,
+  interviews,
+  lessons,
+} from "@litespace/models";
 import {
   asSubSlot,
   asSubSlots,
   isIntersecting,
   isSuperSlot,
 } from "@litespace/utils";
-import { IAvailabilitySlot, IInterview } from "@litespace/types";
+import { IAvailabilitySlot, IDemoSession, IInterview } from "@litespace/types";
 import { Knex } from "knex";
 import { isEmpty, uniqBy } from "lodash";
 import dayjs from "@/lib/dayjs";
@@ -32,7 +37,14 @@ export async function deleteSlots({
     tx,
   });
 
-  const count = slotLessons.total + slotInterviews.total;
+  const slotDemoSessions = await demoSessions.find({
+    ids: ids,
+    full: true,
+    tx,
+  });
+
+  const count =
+    slotLessons.total + slotInterviews.total + slotDemoSessions.total;
   if (count === 0) return await availabilitySlots.delete(ids, tx);
 
   await Promise.all([
@@ -44,6 +56,11 @@ export async function deleteSlots({
     interviews.cancel({
       ids: slotInterviews.list.map((interview) => interview.id),
       status: IInterview.Status.CanceledByInterviewer,
+      tx,
+    }),
+    demoSessions.update({
+      ids: slotDemoSessions.list.map((demoSession) => demoSession.id),
+      status: IDemoSession.Status.CanceledByTutorManager,
       tx,
     }),
     availabilitySlots.markAsDeleted({ ids: ids, tx }),
@@ -106,33 +123,45 @@ export async function updateSlot({
 
 export async function getSubslots({
   slotIds,
-  userId,
+  userIds,
   after,
   before,
 }: {
   slotIds: number[];
-  userId: number;
+  userIds?: number[];
   after?: string;
   before?: string;
 }): Promise<IAvailabilitySlot.SubSlot[]> {
-  const [lessonsResult, interviewsResult] = await Promise.all([
-    await lessons.find({
-      users: [userId],
-      slots: slotIds,
-      canceled: false,
-      after,
-      before,
-      full: true,
-    }),
-    await interviews.find({
-      users: [userId],
-      slots: slotIds,
-      canceled: false,
-      full: true,
-    }),
-  ]);
+  const [lessonsResult, interviewsResult, demoSessionsResult] =
+    await Promise.all([
+      await lessons.find({
+        users: userIds,
+        slots: slotIds,
+        canceled: false,
+        after,
+        before,
+        full: true,
+      }),
 
-  return asSubSlots([...lessonsResult.list, ...interviewsResult.list]);
+      await interviews.find({
+        users: userIds,
+        slots: slotIds,
+        canceled: false,
+        full: true,
+      }),
+
+      await demoSessions.find({
+        slotIds: slotIds,
+        statuses: [IDemoSession.Status.Pending],
+        full: true,
+      }),
+    ]);
+
+  return asSubSlots([
+    ...lessonsResult.list,
+    ...interviewsResult.list,
+    ...demoSessionsResult.list,
+  ]);
 }
 
 function asUpdatedSlots(

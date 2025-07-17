@@ -763,7 +763,7 @@ describe("/api/v1/demo-session/", () => {
         const demoSession = await db.demoSession({ tutorId: tutorUser.id });
 
         await demoSessions.update({
-          id: demoSession.id,
+          ids: [demoSession.id],
           status: IDemoSession.Status.Passed,
         });
 

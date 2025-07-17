@@ -1,10 +1,12 @@
 import { Paginated } from "@/utils";
 import { SkippablePagination } from "@/filter";
+import { IAvailabilitySlot, IFilter, IUser } from ".";
 
 export enum Purpose {
   General = 1,
   Lesson = 2,
   Interview = 3,
+  DemoSession = 4,
 }
 
 export type Self = {
@@ -28,6 +30,10 @@ export type Row = {
   created_at: Date;
   updated_at: Date;
 };
+
+export type Column = keyof Row;
+
+export type Field = keyof Self;
 
 export type CreatePayload = {
   userId: number;
@@ -63,10 +69,28 @@ export type Base = {
 
 export type GeneralSlot = Slot | SubSlot;
 
+export type FindModelQuery<T extends Field = Field> =
+  IFilter.SkippablePagination & {
+    ids?: number[];
+    execludeSlots?: number[];
+    userIds?: number[];
+    /**
+     * filter users further by roles
+     */
+    roles?: IUser.Role[];
+    start?: IFilter.Date;
+    end?: IFilter.Date;
+    createdAt?: IFilter.Date;
+    deleted?: boolean;
+    purposes?: IAvailabilitySlot.Purpose[];
+    select?: T[];
+  };
+
 // API Payloads / Queries
 export type FindAvailabilitySlotsApiQuery = SkippablePagination & {
-  userId: number;
-  purpose?: Purpose;
+  userIds?: number[];
+  roles?: IUser.Role[];
+  purposes?: Purpose[];
   after?: string;
   before?: string;
 };

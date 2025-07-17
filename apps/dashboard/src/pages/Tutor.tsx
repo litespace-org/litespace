@@ -20,7 +20,7 @@ const Tutor: React.FC = () => {
   }, [params.id]);
 
   const slotsQuery = useFindAvailabilitySlots({
-    userId: tutorId || 0,
+    userIds: [tutorId || 0],
     after: start.toISOString(),
     before: end.toISOString(),
     full: true,

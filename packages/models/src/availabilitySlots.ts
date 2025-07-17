@@ -1,44 +1,42 @@
-import { IAvailabilitySlot, IFilter, Paginated } from "@litespace/types";
+import { IAvailabilitySlot, Paginated } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
-import { first, isEmpty, isUndefined } from "lodash";
+import { first, isEmpty } from "lodash";
 import {
   knex,
   column,
   countRows,
   WithOptionalTx,
   withSkippablePagination,
+  withListFilter,
+  withDateFilter,
+  withBooleanFilter,
 } from "@/query";
+import { users } from "@/users";
+import { Model } from "@/lib/model";
 
-type SearchFilter = {
-  /**
-   * Slot ids to be included in the search query.
-   */
-  slots?: number[];
-  /**
-   * Slot ids to be execluded from th search query.
-   */
-  execludeSlots?: number[];
-  /**
-   * User ids to be included in the search query.
-   */
-  users?: number[];
-  /**
-   * Start date time (ISO datetime format)
-   * All slots after (or the same as) this date will be included.
-   */
-  after?: string;
-  /**
-   * End date time (ISO datetime format)
-   * All slots before (or the same as) this date will be included.
-   */
-  before?: string;
-  deleted?: boolean;
-  purposes?: IAvailabilitySlot.Purpose[];
-};
+const FIELD_TO_COLUMN = {
+  id: "id",
+  userId: "user_id",
+  purpose: "purpose",
+  start: "start",
+  end: "end",
+  deleted: "deleted",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+} satisfies Record<IAvailabilitySlot.Field, IAvailabilitySlot.Column>;
 
-export class AvailabilitySlots {
-  table = "availability_slots" as const;
+export class AvailabilitySlots extends Model<
+  IAvailabilitySlot.Row,
+  IAvailabilitySlot.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({
+      table: "availability_slots",
+      fieldColumnMap: FIELD_TO_COLUMN,
+    });
+  }
 
   async create(
     payloads: IAvailabilitySlot.CreatePayload[],
@@ -102,45 +100,78 @@ export class AvailabilitySlots {
 
   async find({
     tx,
-    users,
-    slots,
-    after,
-    before,
-    page,
-    size,
-    full,
+    ids,
+    userIds,
+    roles,
+    start,
+    end,
+    createdAt,
     deleted,
     purposes,
     execludeSlots,
-  }: WithOptionalTx<SearchFilter & IFilter.SkippablePagination>): Promise<
+    select,
+    ...pagination
+  }: WithOptionalTx<IAvailabilitySlot.FindModelQuery>): Promise<
     Paginated<IAvailabilitySlot.Self>
   > {
-    const baseBuilder = this.applySearchFilter(this.builder(tx), {
-      users,
-      slots,
-      after,
-      before,
-      deleted,
-      purposes,
-      execludeSlots,
+    const base = this.builder(tx);
+
+    // ============== list fields ========
+    withListFilter(base, this.column("id"), ids);
+    withListFilter(base, this.column("user_id"), userIds);
+    withListFilter(base, this.column("purpose"), purposes);
+
+    if (execludeSlots && !isEmpty(execludeSlots))
+      base.whereNotIn(this.column("id"), execludeSlots);
+
+    // ============== date fields ========
+    withDateFilter(base, this.column("created_at"), createdAt);
+    // @moehab TODO: refactor this; make an or utility filter function
+    base
+      .where((builder) => withDateFilter(builder, this.column("start"), start))
+      .orWhere((builder) => withDateFilter(builder, this.column("end"), end));
+
+    // ============== boolean fields ========
+    withBooleanFilter(base, this.column("deleted"), deleted);
+
+    //======= filters after joins ====== =
+    if (roles && !isEmpty(roles)) {
+      base.innerJoin(users.table, (builder) =>
+        builder
+          .on(users.column("id"), this.column("user_id"))
+          .andOnIn(users.column("role"), roles)
+      );
+    }
+
+    const total = await countRows(base.clone(), {
+      column: this.column("id"),
+      distinct: true,
     });
-    const total = await countRows(baseBuilder.clone());
-    const rows = await withSkippablePagination(baseBuilder.clone(), {
-      page,
-      size,
-      full,
-    });
-    return {
-      list: rows.map((row) => this.from(row)),
-      total,
-    };
+
+    const queryBuilder = base
+      .clone()
+      .select(this.select(select))
+      .orderBy([
+        {
+          column: this.column("created_at"),
+          order: "desc",
+        },
+        {
+          column: this.column("id"),
+          order: "desc",
+        },
+      ]);
+
+    const rows = await withSkippablePagination(queryBuilder, pagination);
+    const demoSessions = rows.map((row) => this.from(row));
+    return { list: demoSessions, total };
   }
 
   async findById(
     id: number,
     tx?: Knex.Transaction
   ): Promise<IAvailabilitySlot.Self | null> {
-    const { list } = await this.find({ slots: [id], tx });
+    const { list } = await this.find({ ids: [id], tx });
     return first(list) || null;
   }
 
@@ -170,50 +201,6 @@ export class AvailabilitySlots {
       .whereIn(this.column("id"), slots);
     const count = await countRows(builder.clone());
     return Number(count) === slots.length;
-  }
-
-  applySearchFilter<R extends object, T>(
-    builder: Knex.QueryBuilder<R, T>,
-    {
-      slots,
-      users,
-      after,
-      before,
-      deleted,
-      execludeSlots,
-      purposes,
-    }: SearchFilter
-  ): Knex.QueryBuilder<R, T> {
-    if (slots && !isEmpty(slots)) builder.whereIn(this.column("id"), slots);
-
-    if (execludeSlots && !isEmpty(execludeSlots))
-      builder.whereNotIn(this.column("id"), execludeSlots);
-
-    if (users && !isEmpty(users))
-      builder.whereIn(this.column("user_id"), users);
-
-    if (purposes && !isEmpty(purposes))
-      builder.whereIn(this.column("purpose"), purposes);
-
-    const start = this.column("start");
-    const end = this.column("end");
-
-    if (after)
-      builder.where((builder) => {
-        builder
-          .where(start, ">=", dayjs.utc(after).toDate())
-          .orWhere(end, ">", dayjs.utc(after).toDate());
-      });
-    if (before)
-      builder.where((builder) => {
-        builder
-          .where(end, "<=", dayjs.utc(before).toDate())
-          .orWhere(start, "<", dayjs.utc(before).toDate());
-      });
-
-    if (!isUndefined(deleted)) builder.where(this.column("deleted"), deleted);
-
-    return builder;
   }
 
   from(row: IAvailabilitySlot.Row): IAvailabilitySlot.Self {

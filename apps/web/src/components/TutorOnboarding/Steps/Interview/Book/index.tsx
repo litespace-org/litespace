@@ -50,7 +50,7 @@ const Content: React.FC<{
 }> = ({ interviewer, sync, syncing }) => {
   const now = useRef(dayjs());
   const slotsQuery = useFindAvailabilitySlots({
-    userId: interviewer.id,
+    userIds: [interviewer.id],
     after: now.current.toISOString(),
     before: now.current.add(1, "month").toISOString(),
   });

@@ -51,7 +51,7 @@ export type UpdateModelPayload = {
   /**
    * the id of the demo-session to be updated
    */
-  id: number;
+  ids: number[];
   status: Status;
 };
 
