@@ -1,10 +1,11 @@
 import React from "react";
-import Illustration from "@litespace/assets/Illustration";
+import authHero from "@/animations/animated-auth-hero.json";
+import Lottie from "lottie-react";
 
 const Aside: React.FC = () => {
   return (
-    <aside className="bg-brand-800 rounded-lg min-w-[550px] flex items-center justify-center">
-      <Illustration />
+    <aside className="max-w-[704px] shrink flex items-center justify-center">
+      <Lottie animationData={authHero} autoplay loop />
     </aside>
   );
 };
