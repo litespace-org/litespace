@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { flatten, range } from "lodash";
+import { Button } from "@/components/Button";
+import { Typography } from "@/components/Typography";
+import dayjs from "@/lib/dayjs";
+import ChevronLeft from "@litespace/assets/ChevronLeft";
+import ChevronRight from "@litespace/assets/ChevronRight";
+import { Void } from "@litespace/types";
 import cn from "classnames";
 import { Dayjs } from "dayjs";
-import dayjs from "@/lib/dayjs";
-import ChevronRight from "@litespace/assets/ChevronRight";
-import ChevronLeft from "@litespace/assets/ChevronLeft";
-import { Typography } from "@/components/Typography";
-import { Button } from "@/components/Button";
-import { Void } from "@litespace/types";
+import { flatten, range } from "lodash";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 const rows = 6;
 const cols = 7;
@@ -66,7 +66,7 @@ export const MonthlyCalendar: React.FC<{
   }, [date, max]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <Navigation
         nextMonth={nextMonth}
         prevMonth={prevMonth}
@@ -75,7 +75,7 @@ export const MonthlyCalendar: React.FC<{
         disabled={disable}
         date={date}
       />
-      <div className="p-6 flex flex-col gap-5">
+      <div className="px-6 flex flex-col gap-5">
         <WeekDays date={date} />
         <MonthDays
           date={date}
@@ -166,11 +166,11 @@ const MonthDays: React.FC<{
             disabled={disabled || isOutOfRange(day) || !selectable}
             data-selected={isSelected}
             className={cn(
-              "h-12 flex items-center justify-center rounded-md",
+              "h-12 flex flex-col gap-[2px] items-center justify-center rounded-md",
               "data-[selected=false]:hover:bg-natural-100",
               "data-[selected=true]:bg-brand-500 data-[selected=true]:hover:bg-brand-400",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-              "disabled:opacity-50"
+              "disabled:opacity-30"
             )}
             onClick={() => select?.(day)}
             type="button"
@@ -180,13 +180,23 @@ const MonthDays: React.FC<{
               data-selected={isSelected}
               data-current-month={isCurrentMonth}
               className={cn(
-                "inline-block text-natural-950 text-tiny",
+                "inline-block text-body font-semibold",
                 "data-[selected=true]:data-[current-month=true]:text-natural-50",
-                "data-[current-month=false]:text-natural-200"
+                "data-[current-month=false]:text-natural-200",
+                dayjs().date() === day.date()
+                  ? "text-brand-700"
+                  : "text-natural-950"
               )}
             >
               {day.format("D")}
             </Typography>
+            <div
+              className={cn(
+                "h-[5px] w-[5px] rounded-full overflow-hidden",
+                dayjs().date() === day.date() ? "opacity-100" : "opacity-0",
+                isSelected ? "bg-natural-50" : "bg-brand-700"
+              )}
+            />
           </button>
         );
       })}
