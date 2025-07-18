@@ -69,25 +69,25 @@ const Root: React.FC = () => {
     // @note: avoid redirecting the tutor to the complete tutor profile page in
     // case he was visiting a public route or his settings page.
     // @note: tutor should automatically be directed to
-    if (tutor && !completedProfile && !settings && !publicRoute)
-      return navigate(Web.CompleteTutorProfile);
+    // if (tutor && !completedProfile && !settings && !publicRoute)
+    //   return navigate(Web.CompleteTutorProfile);
 
     // @note: tutor should automatically be directed to the onboarding page
     // incase he didn't passed one or more of the onboarding flow steps. tutor
     // should only be redirected if his profile is completed.
-    if (
-      tutor &&
-      completedProfile &&
-      meta &&
-      !settings &&
-      !publicRoute &&
-      !router.match(Web.Interview, location.pathname) &&
-      !meta.bypassOnboarding &&
-      (!meta.passedIntroVideo ||
-        !meta.passedInterview ||
-        !meta.passedDemoSession)
-    )
-      return navigate(Web.TutorOnboarding);
+    // if (
+    //   tutor &&
+    //   completedProfile &&
+    //   meta &&
+    //   !settings &&
+    //   !publicRoute &&
+    //   !router.match(Web.Interview, location.pathname) &&
+    //   !meta.bypassOnboarding &&
+    //   (!meta.passedIntroVideo ||
+    //     !meta.passedInterview ||
+    //     !meta.passedDemoSession)
+    // )
+    //   return navigate(Web.TutorOnboarding);
 
     // ============ student redirect ========
     if (role.student && root) return navigate(Web.StudentDashboard);
