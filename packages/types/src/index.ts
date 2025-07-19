@@ -35,6 +35,7 @@ export * as IFawry from "@/fawry";
 export * as ITransaction from "@/transaction";
 export * as IDemoSession from "@/demoSession";
 export * as IDocmost from "@/docmost";
+export * as IErpNext from "@/erpnext";
 
 export * from "@/api";
 export * from "@/utils";
