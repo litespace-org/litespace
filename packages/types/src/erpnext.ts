@@ -5,11 +5,16 @@ export type DocMethod = "submit" | "cancel";
 export type ChargeType = "On Net Total";
 
 export type Account =
-  | "GST - T"
-  | "Sales - T"
-  | "Debtors - T"
-  | "Creditors - T"
-  | "Bank Account - T";
+  | "CIB - LS"
+  | "NBE - LS"
+  | "ALEX - LS"
+  | "Payonneer - LS"
+  | "Investores - LS"
+  | "Cash - LS"
+  | "Sales - LS"
+  | "Debtors - LS"
+  | "Creditors - LS"
+  | "VAT - LS";
 
 export type AccountType = "Bank" | "Cash";
 
@@ -38,16 +43,7 @@ export type StockUom = "Unit";
 
 export type DocBoolean = 0 | 1;
 
-export type ItemCode =
-  | "M120M1"
-  | "M120M3"
-  | "M120M12"
-  | "M150M1"
-  | "M150M3"
-  | "M150M12"
-  | "M180M1"
-  | "M180M3"
-  | "M180M12";
+export type ItemCode = "WM120" | "WM150" | "WM180";
 
 /**
  * Draft (value: 0)
@@ -158,6 +154,19 @@ export type SalesInvoice = {
     amount: number;
     income_account: number;
   }>;
+  taxes: Array<{
+    charge_type: ChargeType;
+    account_head: Account;
+    eta_tax_type: EtaTaxType;
+    eta_tax_sub_type: EtaTaxSubType;
+    description: string;
+    rate: number;
+    total: number;
+    tax_amount: number;
+    tax_amount_after_discount_amount: number;
+    base_tax_amount: number;
+    base_tax_amount_after_discount_amount: number;
+  }>;
 };
 
 export type DocTypeMap = {
@@ -233,8 +242,6 @@ export type CreateCustomerApiPayload = {
   customerType: CustomerType;
   etaReceiverType: EtaReceiverType;
   customerDetails?: string;
-  mobile: string;
-  email: string;
   gender?: CustomerGender;
 };
 
