@@ -37,7 +37,7 @@ export const sockets: Record<
   },
 } as const;
 
-export type Server = "api" | "messenger" | "echo";
+export type Server = "api" | "messenger" | "echo" | "erpnext";
 
 export const servers: Record<Server, Record<Env.Server, string>> = {
   api: {
@@ -54,6 +54,11 @@ export const servers: Record<Server, Record<Env.Server, string>> = {
     local: "http://localhost:4004",
     staging: "https://echo.staging.litespace.org",
     production: "https://echo.litespace.org",
+  },
+  erpnext: {
+    local: "https://erpnext-pro.k.erpnext.com",
+    staging: "https://erpnext-pro.k.erpnext.com",
+    production: "https://litespace.k.erpnext.com",
   },
 };
 
