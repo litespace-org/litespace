@@ -22,8 +22,6 @@ export class Document extends Base {
       territory: payload.territory,
       eta_receiver_type: payload.etaReceiverType,
       customer_details: payload.customerDetails,
-      mobile: payload.mobile,
-      email: payload.email,
       gender: payload.gender,
     });
   }
@@ -69,6 +67,7 @@ export class Document extends Base {
       taxes: payload.taxes.map((tax) => ({
         charge_type: tax.chargeType,
         account_head: tax.accountHead,
+        description: tax.description,
         eta_tax_type: tax.etaTaxType,
         eta_tax_sub_type: tax.etaTaxSubType,
         docstatus: tax.docStatus,
@@ -141,7 +140,13 @@ export class Document extends Base {
     }).then((res) => res.data);
   }
 
-  async execute(doc: IErpNext.DocType, method: IErpNext.DocMethod) {
-    return this.post({ route: `/api/v2/document/${doc}/method/${method}` });
+  async execute(
+    doc: IErpNext.DocType,
+    name: string,
+    method: IErpNext.DocMethod
+  ) {
+    return this.post({
+      route: `/api/v2/document/${doc}/${name}/method/${method}`,
+    });
   }
 }
