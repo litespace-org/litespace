@@ -89,5 +89,5 @@ export function isValidBankNumber(
   bankNumber: string
 ): FieldError.InvalidBankAccountNumber | true {
   if (isNaN(Number(bankNumber))) return FieldError.InvalidBankAccountNumber;
-  return true;
+  else return true;
 }
