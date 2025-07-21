@@ -6,7 +6,6 @@ import {
   useSetAvailabilitySlots,
 } from "@litespace/headless/availabilitySlots";
 import { useUser } from "@litespace/headless/context/user";
-
 import { AvailabilitySlotProps, Calendar } from "@litespace/ui/Calendar";
 import { DeleteSlotDialog } from "@litespace/ui/DeleteSlotDialog";
 import { ManageSchedule } from "@litespace/ui/ManageSchedule";
@@ -23,6 +22,7 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isEmpty } from "lodash";
 import { useCalendarController } from "@/hooks/calendar";
 import { Optional } from "@litespace/ui/Optional";
+import { splitSlot } from "@/lib/schedule";
 
 const ScheduleManagement: React.FC = () => {
   const { md } = useMediaQuery();
@@ -64,6 +64,7 @@ const ScheduleManagement: React.FC = () => {
   const lessonsQuery = useInfiniteLessons({
     users: user ? [user.id] : [],
     userOnly: true,
+    canceled: false,
     after: start.toISOString(),
     before: end.toISOString(),
     full: true,
@@ -110,12 +111,7 @@ const ScheduleManagement: React.FC = () => {
             });
         });
       });
-      calendarSlots.push({
-        id: slot.id,
-        start: slot.start,
-        end: slot.end,
-        members,
-      });
+      calendarSlots.push(...splitSlot(slot, members));
     }
 
     return calendarSlots;
@@ -177,6 +173,7 @@ const ScheduleManagement: React.FC = () => {
       <Optional unmount show={manageScheduleProps.open}>
         <ManageSchedule
           initialSlots={manageScheduleProps.initialSlots}
+          scheduledLessons={lessonsQuery.list?.map((item) => item.lesson) || []}
           date={manageScheduleProps.date}
           open={manageScheduleProps.open}
           next={next}

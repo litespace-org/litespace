@@ -31,6 +31,8 @@ const SlotRow: React.FC<{
 }) => {
   const intl = useFormatMessage();
 
+  const now = dayjs();
+
   const subslots = useMemo(() => {
     return orderSlots(getSubSlotsBatch(freeSubSlots, 30), "asc");
   }, [freeSubSlots]);
@@ -52,10 +54,13 @@ const SlotRow: React.FC<{
   }, [freeSubSlots, start]);
 
   const fromOptions: SelectList<string> = useMemo(() => {
-    const all = subslots.map((subslot) => ({
-      label: dayjs(subslot.start).format("hh:mm a"),
-      value: dayjs(subslot.start).toISOString(),
-    }));
+    const all = subslots
+      .filter((subslot) => !dayjs(subslot.start).isBefore(now))
+      .map((subslot) => ({
+        label: dayjs(subslot.start).format("hh:mm a"),
+        value: dayjs(subslot.start).toISOString(),
+      }));
+
     if (!end) return all;
     return all.filter((option) => {
       const value = dayjs(option.value);
@@ -65,13 +70,15 @@ const SlotRow: React.FC<{
         value.isSame(earliestStart);
       return value.isBefore(end) && afterEarliestStart;
     });
-  }, [subslots, end, earliestStart]);
+  }, [subslots, now, end, earliestStart]);
 
   const toOptions: SelectList<string> = useMemo(() => {
-    const all = subslots.map((subslot) => ({
-      label: dayjs(subslot.end).format("hh:mm a"),
-      value: dayjs(subslot.end).toISOString(),
-    }));
+    const all = subslots
+      .filter((subslot) => !dayjs(subslot.start).isBefore(now))
+      .map((subslot) => ({
+        label: dayjs(subslot.end).format("hh:mm a"),
+        value: dayjs(subslot.end).toISOString(),
+      }));
     if (!start) return all;
     return all.filter((option) => {
       const value = dayjs(option.value);
@@ -81,7 +88,7 @@ const SlotRow: React.FC<{
         value.isSame(farthestEnd);
       return value.isAfter(start) && beforeFarthestEnd;
     });
-  }, [farthestEnd, start, subslots]);
+  }, [farthestEnd, now, start, subslots]);
 
   return (
     <div className="flex items-center gap-1 lg:w-full py-1 ps-2">
