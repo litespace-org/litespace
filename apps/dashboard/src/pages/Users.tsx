@@ -10,6 +10,7 @@ import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { IUser } from "@litespace/types";
 import { rolesMap } from "@/components/utils/user";
 import { optional } from "@litespace/utils/utils";
+import { useOnError } from "@/hooks/error";
 
 export const Users: React.FC = () => {
   const intl = useFormatMessage();
@@ -28,6 +29,12 @@ export const Users: React.FC = () => {
   );
 
   const users = useUsers(filter);
+
+  useOnError({
+    type: "query",
+    error: users.query.error,
+    keys: users.query.keys,
+  });
 
   const makeRoleOption = useCallback(
     (id: number, roleOption: IUser.Role): MenuAction => {

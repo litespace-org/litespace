@@ -12,6 +12,7 @@ import TruncateField from "@/components/Common/TruncateField";
 import { Link } from "react-router-dom";
 import ImageField from "@/components/Common/ImageField";
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
+import { NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL } from "@litespace/utils/constants";
 
 const List: React.FC<{
   query: UseQueryResult<IUser.FindUsersApiResponse, Error>;
@@ -93,6 +94,18 @@ const List: React.FC<{
         header: intl("global.updated-at"),
         cell: (info) => <DateField date={info.getValue()} />,
       }),
+
+      columnHelper.accessor("notificationMethod", {
+        header: intl("dashboard.user.notificationMethod"),
+        cell: (info) => {
+          const method = info.getValue();
+          if (!method) return "-";
+          const literal =
+            NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[method];
+          return intl(`notification-method.${literal}`);
+        },
+      }),
+
       columnHelper.display({
         id: "actions",
         cell: () => (

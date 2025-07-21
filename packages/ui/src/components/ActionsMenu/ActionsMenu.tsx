@@ -104,7 +104,7 @@ export const ActionsMenu: React.FC<{
       <Portal>
         <Content
           className={cn(
-            "bg-background-overlay border border-border-overlay rounded-md p-1.5",
+            "bg-natural-50 border border-border-overlay rounded-md p-1.5",
             menuClassName
           )}
           sideOffset={5}
@@ -133,7 +133,7 @@ export const ActionsMenu: React.FC<{
                   <Portal>
                     <SubContent
                       className={cn(
-                        "bg-background-overlay border border-border-overlay rounded-md p-1.5"
+                        "bg-natural-50 border border-border-overlay rounded-md p-1.5"
                       )}
                       sideOffset={2}
                       alignOffset={-5}
