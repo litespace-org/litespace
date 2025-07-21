@@ -445,6 +445,7 @@
   "dashboard.user.email": "الإيميل",
   "dashboard.user.hasPassword": "يمتلك رقم سري",
   "dashboard.user.creditScore": "الرقم الإتماني",
+  "dashboard.user.notificationMethod": "طريقة الإشعارات",
   "dashboard.user.birthYear": "سنة الميلاد",
   "dashboard.user.gender": "النوع",
   "dashboard.user.image": "الصورة",

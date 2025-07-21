@@ -144,7 +144,7 @@ const Options: React.FC<{
     <>
       <div
         data-show={values.length > 0}
-        className="absolute top-11 border border-natural-200 shadow-select-menu rounded-lg w-fit min-w-36 max-w-64 bg-natural-50 py-2 hidden data-[show=true]:block"
+        className="absolute top-11 border border-natural-200 shadow-select-menu rounded-lg w-fit min-w-36 max-w-64 bg-natrual-50 py-2 hidden data-[show=true]:block"
         style={{ left }}
         dir="ltr"
         tabIndex={1}

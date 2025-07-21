@@ -1,5 +1,5 @@
 import safeRequest from "express-async-handler";
-import { bad, forbidden, notfound, serviceUnavailable } from "@/lib/error";
+import { bad, notfound, serviceUnavailable } from "@/lib/error";
 import { knex, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import { hashPassword, withImageUrl } from "@/lib/user";
@@ -7,7 +7,6 @@ import { IUser } from "@litespace/types";
 import { email, password, string } from "@/validation/utils";
 import { googleConfig, jwtSecret } from "@/constants";
 import { encodeAuthJwt, decodeAuthJwt } from "@litespace/auth";
-import { isUser } from "@litespace/utils/user";
 import { OAuth2Client } from "google-auth-library";
 import zod from "zod";
 import axios from "axios";
@@ -148,17 +147,12 @@ async function loginWithAuthToken(
 }
 
 async function refreshAuthToken(
-  req: Request,
-  res: Response,
+  _req: Request,
+  _res: Response,
   next: NextFunction
 ) {
-  const user = req.user;
-  const allowed = isUser(user);
-  if (!allowed) return next(forbidden());
-
-  const token = encodeAuthJwt(user.id, jwtSecret);
-  const response: IUser.RefreshAuthTokenApiResponse = token;
-  res.status(200).json(response);
+  // TODO: implement refresh-token in the database in order to enable this handler
+  next(serviceUnavailable());
 }
 
 export default {

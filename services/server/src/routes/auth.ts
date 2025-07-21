@@ -9,7 +9,7 @@ router.post("/password", auth.loginWithPassword);
 router.post("/google", auth.loginWithGoogle);
 router.post(
   "/refresh-token",
-  rateLimit({ windowMs: ms("1m"), limit: 5 }),
+  rateLimit({ windowMs: ms("1M"), limit: 5 }),
   auth.refreshAuthToken
 );
 
