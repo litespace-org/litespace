@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import express, { json } from "express";
+import express, { json, Request, Response } from "express";
+import compression from "compression";
 import routes from "@/routes";
 import { jwtSecret, serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
@@ -68,6 +69,21 @@ app.use(
     ].join(" ");
   })
 );
+
+app.use(
+  compression({
+    filter: function (req: Request, res: Response) {
+      if (req.headers["x-no-compression"]) {
+        // don't compress responses with this request header
+        return false;
+      }
+
+      // fallback to standard filter function
+      return compression.filter(req, res);
+    },
+  })
+);
+
 app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
