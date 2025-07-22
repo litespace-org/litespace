@@ -164,7 +164,6 @@ export class AvailabilitySlots extends Model<
         },
       ]);
 
-    console.log(queryBuilder.toQuery());
     const rows = await withSkippablePagination(queryBuilder, pagination);
     const demoSessions = rows.map((row) => this.from(row));
     return { list: demoSessions, total };

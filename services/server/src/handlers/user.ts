@@ -320,9 +320,9 @@ function update(_: ApiContext) {
 
       // remove assets from the object store
       if (image === null && target.image) s3.drop(target.image);
-      if (tutor && video === null && tutor.video) await s3.drop(tutor.video);
+      if (tutor && video === null && tutor.video) s3.drop(tutor.video);
       if (tutor && thumbnail === null && tutor.thumbnail)
-        await s3.drop(tutor.thumbnail);
+        s3.drop(tutor.thumbnail);
 
       // remove assets ids from the database / update user data
       const updated = await knex.transaction(async (tx: Knex.Transaction) => {
@@ -1097,6 +1097,10 @@ async function uploadTutorAssets(
   const thumbnail = getRequestFile(req.files, IUser.AssetFileName.Thumbnail);
   if (!image && !video && !thumbnail) return next(bad());
 
+  // the procedures afterwards may take a while, users are not concerned about those
+  // procedures as long as the files have been sent successully from their machines.
+  res.sendStatus(200);
+
   const imageId = image
     ? await upload({
         data: image.buffer,
@@ -1144,8 +1148,6 @@ async function uploadTutorAssets(
       payload: { tutorId: tutor.tutorId },
     });
   }
-
-  res.sendStatus(200);
 }
 
 async function findFullTutors(req: Request, res: Response, next: NextFunction) {
