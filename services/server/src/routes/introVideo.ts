@@ -6,7 +6,7 @@ import { Router } from "express";
 const router = Router();
 
 router.post(
-  "/",
+  "/with/asset",
   uploadMiddleware.fields([
     { name: IIntroVideo.AssetFileName.Video, maxCount: 1 },
   ]),

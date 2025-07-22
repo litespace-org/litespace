@@ -13,7 +13,7 @@ export default function router(context: ApiContext) {
   router.post("/", invoice.create);
 
   router.put(
-    "/:invoiceId",
+    "/:invoiceId/with/asset",
     uploadMiddleware.single(IInvoice.ReceiptFileKey),
     invoice.update(context)
   );
