@@ -26,6 +26,9 @@ export class Invoice extends Base {
     invoiceId: number,
     payload: IInvoice.UpdateApiPayload
   ): Promise<void> {
-    return this.put({ route: `/api/v1/invoice/${invoiceId}`, payload });
+    return this.put({
+      route: `/api/v1/invoice/${invoiceId}/with/asset`,
+      payload,
+    });
   }
 }

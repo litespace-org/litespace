@@ -8,7 +8,7 @@ const router = Router();
 router.get("/list", report.find);
 
 router.post(
-  "/",
+  "/with/asset",
   uploadMiddleware.fields([
     { name: IReport.AssetFileName.Screenshot, maxCount: 1 },
     { name: IReport.AssetFileName.Log, maxCount: 1 },
