@@ -19,6 +19,7 @@ const VideoStreams: React.FC<{
   memberAudio: boolean;
   memberVideo: boolean;
   memberSpeaking: boolean;
+  memberConnected: boolean;
   connecting: boolean;
   layout: Layout;
 }> = ({
@@ -36,6 +37,7 @@ const VideoStreams: React.FC<{
   memberAudio,
   memberVideo,
   memberSpeaking,
+  memberConnected,
   connecting,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -46,7 +48,7 @@ const VideoStreams: React.FC<{
         className="flex-1 relative flex flex-col items-center justify-center gap-4"
         ref={ref}
       >
-        {memberTrackRef ? (
+        {memberConnected ? (
           <Stream
             trackRef={memberTrackRef}
             userId={memberId}
@@ -72,7 +74,7 @@ const VideoStreams: React.FC<{
           />
         )}
 
-        {memberTrackRef ? (
+        {memberConnected ? (
           <Movable
             container={ref}
             className="absolute bottom-4 right-4 z-session-movable-stream shadow-session-movable-stream rounded-lg"

@@ -182,6 +182,7 @@ const PreSession: React.FC<{
             remoteMember={{
               id: remoteMemberId,
               role: remoteMemberRole,
+              // TODO: write the corret gender
               gender: IUser.Gender.Male,
               joined: remoteMemberJoined,
             }}
