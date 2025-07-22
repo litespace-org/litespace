@@ -76,6 +76,7 @@ async function main(): Promise<void> {
         name: faker.person.fullName(),
         birthYear: birthYear(),
         password,
+        verifiedEmail: true,
       },
       tx
     );

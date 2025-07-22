@@ -4,7 +4,7 @@ import {
   useRemoteParticipant,
   useTracks,
 } from "@livekit/components-react";
-import { ConnectionState, Track } from "livekit-client";
+import { ConnectionQuality, ConnectionState, Track } from "livekit-client";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   LocalMember,
@@ -92,6 +92,11 @@ const Session: React.FC<{
           memberAudio={!!remoteParticipant?.isMicrophoneEnabled}
           memberVideo={!!remoteParticipant?.isCameraEnabled}
           memberSpeaking={!!remoteParticipant?.isSpeaking}
+          memberConnected={
+            !!remoteParticipant &&
+            remoteParticipant.connectionQuality !== ConnectionQuality.Lost &&
+            remoteParticipant.trackPublications.size > 0 // once the member presses join
+          }
           connecting={
             connectionState === ConnectionState.Connecting ||
             connectionState === ConnectionState.Reconnecting
