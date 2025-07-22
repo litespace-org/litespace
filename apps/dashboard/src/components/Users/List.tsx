@@ -13,6 +13,9 @@ import { Link } from "react-router-dom";
 import ImageField from "@/components/Common/ImageField";
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
 
+const hasEnglish = (str: string | null | undefined) =>
+  /[a-zA-Z]/.test(str || "");
+
 const List: React.FC<{
   query: UseQueryResult<IUser.FindUsersApiResponse, Error>;
   goto: (page: number) => void;
@@ -124,11 +127,15 @@ const List: React.FC<{
 
   if (!query.data) return null;
 
+  const filteredUsers = query.data.list.filter(
+    (user) => !hasEnglish(user.name)
+  );
+
   return (
     <Table
       {...props}
       columns={columns}
-      data={query.data.list}
+      data={filteredUsers}
       loading={query.isLoading}
       fetching={query.isFetching}
     />

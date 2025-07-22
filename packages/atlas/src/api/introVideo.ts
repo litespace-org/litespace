@@ -29,7 +29,7 @@ export class IntroVideo extends Base {
       );
     }
 
-    await this.client.post<void>(`/api/v1/intro-video`, formData, {
+    await this.client.post<void>(`/api/v1/intro-video/with/asset`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
       onUploadProgress: payload.onUploadProgress,
       signal: payload.abortSignal,
