@@ -51,11 +51,11 @@ export function useCreateIntroVideo({
 
   const mutation = useMutation({
     mutationFn: createIntroVideo,
-    onSuccess: onSuccess,
+    onSuccess,
     onMutate() {
       abortController.current = new AbortController();
     },
-    onError: onError,
+    onError,
     mutationKey: [MutationKey.CreateIntroVideo],
   });
 

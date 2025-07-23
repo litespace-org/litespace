@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { DatePicker } from "@/components/DatePicker";
 import { Direction } from "@/components/Direction";
 import dayjs, { Dayjs } from "dayjs";
-import { useState } from "react";
+import React, { useState } from "react";
 
 type Component = typeof DatePicker;
 

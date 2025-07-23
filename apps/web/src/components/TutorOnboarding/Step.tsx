@@ -13,8 +13,14 @@ const Step: React.FC<{
   if (step === "intro-video")
     return <IntroVideo tutorId={selfId} next={() => setStep("interview")} />;
 
-  if (step === "interview") return <Interview selfId={selfId} />;
-  if (step === "demo-session") return <DemoSession />;
+  if (step === "interview")
+    return <Interview selfId={selfId} next={() => setStep("demo-session")} />;
+
+  if (step === "demo-session")
+    return (
+      <DemoSession tutorId={selfId} next={() => setStep("photo-session")} />
+    );
+
   if (step === "photo-session") return <PhotoSession />;
 
   throw new Error("unsupported step, should never happen");
