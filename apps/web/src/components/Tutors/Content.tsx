@@ -1,7 +1,7 @@
 import ManageLesson from "@/components/Lessons/ManageLesson";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { TutorCard } from "@/components/Tutors/TutorCard";
-import { Element, ITutor, Void } from "@litespace/types";
+import { Element, ITutor, IUser, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { InView } from "react-intersection-observer";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -52,9 +52,9 @@ const Content: React.FC<{
         {tutors.map((tutor) => (
           <TutorCard
             key={tutor.id}
-            free={false} // todo: access user role from the tutors cache
+            free={tutor.role === IUser.Role.TutorManager}
             id={tutor.id}
-            bio={tutor.id == 49 ? tutor.bio : null}
+            bio={tutor.bio}
             name={tutor.name}
             rating={tutor.avgRating}
             onBook={() => openBookingDialog(tutor)}
