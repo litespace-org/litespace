@@ -1,3 +1,4 @@
+import { env } from "@/lib/env";
 import { useUser } from "@litespace/headless/context/user";
 import { useLogger } from "@litespace/headless/logger";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -32,5 +33,5 @@ export function useSaveLogs(options?: {
     [intl, logger, toast, user]
   );
 
-  return { save };
+  return { save: env.client === "production" ? () => {} : save };
 }

@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import cn from "classnames";
 import dayjs from "dayjs";
 
@@ -7,7 +7,7 @@ import Menu from "@litespace/assets/Menu";
 import Crown from "@litespace/assets/Crown";
 import { Button } from "@litespace/ui/Button";
 import { Web } from "@litespace/utils/routes";
-import { Void } from "@litespace/types";
+import { IUser, Void } from "@litespace/types";
 import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -95,8 +95,17 @@ const Subscription: React.FC = () => {
 const User: React.FC = () => {
   const { user } = useUser();
   const intl = useFormatMessage();
-  const { save } = useSaveLogs();
-  const [counter, setCounter] = useState<number>(0);
+  const navigate = useNavigate();
+  const { save: saveLogs } = useSaveLogs();
+
+  const navToSettings = useCallback(() => {
+    if (!user) return;
+    navigate(
+      user.role === IUser.Role.Student
+        ? Web.StudentSettings
+        : Web.TutorProfileSettings
+    );
+  }, [user, navigate]);
 
   if (!user)
     return (
@@ -128,10 +137,9 @@ const User: React.FC = () => {
   return (
     <button
       className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 rounded-md"
-      onClick={async () => {
-        if (counter < 2) return setCounter(counter + 1);
-        setCounter(0);
-        await save();
+      onClick={navToSettings}
+      onDoubleClick={async () => {
+        saveLogs();
       }}
     >
       <ProfileInfo

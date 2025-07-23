@@ -4,7 +4,7 @@ import { router } from "@/lib/routes";
 import { useUser } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Landing, Web } from "@litespace/utils/routes";
-import { isForbidden } from "@litespace/utils";
+import { dayjs, isForbidden } from "@litespace/utils";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
 import cn from "classnames";
 import React, { useEffect, useMemo, useState } from "react";
@@ -91,7 +91,10 @@ const Root: React.FC = () => {
       return navigate(Web.TutorOnboarding);
 
     // ============ student redirect ========
-    if (role.student && root) return navigate(Web.StudentDashboard);
+    if (role.student && root) {
+      if (dayjs().isSame(user.createdAt, "day")) return navigate(Web.Tutors);
+      return navigate(Web.StudentDashboard);
+    }
   }, [navigate, location.pathname, user, publicRoute, meta]);
 
   const showNavigation = useMemo(() => {
