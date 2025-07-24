@@ -25,14 +25,23 @@ export type TableNaviationProps = {
   totalPages?: number;
 };
 
+type Horizontal = "start" | "center" | "end";
+type Vertical = "top" | "middle" | "bottom";
+
+type TextAlign =
+  | Exclude<`${Vertical}-${Horizontal}`, "center-middle">
+  | "center";
+
 type TableProps<T extends object> = TableNaviationProps & {
   data: T[];
   columns: TableOptions<T>["columns"];
   headless?: boolean;
+  textAlign?: TextAlign;
 };
 
 export const Table = <T extends object>({
   data,
+  textAlign = "top-center",
   columns,
   page,
   totalPages,
@@ -101,7 +110,21 @@ export const Table = <T extends object>({
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <td
-                    className="p-4 border-l border-natural-100 last:border-0 align-top"
+                    className={cn(
+                      "p-4 border-l border-natural-100 last:border-0",
+                      {
+                        "align-top text-start": textAlign === "top-start",
+                        "align-top text-center": textAlign === "top-center",
+                        "align-top text-end": textAlign === "top-end",
+                        "align-middle text-start": textAlign === "middle-start",
+                        "align-middle text-center": textAlign === "center",
+                        "align-middle text-end": textAlign === "middle-end",
+                        "align-bottom text-start": textAlign === "bottom-start",
+                        "align-bottom text-center":
+                          textAlign === "bottom-center",
+                        "align-bottom text-end": textAlign === "bottom-end",
+                      }
+                    )}
                     key={cell.id}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

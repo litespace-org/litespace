@@ -1,4 +1,4 @@
-import { Table } from "@litespace/ui/Table";
+import { LoadingFragment } from "@/components/Common/LoadingFragment";
 import dayjs from "@/lib/dayjs";
 import Calendar from "@litespace/assets/Calendar";
 import InfoCircle from "@litespace/assets/InfoCircle";
@@ -8,12 +8,12 @@ import { useUpdateUser } from "@litespace/headless/user";
 import { Element, ITutor, Void } from "@litespace/types";
 import { AvatarV2 as Avatar } from "@litespace/ui/Avatar";
 import { Switch } from "@litespace/ui/Switch";
+import { Table } from "@litespace/ui/Table";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo } from "react";
-import { LoadingFragment } from "@/components/Common/LoadingFragment";
 
 export const Content: React.FC<{
   refetch: Void;
@@ -145,6 +145,7 @@ export const Content: React.FC<{
         ),
         cell: (info) => (
           <Switch
+            size="medium"
             checked={info.getValue()}
             disabled={update.isPending}
             onChange={(activated) =>
@@ -170,6 +171,7 @@ export const Content: React.FC<{
         ),
         cell: (info) => (
           <Switch
+            size="medium"
             checked={info.getValue()}
             disabled={update.isPending}
             onChange={(bypassOnboarding) =>
@@ -211,6 +213,7 @@ export const Content: React.FC<{
   return (
     <Table
       columns={columns}
+      textAlign="middle-start"
       data={tutors}
       fetching={fetching}
       loading={loading}

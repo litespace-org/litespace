@@ -11,7 +11,15 @@ const meta: Meta<Component> = {
   decorators: [DarkStoryWrapper],
 };
 
-export const Primary: StoryObj<Component> = {
+export const PrimaryLarge: StoryObj<Component> = {
+  args: { id: "switch", size: "large" },
+};
+
+export const PrimaryMedium: StoryObj<Component> = {
+  args: { id: "switch", size: "medium" },
+};
+
+export const PrimarySmall: StoryObj<Component> = {
   args: { id: "switch" },
 };
 

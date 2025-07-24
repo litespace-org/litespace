@@ -149,6 +149,7 @@ const List: React.FC<
         ),
         cell: (info) => (
           <Switch
+            size="medium"
             id="toggle-plan"
             checked={info.getValue()}
             onChange={(checked) =>
