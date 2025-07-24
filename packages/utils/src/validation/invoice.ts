@@ -1,6 +1,7 @@
 import { HTML_REGEX, INSTAPAY_REGEX, PHONE_NUMBER_REGEX } from "@/constants";
 import { FieldError, type Bank, BANKS, IInvoice } from "@litespace/types";
 import { getSafeInnerHtmlText } from "@/utils";
+import { number } from "zod";
 
 export function isValidInvoiceReceiver(
   receiver: string,
@@ -91,13 +92,13 @@ export function isValidBankNumber(
   if (isNaN(Number(bankNumber))) {
     return FieldError.InvalidBankAccountNumber;
   }
-  const cleanedNumber = bankNumber.replace(/\D/g, "");
 
   const isLuhnValid =
-    [...cleanedNumber]
+    bankNumber
+      .split("")
       .reverse()
       .map((char, index) => {
-        const digit = parseInt(char, 10);
+        const digit = Number(char);
         return index % 2 === 1
           ? digit * 2 > 9
             ? digit * 2 - 9
