@@ -57,6 +57,7 @@ export type Row = {
   bio: string | null;
   about: string | null;
   video: string | null;
+  role: IUser.Role;
   activated: boolean;
   studio_id: number | null;
   thumbnail: string | null;
@@ -123,6 +124,7 @@ export type FindTutorInfoApiResponse = {
   name: string | null;
   bio: string | null;
   about: string | null;
+  role: IUser.Role;
   topics: string[];
   studentCount: number;
   lessonCount: number;
