@@ -57,7 +57,7 @@ export const MAX_MESSAGE_TEXT_LENGTH = 1000;
 export const MIN_MESSAGE_TEXT_LENGTH = 1;
 export const MAX_PLAN_WEEKLY_MINUTES = MINUTES_IN_WEEK;
 export const NUMBERS_ONLY_REGEX = /\d/;
-export const PASSWORD_REGEX = /^(?=.*[0-9])(?=.*[a-z])(?=.*\W)(?!.* ).{8,50}$/;
+export const PASSWORD_REGEX = /^(?=.*[0-9])(?=.*[a-zA-Z])(?!.*\s).{8,50}$/;
 export const PASSWORD_LETTERS_REGEX = /[\W\w][^\d]+/;
 export const HTML_TAGS_REGEX = /<[^>]*>/g;
 export const HTML_REGEX = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/;
