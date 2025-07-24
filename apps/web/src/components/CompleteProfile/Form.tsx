@@ -1,6 +1,5 @@
 import { IUser } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
-import { useForm } from "react-hook-form";
 import { useUser } from "@litespace/headless/context/user";
 import { useToast } from "@litespace/ui/Toast";
 import { useNavigate } from "react-router-dom";
@@ -8,22 +7,27 @@ import { governorates } from "@/constants/user";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
+import { useMakeValidators } from "@litespace/ui/hooks/validation";
 import {
-  useValidatePassword,
-  useValidatePhone,
-  useValidateUserName,
-} from "@litespace/ui/hooks/validation";
+  validatePassword,
+  validatePhone,
+  validateUserName,
+} from "@litespace/ui/lib/validate";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Controller, Form } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { getNullableFiledUpdatedValue } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
 import { useOnError } from "@/hooks/error";
+import { useForm } from "@litespace/headless/form";
+import { Input, Password } from "@litespace/ui/Input";
+import { Select } from "@litespace/ui/Select";
+import { PatternInput } from "@litespace/ui/PatternInput";
+import { Form } from "@litespace/ui/Form";
 
 type IForm = {
   name: string;
   phone: string;
-  city: IUser.City;
+  city?: IUser.City;
   password: string;
 };
 
@@ -35,27 +39,39 @@ const CompleteProfile: React.FC = () => {
   const { user } = useUser();
   const invalidateQuery = useInvalidateQuery();
 
-  const { control, handleSubmit, watch, formState } = useForm<IForm>({
-    defaultValues: {
+  // ============= Form ==============
+  const validators = useMakeValidators<IForm>({
+    name: { validate: validateUserName },
+    phone: { validate: validatePhone },
+    password: { validate: validatePassword },
+  });
+
+  const form = useForm<IForm>({
+    defaults: {
       name: user?.name || "",
       phone: user?.phone || "",
       city: user?.city || undefined,
       password: "",
     },
+    validators,
+    onSubmit: (data) => {
+      if (!user) return;
+      updateUser.mutate({
+        id: user.id,
+        payload: {
+          name: getNullableFiledUpdatedValue(user.name, data.name.trim()),
+          phone: getNullableFiledUpdatedValue(user.phone, data.phone.trim()),
+          city: getNullableFiledUpdatedValue(user.city, data.city),
+          password: data.password
+            ? { new: data.password, current: null }
+            : undefined,
+        },
+      });
+    },
   });
 
-  const name = watch("name");
-  const phone = watch("phone");
-  const city = watch("city");
-  const password = watch("password");
-  const errors = formState.errors;
-
-  const validatePassword = useValidatePassword();
-  const validateUserName = useValidateUserName();
-  const validatePhone = useValidatePhone();
-
+  // ============= Complete Profile Mutation ==============
   const goRoot = useCallback(() => navigate(Web.Root), [navigate]);
-
   const onSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
     goRoot();
@@ -82,88 +98,62 @@ const CompleteProfile: React.FC = () => {
     [intl]
   );
 
-  const onSubmit = useCallback(
-    (data: IForm) => {
-      if (!user) return;
-      updateUser.mutate({
-        id: user.id,
-        payload: {
-          name: getNullableFiledUpdatedValue(user.name, data.name.trim()),
-          phone: getNullableFiledUpdatedValue(user.phone, data.phone.trim()),
-          city: getNullableFiledUpdatedValue(user.city, data.city),
-          password: data.password
-            ? { new: data.password, current: null }
-            : undefined,
-        },
-      });
-    },
-    [updateUser, user]
-  );
-
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col sm:mx-auto gap-6 sm:max-w-[404px]">
+    <Form onSubmit={form.onSubmit} className="w-full max-w-[448px]">
+      <div className="flex flex-col mx-auto gap-6">
         <div className="flex flex-col gap-2 sm:gap-4">
-          <Controller.Input
+          <Input
             id="name"
             name="name"
             idleDir="rtl"
-            value={name}
-            control={control}
+            value={form.state.name}
             inputSize={"large"}
             autoComplete="off"
+            onChange={(e) => form.set("name", e.target.value)}
             label={intl("labels.name")}
-            rules={{ validate: validateUserName }}
             placeholder={intl("labels.name.placeholder")}
-            state={errors.name ? "error" : undefined}
-            helper={errors.name?.message}
+            state={form.errors.name ? "error" : undefined}
+            helper={form.errors.name}
           />
 
-          <Controller.PatternInput
+          <PatternInput
             mask=" "
             id="phone"
-            control={control}
             idleDir="ltr"
             inputSize="large"
             name="phone"
-            value={phone}
+            value={form.state.phone}
+            onChange={(e) => form.set("phone", e.target.value)}
             format="### #### ####"
             label={intl("labels.phone")}
-            rules={{ validate: validatePhone }}
             placeholder={intl("labels.phone.placeholder")}
-            state={errors.phone ? "error" : undefined}
-            helper={
-              errors.phone?.message || intl("complete-profile.phone.helper")
-            }
+            state={form.errors.phone ? "error" : undefined}
+            helper={form.errors.phone || intl("complete-profile.phone.helper")}
             autoComplete="off"
           />
 
-          <Controller.Select
+          <Select
             id="city"
-            name="city"
-            value={city}
-            control={control}
+            value={form.state.city}
+            onChange={(value) => form.set("city", value)}
             options={cityOptions}
             label={intl("labels.city")}
             placeholder={intl("labels.city.placeholder")}
-            helper={
-              errors.city?.message || intl("complete-profile.city.helper")
-            }
+            helper={form.errors.city || intl("complete-profile.city.helper")}
           />
 
           {!user?.password ? (
-            <Controller.Password
+            <Password
               idleDir="rtl"
               id="password"
               name="password"
-              value={password}
-              control={control}
+              onChange={(e) => form.set("password", e.target.value)}
+              value={form.state.password}
               inputSize="large"
               label={intl("labels.password")}
-              rules={{ validate: validatePassword }}
-              state={errors.password ? "error" : undefined}
+              state={form.errors.password ? "error" : undefined}
               placeholder={intl("labels.create-password.placeholder")}
-              helper={errors.password?.message}
+              helper={form.errors.password}
             />
           ) : null}
         </div>
@@ -172,7 +162,7 @@ const CompleteProfile: React.FC = () => {
             type="main"
             size="large"
             htmlType="submit"
-            className="w-full"
+            className="w-full text"
             disabled={updateUser.isPending}
             loading={updateUser.isPending}
           >
@@ -183,7 +173,7 @@ const CompleteProfile: React.FC = () => {
             size="large"
             onClick={goRoot}
             htmlType="button"
-            className="w-full"
+            className="w-full text"
             variant="secondary"
             disabled={updateUser.isPending}
           >
