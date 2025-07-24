@@ -1,7 +1,6 @@
 import { HTML_REGEX, INSTAPAY_REGEX, PHONE_NUMBER_REGEX } from "@/constants";
 import { FieldError, type Bank, BANKS, IInvoice } from "@litespace/types";
 import { getSafeInnerHtmlText } from "@/utils";
-import { number } from "zod";
 
 export function isValidInvoiceReceiver(
   receiver: string,
