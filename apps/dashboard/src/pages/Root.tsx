@@ -11,9 +11,12 @@ import { useAuthRoutes } from "@/hooks/authRoutes";
 import { router } from "@/lib/route";
 import { isRegularUser } from "@litespace/utils";
 import Navbar from "@/components/Layout/Navbar";
+import { useRefreshAuthToken } from "@litespace/headless/auth";
+import { useServer } from "@litespace/headless/server";
 
 const Root: React.FC = () => {
   const { user, logout } = useUser();
+  const { setBearerToken } = useServer();
   const navigate = useNavigate();
   const location = useLocation();
   useAuthRoutes();
@@ -42,6 +45,18 @@ const Root: React.FC = () => {
         router.landing({ route: Landing.Home, full: true })
       );
     }
+    const refreshToken = useRefreshAuthToken({
+      onSuccess: (token) => {
+        setBearerToken(token);
+      },
+    });
+
+    useEffect(() => {
+      if (refreshToken.isError) {
+        logout();
+        navigate(Dashboard.Login);
+      }
+    }, [refreshToken.isError, logout, navigate]);
   }, [location.pathname, logout, navigate, user]);
 
   return (
