@@ -16,6 +16,16 @@ const Tutors: React.FC = () => {
   const { query, next, prev, goto, page, totalPages } = useFindFullTutors();
   const render = useRender();
 
+  const hasEnglish = (str: string | null | undefined) =>
+    /[a-zA-Z]/.test(str || "");
+
+  const filteredTutors = query.data?.list?.filter(
+    (tutor) =>
+      !hasEnglish(tutor.name) &&
+      !hasEnglish(tutor.bio) &&
+      !hasEnglish(tutor.about)
+  );
+
   return (
     <div className="flex flex-col gap-6 p-6 max-w-screen-3xl mx-auto w-full">
       <div className="flex justify-between items-center">
@@ -54,7 +64,7 @@ const Tutors: React.FC = () => {
 
       <Content
         refetch={query.refetch}
-        tutors={query.data?.list}
+        tutors={filteredTutors}
         fetching={query.isFetching}
         loading={query.isLoading}
         error={query.isError}
