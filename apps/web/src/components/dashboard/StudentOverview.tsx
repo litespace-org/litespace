@@ -3,8 +3,12 @@ import { StudentOverview as Overview } from "@litespace/ui/StudentOverview";
 import { Typography } from "@litespace/ui/Typography";
 import { useFindPersonalizedStudentStats } from "@litespace/headless/student";
 import { useOnError } from "@/hooks/error";
+import { Void } from "@litespace/types";
+import { useEffect } from "react";
 
-export const StudentOverview: React.FC = () => {
+export const StudentOverview: React.FC<{
+  setIsEmptyLessons: Void;
+}> = ({ setIsEmptyLessons }) => {
   const intl = useFormatMessage();
   const { query, keys } = useFindPersonalizedStudentStats();
 
@@ -13,6 +17,10 @@ export const StudentOverview: React.FC = () => {
     error: query.error,
     keys,
   });
+
+  useEffect(() => {
+    if (query.data?.completedLessonCount === 0) setIsEmptyLessons();
+  }, [query.data?.completedLessonCount, setIsEmptyLessons]);
 
   return (
     <div className="grid gap-4 sm:gap-6 justify-items-start w-full">
