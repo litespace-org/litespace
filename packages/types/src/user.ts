@@ -61,7 +61,6 @@ export type Self = {
   verifiedEmail: boolean;
   verifiedPhone: boolean;
   verifiedWhatsApp: boolean;
-  verifiedTelegram: boolean;
   creditScore: number;
   city: City | null;
   phone: string | null;
@@ -83,7 +82,6 @@ export type Row = {
   verified_email: boolean;
   verified_phone: boolean;
   verified_whatsapp: boolean;
-  verified_telegram: boolean;
   credit_score: number;
   city: City | null;
   phone: string | null;
@@ -160,10 +158,9 @@ export type UpdateApiPayload = {
 
 export enum NotificationMethod {
   Whatsapp = 1,
-  Telegram = 2,
 }
 
-export type NotificationMethodLiteral = "whatsapp" | "telegram";
+export type NotificationMethodLiteral = "whatsapp";
 
 export enum AssetFileName {
   Image = "image",

@@ -5,6 +5,7 @@ import {
   isFieldError,
 } from "@litespace/utils/error";
 import axios, { AxiosError, AxiosInstance } from "axios";
+import { config } from "@/lib/config";
 
 export enum TokenType {
   Bearer = "Bearer",
@@ -37,7 +38,7 @@ export const sockets: Record<
   },
 } as const;
 
-export type Server = "api" | "messenger" | "echo" | "erpnext";
+export type Server = "api" | "messenger" | "echo" | "erpnext" | "whatsapp";
 
 export const servers: Record<Server, Record<Env.Server, string>> = {
   api: {
@@ -59,6 +60,11 @@ export const servers: Record<Server, Record<Env.Server, string>> = {
     local: "https://erpnext-pro.k.erpnext.com",
     staging: "https://erpnext-pro.k.erpnext.com",
     production: "https://litespace.k.erpnext.com",
+  },
+  whatsapp: {
+    local: `https://graph.facebook.com/${config.whatsAppAPI.graphVersion}/${config.whatsAppAPI.numberProfileId.local}`,
+    staging: `https://graph.facebook.com/${config.whatsAppAPI.graphVersion}/${config.whatsAppAPI.numberProfileId.staging}`,
+    production: `https://graph.facebook.com/${config.whatsAppAPI.graphVersion}/${config.whatsAppAPI.numberProfileId.production}`,
   },
 };
 

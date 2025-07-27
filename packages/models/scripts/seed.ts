@@ -44,11 +44,7 @@ const birthYear = () =>
 const phone = () =>
   sample(["01032142699", "01150970374", "01018303125", "01143759540"])!;
 
-const notificationMethod = () =>
-  sample([
-    IUser.NotificationMethod.Whatsapp,
-    IUser.NotificationMethod.Telegram,
-  ])!;
+const notificationMethod = () => sample([IUser.NotificationMethod.Whatsapp])!;
 
 const city = () =>
   sample(

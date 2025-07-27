@@ -656,7 +656,7 @@ export async function introVideo(
   });
   if (!introVideo) throw new Error("introVideo not found; should never happen");
   await introVideos.update({ id: introVideo.id, state: payload?.state });
-  return introVideos.findById(introVideo.id);
+  return (await introVideos.findById(introVideo.id))!;
 }
 
 export async function invoice(payload?: Partial<IInvoice.CreatePayload>) {

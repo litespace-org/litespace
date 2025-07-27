@@ -42,14 +42,7 @@ const NotificationSettings: React.FC<{
   notificationMethod: IUser.NotificationMethod | null;
   phone: string | null;
   verifiedWhatsApp: boolean;
-  verifiedTelegram: boolean;
-}> = ({
-  id,
-  notificationMethod,
-  verifiedTelegram,
-  verifiedWhatsApp,
-  phone,
-}) => {
+}> = ({ id, notificationMethod, verifiedWhatsApp, phone }) => {
   const intl = useFormatMessage();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [sentCode, setSentCode] = useState<boolean>(false);
@@ -63,10 +56,6 @@ const NotificationSettings: React.FC<{
       {
         label: intl("shared-settings.edit.notification.whatsapp"),
         value: IUser.NotificationMethod.Whatsapp,
-      },
-      {
-        label: intl("shared-settings.edit.notification.telegram"),
-        value: IUser.NotificationMethod.Telegram,
       },
     ],
     [intl]
@@ -160,8 +149,7 @@ const NotificationSettings: React.FC<{
       form.set("notificationMethod", value);
 
       const isVerificationNeeded =
-        (value === IUser.NotificationMethod.Whatsapp && !verifiedWhatsApp) ||
-        (value === IUser.NotificationMethod.Telegram && !verifiedTelegram);
+        value === IUser.NotificationMethod.Whatsapp && !verifiedWhatsApp;
 
       if (isVerificationNeeded) setShowDialog(true);
 
@@ -171,7 +159,7 @@ const NotificationSettings: React.FC<{
           phone,
         });
     },
-    [form, phone, sendPhoneCodeMutation, verifiedTelegram, verifiedWhatsApp]
+    [form, phone, sendPhoneCodeMutation, verifiedWhatsApp]
   );
 
   return (

@@ -220,7 +220,7 @@ describe("Confirmation Codes", () => {
         code: 2,
         userId: u1.id,
         expiresAt: time.iso(1),
-        purpose: IConfirmationCode.Purpose.VerifyTelegram,
+        purpose: IConfirmationCode.Purpose.VerifyEmail,
       });
 
       await confirmationCodes.delete({

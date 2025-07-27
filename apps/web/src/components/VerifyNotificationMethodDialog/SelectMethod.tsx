@@ -1,6 +1,5 @@
 import { Typography } from "@litespace/ui/Typography";
 import { MethodButton } from "@/components/VerifyNotificationMethodDialog/MethodButton";
-import Telegram from "@litespace/assets/TelegramWithoutCircle";
 import WhatsApp from "@litespace/assets/WhatsApp";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IUser, Void } from "@litespace/types";
@@ -28,13 +27,6 @@ export const Method: React.FC<Props> = ({ selected, select, close }) => {
         {intl("notification-method.dialog.method.description")}
       </Typography>
       <div className="flex gap-6 mt-6 w-full h-[152px]">
-        <MethodButton
-          activeColor="bg-telegram hover:bg-telegram"
-          icon={<Telegram className="w-[32px] h-[32px]" />}
-          isActive={method === "telegram"}
-          onClick={() => setMethod("telegram")}
-          method="telegram"
-        />
         <MethodButton
           method="whatsapp"
           activeColor="bg-whatsapp hover:bg-whatsapp"

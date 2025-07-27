@@ -40,7 +40,6 @@ const fullTutorFields: FullTutorFieldsMap = {
   verified_email: users.column("verified_email"),
   verified_phone: users.column("verified_phone"),
   verified_whatsapp: users.column("verified_whatsapp"),
-  verified_telegram: users.column("verified_telegram"),
   credit_score: users.column("credit_score"),
   city: users.column("city"),
   phone: users.column("phone"),
@@ -155,11 +154,6 @@ export class Tutors {
       builder,
       users.column("verified_phone"),
       filter.verifiedPhone
-    );
-    withBooleanFilter(
-      builder,
-      users.column("verified_telegram"),
-      filter.verifiedTelegram
     );
     withBooleanFilter(
       builder,
@@ -535,7 +529,6 @@ export class Tutors {
         verified_email: row.verified_email,
         verified_phone: row.verified_phone,
         verified_whatsapp: row.verified_whatsapp,
-        verified_telegram: row.verified_telegram,
         credit_score: row.credit_score,
         phone: row.phone,
         city: row.city,

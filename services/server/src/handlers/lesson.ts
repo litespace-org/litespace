@@ -42,14 +42,14 @@ import {
 } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import { first, isEmpty, isEqual } from "lodash";
-import { genSessionId } from "@litespace/utils";
+import { AFRICA_CAIRO_TIMEZONE, genSessionId } from "@litespace/utils";
 import { withImageUrls } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
-import { sendBackgroundMessage } from "@/workers";
 import { calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription } from "@/lib/subscription";
 import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
 import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
 import { isBookable } from "@/lib/session";
+import { sendMsg } from "@/lib/messenger";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
@@ -185,16 +185,18 @@ function create(context: ApiContext) {
       );
 
       if (tutor.phone && tutor.verifiedPhone && tutor.notificationMethod)
-        sendBackgroundMessage({
-          type: "send-message",
-          payload: {
-            type: "create-lesson",
-            duration: lesson.duration,
-            start: lesson.start,
-            method: tutor.notificationMethod,
-            phone: tutor.phone,
-            studentName: user.name,
+        sendMsg({
+          to: tutor.phone,
+          template: {
+            name: "new_lesson_booked",
+            parameters: {
+              duration: lesson.duration,
+              date: dayjs(lesson.start)
+                .tz(AFRICA_CAIRO_TIMEZONE)
+                .format("ddd D MMM hh:mm A"),
+            },
           },
+          method: tutor.notificationMethod,
         });
 
       const response: ILesson.CreateLessonApiResponse = lesson;
@@ -264,22 +266,20 @@ function update(context: ApiContext) {
         otherMember.verifiedPhone &&
         otherMember.notificationMethod
       )
-        return sendBackgroundMessage({
-          type: "send-message",
-          payload: {
-            type: "update-lesson",
-            current: {
-              start: updated.start,
-              duration: updated.duration,
+        sendMsg({
+          to: otherMember.phone,
+          template: {
+            name: "lesson_updated",
+            parameters: {
+              preDate: dayjs(lesson.start)
+                .tz(AFRICA_CAIRO_TIMEZONE)
+                .format("ddd D MMM hh:mm A"),
+              curDate: dayjs(updated.start)
+                .tz(AFRICA_CAIRO_TIMEZONE)
+                .format("ddd D MMM hh:mm A"),
             },
-            previous: {
-              start: lesson.start,
-              duration: lesson.duration,
-            },
-            method: otherMember.notificationMethod,
-            phone: otherMember.phone,
-            studentName: user.name,
           },
+          method: otherMember.notificationMethod,
         });
 
       // notify tutors that lessons have been rebooked
@@ -442,18 +442,17 @@ function cancel(_context: ApiContext) {
         otherMember.verifiedPhone &&
         otherMember.notificationMethod
       )
-        return sendBackgroundMessage({
-          type: "send-message",
-          payload: {
-            type: "cancel-lesson",
-            canceller: {
-              name: user.name,
-              role: user.role,
+        sendMsg({
+          to: otherMember.phone,
+          template: {
+            name: "lesson_canceled",
+            parameters: {
+              date: dayjs(lesson.start)
+                .tz(AFRICA_CAIRO_TIMEZONE)
+                .format("ddd D MMM hh:mm A"),
             },
-            method: otherMember.notificationMethod,
-            phone: otherMember.phone,
-            start: lesson.start,
           },
+          method: otherMember.notificationMethod,
         });
     }
   );

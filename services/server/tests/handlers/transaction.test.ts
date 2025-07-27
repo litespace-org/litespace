@@ -5,7 +5,7 @@ import { mockApi } from "@fixtures/mockApi";
 import { expect } from "chai";
 import { forbidden, notfound } from "@/lib/error";
 
-const find = mockApi<ITransaction.FindQueryApi>(handlers.find);
+const find = mockApi<ITransaction.FindApiQuery>(handlers.find);
 const findById = mockApi<object, { id: number }, object, IUser.Self>(
   handlers.findById
 );

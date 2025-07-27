@@ -1,8 +1,7 @@
 import dayjs from "@/lib/dayjs";
 import { router } from "@/lib/router";
-import { producer } from "@/lib/kafka";
 import { lessons } from "@litespace/models";
-import { IKafka, ILesson, IUser } from "@litespace/types";
+import { ILesson, IMessenger, IUser } from "@litespace/types";
 import { Web } from "@litespace/utils/routes";
 import { isEmpty } from "lodash";
 import {
@@ -11,6 +10,7 @@ import {
   safePromise,
 } from "@litespace/utils";
 import { msg } from "@/lib/bot";
+import { sendMsg } from "@/lib/messager";
 
 async function start() {
   const result = await safePromise(sendReminders());
@@ -32,8 +32,7 @@ async function sendReminders() {
 
   if (isEmpty(list)) return;
 
-  const whatsappMessages: Array<IKafka.Message> = [];
-  const telegramMessages: Array<IKafka.Message> = [];
+  const whatsappMessages: Array<IMessenger.Message> = [];
 
   const lessonIds = list.map((lesson) => lesson.id);
   const lessonMembers = await lessons.findLessonMembers(lessonIds);
@@ -47,16 +46,10 @@ async function sendReminders() {
       lessonId: lesson.id,
       lessonStart: dayjs(lesson.start),
     });
-    whatsappMessages.push(
-      ...msgs.filter((msg) => msg.topic === "whatsapp").map((msg) => msg.value)
-    );
-    telegramMessages.push(
-      ...msgs.filter((msg) => msg.topic === "telegram").map((msg) => msg.value)
-    );
+    whatsappMessages.push(...msgs);
   }
 
-  await send("whatsapp", whatsappMessages);
-  await send("telegram", telegramMessages);
+  await send(whatsappMessages);
 }
 
 function getReminerMsgsForLessonMembers({
@@ -67,7 +60,7 @@ function getReminerMsgsForLessonMembers({
   members: ILesson.PopulatedMember[];
   lessonId: number;
   lessonStart: dayjs.Dayjs;
-}): Array<IKafka.Topics> {
+}): Array<IMessenger.Message> {
   const tutor = members.find((member) => member.role !== IUser.Role.Student);
   const student = members.find((member) => member.role === IUser.Role.Student);
 
@@ -77,7 +70,7 @@ function getReminerMsgsForLessonMembers({
   // skip lessons that are already started
   if (lessonStart.isBefore(now)) return [];
 
-  const res: Array<IKafka.Topics> = [];
+  const res: Array<IMessenger.Message> = [];
 
   for (const member of members) {
     const msg = getReminderMsgForMember({
@@ -99,9 +92,8 @@ function getReminderMsgForMember({
   member: ILesson.PopulatedMember;
   lessonId: number;
   lessonStart: dayjs.Dayjs;
-}): IKafka.Topics | null {
+}): IMessenger.Message | null {
   const tz = lessonStart.tz(AFRICA_CAIRO_TIMEZONE);
-  const expiresAt = dayjs.utc(lessonStart).toISOString();
 
   if (!member.notificationMethod || !member.phone || !member.verifiedPhone)
     return null;
@@ -111,29 +103,23 @@ function getReminderMsgForMember({
     id: lessonId,
     full: true,
   });
-  const message = `Your lesson will start ${tz.fromNow()}. Join here ${url}`;
-  const notifyByWhatsapp =
-    member.notificationMethod === IUser.NotificationMethod.Whatsapp;
 
   return {
-    topic: notifyByWhatsapp ? "whatsapp" : "telegram",
-    value: {
-      to: member.phone,
-      message,
-      expiresAt,
+    to: member.phone,
+    template: {
+      name: "lesson_reminder",
+      parameters: {
+        time: tz.fromNow(),
+        url,
+      },
     },
+    method: member.notificationMethod,
   };
 }
 
-async function send<T extends IKafka.TopicType>(
-  topic: T,
-  messages: IKafka.Message[]
-) {
+async function send(messages: IMessenger.Message[]) {
   if (isEmpty(messages)) return;
-  await producer.send({
-    topic,
-    messages: messages.map((message) => ({ value: message })),
-  });
+  for (const msg of messages) sendMsg({ ...msg, method: msg.method || null });
 }
 
 export default { start };

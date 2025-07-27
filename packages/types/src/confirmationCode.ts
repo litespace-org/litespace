@@ -2,7 +2,6 @@ import { IUser } from "@/index";
 
 export enum Purpose {
   VerifyWhatsApp = 1,
-  VerifyTelegram = 2,
   VerifyEmail = 3,
   ResetPassword = 4,
 }

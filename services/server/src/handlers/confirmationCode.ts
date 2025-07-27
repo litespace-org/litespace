@@ -5,17 +5,14 @@ import {
   forbidden,
   invalidVerificationCode,
   notfound,
-  unresolvedPhone,
 } from "@/lib/error";
 import { confirmationCodes, knex, users } from "@litespace/models";
 import { IConfirmationCode, IUser } from "@litespace/types";
 import {
   isUser,
   CONFIRMATION_CODE_VALIDITY_MINUTES,
-  NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC,
   NOTIFICATION_METHOD_LITERAL_TO_ENUM,
   NOTIFICATION_METHOD_LITERAL_TO_PURPOSE,
-  safePromise,
 } from "@litespace/utils";
 import { NextFunction, Request, Response } from "express";
 import zod, { ZodSchema } from "zod";
@@ -23,16 +20,12 @@ import dayjs from "@/lib/dayjs";
 import safeRequest from "express-async-handler";
 import { first } from "lodash";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
-import { messenger } from "@/lib/messenger";
-import { producer } from "@/lib/kafka";
 import { unionOfLiterals, email, password } from "@/validation/utils";
 import { sendBackgroundMessage } from "@/workers";
 import { hashPassword, selectPhone } from "@/lib/user";
+import { sendMsg } from "@/lib/messenger";
 
-const method = unionOfLiterals<IUser.NotificationMethodLiteral>([
-  "whatsapp",
-  "telegram",
-]);
+const method = unionOfLiterals<IUser.NotificationMethodLiteral>(["whatsapp"]);
 
 const sendVerifyPhoneCodePayload: ZodSchema<IConfirmationCode.SendVerifyPhoneCodeApiPayload> =
   zod.object({
@@ -91,35 +84,24 @@ async function sendVerifyPhoneCode(
     .toISOString();
 
   // Store the new code in the db
-  const code = await confirmationCodes.create({
+  const { code } = await confirmationCodes.create({
     userId: user.id,
     purpose,
     code: generateConfirmationCode(),
     expiresAt: expiresAt,
   });
 
-  // If the method is telegram; we need to resolve the number first with telegram Api
-  const resolvedPhone =
-    payload.method !== "telegram" ||
-    (await safePromise(
-      messenger.telegram.resolvePhone({ phone }).then((phone) => !!phone)
-    ));
-  if (!resolvedPhone) return next(unresolvedPhone());
-
-  // Send the notification using Kafka Producer
-  const topic = NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC[payload.method];
-  await producer.send({
-    topic,
-    messages: [
-      {
-        value: {
-          to: phone,
-          expiresAt,
-          message: `LiteSpace here! Your verification code: ${code.code}. Please note this code is only valid for the next ${CONFIRMATION_CODE_VALIDITY_MINUTES} minutes. If you didn't ask for this, no action is needed.`,
-        },
+  sendMsg(
+    {
+      to: phone,
+      template: {
+        name: "verify_phone_number",
+        parameters: { otp: code },
       },
-    ],
-  });
+      method: user.notificationMethod,
+    },
+    true
+  );
 
   res.sendStatus(200);
 }
@@ -151,7 +133,6 @@ async function verifyPhoneCode(
     return next(expiredVerificationCode());
   }
 
-  const verifiedTelegram = method === "telegram" || user.verifiedTelegram;
   const verifiedWhatsApp = method === "whatsapp" || user.verifiedWhatsApp;
 
   await knex.transaction(async (tx) => {
@@ -163,7 +144,6 @@ async function verifyPhoneCode(
         verifiedPhone: true,
         notificationMethod: NOTIFICATION_METHOD_LITERAL_TO_ENUM[method],
         verifiedWhatsApp,
-        verifiedTelegram,
       },
       tx
     );

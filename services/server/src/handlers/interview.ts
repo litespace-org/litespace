@@ -52,10 +52,10 @@ import {
   getFirstAvailableSlot,
   INTERVIEW_DURATION,
 } from "@litespace/utils";
-import { sendNotificationMessage } from "@/lib/kafka";
 import dayjs from "dayjs";
 import { withImageUrl, withImageUrls } from "@/lib/user";
 import { isBookable } from "@/lib/session";
+import { sendMsg } from "@/lib/messenger";
 
 const createPayload: ZodSchema<IInterview.CreateApiPayload> = zod.object({
   start: datetime,
@@ -159,13 +159,14 @@ async function create(req: Request, res: Response, next: NextFunction) {
     const date = dayjs(start)
       .tz(AFRICA_CAIRO_TIMEZONE)
       .format("ddd D MMM hh:mm A");
-    const expiresAt = dayjs.utc(start).toISOString();
 
-    await sendNotificationMessage({
+    sendMsg({
+      to: interviewer.phone,
+      template: {
+        name: "new_interview_booked",
+        parameters: { date },
+      },
       method: interviewer.notificationMethod,
-      phone: interviewer.phone,
-      expiresAt,
-      message: `A new interview has be booked at ${date}`,
     });
   }
 

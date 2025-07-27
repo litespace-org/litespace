@@ -7,36 +7,32 @@ import {
   forbidden,
   invalidVerificationCode,
   notfound,
-  unresolvedPhone,
 } from "@/lib/error";
 import dayjs from "@/lib/dayjs";
-import { IConfirmationCode, ITelegram, IUser } from "@litespace/types";
+import { IConfirmationCode, IUser } from "@litespace/types";
 import { mockApi } from "@fixtures/mockApi";
 import handlers from "@/handlers/confirmationCode";
 import { safe, safePromise } from "@litespace/utils";
 import { expect } from "chai";
-import { messenger } from "@/lib/messenger";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
 import { ZodError } from "zod";
 
-const resolvePhoneMock = jest.spyOn(messenger.telegram, "resolvePhone");
-
 const sendVerifyPhoneCode =
-  mockApi<IConfirmationCode.SendVerifyPhoneCodePayload>(
+  mockApi<IConfirmationCode.SendVerifyPhoneCodeApiPayload>(
     handlers.sendVerifyPhoneCode
   );
 
-const verifyPhoneCode = mockApi<IConfirmationCode.VerifyPhoneCodePayload>(
+const verifyPhoneCode = mockApi<IConfirmationCode.VerifyPhoneCodeApiPayload>(
   handlers.verifyPhoneCode
 );
 
 const sendForgetPasswordCode =
-  mockApi<IConfirmationCode.SendForgetPasswordEmailPayload>(
+  mockApi<IConfirmationCode.SendForgetPasswordEmailApiPayload>(
     handlers.sendForgetPasswordCode
   );
 
 const confirmForgetPasswordCode = mockApi<
-  IConfirmationCode.ConfirmForgetPasswordCodePayload,
+  IConfirmationCode.ConfirmForgetPasswordCodeApiPayload,
   void,
   void,
   IConfirmationCode.ConfirmPasswordCodeApiResponse
@@ -45,7 +41,7 @@ const confirmForgetPasswordCode = mockApi<
 const sendEmailVerificationCode = mockApi(handlers.sendEmailVerificationCode);
 
 const confirmEmailVerificationCode =
-  mockApi<IConfirmationCode.VerifyEmailPayload>(
+  mockApi<IConfirmationCode.VerifyEmailApiPayload>(
     handlers.confirmEmailVerificationCode
   );
 
@@ -73,31 +69,6 @@ describe("/api/v1/confirmation-code", () => {
         userId: user.id,
       });
 
-      expect(confirmationCode).to.not.be.null;
-    });
-
-    it("should send the code successfully to a new phone number via telegram", async () => {
-      const phone = "01018303125";
-      const user = await db.student();
-
-      resolvePhoneMock.mockImplementationOnce(() =>
-        Promise.resolve({ id: 1 } as unknown as ITelegram.ResolvePhoneResponse)
-      );
-
-      const response = await safePromise(
-        sendVerifyPhoneCode({
-          body: { phone, method: "telegram" },
-          user,
-        })
-      );
-
-      expect(response).to.not.be.instanceof(Error);
-      const updatedUser = await users.findById(user.id);
-      expect(updatedUser?.phone).to.eq(phone);
-
-      const confirmationCode = await confirmationCodes.find({
-        userId: user.id,
-      });
       expect(confirmationCode).to.not.be.null;
     });
 
@@ -158,23 +129,6 @@ describe("/api/v1/confirmation-code", () => {
 
       expect(response).to.deep.eq(bad("invalid or missing phone number"));
     });
-
-    it("should reject because we phone is unresolved", async () => {
-      const user = await db.student();
-
-      resolvePhoneMock.mockImplementationOnce(() => Promise.resolve(null));
-
-      const response = await safe(async () =>
-        sendVerifyPhoneCode({
-          body: {
-            phone: "01018303124",
-            method: "telegram",
-          },
-          user,
-        })
-      );
-      expect(response).to.deep.eq(unresolvedPhone());
-    });
   });
 
   describe("POST /api/v1/confirmation-code/phone/verify", () => {
@@ -183,18 +137,18 @@ describe("/api/v1/confirmation-code", () => {
       const phone = "01018303125";
       users.update(user.id, {
         phone,
-        notificationMethod: IUser.NotificationMethod.Telegram,
+        notificationMethod: IUser.NotificationMethod.Whatsapp,
       });
       const code = await confirmationCodes.create({
         code: 1234,
         userId: user.id,
         expiresAt: dayjs.utc().add(5, "m").toISOString(),
-        purpose: IConfirmationCode.Purpose.VerifyTelegram,
+        purpose: IConfirmationCode.Purpose.VerifyWhatsApp,
       });
 
       const response = await safe(async () =>
         verifyPhoneCode({
-          body: { code: code.code, method: "telegram" },
+          body: { code: code.code, method: "whatsapp" },
           user,
         })
       );
@@ -203,7 +157,7 @@ describe("/api/v1/confirmation-code", () => {
       const updatedUser = await users.findById(user.id);
       expect(updatedUser?.verifiedPhone).eq(true);
       expect(updatedUser?.notificationMethod).eq(
-        IUser.NotificationMethod.Telegram
+        IUser.NotificationMethod.Whatsapp
       );
 
       const deletedCode = await confirmationCodes.findById(code.id);
@@ -215,18 +169,18 @@ describe("/api/v1/confirmation-code", () => {
       const phone = "01018303125";
       users.update(user.id, {
         phone,
-        notificationMethod: IUser.NotificationMethod.Telegram,
+        notificationMethod: IUser.NotificationMethod.Whatsapp,
       });
       await confirmationCodes.create({
         code: 1234,
         userId: user.id,
         expiresAt: dayjs.utc().add(5, "m").toISOString(),
-        purpose: IConfirmationCode.Purpose.VerifyTelegram,
+        purpose: IConfirmationCode.Purpose.VerifyWhatsApp,
       });
 
       const response = await safe(async () =>
         verifyPhoneCode({
-          body: { code: 1235, method: "telegram" },
+          body: { code: 1235, method: "whatsapp" },
           user,
         })
       );
@@ -240,18 +194,18 @@ describe("/api/v1/confirmation-code", () => {
       const phone = "01018303125";
       users.update(user.id, {
         phone,
-        notificationMethod: IUser.NotificationMethod.Telegram,
+        notificationMethod: IUser.NotificationMethod.Whatsapp,
       });
       const code = await confirmationCodes.create({
         code: 1234,
         userId: user.id,
         expiresAt: dayjs.utc().subtract(5, "m").toISOString(),
-        purpose: IConfirmationCode.Purpose.VerifyTelegram,
+        purpose: IConfirmationCode.Purpose.VerifyWhatsApp,
       });
 
       const response = await safe(async () =>
         verifyPhoneCode({
-          body: { code: code.code, method: "telegram" },
+          body: { code: code.code, method: "whatsapp" },
           user,
         })
       );

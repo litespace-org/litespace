@@ -1,5 +1,4 @@
 import { MethodButton } from "@/components/VerifyPhoneDialog/MethodButton";
-import Telegram from "@litespace/assets/TelegramWithoutCircle";
 import WhatsApp from "@litespace/assets/WhatsApp";
 import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
@@ -36,14 +35,6 @@ export const SelectMethod: React.FC<Props> = ({ close, sendCode, sending }) => {
           isActive={method === "whatsapp"}
           disabled={sending}
           onClick={() => setMethod("whatsapp")}
-        />
-        <MethodButton
-          activeColor="bg-telegram hover:bg-telegram"
-          icon={<Telegram className="w-[32px] h-[32px] icon" />}
-          isActive={method === "telegram"}
-          disabled={sending}
-          onClick={() => setMethod("telegram")}
-          method="telegram"
         />
       </div>
       <div className="flex flex-row items-center gap-6 mt-6 w-full">
