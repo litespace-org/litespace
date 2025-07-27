@@ -10,7 +10,7 @@ export function asSessionId(id: string) {
 
 export function isSessionId(id: string): id is ISession.Id {
   const [prefix, uuid] = id.split(":");
-  return (prefix === "lesson" || prefix === "interview") && !!uuid;
+  return isValidSessionType(prefix) && !!uuid;
 }
 
 export function genSessionId(type: ISession.Type): ISession.Id {

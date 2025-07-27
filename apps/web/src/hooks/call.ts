@@ -78,13 +78,28 @@ export function useUserMedia() {
   const [video, setVideo] = useState<boolean>(false);
   const [denied, setUserDenied] = useState<boolean>(false);
 
+  const intl = useFormatMessage();
+  const toast = useToast();
   const getUserMedia = useCallback(
     async ({ video, audio }: { video: boolean; audio: boolean }) => {
+      if (
+        typeof navigator === "undefined" ||
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+      ) {
+        toast.error({
+          title: intl("labels.file-upload-failed"),
+          description: intl(
+            "tutor-onboarding.steps.intro-video.unsupported-browser"
+          ),
+        });
+        return new Error("getUserMedia is not supported in this environment");
+      }
       return await safe(
         async () => await navigator.mediaDevices.getUserMedia({ video, audio })
       );
     },
-    []
+    [toast, intl]
   );
 
   const getUserStream = useCallback(async () => {

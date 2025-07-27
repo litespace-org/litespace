@@ -111,6 +111,7 @@ const InRecord: React.FC<{ next: (b: Blob, dur: number) => void }> = ({
   next,
 }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -137,16 +138,27 @@ const InRecord: React.FC<{ next: (b: Blob, dur: number) => void }> = ({
   // ========== Capturing Media Logic ===========
   useEffect(() => {
     if (!videoRef.current) return;
+    if (
+      typeof navigator === "undefined" ||
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ) {
+      setStream(null);
+      toast.error({
+        title: intl("labels.file-upload-failed"),
+        description: intl(
+          "tutor-onboarding.steps.intro-video.unsupported-browser"
+        ),
+      });
+      return;
+    }
     navigator.mediaDevices
-      .getUserMedia({
-        audio: true,
-        video: true,
-      })
+      .getUserMedia({ audio: true, video: true })
       .then((stream) => {
         setStream(stream);
         if (videoRef.current) videoRef.current.srcObject = stream;
       });
-  }, [intl]);
+  }, [intl, toast]);
 
   // ========== Timing Logic ===========
   useEffect(() => {
