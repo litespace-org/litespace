@@ -140,14 +140,12 @@ export const fawryConfig = {
 };
 
 export const messengerConfig = {
-  username: zod
-    .string({ message: "Missing messenger username" })
-    .trim()
-    .parse(process.env.MESSENGER_USERNAME),
-  password: zod
-    .string({ message: "Missing messenger password" })
-    .trim()
-    .parse(process.env.MESSENGER_PASSWORD),
+  whatsAppAPI: {
+    accessToken: zod
+      .string()
+      .trim()
+      .parse(process.env.WHATSAPP_API_ACCESS_TOKEN),
+  },
 };
 
 export const livekitConfig = {

@@ -24,6 +24,9 @@ const schema = zod.object({
     accessKeyId: zod.string().trim(),
     secretAccessKey: zod.string().trim(),
   }),
+  whatsAppAPI: zod.object({
+    accessToken: zod.string().trim(),
+  }),
 });
 
 type ConfigSchema = Zod.infer<typeof schema>;
@@ -40,5 +43,8 @@ export const config: ConfigSchema = schema.parse({
     bucketName: process.env.SPACES_BUCKET_NAME,
     accessKeyId: process.env.SPACES_ACCESS_KEY,
     secretAccessKey: process.env.SPACES_SECRET_ACCESS_KEY,
+  },
+  whatsAppAPI: {
+    accessToken: process.env.WHATSAPP_API_ACCESS_TOKEN,
   },
 });

@@ -109,7 +109,6 @@ export const NOTIFICATION_METHOD_TO_PURPOSE: Record<
   IConfirmationCode.Purpose
 > = {
   [IUser.NotificationMethod.Whatsapp]: IConfirmationCode.Purpose.VerifyWhatsApp,
-  [IUser.NotificationMethod.Telegram]: IConfirmationCode.Purpose.VerifyTelegram,
 };
 
 export const NOTIFICATION_METHOD_LITERAL_TO_ENUM: Record<
@@ -117,7 +116,6 @@ export const NOTIFICATION_METHOD_LITERAL_TO_ENUM: Record<
   IUser.NotificationMethod
 > = {
   whatsapp: IUser.NotificationMethod.Whatsapp,
-  telegram: IUser.NotificationMethod.Telegram,
 };
 
 export const NOTIFICATION_METHOD_LITERAL_TO_PURPOSE: Record<
@@ -125,7 +123,6 @@ export const NOTIFICATION_METHOD_LITERAL_TO_PURPOSE: Record<
   IConfirmationCode.Purpose
 > = {
   whatsapp: IConfirmationCode.Purpose.VerifyWhatsApp,
-  telegram: IConfirmationCode.Purpose.VerifyTelegram,
 };
 
 export const NOTIFICATION_METHOD_TO_KAFKA_TOPIC: Record<
@@ -133,7 +130,6 @@ export const NOTIFICATION_METHOD_TO_KAFKA_TOPIC: Record<
   IKafka.TopicType
 > = {
   [IUser.NotificationMethod.Whatsapp]: "whatsapp",
-  [IUser.NotificationMethod.Telegram]: "telegram",
 };
 
 export const NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL: Record<
@@ -141,7 +137,6 @@ export const NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL: Record<
   IUser.NotificationMethodLiteral
 > = {
   [IUser.NotificationMethod.Whatsapp]: "whatsapp",
-  [IUser.NotificationMethod.Telegram]: "telegram",
 };
 
 export const NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC: Record<
@@ -149,7 +144,6 @@ export const NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC: Record<
   IKafka.TopicType
 > = {
   whatsapp: "whatsapp",
-  telegram: "telegram",
 };
 
 export const PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL: Record<

@@ -78,7 +78,6 @@ const Body: React.FC<{ tab: TabId; user: IUser.Self; notice: number }> = ({
         id={user.id}
         phone={user.phone}
         verifiedWhatsApp={user.verifiedWhatsApp}
-        verifiedTelegram={user.verifiedTelegram}
         notificationMethod={user.notificationMethod}
       />
     );

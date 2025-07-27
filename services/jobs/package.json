@@ -16,6 +16,7 @@
     "@litespace/radio": "workspace:^",
     "@litespace/types": "workspace:^",
     "@litespace/utils": "workspace:^",
+    "@litespace/atlas": "workspace:^",
     "node-schedule": "^2.1.1",
     "commander": "^13.1.0",
     "dayjs": "^1.11.13",

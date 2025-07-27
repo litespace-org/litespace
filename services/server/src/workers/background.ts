@@ -4,7 +4,6 @@ import {
   createSessionEvent,
   sendForgetPasswordCodeEmail,
   sendUserVerificationCodeEmail,
-  sendMessage,
   updateTutorCache,
 } from "@/workers/handlers";
 
@@ -29,5 +28,4 @@ parentPort?.on("message", async ({ type, payload }: WorkerMessage) => {
 
   if (type === "update-tutor-cache") return await updateTutorCache(payload);
   if (type === "create-session-event") return await createSessionEvent(payload);
-  if (type == "send-message") return await sendMessage(payload);
 });

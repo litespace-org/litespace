@@ -26,7 +26,7 @@ export const Primary: Story = {
 export const WithMethod: Story = {
   args: {
     close: () => {},
-    method: "telegram",
+    method: "whatsapp",
     phone: null,
     sendCode: () => {},
     sendingCode: false,
@@ -39,7 +39,7 @@ export const WithMethod: Story = {
 export const SendingCode: Story = {
   args: {
     close: () => {},
-    method: "telegram",
+    method: "whatsapp",
     phone: "01012345678",
     sendCode: () => {},
     sendingCode: true,
@@ -52,7 +52,7 @@ export const SendingCode: Story = {
 export const WithPhone: Story = {
   args: {
     close: () => {},
-    method: "telegram",
+    method: "whatsapp",
     phone: "01012345678",
     sendCode: () => {},
     sendingCode: false,
@@ -65,7 +65,7 @@ export const WithPhone: Story = {
 export const VerifyingCode: Story = {
   args: {
     close: () => {},
-    method: "telegram",
+    method: "whatsapp",
     phone: "01012345678",
     sendCode: () => {},
     sendingCode: false,
@@ -78,7 +78,7 @@ export const VerifyingCode: Story = {
 export const ResendingCode: Story = {
   args: {
     close: () => {},
-    method: "telegram",
+    method: "whatsapp",
     phone: "01012345678",
     sendCode: () => {},
     sendingCode: true,
@@ -91,7 +91,7 @@ export const ResendingCode: Story = {
 export const UnresolvedPhone: Story = {
   args: {
     close: () => {},
-    method: "telegram",
+    method: "whatsapp",
     phone: "01012345678",
     sendCode: () => {},
     sendingCode: false,

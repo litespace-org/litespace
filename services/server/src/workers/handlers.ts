@@ -2,14 +2,11 @@ import { emailer } from "@/lib/email";
 import { EmailTemplate } from "@litespace/emails";
 import { safe, safePromise } from "@litespace/utils/error";
 import { nameof } from "@litespace/utils/utils";
-import { WorkerMessageOf, WorkerMessagePayloadOf } from "@/workers/types";
+import { WorkerMessageOf } from "@/workers/types";
 import { sessionEvents, tutors } from "@litespace/models";
 import { joinTutorCache } from "@/lib/tutor";
 import { cache } from "@/lib/cache";
 import { isOnboarded } from "@litespace/utils/tutor";
-import dayjs from "@/lib/dayjs";
-import { producer } from "@/lib/kafka";
-import { NOTIFICATION_METHOD_TO_KAFKA_TOPIC } from "@litespace/utils/constants";
 
 export async function sendForgetPasswordCodeEmail({
   email,
@@ -82,45 +79,4 @@ export async function createSessionEvent(
     return sessionEvents.create(payload);
   });
   if (error instanceof Error) console.error(error);
-}
-
-function formatMessage(
-  payload: WorkerMessagePayloadOf<"send-message">
-): string {
-  const formatDate = (date: string) =>
-    dayjs(date).tz("Africa/Cairo").format("ddd D MMM hh:mm a");
-
-  if (payload.type === "create-lesson") {
-    const date = formatDate(payload.start);
-    return `New lesson booked! A student has booked a lesson with you for ${payload.duration} minutes at ${date} (GMT+2)`;
-  }
-
-  if (payload.type === "update-lesson") {
-    const prevStart = formatDate(payload.previous.start);
-    const prevDuration = payload.previous.duration + " minutes";
-    const currentStart = formatDate(payload.current.start);
-    const currentDuration = payload.current.duration + " minutes";
-    return `Your lesson at ${prevStart} (${prevDuration}) is now updated to ${currentStart} (${currentDuration})`;
-  }
-
-  const date = formatDate(payload.start);
-  return `Your lesson at ${date} is canceled.`;
-}
-
-export async function sendMessage(
-  payload: WorkerMessagePayloadOf<"send-message">
-) {
-  const message = formatMessage(payload);
-
-  await producer.send({
-    topic: NOTIFICATION_METHOD_TO_KAFKA_TOPIC[payload.method],
-    messages: [
-      {
-        value: {
-          to: payload.phone,
-          message,
-        },
-      },
-    ],
-  });
 }

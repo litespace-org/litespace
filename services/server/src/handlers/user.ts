@@ -340,7 +340,6 @@ function update(_: ApiContext) {
           // reset user verification status incase his email or phone got updated.
           verifiedEmail: newEmail ? false : undefined,
           verifiedPhone: newPhone ? false : undefined,
-          verifiedTelegram: newPhone ? false : undefined,
           verifiedWhatsApp: newPhone ? false : undefined,
           password: password ? hashPassword(password.new) : undefined,
           // reset notification method incase the user phone got updated

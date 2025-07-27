@@ -186,18 +186,9 @@ describe(nameof(Tutors), () => {
     });
 
     it("should filter based on notification methods", async () => {
-      await fixtures.tutor(
-        {},
-        { notificationMethod: IUser.NotificationMethod.Telegram }
-      );
-      await fixtures.tutor(
-        {},
-        { notificationMethod: IUser.NotificationMethod.Telegram }
-      );
-      await fixtures.tutor(
-        {},
-        { notificationMethod: IUser.NotificationMethod.Telegram }
-      );
+      await fixtures.tutor({}, { notificationMethod: null });
+      await fixtures.tutor({}, { notificationMethod: null });
+      await fixtures.tutor({}, { notificationMethod: null });
       await fixtures.tutor(
         {},
         { notificationMethod: IUser.NotificationMethod.Whatsapp }
@@ -211,22 +202,9 @@ describe(nameof(Tutors), () => {
       expect(res1.list.length).to.be.eq(5);
 
       const res2 = await tutors.find({
-        notificationMethod: [IUser.NotificationMethod.Telegram],
-      });
-      expect(res2.list.length).to.be.eq(3);
-
-      const res3 = await tutors.find({
         notificationMethod: [IUser.NotificationMethod.Whatsapp],
       });
-      expect(res3.list.length).to.be.eq(2);
-
-      const res4 = await tutors.find({
-        notificationMethod: [
-          IUser.NotificationMethod.Telegram,
-          IUser.NotificationMethod.Whatsapp,
-        ],
-      });
-      expect(res4.list.length).to.be.eq(5);
+      expect(res2.list.length).to.be.eq(2);
     });
 
     it("should filter based on name", async () => {
@@ -358,20 +336,6 @@ describe(nameof(Tutors), () => {
       expect(res1.list.length).to.be.eq(2);
 
       const res2 = await tutors.find({ verifiedPhone: false });
-      expect(res2.list.length).to.be.eq(3);
-    });
-
-    it("should filter based on verifiedTelegram", async () => {
-      await fixtures.tutor({}, { verifiedTelegram: true });
-      await fixtures.tutor({}, { verifiedTelegram: true });
-      await fixtures.tutor({}, { verifiedTelegram: false });
-      await fixtures.tutor({}, { verifiedTelegram: false });
-      await fixtures.tutor({}, { verifiedTelegram: false });
-
-      const res1 = await tutors.find({ verifiedTelegram: true });
-      expect(res1.list.length).to.be.eq(2);
-
-      const res2 = await tutors.find({ verifiedTelegram: false });
       expect(res2.list.length).to.be.eq(3);
     });
 

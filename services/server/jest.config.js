@@ -24,7 +24,6 @@ module.exports = {
     "<rootDir>/../../packages/tests/dist/cjs/mocks/global/s3",
     "<rootDir>/../../packages/tests/dist/cjs/mocks/global/worker",
     "<rootDir>/../../packages/tests/dist/cjs/mocks/global/telegram",
-    "<rootDir>/../../packages/tests/dist/cjs/mocks/global/kafka",
     "<rootDir>/fixtures/fawry.ts",
   ],
 };

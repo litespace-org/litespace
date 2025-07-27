@@ -1592,6 +1592,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.806.0
         version: 3.806.0
+      '@litespace/atlas':
+        specifier: workspace:^
+        version: link:../../packages/atlas
       '@litespace/kafka':
         specifier: workspace:^
         version: link:../../packages/kafka
@@ -1803,9 +1806,6 @@ importers:
       '@litespace/emails':
         specifier: workspace:^
         version: link:../../packages/emails
-      '@litespace/kafka':
-        specifier: workspace:^
-        version: link:../../packages/kafka
       '@litespace/models':
         specifier: workspace:^
         version: link:../../packages/models
@@ -1839,6 +1839,9 @@ importers:
       bytes:
         specifier: ^3.1.2
         version: 3.1.2
+      chai-as-promised:
+        specifier: ^8.0.1
+        version: 8.0.1(chai@5.2.0)
       colors:
         specifier: ^1.4.0
         version: 1.4.0
