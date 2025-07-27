@@ -61,62 +61,45 @@ export const Ready: React.FC<{
   const messageIds = useMemo(() => SESSION_TO_MESSAGE_IDS[type], [type]);
 
   const waiting = useMemo(() => {
-    if (
-      type === "interview" &&
-      isTutorManagerRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.male-interviewer-waiting");
-
-    if (
-      type === "interview" &&
-      isTutorManagerRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.female-interviewer-waiting");
-
-    if (
-      type === "interview" &&
-      isRegularTutorRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.male-tutor-waiting");
-
-    if (
-      type === "interview" &&
-      isRegularTutorRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.male-tutor-waiting");
-
-    if (
-      type === "lesson" &&
-      isTutorRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Female
-    )
-      return intl("session.ready.female-tutor-waiting");
-
-    if (
-      type === "lesson" &&
-      isTutorRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.female-tutor-waiting");
-
-    if (
-      type === "lesson" &&
-      isStudentRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.male-student-waiting");
-
-    if (
-      type === "lesson" &&
-      isStudentRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Female
-    )
-      return intl("session.ready.female-student-waiting");
-
+    // Interview
+    if (type === "interview" && isTutorManagerRole(remoteMember.role)) {
+      if (remoteMember.gender === IUser.Gender.Male)
+        return intl("session.ready.male-interviewer-waiting");
+      if (remoteMember.gender === IUser.Gender.Female)
+        return intl("session.ready.female-interviewer-waiting");
+    }
+    if (type === "interview" && isRegularTutorRole(remoteMember.role)) {
+      if (remoteMember.gender === IUser.Gender.Male)
+        return intl("session.ready.male-tutor-waiting");
+      if (remoteMember.gender === IUser.Gender.Female)
+        return intl("session.ready.female-tutor-waiting");
+    }
+    // Lesson
+    if (type === "lesson" && isTutorRole(remoteMember.role)) {
+      if (remoteMember.gender === IUser.Gender.Male)
+        return intl("session.ready.male-tutor-waiting");
+      if (remoteMember.gender === IUser.Gender.Female)
+        return intl("session.ready.female-tutor-waiting");
+    }
+    if (type === "lesson" && isStudentRole(remoteMember.role)) {
+      if (remoteMember.gender === IUser.Gender.Male)
+        return intl("session.ready.male-student-waiting");
+      if (remoteMember.gender === IUser.Gender.Female)
+        return intl("session.ready.female-student-waiting");
+    }
+    // Demo
+    if (type === "demo" && isTutorManagerRole(remoteMember.role)) {
+      if (remoteMember.gender === IUser.Gender.Male)
+        return intl("session.ready.demo-male-tutor-manager-waiting");
+      if (remoteMember.gender === IUser.Gender.Female)
+        return intl("session.ready.demo-female-tutor-manager-waiting");
+    }
+    if (type === "demo" && isRegularTutorRole(remoteMember.role)) {
+      if (remoteMember.gender === IUser.Gender.Male)
+        return intl("session.ready.demo-male-tutor-waiting");
+      if (remoteMember.gender === IUser.Gender.Female)
+        return intl("session.ready.demo-female-tutor-waiting");
+    }
     throw new Error("unsupported session or user role, should never happen");
   }, [remoteMember.role, remoteMember.gender, type, intl]);
 

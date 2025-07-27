@@ -32,6 +32,8 @@ import {
   tutors,
   availabilitySlots,
   demoSessions,
+  knex,
+  rooms,
 } from "@litespace/models";
 import { first } from "lodash";
 import zod, { ZodSchema } from "zod";
@@ -125,12 +127,17 @@ async function create(req: Request, res: Response, next: NextFunction) {
   )
     return next(busyTutorManager());
 
-  await demoSessions.create({
-    tutorId: user.id,
-    slotId,
-    start,
+  await knex.transaction(async (tx) => {
+    await demoSessions.create(
+      {
+        tutorId: user.id,
+        slotId,
+        start,
+      },
+      tx
+    );
+    await rooms.create([user.id, slot.userId], tx);
   });
-
   res.sendStatus(200);
 }
 
@@ -190,23 +197,11 @@ async function find(req: Request, res: Response, next: NextFunction) {
 
   const payload = findDemoSessionQuery.parse(req.query);
 
-  // regular tutors are only allowed to retrieve their demo-sessions
-  if (
-    isRegularTutor(user) &&
-    (!payload.tutorIds?.includes(user.id) || payload.tutorIds.length > 1)
-  )
-    return next(forbidden());
-
-  // tutor-managers are only allowed to retrieve their demo-sessions
-  if (
-    isTutorManager(user) &&
-    (!payload.tutorManagerIds?.includes(user.id) ||
-      payload.tutorManagerIds.length > 1)
-  )
-    return next(forbidden());
-
-  const response: IDemoSession.FindApiResponse =
-    await demoSessions.find(payload);
+  const response: IDemoSession.FindApiResponse = await demoSessions.find({
+    ...payload,
+    tutorIds: isRegularTutor(user) ? [user.id] : payload.tutorIds,
+    tutorManagerIds: isTutorManager(user) ? [user.id] : payload.tutorManagerIds,
+  });
 
   res.status(200).json(response);
 }

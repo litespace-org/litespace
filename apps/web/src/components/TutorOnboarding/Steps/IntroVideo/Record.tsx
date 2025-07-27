@@ -137,11 +137,16 @@ const InRecord: React.FC<{ next: (b: Blob, dur: number) => void }> = ({
   // ========== Capturing Media Logic ===========
   useEffect(() => {
     if (!videoRef.current) return;
+    if (
+      typeof navigator === "undefined" ||
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ) {
+      setStream(null);
+      return;
+    }
     navigator.mediaDevices
-      .getUserMedia({
-        audio: true,
-        video: true,
-      })
+      .getUserMedia({ audio: true, video: true })
       .then((stream) => {
         setStream(stream);
         if (videoRef.current) videoRef.current.srcObject = stream;

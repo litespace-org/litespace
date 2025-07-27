@@ -12,6 +12,7 @@ import { Chat } from "@/api/chat";
 import { Interview } from "@/api/interview";
 import { Lesson } from "@/api/lesson";
 import { Invoice } from "@/api/invoice";
+import { DemoSession } from "@/api/demoSession";
 import { Topic } from "@/api/topic";
 import { AuthToken, createClient } from "@/lib/client";
 import { Cache } from "@/api/cache";
@@ -48,6 +49,7 @@ export class Api {
   public readonly subscription: Subscription;
   public readonly transaction: Transaction;
   public readonly introVideo: IntroVideo;
+  public readonly demoSession: DemoSession;
 
   constructor(server: Env.Server, token: AuthToken | null) {
     const client = createClient("api", server, token);
@@ -74,5 +76,6 @@ export class Api {
     this.subscription = new Subscription(client);
     this.transaction = new Transaction(client);
     this.introVideo = new IntroVideo(client);
+    this.demoSession = new DemoSession(client);
   }
 }
