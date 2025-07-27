@@ -1,22 +1,24 @@
-import { IInvoice, Paginated, Void } from "@litespace/types";
-import React, { useCallback, useState } from "react";
-import { Table } from "@litespace/ui/Table";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { formatCurrency } from "@litespace/ui/utils";
-import { ActionsMenu } from "@litespace/ui/ActionsMenu";
-import { createColumnHelper } from "@tanstack/react-table";
-import { useMemo } from "react";
 import DateField from "@/components/Common/DateField";
-import { UseQueryResult } from "@tanstack/react-query";
+import UserPopover from "@/components/Common/UserPopover";
 import Process from "@/components/Invoices/Process";
 import { Action } from "@/components/Invoices/type";
-import UserPopover from "@/components/Common/UserPopover";
 import {
   invoiceStatusIntlMap,
   withdrawMethodsIntlMap,
 } from "@/components/utils/invoice";
+import { IInvoice, Paginated, Void } from "@litespace/types";
+import { ActionsMenu } from "@litespace/ui/ActionsMenu";
+import { Button } from "@litespace/ui/Button";
+import { Table } from "@litespace/ui/Table";
 import { Typography } from "@litespace/ui/Typography";
-import ImageField from "@/components/Common/ImageField";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { formatCurrency } from "@litespace/ui/utils";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { UseQueryResult } from "@tanstack/react-query";
+import { createColumnHelper } from "@tanstack/react-table";
+import cn from "classnames";
+import React, { useCallback, useMemo, useState } from "react";
+import Menu from "@litespace/assets/Menu";
 
 const List: React.FC<{
   data: Paginated<IInvoice.Self>;
@@ -38,7 +40,9 @@ const List: React.FC<{
     () => [
       columnHelper.accessor("id", {
         header: intl("global.labels.id"),
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+          return <>{info.getValue()}#</>;
+        },
       }),
       columnHelper.accessor("userId", {
         header: intl("dashboard.invoices.userId"),
@@ -66,38 +70,28 @@ const List: React.FC<{
           const status = info.getValue();
           const value = invoiceStatusIntlMap[status];
           return (
-            <Typography tag="span" className="truncate text-body">
+            <Typography
+              tag="span"
+              className={cn("text-body", {
+                "text-warning-600":
+                  info.row.original.status ===
+                    IInvoice.Status.PendingApproval ||
+                  info.row.original.status ===
+                    IInvoice.Status.PendingCancellation,
+              })}
+            >
               {intl(value)}
             </Typography>
           );
-        },
-      }),
-      columnHelper.accessor("note", {
-        header: intl("dashboard.invoices.note"),
-        cell: (info) => info.getValue(),
-      }),
-      columnHelper.accessor("receipt", {
-        header: intl("dashboard.invoices.receipt"),
-        cell: (info) => <ImageField url={info.getValue()} />,
-      }),
-      columnHelper.accessor("addressedBy", {
-        header: intl("dashboard.invoices.addressedBy"),
-        cell: (info) => {
-          const id = info.getValue();
-          if (!id) return "-";
-          return <UserPopover id={id} />;
         },
       }),
       columnHelper.accessor("createdAt", {
         header: intl("global.created-at"),
         cell: (info) => <DateField date={info.row.original.updatedAt} />,
       }),
-      columnHelper.accessor("updatedAt", {
-        header: intl("global.updated-at"),
-        cell: (info) => <DateField date={info.row.original.updatedAt} />,
-      }),
       columnHelper.display({
         id: "actions",
+        header: intl("table.actions"),
         cell: (info) => {
           const status = info.row.original.status;
           const fulfilled = status === IInvoice.Status.Approved;
@@ -110,8 +104,18 @@ const List: React.FC<{
             setInvoice(info.row.original);
           };
 
+          if (info.row.original.status === IInvoice.Status.Rejected) return;
+
           return (
             <ActionsMenu
+              children={
+                <Button
+                  variant="secondary"
+                  type="natural"
+                  size="medium"
+                  startIcon={<Menu className="icon" />}
+                />
+              }
               actions={[
                 {
                   id: 1,
