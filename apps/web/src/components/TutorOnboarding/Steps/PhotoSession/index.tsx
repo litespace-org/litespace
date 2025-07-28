@@ -2,7 +2,7 @@ import Logo from "@litespace/assets/Logo";
 import { useRender } from "@litespace/headless/common";
 import { Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
-import { VideoDialog } from "@litespace/ui/Dialog";
+import { Dialog } from "@litespace/ui/Dialog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
@@ -64,9 +64,9 @@ const SessionExample: React.FC<{
               </Typography>
             </Button>
           ) : null}
-          <VideoDialog open={open} close={() => setOpen(false)}>
+          <Dialog open={open} variant="media" close={() => setOpen(false)}>
             <VideoPlayer src={VIDEO_SESSION_EXAMPLE} />
-          </VideoDialog>
+          </Dialog>
         </div>
         <div className="flex flex-col gap-2 mb-6">
           <Typography
