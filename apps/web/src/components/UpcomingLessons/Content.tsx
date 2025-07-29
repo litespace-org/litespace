@@ -21,7 +21,6 @@ import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isStudent } from "@litespace/utils/user";
-import { useEnableNotificationsToastAction } from "@/hooks/notification";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -40,7 +39,6 @@ export const Content: React.FC<{
   const toast = useToast();
   const { user } = useUser();
   const navigate = useNavigate();
-  const enableNotifications = useEnableNotificationsToastAction();
 
   const [cancelLessonId, setCancelLessonId] = useState<number | null>(null);
   const [manageLessonData, setManageLessonData] =
@@ -49,19 +47,12 @@ export const Content: React.FC<{
   const onCancelSuccess = useCallback(() => {
     toast.success({
       title: intl("cancel-lesson.success"),
-      actions: enableNotifications.show ? [enableNotifications.action] : [],
     });
     setCancelLessonId(null);
     queryClient.invalidateQueries({
       queryKey: [QueryKey.FindInfiniteLessons],
     });
-  }, [
-    toast,
-    intl,
-    enableNotifications.show,
-    enableNotifications.action,
-    queryClient,
-  ]);
+  }, [toast, intl, queryClient]);
 
   const onCancelError = useCallback(
     (error: unknown) => {

@@ -64,16 +64,14 @@ export const TutorCard: React.FC<{
 
         <Button
           htmlType="button"
-          className="w-full mt-auto"
+          className="w-full mt-auto text-body font-medium"
           size="large"
           onClick={(event) => {
             event.preventDefault();
             onBook();
           }}
         >
-          <Typography tag="span" className="text-body font-medium">
-            {intl("tutor-card.book-now")}
-          </Typography>
+          {intl("tutor-card.book-now")}
         </Button>
       </div>
     </Link>

@@ -1,8 +1,10 @@
 import { createContext, useCallback, useContext } from "react";
 import { ToastId, ToastType } from "@/components/Toast/types";
+import { ButtonVariant } from "@/components/Button";
 
 export type ToastAction = {
   label: string;
+  variant?: ButtonVariant;
   onClick?: () => boolean | void;
   loading?: boolean;
   disabled?: boolean;
