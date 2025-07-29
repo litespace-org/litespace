@@ -8,15 +8,13 @@ export class Messenger {
   constructor({
     server,
     whatsAppToken,
+    profileId,
   }: {
     server: Env.Server;
-    whatsAppToken?: AuthToken;
+    whatsAppToken: AuthToken;
+    profileId: number;
   }) {
-    const whatsAppClient = createClient(
-      "whatsapp",
-      server,
-      whatsAppToken || null
-    );
-    this.whatsapp = new Whatsapp(whatsAppClient);
+    const whatsAppClient = createClient("whatsapp", server, whatsAppToken);
+    this.whatsapp = new Whatsapp(whatsAppClient, profileId);
   }
 }

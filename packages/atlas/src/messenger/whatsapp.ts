@@ -1,11 +1,19 @@
 import { Base } from "@/lib/base";
 import { IMessenger } from "@litespace/types";
+import { AxiosInstance } from "axios";
 
 export class Whatsapp extends Base {
+  constructor(
+    client: AxiosInstance,
+    public readonly profileId: number
+  ) {
+    super(client);
+  }
+
   sendSimpleMessage(payload: IMessenger.Message) {
     return this.post({
       // as shown here: https://developers.facebook.com/docs/whatsapp/cloud-api/overview
-      route: "/messages",
+      route: `/v22.0/${this.profileId}/messages`,
       payload: {
         messaging_product: "whatsapp",
         recipient_type: "individual",

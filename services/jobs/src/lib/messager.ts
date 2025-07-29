@@ -8,6 +8,7 @@ export const messenger = new Messenger({
     type: TokenType.Bearer,
     value: config.whatsAppAPI.accessToken,
   },
+  profileId: config.whatsAppAPI.profileId,
 });
 
 export function sendMsg(msg: Required<IMessenger.Message>) {

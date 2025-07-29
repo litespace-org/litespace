@@ -145,6 +145,7 @@ export const messengerConfig = {
       .string()
       .trim()
       .parse(process.env.WHATSAPP_API_ACCESS_TOKEN),
+    profileId: zod.coerce.number().parse(process.env.WHATSAPP_API_PROFILE_ID),
   },
 };
 
