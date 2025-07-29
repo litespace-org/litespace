@@ -1,9 +1,9 @@
-import { Button } from "@/components/Button";
+import { Button, ButtonType } from "@/components/Button";
 import { ToastAction } from "@/components/Toast/context";
 import { ToastId, ToastType } from "@/components/Toast/types";
 import { Typography } from "@/components/Typography";
 import AlertCircle from "@litespace/assets/AlertCircle";
-import CheckCircle from "@litespace/assets/CheckCircle";
+import CheckCircle from "@litespace/assets/CheckCircleV2";
 import Error from "@litespace/assets/Error";
 import WarningInfo from "@litespace/assets/WarningInfo";
 import X from "@litespace/assets/X";
@@ -58,16 +58,20 @@ export const Toast: React.FC<{
       <Title className="flex gap-2 items-center justify-center w-full">
         <Typography
           tag="span"
-          className={cn(
-            "font-bold flex-1 text-body text-natural-950 select-text relative"
-          )}
+          className={cn("font-bold flex-1 text-body select-text relative", {
+            "text-success-500": type === "success",
+            "text-destructive-600": type === "error",
+            "text-secondary-600": type === "info",
+            "text-warning-600": type === "warning",
+          })}
           style={{ textIndent: "28px" }}
         >
           <Icon
             className={cn("w-5 h-5 absolute top-0.5", {
-              "[&>*]:stroke-brand-600": type === "success",
+              "[&>*]:stroke-success-500": type === "success",
               "[&>*>*]:stroke-destructive-600": type === "error",
               "[&>*>*]:stroke-secondary-600": type === "info",
+              "[&>*>*]:stroke-warning-600": type === "warning",
             })}
           />
 
@@ -90,7 +94,7 @@ export const Toast: React.FC<{
       >
         <Typography
           tag="p"
-          className="text-natural-600 font-semibold dark:text-natural-50 text-caption select-text"
+          className="text-natural-600 font-normal dark:text-natural-50 text-tiny select-text"
         >
           {description}
         </Typography>
@@ -101,22 +105,25 @@ export const Toast: React.FC<{
           {actions.map((action, idx) => (
             <Button
               key={idx}
-              variant="primary"
-              type="natural"
+              variant={action.variant}
+              type={
+                cn({
+                  success: type === "success",
+                  main: type === "info",
+                  warning: type === "warning",
+                  error: type === "error",
+                }) as ButtonType
+              }
+              size="large"
               loading={action.loading}
               disabled={action.disabled}
               onClick={() => {
                 const shouldClose = action.onClick?.();
                 if (shouldClose) onOpenChange?.(false);
               }}
-              className="min-w-20"
+              className="flex-1 text-body font-medium"
             >
-              <Typography
-                tag="span"
-                className="text-natural-700 text-body font-medium"
-              >
-                {action.label}
-              </Typography>
+              {action.label}
             </Button>
           ))}
         </div>

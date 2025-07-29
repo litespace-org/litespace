@@ -44,12 +44,14 @@ export const Success: Story = {
                   actions: [
                     {
                       label: faker.lorem.word(),
+                      variant: "secondary",
                       disabled: false,
                       loading: false,
                       onClick: () => true,
                     },
                     {
                       label: faker.lorem.word(),
+                      variant: "primary",
                       disabled: false,
                       loading: false,
                       onClick: () => false,
@@ -69,12 +71,14 @@ export const Success: Story = {
                   actions: [
                     {
                       label: faker.lorem.word(),
+                      variant: "secondary",
                       disabled: true,
                       loading: true,
                       onClick: () => true,
                     },
                     {
                       label: faker.lorem.word(),
+                      variant: "primary",
                       disabled: true,
                       loading: true,
                       onClick: () => false,
@@ -106,12 +110,14 @@ export const Success: Story = {
                   actions: [
                     {
                       label: faker.lorem.word(),
+                      variant: "secondary",
                       disabled: false,
                       loading: false,
                       onClick: () => true,
                     },
                     {
                       label: faker.lorem.word(),
+                      variant: "primary",
                       disabled: false,
                       loading: false,
                       onClick: () => false,
@@ -139,12 +145,14 @@ export const Success: Story = {
                   actions: [
                     {
                       label: faker.lorem.word(),
+                      variant: "secondary",
                       disabled: false,
                       loading: false,
                       onClick: () => true,
                     },
                     {
                       label: faker.lorem.word(),
+                      variant: "primary",
                       disabled: false,
                       loading: false,
                       onClick: () => false,
@@ -186,12 +194,14 @@ export const Info: Story = {
                 actions: [
                   {
                     label: faker.lorem.word(),
+                    variant: "secondary",
                     disabled: false,
                     loading: false,
                     onClick: () => true,
                   },
                   {
                     label: faker.lorem.word(),
+                    variant: "primary",
                     disabled: false,
                     loading: false,
                     onClick: () => false,
@@ -220,12 +230,14 @@ export const Info: Story = {
                 actions: [
                   {
                     label: faker.lorem.word(),
+                    variant: "secondary",
                     disabled: false,
                     loading: false,
                     onClick: () => true,
                   },
                   {
                     label: faker.lorem.word(),
+                    variant: "primary",
                     disabled: false,
                     loading: false,
                     onClick: () => false,
@@ -252,12 +264,14 @@ export const Info: Story = {
                 actions: [
                   {
                     label: faker.lorem.word(),
+                    variant: "secondary",
                     disabled: false,
                     loading: false,
                     onClick: () => true,
                   },
                   {
                     label: faker.lorem.word(),
+                    variant: "primary",
                     disabled: false,
                     loading: false,
                     onClick: () => false,
@@ -298,12 +312,14 @@ export const Warning: Story = {
                 actions: [
                   {
                     label: faker.lorem.word(),
+                    variant: "secondary",
                     disabled: false,
                     loading: false,
                     onClick: () => true,
                   },
                   {
                     label: faker.lorem.word(),
+                    variant: "primary",
                     disabled: false,
                     loading: false,
                     onClick: () => false,
@@ -332,12 +348,14 @@ export const Warning: Story = {
                 actions: [
                   {
                     label: faker.lorem.word(),
+                    variant: "secondary",
                     disabled: false,
                     loading: false,
                     onClick: () => true,
                   },
                   {
                     label: faker.lorem.word(),
+                    variant: "primary",
                     disabled: false,
                     loading: false,
                     onClick: () => false,
@@ -364,12 +382,14 @@ export const Warning: Story = {
                 actions: [
                   {
                     label: faker.lorem.word(),
+                    variant: "secondary",
                     disabled: false,
                     loading: false,
                     onClick: () => true,
                   },
                   {
                     label: faker.lorem.word(),
+                    variant: "primary",
                     disabled: false,
                     loading: false,
                     onClick: () => false,
@@ -411,12 +431,14 @@ export const Error: Story = {
                   actions: [
                     {
                       label: faker.lorem.word(),
+                      variant: "secondary",
                       disabled: false,
                       loading: false,
                       onClick: () => true,
                     },
                     {
                       label: faker.lorem.word(),
+                      variant: "primary",
                       disabled: false,
                       loading: false,
                       onClick: () => false,
@@ -445,12 +467,14 @@ export const Error: Story = {
                   actions: [
                     {
                       label: faker.lorem.word(),
+                      variant: "secondary",
                       disabled: false,
                       loading: false,
                       onClick: () => true,
                     },
                     {
                       label: faker.lorem.word(),
+                      variant: "primary",
                       disabled: false,
                       loading: false,
                       onClick: () => false,
@@ -477,12 +501,14 @@ export const Error: Story = {
                   actions: [
                     {
                       label: faker.lorem.word(),
+                      variant: "secondary",
                       disabled: false,
                       loading: false,
                       onClick: () => true,
                     },
                     {
                       label: faker.lorem.word(),
+                      variant: "primary",
                       disabled: false,
                       loading: false,
                       onClick: () => false,

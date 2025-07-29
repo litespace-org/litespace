@@ -14,6 +14,7 @@ export function useEnableNotificationsToastAction() {
   const action = useMemo(
     (): ToastAction => ({
       label: intl("labels.enable-notifications"),
+      variant: "secondary",
       onClick() {
         navigate(
           router.web({
