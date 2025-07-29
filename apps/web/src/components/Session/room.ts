@@ -39,11 +39,6 @@ export function useRoom(token?: string) {
     });
   }, []);
 
-  const onParticipantConnected = useCallback(() => {
-    const audio = new Audio("/join-session.mp3");
-    audio.play();
-  }, []);
-
   const onParticipantDisconnected = useCallback(() => {
     const audio = new Audio("/leave-session.mp3");
     audio.play();
@@ -51,24 +46,19 @@ export function useRoom(token?: string) {
 
   const onLocalTrackPublished = useCallback(() => {
     setPublished(true);
+    const audio = new Audio("/join-session.mp3");
+    audio.play();
   }, []);
 
   useEffect(() => {
-    room.on(RoomEvent.ParticipantConnected, onParticipantConnected);
-    room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
     room.on(RoomEvent.LocalTrackPublished, onLocalTrackPublished);
+    room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
 
     return () => {
-      room.off(RoomEvent.ParticipantConnected, onParticipantConnected);
-      room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
       room.off(RoomEvent.LocalTrackPublished, onLocalTrackPublished);
+      room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
     };
-  }, [
-    onLocalTrackPublished,
-    onParticipantConnected,
-    onParticipantDisconnected,
-    room,
-  ]);
+  }, [onLocalTrackPublished, onParticipantDisconnected, room]);
 
   useEffect(() => {
     if (connected || !token) return;

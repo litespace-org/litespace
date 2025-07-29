@@ -31,19 +31,31 @@ const List: React.FC<{
           return <Link to={`/user/${info.getValue()}`}>{info.getValue()}</Link>;
         },
       }),
+      columnHelper.accessor("name", {
+        header: intl("dashboard.user.name"),
+        cell: (info) => <TruncateField>{info.getValue()}</TruncateField>,
+      }),
       columnHelper.accessor("email", {
         header: intl("dashboard.user.email"),
         cell: (info) => {
           return info.getValue();
         },
       }),
+      columnHelper.accessor("verifiedEmail", {
+        header: intl("dashboard.user.verified-email"),
+        cell: (info) => <BooleanField checked={info.getValue()} />,
+      }),
+      columnHelper.accessor("phone", {
+        header: intl("dashboard.user.phone"),
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("verifiedPhone", {
+        header: intl("dashboard.user.verified-phone"),
+        cell: (info) => <BooleanField checked={info.getValue()} />,
+      }),
       columnHelper.accessor("password", {
         header: intl("dashboard.user.hasPassword"),
         cell: (info) => <BooleanField checked={info.row.original.password} />,
-      }),
-      columnHelper.accessor("name", {
-        header: intl("dashboard.user.name"),
-        cell: (info) => <TruncateField>{info.getValue()}</TruncateField>,
       }),
       columnHelper.accessor("image", {
         header: intl("dashboard.user.image"),
@@ -68,10 +80,6 @@ const List: React.FC<{
         cell: (info) => (
           <TruncateField>{intl(rolesMap[info.getValue()])}</TruncateField>
         ),
-      }),
-      columnHelper.accessor("verifiedEmail", {
-        header: intl("dashboard.user.verified"),
-        cell: (info) => <BooleanField checked={info.getValue()} />,
       }),
       columnHelper.accessor("creditScore", {
         header: intl("dashboard.user.creditScore"),

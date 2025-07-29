@@ -26,6 +26,7 @@ const schema = zod.object({
   }),
   whatsAppAPI: zod.object({
     accessToken: zod.string().trim(),
+    profileId: zod.coerce.number(),
   }),
 });
 
@@ -46,5 +47,6 @@ export const config: ConfigSchema = schema.parse({
   },
   whatsAppAPI: {
     accessToken: process.env.WHATSAPP_API_ACCESS_TOKEN,
+    profileId: process.env.WHATSAPP_API_PROFILE_ID,
   },
 });

@@ -9,6 +9,7 @@ export const messenger = new Messenger({
     type: TokenType.Bearer,
     value: messengerConfig.whatsAppAPI.accessToken,
   },
+  profileId: messengerConfig.whatsAppAPI.profileId,
 });
 
 /**
