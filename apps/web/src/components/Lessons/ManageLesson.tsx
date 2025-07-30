@@ -22,6 +22,9 @@ import { useEnableNotificationsToastAction } from "@/hooks/notification";
 import { useSubscription } from "@litespace/headless/context/subscription";
 import { asSlotBoundries } from "@/lib/lesson";
 import { isTutorManager, MAX_LESSON_DURATION } from "@litespace/utils";
+import { Typography } from "@litespace/ui/Typography";
+import { LocalId } from "@litespace/ui/locales";
+import Notification from "@litespace/assets/Notification";
 
 type Base = {
   close: Void;
@@ -101,22 +104,49 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   // ====== Create Lesson Mutation =========
   const enableNotifications = useEnableNotificationsToastAction();
   const onCreateSuccess = useCallback(() => {
-    if (tutor.data?.name)
-      toast.success({
-        title: intl("book-lesson.success", { tutor: tutor.data.name }),
-        actions: enableNotifications.show ? [enableNotifications.action] : [],
+    if (enableNotifications.show) {
+      toast.info({
+        title: "",
+        description: (
+          <div className="flex flex-col gap-1">
+            <Typography
+              tag="p"
+              className="text-body font-semibold text-natural-950"
+            >
+              {intl("book-lesson.success.activate-notifications.desc")}
+            </Typography>
+            <List />
+          </div>
+        ),
+        actions: [
+          {
+            label: intl("labels.not-now"),
+            onClick: () => true,
+            variant: "primary",
+          },
+          enableNotifications.action,
+        ],
+        icon: <Notification />,
       });
+    }
+
+    if (!enableNotifications.show && tutor.data?.name)
+      toast.success({
+        title: "",
+        description: intl("book-lesson.success", { tutor: tutor.data.name }),
+      });
+
     invalidate([QueryKey.FindAvailabilitySlots]);
     invalidate([QueryKey.FindLesson]);
     invalidate([QueryKey.FindInfiniteLessons]);
     invalidate([QueryKey.FindTutors]);
     close();
   }, [
-    intl,
-    toast,
-    tutor.data?.name,
     enableNotifications.show,
     enableNotifications.action,
+    tutor.data?.name,
+    toast,
+    intl,
     invalidate,
     close,
   ]);
@@ -256,6 +286,35 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
         close={verifyEmailDialog.hide}
       />
     </>
+  );
+};
+
+const LIST_ITEMS: LocalId[] = [
+  "book-lesson.success.activate-notifications.benefits-1",
+  "book-lesson.success.activate-notifications.benefits-2",
+  "book-lesson.success.activate-notifications.benefits-3",
+  "book-lesson.success.activate-notifications.benefits-4",
+];
+
+const List: React.FC = () => {
+  const intl = useFormatMessage();
+
+  return (
+    <div className="flex flex-col">
+      {LIST_ITEMS.map((item, idx) => {
+        return (
+          <div key={idx} className="flex items-center">
+            <div className="bg-natural-700 w-1 h-1 overflow-hidden mx-2" />
+            <Typography
+              tag="p"
+              className="text-caption font-regular text-natural-700"
+            >
+              {intl(item)}
+            </Typography>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 
