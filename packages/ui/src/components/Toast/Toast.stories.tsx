@@ -50,7 +50,7 @@ export const Success: Story = {
                       onClick: () => true,
                     },
                     {
-                      label: faker.lorem.word(),
+                      label: faker.lorem.words(3),
                       variant: "primary",
                       disabled: false,
                       loading: false,

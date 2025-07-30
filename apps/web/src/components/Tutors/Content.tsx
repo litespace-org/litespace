@@ -12,6 +12,8 @@ import {
   isValidTutorName,
 } from "@litespace/utils";
 import { isTutorManager } from "@litespace/utils";
+import { NotificationsDialog } from "@/components/Lessons/NotificationDialog";
+import { useUser } from "@litespace/headless/context/user";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -24,8 +26,10 @@ const Content: React.FC<{
   more: Void;
   refetch: Void;
 }> = ({ tutors, loading, error, more, hasMore, fetching, refetch }) => {
+  const { user } = useUser();
   const intl = useFormatMessage();
   const [tutor, setTutor] = useState<Tutor | null>(null);
+  const [notiDialogOpen, setNotiDialogOpen] = useState<boolean>(false);
   const mq = useMediaQuery();
 
   const openBookingDialog = useCallback((tutor: Tutor) => setTutor(tutor), []);
@@ -79,8 +83,16 @@ const Content: React.FC<{
           type="book"
           close={closeBookingDialog}
           tutorId={tutor.id}
+          onSuccess={() => {
+            if (!user?.notificationMethod) setNotiDialogOpen(true);
+          }}
         />
       ) : null}
+
+      <NotificationsDialog
+        open={notiDialogOpen}
+        close={() => setNotiDialogOpen(false)}
+      />
 
       {fetching ? (
         <div className="mt-6">

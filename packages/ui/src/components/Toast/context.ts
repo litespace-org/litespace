@@ -15,6 +15,7 @@ export type AddToastData = {
   title: React.ReactNode;
   description?: React.ReactNode;
   actions?: Array<ToastAction>;
+  icon?: React.ReactNode;
 };
 
 export type ToastData = AddToastData & { id: ToastId; type: ToastType };
