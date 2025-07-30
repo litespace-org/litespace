@@ -1,30 +1,30 @@
-import { ManageLessonDialog } from "@litespace/ui/Lessons";
-import { ILesson, Void } from "@litespace/types";
+import { VerifyEmail } from "@/components/Common/VerifyEmail";
+import { useOnError } from "@/hooks/error";
+import dayjs from "@/lib/dayjs";
+import { asSlotBoundries } from "@/lib/lesson";
+import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
+import { useRender } from "@litespace/headless/common";
+import { QueryKey } from "@litespace/headless/constants";
+import { useSubscription } from "@litespace/headless/context/subscription";
+import { useUser } from "@litespace/headless/context/user";
 import {
   useCreateLesson,
   useFindLessons,
   useUpdateLesson,
 } from "@litespace/headless/lessons";
-import React, { useMemo, useCallback, useRef } from "react";
+import { useInvalidateQuery } from "@litespace/headless/query";
+import { useFindTutorInfo } from "@litespace/headless/tutor";
+import { ILesson, Void } from "@litespace/types";
+import { ManageLessonDialog } from "@litespace/ui/Lessons";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { QueryKey } from "@litespace/headless/constants";
-import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
-import { useFindTutorInfo } from "@litespace/headless/tutor";
-import { nullable } from "@litespace/utils/utils";
-import dayjs from "@/lib/dayjs";
-import { useInvalidateQuery } from "@litespace/headless/query";
-import { useUser } from "@litespace/headless/context/user";
-import { useOnError } from "@/hooks/error";
-import { VerifyEmail } from "@/components/Common/VerifyEmail";
-import { useRender } from "@litespace/headless/common";
-import { useEnableNotificationsToastAction } from "@/hooks/notification";
-import { useSubscription } from "@litespace/headless/context/subscription";
-import { asSlotBoundries } from "@/lib/lesson";
 import { isTutorManager, MAX_LESSON_DURATION } from "@litespace/utils";
+import { nullable } from "@litespace/utils/utils";
+import React, { useCallback, useMemo, useRef } from "react";
 
 type Base = {
   close: Void;
+  onSuccess?: Void;
 };
 
 export type ManageLessonPayload =
@@ -99,27 +99,14 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   }, [remainingWeeklyMinutes, tutor.data, info]);
 
   // ====== Create Lesson Mutation =========
-  const enableNotifications = useEnableNotificationsToastAction();
   const onCreateSuccess = useCallback(() => {
-    if (tutor.data?.name)
-      toast.success({
-        title: intl("book-lesson.success", { tutor: tutor.data.name }),
-        actions: enableNotifications.show ? [enableNotifications.action] : [],
-      });
+    if (payload.onSuccess) payload.onSuccess();
     invalidate([QueryKey.FindAvailabilitySlots]);
     invalidate([QueryKey.FindLesson]);
     invalidate([QueryKey.FindInfiniteLessons]);
     invalidate([QueryKey.FindTutors]);
     close();
-  }, [
-    intl,
-    toast,
-    tutor.data?.name,
-    enableNotifications.show,
-    enableNotifications.action,
-    invalidate,
-    close,
-  ]);
+  }, [payload, invalidate, close]);
 
   const onCreateError = useOnError({
     type: "mutation",
@@ -138,25 +125,13 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   // ====== Update Lesson Mutation =========
   const onUpdateSuccess = useCallback(() => {
-    if (tutor.data?.name)
-      toast.success({
-        title: intl("update-lesson.success", { tutor: tutor.data.name }),
-        actions: enableNotifications.show ? [enableNotifications.action] : [],
-      });
+    if (payload.onSuccess) payload.onSuccess();
     invalidate([QueryKey.FindAvailabilitySlots]);
     invalidate([QueryKey.FindLesson]);
     invalidate([QueryKey.FindInfiniteLessons]);
     invalidate([QueryKey.FindTutors]);
     close();
-  }, [
-    intl,
-    toast,
-    tutor.data?.name,
-    enableNotifications.show,
-    enableNotifications.action,
-    invalidate,
-    close,
-  ]);
+  }, [payload, invalidate, close]);
 
   const onUpdateError = useOnError({
     type: "mutation",
