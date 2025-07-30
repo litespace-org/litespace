@@ -43,7 +43,7 @@ const CompleteProfile: React.FC = () => {
   const validators = useMakeValidators<IForm>({
     name: { validate: validateUserName },
     phone: { validate: validatePhone },
-    password: { validate: validatePassword },
+    password: { required: false, validate: validatePassword },
   });
 
   const form = useForm<IForm>({
@@ -123,7 +123,7 @@ const CompleteProfile: React.FC = () => {
             inputSize="large"
             name="phone"
             value={form.state.phone}
-            onChange={(e) => form.set("phone", e.target.value)}
+            onValueChange={(e) => form.set("phone", e.value)}
             format="### #### ####"
             label={intl("labels.phone")}
             placeholder={intl("labels.phone.placeholder")}
