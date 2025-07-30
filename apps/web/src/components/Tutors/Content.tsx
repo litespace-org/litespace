@@ -6,6 +6,11 @@ import React, { useCallback, useState } from "react";
 import { InView } from "react-intersection-observer";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import {
+  isValidTutorAbout,
+  isValidTutorBio,
+  isValidTutorName,
+} from "@litespace/utils";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -49,18 +54,22 @@ const Content: React.FC<{
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-        {tutors.map((tutor) => (
-          <TutorCard
-            key={tutor.id}
-            free={tutor.role === IUser.Role.TutorManager}
-            id={tutor.id}
-            bio={tutor.bio}
-            name={tutor.name}
-            rating={tutor.avgRating}
-            onBook={() => openBookingDialog(tutor)}
-            image={tutor.image}
-          />
-        ))}
+        {tutors.map((tutor) =>
+          isValidTutorName(tutor.name) === true &&
+          isValidTutorAbout(tutor.about) === true &&
+          isValidTutorBio(tutor.bio) === true ? (
+            <TutorCard
+              key={tutor.id}
+              free={tutor.role === IUser.Role.TutorManager}
+              id={tutor.id}
+              bio={tutor.bio}
+              name={tutor.name}
+              rating={tutor.avgRating}
+              onBook={() => openBookingDialog(tutor)}
+              image={tutor.image}
+            />
+          ) : null
+        )}
       </div>
 
       {tutor ? (
