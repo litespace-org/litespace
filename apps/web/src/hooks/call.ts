@@ -80,6 +80,13 @@ export function useUserMedia() {
 
   const getUserMedia = useCallback(
     async ({ video, audio }: { video: boolean; audio: boolean }) => {
+      if (
+        typeof navigator === "undefined" ||
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+      ) {
+        return new Error("getUserMedia is not supported in this environment");
+      }
       return await safe(
         async () => await navigator.mediaDevices.getUserMedia({ video, audio })
       );
