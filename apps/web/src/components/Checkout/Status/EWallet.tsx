@@ -44,7 +44,7 @@ const QrPayment: React.FC<{
 
   return (
     <div className="flex flex-col items-center justify-center gap-10 lg:gap-6">
-      <img src={qr} className="w-[100px] h-[100px] md:w-64 md:h-64" />
+      <img src={qr} className="w-72 h-72" />
 
       <div className="flex flex-col items-center justify-center gap-4 md:gap-6 lg:gap-4">
         <div className="flex flex-col items-center justify-center text-center gap-2">
