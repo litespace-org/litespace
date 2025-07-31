@@ -90,6 +90,8 @@ export const VIDEO_SESSION_EXAMPLE =
 export const USER_NAME_REGEX = /^[A-Za-z\u0600-\u06ff ]+$/;
 
 export const HAS_ENGLISH_CHAR_REGEX = /[a-zA-Z]+/;
+export const HAS_ARABIC_CHAR_REGEX =
+  /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]+/;
 
 /**
  * Interview duration in minutes.

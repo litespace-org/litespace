@@ -9,6 +9,7 @@ import {
   MIN_USER_NAME_LENGTH,
   MAX_USER_NAME_LENGTH,
   HAS_ENGLISH_CHAR_REGEX,
+  HAS_ARABIC_CHAR_REGEX,
 } from "@/constants";
 import { FieldError, Optional } from "@litespace/types";
 
@@ -50,7 +51,7 @@ export function isValidTutorAbout(
   | FieldError.ShortTutorAbout
   | FieldError.LongTutorAbout
   | true {
-  if (typeof about !== "string" || HAS_ENGLISH_CHAR_REGEX.test(about))
+  if (typeof about !== "string" || !HAS_ARABIC_CHAR_REGEX.test(about))
     return FieldError.InvalidTutorAbout;
   if (about.length < MIN_TUTOR_ABOUT_TEXT_LENGTH)
     return FieldError.ShortTutorAbout;
