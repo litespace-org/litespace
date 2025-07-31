@@ -6,6 +6,11 @@ import React from "react";
 import InViewTrack from "@/components/Common/InViewTrack";
 import { ITutor } from "@litespace/types";
 import { Highlight } from "@/components/Common/Highlight";
+import {
+  isValidTutorAbout,
+  isValidTutorBio,
+  isValidTutorName,
+} from "@litespace/utils";
 
 export const Tutors: React.FC<{
   tutors: ITutor.FindOnboardedTutorsApiResponse;
@@ -29,7 +34,14 @@ export const Tutors: React.FC<{
           </Typography>
         </div>
 
-        <Content tutors={tutors.list} />
+        <Content
+          tutors={tutors.list.filter(
+            (tutor) =>
+              isValidTutorName(tutor.name) &&
+              isValidTutorBio(tutor.bio) &&
+              isValidTutorAbout(tutor.about)
+          )}
+        />
       </div>
     </div>
   );
