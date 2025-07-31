@@ -2,6 +2,11 @@ import React from "react";
 import { api } from "@/lib/api";
 import { isEmpty } from "lodash";
 import { Tutors } from "@/components/Tutors";
+import {
+  isValidTutorAbout,
+  isValidTutorBio,
+  isValidTutorName,
+} from "@litespace/utils";
 
 export const TutorsSection: React.FC = async () => {
   const tutors = await api.user
@@ -11,9 +16,16 @@ export const TutorsSection: React.FC = async () => {
     })
     .catch(() => ({ list: [], total: 0 }));
 
-  if (isEmpty(tutors.list)) return null;
+  const list = tutors.list.filter(
+    (tutor) =>
+      isValidTutorName(tutor.name) === true &&
+      isValidTutorBio(tutor.bio) === true &&
+      isValidTutorAbout(tutor.about) === true
+  );
 
-  return <Tutors tutors={tutors} />;
+  if (isEmpty(list)) return null;
+
+  return <Tutors tutors={list} />;
 };
 
 export default TutorsSection;
