@@ -30,7 +30,7 @@ import cn from "classnames";
 import dayjs, { Dayjs } from "dayjs";
 import { first, isEmpty } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 type Step = "date-selection" | "time-selection" | "booked-session";
 
@@ -39,7 +39,6 @@ const DemoSession: React.FC<{ tutorId: number; next: Void }> = ({
   next,
 }) => {
   const intl = useFormatMessage();
-  const navigate = useNavigate();
   const toast = useToast();
 
   const [step, setStep] = useState<Step>("date-selection");
@@ -67,7 +66,7 @@ const DemoSession: React.FC<{ tutorId: number; next: Void }> = ({
   const onCancelSuccess = useCallback(() => {
     query.refetch();
     setStep("date-selection");
-  }, [navigate]);
+  }, [setStep, query]);
 
   const onCancelError = useOnError({
     type: "mutation",

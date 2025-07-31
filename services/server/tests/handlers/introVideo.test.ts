@@ -10,7 +10,9 @@ import {
   forbidden,
   inActiveTutorManager,
   largeFileSize,
+  longVideoDur,
   notfound,
+  shortVideoDur,
   unexpected,
 } from "@/lib/error";
 import db from "@fixtures/db";
@@ -56,14 +58,14 @@ describe(nameof(createIntroVideo), () => {
       body: { duration: INTRO_VIDEO_MIN_MINUTES - 1 },
     });
 
-    expect(res1).to.deep.eq(bad());
+    expect(res1).to.deep.eq(shortVideoDur());
 
     const res2 = await createIntroVideo({
       user: tutor,
       body: { duration: INTRO_VIDEO_MAX_MINUTES + 1 },
     });
 
-    expect(res2).to.deep.eq(bad());
+    expect(res2).to.deep.eq(longVideoDur());
   });
 
   it("should respond with conflict in case there is an already approved intro-video", async () => {

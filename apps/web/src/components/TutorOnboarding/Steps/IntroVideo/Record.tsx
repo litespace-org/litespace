@@ -18,13 +18,13 @@ import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useCreateIntroVideo } from "@litespace/headless/introVideos";
-import { useNavigate } from "react-router-dom";
-import { router } from "@/lib/routes";
-import { Web } from "@litespace/utils/routes";
+import { useOnError } from "@/hooks/error";
 
 type View = "pre-record" | "record" | "post-record";
 
-export const Record: React.FC = () => {
+export const Record: React.FC<{ onUploadSuccess: Void }> = ({
+  onUploadSuccess,
+}) => {
   const intl = useFormatMessage();
   const [view, setView] = useState<View>("pre-record");
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
@@ -60,6 +60,7 @@ export const Record: React.FC = () => {
             videoSrc={URL.createObjectURL(recordedBlob)}
             recordedBlob={recordedBlob}
             recordedSeconds={recordedSeconds}
+            onUploadSuccess={onUploadSuccess}
           />
         ) : null}
       </div>
@@ -243,16 +244,24 @@ const PostRecord: React.FC<{
   prev: Void;
   recordedBlob: Blob;
   recordedSeconds: number;
-}> = ({ prev, videoSrc, recordedBlob, recordedSeconds }) => {
+  onUploadSuccess: Void;
+}> = ({ prev, videoSrc, recordedBlob, recordedSeconds, onUploadSuccess }) => {
   const intl = useFormatMessage();
   const toast = useToast();
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
+  const onError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) =>
+      toast.error({
+        title: intl("labels.file-upload-failed"),
+        description: intl(messageId),
+      }),
+  });
+
   const { mutation, abort, progress } = useCreateIntroVideo({
-    onSuccess: () => navigate(router.web({ route: Web.TutorOnboarding })),
-    // @mo TODO: enhance the error messages
-    onError: () => toast.error({ title: intl("labels.file-upload-failed") }),
+    onSuccess: onUploadSuccess,
+    onError,
   });
 
   return (

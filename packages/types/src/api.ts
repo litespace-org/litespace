@@ -9,6 +9,8 @@ export enum ApiError {
   UserExists = "user-exists",
   RatingExists = "rating-exists",
   IntroVideoExists = "intro-video-exists",
+  LongVideoDur = "long-video-dur",
+  ShortVideoDur = "short-video-dur",
   DemoSessionExists = "demo-session-exists",
   SubscriptionExists = "subscription-exists",
   SubscriptionRequired = "subscription-required",
