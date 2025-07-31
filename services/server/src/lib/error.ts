@@ -25,6 +25,12 @@ export const subscriptionUncancellable = () =>
 export const bad = (message?: string) =>
   error(ApiError.BadRequest, 400, message);
 
+export const shortVideoDur = (message?: string) =>
+  error(ApiError.ShortVideoDur, 400, message);
+
+export const longVideoDur = (message?: string) =>
+  error(ApiError.LongVideoDur, 400, message);
+
 export const largeFileSize = () => error(ApiError.LargeFileSize, 400);
 
 export const conflictingInterview = () =>

@@ -13,6 +13,8 @@ import {
   notfound,
   unauthenticated,
   inActiveTutorManager,
+  shortVideoDur,
+  longVideoDur,
 } from "@/lib/error";
 import { canReview, canUpdate, chooseReviewer } from "@/lib/introVideo";
 import { introVideos } from "@litespace/models";
@@ -66,11 +68,9 @@ async function create(req: Request, res: Response, next: NextFunction) {
 
   const payload = createPayload.parse(req.body);
 
-  if (
-    payload.duration < INTRO_VIDEO_MIN_MINUTES ||
-    payload.duration > INTRO_VIDEO_MAX_MINUTES
-  )
-    return next(bad());
+  if (payload.duration < INTRO_VIDEO_MIN_MINUTES) return next(shortVideoDur());
+
+  if (payload.duration > INTRO_VIDEO_MAX_MINUTES) return next(longVideoDur());
 
   const { list: prevVideos } = await introVideos.find({
     tutorIds: [user.id],

@@ -28,7 +28,7 @@ const IntroVideo: React.FC<{ tutorId: number; next: Void }> = ({
 
   if (lastIntroVideo?.state === IIntroVideo.State.Approved) next();
 
-  return <Record />;
+  return <Record onUploadSuccess={introVideoQuery.refetch} />;
 };
 
 export default IntroVideo;
