@@ -1,7 +1,7 @@
 import { config } from "@/config";
 import { Workspace } from "@/types";
 import { flatten } from "lodash";
-import { spawn } from "node:child_process";
+import { ChildProcess, spawn } from "node:child_process";
 
 const services = ["api", "jobs", "landing", "messenger"];
 
@@ -28,6 +28,9 @@ function getWorkspaceBuildCommand(workspaces: Workspace[] | "all"): string[] {
   return commands;
 }
 
+let process: ChildProcess | null = null;
+let postBuild: boolean = false;
+
 export async function build(workspaces: Workspace[] | "all") {
   const commands = [
     ...stopServicesCommands,
@@ -42,14 +45,27 @@ export async function build(workspaces: Workspace[] | "all") {
 
   console.log("Commands: \n", commands.join("\t\n"));
 
-  const process = spawn(commands.join(" && "), [], {
+  if (process !== null) {
+    postBuild = true;
+    return;
+  }
+
+  process = spawn(commands.join(" && "), [], {
     shell: true,
     cwd: config.repo,
     stdio: "inherit",
   });
 
   return await new Promise((resolve, reject) => {
-    process.on("error", reject);
-    process.on("close", resolve);
+    process?.on("error", () => {
+      reject();
+      process = null;
+      if (postBuild) build("all");
+    });
+    process?.on("close", (code) => {
+      resolve(code);
+      process = null;
+      if (postBuild) build("all");
+    });
   });
 }
