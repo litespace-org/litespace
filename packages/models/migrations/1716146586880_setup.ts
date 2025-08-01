@@ -23,6 +23,28 @@ export function up(pgm: MigrationBuilder) {
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
+  pgm.createTable("students", {
+    id: {
+      type: "int",
+      primaryKey: true,
+      notNull: true,
+      references: "users(id)",
+    },
+    job_title: { type: "varchar(128)", notNull: true },
+    eng_lang_level: { type: "varchar(64)", notNull: true },
+    learning_objective: { type: "varchar(256)", notNull: true },
+    created_at: {
+      type: "timestamp",
+      notNull: true,
+      default: pgm.func("current_timestamp"),
+    },
+    updated_at: {
+      type: "timestamp",
+      notNull: true,
+      default: pgm.func("current_timestamp"),
+    },
+  });
+
   pgm.createTable("tutors", {
     id: {
       type: "SERIAL",
