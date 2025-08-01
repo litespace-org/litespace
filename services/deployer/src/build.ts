@@ -3,7 +3,7 @@ import { Workspace } from "@/types";
 import { flatten } from "lodash";
 import { ChildProcess, spawn } from "node:child_process";
 
-const services = ["api", "jobs", "landing", "messenger"];
+const services = ["api", "jobs", "landing"];
 
 const stopServicesCommands = services.map((s) => `pm2 stop ${s}`);
 const restartServicesCommands = services.map((s) => `pm2 restart ${s}`);
