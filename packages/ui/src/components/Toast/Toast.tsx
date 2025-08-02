@@ -59,7 +59,7 @@ export const Toast: React.FC<{
         <Typography
           tag="span"
           className={cn("font-bold flex-1 text-body select-text relative", {
-            "text-success-500": type === "success",
+            "text-brand-500": type === "success",
             "text-destructive-600": type === "error",
             "text-secondary-600": type === "info",
             "text-warning-600": type === "warning",
@@ -67,8 +67,8 @@ export const Toast: React.FC<{
           style={{ textIndent: "28px" }}
         >
           <Icon
-            className={cn("w-5 h-5 absolute top-0.5", {
-              "[&>*]:stroke-success-500": type === "success",
+            className={cn("w-5 h-5 absolute", title ? "top-0.5" : "-top-2.5", {
+              "[&>*]:stroke-brand-500": type === "success",
               "[&>*>*]:stroke-destructive-600": type === "error",
               "[&>*>*]:stroke-secondary-600": type === "info",
               "[&>*>*]:stroke-warning-600": type === "warning",
@@ -108,8 +108,7 @@ export const Toast: React.FC<{
               variant={action.variant}
               type={
                 cn({
-                  success: type === "success",
-                  main: type === "info",
+                  main: type === "info" || type === "success",
                   warning: type === "warning",
                   error: type === "error",
                 }) as ButtonType
