@@ -297,9 +297,10 @@ async function confirmEmailVerificationCode(
     return next(expiredVerificationCode());
   }
 
-  // update the database to mark the email as verified
-  await users.update(user.id, { verifiedEmail: true });
+  if (confirmationCode.code !== code) return next(invalidVerificationCode);
 
+  await confirmationCodes.deleteById({ id: confirmationCode.id });
+  await users.update(user.id, { verifiedEmail: true });
   res.sendStatus(200);
 }
 
