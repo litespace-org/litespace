@@ -8,6 +8,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IConfirmationCode, Void } from "@litespace/types";
 import React, { useEffect, useState } from "react";
 import { Method } from "@/components/VerifyPhoneDialog/utils";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
   open: boolean;
@@ -32,6 +33,7 @@ export const VerifyPhoneDialog: React.FC<Props> = ({
   verifyCode,
   verifyingCode,
 }) => {
+  const { sm } = useMediaQuery();
   const intl = useFormatMessage();
 
   const [phone, setPhone] = useState<string | null>(defaultPhone);
@@ -45,6 +47,7 @@ export const VerifyPhoneDialog: React.FC<Props> = ({
     <Dialog
       open={open}
       close={close}
+      position={sm ? "center" : "bottom"}
       title={
         <Typography
           tag="span"
@@ -53,7 +56,7 @@ export const VerifyPhoneDialog: React.FC<Props> = ({
           {intl("verify-phone-dialog.title")}
         </Typography>
       }
-      className="w-[512px]"
+      className="max-w-[512px] w-full"
     >
       {!phone ? <PhoneNumber close={close} setPhone={setPhone} /> : null}
 
