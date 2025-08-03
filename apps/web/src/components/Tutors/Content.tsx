@@ -68,6 +68,7 @@ const Content: React.FC<{
               rating={tutor.avgRating}
               onBook={() => openBookingDialog(tutor)}
               image={tutor.image}
+              topics={tutor.topics}
             />
           ) : null
         )}
