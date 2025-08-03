@@ -279,10 +279,10 @@ async function confirmEmailVerificationCode(
   // get the code from the payload and verify it
   const { code } = verifyEmailPayload.parse(req.body);
 
+  // Find any confirmation code for this user and purpose (regardless of code value)
   const list = await confirmationCodes.find({
     purpose: IConfirmationCode.Purpose.VerifyEmail,
     userId: user.id,
-    code,
   });
 
   const confirmationCode = first(list);
@@ -297,7 +297,11 @@ async function confirmEmailVerificationCode(
     return next(expiredVerificationCode());
   }
 
-  // update the database to mark the email as verified
+  if (confirmationCode.code !== code) {
+    return next(invalidVerificationCode());
+  }
+
+  await confirmationCodes.deleteById({ id: confirmationCode.id });
   await users.update(user.id, { verifiedEmail: true });
 
   res.sendStatus(200);

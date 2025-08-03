@@ -17,7 +17,6 @@ import { Topic } from "@/api/topic";
 import { AuthToken, createClient } from "@/lib/client";
 import { Cache } from "@/api/cache";
 import { Session } from "@/api/session";
-import { DemoSession } from "@/api/demoSession";
 import { ContactRequest } from "@/api/contactRequest";
 import { Fawry } from "@/api/fawry";
 import { ConfirmationCode } from "@/api/confirmationCode";
@@ -49,7 +48,6 @@ export class Api {
   public readonly subscription: Subscription;
   public readonly transaction: Transaction;
   public readonly introVideo: IntroVideo;
-  public readonly demoSession: DemoSession;
 
   constructor(server: Env.Server, token: AuthToken | null) {
     const client = createClient("api", server, token);

@@ -4,7 +4,7 @@ import {
   useConfirmVerificationEmailCode,
   useSendVerificationEmailCode,
 } from "@litespace/headless/confirmationCode";
-import { Void } from "@litespace/types";
+import { Void, ApiError } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";
@@ -61,7 +61,17 @@ export const VerifyEmail: React.FC<Props> = ({ close, emailSent, open }) => {
 
   const onVerifyError = useOnError({
     type: "mutation",
-    handler: ({ messageId }) => {
+    handler: ({ messageId, errorCode }) => {
+      // If the confirmation code has expired, close the dialog
+      if (errorCode === ApiError.ExpiredVerificationCode) {
+        close();
+        toast.error({
+          title: intl("verify-email-dialog.error"),
+          description: intl("error.api.expired-verification-code"),
+        });
+        return;
+      }
+
       toast.error({
         title: intl("verify-email-dialog.error"),
         description: intl(messageId),
