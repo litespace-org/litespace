@@ -32,6 +32,12 @@ let process: ChildProcess | null = null;
 let postBuild: boolean = false;
 
 export async function build(workspaces: Workspace[] | "all") {
+  postBuild = false;
+  if (process !== null) {
+    postBuild = true;
+    return;
+  }
+
   const commands = [
     ...stopServicesCommands,
     `git reset --hard`,
@@ -44,11 +50,6 @@ export async function build(workspaces: Workspace[] | "all") {
   ];
 
   console.log("Commands: \n", commands.join("\t\n"));
-
-  if (process !== null) {
-    postBuild = true;
-    return;
-  }
 
   process = spawn(commands.join(" && "), [], {
     shell: true,
