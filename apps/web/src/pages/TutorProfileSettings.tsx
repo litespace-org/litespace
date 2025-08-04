@@ -48,12 +48,14 @@ const Body: React.FC<{
   refetch: Void;
 }> = ({ data, loading, error, refetch }) => {
   const intl = useFormatMessage();
+
   if (loading)
     return (
       <div className="mt-[10vh]">
         <Loading size="large" />
       </div>
     );
+
   if (error || !data)
     return (
       <div className="w-fit mx-auto">

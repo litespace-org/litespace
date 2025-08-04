@@ -8,6 +8,7 @@ import EmptyStudentDashboard from "@litespace/assets/EmptyStudentDashboard";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useFindPersonalizedStudentStats } from "@litespace/headless/student";
 import { Button } from "@litespace/ui/Button";
+import { Loading } from "@litespace/ui/Loading";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Web } from "@litespace/utils/routes";
@@ -16,6 +17,7 @@ import { Link } from "react-router-dom";
 
 const StudentDashboard: React.FC = () => {
   const mq = useMediaQuery();
+  const intl = useFormatMessage();
 
   const { query, keys } = useFindPersonalizedStudentStats();
 
@@ -24,6 +26,16 @@ const StudentDashboard: React.FC = () => {
     error: query.error,
     keys,
   });
+
+  if (query.isLoading)
+    return (
+      <div className="mt-[40vh]">
+        <Loading
+          size={mq.sm ? "large" : "medium"}
+          text={intl("student-dashboard.overview.loading")}
+        />
+      </div>
+    );
 
   if (query.data?.completedLessonCount === 0) return <EmptyDashboard />;
 
