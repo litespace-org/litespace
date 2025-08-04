@@ -13,7 +13,7 @@ export class Whatsapp extends Base {
   sendSimpleMessage(payload: IMessenger.Message) {
     return this.post({
       // as shown here: https://developers.facebook.com/docs/whatsapp/cloud-api/overview
-      route: `/v22.0/${this.profileId}/messages`,
+      route: `/v23.0/${this.profileId}/messages`,
       payload: {
         messaging_product: "whatsapp",
         recipient_type: "individual",
