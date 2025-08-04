@@ -76,11 +76,7 @@ const TopicSelection: React.FC = () => {
       showDialog={showDialog}
       setShowDialog={setShowDialog}
       updating={updateTopics.isPending}
-      loading={
-        userTopicsQuery.isLoading ||
-        allTopicsQuery.isLoading ||
-        allTopicsQuery.isLoading
-      }
+      loading={userTopicsQuery.isLoading || allTopicsQuery.isLoading}
       fetching={allTopicsQuery.isFetching}
       error={allTopicsQuery.isError || userTopicsQuery.isError}
       refetch={() => {
@@ -119,9 +115,10 @@ const Content: React.FC<{
   refetch,
 }) => {
   const intl = useFormatMessage();
+
   const [selectedTopics, setSelectedTopics] = useState<
     ITopic.PopulatedUserTopic[]
-  >([]);
+  >(!isEmpty(userTopics) && userTopics ? userTopics : []);
 
   const { user } = useUser();
   const isTutor = useMemo(() => isUserTutor(user), [user]);
