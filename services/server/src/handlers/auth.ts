@@ -119,7 +119,9 @@ async function loginWithGoogle(
   if (user && role && role !== user.role) return next(bad());
   if (user && (!role || role === user.role)) return await success(user);
 
-  if (role) {
+  const register = !user;
+  if (register && !role) return next(bad());
+  if (register) {
     // TODO: remove this condition once the turor onboarding is finalized.
     if (role === IUser.Role.Tutor) return next(serviceUnavailable());
 
