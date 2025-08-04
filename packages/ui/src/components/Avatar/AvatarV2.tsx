@@ -43,7 +43,7 @@ export const AvatarV2: React.FC<{
   const [imgData, setImgData] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!src) return;
+    if (!src) return setImgData(null);
     imageUrlToBase64(src).then((res) => setImgData(res));
   }, [src]);
 
