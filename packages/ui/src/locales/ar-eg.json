@@ -1069,6 +1069,7 @@
   "error.api.reached-booking-limit": "لا يمكن حجز حصة اخري حتي الانتهاء من الحصة الحالية او إلغائها",
   "error.api.phone-already-verified": "هذا الرقم تم تفعيله لاستقبال الاشعارات بالفعل",
   "error.api.unresolved-phone": "لا يمكن الوصول الي هذا الرقم عن طريق تيليجرام، برجاء تغيير اعدادات الخصوصية او اختيار رقم اخر",
+  "error.api.unverified-phone": "يجب تأكيد رقم الهاتف أولاً",
   "error.api.expired-verification-code": "هذا الكود انتهت صلاحيته، برجاء المحاولة مرة أخرى",
   "error.api.invalid-verification-code": "هذا الكود خاطئ، برجاء التأكد من صحة الكود والمحاولة مرة أخرى",
   "error.api.incorrect-phone": "هذا الرقم خاطئ، برجاء التأكد من صحة الكود والمحاولة مرة أخرى",
