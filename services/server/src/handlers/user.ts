@@ -25,7 +25,7 @@ import {
   invalidEmail,
   notfound,
   unexpected,
-  unresolvedPhone,
+  unverifiedPhone,
   wrongPassword,
 } from "@/lib/error";
 import {
@@ -321,7 +321,7 @@ function update(_: ApiContext) {
 
       // prevent users from updating notification method without verified phone
       if (notificationMethod !== undefined && !target.verifiedPhone) {
-        return next(unresolvedPhone());
+        return next(unverifiedPhone());
       }
 
       // remove assets from the object store
