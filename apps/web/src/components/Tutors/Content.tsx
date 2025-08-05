@@ -63,7 +63,7 @@ const Content: React.FC<{
               key={tutor.id}
               free={isTutorManager(tutor)}
               id={tutor.id}
-              bio={tutor.id == 49 ? tutor.bio : null}
+              bio={tutor.bio}
               name={tutor.name}
               rating={tutor.avgRating}
               onBook={() => openBookingDialog(tutor)}

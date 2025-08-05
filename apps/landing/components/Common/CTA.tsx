@@ -16,12 +16,10 @@ const CTA: React.FC = () => {
         id="CTA"
         className="bg-[#121212] absolute w-screen h-full justify-center items-center z-[9999] py-40 lg:py-0"
       >
-        <div className="flex flex-col md:flex-row gap-6 lg:gap-21 w-full h-full justify-center items-center">
-          <RiveAnimate
-            state="main_comp"
-            animation="cta"
-            className="w-5/6 md:w-1/3 xl:w-[467px] min-h-[303px] md:min-h-[259px] lg:min-h-[433px]"
-          />
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-21 w-full h-full justify-center items-center">
+          <div className="flex justify-center items-center w-5/6 lg:w-1/3 h-full">
+            <RiveAnimate state="main_comp" animation="cta" />
+          </div>
           <div className="flex flex-col gap-4 justify-center text-center">
             <Typography
               tag="p"
