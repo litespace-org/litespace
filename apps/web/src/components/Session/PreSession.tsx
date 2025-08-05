@@ -8,6 +8,7 @@ import Ready from "@/components/Session/Ready";
 import { useTracks } from "@livekit/components-react";
 import { TrackReference } from "@/components/Session/types";
 import { Dialogs, DialogTypes } from "@/components/Session/Dialogs";
+import { useSearchParams } from "react-router-dom";
 
 const PreSession: React.FC<{
   type: ISession.Type;
@@ -31,12 +32,13 @@ const PreSession: React.FC<{
   duration: sessionDuration,
 }) => {
   const tracks: TrackReference[] = useTracks();
+  const [_searchParams, setSearchParams] = useSearchParams();
   const {
     loading,
     error,
     success,
     start,
-    join,
+    join: originalJoin,
     videoRef,
     videoTrack,
     audioTrack,
@@ -60,6 +62,15 @@ const PreSession: React.FC<{
       (track) => track.participant.identity === remoteMemberId.toString()
     );
   }, [remoteMemberId, tracks]);
+
+  const join = () => {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("nav", "false");
+      return params;
+    });
+    originalJoin();
+  };
 
   useEffect(() => {
     if (loading || error || success) return;

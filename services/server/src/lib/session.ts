@@ -4,8 +4,13 @@ import {
   IInterview,
   ISession,
 } from "@litespace/types";
-import { concat, isEmpty } from "lodash";
-import { demoSessions, interviews, lessons } from "@litespace/models";
+import { concat, first, isEmpty } from "lodash";
+import {
+  availabilitySlots,
+  demoSessions,
+  interviews,
+  lessons,
+} from "@litespace/models";
 import { asSubSlots, canBook, getSessionType } from "@litespace/utils";
 
 // todo: impl: each tutor can have interview each 3 months.
@@ -29,18 +34,33 @@ export async function canAccessSession({
 
     const members = await lessons.findLessonMembers([lesson.id]);
     const isMember = members.find((member) => member.userId === userId);
-    if (isMember) return true;
+
+    return isMember;
   }
 
   if (type === "interview") {
     const interview = await interviews.findOne({ sessions: [sessionId] });
     if (!interview) return false;
+
     const isMember =
       interview.interviewerId === userId || interview.intervieweeId === userId;
-    if (isMember) return true;
+
+    return isMember;
   }
 
-  return false;
+  if (type === "demo") {
+    const demoSession = first(
+      (await demoSessions.find({ sessionIds: [sessionId] })).list
+    );
+
+    if (!demoSession) return false;
+    // @moehab TODO: refactor the model select function in order to perform
+    // join queries correctly and use it instead of multiple queries.
+    const slot = await availabilitySlots.findById(demoSession?.slotId);
+    const isMember = demoSession.tutorId === userId || slot?.userId === userId;
+
+    return isMember;
+  }
 }
 
 export async function isBookable({
