@@ -14,19 +14,14 @@ export const Features: React.FC = () => {
         <Highlight id="home/features/feature/one-on-one/description" />
       ),
       image: (
-        <LottieAnimate
-          animation="one-and-one"
-          className="w-1/2 min-w-[350px]"
-        />
+        <LottieAnimate animation="one-and-one" className="min-w-[350px]" />
       ),
       reverse: false,
     },
     {
       title: intl("home/features/feature/anytime/title"),
       description: <Highlight id="home/features/feature/anytime/description" />,
-      image: (
-        <LottieAnimate animation="anytime" className="w-1/2 min-w-[350px]" />
-      ),
+      image: <LottieAnimate animation="anytime" className="min-w-[350px]" />,
       reverse: true,
     },
     {
@@ -39,7 +34,7 @@ export const Features: React.FC = () => {
           animation="novelity"
           loop={false}
           startingFrameAfterFirstPlay={65}
-          className="w-1/2 min-w-[350px]"
+          className="min-w-[350px]"
         />
       ),
       reverse: false,
@@ -50,10 +45,7 @@ export const Features: React.FC = () => {
         <Highlight id="home/features/feature/time-is-yours/description" />
       ),
       image: (
-        <LottieAnimate
-          animation="time-is-yours"
-          className="w-1/2 min-w-[350px]"
-        />
+        <LottieAnimate animation="time-is-yours" className="min-w-[350px]" />
       ),
       reverse: true,
     },
@@ -63,10 +55,7 @@ export const Features: React.FC = () => {
         <Highlight id="home/features/feature/all-in-english/description" />
       ),
       image: (
-        <LottieAnimate
-          animation="all-in-english"
-          className="w-1/2 min-w-[350px]"
-        />
+        <LottieAnimate animation="all-in-english" className="min-w-[350px]" />
       ),
       reverse: false,
     },
@@ -76,10 +65,7 @@ export const Features: React.FC = () => {
         <Highlight id="home/features/feature/notifications/description" />
       ),
       image: (
-        <LottieAnimate
-          animation="notifications"
-          className="w-1/2 min-w-[350px]"
-        />
+        <LottieAnimate animation="notifications" className="min-w-[350px]" />
       ),
       reverse: true,
     },
