@@ -1,6 +1,8 @@
 import { Command } from "commander";
+import { IUser } from "@litespace/types";
+import { sendMsg } from "../src/lib/messenger";
 
-const commentCommand = new Command()
+const generateTokenCommand = new Command()
   .name("generate-token")
   .option("-a, --id <string>", "WhatsApp API AppId")
   .option("-s, --secret <string>", "WhatsApp API SecretKey")
@@ -19,13 +21,34 @@ const commentCommand = new Command()
         `https://graph.facebook.com/v23.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${id}&client_secret=${secret}&fb_exchange_token=${token}`
       )
         .then((res) => res.json())
-        .then(console.log);
+        .then(console.log)
+        .catch(console.error);
     }
   );
 
+const sendMessageCommand = new Command()
+  .name("send-message")
+  .option(
+    "-r, --receiver <string>",
+    "The phone number that should recieve the message"
+  )
+  .action(async ({ receiver }: { receiver: string }) => {
+    sendMsg({
+      to: receiver,
+      template: {
+        name: "hello_world",
+        parameters: {},
+      },
+      method: IUser.NotificationMethod.Whatsapp,
+    });
+  });
+
 new Command()
   .name("WhatsApp API")
-  .description("Generate long-live whatsapp api access token from the temp one")
+  .description(
+    "Generate long-lived whatsapp api access token from the temp one"
+  )
   .version("1.0.0", "-v")
-  .addCommand(commentCommand)
+  .addCommand(generateTokenCommand)
+  .addCommand(sendMessageCommand)
   .parse();

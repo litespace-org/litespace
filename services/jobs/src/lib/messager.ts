@@ -19,6 +19,7 @@ export function sendMsg(msg: Required<IMessenger.Message>) {
         template: msg.template,
       })
       .catch((e) => console.error(e));
+  } else {
+    console.warn("message not sent; no notification method found.");
   }
-  console.warn("message not sent; no notification method found.");
 }

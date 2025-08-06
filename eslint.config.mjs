@@ -29,6 +29,7 @@ export default [
       "**/apps/blog",
       "**/apps/landing/.vercel",
       "**/services/studio/build",
+      "**/services/server/scripts",
       "**/migrations",
       "**/jest.config.js",
       "**/jest.config.cjs",
