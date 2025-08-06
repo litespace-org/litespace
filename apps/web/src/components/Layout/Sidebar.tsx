@@ -115,18 +115,24 @@ const MainPages: React.FC<{ hide: Void }> = ({ hide }) => {
       isActive: match(Web.StudentDashboard) || match(Web.TutorDashboard),
     };
 
-    const lessonsSchedule = {
-      label: intl("sidebar.lessons-schedule"),
-      route: Web.LessonsSchedule,
-      Icon: Calendar,
-      isActive: match(Web.LessonsSchedule),
-    };
-
     const upcomingLessons = {
-      label: intl("sidebar.upcoming-lessons"),
+      label:
+        user?.role === IUser.Role.Student
+          ? intl("sidebar.lessons")
+          : intl("sidebar.upcoming-lessons"),
       route: Web.UpcomingLessons,
       Icon: Video,
       isActive: match(Web.UpcomingLessons),
+    };
+
+    const lessonsSchedule = {
+      label:
+        user?.role === IUser.Role.Student
+          ? intl("sidebar.lessons")
+          : intl("sidebar.lessons-schedule"),
+      route: Web.LessonsSchedule,
+      Icon: user?.role === IUser.Role.Student ? Video : Calendar,
+      isActive: match(Web.LessonsSchedule),
     };
 
     const chat = {
@@ -184,14 +190,7 @@ const MainPages: React.FC<{ hide: Void }> = ({ hide }) => {
       ];
 
     if (user?.role === IUser.Role.Student)
-      return [
-        dashboard,
-        upcomingLessons,
-        tutors,
-        lessonsSchedule,
-        chat,
-        subscribtions,
-      ];
+      return [dashboard, tutors, lessonsSchedule, chat, subscribtions];
 
     return [];
   }, [intl, match, user?.role]);
@@ -281,7 +280,7 @@ const AccountPromotion: React.FC = () => {
   if (!showPromotion) return null;
 
   return (
-    <div className="bg-brand-100 lg:rounded-lg mt-10 -mx-4 lg:mx-0 py-4 lg:pb-0 flex flex-col items-center">
+    <div className="bg-natural-100 lg:rounded-lg mt-10 -mx-4 lg:mx-0 py-4 lg:pb-0 flex flex-col items-center">
       <div className="mx-2 lg:mx-0 px-4 mb-3">
         <Typography
           tag="p"
@@ -297,13 +296,8 @@ const AccountPromotion: React.FC = () => {
         </Typography>
       </div>
       <Link to={Web.Plans} tabIndex={-1}>
-        <Button size="large" htmlType="button">
-          <Typography
-            tag="span"
-            className="text-natural-50 text-caption font-semibold"
-          >
-            {intl("sidebar.subscribe-now")}
-          </Typography>
+        <Button size="large" htmlType="button" type="natural" className="text">
+          {intl("sidebar.subscribe-now")}
         </Button>
       </Link>
 
