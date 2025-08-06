@@ -414,102 +414,149 @@ async function main(): Promise<void> {
 
   // seeding slots
   const seededSlots: { [tutorId: number]: IAvailabilitySlot.Self[] } = {};
-  [tutorManager, ...addedTutors].forEach(async (tutor, i) => {
-    const date = dayjs.utc().add(i, "day").startOf("day");
+
+  // Process tutorManager first with non-overlapping slots and proper purposes
+  if (tutorManager) {
+    const baseDate = dayjs.utc().startOf("day");
+    const slots = await availabilitySlots.create([
+      {
+        userId: tutorManager.id,
+        start: baseDate.add(9, "hours").toISOString(), // 9 AM
+        end: baseDate.add(11, "hours").toISOString(), // 11 AM
+        purpose: IAvailabilitySlot.Purpose.Lesson,
+      },
+      {
+        userId: tutorManager.id,
+        start: baseDate.add(14, "hours").toISOString(), // 2 PM
+        end: baseDate.add(16, "hours").toISOString(), // 4 PM
+        purpose: IAvailabilitySlot.Purpose.General,
+      },
+      {
+        userId: tutorManager.id,
+        start: baseDate.add(1, "day").add(10, "hours").toISOString(), // Next day 10 AM
+        end: baseDate.add(1, "day").add(12, "hours").toISOString(), // Next day 12 PM
+        purpose: IAvailabilitySlot.Purpose.Interview,
+      },
+      {
+        userId: tutorManager.id,
+        start: baseDate.add(2, "days").add(15, "hours").toISOString(), // Day 3, 3 PM
+        end: baseDate.add(2, "days").add(17, "hours").toISOString(), // Day 3, 5 PM
+        purpose: IAvailabilitySlot.Purpose.DemoSession,
+      },
+      {
+        userId: tutorManager.id,
+        start: baseDate.add(3, "days").add(9, "hours").toISOString(), // Day 4, 9 AM
+        end: baseDate.add(3, "days").add(13, "hours").toISOString(), // Day 4, 1 PM
+        purpose: IAvailabilitySlot.Purpose.General,
+      },
+      {
+        userId: tutorManager.id,
+        start: baseDate.add(4, "days").add(11, "hours").toISOString(), // Day 5, 11 AM
+        end: baseDate.add(4, "days").add(15, "hours").toISOString(), // Day 5, 3 PM
+        purpose: IAvailabilitySlot.Purpose.Lesson,
+      },
+    ]);
+    seededSlots[tutorManager.id] = slots;
+  }
+
+  // Process regular tutors with non-overlapping slots
+  for (let i = 0; i < addedTutors.length; i++) {
+    const tutor = addedTutors[i];
+    // Each tutor gets slots on different days to avoid conflicts
+    // Use a wider spread to ensure no overlap
+    const baseDate = dayjs
+      .utc()
+      .add(i * 2 + 7, "days") // Start from day 7+ and use 2-day intervals
+      .startOf("day");
+
     const slots = await availabilitySlots.create([
       {
         userId: tutor.id,
-        start: date.toISOString(),
-        end: date.add(2, "hours").toISOString(),
+        start: baseDate.add(8, "hours").toISOString(), // 8 AM
+        end: baseDate.add(10, "hours").toISOString(), // 10 AM
+        purpose: IAvailabilitySlot.Purpose.Lesson,
       },
       {
         userId: tutor.id,
-        start: date.add(3, "hours").toISOString(),
-        end: date.add(7, "hours").toISOString(),
+        start: baseDate.add(12, "hours").toISOString(), // 12 PM
+        end: baseDate.add(14, "hours").toISOString(), // 2 PM
+        purpose: IAvailabilitySlot.Purpose.General,
       },
       {
         userId: tutor.id,
-        start: date.add(12, "hours").toISOString(),
-        end: date.add(20, "hours").toISOString(),
+        start: baseDate.add(1, "day").add(9, "hours").toISOString(), // Next day 9 AM
+        end: baseDate.add(1, "day").add(11, "hours").toISOString(), // Next day 11 AM
+        purpose: IAvailabilitySlot.Purpose.Lesson,
       },
       {
         userId: tutor.id,
-        start: date.add(25, "hours").toISOString(),
-        end: date.add(29, "hours").toISOString(),
-      },
-      {
-        userId: tutor.id,
-        start: date.add(36, "hours").toISOString(),
-        end: date.add(40, "hours").toISOString(),
-      },
-      {
-        userId: tutor.id,
-        start: date.add(80, "hours").toISOString(),
-        end: date.add(90, "hours").toISOString(),
+        start: baseDate.add(1, "day").add(15, "hours").toISOString(), // Next day 3 PM
+        end: baseDate.add(1, "day").add(17, "hours").toISOString(), // Next day 5 PM
+        purpose: IAvailabilitySlot.Purpose.General,
       },
     ]);
-    return (seededSlots[tutor.id] = slots);
-  });
+    seededSlots[tutor.id] = slots;
+  }
 
   // seeding slots for tutor managers
   const seededSlotsForTutorManagers: {
     [tutorId: number]: IAvailabilitySlot.Self[];
   } = {};
-  addedTutorManagers.forEach(async (tutor, i) => {
-    const date = dayjs
+
+  // Seeding slots for additional tutor managers with proper spacing
+  for (let i = 0; i < addedTutorManagers.length; i++) {
+    const tutor = addedTutorManagers[i];
+    // Each tutor manager gets slots spread across different weeks to avoid conflicts
+    const baseDate = dayjs
       .utc()
-      .add(i * 4, "days")
+      .add(i * 10 + 30, "days") // Use 10-day intervals starting from day 30
       .startOf("day");
+
     const slots = await availabilitySlots.create([
+      // Day 1: Morning lesson slot
       {
         userId: tutor.id,
-        start: date.toISOString(),
-        end: date.add(2, "hours").toISOString(),
+        start: baseDate.add(9, "hours").toISOString(), // 9 AM
+        end: baseDate.add(11, "hours").toISOString(), // 11 AM
         purpose: IAvailabilitySlot.Purpose.Lesson,
       },
+      // Day 1: Afternoon general slot
       {
         userId: tutor.id,
-        start: date.add(3, "hours").toISOString(),
-        end: date.add(7, "hours").toISOString(),
+        start: baseDate.add(14, "hours").toISOString(), // 2 PM
+        end: baseDate.add(16, "hours").toISOString(), // 4 PM
         purpose: IAvailabilitySlot.Purpose.General,
       },
+      // Day 2: Interview slot
       {
         userId: tutor.id,
-        start: date.add(12, "hours").toISOString(),
-        end: date.add(20, "hours").toISOString(),
+        start: baseDate.add(1, "day").add(10, "hours").toISOString(), // Next day 10 AM
+        end: baseDate.add(1, "day").add(12, "hours").toISOString(), // Next day 12 PM
         purpose: IAvailabilitySlot.Purpose.Interview,
       },
+      // Day 3: Demo session slot
       {
         userId: tutor.id,
-        start: date.add(25, "hours").toISOString(),
-        end: date.add(29, "hours").toISOString(),
-        purpose: IAvailabilitySlot.Purpose.General,
-      },
-      {
-        userId: tutor.id,
-        start: date.add(36, "hours").toISOString(),
-        end: date.add(40, "hours").toISOString(),
+        start: baseDate.add(2, "days").add(15, "hours").toISOString(), // Day 3, 3 PM
+        end: baseDate.add(2, "days").add(17, "hours").toISOString(), // Day 3, 5 PM
         purpose: IAvailabilitySlot.Purpose.DemoSession,
       },
+      // Day 4: General availability
       {
         userId: tutor.id,
-        start: date.add(80, "hours").toISOString(),
-        end: date.add(90, "hours").toISOString(),
+        start: baseDate.add(3, "days").add(9, "hours").toISOString(), // Day 4, 9 AM
+        end: baseDate.add(3, "days").add(11, "hours").toISOString(), // Day 4, 11 AM
         purpose: IAvailabilitySlot.Purpose.General,
       },
+      // Day 5: Extended lesson slot
+      {
+        userId: tutor.id,
+        start: baseDate.add(4, "days").add(13, "hours").toISOString(), // Day 5, 1 PM
+        end: baseDate.add(4, "days").add(15, "hours").toISOString(), // Day 5, 3 PM
+        purpose: IAvailabilitySlot.Purpose.Lesson,
+      },
     ]);
-    return (seededSlotsForTutorManagers[tutor.id] = slots);
-  });
-
-  function randomStart(): string {
-    return dayjs
-      .utc()
-      .subtract(50, "hours")
-      .add(sample(range(1, 100))!, "hours")
-      .set("hours", sample(range(0, 24))!)
-      .set("minutes", sample([0, 15, 30, 45])!)
-      .startOf("minutes")
-      .toISOString();
+    seededSlotsForTutorManagers[tutor.id] = slots;
   }
 
   async function createRandomLesson({
@@ -566,35 +613,48 @@ async function main(): Promise<void> {
     );
   }
 
-  const slot = (
-    await availabilitySlots.create([
-      {
-        userId: tutorManager2.id,
-        start: dayjs.utc().startOf("day").toISOString(),
-        end: dayjs.utc().startOf("day").add(1, "days").toISOString(),
-      },
-    ])
-  )[0];
+  // Create interview slots using the first tutor manager's interview slots
+  const tutorManagerWithInterviewSlot = addedTutorManagers.find((tm) =>
+    seededSlotsForTutorManagers[tm.id]?.some(
+      (slot) => slot.purpose === IAvailabilitySlot.Purpose.Interview
+    )
+  );
 
-  for (const tutor of addedTutors) {
-    await knex.transaction(async (tx: Knex.Transaction) => {
-      const interview = await interviews.create({
-        session: `interview:${randomUUID()}`,
-        intervieweeId: tutor.id,
-        interviewerId: tutorManager2.id,
-        start: randomStart(),
-        slot: slot.id,
-        tx,
-      });
+  if (tutorManagerWithInterviewSlot) {
+    const interviewSlot = seededSlotsForTutorManagers[
+      tutorManagerWithInterviewSlot.id
+    ].find((slot) => slot.purpose === IAvailabilitySlot.Purpose.Interview);
 
-      await interviews.update({
-        id: interview.id,
-        intervieweeFeedback: faker.lorem.paragraphs(),
-        interviewerFeedback: faker.lorem.paragraphs(),
-        status: IInterview.Status.Passed,
-        tx,
-      });
-    });
+    if (interviewSlot) {
+      // Create interviews for some tutors using the existing interview slot
+      const tutorsToInterview = addedTutors.slice(
+        0,
+        Math.min(5, addedTutors.length)
+      );
+
+      for (const tutor of tutorsToInterview) {
+        await knex.transaction(async (tx: Knex.Transaction) => {
+          const interview = await interviews.create({
+            session: `interview:${randomUUID()}`,
+            intervieweeId: tutor.id,
+            interviewerId: tutorManagerWithInterviewSlot.id,
+            start: dayjs(interviewSlot.start)
+              .add(Math.floor(Math.random() * 60), "minutes")
+              .toISOString(),
+            slot: interviewSlot.id,
+            tx,
+          });
+
+          await interviews.update({
+            id: interview.id,
+            intervieweeFeedback: faker.lorem.paragraphs(),
+            interviewerFeedback: faker.lorem.paragraphs(),
+            status: IInterview.Status.Passed,
+            tx,
+          });
+        });
+      }
+    }
   }
 
   // adding introVideos to each tutor
@@ -617,27 +677,44 @@ async function main(): Promise<void> {
     });
   }
 
-  // adding demoSessions to each tutor
+  // adding demoSessions to each tutor using demo session slots
   for (const tutor of addedTutors) {
-    const demo = await demoSessions.create({
-      slotId: slot.id,
-      tutorId: tutor.id,
-      start: dayjs().subtract(1, "day").toISOString(),
-    });
+    // Find a tutor manager with demo session slots
+    const tutorManagerWithDemoSlot = addedTutorManagers.find((tm) =>
+      seededSlotsForTutorManagers[tm.id]?.some(
+        (slot) => slot.purpose === IAvailabilitySlot.Purpose.DemoSession
+      )
+    );
 
-    // if there is a reviewer, the video is rejected or approved otherwise it's in pending state
-    await demoSessions.update({
-      ids: [demo.id],
-      status: tutor.verifiedEmail
-        ? IDemoSession.Status.Passed
-        : sample([
-            IDemoSession.Status.Pending,
-            IDemoSession.Status.Rejected,
-            IDemoSession.Status.CanceledByTutor,
-            IDemoSession.Status.CanceledByTutorManager,
-            IDemoSession.Status.CanceledByAdmin,
-          ]),
-    });
+    if (tutorManagerWithDemoSlot) {
+      const demoSlot = seededSlotsForTutorManagers[
+        tutorManagerWithDemoSlot.id
+      ].find((slot) => slot.purpose === IAvailabilitySlot.Purpose.DemoSession);
+
+      if (demoSlot) {
+        const demo = await demoSessions.create({
+          slotId: demoSlot.id,
+          tutorId: tutor.id,
+          start: dayjs(demoSlot.start)
+            .add(Math.floor(Math.random() * 60), "minutes")
+            .toISOString(),
+        });
+
+        // if there is a reviewer, the demo session is rejected or approved otherwise it's in pending state
+        await demoSessions.update({
+          ids: [demo.id],
+          status: tutor.verifiedEmail
+            ? IDemoSession.Status.Passed
+            : sample([
+                IDemoSession.Status.Pending,
+                IDemoSession.Status.Rejected,
+                IDemoSession.Status.CanceledByTutor,
+                IDemoSession.Status.CanceledByTutorManager,
+                IDemoSession.Status.CanceledByAdmin,
+              ]),
+        });
+      }
+    }
   }
 
   await knex.transaction(async (tx) => {
