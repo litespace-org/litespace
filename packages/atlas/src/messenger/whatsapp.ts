@@ -22,7 +22,7 @@ export class Whatsapp extends Base {
         template: {
           name: payload.template.name,
           language: {
-            code: "en",
+            code: "en_us",
           },
           components: [
             {

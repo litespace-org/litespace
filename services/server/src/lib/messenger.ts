@@ -27,6 +27,7 @@ export function sendMsg(msg: Required<IMessenger.Message>, force?: boolean) {
       .catch((e: AxiosError) =>
         console.error("WhatsAppAPI:", e.response?.data)
       );
+  } else {
+    console.warn("message not sent; no notification method found.");
   }
-  console.warn("message not sent; no notification method found.");
 }

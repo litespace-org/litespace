@@ -2,20 +2,24 @@ import { IUser } from "@/index";
 
 export type Template =
   | {
+      name: "hello_world";
+      parameters: object;
+    }
+  | {
       name: "verify_phone_number";
       parameters: {
         otp: number;
       };
     }
   | {
-      // A new interview has be booked at ${date}
+      // A new interview has be booked at {{date}}.
       name: "new_interview_booked";
       parameters: {
         date: string;
       };
     }
   | {
-      // New lesson booked! A student has booked a lesson with you for ${payload.duration} minutes at ${date} (GMT+2)
+      // New lesson booked! A student has booked a lesson with you for {{duration}} minutes at {{date}}.
       name: "new_lesson_booked";
       parameters: {
         duration: number;
@@ -23,22 +27,22 @@ export type Template =
       };
     }
   | {
-      // Your lesson at ${prevStart} is now updated to ${currentStart}
+      // Your lesson at {{predate}} is now updated to {{curdate}}.
       name: "lesson_updated";
       parameters: {
-        preDate: string;
-        curDate: string;
+        predate: string;
+        curdate: string;
       };
     }
   | {
-      // Your lesson at ${date} is canceled.
+      // Your lesson at {{date}} is canceled.
       name: "lesson_canceled";
       parameters: {
         date: string;
       };
     }
   | {
-      // Your lesson will start ${tz.fromNow()}. Join here ${url}
+      // Your lesson will start {{time}}. Join here {{url}}
       name: "lesson_reminder";
       parameters: {
         time: string;

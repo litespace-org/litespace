@@ -271,10 +271,10 @@ function update(context: ApiContext) {
           template: {
             name: "lesson_updated",
             parameters: {
-              preDate: dayjs(lesson.start)
+              predate: dayjs(lesson.start)
                 .tz(AFRICA_CAIRO_TIMEZONE)
                 .format("ddd D MMM hh:mm A"),
-              curDate: dayjs(updated.start)
+              curdate: dayjs(updated.start)
                 .tz(AFRICA_CAIRO_TIMEZONE)
                 .format("ddd D MMM hh:mm A"),
             },
