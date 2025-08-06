@@ -75,7 +75,9 @@ export const ActionsMenu: React.FC<{
   return (
     <Root dir="rtl" onOpenChange={onOpenChange}>
       <Trigger disabled={disabled} asChild>
-        {children || (
+        {children ? (
+          <div>{children}</div>
+        ) : (
           <button
             disabled={disabled}
             className={cn(
