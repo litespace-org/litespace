@@ -85,6 +85,7 @@ export const MAIN_TUTOR_MANAGER_TELEGRAM_URL =
   "https://web.telegram.org/k/#@MahmoudNagaty";
 export const VIDEO_SESSION_EXAMPLE =
   "https://litespace-prod-assets.fra1.cdn.digitaloceanspaces.com/4ea88b90-dc5b-4b31-9131-fa2da1475ce3";
+export const LITESPACE_SUPPORT_URL = "https://wa.me/+201552873917";
 
 // All users except tutors and tutor-managers can have their names in either Arabic or English or both.
 // https://regex101.com/r/ER7McY/1
