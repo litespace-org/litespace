@@ -1,13 +1,13 @@
-import ExclaimationMarkCircle from "@litespace/assets/ExclaimationMarkCircle";
 import { Button } from "@/components/Button";
-import { useFormatMessage } from "@/hooks/intl";
-import { Typography } from "@/components/Typography";
-import { Void } from "@litespace/types";
-import React, { useCallback, useState } from "react";
-import cn from "classnames";
-import { useLogger } from "@litespace/headless/logger";
 import { useToast } from "@/components/Toast";
-import { safePromise } from "@litespace/utils";
+import { Typography } from "@/components/Typography";
+import { useFormatMessage } from "@/hooks/intl";
+import ExclaimationMarkCircle from "@litespace/assets/ExclaimationMarkCircle";
+import { useLogger } from "@litespace/headless/logger";
+import { Void } from "@litespace/types";
+import { LITESPACE_SUPPORT_URL, safePromise } from "@litespace/utils";
+import cn from "classnames";
+import React, { useCallback, useState } from "react";
 
 export const LoadingError: React.FC<{
   retry: Void;
@@ -29,6 +29,13 @@ export const LoadingError: React.FC<{
     toast.success({
       title: intl("logs.export.title"),
       description: intl("logs.export.desc"),
+      customAction: (
+        <a href={LITESPACE_SUPPORT_URL} target="_blank" className="w-full mt-4">
+          <Button type="success" size="large" className="text w-full">
+            {intl("labels.contact-us")}
+          </Button>
+        </a>
+      ),
     });
   }, [intl, logger, toast]);
 

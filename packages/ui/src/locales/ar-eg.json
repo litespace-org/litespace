@@ -857,6 +857,7 @@
   "payment.methods.wallet": "المحافظ الإلكترونة",
   "payment.methods.cards": "البطاقات",
   "payment.methods.fawry": "الدفع عن طريق فوري",
+  "labels.contact-us": "تواصل معنا",
   "labels.enable-notifications": "تفعيل الإشعارات",
   "labels.percent": "{value}%",
   "labels.hash-value": "{value}#",
