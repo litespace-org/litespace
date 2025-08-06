@@ -34,7 +34,17 @@ export const Toast: React.FC<{
   onOpenChange?: (value: boolean) => void;
   toastId?: ToastId;
   actions?: Array<ToastAction>;
-}> = ({ open, onOpenChange, title, description, toastId, type, actions }) => {
+  customAction?: React.ReactNode;
+}> = ({
+  open,
+  onOpenChange,
+  title,
+  description,
+  toastId,
+  type,
+  actions,
+  customAction,
+}) => {
   const Icon = useMemo(() => IconMap[type], [type]);
   return (
     <Root
@@ -128,6 +138,8 @@ export const Toast: React.FC<{
           ))}
         </div>
       ) : null}
+
+      {customAction}
     </Root>
   );
 };
