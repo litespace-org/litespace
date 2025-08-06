@@ -14,12 +14,11 @@ import React, { useMemo } from "react";
 
 const TOAST_DURATION = 4_000;
 
-const IconMap: Record<
-  ToastType,
-  React.MemoExoticComponent<
-    (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element
-  >
-> = {
+type IconType = React.MemoExoticComponent<
+  (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element
+>;
+
+const IconMap: Record<ToastType, IconType> = {
   error: Error,
   info: AlertCircle,
   warning: WarningInfo,
@@ -34,8 +33,21 @@ export const Toast: React.FC<{
   onOpenChange?: (value: boolean) => void;
   toastId?: ToastId;
   actions?: Array<ToastAction>;
-}> = ({ open, onOpenChange, title, description, toastId, type, actions }) => {
-  const Icon = useMemo(() => IconMap[type], [type]);
+  icon?: IconType;
+}> = ({
+  open,
+  onOpenChange,
+  title,
+  description,
+  toastId,
+  type,
+  actions,
+  icon,
+}) => {
+  const Icon = useMemo(() => {
+    return icon || IconMap[type];
+  }, [icon, type]);
+
   return (
     <Root
       dir="rtl"
@@ -67,7 +79,7 @@ export const Toast: React.FC<{
           style={{ textIndent: "28px" }}
         >
           <Icon
-            className={cn("w-5 h-5 absolute top-0.5", {
+            className={cn("w-5 h-5 absolute", title ? "top-0.5" : "-top-2.5", {
               "[&>*]:stroke-success-500": type === "success",
               "[&>*>*]:stroke-destructive-600": type === "error",
               "[&>*>*]:stroke-secondary-600": type === "info",
@@ -94,14 +106,14 @@ export const Toast: React.FC<{
       >
         <Typography
           tag="p"
-          className="text-natural-600 font-normal dark:text-natural-50 text-tiny select-text"
+          className="text-natural-700 font-normal dark:text-natural-50 text-tiny select-text"
         >
           {description}
         </Typography>
       </Description>
 
       {actions && !isEmpty(actions) ? (
-        <div className="flex flex-row items-center justify-normal gap-2 w-full mt-4">
+        <div className="flex flex-row items-center justify-normal gap-2 md:gap-4 w-full mt-4">
           {actions.map((action, idx) => (
             <Button
               key={idx}
@@ -121,7 +133,7 @@ export const Toast: React.FC<{
                 const shouldClose = action.onClick?.();
                 if (shouldClose) onOpenChange?.(false);
               }}
-              className="flex-1 text-body font-medium"
+              className="min-w-fit flex-1 text-body font-medium"
             >
               {action.label}
             </Button>
