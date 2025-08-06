@@ -10,11 +10,11 @@ const Feature: React.FC<FeatureProps> = ({
   return (
     <div
       className={cn(
-        "flex flex-col-reverse md:flex-row gap-4 justify-center md:justify-between items-center h-96",
+        "flex flex-col-reverse md:flex-row gap-4 items-center justify-center md:justify-between h-[400px] xl:h-[600px]",
         reverse ? "md:flex-row-reverse" : "md:flex-row"
       )}
     >
-      <div className="flex flex-col gap-4 max-w-[328px] md:max-w-[377px] lg:max-w-[600px] justify-center items-center md:items-start  text-center">
+      <div className="lg:flex-1 flex flex-col gap-4 max-w-[400px] md:max-w-[377px] lg:max-w-[none] text-center md:text-left">
         <h2 className="text-subtitle-1 md:text-h4 font-bold text-natural-950 md:text-right">
           {title}
         </h2>
@@ -23,7 +23,7 @@ const Feature: React.FC<FeatureProps> = ({
         </p>
       </div>
 
-      {image}
+      <div className="flex-1 flex w-full h-full">{image}</div>
     </div>
   );
 };
