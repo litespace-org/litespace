@@ -8,9 +8,9 @@ const Feature: React.FC<FeatureProps> = ({
   reverse,
 }) => {
   return (
-    <section
+    <div
       className={cn(
-        "flex flex-col-reverse md:flex-row gap-4 justify-center md:justify-between items-center",
+        "flex flex-col-reverse md:flex-row gap-4 justify-center md:justify-between items-center h-96",
         reverse ? "md:flex-row-reverse" : "md:flex-row"
       )}
     >
@@ -24,7 +24,7 @@ const Feature: React.FC<FeatureProps> = ({
       </div>
 
       {image}
-    </section>
+    </div>
   );
 };
 
