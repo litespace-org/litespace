@@ -76,6 +76,8 @@ export const invalidPhone = () => error(ApiError.InvalidPhone, 400);
 
 export const unresolvedPhone = () => error(ApiError.UnresolvedPhone, 403);
 
+export const unverifiedPhone = () => error(ApiError.UnverifiedPhone, 403);
+
 export const expiredVerificationCode = () =>
   error(ApiError.ExpiredVerificationCode, 410);
 
