@@ -23,7 +23,7 @@ import { generateConfirmationCode } from "@/lib/confirmationCodes";
 import { unionOfLiterals, email, password } from "@/validation/utils";
 import { sendBackgroundMessage } from "@/workers";
 import { hashPassword, selectPhone } from "@/lib/user";
-import { sendMsg } from "@/lib/messenger";
+import { sendOtpMsg } from "@/lib/messenger";
 
 const method = unionOfLiterals<IUser.NotificationMethodLiteral>(["whatsapp"]);
 
@@ -91,7 +91,7 @@ async function sendVerifyPhoneCode(
     expiresAt: expiresAt,
   });
 
-  sendMsg(
+  sendOtpMsg(
     {
       to: phone,
       template: {

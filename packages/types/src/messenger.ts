@@ -55,3 +55,16 @@ export type Message = {
   template: Template;
   method?: IUser.NotificationMethod | null;
 };
+
+export type OtpTemplate = {
+  name: string;
+  parameters: {
+    otp: number;
+  };
+};
+
+export type OtpMessage = {
+  to: string;
+  template: OtpTemplate;
+  method?: IUser.NotificationMethod | null;
+};
