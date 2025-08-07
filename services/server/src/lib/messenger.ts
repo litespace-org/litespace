@@ -31,3 +31,21 @@ export function sendMsg(msg: Required<IMessenger.Message>, force?: boolean) {
     console.warn("message not sent; no notification method found.");
   }
 }
+
+export function sendOtpMsg(
+  msg: Required<IMessenger.OtpMessage>,
+  force?: boolean
+) {
+  if (force || msg.method === IUser.NotificationMethod.Whatsapp) {
+    messenger.whatsapp
+      .sendOtpMessage({
+        to: msg.to.startsWith("2") ? msg.to : `2${msg.to}`,
+        template: msg.template,
+      })
+      .catch((e: AxiosError) =>
+        console.error("WhatsAppAPI:", e.response?.data)
+      );
+  } else {
+    console.warn("message not sent; no notification method found.");
+  }
+}

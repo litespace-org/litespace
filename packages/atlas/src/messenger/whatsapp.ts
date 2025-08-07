@@ -39,4 +39,45 @@ export class Whatsapp extends Base {
       },
     });
   }
+
+  sendOtpMessage(payload: IMessenger.OtpMessage) {
+    return this.post({
+      // as shown here: https://developers.facebook.com/docs/whatsapp/cloud-api/overview
+      route: `/v23.0/${this.profileId}/messages`,
+      payload: {
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: payload.to,
+        type: "template",
+        template: {
+          name: payload.template.name,
+          language: {
+            code: "en_us",
+          },
+          components: [
+            {
+              type: "body",
+              parameters: [
+                {
+                  type: "text",
+                  text: payload.template.parameters.otp,
+                },
+              ],
+            },
+            {
+              type: "button",
+              sub_type: "url",
+              index: "0",
+              parameters: [
+                {
+                  type: "text",
+                  text: payload.template.parameters.otp,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    });
+  }
 }
