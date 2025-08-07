@@ -60,19 +60,7 @@ const VideoStreams: React.FC<{
             loading={connecting}
             size="lg"
           />
-        ) : (
-          <Stream
-            trackRef={selfTrackRef}
-            userId={selfId}
-            userImage={selfImage}
-            userName={selfName}
-            audio={selfAudio}
-            video={selfVideo}
-            speaking={selfSpeaking}
-            size="lg"
-            muted
-          />
-        )}
+        ) : null}
 
         {memberConnected ? (
           <Movable
@@ -93,7 +81,19 @@ const VideoStreams: React.FC<{
               />
             </div>
           </Movable>
-        ) : null}
+        ) : (
+          <Stream
+            trackRef={selfTrackRef}
+            userId={selfId}
+            userImage={selfImage}
+            userName={selfName}
+            audio={selfAudio}
+            video={selfVideo}
+            speaking={selfSpeaking}
+            size="lg"
+            muted
+          />
+        )}
       </div>
     </div>
   );
