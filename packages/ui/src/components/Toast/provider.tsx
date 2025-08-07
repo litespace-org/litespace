@@ -48,6 +48,7 @@ export const ToastProvider: React.FC<{
               if (!open) remove(toast.id);
             }}
             actions={toast.actions}
+            customAction={toast.customAction}
           />
         ))}
 
