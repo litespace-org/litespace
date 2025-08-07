@@ -166,17 +166,19 @@ export const ConfirmationDialog: React.FC<{
             >
               <div className="w-6 h-6">{icon}</div>
             </div>
-            <Close
-              onClick={close}
-              disabled={!closable}
-              className={cn(
-                "rounded-full flex items-center justify-center",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-                { "cursor-not-allowed opacity-50": !closable }
-              )}
-            >
-              <X className="text-natural-600 w-4 h-4 lg:w-6 lg:h-6" />
-            </Close>
+            {close ? (
+              <Close
+                onClick={close}
+                disabled={!closable}
+                className={cn(
+                  "rounded-full flex items-center justify-center",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                  { "cursor-not-allowed opacity-50": !closable }
+                )}
+              >
+                <X className="text-natural-600 w-4 h-4 lg:w-6 lg:h-6" />
+              </Close>
+            ) : null}
           </div>
 
           <Title>

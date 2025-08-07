@@ -18,6 +18,7 @@ import { useSaveLogs } from "@/hooks/logger";
 import { isProfileComplete } from "@litespace/utils/tutor";
 import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
+import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowserDialog";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -158,6 +159,7 @@ const Root: React.FC = () => {
           }
         )}
       >
+        <UnsupportedBrowserDialog />
         <WebrtcCheckDialog />
         {showNavigation ? (
           <Navbar toggleSidebar={() => setShowMobileSidebar((prev) => !prev)} />
