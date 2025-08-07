@@ -41,7 +41,8 @@ export const LottieAnimate = ({
   useEffect(() => {
     fetch(`/animations/${animation}.json`)
       .then((res) => res.json())
-      .then((data) => setAnimationData(data));
+      .then((data) => setAnimationData(data))
+      .catch(console.error);
   }, [animation]);
 
   const onComplete = useCallback(() => {
