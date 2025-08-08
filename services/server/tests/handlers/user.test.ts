@@ -119,6 +119,16 @@ describe("/api/v1/user/", () => {
       const updated = await tutors.findById(tutor.id);
       expect(updated?.bypassOnboarding).to.be.true;
     });
+
+    it("should respond with Error when trying to update notification method with unverified phone", async () => {
+      const user = await db.user({ verifiedPhone: false });
+      const res = await updateUser({
+        user,
+        params: { id: user.id },
+        body: { notificationMethod: IUser.NotificationMethod.Whatsapp },
+      });
+      expect(res).to.be.instanceOf(Error);
+    });
   });
 
   describe("GET /api/v1/user/tutor/list/onboarded", () => {
