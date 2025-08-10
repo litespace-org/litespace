@@ -99,6 +99,7 @@ export type CreateAction = {
   type: "create";
   start: string;
   end: string;
+  purpose: Purpose;
 };
 
 export type UpdateAction = {
@@ -106,6 +107,7 @@ export type UpdateAction = {
   id: number;
   start?: string;
   end?: string;
+  purpose?: Purpose;
 };
 
 export type DeleteAction = {
