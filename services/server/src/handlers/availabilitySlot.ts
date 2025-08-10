@@ -169,6 +169,7 @@ async function set(req: Request, res: Response, next: NextFunction) {
       execludeSlots: deletes.map((action) => action.id),
       userIds: [user.id],
       start: { gt: dayjs().toISOString() },
+      end: { gt: dayjs().toISOString() },
       deleted: false,
       full: true,
     });
