@@ -1,4 +1,5 @@
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
+import SubscriptionDialog from "@/components/Lessons/SubscriptionDialog";
 import { useOnError } from "@/hooks/error";
 import dayjs from "@/lib/dayjs";
 import { asSlotBoundries } from "@/lib/lesson";
@@ -14,14 +15,20 @@ import {
 } from "@litespace/headless/lessons";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
-import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
+import { IAvailabilitySlot, ILesson, IUser, Void } from "@litespace/types";
 import { ManageLessonDialog } from "@litespace/ui/Lessons";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { isTutorManager, MAX_LESSON_DURATION } from "@litespace/utils";
 import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
 import { nullable } from "@litespace/utils/utils";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 type Base = {
   close: Void;
@@ -96,6 +103,16 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   // ====== get tutorInfo =========
   const { query: tutor } = useFindTutorInfo(tutorId);
+
+  const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(
+    !info && tutor.data?.role === IUser.Role.Tutor
+  );
+
+  useEffect(
+    () =>
+      setSubscribeDialogOpen(!info && tutor.data?.role === IUser.Role.Tutor),
+    [info, tutor.data]
+  );
 
   const tutorAvailabilitySlots = useFindAvailabilitySlots({
     userIds: [tutorId],
@@ -210,42 +227,48 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   return (
     <>
-      {!verifyEmailDialog.open ? (
-        <ManageLessonDialog
-          remainingWeeklyMinutes={asRemainingWeeklyMinutes}
-          open
-          type={payload.type}
-          slotId={payload.type === "update" ? payload.slotId : undefined}
-          start={payload.type === "update" ? payload.start : undefined}
-          duration={payload.type === "update" ? payload.duration : undefined}
-          imageUrl={nullable(tutor.data?.image)}
-          name={nullable(tutor.data?.name)}
-          tutorId={tutorId}
-          dateBoundaries={weekBoundaries}
-          close={close}
-          confirmationLoading={createLessonMutation.isPending}
-          loading={
-            tutorAvailabilitySlots.isLoading ||
-            tutor.isPending ||
-            lessons.query.isPending
-          }
-          sendVerifyEmail={() => {
-            verifyEmailDialog.show();
-          }}
-          bookedSlots={bookedSlots}
-          slots={tutorAvailabilitySlots.data?.slots.list || []}
-          onSubmit={onSubmit}
-          isVerified={user?.verifiedEmail}
-          subscribed={!!info}
-          hasBookedLessons={hasBookedLessons}
-          retry={tutorAvailabilitySlots.refetch}
-          error={
-            tutorAvailabilitySlots.isError ||
-            lessons.query.isError ||
-            tutor.isError
-          }
-        />
-      ) : null}
+      <SubscriptionDialog
+        open={subscribeDialogOpen}
+        close={() => {
+          setSubscribeDialogOpen(false);
+          close();
+        }}
+      />
+
+      <ManageLessonDialog
+        remainingWeeklyMinutes={asRemainingWeeklyMinutes}
+        open={!verifyEmailDialog.open && !subscribeDialogOpen}
+        type={payload.type}
+        slotId={payload.type === "update" ? payload.slotId : undefined}
+        start={payload.type === "update" ? payload.start : undefined}
+        duration={payload.type === "update" ? payload.duration : undefined}
+        imageUrl={nullable(tutor.data?.image)}
+        name={nullable(tutor.data?.name)}
+        tutorId={tutorId}
+        dateBoundaries={weekBoundaries}
+        close={close}
+        confirmationLoading={createLessonMutation.isPending}
+        loading={
+          tutorAvailabilitySlots.isLoading ||
+          tutor.isPending ||
+          lessons.query.isPending
+        }
+        sendVerifyEmail={() => {
+          verifyEmailDialog.show();
+        }}
+        bookedSlots={bookedSlots}
+        slots={tutorAvailabilitySlots.data?.slots.list || []}
+        onSubmit={onSubmit}
+        isVerified={user?.verifiedEmail}
+        subscribed={!!info}
+        hasBookedLessons={hasBookedLessons}
+        retry={tutorAvailabilitySlots.refetch}
+        error={
+          tutorAvailabilitySlots.isError ||
+          lessons.query.isError ||
+          tutor.isError
+        }
+      />
 
       <VerifyEmail
         open={verifyEmailDialog.open}

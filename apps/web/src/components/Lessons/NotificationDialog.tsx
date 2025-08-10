@@ -21,7 +21,7 @@ export const NotificationsDialog: React.FC<{
       close={close}
       title={
         <div className="w-12 h-12 bg-brand-50 rounded-full overflow-hidden flex items-center justify-center">
-          <Notification className="relative w-6 h-6 [&>*]:stroke-brand-500 bg-brand-100 rounded-full overflow-hidden p-1" />
+          <Notification className="w-6 h-6 [&>*]:stroke-brand-500 bg-brand-100 rounded-full overflow-hidden p-1" />
         </div>
       }
     >
