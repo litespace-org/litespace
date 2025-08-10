@@ -7,6 +7,7 @@ import {
 import {
   asSubSlot,
   asSubSlots,
+  expandGeneralPurposeSlot,
   isIntersecting,
   isSuperSlot,
 } from "@litespace/utils";
@@ -220,11 +221,15 @@ export async function isValidSlots({
   // 3. `updatedSlots` -> in-memory slots with the desired updates (updates are
   //    applied)
   const allSlots = [...readOnlySlots, ...creates, ...updatedSlots];
+  const expanded = [];
+  for (const slot of allSlots) {
+    expanded.push(...expandGeneralPurposeSlot(slot));
+  }
 
   // All start and end dates must be unique.
-  const starts = uniqBy(allSlots, (slot) => slot.start);
-  const ends = uniqBy(allSlots, (slot) => slot.end);
-  if (starts.length !== allSlots.length || ends.length !== allSlots.length)
+  const starts = uniqBy(expanded, (slot) => `${slot.start}/${slot.purpose}`);
+  const ends = uniqBy(expanded, (slot) => `${slot.start}/${slot.purpose}`);
+  if (starts.length !== expanded.length || ends.length !== expanded.length)
     return "conflict";
 
   // Rule: each slot should not conflict with the other slots.

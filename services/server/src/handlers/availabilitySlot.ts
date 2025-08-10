@@ -45,12 +45,14 @@ const setPayload: ZodSchema<IAvailabilitySlot.SetAvailabilitySlotsApiPayload> =
           type: zod.literal("create"),
           start: datetime,
           end: datetime,
+          purpose: slotPurpose,
         }),
         zod.object({
           type: zod.literal("update"),
           id: id,
           start: datetime.optional(),
           end: datetime.optional(),
+          purpose: slotPurpose.optional(),
         }),
         zod.object({
           type: zod.literal("delete"),
@@ -163,10 +165,10 @@ async function set(req: Request, res: Response, next: NextFunction) {
 
     // Find "all" (hence `full=true`) user slots that are not deleted or about to
     // be deleted (hence why `execludeSlots`)
-    // TODO: fetch only future slots @mmoehabb & @neuodev
     const userSlots = await availabilitySlots.find({
       execludeSlots: deletes.map((action) => action.id),
       userIds: [user.id],
+      start: { gt: dayjs().toISOString() },
       deleted: false,
       full: true,
     });

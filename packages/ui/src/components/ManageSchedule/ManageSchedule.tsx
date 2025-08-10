@@ -182,7 +182,13 @@ export const ManageSchedule: React.FC<Props> = ({
     // NOTE: `unchnaged` slots are not added to the final slots actions.
     for (const slot of slots) {
       if (slot.state === "created" && slot.start && slot.end)
-        final.push({ type: "create", start: slot.start, end: slot.end });
+        final.push({
+          type: "create",
+          start: slot.start,
+          end: slot.end,
+          // TODO: this should be dynamic in future
+          purpose: IAvailabilitySlot.Purpose.Lesson,
+        });
 
       if (slot.state === "updated" && slot.start && slot.end) {
         final.push({

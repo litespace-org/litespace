@@ -1,6 +1,7 @@
 import safeRequest from "express-async-handler";
 import {
   bad,
+  forbidden,
   noPassword,
   notfound,
   serviceUnavailable,
@@ -16,6 +17,7 @@ import { encodeAuthJwt, decodeAuthJwt } from "@litespace/auth";
 import { OAuth2Client } from "google-auth-library";
 import zod from "zod";
 import axios from "axios";
+import { isUser } from "@litespace/utils";
 
 const credentials = zod.object({
   email,
@@ -159,12 +161,16 @@ async function loginWithAuthToken(
 }
 
 async function refreshAuthToken(
-  _req: Request,
-  _res: Response,
+  req: Request,
+  res: Response,
   next: NextFunction
 ) {
-  // TODO: implement refresh-token in the database in order to enable this handler
-  next(serviceUnavailable());
+  const user = req.user;
+  const allowed = isUser(user);
+  if (!allowed) return next(forbidden());
+
+  const token = encodeAuthJwt(user.id, jwtSecret);
+  res.status(200).json(token);
 }
 
 export default {

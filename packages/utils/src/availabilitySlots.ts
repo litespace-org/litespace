@@ -265,3 +265,14 @@ export function asSubSlots<
 >(items: T[]): IAvailabilitySlot.SubSlot[] {
   return items.map((item) => asSubSlot(item));
 }
+
+export function expandGeneralPurposeSlot(
+  slot: Pick<IAvailabilitySlot.Self, "start" | "end" | "purpose">
+) {
+  if (slot.purpose !== IAvailabilitySlot.Purpose.General) return [slot];
+  return [
+    { ...slot, purpose: IAvailabilitySlot.Purpose.Lesson },
+    { ...slot, purpose: IAvailabilitySlot.Purpose.Interview },
+    { ...slot, purpose: IAvailabilitySlot.Purpose.DemoSession },
+  ];
+}
