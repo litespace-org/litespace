@@ -37,7 +37,13 @@ export const sockets: Record<
   },
 } as const;
 
-export type Server = "api" | "messenger" | "echo" | "erpnext" | "whatsapp";
+export type Server =
+  | "api"
+  | "messenger"
+  | "echo"
+  | "erpnext"
+  | "whatsapp"
+  | "paymob";
 
 export const servers: Record<Server, Record<Env.Server, string>> = {
   api: {
@@ -64,6 +70,11 @@ export const servers: Record<Server, Record<Env.Server, string>> = {
     local: "https://graph.facebook.com",
     staging: "https://graph.facebook.com",
     production: "https://graph.facebook.com",
+  },
+  paymob: {
+    local: "https://accept.paymob.com",
+    staging: "https://accept.paymob.com",
+    production: "https://accept.paymob.com",
   },
 };
 

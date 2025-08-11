@@ -66,6 +66,8 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.LargeFileSize]: "error.api.large-file-size",
   [ApiError.InactiveTutorManager]: "error.api.inactive-tutor-manager",
   [ApiError.NotRoomMember]: "error.api.not-room-member",
+  [ApiError.InvalidUserName]: "error.api.invalid-user-name",
+  [ApiError.PhoneRequired]: "error.api.phone-required",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
   [FieldError.ShortPassword]: "error.field.short-password",
   [FieldError.LongPassword]: "error.field.long-password",

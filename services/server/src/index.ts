@@ -112,6 +112,7 @@ app.use("/api/v1/confirmation-code", routes.confirmationCode);
 app.use("/api/v1/report", routes.report);
 app.use("/api/v1/demo-session", routes.demoSession);
 app.use("/api/v1/intro-video", routes.introVideo);
+app.use("/api/v1/paymob", routes.paymob);
 
 app.use(errorHandler);
 

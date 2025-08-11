@@ -15,6 +15,7 @@ import asset from "@/routes/asset";
 import session from "@/routes/session";
 import contactRequest from "@/routes/contactRequest";
 import fawry from "@/routes/fawry";
+import paymob from "@/routes/paymob";
 import transaction from "@/routes/transaction";
 import subscription from "@/routes/subscription";
 import confirmationCode from "@/routes/confirmationCode";
@@ -40,6 +41,7 @@ export default {
   session,
   availabilitySlot,
   fawry,
+  paymob,
   transaction,
   subscription,
   confirmationCode,

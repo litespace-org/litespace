@@ -23,6 +23,7 @@ import { ConfirmationCode } from "@/api/confirmationCode";
 import { Subscription } from "@/api/subscription";
 import { Transaction } from "@/api/transaction";
 import { IntroVideo } from "@/api/introVideo";
+import { Paymob } from "@/api/paymob";
 
 export class Api {
   public readonly user: User;
@@ -44,6 +45,7 @@ export class Api {
   public readonly session: Session;
   public readonly demoSession: DemoSession;
   public readonly fawry: Fawry;
+  public readonly paymob: Paymob;
   public readonly confirmationCode: ConfirmationCode;
   public readonly subscription: Subscription;
   public readonly transaction: Transaction;
@@ -70,6 +72,7 @@ export class Api {
     this.session = new Session(client);
     this.demoSession = new DemoSession(client);
     this.fawry = new Fawry(client);
+    this.paymob = new Paymob(client);
     this.confirmationCode = new ConfirmationCode(client);
     this.subscription = new Subscription(client);
     this.transaction = new Transaction(client);

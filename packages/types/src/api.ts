@@ -66,6 +66,8 @@ export enum ApiError {
   LargeFileSize = "large-file-size",
   LessonTimePassed = "lesson-time-passed",
   NotRoomMember = "not-room-member",
+  InvalidUserName = "api-invalid-user-name",
+  PhoneRequired = "phone-required",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

@@ -196,7 +196,7 @@ const Body: React.FC<{
   if (transaction.data?.status === ITransaction.Status.Paid && subscribed)
     return <TransactionDone />;
 
-  if (transaction.data?.status === ITransaction.Status.New)
+  if (transaction.data?.status === ITransaction.Status.Processed)
     return (
       <StatusContainer
         transactionId={transaction.data.id}

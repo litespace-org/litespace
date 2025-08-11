@@ -85,6 +85,10 @@ export const invalidVerificationCode = () =>
 export const inActiveTutorManager = () =>
   error(ApiError.InvalidVerificationCode, 400);
 
+export const invalidUserName = () => error(ApiError.InvalidUserName, 400);
+
+export const phoneRequired = () => error(ApiError.PhoneRequired, 400);
+
 export const wrongPassword = () => error(ApiError.WrongPassword, 401);
 
 export const noPassword = () => error(ApiError.NoPassword, 401);
