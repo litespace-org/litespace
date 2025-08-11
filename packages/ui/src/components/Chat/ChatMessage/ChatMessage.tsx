@@ -176,7 +176,7 @@ export const ChatMessage: React.FC<{
               "flex items-center justify-center shrink-0"
             )}
           >
-            <AlertCircle className="w-[10px] h-[10px]" />
+            <AlertCircle className="w-[10px] h-[10px] [&>*>*]:stroke-natural-50" />
           </div>
         ) : null}
         {owner && !error && !pending ? (

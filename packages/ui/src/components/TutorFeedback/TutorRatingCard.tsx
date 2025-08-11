@@ -77,7 +77,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
                 : "w-8 h-8 md:w-[39px] md:h-[39px] lg:w-14 lg:h-14 -right-[12px] -bottom-[12px]"
             )}
           >
-            <Quote className="w-[14px] h-[14px] md:w-6 md:h-6" />
+            <Quote className="[&>*]:stroke-natural-50 w-[14px] h-[14px] md:w-6 md:h-6" />
           </div>
         </div>
       </div>

@@ -65,7 +65,11 @@ const Subscription: React.FC = () => {
   if (!info || ended)
     return (
       <Link to={Web.Plans} tabIndex={-1}>
-        <Button size="large" htmlType="button" endIcon={<Crown />}>
+        <Button
+          size="large"
+          htmlType="button"
+          endIcon={<Crown className="[&>*]:stroke-natural-50" />}
+        >
           <Typography
             tag="span"
             className="text-natural-50 text-body font-bold"

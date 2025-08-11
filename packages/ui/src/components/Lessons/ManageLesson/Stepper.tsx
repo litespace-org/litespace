@@ -117,7 +117,7 @@ const Icon: React.FC<{
           {index}
         </Typography>
       ) : (
-        <Check />
+        <Check className="[&>*]:stroke-natural-50" />
       )}
     </div>
   );

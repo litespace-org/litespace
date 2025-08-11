@@ -131,7 +131,7 @@ export const VideoPlayer = React.forwardRef<HTMLVideoElement, Props>(
                 playbackSpeed={playbackRate}
                 container={containerRef.current || undefined}
               >
-                <SettingsScrew />
+                <SettingsScrew className="[&>*]:fill-natural-50" />
               </SettingsMenu>
               <AudioController setVolume={setVolume} volume={volume} />
               <VideoProgressbar
@@ -147,7 +147,11 @@ export const VideoPlayer = React.forwardRef<HTMLVideoElement, Props>(
               onClick={togglePlay}
               className="w-16 h-10 bg-background-video flex justify-center items-center rounded"
             >
-              {paused ? <Play className="w-4 h-[18px]" /> : <Pause />}
+              {paused ? (
+                <Play className="[&>*]:fill-white w-4 h-[18px]" />
+              ) : (
+                <Pause className="[&>*]:stroke-natural-50 [&>*]:fill-natural-50" />
+              )}
             </button>
           </div>
         ) : null}

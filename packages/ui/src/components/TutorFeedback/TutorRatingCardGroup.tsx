@@ -116,7 +116,7 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
         <Quote
           width={52.72}
           height={52.72}
-          className="md:w-[52.72px] md:h-[52.72px] w-6 h-6"
+          className="[&>*]:stroke-natural-50 md:w-[52.72px] md:h-[52.72px] w-6 h-6"
         />
       </div>
     </div>
