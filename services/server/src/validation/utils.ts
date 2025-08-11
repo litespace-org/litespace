@@ -12,6 +12,7 @@ import {
   IPlan,
   IAvailabilitySlot,
   IDemoSession,
+  IPaymob,
 } from "@litespace/types";
 import zod, { ZodLiteral } from "zod";
 
@@ -91,6 +92,10 @@ export const role = zod.coerce.number(zod.nativeEnum(IUser.Role));
 export const url = zod.string().url().trim();
 
 export const planPeriod = zod.nativeEnum(IPlan.Period);
+
+export const paymobIntegrationId = zod.coerce.number(
+  zod.nativeEnum(IPaymob.PaymobIntegrationIds)
+);
 
 export const interviewStatus = zod.coerce.number(
   zod.nativeEnum(IInterview.Status)

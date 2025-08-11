@@ -8,6 +8,7 @@ export enum Status {
   Expired,
   PartialRefunded,
   Failed,
+  Processed,
 }
 
 export enum PaymentMethod {

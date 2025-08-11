@@ -200,6 +200,10 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
     return next(fawryError(result.statusDescription));
   }
 
+  await transactions.update(transaction.id, {
+    status: ITransaction.Status.Processed,
+  });
+
   const response: IFawry.PayWithCardResponse = {
     transactionId: transaction.id,
     redirectUrl: result.nextAction.redirectUrl,
@@ -262,6 +266,7 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
   }
 
   await transactions.update(transaction.id, {
+    status: ITransaction.Status.Processed,
     providerRefNum: Number(referenceNumber),
   });
 
@@ -324,6 +329,10 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
     });
     return next(fawryError(payment.statusDescription));
   }
+
+  await transactions.update(transaction.id, {
+    status: ITransaction.Status.Processed,
+  });
 
   const response: IFawry.PayWithEWalletResponse = {
     transactionId: transaction.id,
@@ -644,9 +653,9 @@ function setPaymentStatus(context: ApiContext) {
     if (!plan) throw new Error("Plan not found; should never happen");
 
     const subscription = await subscriptions.findByTxId(transaction.id);
-    const monthCount = PLAN_PERIOD_TO_WEEK_COUNT[transaction.planPeriod];
+    const weekCount = PLAN_PERIOD_TO_WEEK_COUNT[transaction.planPeriod];
     const now = dayjs.utc();
-    const end = now.add(monthCount, "month");
+    const end = now.add(weekCount, "week");
     const paid = status === ITransaction.Status.Paid;
 
     await knex.transaction(async (tx) => {

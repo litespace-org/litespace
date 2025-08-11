@@ -42,6 +42,7 @@
     "./recorder": "./dist/recorder.js",
     "./contactRequest": "./dist/contactRequest.js",
     "./fawry": "./dist/fawry.js",
+    "./paymob": "./dist/paymob.js",
     "./transaction": "./dist/transaction.js",
     "./confirmationCode": "./dist/confirmationCode.js",
     "./studio": "./dist/studio.js"

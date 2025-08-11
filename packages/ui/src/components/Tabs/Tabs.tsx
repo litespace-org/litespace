@@ -12,18 +12,24 @@ export const Tabs = <T extends string>({
    * The Id of the current tab
    */
   tab?: T;
-  tabs: Array<{ id: T; label: string; important?: boolean }>;
+  tabs: Array<{
+    id: T;
+    label: string;
+    important?: boolean;
+    disabled?: boolean;
+  }>;
   setTab: (id: T) => void;
 }) => {
   return (
     <div className="border border-natural-200 rounded-xl flex items-center justify-between w-full">
-      {tabs.map(({ id, label, important }) => (
+      {tabs.map(({ id, label, important, disabled }) => (
         <Tab
           key={id}
           select={() => setTab(id)}
           active={tab === id}
           label={label}
           important={important}
+          disabled={disabled}
         />
       ))}
     </div>
@@ -35,7 +41,8 @@ const Tab: React.FC<{
   active: boolean;
   label: string;
   important?: boolean;
-}> = ({ select, active, label, important }) => {
+  disabled?: boolean;
+}> = ({ select, active, label, important, disabled }) => {
   return (
     <button
       type="button"
@@ -45,6 +52,7 @@ const Tab: React.FC<{
         "flex items-center justify-center"
       )}
       onClick={select}
+      disabled={disabled}
     >
       <Typography
         tag="h6"

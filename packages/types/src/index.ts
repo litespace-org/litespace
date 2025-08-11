@@ -32,6 +32,7 @@ export * as IShortUrl from "@/shortUrl";
 export * as IMessenger from "@/messenger";
 export * as IKafka from "@/kafka";
 export * as IFawry from "@/fawry";
+export * as IPaymob from "@/paymob";
 export * as ITransaction from "@/transaction";
 export * as IDemoSession from "@/demoSession";
 export * as IDocmost from "@/docmost";

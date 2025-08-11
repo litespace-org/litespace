@@ -7,6 +7,8 @@ import Plan from "@/components/Checkout/Plan";
 import Card from "@/components/Checkout/Forms/Card";
 import EWallet from "@/components/Checkout/Forms/EWallet";
 import Fawry from "@/components/Checkout/Forms/Fawry";
+import PayWithPaymob from "@/components/Checkout/PayWithPaymob";
+import { PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD } from "@litespace/utils";
 
 type Tab = "card" | "ewallet" | "fawry";
 
@@ -81,6 +83,7 @@ const Header: React.FC<{ tab: Tab; setTab(tab: Tab): void }> = ({
           {
             id: "fawry",
             label: intl("checkout.tabs.fawry"),
+            disabled: true,
           },
         ]}
       />
@@ -110,19 +113,34 @@ const Body: React.FC<{
   transactionStatus,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-4 lg:gap-10 lg:min-w-[1004px] ">
-      <PaymentPannel
-        userId={userId}
-        planId={plan.id}
-        tab={tab}
-        phone={phone}
-        period={period}
-        syncing={syncing}
-        sync={sync}
-        transactionId={transactionId}
-        transactionStatus={transactionStatus}
-      />
-      <PlansPannel plan={plan} period={period} />
+    <div className="flex flex-col justify-center items-center w-full">
+      {tab !== "fawry" ? (
+        <PayWithPaymob
+          className="mb-4"
+          planId={plan.id}
+          planPeriod={PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[period]}
+          paymentMethod={
+            tab === "card"
+              ? ITransaction.PaymentMethod.Card
+              : ITransaction.PaymentMethod.EWallet
+          }
+        />
+      ) : null}
+
+      <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-4 lg:gap-10 lg:min-w-[1004px] ">
+        <PaymentPannel
+          userId={userId}
+          planId={plan.id}
+          tab={tab}
+          phone={phone}
+          period={period}
+          syncing={syncing}
+          sync={sync}
+          transactionId={transactionId}
+          transactionStatus={transactionStatus}
+        />
+        <PlansPannel plan={plan} period={period} />
+      </div>
     </div>
   );
 };
