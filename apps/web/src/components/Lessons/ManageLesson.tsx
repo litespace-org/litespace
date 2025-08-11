@@ -1,4 +1,5 @@
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
+import SubscriptionDialog from "@/components/Lessons/SubscriptionDialog";
 import { useOnError } from "@/hooks/error";
 import dayjs from "@/lib/dayjs";
 import { asSlotBoundries } from "@/lib/lesson";
@@ -20,7 +21,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { isTutorManager, MAX_LESSON_DURATION } from "@litespace/utils";
 import { nullable } from "@litespace/utils/utils";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 type Base = {
   close: Void;
@@ -81,6 +82,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
       }),
     [info]
   );
+  const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(!info);
 
   const tutorAvailabilitySlots = useFindAvailabilitySlots({
     userIds: [tutorId],
@@ -191,7 +193,17 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   return (
     <>
-      {!verifyEmailDialog.open ? (
+      {!info ? (
+        <SubscriptionDialog
+          open={subscribeDialogOpen}
+          close={() => {
+            setSubscribeDialogOpen(false);
+            close();
+          }}
+        />
+      ) : null}
+
+      {!verifyEmailDialog.open && !subscribeDialogOpen ? (
         <ManageLessonDialog
           remainingWeeklyMinutes={asRemainingWeeklyMinutes}
           open
