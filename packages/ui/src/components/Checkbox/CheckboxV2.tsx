@@ -27,7 +27,7 @@ const CheckboxV2: React.FC<{
         )}
       >
         <Indicator className="text-natural-50">
-          <Check />
+          <Check className="[&>*]:fill-natural-50" />
         </Indicator>
       </Root>
     </div>

@@ -78,7 +78,7 @@ export const AvatarV2: React.FC<{
           COLOR_STYLES[mod]
         )}
       >
-        <Logo className="w-full h-full" />
+        <Logo className="[&>circle]:fill-natural-50 w-full h-full" />
       </div>
     </div>
   );

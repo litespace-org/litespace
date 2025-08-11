@@ -52,7 +52,7 @@ const Contacts: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
             href={LITESPACE_TUTORS_TELEGRAM}
             target="_blank"
           >
-            <Telegram className="fill-white w-6 h-6" />
+            <Telegram className="[&>*>*]:fill-white w-6 h-6" />
             <Typography
               dir="ltr"
               tag="span"
@@ -121,10 +121,10 @@ const ContactUs: React.FC<{ tutor?: boolean }> = ({ tutor }) => {
 
             <div className="flex justify-between gap-1.5 mt-auto md:mb-6">
               <div className="flex justify-start w-auto">
-                <PaperMessage2 />
+                <PaperMessage2 className="[&>*]:fill-natural-50" />
               </div>
               <div className="w-auto">
-                <PaperMessage1 />
+                <PaperMessage1 className="[&>*>*]:fill-natural-50" />
               </div>
             </div>
           </div>

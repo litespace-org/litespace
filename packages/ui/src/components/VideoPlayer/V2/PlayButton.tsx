@@ -14,7 +14,7 @@ export const PlayButton: React.FC<{ togglePlay: Void }> = ({ togglePlay }) => {
       )}
     >
       <div className="w-[32px] h-[36px] ml-1 z-20">
-        <Play />
+        <Play className="[&>*]:fill-white" />
       </div>
     </button>
   );

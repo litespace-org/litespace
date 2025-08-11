@@ -479,7 +479,9 @@ export const ManageLessonDialog: React.FC<{
           ) : null}
 
           <Button
-            endIcon={<LongLeftArrow className="w-4 h-4 icon" />}
+            endIcon={
+              <LongLeftArrow className="[&>*]:stroke-natural-50 w-4 h-4 icon" />
+            }
             size="large"
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");
