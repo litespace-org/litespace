@@ -3,8 +3,6 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import Switch from "@litespace/assets/Switch";
 import { useMemo } from "react";
 
-const CHROME_LINK = "https://www.google.com/chrome/";
-
 export function UnsupportedBrowserDialog() {
   const intl = useFormatMessage();
 
@@ -16,6 +14,47 @@ export function UnsupportedBrowserDialog() {
     return false;
   }, []);
 
+  const openInChrome = () => {
+    const currentUrl = "https://app.litespace.org/login";
+
+    // Android: Use Android Intent
+    if (/Android/.test(navigator.userAgent)) {
+      const intentUrl = `intent://${currentUrl.replace(
+        /^https?:\/\//,
+        ""
+      )}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(
+        "https://www.google.com/chrome/"
+      )};end`;
+
+      // Try to open Chrome
+      window.location.href = intentUrl;
+
+      // Fallback to Chrome download if intent fails (common)
+      setTimeout(() => {
+        window.location.href = "https://www.google.com/chrome/";
+      }, 1500);
+
+      return;
+    }
+
+    // iOS: Open Chrome App Store (can't deep-link directly)
+    if (/iPad|iPhone|iPod/.test(navigator.platform)) {
+      window.location.href =
+        "https://apps.apple.com/app/google-chrome/id535886823";
+      return;
+    }
+
+    // Desktop: Try googlechrome:// (rarely works), fallback to download
+    const chromeProtocolUrl = `googlechrome://navigate?url=${encodeURIComponent(
+      currentUrl
+    )}`;
+    window.location.href = chromeProtocolUrl;
+
+    setTimeout(() => {
+      window.location.href = "https://www.google.com/chrome/";
+    }, 1500);
+  };
+
   return (
     <ConfirmationDialog
       open={unsupportedBrowser}
@@ -25,10 +64,7 @@ export function UnsupportedBrowserDialog() {
       actions={{
         primary: {
           label: intl("webrtc-check.confirm"),
-          onClick: () => {
-            location.href = CHROME_LINK;
-            close();
-          },
+          onClick: openInChrome,
         },
       }}
       icon={<Switch />}
