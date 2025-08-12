@@ -14,14 +14,15 @@ export const TimeSelection: React.FC<{
   return (
     <div
       className={cn(
-        "flex flex-wrap gap-2 md:gap-x-3 md:gap-y-[10px] max-h-[350px] overflow-y-auto",
+        "flex flex-wrap gap-2 md:gap-x-3 md:gap-y-[10px] max-h-[350px] overflow-y-auto justify-center px-4 sm:px-0",
         "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent mt-8 mb-6"
       )}
     >
-      {slots.map((slot) => {
+      {slots.map((slot, idx) => {
         const selected = slot.start === start && slot.parent === slotId;
         return (
           <Slot
+            key={idx}
             onSelect={() => select(slot.parent, slot.start)}
             slot={slot}
             selected={selected}

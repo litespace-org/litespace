@@ -247,7 +247,6 @@ export const ManageLessonDialog: React.FC<{
         (event) =>
           day.isSame(event.start, "day") || day.isSame(event.end, "day")
       );
-
       return getSubSlots(daySlots, duration);
     },
     [duration, unbookedSlots]
@@ -312,14 +311,14 @@ export const ManageLessonDialog: React.FC<{
         </Typography>
       }
       className={cn(
-        "px-0 py-4 lg:!py-6 sm:w-[512px] [&>div:first-child]:!px-4 md:[&>div:first-child]:!px-0 lg:[&>div:first-child]:!px-0",
+        "w-full max-w-[550px] mx-auto px-0 py-4 lg:!py-6 sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0",
         {
           "!left-0 right-0 translate-x-0": !sm,
         }
       )}
     >
       {canBook && !isTutorBusy ? (
-        <div className="mt-6 md:mt-8 px-4 md:px-0">
+        <div className="mt-6 md:mt-8 px-4 sm:px-0">
           <Stepper step={step} />
         </div>
       ) : null}
@@ -449,7 +448,7 @@ export const ManageLessonDialog: React.FC<{
       {step !== "confirmation" && canBook && !isTutorBusy ? (
         <div
           className={cn(
-            "flex flex-row gap-4 md:gap-[14px] w-full md:ms-auto md:w-fit px-4 md:px-0",
+            "flex flex-row gap-4 md:gap-[14px] w-full md:ms-auto md:w-fit px-4 sm:px-0",
             {
               "mt-6": step === "date-selection",
               "mt-5 md:mt-3": step === "time-selection",

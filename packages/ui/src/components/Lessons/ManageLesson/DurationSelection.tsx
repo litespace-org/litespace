@@ -9,9 +9,10 @@ export const DurationSelection: React.FC<{
   onChange: (value: number) => void;
 }> = ({ value, remainingWeeklyMinutes, onChange }) => {
   return (
-    <div className="flex flex-col gap-4 my-6">
+    <div className="flex flex-col gap-4 my-6 px-4 sm:px-0">
       {LESSON_DURATION_LIST.map((duration) => (
         <Selectable
+          key={duration}
           disabled={remainingWeeklyMinutes < duration}
           name="duration"
           isSelected={value === duration}
