@@ -63,7 +63,7 @@ export function UnsupportedBrowserDialog() {
       description={intl("unsupported-browser.description")}
       actions={{
         primary: {
-          label: intl("webrtc-check.confirm"),
+          label: intl("unsupported-browser.confirm"),
           onClick: openInChrome,
         },
       }}
