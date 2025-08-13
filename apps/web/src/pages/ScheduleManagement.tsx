@@ -58,7 +58,10 @@ const ScheduleManagement: React.FC = () => {
     userIds: [user?.id || 0],
     after: start.toISOString(),
     before: end.toISOString(),
-    purposes: [IAvailabilitySlot.Purpose.Lesson],
+    purposes: [
+      IAvailabilitySlot.Purpose.General,
+      IAvailabilitySlot.Purpose.Lesson,
+    ],
     full: true,
   });
 
