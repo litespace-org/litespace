@@ -47,10 +47,10 @@ export const ConfirmationCode: React.FC<{
   }, []);
 
   const onChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-      const value = e.target.value;
+    (value: string, index: number) => {
       if (!SINGLE_NUMBER_REGEX.test(value)) return;
       setDigit(value, index);
+      setSubmitted(false);
       focus(index + 1);
     },
     [focus, setDigit]
@@ -120,7 +120,7 @@ export const ConfirmationCode: React.FC<{
           idleDir="ltr"
           size={1}
           mask=" "
-          onChange={(e) => onChange(e, index)}
+          onValueChange={({ value }) => onChange(value, index)}
           onPaste={onPaste}
           disabled={disabled}
           className="w-[18px] text-center"
