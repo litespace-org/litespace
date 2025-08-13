@@ -414,7 +414,7 @@ async function main(): Promise<void> {
 
   // seeding slots
   const seededSlots: { [tutorId: number]: IAvailabilitySlot.Self[] } = {};
-  [tutorManager, ...addedTutors].forEach(async (tutor, i) => {
+  addedTutors.forEach(async (tutor, i) => {
     const date = dayjs.utc().add(i, "day").startOf("day");
     const slots = await availabilitySlots.create([
       {
@@ -455,6 +455,9 @@ async function main(): Promise<void> {
   const seededSlotsForTutorManagers: {
     [tutorId: number]: IAvailabilitySlot.Self[];
   } = {};
+  const flatInteviewSlotsForTutorManagers: IAvailabilitySlot.Self[] = [];
+  const flatDemoSessionSlotsForTutorManagers: IAvailabilitySlot.Self[] = [];
+
   addedTutorManagers.forEach(async (tutor, i) => {
     const date = dayjs
       .utc()
@@ -498,16 +501,28 @@ async function main(): Promise<void> {
         purpose: IAvailabilitySlot.Purpose.General,
       },
     ]);
+
+    flatInteviewSlotsForTutorManagers.push(
+      ...slots.filter((s) => s.purpose === IAvailabilitySlot.Purpose.Interview)
+    );
+
+    flatDemoSessionSlotsForTutorManagers.push(
+      ...slots.filter(
+        (s) => s.purpose === IAvailabilitySlot.Purpose.DemoSession
+      )
+    );
+
     return (seededSlotsForTutorManagers[tutor.id] = slots);
   });
 
-  function randomStart(): string {
-    return dayjs
-      .utc()
-      .subtract(50, "hours")
-      .add(sample(range(1, 100))!, "hours")
-      .set("hours", sample(range(0, 24))!)
-      .set("minutes", sample([0, 15, 30, 45])!)
+  function randomStart({
+    between,
+  }: {
+    between: { start: string; end: string };
+  }): string {
+    const diff = dayjs(between.start).diff(between.end, "hours");
+    return dayjs(between.start)
+      .add(sample(range(1, diff - 1))!, "hours")
       .startOf("minutes")
       .toISOString();
   }
@@ -566,23 +581,20 @@ async function main(): Promise<void> {
     );
   }
 
-  const slot = (
-    await availabilitySlots.create([
-      {
-        userId: tutorManager2.id,
-        start: dayjs.utc().startOf("day").toISOString(),
-        end: dayjs.utc().startOf("day").add(1, "days").toISOString(),
-      },
-    ])
-  )[0];
-
-  for (const tutor of addedTutors) {
+  addedTutors.forEach(async (tutor, index) => {
+    const slot = flatInteviewSlotsForTutorManagers[index];
+    if (!slot) return;
     await knex.transaction(async (tx: Knex.Transaction) => {
       const interview = await interviews.create({
         session: `interview:${randomUUID()}`,
         intervieweeId: tutor.id,
         interviewerId: tutorManager2.id,
-        start: randomStart(),
+        start: randomStart({
+          between: {
+            start: slot.start,
+            end: slot.end,
+          },
+        }),
         slot: slot.id,
         tx,
       });
@@ -595,7 +607,7 @@ async function main(): Promise<void> {
         tx,
       });
     });
-  }
+  });
 
   // adding introVideos to each tutor
   for (const tutor of addedTutors) {
@@ -618,7 +630,9 @@ async function main(): Promise<void> {
   }
 
   // adding demoSessions to each tutor
-  for (const tutor of addedTutors) {
+  addedTutors.forEach(async (tutor, index) => {
+    const slot = flatDemoSessionSlotsForTutorManagers[index];
+    if (!slot) return;
     const demo = await demoSessions.create({
       slotId: slot.id,
       tutorId: tutor.id,
@@ -638,7 +652,7 @@ async function main(): Promise<void> {
             IDemoSession.Status.CanceledByAdmin,
           ]),
     });
-  }
+  });
 
   await knex.transaction(async (tx) => {
     const roomId = await rooms.create([tutor.id, tutorManager.id], tx);
