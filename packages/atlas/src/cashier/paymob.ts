@@ -15,7 +15,7 @@ export class Paymob extends Base {
     payload: IPaymob.PaymentInfo
   ): Promise<string> {
     const { client_secret } = await this.post<
-      object,
+      IPaymob.IntentionApiPayload,
       IPaymob.IntentionApiResponse
     >({
       route: "/v1/intention/",

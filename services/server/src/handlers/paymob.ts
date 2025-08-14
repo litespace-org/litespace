@@ -18,7 +18,11 @@ import {
   PLAN_PERIOD_TO_WEEK_COUNT,
 } from "@litespace/utils";
 import { calculatePlanPrice } from "@/lib/plan";
-import { getCheckoutPageUrl, paymentMethodToIntegration } from "@/lib/paymob";
+import {
+  encodeSpecialRefernce,
+  getCheckoutPageUrl,
+  paymentMethodToIntegration,
+} from "@/lib/paymob";
 import { cashier } from "@/lib/cashier";
 
 const createCheckoutUrlPayload: ZodSchema<IPaymob.CreateCheckoutUrlApiPayload> =
@@ -79,7 +83,10 @@ async function createCheckoutUrl(
   // craft the payment info
   const paymentInfo: IPaymob.PaymentInfo = {
     paymentMethods: [integrationId],
-    specialReference: tx.id.toString(),
+    specialReference: encodeSpecialRefernce({
+      transactionId: tx.id,
+      createdAt: tx.createdAt,
+    }),
 
     items: [
       {

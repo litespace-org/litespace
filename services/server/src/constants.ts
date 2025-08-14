@@ -163,6 +163,16 @@ export const livekitConfig = {
 export const paymobConfig = {
   publicKey: zod.string().trim().parse(process.env.PAYMOB_PUBLIC_KEY),
   secretKey: zod.string().trim().parse(process.env.PAYMOB_SECRET_KEY),
+  integrationIds: {
+    card: zod.coerce
+      .number()
+      .positive()
+      .parse(process.env.PAYMOB_CARD_INTEGRATION_ID),
+    ewallet: zod.coerce
+      .number()
+      .positive()
+      .parse(process.env.PAYMOB_EWALLET_INTEGRATION_ID),
+  },
 };
 
 export const INTRO_VIDEO_MIN_MINUTES = 1;

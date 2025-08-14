@@ -1,11 +1,5 @@
 import { IPlan, ITransaction } from "@/index";
 
-// copied from paymob dashboard; Developers -> Payment Integrations.
-export enum PaymobIntegrationIds {
-  Ewallet = 5225743,
-  Card = 4358466,
-}
-
 export type CreateCheckoutUrlApiPayload = {
   planId: number;
   planPeriod: IPlan.Period;
@@ -18,8 +12,13 @@ export type CreateCheckoutUrlApiResponse = {
   checkoutUrl: string;
 };
 
+/**
+ * the integration name or id
+ */
+export type PaymobIntegration = string | number;
+
 export type PaymentInfo = {
-  paymentMethods: Array<PaymobIntegrationIds>;
+  paymentMethods: Array<PaymobIntegration>;
   specialReference: string;
 
   items: Array<{
@@ -37,6 +36,31 @@ export type PaymentInfo = {
   };
 };
 
+export type IntentionApiPayload = {
+  /**
+   * amount of money in cents
+   */
+  amount: number;
+  currency: "EGP";
+  payment_methods: Array<PaymobIntegration>;
+  items: Array<{
+    name: string;
+    amount: number;
+    description: string;
+    quantity: number;
+  }>;
+  billing_data: {
+    first_name: string;
+    last_name: string;
+    phone_number: string;
+    email: string;
+  };
+  special_reference?: string;
+  expiration?: number;
+  notification_url?: string;
+  redirection_url?: string;
+};
+
 // https://developers.paymob.com/egypt/api-reference-guide/create-intention-payment-api
 export type IntentionApiResponse = {
   client_secret: string;
@@ -44,6 +68,7 @@ export type IntentionApiResponse = {
 
 // https://developers.paymob.com/egypt/api-reference-guide/create-intention-payment-api#Webhook-Responses
 export type WebhookResponse = {
+  hmac: string;
   intention: {
     id: string;
     intention_detail: {
@@ -58,9 +83,6 @@ export type WebhookResponse = {
     };
     special_reference: string;
   };
-
-  hmac: string;
-
   transaction: {
     id: number;
     pending: boolean;
@@ -68,7 +90,7 @@ export type WebhookResponse = {
     is_auth: boolean;
     is_capture: boolean;
     is_refunded: boolean;
-    integration_id: PaymobIntegrationIds;
+    integration_id: number;
     created_at: string;
     order: { id: number };
   };
