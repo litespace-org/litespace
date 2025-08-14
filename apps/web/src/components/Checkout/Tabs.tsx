@@ -9,6 +9,7 @@ import EWallet from "@/components/Checkout/Forms/EWallet";
 import Fawry from "@/components/Checkout/Forms/Fawry";
 import PayWithPaymob from "@/components/Checkout/PayWithPaymob";
 import { PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD } from "@litespace/utils";
+import { env } from "@/lib/env";
 
 type Tab = "card" | "ewallet" | "fawry";
 
@@ -83,7 +84,6 @@ const Header: React.FC<{ tab: Tab; setTab(tab: Tab): void }> = ({
           {
             id: "fawry",
             label: intl("checkout.tabs.fawry"),
-            disabled: true,
           },
         ]}
       />
@@ -114,7 +114,7 @@ const Body: React.FC<{
 }) => {
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      {tab !== "fawry" ? (
+      {tab !== "fawry" && env.client !== "production" ? (
         <PayWithPaymob
           className="mb-4"
           planId={plan.id}

@@ -6,6 +6,7 @@ import { Button } from "@litespace/ui/Button";
 import { IframeDialog } from "@litespace/ui/IframeDilaog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import cn from "classnames";
+import { useToast } from "@litespace/ui/Toast";
 
 const PayWithPaymob: React.FC<{
   className?: string;
@@ -16,12 +17,13 @@ const PayWithPaymob: React.FC<{
     | ITransaction.PaymentMethod.EWallet;
 }> = ({ className, planId, planPeriod, paymentMethod }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
   const [url, setUrl] = useState("");
 
   const onError = useOnError({
     type: "mutation",
     handler: (err) => {
-      console.error(err);
+      toast.error({ title: intl(err.messageId) });
     },
   });
 
