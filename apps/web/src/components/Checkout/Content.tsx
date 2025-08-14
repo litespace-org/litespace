@@ -111,6 +111,7 @@ const Body: React.FC<{
   const intl = useFormatMessage();
   const logger = useLogger();
   const toast = useToast();
+  const subscription = useSubscription();
 
   // =================== sync payment manually =====================
   const syncPayment = useSyncPaymentStatus({
@@ -161,8 +162,9 @@ const Body: React.FC<{
 
       logger.debug("transaction status update", payload);
       transaction.refetch();
+      subscription.refetch();
     },
-    [intl, logger, toast, transaction]
+    [intl, logger, toast, transaction, subscription]
   );
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { environment } from "@/constants";
 
-export const FAWRY_API_URL_PROD = "https://www.fawrypay.com";
+export const FAWRY_API_URL_PROD = "https://www.atfawry.com";
 export const FAWRY_API_URL_STAGING = "https://atfawry.fawrystaging.com";
 export const FAWRY_API_URL_CURRENT =
   environment === "production" ? FAWRY_API_URL_PROD : FAWRY_API_URL_STAGING;
@@ -18,9 +18,6 @@ export const FAWRY_ROUTES = {
   CANCEL_UNPAID_ORDER: "/ECommerceWeb/api/orders/cancel-unpaid-order",
   REFUND: "/ECommerceWeb/Fawry/payments/refund",
   CREATE_CARD_TOKEN_V1: "/ECommerceWeb/api/cards/cardToken",
-  /**
-   * this can be a mistake in the docs: https://developer.fawrystaging.com/docs/card-tokens/create-use-token
-   */
   ADD_CARD_TOKEN: "/atfawry/plugin/card-token",
   CREATE_CARD_TOKEN_V2: "/fawrypay-api/api/cards/cardToken",
   LIST_CARD_TOKENS: "/ECommerceWeb/Fawry/cards/cardToken",

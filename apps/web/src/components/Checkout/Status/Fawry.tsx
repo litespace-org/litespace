@@ -12,13 +12,13 @@ import cn from "classnames";
  *
  * @note the oreder ref number is made of 9 digits.
  */
-function asParts(orderRefNum: number) {
+function asParts(orderRefNum: string) {
   const ref = orderRefNum.toString();
   return [ref.substring(0, 3), ref.substring(3, 6), ref.substring(6)];
 }
 
 const Status: React.FC<{
-  orderRefNum: number;
+  orderRefNum: string;
   cancel: Void;
   canceling: boolean;
   syncing: boolean;

@@ -26,7 +26,7 @@ export type Row = {
   amount: number;
   status: Status;
   payment_method: PaymentMethod;
-  provider_ref_num: number | null;
+  provider_ref_num: string | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -46,7 +46,7 @@ export type Self = {
    * this is defined to map between transactions and ref numbers
    * from third party services. e.g. fawry orderRefNum.
    */
-  providerRefNum: number | null;
+  providerRefNum: string | null;
   /**
    * ISO datetime
    */
@@ -65,7 +65,7 @@ export type FindFilterModel = {
   amount?: number | { gte: number; lte: number; gt: number; lt: number };
   statuses?: Status[];
   paymentMethods?: PaymentMethod[];
-  providerRefNums?: Array<number | null>;
+  providerRefNums?: Array<string | null>;
   after?: string;
   before?: string;
 };
@@ -90,7 +90,7 @@ export type CreatePayload = {
    * this is defined to map between transactions and ref numbers
    * from third party services. e.g. fawry orderRefNum.
    */
-  providerRefNum: number | null;
+  providerRefNum: string | null;
   status?: Status;
 };
 
@@ -100,5 +100,5 @@ export type UpdatePayload = {
    * this is defined to map between transactions and ref numbers
    * from third party services. e.g. fawry orderRefNum.
    */
-  providerRefNum?: number;
+  providerRefNum?: string;
 };
