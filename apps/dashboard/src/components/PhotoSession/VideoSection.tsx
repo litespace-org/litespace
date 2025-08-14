@@ -119,7 +119,7 @@ export const VideoSection: React.FC<{
           onTryAgain={() => {
             if (!tutorId || !file) return;
             upload.mutation.reset();
-            upload.mutation.mutate({ tutorId: tutorId, image: file });
+            upload.mutation.mutate({ tutorId: tutorId, video: file });
           }}
           progress={upload.progress}
           state={state}

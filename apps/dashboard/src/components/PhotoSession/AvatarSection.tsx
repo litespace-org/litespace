@@ -6,7 +6,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { useUpdateUser, useUploadTutorAssets } from "@litespace/headless/user";
 import Trash from "@litespace/assets/Trash";
 import { ITutor, Void } from "@litespace/types";
-import { ConfirmDialog } from "./ConfirmDialog";
+import { ConfirmDialog } from "@/components/PhotoSession/ConfirmDialog";
 import VideoClip from "@litespace/assets/VideoClip";
 
 export const AvatarSection: React.FC<{

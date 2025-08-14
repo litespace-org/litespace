@@ -27,11 +27,9 @@ export async function withImageUrl<
   const videoId = "video" in cloned && cloned.video;
   const thumbnailId = "thumbnail" in cloned && cloned.thumbnail;
 
-  const [imageUrl, videoUrl, thumbnailUrl] = await Promise.all([
-    imageId ? s3.get(imageId) : null,
-    videoId ? s3.get(videoId) : null,
-    thumbnailId ? s3.get(thumbnailId) : null,
-  ]);
+  const imageUrl = imageId ? await s3.get(imageId) : null;
+  const videoUrl = videoId ? await s3.get(videoId) : null;
+  const thumbnailUrl = thumbnailId ? await s3.get(thumbnailId) : null;
 
   if (imageId && imageUrl) cloned.image = imageUrl;
   if (videoId && videoUrl) cloned.video = videoUrl;
