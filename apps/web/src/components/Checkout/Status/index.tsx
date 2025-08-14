@@ -11,7 +11,7 @@ import { useCancelUnpaidOrder } from "@litespace/headless/fawry";
 const StatusContainer: React.FC<{
   transactionId: number;
   paymentMethod: ITransaction.PaymentMethod;
-  providerRefNum: number | null;
+  providerRefNum: string | null;
   syncing: boolean;
   sync: Void;
 }> = ({ paymentMethod, transactionId, providerRefNum, syncing, sync }) => {

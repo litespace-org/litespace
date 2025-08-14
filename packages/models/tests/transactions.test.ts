@@ -67,14 +67,14 @@ describe("transactions", () => {
       });
 
       const updated = await transactions.update(created.id, {
-        providerRefNum: 123,
+        providerRefNum: "123",
       });
 
       expect(updated.id).to.be.eq(created.id);
       expect(updated.amount).to.be.eq(created.amount);
       expect(updated.status).to.be.eq(created.status);
       expect(updated.paymentMethod).to.be.eq(created.paymentMethod);
-      expect(updated.providerRefNum).to.be.eq(123);
+      expect(updated.providerRefNum).to.be.eq("123");
     });
   });
 

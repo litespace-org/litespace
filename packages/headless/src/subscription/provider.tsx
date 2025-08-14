@@ -24,6 +24,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       isError: query.isError,
       error: query.error,
       fetching: query.isFetching,
+      refetch: query.refetch,
     };
   }, [
     query.data?.info,
@@ -32,6 +33,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
     query.isError,
     query.error,
     query.isFetching,
+    query.refetch,
   ]);
 
   return (

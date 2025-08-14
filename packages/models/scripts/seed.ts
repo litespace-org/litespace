@@ -158,7 +158,7 @@ async function main(): Promise<void> {
       paymentMethod: ITransaction.PaymentMethod.EWallet,
       planId: plan1.id,
       planPeriod: IPlan.Period.Month,
-      providerRefNum: 1,
+      providerRefNum: idx.toString(),
       userId: student.id,
       status: ITransaction.Status.Paid,
     });

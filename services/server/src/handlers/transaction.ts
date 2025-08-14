@@ -3,7 +3,13 @@ import { ITransaction } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { forbidden, notfound } from "@/lib/error";
-import { id, pageNumber, pageSize, withNamedId } from "@/validation/utils";
+import {
+  id,
+  pageNumber,
+  pageSize,
+  string,
+  withNamedId,
+} from "@/validation/utils";
 import { isAdmin, isStudent } from "@litespace/utils/user";
 import { transactions } from "@litespace/models";
 import { first } from "lodash";
@@ -14,7 +20,7 @@ const findPayload: ZodSchema<ITransaction.FindApiQuery> = zod.object({
   amount: zod.number().min(0).optional(),
   statuses: zod.nativeEnum(ITransaction.Status).array().optional(),
   paymentMethods: zod.nativeEnum(ITransaction.PaymentMethod).array().optional(),
-  providerRefNums: zod.number().array().optional(),
+  providerRefNums: string.array().optional(),
   after: zod.string().datetime().optional(),
   before: zod.string().datetime().optional(),
   page: pageNumber.optional().default(1),

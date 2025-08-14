@@ -1,4 +1,4 @@
-import { ISubscription } from "@litespace/types";
+import { ISubscription, Void } from "@litespace/types";
 import { createContext, useContext } from "react";
 
 export type Context = {
@@ -8,6 +8,7 @@ export type Context = {
   isError: boolean;
   error: unknown | null;
   fetching: boolean;
+  refetch: Void;
 };
 
 export const SubscriptionContext = createContext<Context | null>(null);
