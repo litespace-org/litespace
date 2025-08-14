@@ -29,8 +29,8 @@ export async function upload({
   type?: string;
   key?: string | null;
 }) {
-  const id = path.join(prefix, key || uuid());
-  await s3.put({ key: id, data, type });
+  const id = path.join(prefix, uuid());
+  await s3.put({ key: key || id, data, type });
   return id;
 }
 
