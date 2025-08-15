@@ -14,6 +14,10 @@ import {
 import { isTutorManager } from "@litespace/utils";
 import { NotificationsDialog } from "@/components/Lessons/NotificationDialog";
 import { useUser } from "@litespace/headless/context/user";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@litespace/ui/Toast";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -31,6 +35,8 @@ const Content: React.FC<{
   const [tutor, setTutor] = useState<Tutor | null>(null);
   const [notiDialogOpen, setNotiDialogOpen] = useState<boolean>(false);
   const mq = useMediaQuery();
+  const navigate = useNavigate();
+  const toast = useToast();
 
   const openBookingDialog = useCallback((tutor: Tutor) => setTutor(tutor), []);
   const closeBookingDialog = useCallback(() => setTutor(null), []);
@@ -84,14 +90,21 @@ const Content: React.FC<{
           close={closeBookingDialog}
           tutorId={tutor.id}
           onSuccess={() => {
+            toast.success({
+              title: intl("book-lesson.success", { tutor: tutor.name }),
+            });
             if (!user?.notificationMethod) setNotiDialogOpen(true);
+            else navigate(router.web({ route: Web.UpcomingLessons }));
           }}
         />
       ) : null}
 
       <NotificationsDialog
         open={notiDialogOpen}
-        close={() => setNotiDialogOpen(false)}
+        close={() => {
+          setNotiDialogOpen(false);
+          navigate(router.web({ route: Web.UpcomingLessons }));
+        }}
       />
 
       {fetching ? (

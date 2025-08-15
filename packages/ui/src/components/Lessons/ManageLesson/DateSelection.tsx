@@ -30,7 +30,7 @@ export const DateSelection: React.FC<{
   );
 
   return (
-    <ul className={cn("flex flex-col gap-2 w-full")}>
+    <ul className={cn("flex flex-col gap-2 w-full px-4 sm:px-0")}>
       {weekDays.map((day) => {
         const isSelected = !!selected?.isSame(day, "day");
 

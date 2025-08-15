@@ -210,6 +210,9 @@ export const Content: React.FC<{
           close={() => {
             setManageLessonData(null);
           }}
+          onSuccess={() => {
+            toast.success({ title: intl("update-lesson.success") });
+          }}
           {...manageLessonData}
         />
       ) : null}
