@@ -29,6 +29,7 @@ import { Icon } from "@/types/common";
 import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isTutor } from "@litespace/utils";
+import { useSubscription } from "@litespace/headless/context/subscription";
 
 type LinkInfo = {
   label: string;
@@ -267,14 +268,16 @@ const AccountPromotion: React.FC = () => {
   const intl = useFormatMessage();
   const { lg, md } = useMediaQuery();
   const { user } = useUser();
+  const { info: subscription } = useSubscription();
 
   const showPromotion = useMemo(
     () =>
       user &&
+      !subscription &&
       user.role === IUser.Role.Student &&
       location.pathname !== Web.Plans &&
       (lg || !md),
-    [user, lg, md]
+    [user, lg, md, subscription]
   );
 
   if (!showPromotion) return null;
