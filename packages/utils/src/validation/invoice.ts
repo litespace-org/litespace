@@ -88,6 +88,29 @@ export function isValidBankname(
 export function isValidBankNumber(
   bankNumber: string
 ): FieldError.InvalidBankAccountNumber | true {
-  if (isNaN(Number(bankNumber))) return FieldError.InvalidBankAccountNumber;
+  if (isNaN(Number(bankNumber))) {
+    return FieldError.InvalidBankAccountNumber;
+  }
+
+  const isLuhnValid =
+    bankNumber
+      .split("")
+      .reverse()
+      .map((char, index) => {
+        const digit = Number(char);
+        return index % 2 === 1
+          ? digit * 2 > 9
+            ? digit * 2 - 9
+            : digit * 2
+          : digit;
+      })
+      .reduce((sum, digit) => sum + digit, 0) %
+      10 ===
+    0;
+
+  if (!isLuhnValid) {
+    return FieldError.InvalidBankAccountNumber;
+  }
+
   return true;
 }
