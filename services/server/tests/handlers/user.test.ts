@@ -9,7 +9,7 @@ import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
 import { first, range } from "lodash";
-import { bad, forbidden, notfound } from "@/lib/error";
+import { bad, forbidden, notfound, unverifiedPhone } from "@/lib/error";
 import handlers from "@/handlers/user";
 import { nameof } from "@litespace/utils";
 
@@ -127,7 +127,7 @@ describe("/api/v1/user/", () => {
         params: { id: user.id },
         body: { notificationMethod: IUser.NotificationMethod.Whatsapp },
       });
-      expect(res).to.be.instanceOf(Error);
+      expect(res).to.deep.eq(unverifiedPhone());
     });
   });
 

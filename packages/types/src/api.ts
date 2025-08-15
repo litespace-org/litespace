@@ -46,6 +46,7 @@ export enum ApiError {
   EmailAlreadyVerified = "email-already-verified",
   PhoneAlreadyVerified = "phone-already-verified",
   UnresolvedPhone = "unresolved-phone",
+  UnverifiedPhone = "unverified-phone",
   InvalidPhone = "invalid-phone",
   IncorrectPhone = "incorrect-phone",
   ExpiredVerificationCode = "expired-verification-code",
