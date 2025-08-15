@@ -112,7 +112,6 @@ const Root: React.FC = () => {
       Web.CompleteTutorProfile,
       Web.TutorOnboarding,
       Web.Interview,
-      Web.DemoSession,
     ];
     const match = routes.some((route) =>
       router.match(route, location.pathname)

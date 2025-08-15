@@ -45,7 +45,8 @@
     "./paymob": "./dist/paymob.js",
     "./transaction": "./dist/transaction.js",
     "./confirmationCode": "./dist/confirmationCode.js",
-    "./studio": "./dist/studio.js"
+    "./studio": "./dist/studio.js",
+    "./demoSessions": "./dist/demoSessions.js"
   },
   "react-native": {
     "./auth": "./dist/auth.js",
