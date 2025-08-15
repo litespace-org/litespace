@@ -2,6 +2,7 @@ export * as IContactRequest from "@/contactRequest";
 export * as IConfirmationCode from "@/confirmationCode";
 export * as ISessionEvent from "@/sessionEvent";
 export * as IUser from "@/user";
+export * as IStudent from "@/student";
 export * as ITutor from "@/tutor";
 export * as ISubscription from "@/subscription";
 export * as IRoom from "@/room";
