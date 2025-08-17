@@ -3,11 +3,31 @@ import Content from "@/components/Tutors/Content";
 import { useOnError } from "@/hooks/error";
 import { useTutors } from "@litespace/headless/tutor";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import React from "react";
+import React, { useState, useMemo } from "react";
+import TutorFilters from "@/components/Tutors/TutorFilters";
 
 const Tutors: React.FC = () => {
   const intl = useFormatMessage();
   const tutors = useTutors();
+
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const filteredTutors = useMemo(() => {
+    if (!tutors.list) return null;
+    switch (selectedFilter) {
+      case "recommended":
+        return tutors.list;
+      case "available_now":
+        return tutors.list.filter((t) => t.notice === 0);
+      case "male":
+        return tutors.list.filter((t) => t.gender === "male");
+      case "female":
+        return tutors.list.filter((t) => t.gender === "female");
+      case "rating_4_plus":
+        return tutors.list.filter((t) => t.avgRating >= 4);
+      default:
+        return tutors.list;
+    }
+  }, [tutors.list, selectedFilter]);
 
   useOnError({
     type: "query",
@@ -23,8 +43,10 @@ const Tutors: React.FC = () => {
         className="mb-6"
       />
 
+      <TutorFilters selected={selectedFilter} onSelect={setSelectedFilter} />
+
       <Content
-        tutors={tutors.list}
+        tutors={filteredTutors}
         loading={tutors.query.isLoading}
         fetching={tutors.query.isFetching && !tutors.query.isLoading}
         error={tutors.query.isError}
