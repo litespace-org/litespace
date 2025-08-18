@@ -1,4 +1,4 @@
-import { IConfirmationCode, IKafka, IPlan, IUser } from "@litespace/types";
+import { IConfirmationCode, IPlan, IUser } from "@litespace/types";
 import { percentage } from "@/value";
 
 export const WEEKS_IN_YEAR = 52;
@@ -109,7 +109,7 @@ export const CONFIRMATION_CODE_VALIDITY_MINUTES = 15;
 export const AFRICA_CAIRO_TIMEZONE = "Africa/Cairo";
 
 export const NOTIFICATION_METHOD_TO_PURPOSE: Record<
-  IUser.NotificationMethod,
+  Exclude<IUser.NotificationMethod, IUser.NotificationMethod.None>,
   IConfirmationCode.Purpose
 > = {
   [IUser.NotificationMethod.Whatsapp]: IConfirmationCode.Purpose.VerifyWhatsApp,
@@ -119,35 +119,23 @@ export const NOTIFICATION_METHOD_LITERAL_TO_ENUM: Record<
   IUser.NotificationMethodLiteral,
   IUser.NotificationMethod
 > = {
+  none: IUser.NotificationMethod.None,
   whatsapp: IUser.NotificationMethod.Whatsapp,
 };
 
 export const NOTIFICATION_METHOD_LITERAL_TO_PURPOSE: Record<
-  IUser.NotificationMethodLiteral,
+  Exclude<IUser.NotificationMethodLiteral, "none">,
   IConfirmationCode.Purpose
 > = {
   whatsapp: IConfirmationCode.Purpose.VerifyWhatsApp,
-};
-
-export const NOTIFICATION_METHOD_TO_KAFKA_TOPIC: Record<
-  IUser.NotificationMethod,
-  IKafka.TopicType
-> = {
-  [IUser.NotificationMethod.Whatsapp]: "whatsapp",
 };
 
 export const NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL: Record<
   IUser.NotificationMethod,
   IUser.NotificationMethodLiteral
 > = {
+  [IUser.NotificationMethod.None]: "none",
   [IUser.NotificationMethod.Whatsapp]: "whatsapp",
-};
-
-export const NOTIFICATION_METHOD_LITERAL_TO_KAFKA_TOPIC: Record<
-  IUser.NotificationMethodLiteral,
-  IKafka.TopicType
-> = {
-  whatsapp: "whatsapp",
 };
 
 export const PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL: Record<

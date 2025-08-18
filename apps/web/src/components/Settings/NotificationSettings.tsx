@@ -54,6 +54,10 @@ const NotificationSettings: React.FC<{
   const options = useMemo(
     () => [
       {
+        label: intl("shared-settings.edit.notification.none"),
+        value: IUser.NotificationMethod.None,
+      },
+      {
         label: intl("shared-settings.edit.notification.whatsapp"),
         value: IUser.NotificationMethod.Whatsapp,
       },
@@ -131,7 +135,7 @@ const NotificationSettings: React.FC<{
       updateUserMutation.mutate({
         id,
         payload: {
-          notificationMethod: data.notificationMethod,
+          notificationMethod: data.notificationMethod || null,
         },
       });
     },
