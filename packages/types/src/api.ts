@@ -69,6 +69,7 @@ export enum ApiError {
   NotRoomMember = "not-room-member",
   InvalidUserName = "api-invalid-user-name",
   PhoneRequired = "phone-required",
+  WeekBoundariesViolation = "week-boundaries-violation",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

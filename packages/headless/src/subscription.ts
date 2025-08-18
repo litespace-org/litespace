@@ -3,6 +3,9 @@ import { useCallback } from "react";
 import { useApi } from "@/api";
 import { QueryKey } from "@/constants";
 
+/**
+ * Retrieve the last valid unterminated nor ended subscription for a specific userId
+ */
 export function useCurrentSubscription({
   userId,
   enabled,

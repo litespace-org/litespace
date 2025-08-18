@@ -169,9 +169,14 @@ export const ManageLessonDialog: React.FC<{
   slotId?: number;
   start?: string;
   duration?: number;
+  dateBoundaries?: {
+    start: Dayjs;
+    end: Dayjs;
+  };
   slots: IAvailabilitySlot.Self[];
   bookedSlots: IAvailabilitySlot.SubSlot[];
   isVerified: boolean;
+  subscribed: boolean;
   hasBookedLessons: boolean;
   remainingWeeklyMinutes: number;
   sendVerifyEmail?: Void;
@@ -200,8 +205,10 @@ export const ManageLessonDialog: React.FC<{
   error,
   confirmationLoading,
   isVerified,
+  subscribed,
   hasBookedLessons,
   remainingWeeklyMinutes,
+  dateBoundaries,
   sendVerifyEmail,
   close,
   onSubmit,
@@ -226,17 +233,18 @@ export const ManageLessonDialog: React.FC<{
   );
 
   const dateBounds = useMemo(() => {
-    const min = dayjs();
-    const max = dayjs().startOf("day").add(1, "week");
-    return { min, max };
+    if (dateBoundaries) return dateBoundaries;
+    const start = dayjs();
+    const end = dayjs().startOf("day").add(1, "week");
+    return { start, end };
   }, []);
 
   const unbookedSlots = useMemo(
     () =>
       subtractSlots({ slots, subslots: bookedSlots }).filter((slot) =>
-        dayjs(slot.start).isBefore(dateBounds.max)
+        dayjs(slot.start).isBefore(dateBounds.end)
       ),
-    [slots, bookedSlots, dateBounds.max]
+    [slots, bookedSlots, dateBounds.end]
   );
 
   const selectDaySlots = useCallback(
@@ -291,7 +299,7 @@ export const ManageLessonDialog: React.FC<{
       !loading &&
       isVerified &&
       !depletedSubscription &&
-      (!hasBookedLessons || type === "update"),
+      (!hasBookedLessons || type === "update" || subscribed),
     [error, loading, isVerified, depletedSubscription, hasBookedLessons, type]
   );
 
@@ -360,6 +368,7 @@ export const ManageLessonDialog: React.FC<{
           ) : null}
 
           {hasBookedLessons &&
+          !subscribed &&
           !depletedSubscription &&
           isVerified &&
           !error &&
@@ -379,8 +388,8 @@ export const ManageLessonDialog: React.FC<{
           {step === "date-selection" && canBook && !isTutorBusy ? (
             <Animation key="date-selection" id="date-selection">
               <DateSelection
-                min={dateBounds.min}
-                max={dateBounds.max}
+                min={dateBounds.start}
+                max={dateBounds.end}
                 selected={date}
                 onSelect={setDate}
                 isSelectable={isValidDate}

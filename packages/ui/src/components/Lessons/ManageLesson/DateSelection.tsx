@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { range } from "lodash";
 import cn from "classnames";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { Selectable } from "@/components/Lessons/ManageLesson/Selectable";
 
 const rows = 7;
@@ -37,7 +37,12 @@ export const DateSelection: React.FC<{
         return (
           <Selectable
             key={day.format("YYYY-MM-DD")}
-            disabled={disable || isOutOfRange(day) || !isSelectable(day)}
+            disabled={
+              disable ||
+              dayjs().startOf("day").isAfter(day) ||
+              isOutOfRange(day) ||
+              !isSelectable(day)
+            }
             isSelected={isSelected}
             name="day"
             onSelect={() => onSelect(day)}

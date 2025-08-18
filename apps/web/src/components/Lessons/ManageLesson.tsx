@@ -14,11 +14,12 @@ import {
 } from "@litespace/headless/lessons";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
-import { ILesson, Void } from "@litespace/types";
+import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
 import { ManageLessonDialog } from "@litespace/ui/Lessons";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { isTutorManager, MAX_LESSON_DURATION } from "@litespace/utils";
+import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
 import { nullable } from "@litespace/utils/utils";
 import React, { useCallback, useMemo, useRef } from "react";
 
@@ -56,11 +57,36 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   const verifyEmailDialog = useRender();
 
+  // ====== get subscribtion details and get the boundries you filter the availability slots on =========
+  const { info, remainingWeeklyMinutes } = useSubscription();
+  const weekBoundaries = useMemo(() => {
+    if (info) {
+      const boundaries = getCurrentWeekBoundaries(info.start);
+      return {
+        start: dayjs(boundaries.start),
+        end: dayjs(boundaries.end),
+      }
+    }
+    return { 
+      start: now.current.startOf("week"),
+      end: now.current.startOf("week").add(1, "week")
+    };
+  }, [info?.start]);
+  const slotBoundries = useMemo(
+    () =>
+      asSlotBoundries({
+        start: weekBoundaries.start.toISOString(),
+        end: weekBoundaries.end.toISOString(),
+      }),
+    [info]
+  );
+
   // ====== Check if user has any booked lessons =========
   const lessons = useFindLessons({
     canceled: false,
     users: user ? [user?.id] : [],
-    after: now.current.toISOString(),
+    after: weekBoundaries.start.toISOString(),
+    before: weekBoundaries.end.toISOString(),
     userOnly: true,
     size: 1,
   });
@@ -71,19 +97,12 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   // ====== get tutorInfo =========
   const { query: tutor } = useFindTutorInfo(tutorId);
 
-  // ====== get subscribtion details and get the boundries you filter the availability slots on =========
-  const { info, remainingWeeklyMinutes } = useSubscription();
-  const slotBoundries = useMemo(
-    () =>
-      asSlotBoundries({
-        start: info?.start,
-        end: info?.end,
-      }),
-    [info]
-  );
-
   const tutorAvailabilitySlots = useFindAvailabilitySlots({
     userIds: [tutorId],
+    purposes: [
+      IAvailabilitySlot.Purpose.General,
+      IAvailabilitySlot.Purpose.Lesson,
+    ],
     ...slotBoundries,
   });
 
@@ -202,6 +221,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
           imageUrl={nullable(tutor.data?.image)}
           name={nullable(tutor.data?.name)}
           tutorId={tutorId}
+          dateBoundaries={weekBoundaries}
           close={close}
           confirmationLoading={createLessonMutation.isPending}
           loading={
@@ -216,6 +236,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
           slots={tutorAvailabilitySlots.data?.slots.list || []}
           onSubmit={onSubmit}
           isVerified={user?.verifiedEmail}
+          subscribed={!!info}
           hasBookedLessons={hasBookedLessons}
           retry={tutorAvailabilitySlots.refetch}
           error={
