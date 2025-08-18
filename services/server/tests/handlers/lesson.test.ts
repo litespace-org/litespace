@@ -12,6 +12,7 @@ import {
   subscriptionRequired,
   noEnoughMinutes,
   lessonTimePassed,
+  weekBoundariesViolation,
 } from "@/lib/error";
 import { dayjs, getSubSlots, nameof, safe } from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";
@@ -372,7 +373,7 @@ describe("/api/v1/lesson/", () => {
       expect(res).to.deep.eq(noEnoughMinutes());
     });
 
-    it("should respond with bad in case the lesson doesn't start within the current week", async () => {
+    it("should respond with weekBoundariesViolation in case the lesson doesn't start within the current week", async () => {
       const student = await db.student();
       const start = dayjs().startOf("week");
       await db.subscription({
@@ -399,7 +400,7 @@ describe("/api/v1/lesson/", () => {
         },
       });
 
-      expect(res).to.deep.eq(bad());
+      expect(res).to.deep.eq(weekBoundariesViolation());
     });
 
     it("should successfully create the lesson when an unsubscribed student books a lesson with a tutor-manager", async () => {

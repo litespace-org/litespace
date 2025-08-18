@@ -55,7 +55,7 @@ const NotificationSettings: React.FC<{
     () => [
       {
         label: intl("shared-settings.edit.notification.none"),
-        value: IUser.NotificationMethod.None,
+        value: 0,
       },
       {
         label: intl("shared-settings.edit.notification.whatsapp"),
