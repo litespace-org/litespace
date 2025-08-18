@@ -109,7 +109,7 @@ export const CONFIRMATION_CODE_VALIDITY_MINUTES = 15;
 export const AFRICA_CAIRO_TIMEZONE = "Africa/Cairo";
 
 export const NOTIFICATION_METHOD_TO_PURPOSE: Record<
-  Exclude<IUser.NotificationMethod, IUser.NotificationMethod.None>,
+  IUser.NotificationMethod,
   IConfirmationCode.Purpose
 > = {
   [IUser.NotificationMethod.Whatsapp]: IConfirmationCode.Purpose.VerifyWhatsApp,
@@ -119,12 +119,11 @@ export const NOTIFICATION_METHOD_LITERAL_TO_ENUM: Record<
   IUser.NotificationMethodLiteral,
   IUser.NotificationMethod
 > = {
-  none: IUser.NotificationMethod.None,
   whatsapp: IUser.NotificationMethod.Whatsapp,
 };
 
 export const NOTIFICATION_METHOD_LITERAL_TO_PURPOSE: Record<
-  Exclude<IUser.NotificationMethodLiteral, "none">,
+  IUser.NotificationMethodLiteral,
   IConfirmationCode.Purpose
 > = {
   whatsapp: IConfirmationCode.Purpose.VerifyWhatsApp,
@@ -134,7 +133,6 @@ export const NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL: Record<
   IUser.NotificationMethod,
   IUser.NotificationMethodLiteral
 > = {
-  [IUser.NotificationMethod.None]: "none",
   [IUser.NotificationMethod.Whatsapp]: "whatsapp",
 };
 

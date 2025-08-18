@@ -121,7 +121,10 @@ describe("/api/v1/user/", () => {
     });
 
     it("should respond with Error when trying to update notification method with unverified phone", async () => {
-      const user = await db.user({ verifiedPhone: false });
+      const user = await db.user({
+        verifiedPhone: false,
+        role: IUser.Role.Student,
+      });
       const res = await updateUser({
         user,
         params: { id: user.id },

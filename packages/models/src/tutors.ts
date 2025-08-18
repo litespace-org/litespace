@@ -134,7 +134,7 @@ export class Tutors {
 
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
-    filter: ITutor.FindModelQuery
+    filter: Omit<ITutor.FindModelQuery, "size" | "page">
   ): Knex.QueryBuilder<R, T> {
     // ============== string fields ========
     withStringFilter(builder, this.column("bio"), filter.bio);
@@ -358,13 +358,12 @@ export class Tutors {
     const filtered = this.applySearchFilter<IUser.Row, Array<{ id: number }>>(
       builder,
       {
-        size,
         role: [IUser.Role.TutorManager],
         activated,
       }
     );
 
-    const query = filtered
+    const query = withSkippablePagination(filtered, { size })
       .leftJoin(
         introVideos.table,
         this.column("id"),

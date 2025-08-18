@@ -157,11 +157,10 @@ export type UpdateApiPayload = {
 };
 
 export enum NotificationMethod {
-  None = 0,
   Whatsapp = 1,
 }
 
-export type NotificationMethodLiteral = "none" | "whatsapp";
+export type NotificationMethodLiteral = "whatsapp";
 
 export enum AssetFileName {
   Image = "image",
