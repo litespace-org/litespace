@@ -1,6 +1,7 @@
 import {
   knex,
   users,
+  students,
   tutors,
   ratings,
   plans,
@@ -111,13 +112,14 @@ async function main(): Promise<void> {
       },
       tx
     );
+    await students.create({ userId: student.id, tx });
 
     await users.update(student.id, { gender: IUser.Gender.Male }, tx);
     return student;
   });
 
   // Creating full students with subscriptions
-  const students = await Promise.all(
+  const seededStudents = await Promise.all(
     range(20).map(
       async (idx) =>
         await knex.transaction(async (tx) => {
@@ -133,6 +135,7 @@ async function main(): Promise<void> {
             },
             tx
           );
+          await students.create({ userId: student.id, tx });
 
           await users.update(
             student.id,
@@ -152,7 +155,7 @@ async function main(): Promise<void> {
     )
   );
 
-  students.forEach(async (student, idx) => {
+  seededStudents.forEach(async (student, idx) => {
     const transaction = await transactions.create({
       amount: 1200,
       paymentMethod: ITransaction.PaymentMethod.EWallet,
@@ -373,7 +376,7 @@ async function main(): Promise<void> {
   // seeding ratings data
   await knex.transaction(async () => {
     return await Promise.all(
-      students.map(async (student) => {
+      seededStudents.map(async (student) => {
         stdout.info(`Student ${student.id} is rating all available tutors.`);
 
         const allTutors = [...addedTutors, ...addedTutorManagers];
