@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import cn from "classnames";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -17,6 +17,16 @@ const Root: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   useAuthRoutes();
+
+  const isPublicPath = useMemo(
+    () => {
+      const publicUrls: string[] = [
+        Dashboard.Login,
+      ];
+      return publicUrls.includes(location.pathname);
+    },
+    [location.pathname]
+  );
 
   useEffect(() => {
     if (location.pathname === Dashboard.Login) return;
@@ -50,10 +60,10 @@ const Root: React.FC = () => {
         "flex flex-row items-stretch min-h-screen overflow-x-hidden bg-natural-50"
       )}
     >
-      {user ? <Sidebar /> : null}
+      {user && !isPublicPath ? <Sidebar /> : null}
 
       <div className="flex-1 flex flex-col overflow-y-hidden">
-        {user ? (
+        {user && !isPublicPath ? (
           <Navbar
             id={user.id}
             name={user.name}
