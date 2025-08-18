@@ -69,6 +69,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.NotRoomMember]: "error.api.not-room-member",
   [ApiError.InvalidUserName]: "error.api.invalid-user-name",
   [ApiError.PhoneRequired]: "error.api.phone-required",
+  [ApiError.WeekBoundariesViolation]: "error.api.week-boundaries-violation",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
   [FieldError.ShortPassword]: "error.field.short-password",
   [FieldError.LongPassword]: "error.field.long-password",

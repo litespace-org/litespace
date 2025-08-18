@@ -40,10 +40,10 @@ export function getCurrentWeekBoundaries(start: string): {
    */
   end: string;
 } {
-  const subscriptionStart = dayjs.utc(start);
+  const subscriptionStart = dayjs.utc(start).startOf("day");
   const weekIndex = getCurrentWeekIndex(start);
   const weekStart = subscriptionStart.add(weekIndex, "week");
-  const weekEnd = weekStart.add(1, "week");
+  const weekEnd = weekStart.add(6, "days").endOf("day");
   return {
     start: weekStart.toISOString(),
     end: weekEnd.toISOString(),

@@ -54,8 +54,8 @@ const Header: React.FC<Props> = ({
           tag="span"
           className="text-natural-700 text-caption lg:text-body font-semibold"
         >
-          {date.startOf("week").format("DD MMMM YYYY")}&nbsp;-&nbsp;
-          {date.endOf("week").format("DD MMMM YYYY")}
+          {date.format("DD MMMM YYYY")}&nbsp;-&nbsp;
+          {date.add(6, "day").format("DD MMMM YYYY")}
         </Typography>
 
         <div className="w-full sm:w-fit flex flex-row gap-6 items-center justify-center">
@@ -93,9 +93,9 @@ const Header: React.FC<Props> = ({
               tag="span"
               className="text-natural-950 text-caption lg:text-body font-bold"
             >
-              {date.startOf("week").format("DD MMMM")}
+              {date.format("DD MMMM")}
               {" - "}
-              {date.endOf("week").format("DD MMMM")}
+              {date.add(6, "days").format("DD MMMM")}
             </Typography>
             <button
               onClick={nextWeek}
