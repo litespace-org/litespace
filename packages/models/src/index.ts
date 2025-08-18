@@ -20,6 +20,7 @@ export { transactions } from "@/transactions";
 export { confirmationCodes } from "@/confirmationCodes";
 export { introVideos } from "@/introVideos";
 export { demoSessions } from "@/demoSessions";
+export { students } from "@/students";
 export { knex, pool, count } from "@/query";
 export { hashPassword, isSamePassword } from "@/lib/password";
 export { Cache } from "@/cache";

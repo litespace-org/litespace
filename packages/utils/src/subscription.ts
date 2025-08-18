@@ -43,7 +43,7 @@ export function getCurrentWeekBoundaries(start: string): {
   const subscriptionStart = dayjs.utc(start).startOf("day");
   const weekIndex = getCurrentWeekIndex(start);
   const weekStart = subscriptionStart.add(weekIndex, "week");
-  const weekEnd = weekStart.add(6, "days").endOf("day");
+  const weekEnd = weekStart.add(1, "week");
   return {
     start: weekStart.toISOString(),
     end: weekEnd.toISOString(),

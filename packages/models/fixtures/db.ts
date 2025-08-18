@@ -8,6 +8,7 @@ import {
   sessionEvents,
   topics,
   users,
+  students,
   ratings,
   tutors,
   availabilitySlots,
@@ -32,6 +33,7 @@ import {
   IPlan,
   IReport,
   IIntroVideo,
+  IStudent,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -68,6 +70,7 @@ export async function flush() {
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await confirmationCodes.builder(tx).del();
+    await students.builder(tx).del();
     await users.builder(tx).del();
     await contactRequests.builder(tx).del();
   });
@@ -245,6 +248,17 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
   });
 }
 
+async function student(
+  studentPayload?: Partial<IStudent.CreateModelPayload>
+): Promise<IUser.Self & IStudent.Self> {
+  const usr = await user({ role: IUser.Role.Student });
+  const stud = await students.create({
+    userId: usr.id,
+    ...studentPayload,
+  });
+  return { ...usr, ...stud };
+}
+
 async function tutor(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
   userPayload?: Partial<IUser.UpdateModelPayload>,
@@ -257,10 +271,6 @@ async function tutor(
   const data = await tutors.findById(tutor.id);
   if (!data) throw new Error("tutor not found");
   return data;
-}
-
-function student() {
-  return user({ role: IUser.Role.Student });
 }
 
 async function tutorManager(
@@ -276,7 +286,7 @@ async function tutorManager(
   return data;
 }
 
-async function students(count: number) {
+async function makeStudents(count: number) {
   return await Promise.all(range(0, count).map(() => student()));
 }
 
@@ -572,7 +582,7 @@ export default {
   tutor,
   student,
   tutorManager,
-  students,
+  students: makeStudents,
   interview,
   lesson,
   flush,

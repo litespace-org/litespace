@@ -1,0 +1,109 @@
+import { first } from "lodash";
+import { Knex } from "knex";
+
+import { IStudent, Paginated } from "@litespace/types";
+import dayjs from "@/lib/dayjs";
+import { Model } from "@/lib/model";
+import {
+  countRows,
+  WithOptionalTx,
+  withSkippablePagination,
+  withStringFilter,
+  withListFilter,
+} from "@/query";
+
+const FIELD_TO_COLUMN = {
+  id: "id",
+  userId: "id",
+  jobTitle: "job_title",
+  englishLevel: "english_level",
+  learningObjective: "learning_objective",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+} satisfies Record<IStudent.Field, IStudent.Column>;
+
+export class Students extends Model<
+  IStudent.Row,
+  IStudent.Self,
+  typeof FIELD_TO_COLUMN
+> {
+  constructor() {
+    super({ table: "students", fieldColumnMap: FIELD_TO_COLUMN });
+  }
+
+  async create(
+    payload: IStudent.CreateModelPayload,
+    tx?: Knex.Transaction
+  ): Promise<IStudent.Self> {
+    const now = dayjs.utc().toDate();
+    const rows = await this.builder(tx).insert(
+      {
+        id: payload.userId,
+        job_title: payload.jobTitle,
+        english_level: payload.englishLevel,
+        learning_objective: payload.learningObjective,
+        created_at: now,
+        updated_at: now,
+      },
+      "*"
+    );
+
+    const row = first(rows);
+    if (!row) throw new Error("Student not found; should never happen");
+    return this.from(row);
+  }
+
+  async update({
+    id,
+    tx,
+    jobTitle,
+    englishLevel,
+    learningObjective,
+  }: WithOptionalTx<IStudent.UpdateModelPayload>): Promise<void> {
+    const now = dayjs.utc().toDate();
+    await this.builder(tx)
+      .update({
+        job_title: jobTitle,
+        english_level: englishLevel,
+        learning_objective: learningObjective,
+        updated_at: now,
+      })
+      .where(this.column("id"), id);
+  }
+
+  async findMany({
+    tx,
+    ids,
+    jobTitle,
+    englishLevels,
+    learningObjective,
+    ...pagination
+  }: WithOptionalTx<IStudent.FindModelQuery>): Promise<
+    Paginated<IStudent.Self>
+  > {
+    const builder = this.builder(tx);
+
+    // ============== list-based fields ========
+    withListFilter(builder, this.column("id"), ids);
+    withListFilter(builder, this.column("english_level"), englishLevels);
+
+    // ============== string fields ========
+    withStringFilter(builder, this.column("job_title"), jobTitle);
+    withStringFilter(
+      builder,
+      this.column("learning_objective"),
+      learningObjective
+    );
+
+    const total = await countRows(builder.clone(), { distinct: true });
+    const query = builder
+      .select<IStudent.Row[]>("*")
+      .orderBy(this.column("created_at"), "desc");
+    const rows = await withSkippablePagination(query, pagination);
+    const list = rows.map((row) => this.from(row));
+
+    return { list, total };
+  }
+}
+
+export const students = new Students();
