@@ -18,15 +18,10 @@ const Root: React.FC = () => {
   const location = useLocation();
   useAuthRoutes();
 
-  const isPublicPath = useMemo(
-    () => {
-      const publicUrls: string[] = [
-        Dashboard.Login,
-      ];
-      return publicUrls.includes(location.pathname);
-    },
-    [location.pathname]
-  );
+  const isPublicPath = useMemo(() => {
+    const publicUrls: string[] = [Dashboard.Login];
+    return publicUrls.includes(location.pathname);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (location.pathname === Dashboard.Login) return;

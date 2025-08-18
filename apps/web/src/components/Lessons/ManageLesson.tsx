@@ -65,20 +65,20 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
       return {
         start: dayjs(boundaries.start),
         end: dayjs(boundaries.end),
-      }
+      };
     }
-    return { 
+    return {
       start: now.current.startOf("week"),
-      end: now.current.startOf("week").add(1, "week")
+      end: now.current.startOf("week").add(1, "week"),
     };
-  }, [info?.start]);
+  }, [info]);
   const slotBoundries = useMemo(
     () =>
       asSlotBoundries({
         start: weekBoundaries.start.toISOString(),
         end: weekBoundaries.end.toISOString(),
       }),
-    [info]
+    [weekBoundaries.start, weekBoundaries.end]
   );
 
   // ====== Check if user has any booked lessons =========

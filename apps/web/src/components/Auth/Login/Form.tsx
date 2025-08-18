@@ -22,6 +22,7 @@ import { useCallback, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Or from "@/components/Auth/Common/Or";
 import cn from "classnames";
+import { useSocket } from "@litespace/headless/socket";
 
 type Form = {
   email: string;
@@ -33,6 +34,7 @@ const LoginForm: React.FC<{
 }> = ({ onForgetPassword }) => {
   const intl = useFormatMessage();
   const toast = useToast();
+  const { reconnect: socketReconnect } = useSocket();
 
   const user = useUser();
   const navigate = useNavigate();
@@ -47,7 +49,7 @@ const LoginForm: React.FC<{
   }, [searchParams]);
 
   const google = useGoogle({
-    // TODO: this should cover both tutors studens.
+    // TODO: this should cover both tutors and students.
     // should be implemented once the tutor onboarding is finalized.
     role: IUser.Role.Student,
     redirect,
@@ -64,9 +66,10 @@ const LoginForm: React.FC<{
         );
       }
       user.set(result);
+      socketReconnect();
       return navigate(redirect || Web.Root);
     },
-    [navigate, redirect, user]
+    [navigate, redirect, user, socketReconnect]
   );
 
   const onError = useOnError(

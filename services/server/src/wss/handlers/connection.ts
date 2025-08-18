@@ -72,6 +72,7 @@ export class Connection extends WssHandler {
       const user = this.user;
       if (isGhost(user)) return;
       const { list } = await rooms.findMemberRooms({ userId: user.id });
+      await rooms.updateMember({ userId: user.id });
       this.socket.join(list.map((roomId) => asChatRoomId(roomId)));
     });
     if (error instanceof Error) stdout.error(error.message);

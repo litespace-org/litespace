@@ -224,7 +224,7 @@ export function useCallEvents(
   const [mateVideo, setMateVideo] = useState<boolean>(false);
   const [mateAudio, setMateAudio] = useState<boolean>(false);
   const streamState = useStreamState(stream);
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   const notifyCameraToggle = useCallback(
     (camera: boolean) => {
