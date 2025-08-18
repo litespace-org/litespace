@@ -1,3 +1,5 @@
+import { IFilter } from "@/index";
+
 export enum EnglishLevel {
   Beginner = 1,
   PreIntermediate = 2,
@@ -29,3 +31,24 @@ export type Row = {
 
 export type Column = keyof Row;
 export type Field = keyof Self;
+
+export type CreateModelPayload = {
+  userId: number;
+  jobTitle?: string | null;
+  englishLevel?: EnglishLevel | null;
+  learningObjective?: string | null;
+};
+
+export type UpdateModelPayload = {
+  id: number;
+  jobTitle?: string | null;
+  englishLevel?: EnglishLevel | null;
+  learningObjective?: string | null;
+};
+
+export type FindModelQuery = IFilter.SkippablePagination & {
+  ids?: number[];
+  jobTitle?: string;
+  englishLevels?: EnglishLevel[];
+  learningObjective?: string;
+};
