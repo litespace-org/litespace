@@ -19,6 +19,7 @@ import {
   noEnoughMinutes,
   illegal,
   lessonTimePassed,
+  weekBoundariesViolation,
 } from "@/lib/error";
 import { IAvailabilitySlot, ILesson, Wss } from "@litespace/types";
 import {
@@ -141,7 +142,7 @@ function create(context: ApiContext) {
           .utc(payload.start)
           .add(payload.duration, "minutes")
           .isBetween(weekBoundaries.start, weekBoundaries.end, "minutes", "[]");
-        if (!within) return next(bad());
+        if (!within) return next(weekBoundariesViolation());
       }
 
       const price = isTutorManager(tutor)
@@ -235,7 +236,10 @@ function update(context: ApiContext) {
 
       const slot = await availabilitySlots.findById(payload.slotId);
       if (!slot) return next(notfound.slot());
-      if (slot.purpose !== IAvailabilitySlot.Purpose.Lesson)
+      if (
+        slot.purpose !== IAvailabilitySlot.Purpose.General &&
+        slot.purpose !== IAvailabilitySlot.Purpose.Lesson
+      )
         return next(illegal());
 
       if (
