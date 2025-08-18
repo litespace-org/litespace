@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react";
 import { ActionsMenu } from "@/components/ActionsMenu";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import ar from "@/locales/ar-eg.json";
+import type { Meta, StoryObj } from "@storybook/react";
 
 type Component = typeof ActionsMenu;
 
