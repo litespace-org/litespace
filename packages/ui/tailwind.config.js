@@ -404,8 +404,9 @@ export default {
       "tutor-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       slot: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
       "session-movable-stream": "0px 4px 20px 0px rgba(0, 0, 0, 0.10)",
-      "plan-card-v2": "0px 4px 20px 0px rgba(0, 0,0, .03)",
+      "plan-card-v2": "0px 4px 20px 0px rgba(0, 0, 0, .03)",
       "time-selection": "0px 4px 15px 0px #00000008",
+      "mobile-sidebar": "0px -4px 25px 0px rgba(0, 0, 0, 0.08)",
     },
   },
   plugins: [

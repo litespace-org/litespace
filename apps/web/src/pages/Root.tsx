@@ -1,24 +1,23 @@
+import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowserDialog";
+import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
+import { useSaveLogs } from "@/hooks/logger";
+import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 import { router } from "@/lib/routes";
 import { useUser } from "@litespace/headless/context/user";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { Landing, Web } from "@litespace/utils/routes";
 import { dayjs, isForbidden } from "@litespace/utils";
+import { Landing, Web } from "@litespace/utils/routes";
+import { isProfileComplete } from "@litespace/utils/tutor";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
 import cn from "classnames";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Outlet,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { useSaveLogs } from "@/hooks/logger";
-import { isProfileComplete } from "@litespace/utils/tutor";
-import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
-import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
-import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowserDialog";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -29,8 +28,6 @@ const publicRoutes: Web[] = [
 ];
 
 const Root: React.FC = () => {
-  const mq = useMediaQuery();
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { user, meta, error, logout } = useUser();
 
   /**
@@ -145,25 +142,17 @@ const Root: React.FC = () => {
 
   return (
     <div className="flex relative w-full">
-      {showNavigation && (mq.md || showMobileSidebar) && !!user ? (
-        <Sidebar hide={() => setShowMobileSidebar(false)} />
-      ) : null}
+      {showNavigation && !!user ? <Sidebar /> : null}
 
       <div
         className={cn(
-          "flex flex-col w-full overflow-x-hidden",
-          fullScreenPage ? "h-screen overflow-hidden" : "min-h-screen",
-          {
-            "after:content-[''] after:absolute after:z-10 after:top-[72px] md:after:top-[88px] lg:after:top-0 after:bottom-0 after:right-0 after:left-0 after:bg-black after:bg-opacity-20 after:backdrop-blur-sm":
-              showMobileSidebar && !mq.lg,
-          }
+          "flex flex-col w-full overflow-x-hidden pb-[100px] md:pb-0",
+          fullScreenPage ? "h-screen overflow-hidden" : "min-h-screen"
         )}
       >
         <UnsupportedBrowserDialog />
         <WebrtcCheckDialog />
-        {showNavigation ? (
-          <Navbar toggleSidebar={() => setShowMobileSidebar((prev) => !prev)} />
-        ) : null}
+        {showNavigation ? <Navbar /> : null}
 
         <Outlet />
       </div>
