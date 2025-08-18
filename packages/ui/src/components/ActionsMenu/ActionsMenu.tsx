@@ -32,22 +32,24 @@ const MenuItem: React.FC<{
   danger?: boolean;
   checked?: boolean;
   onClick?: Void;
-}> = ({ label, disabled, danger, checked, onClick }) => {
+  className?: string;
+}> = ({ label, disabled, danger, checked, className, onClick }) => {
   return (
     <Item
       disabled={disabled}
       className={cn(
-        "relative flex justify-between items-center h-6 select-none rounded-[3px]",
-        "pr-2 pl-1 text-caption leading-none outline-none",
+        "relative flex justify-between items-center select-none rounded-[3px]",
+        "text-caption leading-none outline-none",
         "data-[disabled]:pointer-events-none  data-[disabled]:text-foreground-muted",
         "min-w-fit",
         danger
           ? "text-destructive-600 data-[highlighted]:bg-destructive-300 data-[highlighted]:outline-destructive-400"
-          : "text-foreground data-[highlighted]:bg-background-selection data-[highlighted]:outline-border-control"
+          : "text-foreground data-[highlighted]:bg-background-selection data-[highlighted]:outline-border-control",
+        className || "h-6 pr-2 pl-1"
       )}
       onClick={!disabled ? onClick : undefined}
     >
-      <p className=" truncate leading-normal">{label}</p>
+      <p className="truncate leading-normal">{label}</p>
       {checked ? <CheckIcon /> : null}
     </Item>
   );
@@ -62,6 +64,9 @@ export const ActionsMenu: React.FC<{
   small?: boolean;
   Icon?: typeof DotsVerticalIcon;
   menuClassName?: string;
+  sideOffset?: number;
+  itemClassName?: string;
+  subContentItemClassName?: string;
 }> = ({
   actions,
   children,
@@ -71,6 +76,9 @@ export const ActionsMenu: React.FC<{
   small,
   Icon = DotsVerticalIcon,
   menuClassName,
+  subContentItemClassName,
+  itemClassName,
+  sideOffset = 5,
 }) => {
   return (
     <Root dir="rtl" onOpenChange={onOpenChange}>
@@ -104,10 +112,10 @@ export const ActionsMenu: React.FC<{
       <Portal>
         <Content
           className={cn(
-            "bg-natural-50 border border-border-overlay rounded-md p-1.5",
+            "bg-natural-50 border border-border-overlay rounded-md p-1.5 z-select-dropdown",
             menuClassName
           )}
-          sideOffset={5}
+          sideOffset={sideOffset}
           side={side}
           loop
         >
@@ -117,13 +125,14 @@ export const ActionsMenu: React.FC<{
                 <Sub key={action.id}>
                   <SubTrigger
                     className={cn(
-                      "relative flex flex-row justify-between items-center h-7 select-none rounded-sm",
-                      "pr-2 pl-1 text-caption leading-none outline-none",
+                      "relative flex flex-row justify-between items-center select-none rounded-sm",
+                      "text-caption leading-none outline-none",
                       "data-[disabled]:pointer-events-none  data-[disabled]:text-foreground-muted",
                       "min-w-56",
                       action.danger
                         ? "text-destructive-600 data-[highlighted]:bg-destructive-300 data-[highlighted]:outline-destructive-400"
-                        : "text-foreground data-[highlighted]:bg-background-selection data-[highlighted]:outline-border-control"
+                        : "text-foreground data-[highlighted]:bg-background-selection data-[highlighted]:outline-border-control",
+                      itemClassName || "h-6 pr-2 pl-1"
                     )}
                   >
                     <p>{action.label}</p>
@@ -189,6 +198,7 @@ export const ActionsMenu: React.FC<{
                 danger={action.danger}
                 checked={action.checked}
                 onClick={action.onClick}
+                className={subContentItemClassName}
               />
             );
           })}
