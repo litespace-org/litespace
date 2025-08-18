@@ -237,7 +237,7 @@ export const ManageLessonDialog: React.FC<{
     const start = dayjs();
     const end = dayjs().startOf("day").add(1, "week");
     return { start, end };
-  }, []);
+  }, [dateBoundaries]);
 
   const unbookedSlots = useMemo(
     () =>
@@ -300,7 +300,15 @@ export const ManageLessonDialog: React.FC<{
       isVerified &&
       !depletedSubscription &&
       (!hasBookedLessons || type === "update" || subscribed),
-    [error, loading, isVerified, depletedSubscription, hasBookedLessons, type]
+    [
+      error,
+      loading,
+      isVerified,
+      depletedSubscription,
+      hasBookedLessons,
+      type,
+      subscribed,
+    ]
   );
 
   return (

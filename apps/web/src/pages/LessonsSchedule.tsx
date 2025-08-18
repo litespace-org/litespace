@@ -43,13 +43,13 @@ const LessonsSchedule: React.FC = () => {
       return {
         start: dayjs(boundaries.start),
         end: dayjs(boundaries.end),
-      }
+      };
     }
-    return { 
+    return {
       start: dayjs().startOf("week"),
-      end: dayjs().startOf("week").add(1, "week")
+      end: dayjs().startOf("week").add(1, "week"),
     };
-  }, [info?.start]);
+  }, [info]);
 
   const [date, setDate] = useState(weekBoundaries.start);
   const [view, setView] = useState<View>("list");

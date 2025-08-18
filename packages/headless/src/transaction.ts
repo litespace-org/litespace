@@ -29,7 +29,7 @@ type TransactionStatusUpdate = {
 };
 
 export function useTransactionStatus(txId?: number) {
-  const socket = useSocket();
+  const { socket } = useSocket();
   const [updates, setUpdates] = useState<TransactionStatusUpdate[]>([]);
 
   useEffect(() => {

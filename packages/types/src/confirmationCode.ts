@@ -39,12 +39,12 @@ export type FindModelPayload = {
 
 export type SendVerifyPhoneCodeApiPayload = {
   phone?: string;
-  method: IUser.NotificationMethodLiteral;
+  method: Exclude<IUser.NotificationMethodLiteral, "none">;
 };
 
 export type VerifyPhoneCodeApiPayload = {
   code: number;
-  method: IUser.NotificationMethodLiteral;
+  method: Exclude<IUser.NotificationMethodLiteral, "none">;
 };
 
 export type SendForgetPasswordEmailApiPayload = {

@@ -72,6 +72,19 @@ export class Rooms {
     return this.asRoomMember(row);
   }
 
+  async updateMember({
+    userId,
+    tx,
+  }: {
+    userId: number;
+    tx?: Knex.Transaction;
+  }) {
+    const now = dayjs.utc();
+    await this.builder(tx)
+      .members.update({ updated_at: now.toDate() })
+      .where(this.column.members("user_id"), userId);
+  }
+
   async findById(id: number): Promise<IRoom.Self | null> {
     const rows: IRoom.Row[] = await knex<IRoom.Row>(this.tables.rooms)
       .select("*")
@@ -101,8 +114,8 @@ export class Rooms {
       gender: users.column("gender"),
       pinned: this.column.members("pinned"),
       muted: this.column.members("muted"),
-      createdAt: users.column("created_at"),
-      updatedAt: users.column("updated_at"),
+      createdAt: this.column.members("created_at"),
+      updatedAt: this.column.members("updated_at"),
     };
 
     const builder = this.builder(tx)

@@ -197,7 +197,7 @@ export type OnMessage = (action: MessageStreamAction) => void;
  * @returns Send, update, delete functions which are wss emitters
  */
 export function useChat(onMessage?: OnMessage, userId?: number) {
-  const socket = useSocket();
+  const { socket } = useSocket();
   const sendMessage = useCallback(
     ({
       roomId,
@@ -850,7 +850,7 @@ export type RoomsMap = Partial<{
 }>;
 
 export function useChatStatus() {
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   /**
    * A map from rooms to object containing both users in it and showing if they

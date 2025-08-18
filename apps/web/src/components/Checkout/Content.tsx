@@ -150,7 +150,7 @@ const Body: React.FC<{
   );
 
   // =================== handle transaction status updates =====================
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   const onTransactionStatusUpdate = useCallback(
     (payload: Wss.EventPayload<Wss.ServerEvent.TransactionStatusUpdate>) => {

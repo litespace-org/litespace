@@ -1,6 +1,5 @@
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import React, { useEffect, useMemo, useState } from "react";
-import dayjs from "@/lib/dayjs";
 import {
   Link,
   useNavigate,
@@ -18,8 +17,6 @@ import { Web } from "@litespace/utils/routes";
 import ProfileCard from "@/components/TutorProfile/ProfileCard";
 import { useUser } from "@litespace/headless/context/user";
 import { router } from "@/lib/routes";
-import { useSubscription } from "@litespace/headless/context/subscription";
-import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
 
 const TutorProfile: React.FC = () => {
   const { md, lg } = useMediaQuery();
@@ -29,22 +26,6 @@ const TutorProfile: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const { info } = useSubscription();
-  const weekBoundaries = useMemo(() => {
-    if (info) {
-      const boundaries = getCurrentWeekBoundaries(info.start);
-      return {
-        start: dayjs(boundaries.start),
-        end: dayjs(boundaries.end),
-      }
-    }
-    return { 
-      start: dayjs().startOf("week"),
-      end: dayjs().startOf("week").add(1, "week")
-    };
-  }, [info?.start]);
-
 
   const id = useMemo(() => {
     const id = Number(params.id);

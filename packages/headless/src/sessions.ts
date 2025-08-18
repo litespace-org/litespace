@@ -544,7 +544,7 @@ export function useSessionEvents({
 }) {
   const [memberVideo, setMemberVideo] = useState<boolean>(false);
   const [memberAudio, setMemberAudio] = useState<boolean>(false);
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   const notifyCameraToggle = useCallback(
     (camera: boolean) => {
@@ -1239,7 +1239,7 @@ export function useSessionManager({
   onReconnect?(members: number[]): void;
 }) {
   const logger = useLogger();
-  const socket = useSocket();
+  const { socket } = useSocket();
   const api = useApi();
   const onLeaveRef = useRef(onLeave);
   const onJoinRef = useRef(onJoin);
@@ -1399,7 +1399,7 @@ const offerOptions: RTCOfferOptions = {
 };
 
 function useNotifyState(sessionId?: ISession.Id) {
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   const notifyCamera = useCallback(
     (camera: boolean) => {
@@ -1427,7 +1427,7 @@ function useMemberState({
   memberId?: number;
   stream: MediaStream | null;
 }) {
-  const socket = useSocket();
+  const { socket } = useSocket();
   const [video, setVideo] = useState<boolean>(false);
   const [audio, setAudio] = useState<boolean>(false);
   const speaking = useSpeakingV3(stream);
@@ -1495,7 +1495,7 @@ function usePeer({
   selfId?: number;
 }) {
   const logger = useLogger();
-  const socket = useSocket();
+  const { socket } = useSocket();
   const [activePeer, setActivePeer] = useState<RTCPeerConnection>(defaultPeer);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [connectionState, setConnectionState] =

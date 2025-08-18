@@ -25,7 +25,9 @@ import { sendBackgroundMessage } from "@/workers";
 import { hashPassword, selectPhone } from "@/lib/user";
 import { sendOtpMsg } from "@/lib/messenger";
 
-const method = unionOfLiterals<IUser.NotificationMethodLiteral>(["whatsapp"]);
+const method = unionOfLiterals<
+  Exclude<IUser.NotificationMethodLiteral, "none">
+>(["whatsapp"]);
 
 const sendVerifyPhoneCodePayload: ZodSchema<IConfirmationCode.SendVerifyPhoneCodeApiPayload> =
   zod.object({

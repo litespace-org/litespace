@@ -19,28 +19,28 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { server, token } = useServer();
-  const [, setConnected] = useState<boolean>(false);
   const [socket, setSocket] = useState<Socket<
     Wss.ServerEventsMap,
     Wss.ClientEventsMap
   > | null>(null);
 
-  useEffect(() => {
+  const reconnect = useCallback(() => {
+    if (socket !== null) return;
     if (!token) return;
     setSocket((prev) => {
       if (prev) prev.disconnect();
       return createSocket(server, token);
     });
-  }, [server, token]);
+  }, [server, token, socket]);
+
+  useEffect(() => reconnect(), [reconnect]);
 
   const onConnect = useCallback(() => {
-    console.log("Socket connected...");
-    setConnected(true);
+    console.log("Socket connected.");
   }, []);
 
   const onDisconnect = useCallback(() => {
-    console.log("Socket disconnected...");
-    setConnected(false);
+    console.log("Socket disconnected!");
   }, []);
 
   const onConnectionError = useCallback((error: Error) => {
@@ -60,6 +60,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [onConnect, onConnectionError, onDisconnect, socket]);
 
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, reconnect }}>
+      {children}
+    </SocketContext.Provider>
   );
 };
