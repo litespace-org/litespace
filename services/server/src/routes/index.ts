@@ -1,4 +1,5 @@
 import user from "@/routes/user";
+import student from "@/routes/student";
 import interview from "@/routes/interview";
 import availabilitySlot from "@/routes/availabilitySlot";
 import rating from "@/routes/rating";
@@ -25,6 +26,7 @@ import introVideo from "@/routes/introVideo";
 
 export default {
   user,
+  student,
   lesson,
   invoice,
   contactRequest,

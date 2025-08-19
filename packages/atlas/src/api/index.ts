@@ -1,4 +1,5 @@
 import { User } from "@/api/user";
+import { Student } from "@/api/student";
 import { Auth } from "@/api/auth";
 import { AvailabilitySlot } from "@/api/availabilitySlot";
 import { Env } from "@litespace/types";
@@ -27,6 +28,7 @@ import { Paymob } from "@/api/paymob";
 
 export class Api {
   public readonly user: User;
+  public readonly student: Student;
   public readonly auth: Auth;
   public readonly availabilitySlot: AvailabilitySlot;
   public readonly contactRequest: ContactRequest;
@@ -54,6 +56,7 @@ export class Api {
   constructor(server: Env.Server, token: AuthToken | null) {
     const client = createClient("api", server, token);
     this.user = new User(client);
+    this.student = new Student(client);
     this.auth = new Auth(client);
     this.availabilitySlot = new AvailabilitySlot(client);
     this.contactRequest = new ContactRequest(client);

@@ -37,3 +37,5 @@ export const Stepper: React.FC<{
     </ol>
   );
 };
+
+export default Stepper;

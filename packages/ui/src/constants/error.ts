@@ -149,4 +149,5 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
     "error.field.short-contact-request-message",
   [FieldError.LongContactRequestMessage]:
     "error.field.long-contact-request-message",
+  [FieldError.InvalidEnglishLevel]: "error.field.invalid-english-level",
 };

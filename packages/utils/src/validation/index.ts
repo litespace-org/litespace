@@ -13,6 +13,8 @@ export {
   validateTutorNotice,
 } from "@/validation/tutor";
 
+export { isValidEnglishLevel } from "@/validation/student";
+
 export {
   isValidInterviewFeedback,
   isValidInterviewNote,

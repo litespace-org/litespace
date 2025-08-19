@@ -1,27 +1,28 @@
 import { LocalId } from "@/locales";
-import { FieldError, IInvoice } from "@litespace/types";
+import { FieldError, IInvoice, IStudent } from "@litespace/types";
 import { MAX_INVOICE_AMOUNT, MIN_INVOICE_AMOUNT } from "@litespace/utils";
 import {
-  isValidPhone as isValidPhoneBase,
-  isValidCvv as isValidCvvBase,
-  isValidUserName as isValidUserNameBase,
-  isValidTutorName as isValidTutorNameBase,
-  isValidEmail as isValidEmailBase,
-  isValidPassword as isValidPasswordBase,
-  isValidUserBirthYear as isValidUserBirthYearBase,
-  isValidTutorAbout as isValidTutorAboutBase,
-  validateTutorNotice as validateTutorNoticeBase,
-  isValidTutorBio as isValidTutorBioBase,
-  isValidConfirmationCode as isValidConfirmationCodeBase,
-  validatePlanWeeklyMinutes as validatePlanWeeklyMinutesBase,
-  validatePlanPrice as validatePlanPriceBase,
-  validatePlanDiscount as validatePlanDiscountBase,
-  isValidInvoiceAmount,
-  isValidInvoiceReceiver,
-  isValidInstapayIPA,
   isValidBankname,
   isValidBankNumber,
+  isValidConfirmationCode as isValidConfirmationCodeBase,
+  isValidCvv as isValidCvvBase,
+  isValidEmail as isValidEmailBase,
+  isValidEnglishLevel,
+  isValidInstapayIPA,
+  isValidInvoiceAmount,
   isValidInvoiceMethod,
+  isValidInvoiceReceiver,
+  isValidPassword as isValidPasswordBase,
+  isValidPhone as isValidPhoneBase,
+  isValidTutorAbout as isValidTutorAboutBase,
+  isValidTutorBio as isValidTutorBioBase,
+  isValidTutorName as isValidTutorNameBase,
+  isValidUserBirthYear as isValidUserBirthYearBase,
+  isValidUserName as isValidUserNameBase,
+  validatePlanDiscount as validatePlanDiscountBase,
+  validatePlanPrice as validatePlanPriceBase,
+  validatePlanWeeklyMinutes as validatePlanWeeklyMinutesBase,
+  validateTutorNotice as validateTutorNoticeBase,
 } from "@litespace/utils/validation";
 
 export function validateText({
@@ -197,5 +198,14 @@ export function validateBankNumber(number: string): LocalId | null {
   const error = isValidBankNumber(number);
   if (error === FieldError.InvalidBankAccountNumber)
     return "error.field.invalid-bank-number";
+  return null;
+}
+
+export function validateEnglishLevel(
+  level: IStudent.EnglishLevel
+): LocalId | null {
+  const error = isValidEnglishLevel(level);
+  if (error === FieldError.InvalidEnglishLevel)
+    return "error.field.invalid-english-level";
   return null;
 }
