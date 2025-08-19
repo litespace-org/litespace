@@ -30,6 +30,8 @@ import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isTutor } from "@litespace/utils";
 import { useSubscription } from "@litespace/headless/context/subscription";
+import { StudentDashboardTour } from "@/constants/tour";
+import { useTour } from "@/hooks/tour";
 
 type LinkInfo = {
   label: string;
@@ -43,6 +45,14 @@ const Sidebar: React.FC<{
 }> = ({ hide }) => {
   const { md } = useMediaQuery();
   const intl = useFormatMessage();
+  const tour = useTour(StudentDashboardTour, {
+    nextButton: <Button size="large">{intl("labels.next")}</Button>,
+    prevButton: (
+      <Button className="bg-natural-0" size="large" variant="secondary">
+        {intl("labels.prev")}
+      </Button>
+    ),
+  });
 
   const onMouseDown = useCallback(
     (e: MouseEvent) => {
@@ -52,6 +62,8 @@ const Sidebar: React.FC<{
     },
     [hide, md]
   );
+
+  useEffect(() => tour.start(), [tour]);
 
   useEffect(() => {
     window.addEventListener("mousedown", onMouseDown);
@@ -68,7 +80,7 @@ const Sidebar: React.FC<{
     >
       <Header />
 
-      <div className="flex flex-col gap-2 md:gap-1.5">
+      <div className="flex flex-col gap-2 md:gap-1.5" id={tour.stepIds[0]}>
         <Typography
           tag="span"
           className="text-natural-800 md:py-2 text-tiny md:text-caption font-bold md:text-center lg:text-start"
@@ -78,7 +90,7 @@ const Sidebar: React.FC<{
         <MainPages hide={hide} />
       </div>
 
-      <div className="flex flex-col gap-2 md:gap-1.5">
+      <div className="flex flex-col gap-2 md:gap-1.5" id={tour.stepIds[1]}>
         <Typography
           tag="span"
           className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold text-start md:text-center lg:text-start"
