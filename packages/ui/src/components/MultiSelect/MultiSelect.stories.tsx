@@ -19,7 +19,7 @@ const meta: Meta<Component> = {
 export const Primary: StoryObj<Component> = {
   args: {
     placeholder: faker.color.human(),
-    options: range(4).map((idx) => ({
+    options: range(14).map((idx) => ({
       label: faker.color.human(),
       value: idx,
     })),

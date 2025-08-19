@@ -1,9 +1,10 @@
+import Or from "@/components/Auth/Common/Or";
 import { VerifyEmail } from "@/components/Common/VerifyEmail";
 import { useOnError } from "@/hooks/error";
 import { useGoogle } from "@/hooks/google";
-import { useRender } from "@litespace/headless/common";
 import { router } from "@/lib/routes";
 import Google from "@litespace/assets/Google";
+import { useRender } from "@litespace/headless/common";
 import { useUser } from "@litespace/headless/context/user";
 import { useForm } from "@litespace/headless/form";
 import { useRegisterUser } from "@litespace/headless/user";
@@ -19,7 +20,6 @@ import { Typography } from "@litespace/ui/Typography";
 import { Landing, Web } from "@litespace/utils/routes";
 import { useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Or from "@/components/Auth/Common/Or";
 
 type Form = {
   email: string;
@@ -60,6 +60,9 @@ const RegisterForm: React.FC<{ role?: Role }> = ({ role }) => {
     },
   });
 
+  // @galal TODO: uncomment this once the student backend PR is done.
+  // const mutation = useCreateStudent({ onSuccess, onError });
+
   const mutation = useRegisterUser({ onSuccess, onError });
 
   // ============= form ==============
@@ -89,11 +92,11 @@ const RegisterForm: React.FC<{ role?: Role }> = ({ role }) => {
     },
     validators,
     onSubmit: (data) => {
-      if (!role) return;
+      if (!role || role === IUser.Role.Tutor) return;
       return mutation.mutate({
         email: data.email,
         password: data.password,
-        role,
+        role, // @galal TODO: remove this once the student backend work is done.
       });
     },
   });

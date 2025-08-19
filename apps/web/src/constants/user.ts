@@ -1,5 +1,5 @@
-import { LocalId } from "@litespace/ui/locales";
 import { IUser } from "@litespace/types";
+import { LocalId } from "@litespace/ui/locales";
 
 export enum TutorOnboardingStep {
   /**

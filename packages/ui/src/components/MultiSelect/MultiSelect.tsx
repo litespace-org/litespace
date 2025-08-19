@@ -1,6 +1,9 @@
+import { Checkbox } from "@/components/Checkbox";
 import { MultiSelectOption } from "@/components/MultiSelect/types";
+import { Tooltip } from "@/components/Tooltip/Tooltip";
 import { Typography } from "@/components/Typography";
 import ChevronDown from "@litespace/assets/ChevronDown";
+import CloseCircle from "@litespace/assets/CloseCircle";
 import SearchIcon from "@litespace/assets/Search";
 import {
   Content,
@@ -11,10 +14,7 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import cn from "classnames";
 import { isEmpty } from "lodash";
-import { useCallback, useMemo, useState } from "react";
-import { X } from "react-feather";
-import React from "react";
-import { Tooltip } from "@/components/Tooltip/Tooltip";
+import React, { useCallback, useMemo, useState } from "react";
 
 export const MultiSelect = <T,>({
   options,
@@ -22,6 +22,7 @@ export const MultiSelect = <T,>({
   placeholder,
   error,
   hasSearchIcon = false,
+  label,
   setValues,
 }: {
   options: MultiSelectOption<T>[];
@@ -29,8 +30,10 @@ export const MultiSelect = <T,>({
   placeholder?: string;
   error?: boolean;
   hasSearchIcon?: boolean;
+  label?: string;
   setValues?: (values: T[]) => void;
 }) => {
+  const [offset, setOffset] = useState(5);
   const [open, setOpen] = useState(false);
   const selectedOptions = useMemo(
     () => options.filter((option) => values.includes(option.value)),
@@ -53,13 +56,19 @@ export const MultiSelect = <T,>({
 
   return (
     <Root open={open} onOpenChange={setOpen}>
-      <div className="flex flex-col gap-0">
+      <div className="flex flex-col">
+        <Typography
+          tag="p"
+          className="text-caption font-semibold text-natural-950 mb-1"
+        >
+          {label}
+        </Typography>
         <div
           tabIndex={0}
           data-error={!!error}
           data-open={open}
           className={cn(
-            "w-full h-14 rounded-lg p-2 transition-colors duration-200",
+            "w-full rounded-lg p-2 transition-colors duration-200",
             "border border-natural-300 hover:border-brand-200 focus:border-brand-500",
             "data-[error=true]:border-destructive-500 data-[error=true]:shadow-ls-x-small data-[error=true]:shadow-[rgba(204,0,0,0.25)]",
             "focus:outline-none focus:shadow-ls-x-small focus:shadow-[rgba(43,181,114,0.25)]",
@@ -72,7 +81,7 @@ export const MultiSelect = <T,>({
             {hasSearchIcon ? (
               <SearchIcon className="justify-self-start shrink-0" />
             ) : null}
-            <div className="h-full flex-1 flex justify-start items-center gap-2">
+            <div className="h-full flex-1 flex justify-start items-center gap-2 flex-wrap">
               {isEmpty(selectedOptions) ? (
                 <Typography
                   tag="span"
@@ -82,51 +91,38 @@ export const MultiSelect = <T,>({
                 </Typography>
               ) : (
                 selectedOptions.map(({ label, value }, idx) => {
-                  if (idx <= 1)
-                    return (
-                      <Tooltip
-                        side="top"
-                        content={<Typography tag="span">{label}</Typography>}
-                        key={label}
-                      >
-                        <div className=" flex justify-center items-center px-[10px] py-2 rounded-full gap-2 bg-brand-700 h-full">
-                          <Typography
-                            tag="span"
-                            className="text-natural-50 max-w-[100px] truncate text-base"
-                          >
-                            {label}
-                          </Typography>
-                          <button
-                            onClick={() => {
-                              if (!setValues) return;
-                              const copy = structuredClone(values);
-                              setValues(
-                                copy.filter(
-                                  (optionValue) => optionValue !== value
-                                )
-                              );
-                            }}
-                          >
-                            <X className="w-4 h-4 stroke-natural-50" />
-                          </button>
-                        </div>
-                      </Tooltip>
-                    );
-
-                  if (idx === 2)
-                    return (
+                  return (
+                    <Tooltip
+                      side="top"
+                      content={<Typography tag="span">{label}</Typography>}
+                      key={[label, idx].join("")}
+                    >
                       <div
-                        key={label}
-                        className="flex items-center px-[10px] rounded-full gap-2 bg-brand-700 h-full"
+                        onClick={(e) => e.stopPropagation()}
+                        className="selected border border-brand-500 flex justify-center items-center px-2 py-1 rounded-full gap-2 bg-brand-50 h-full"
                       >
                         <Typography
                           tag="span"
-                          className="text-natural-50 whitespace-nowrap text-base"
+                          className="text-brand-500 max-w-[100px] truncate text-tiny"
                         >
-                          {selectedOptions.length - idx} +
+                          {label}
                         </Typography>
+                        <button
+                          onClick={() => {
+                            if (!setValues) return;
+                            const copy = structuredClone(values);
+                            setValues(
+                              copy.filter(
+                                (optionValue) => optionValue !== value
+                              )
+                            );
+                          }}
+                        >
+                          <CloseCircle className="w-4 h-4 [&>*]:stroke-brand-500 [&>*]:stroke-[1.5px]" />
+                        </button>
                       </div>
-                    );
+                    </Tooltip>
+                  );
                 })
               )}
             </div>
@@ -148,31 +144,31 @@ export const MultiSelect = <T,>({
           side="bottom"
           className={cn(
             "flex flex-col gap-1 w-[var(--radix-dropdown-menu-trigger-width)]",
-            "border border-brand-400 rounded-lg p-1",
+            "border border-brand-400 rounded-lg",
             "max-h-64 overflow-y-auto bg-natural-50",
-            "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
+            "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent",
+            "translate-y-[calc(var(--radix-dropdown-menu-trigger-height) + 5px)]"
           )}
-          sideOffset={5}
+          sideOffset={offset}
         >
-          {options.map((option) => {
+          {options.map((option, idx) => {
             return (
               <Item
                 className={cn(
-                  "px-3 flex shrink-0 items-center gap-3 focus:outline-none rounded-md h-14 cursor-pointer",
-                  { "hover:bg-natural-100": !values.includes(option.value) },
-                  {
-                    "bg-brand-700 text-natural-50": values.includes(
-                      option.value
-                    ),
-                  }
+                  "px-2 py-2 flex shrink-0 items-center gap-3 focus:outline-none rounded-md _h-14 cursor-pointer",
+                  { "hover:bg-natural-100": !values.includes(option.value) }
                 )}
-                key={option.label}
+                key={[option.label, idx].join("")}
                 onSelect={(event: Event) => {
                   event.preventDefault();
+                  setOffset(5);
                   toggleItem(option.value);
                 }}
               >
-                {option.label}
+                <Checkbox
+                  label={option.label}
+                  checked={values.includes(option.value)}
+                />
               </Item>
             );
           })}

@@ -21,7 +21,7 @@ export function getSafeInnerHtmlText(HTMLString: string): string {
   return sanitizedMessage.replace(HTML_TAGS_REGEX, "");
 }
 
-export function getNullableFiledUpdatedValue<T>(
+export function getNullableFieldUpdatedValue<T>(
   current: T | null,
   future: T
 ): T | null | undefined {

@@ -1,3 +1,5 @@
+import { IUser } from ".";
+
 export enum EnglishLevel {
   Beginner = 1,
   PreIntermediate = 2,
@@ -26,6 +28,12 @@ export type Row = {
   created_at: Date;
   updated_at: Date;
 };
+
+export type CreateApiPayload = unknown;
+export type CreateApiResponse = IUser.RegisterApiResponse & unknown;
+
+export type UpdateApiPayload = unknown;
+export type UpdateApiResponse = unknown;
 
 export type Column = keyof Row;
 export type Field = keyof Self;

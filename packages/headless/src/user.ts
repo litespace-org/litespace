@@ -1,10 +1,10 @@
-import { ITopic, IUser } from "@litespace/types";
 import { useApi } from "@/api";
-import { useCallback, useRef, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
-import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
 import { useExtendedQuery } from "@/query";
+import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
+import { ITopic, IUser } from "@litespace/types";
+import { useMutation } from "@tanstack/react-query";
+import { useCallback, useRef, useState } from "react";
 
 export function useLoginUser(
   payload?: BaseMutationPayload<IUser.LoginApiResponse>

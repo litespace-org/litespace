@@ -1,8 +1,9 @@
 import { useApi } from "@/api";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
-import { QueryKey } from "@/constants";
-import { IUser } from "@litespace/types";
+import { MutationKey, QueryKey } from "@/constants";
+import { IStudent, IUser } from "@litespace/types";
+import { OnError, OnSuccess } from "@/types/query";
 
 export function useFindStudentStats(
   id?: number
@@ -36,4 +37,55 @@ export function useFindPersonalizedStudentStats() {
   });
 
   return { query, keys };
+}
+
+export function useCreateStudent({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<IStudent.CreateApiResponse>;
+  onError?: OnError;
+}) {
+  const api = useApi();
+
+  const create = useCallback(
+    async (payload: IStudent.CreateApiPayload) => {
+      return api.student.create(payload);
+    },
+    [api.student]
+  );
+
+  return useMutation({
+    mutationFn: create,
+    onSuccess,
+    onError,
+  });
+}
+
+export function useUpdateStudent({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<IStudent.UpdateApiResponse>;
+  onError?: OnError;
+}) {
+  const api = useApi();
+
+  const update = useCallback(
+    async ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: IStudent.UpdateApiPayload;
+    }) => api.student.update(id, payload),
+    [api.student]
+  );
+
+  return useMutation({
+    mutationFn: update,
+    mutationKey: [MutationKey.UpdateStudent],
+    onSuccess,
+    onError,
+  });
 }
