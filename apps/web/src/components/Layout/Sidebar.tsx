@@ -28,6 +28,8 @@ import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import React, { SVGProps, useCallback, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { StudentDashboardTour } from "@/constants/tour";
+import { useTour } from "@/hooks/tour";
 
 type LinkInfo = {
   label: string;
@@ -38,6 +40,30 @@ type LinkInfo = {
 
 const Sidebar: React.FC = () => {
   const intl = useFormatMessage();
+  const tour = useTour(StudentDashboardTour, {
+    nextButton: <Button size="large">{intl("labels.next")}</Button>,
+    prevButton: (
+      <Button className="bg-natural-0" size="large" variant="secondary">
+        {intl("labels.prev")}
+      </Button>
+    ),
+  });
+
+  const onMouseDown = useCallback(
+    (e: MouseEvent) => {
+      const backdropXEnd = window.innerWidth - MOBILE_SIDEBAR_WIDTH;
+      const backdropYStart = !md ? MOBILE_NAVBAR_HEIGHT : TABLET_NAVBAR_HEIGHT;
+      if (e.pageX < backdropXEnd && e.pageY > backdropYStart) hide();
+    },
+    [hide, md]
+  );
+
+  useEffect(() => tour.start(), [tour]);
+
+  useEffect(() => {
+    window.addEventListener("mousedown", onMouseDown);
+    return () => window.removeEventListener("mousedown", onMouseDown);
+  }, [onMouseDown]);
 
   return (
     <div
@@ -49,7 +75,7 @@ const Sidebar: React.FC = () => {
     >
       <Header />
 
-      <div className="flex flex-col md:gap-1.5">
+      <div className="flex flex-col md:gap-1.5" id={tour.stepIds[0]}>
         <Typography
           tag="span"
           className="hidden md:inline-block text-natural-800 md:py-2 text-tiny md:text-caption font-bold md:text-center lg:text-start"
@@ -59,7 +85,7 @@ const Sidebar: React.FC = () => {
         <MainPages />
       </div>
 
-      <div className="hidden md:flex flex-col md:gap-1.5">
+      <div className="hidden md:flex flex-col md:gap-1.5" id={tour.stepIds[1]}>
         <Typography
           tag="span"
           className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold text-start md:text-center lg:text-start"
