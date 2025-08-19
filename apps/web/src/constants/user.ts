@@ -1,5 +1,5 @@
 import { LocalId } from "@litespace/ui/locales";
-import { IUser } from "@litespace/types";
+import { IStudent, IUser } from "@litespace/types";
 
 export enum TutorOnboardingStep {
   /**
@@ -52,4 +52,13 @@ export const governorates: Record<IUser.City, LocalId> = {
 export const genders: Record<IUser.Gender, LocalId> = {
   [IUser.Gender.Male]: "global.genders.male",
   [IUser.Gender.Female]: "global.genders.female",
+};
+
+export const languageLevels: Record<IStudent.EnglishLevel, LocalId> = {
+  [IStudent.EnglishLevel.Beginner]: "labels.level.beginner",
+  [IStudent.EnglishLevel.PreIntermediate]: "labels.level.pre-intermediate",
+  [IStudent.EnglishLevel.Intermediate]: "labels.level.intermediate",
+  [IStudent.EnglishLevel.UpperIntermediate]: "labels.level.upper-intermediate",
+  [IStudent.EnglishLevel.Advanced]: "labels.level.advanced",
+  [IStudent.EnglishLevel.Mastery]: "labels.level.mastery",
 };

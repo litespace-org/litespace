@@ -39,15 +39,16 @@ export const Checkbox: React.FC<{
             if (onCheckedChange) onCheckedChange();
           }
         }}
-        className="hover:bg-brand-100 rounded-full w-10 h-10 flex justify-center items-center active:bg-brand-200"
+        className="hover:bg-brand-100 rounded-full flex justify-center items-center"
       >
         <div
           role="checkbox"
           id={id}
           onClick={onCheckedChange}
           className={cn(
-            "border-2 border-brand-500 flex justify-center items-center rounded-sm h-[18px] w-[18px]",
-            checked && "bg-brand-500",
+            "border flex justify-center items-center rounded-sm h-4 w-4",
+            checked ? "bg-brand-500 border-brand-500" : "border-natural-500",
+
             disabled && "opacity-50 pointer-events-none",
             checkBoxClassName
           )}
@@ -56,7 +57,7 @@ export const Checkbox: React.FC<{
         </div>
       </div>
       <label
-        className="pr-2 text-[13px] leading-none text-foreground cursor-pointer w-full"
+        className="font-cairo font-semibold pr-2 text-tiny leading-[150%] text-natural-600 cursor-pointer w-full"
         htmlFor={id}
         onClick={onCheckedChange}
       >

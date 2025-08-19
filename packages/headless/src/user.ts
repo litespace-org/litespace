@@ -1,4 +1,4 @@
-import { ITopic, IUser } from "@litespace/types";
+import { IStudent, ITopic, IUser } from "@litespace/types";
 import { useApi } from "@/api";
 import { useCallback, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -57,8 +57,13 @@ export function useUpdateUser({
   const api = useApi();
 
   const update = useCallback(
-    async ({ id, payload }: { id: number; payload: IUser.UpdateApiPayload }) =>
-      api.user.update(id, payload),
+    async ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: IUser.UpdateApiPayload & IStudent.UpdateApiPayload;
+    }) => api.user.update(id, payload),
     [api.user]
   );
 

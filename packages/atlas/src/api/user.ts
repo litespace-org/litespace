@@ -1,5 +1,5 @@
 import { Base } from "@/lib/base";
-import { IFilter, ITutor, IUser } from "@litespace/types";
+import { IFilter, IStudent, ITutor, IUser } from "@litespace/types";
 import { AxiosProgressEvent } from "axios";
 
 export class User extends Base {
@@ -26,7 +26,7 @@ export class User extends Base {
 
   async update(
     id: number,
-    payload: IUser.UpdateApiPayload
+    payload: IUser.UpdateApiPayload & IStudent.UpdateApiPayload
   ): Promise<IUser.Self> {
     return this.put({ route: `/api/v1/user/${id}`, payload });
   }
