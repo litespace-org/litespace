@@ -11,6 +11,10 @@ export class Whatsapp extends Base {
   }
 
   sendSimpleMessage(payload: IMessenger.Message) {
+    const keys = Object.keys(payload.template.parameters);
+    const values = Object.values(payload.template.parameters);
+    if (keys.length !== values.length) throw Error("should never happen!");
+
     return this.post({
       // as shown here: https://developers.facebook.com/docs/whatsapp/cloud-api/overview
       route: `/v23.0/${this.profileId}/messages`,
@@ -22,17 +26,16 @@ export class Whatsapp extends Base {
         template: {
           name: payload.template.name,
           language: {
-            code: "en_us",
+            code: "en_US",
           },
           components: [
             {
               type: "body",
-              parameters: Object.values(payload.template.parameters).map(
-                (value) => ({
-                  type: "text",
-                  text: value.toString(),
-                })
-              ),
+              parameters: keys.map((key, i) => ({
+                type: "text",
+                parameter_name: key,
+                text: values[i].toString(),
+              })),
             },
           ],
         },
