@@ -9,6 +9,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { formatNumber } from "@litespace/ui/utils";
 import { Button } from "@litespace/ui/Button";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { StudentDashboardTour } from "@/constants/tour";
 
 const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
@@ -82,58 +83,71 @@ export const ProfileCard: React.FC<{
         "md:pt-10 md:px-10 flex flex-col gap-4 sm:gap-0 items-stretch w-full"
       )}
     >
-      <div className="flex gap-4 md:gap-10 lg:justify-start">
+      <div className="flex">
         <div
-          className={cn(
-            "aspect-square shrink-0 rounded-full overflow-hidden",
-            "w-[90px] h-[90px] md:w-[242px] md:h-[242px]"
-          )}
+          id={StudentDashboardTour.stepId(3, {
+            next: () => {
+              if (onBook) onBook();
+              StudentDashboardTour.goNext();
+            },
+          })}
+          className="flex gap-4 md:gap-10 lg:justify-start"
         >
-          <AvatarV2 src={image} alt={name} id={id} object="cover" />
-        </div>
+          <div
+            className={cn(
+              "aspect-square shrink-0 rounded-full overflow-hidden",
+              "w-[90px] h-[90px] md:w-[242px] md:h-[242px]"
+            )}
+          >
+            <AvatarV2 src={image} alt={name} id={id} object="cover" />
+          </div>
 
-        <div className="sm:flex sm:flex-col w-full sm:gap-5 min-w-max">
-          <div className="flex flex-col gap-1 md:gap-2">
-            <Typography
-              tag="h3"
-              className="font-bold text-natural-950 dark:text-natural-50 text-body md:text-h2"
-            >
-              {name}
-            </Typography>
+          <div
+            onLoadCapture={() => StudentDashboardTour.goNext()}
+            className="sm:flex sm:flex-col w-full sm:gap-5 min-w-max"
+          >
             <div className="flex flex-col gap-1 md:gap-2">
               <Typography
-                tag="span"
-                className="inline-block font-semibold text-natural-950 text-tiny md:text-subtitle-2"
+                tag="h3"
+                className="font-bold text-natural-950 dark:text-natural-50 text-body md:text-h2"
               >
-                {bio}
+                {name}
               </Typography>
-              {studentCount >= ACHIEVEMENTS_DISPLAY_THRETHOLD ? (
+              <div className="flex flex-col gap-1 md:gap-2">
                 <Typography
                   tag="span"
-                  className="inline-block text-natural-950 dark:text-natural-50 font-semibold text-tiny md:text-subtitle-2"
+                  className="inline-block font-semibold text-natural-950 text-tiny md:text-subtitle-2"
                 >
-                  {intl("tutor.achievements", {
-                    lessonCount: formatNumber(lessonCount),
-                    studentCount: formatNumber(studentCount),
-                  })}
+                  {bio}
                 </Typography>
+                {studentCount >= ACHIEVEMENTS_DISPLAY_THRETHOLD ? (
+                  <Typography
+                    tag="span"
+                    className="inline-block text-natural-950 dark:text-natural-50 font-semibold text-tiny md:text-subtitle-2"
+                  >
+                    {intl("tutor.achievements", {
+                      lessonCount: formatNumber(lessonCount),
+                      studentCount: formatNumber(studentCount),
+                    })}
+                  </Typography>
+                ) : null}
+              </div>
+              {avgRating > 0 ? (
+                <div className="flex items-center gap-2">
+                  <Typography
+                    tag="span"
+                    className="font-normal md:font-semibold text-tiny md:text-body lg:text-subtitle-2 text-natural-950 dark:text-natural-50 inline-block md:-mt-1"
+                  >
+                    {formatNumber(avgRating, {
+                      maximumFractionDigits: 1,
+                    })}
+                  </Typography>
+                  <Star className="w-4 h-4 md:w-[30px] md:h-[30px] [&>*]:fill-warning-500" />
+                </div>
               ) : null}
             </div>
-            {avgRating > 0 ? (
-              <div className="flex items-center gap-2">
-                <Typography
-                  tag="span"
-                  className="font-normal md:font-semibold text-tiny md:text-body lg:text-subtitle-2 text-natural-950 dark:text-natural-50 inline-block md:-mt-1"
-                >
-                  {formatNumber(avgRating, {
-                    maximumFractionDigits: 1,
-                  })}
-                </Typography>
-                <Star className="w-4 h-4 md:w-[30px] md:h-[30px] [&>*]:fill-warning-500" />
-              </div>
-            ) : null}
+            {sm ? BookButton : null}
           </div>
-          {sm ? BookButton : null}
         </div>
       </div>
       {!sm ? BookButton : null}

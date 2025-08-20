@@ -31,7 +31,6 @@ import { router } from "@/lib/routes";
 import { isTutor } from "@litespace/utils";
 import { useSubscription } from "@litespace/headless/context/subscription";
 import { StudentDashboardTour } from "@/constants/tour";
-import { useTour } from "@/hooks/tour";
 
 type LinkInfo = {
   label: string;
@@ -45,14 +44,6 @@ const Sidebar: React.FC<{
 }> = ({ hide }) => {
   const { md } = useMediaQuery();
   const intl = useFormatMessage();
-  const tour = useTour(StudentDashboardTour, {
-    nextButton: <Button size="large">{intl("labels.next")}</Button>,
-    prevButton: (
-      <Button className="bg-natural-0" size="large" variant="secondary">
-        {intl("labels.prev")}
-      </Button>
-    ),
-  });
 
   const onMouseDown = useCallback(
     (e: MouseEvent) => {
@@ -62,8 +53,6 @@ const Sidebar: React.FC<{
     },
     [hide, md]
   );
-
-  useEffect(() => tour.start(), [tour]);
 
   useEffect(() => {
     window.addEventListener("mousedown", onMouseDown);
@@ -80,7 +69,7 @@ const Sidebar: React.FC<{
     >
       <Header />
 
-      <div className="flex flex-col gap-2 md:gap-1.5" id={tour.stepIds[0]}>
+      <div className="flex flex-col gap-2 md:gap-1.5">
         <Typography
           tag="span"
           className="text-natural-800 md:py-2 text-tiny md:text-caption font-bold md:text-center lg:text-start"
@@ -90,7 +79,7 @@ const Sidebar: React.FC<{
         <MainPages hide={hide} />
       </div>
 
-      <div className="flex flex-col gap-2 md:gap-1.5" id={tour.stepIds[1]}>
+      <div className="flex flex-col gap-2 md:gap-1.5">
         <Typography
           tag="span"
           className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold text-start md:text-center lg:text-start"
@@ -212,6 +201,7 @@ const MainPages: React.FC<{ hide: Void }> = ({ hide }) => {
     <ul className="flex flex-col gap-2">
       {pages.map(({ label, route, Icon, isActive }) => (
         <SidebarItem
+          id={route === Web.Tutors ? StudentDashboardTour.stepId(0) : undefined}
           hide={hide}
           key={route}
           to={route}
@@ -326,6 +316,7 @@ const AccountPromotion: React.FC = () => {
 };
 
 const SidebarItem: React.FC<{
+  id?: string;
   to: string;
   Icon: React.MemoExoticComponent<
     (props: SVGProps<SVGSVGElement>) => JSX.Element
@@ -334,11 +325,12 @@ const SidebarItem: React.FC<{
   active?: boolean;
   hide: Void;
   notificationsCount?: number;
-}> = ({ to, hide, Icon, label, active, notificationsCount = 0 }) => {
+}> = ({ id, to, hide, Icon, label, active, notificationsCount = 0 }) => {
   const { md, lg } = useMediaQuery();
 
   return (
     <Link
+      id={id}
       className={cn(
         "flex flex-row justify-start md:justify-center lg:justify-start ps-[14px] pe-2 py-2 items-center",
         "rounded-lg transition-colors duration-200 group",
