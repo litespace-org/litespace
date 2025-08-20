@@ -22,7 +22,7 @@ type Story = StoryObj<typeof TutorCard>;
 
 export const Primary: Story = {
   args: {
-    id: 1,
+    tutorId: 1,
     bio: faker.lorem.words(145),
     name: faker.lorem.words(2),
     rating: 5,
@@ -34,7 +34,7 @@ export const Primary: Story = {
 
 export const NoRating: Story = {
   args: {
-    id: 1,
+    tutorId: 1,
     bio: faker.lorem.words(5),
     name: faker.lorem.words(2),
     image: faker.image.urlPicsumPhotos(),
@@ -43,7 +43,7 @@ export const NoRating: Story = {
 
 export const FractionalRating: Story = {
   args: {
-    id: 1,
+    tutorId: 1,
     bio: faker.lorem.words(5),
     name: faker.lorem.words(2),
     image: faker.image.urlPicsumPhotos(),
@@ -54,7 +54,7 @@ export const FractionalRating: Story = {
 export const Free: Story = {
   args: {
     free: true,
-    id: 1,
+    tutorId: 1,
     bio: faker.lorem.words(5),
     name: faker.lorem.words(2),
     image: faker.image.urlPicsumPhotos(),
@@ -63,7 +63,7 @@ export const Free: Story = {
 
 export const LongBio: Story = {
   args: {
-    id: 1,
+    tutorId: 1,
     bio: faker.lorem.words(40),
     name: faker.lorem.words(2),
     rating: 5,
@@ -73,7 +73,7 @@ export const LongBio: Story = {
 
 export const NoBio: Story = {
   args: {
-    id: 1,
+    tutorId: 1,
     bio: null,
     name: faker.lorem.words(2),
     rating: 5,

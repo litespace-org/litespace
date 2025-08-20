@@ -19,13 +19,16 @@ export type TourConfig = {
   nextButton?: ReactNode;
   prevButton?: ReactNode;
   onStop?: Void;
+  onNext?: Void;
+  onPrev?: Void;
 };
 
 export interface Tour<T extends string = string> {
   readonly config: TourConfig;
   readonly steps: Array<TourStep<T>>;
+  setSteps(steps: Array<TourStep<T>>): void;
   addSteps(steps: Array<TourStep<T>>): void;
-  setGoNext(goNext: Function): void;
+  setGoNext(goNext: Void): void;
   goNext(): void;
 }
 

@@ -17,17 +17,22 @@ export function getDriver(tour: Tour, config?: TourConfig) {
           title: step.info.title,
           description: step.info.description,
           onNextClick: () => {
+            if (config?.onNext) config.onNext();
             if (step.next) return step.next();
             driverObj.moveNext();
           },
           onPrevClick: () => {
+            if (config?.onPrev) config.onPrev();
             if (step.prev) return step.prev();
             driverObj.movePrevious();
           },
         },
       })),
 
-    onDestroyStarted: config?.onStop || undefined,
+    onDestroyStarted: () => {
+      if (config?.onStop) config?.onStop();
+      driverObj.destroy();
+    },
 
     onPopoverRender: (popover) => {
       const buttonsContainer = document.createElement("div");

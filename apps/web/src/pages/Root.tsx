@@ -23,6 +23,8 @@ import { useTour } from "@/hooks/tour";
 import { StudentDashboardTour } from "@/constants/tour";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import Exit from "@litespace/assets/Exit";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -38,14 +40,26 @@ const Root: React.FC = () => {
   const { user, meta, error, logout } = useUser();
   const intl = useFormatMessage();
 
-  const studentTour = useTour(StudentDashboardTour, {
-    nextButton: <Button size="large">{intl("labels.next")}</Button>,
-    prevButton: (
-      <Button className="!bg-natural-0" size="large" variant="secondary">
-        {intl("labels.prev")}
-      </Button>
-    ),
-  });
+  const [stepNumber, setStepNumber] = useState(0);
+  const [closeTourDialogShow, setCloseTourDialogShow] =
+    useState<boolean>(false);
+
+  const config = useMemo(
+    () => ({
+      nextButton: <Button size="large">{intl("labels.next")}</Button>,
+      prevButton: (
+        <Button className="!bg-natural-0" size="large" variant="secondary">
+          {intl("labels.prev")}
+        </Button>
+      ),
+      onStop: () => setCloseTourDialogShow(true),
+      onNext: () => setStepNumber((prev) => prev + 1),
+      onPrev: () => setStepNumber((prev) => prev - 1),
+    }),
+    [intl]
+  );
+
+  const studentTour = useTour(StudentDashboardTour, config);
 
   /**
    * `nav` is a url param used to hide the page navigation. It is mainlly used
@@ -179,6 +193,31 @@ const Root: React.FC = () => {
       >
         <UnsupportedBrowserDialog />
         <WebrtcCheckDialog />
+        <ConfirmationDialog
+          open={
+            closeTourDialogShow && stepNumber !== studentTour.tour.steps.length
+          }
+          title={intl("stop-tour-dialog.title")}
+          description={intl("stop-tour-dialog.description")}
+          icon={<Exit />}
+          actions={{
+            primary: {
+              label: intl("stop-tour-dialog.continue"),
+              onClick: () => {
+                setCloseTourDialogShow(false);
+                studentTour.startFrom(stepNumber);
+              },
+            },
+            secondary: {
+              label: intl("labels.leave"),
+              onClick: () => {
+                setCloseTourDialogShow(false);
+                studentTour.stop();
+              },
+            },
+          }}
+        />
+
         {showNavigation ? (
           <Navbar toggleSidebar={() => setShowMobileSidebar((prev) => !prev)} />
         ) : null}

@@ -1,16 +1,22 @@
 import { Tour, TourConfig, TourId, TourStep } from "@/types/tour";
+import { Void } from "@litespace/types";
 import { LocalId } from "@litespace/ui/locales";
 
 export class GeneralTour<T extends string> implements Tour<T> {
   readonly config: TourConfig = {};
   readonly steps: Array<TourStep<T>> = [];
 
-  private goNextFn: Function = () => {};
+  private goNextFn: Void = () => {};
 
   constructor(config?: TourConfig, steps?: Array<TourStep<T>>) {
     this.config = config || {};
     if (steps) this.steps.push(...steps);
     return this;
+  }
+
+  setSteps(steps: Array<TourStep<T>>) {
+    while (this.steps.length > 0) this.steps.pop();
+    this.steps.push(...steps);
   }
 
   addSteps(steps: Array<TourStep<T>>) {
@@ -32,7 +38,7 @@ export class GeneralTour<T extends string> implements Tour<T> {
     this.goNextFn();
   }
 
-  setGoNext(goNext: Function): void {
+  setGoNext(goNext: Void): void {
     this.goNextFn = goNext;
   }
 }
