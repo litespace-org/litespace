@@ -1,3 +1,4 @@
+import { StudentDashboardTour } from "@/constants/tour";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
@@ -31,7 +32,10 @@ const ProfileInfo: React.FC<{
           </div>
         ) : null}
         {!isEmpty(topics) ? (
-          <div className="mt-4 md:mt-6 lg:mt-8 flex flex-col gap-2 md:gap-4">
+          <div
+            id={StudentDashboardTour.stepId(2)}
+            className="mt-4 md:mt-6 lg:mt-8 flex flex-col gap-2 md:gap-4"
+          >
             <Typography
               tag="span"
               className="text-natural-950 text-body lg:text-subtitle-2 font-bold"

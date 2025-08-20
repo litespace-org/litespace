@@ -17,7 +17,8 @@ import { Link } from "react-router-dom";
 const MAXIMUM_CARD_TOPICS_NUM = 4;
 
 export const TutorCard: React.FC<{
-  id: number;
+  id?: string;
+  tutorId: number;
   bio: string | null;
   name: string | null;
   free?: boolean;
@@ -25,12 +26,13 @@ export const TutorCard: React.FC<{
   rating?: number;
   topics: string[];
   onBook: Void;
-}> = ({ id, bio, name, image, rating, free, topics, onBook }) => {
+}> = ({ id, tutorId, bio, name, image, rating, free, topics, onBook }) => {
   const intl = useFormatMessage();
 
   return (
     <Link
-      to={router.web({ route: Web.TutorProfile, id })}
+      id={id}
+      to={router.web({ route: Web.TutorProfile, id: tutorId })}
       className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 @container block rounded-lg"
     >
       <div className="w-full border border-natural-200 rounded-lg p-4 flex flex-col gap-2 h-full">
@@ -46,7 +48,7 @@ export const TutorCard: React.FC<{
           )}
         >
           {free ? <Free /> : null}
-          <AvatarV2 src={image} alt={name} id={id} object="cover" />
+          <AvatarV2 src={image} alt={name} id={tutorId} object="cover" />
         </div>
         <div className="flex flex-col">
           <div className="flex justify-between mb-1">

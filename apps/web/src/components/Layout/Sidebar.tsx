@@ -30,6 +30,7 @@ import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isTutor } from "@litespace/utils";
 import { useSubscription } from "@litespace/headless/context/subscription";
+import { StudentDashboardTour } from "@/constants/tour";
 
 type LinkInfo = {
   label: string;
@@ -200,6 +201,7 @@ const MainPages: React.FC<{ hide: Void }> = ({ hide }) => {
     <ul className="flex flex-col gap-2">
       {pages.map(({ label, route, Icon, isActive }) => (
         <SidebarItem
+          id={route === Web.Tutors ? StudentDashboardTour.stepId(0) : undefined}
           hide={hide}
           key={route}
           to={route}
@@ -314,6 +316,7 @@ const AccountPromotion: React.FC = () => {
 };
 
 const SidebarItem: React.FC<{
+  id?: string;
   to: string;
   Icon: React.MemoExoticComponent<
     (props: SVGProps<SVGSVGElement>) => JSX.Element
@@ -322,11 +325,12 @@ const SidebarItem: React.FC<{
   active?: boolean;
   hide: Void;
   notificationsCount?: number;
-}> = ({ to, hide, Icon, label, active, notificationsCount = 0 }) => {
+}> = ({ id, to, hide, Icon, label, active, notificationsCount = 0 }) => {
   const { md, lg } = useMediaQuery();
 
   return (
     <Link
+      id={id}
       className={cn(
         "flex flex-row justify-start md:justify-center lg:justify-start ps-[14px] pe-2 py-2 items-center",
         "rounded-lg transition-colors duration-200 group",

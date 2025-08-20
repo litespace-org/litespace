@@ -19,6 +19,12 @@ import { isProfileComplete } from "@litespace/utils/tutor";
 import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowserDialog";
+import { useTour } from "@/hooks/tour";
+import { StudentDashboardTour } from "@/constants/tour";
+import { Button } from "@litespace/ui/Button";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import Exit from "@litespace/assets/Exit";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -32,6 +38,28 @@ const Root: React.FC = () => {
   const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { user, meta, error, logout } = useUser();
+  const intl = useFormatMessage();
+
+  const [stepNumber, setStepNumber] = useState(0);
+  const [closeTourDialogShow, setCloseTourDialogShow] =
+    useState<boolean>(false);
+
+  const config = useMemo(
+    () => ({
+      nextButton: <Button size="large">{intl("labels.next")}</Button>,
+      prevButton: (
+        <Button className="!bg-natural-0" size="large" variant="secondary">
+          {intl("labels.prev")}
+        </Button>
+      ),
+      onStop: () => setCloseTourDialogShow(true),
+      onNext: () => setStepNumber((prev) => prev + 1),
+      onPrev: () => setStepNumber((prev) => prev - 1),
+    }),
+    [intl]
+  );
+
+  const studentTour = useTour(StudentDashboardTour, config);
 
   /**
    * `nav` is a url param used to hide the page navigation. It is mainlly used
@@ -94,10 +122,14 @@ const Root: React.FC = () => {
 
     // ============ student redirect ========
     if (role.student && root) {
-      if (dayjs().isSame(user.createdAt, "day")) return navigate(Web.Tutors);
+      if (dayjs().isSame(user.createdAt, "day")) {
+        navigate(Web.Tutors);
+        studentTour.start();
+        return;
+      }
       return navigate(Web.StudentDashboard);
     }
-  }, [navigate, location.pathname, user, publicRoute, meta]);
+  }, [navigate, location.pathname, user, publicRoute, meta, studentTour]);
 
   const showNavigation = useMemo(() => {
     if (params.get("nav") === "false") return false;
@@ -161,6 +193,31 @@ const Root: React.FC = () => {
       >
         <UnsupportedBrowserDialog />
         <WebrtcCheckDialog />
+        <ConfirmationDialog
+          open={
+            closeTourDialogShow && stepNumber !== studentTour.tour.steps.length
+          }
+          title={intl("stop-tour-dialog.title")}
+          description={intl("stop-tour-dialog.description")}
+          icon={<Exit />}
+          actions={{
+            primary: {
+              label: intl("stop-tour-dialog.continue"),
+              onClick: () => {
+                setCloseTourDialogShow(false);
+                studentTour.startFrom(stepNumber);
+              },
+            },
+            secondary: {
+              label: intl("labels.leave"),
+              onClick: () => {
+                setCloseTourDialogShow(false);
+                studentTour.stop();
+              },
+            },
+          }}
+        />
+
         {showNavigation ? (
           <Navbar toggleSidebar={() => setShowMobileSidebar((prev) => !prev)} />
         ) : null}
