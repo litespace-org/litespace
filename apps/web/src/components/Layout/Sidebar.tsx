@@ -29,7 +29,6 @@ import cn from "classnames";
 import React, { SVGProps, useCallback, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { StudentDashboardTour } from "@/constants/tour";
-import { useTour } from "@/hooks/tour";
 
 type LinkInfo = {
   label: string;
@@ -40,14 +39,6 @@ type LinkInfo = {
 
 const Sidebar: React.FC = () => {
   const intl = useFormatMessage();
-  const tour = useTour(StudentDashboardTour, {
-    nextButton: <Button size="large">{intl("labels.next")}</Button>,
-    prevButton: (
-      <Button className="bg-natural-0" size="large" variant="secondary">
-        {intl("labels.prev")}
-      </Button>
-    ),
-  });
 
   const onMouseDown = useCallback(
     (e: MouseEvent) => {
@@ -57,8 +48,6 @@ const Sidebar: React.FC = () => {
     },
     [hide, md]
   );
-
-  useEffect(() => tour.start(), [tour]);
 
   useEffect(() => {
     window.addEventListener("mousedown", onMouseDown);
@@ -233,6 +222,8 @@ const MainPages: React.FC = () => {
       {pages.map(({ label, route, Icon, isActive }) => {
         return (
           <SidebarItem
+            id={route === Web.Tutors ? StudentDashboardTour.stepId(0) : undefined}
+            hide={hide}
             key={route}
             to={route}
             Icon={Icon}
@@ -346,6 +337,7 @@ const AccountPromotion: React.FC = () => {
 };
 
 const SidebarItem: React.FC<{
+  id?: string;
   to: string;
   Icon: React.MemoExoticComponent<
     (props: SVGProps<SVGSVGElement>) => JSX.Element
@@ -353,11 +345,12 @@ const SidebarItem: React.FC<{
   label: React.ReactNode;
   active?: boolean;
   notificationsCount?: number;
-}> = ({ to, Icon, label, active, notificationsCount = 0 }) => {
+}> = ({ id, to, hide, Icon, label, active, notificationsCount = 0 }) => {
   const { md, lg } = useMediaQuery();
 
   return (
     <Link
+      id={id}
       className={cn(
         "relative md:static min-w-14 md:min-w-auto flex md:gap-0 flex-col gap-[11px] md:flex-row justify-between md:justify-center lg:justify-start pt-[13px] md:p-0 lg:ps-[14px] lg:pe-2 md:py-2 items-center",
         "rounded-lg transition-colors duration-200 group",

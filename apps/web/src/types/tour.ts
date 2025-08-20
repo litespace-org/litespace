@@ -10,13 +10,23 @@ export type TourStep<T extends string> = {
     title: T;
     description?: T;
   };
+  next?: Void;
+  prev?: Void;
+  skip?: boolean;
 };
-
-export type LocalTour = Array<TourStep<LocalId>>;
-export type Tour = Array<TourStep<string>>;
 
 export type TourConfig = {
   nextButton?: ReactNode;
   prevButton?: ReactNode;
   onStop?: Void;
 };
+
+export interface Tour<T extends string = string> {
+  readonly config: TourConfig;
+  readonly steps: Array<TourStep<T>>;
+  addSteps(steps: Array<TourStep<T>>): void;
+  setGoNext(goNext: Function): void;
+  goNext(): void;
+}
+
+export type LocalTour = Tour<LocalId>;
