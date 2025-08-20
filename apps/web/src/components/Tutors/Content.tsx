@@ -18,6 +18,7 @@ import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@litespace/ui/Toast";
+import { StudentDashboardTour } from "@/constants/tour";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -65,14 +66,28 @@ const Content: React.FC<{
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {tutors.map((tutor) =>
+        {tutors.map((tutor, i) =>
           isValidTutorName(tutor.name) === true &&
           isValidTutorAbout(tutor.about) === true &&
           isValidTutorBio(tutor.bio) === true ? (
             <TutorCard
+              id={
+                i === 0
+                  ? StudentDashboardTour.stepId(1, {
+                      next: () => {
+                        navigate(
+                          router.web({
+                            route: Web.TutorProfile,
+                            id: tutor.id,
+                          })
+                        );
+                      },
+                    })
+                  : undefined
+              }
+              tutorId={tutor.id}
               key={tutor.id}
               free={isTutorManager(tutor)}
-              id={tutor.id}
               bio={tutor.bio}
               name={tutor.name}
               rating={tutor.avgRating}

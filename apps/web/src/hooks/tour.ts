@@ -1,26 +1,41 @@
-import { getDriver, getTourIds } from "@/lib/tour";
+import { GeneralTour } from "@/constants/tour";
+import { getDriver } from "@/lib/tour";
 import { LocalTour, Tour, TourConfig } from "@/types/tour";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { useMemo } from "react";
+import { LocalId } from "@litespace/ui/locales";
+import { useEffect, useMemo, useState } from "react";
 
 export function useTour(localTour: LocalTour, config?: TourConfig) {
   const intl = useFormatMessage();
+  const [tour, setTour] = useState<Tour>(localTour);
+  const [started, setStarted] = useState<boolean>(false);
 
-  const tour: Tour = localTour.map((step) => ({
-    id: step.id,
-    info: {
-      title: intl(step.info.title),
-      description: step.info.description
-        ? intl(step.info.description)
-        : undefined,
-    },
-  }));
+  useEffect(() => {
+    const steps = localTour.steps;
+    for (const step of steps) {
+      if (!step.info) continue;
 
-  const driver = useMemo(() => getDriver(tour, config), [tour]);
+      step.info.title = intl(step.info.title) as LocalId;
+
+      if (step.info.description)
+        step.info.description = intl(step.info.description) as LocalId;
+    }
+    setTour(new GeneralTour(config, steps));
+  }, [localTour]);
+
+  const driver = useMemo(() => {
+    const driver = getDriver(tour, config);
+    if (started) driver.drive();
+    tour.setGoNext(driver.moveNext);
+    return driver;
+  }, [tour]);
 
   return {
-    start: driver.drive,
+    tour,
+    start: () => {
+      driver.drive();
+      setStarted(true);
+    },
     stop: driver.destroy,
-    stepIds: getTourIds(tour),
   };
 }

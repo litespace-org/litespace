@@ -19,6 +19,16 @@ import {
   useSearchParams,
 } from "react-router-dom";
 
+import { useSaveLogs } from "@/hooks/logger";
+import { isProfileComplete } from "@litespace/utils/tutor";
+import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
+import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
+import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowserDialog";
+import { useTour } from "@/hooks/tour";
+import { StudentDashboardTour } from "@/constants/tour";
+import { Button } from "@litespace/ui/Button";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+
 const publicRoutes: Web[] = [
   Web.Login,
   Web.ForgetPassword,
@@ -29,6 +39,16 @@ const publicRoutes: Web[] = [
 
 const Root: React.FC = () => {
   const { user, meta, error, logout } = useUser();
+  const intl = useFormatMessage();
+
+  const studentTour = useTour(StudentDashboardTour, {
+    nextButton: <Button size="large">{intl("labels.next")}</Button>,
+    prevButton: (
+      <Button className="!bg-natural-0" size="large" variant="secondary">
+        {intl("labels.prev")}
+      </Button>
+    ),
+  });
 
   /**
    * `nav` is a url param used to hide the page navigation. It is mainlly used
@@ -91,10 +111,14 @@ const Root: React.FC = () => {
 
     // ============ student redirect ========
     if (role.student && root) {
-      if (dayjs().isSame(user.createdAt, "day")) return navigate(Web.Tutors);
+      if (dayjs().isSame(user.createdAt, "day")) {
+        navigate(Web.Tutors);
+        studentTour.start();
+        return;
+      }
       return navigate(Web.StudentDashboard);
     }
-  }, [navigate, location.pathname, user, publicRoute, meta]);
+  }, [navigate, location.pathname, user, publicRoute, meta, studentTour]);
 
   const showNavigation = useMemo(() => {
     if (params.get("nav") === "false") return false;

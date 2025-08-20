@@ -7,6 +7,7 @@ import { Size } from "@litespace/types";
 type Button = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button: React.FC<{
+  id?: string;
   children?: React.ReactNode;
   onClick?: Button["onClick"];
   type?: ButtonType;
@@ -21,6 +22,7 @@ export const Button: React.FC<{
   tabIndex?: number;
   autoFocus?: boolean;
 }> = ({
+  id,
   children,
   variant = "primary",
   type = "main",
@@ -55,6 +57,7 @@ export const Button: React.FC<{
 
   return (
     <button
+      id={id}
       type={htmlType}
       disabled={disabled}
       data-size={size}
