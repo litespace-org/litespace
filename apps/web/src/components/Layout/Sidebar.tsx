@@ -40,20 +40,6 @@ type LinkInfo = {
 const Sidebar: React.FC = () => {
   const intl = useFormatMessage();
 
-  const onMouseDown = useCallback(
-    (e: MouseEvent) => {
-      const backdropXEnd = window.innerWidth - MOBILE_SIDEBAR_WIDTH;
-      const backdropYStart = !md ? MOBILE_NAVBAR_HEIGHT : TABLET_NAVBAR_HEIGHT;
-      if (e.pageX < backdropXEnd && e.pageY > backdropYStart) hide();
-    },
-    [hide, md]
-  );
-
-  useEffect(() => {
-    window.addEventListener("mousedown", onMouseDown);
-    return () => window.removeEventListener("mousedown", onMouseDown);
-  }, [onMouseDown]);
-
   return (
     <div
       className={cn(
@@ -64,7 +50,7 @@ const Sidebar: React.FC = () => {
     >
       <Header />
 
-      <div className="flex flex-col md:gap-1.5" id={tour.stepIds[0]}>
+      <div className="flex flex-col md:gap-1.5">
         <Typography
           tag="span"
           className="hidden md:inline-block text-natural-800 md:py-2 text-tiny md:text-caption font-bold md:text-center lg:text-start"
@@ -74,7 +60,7 @@ const Sidebar: React.FC = () => {
         <MainPages />
       </div>
 
-      <div className="hidden md:flex flex-col md:gap-1.5" id={tour.stepIds[1]}>
+      <div className="hidden md:flex flex-col md:gap-1.5">
         <Typography
           tag="span"
           className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold text-start md:text-center lg:text-start"
@@ -222,8 +208,9 @@ const MainPages: React.FC = () => {
       {pages.map(({ label, route, Icon, isActive }) => {
         return (
           <SidebarItem
-            id={route === Web.Tutors ? StudentDashboardTour.stepId(0) : undefined}
-            hide={hide}
+            id={
+              route === Web.Tutors ? StudentDashboardTour.stepId(0) : undefined
+            }
             key={route}
             to={route}
             Icon={Icon}
@@ -345,7 +332,7 @@ const SidebarItem: React.FC<{
   label: React.ReactNode;
   active?: boolean;
   notificationsCount?: number;
-}> = ({ id, to, hide, Icon, label, active, notificationsCount = 0 }) => {
+}> = ({ id, to, Icon, label, active, notificationsCount = 0 }) => {
   const { md, lg } = useMediaQuery();
 
   return (
@@ -405,6 +392,7 @@ const SidebarItem: React.FC<{
 };
 
 const MobileSidebarItem: React.FC<{
+  id?: string;
   active: boolean;
   label: string;
   Icon: React.MemoExoticComponent<
@@ -413,7 +401,7 @@ const MobileSidebarItem: React.FC<{
   to: string;
   notificationsCount?: number;
   setActive?: (open: boolean) => void;
-}> = ({ active, label, Icon, to, notificationsCount = 0, setActive }) => {
+}> = ({ id, active, label, Icon, to, notificationsCount = 0, setActive }) => {
   const intl = useFormatMessage();
 
   if (label === intl("global.labels.more"))
@@ -427,6 +415,7 @@ const MobileSidebarItem: React.FC<{
 
   return (
     <Link
+      id={id}
       to={to}
       className={cn(
         "relative min-w-14 flex flex-col gap-[11px] justify-between pt-[13px] items-center",
@@ -1009,6 +998,11 @@ const MobileSidebar: React.FC<{
     >
       {pages.map((page) => (
         <MobileSidebarItem
+          id={
+            page.route === Web.Tutors
+              ? StudentDashboardTour.stepId(0)
+              : undefined
+          }
           key={page.label}
           label={page.label}
           to={page.route}

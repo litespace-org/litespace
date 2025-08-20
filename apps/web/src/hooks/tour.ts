@@ -21,14 +21,14 @@ export function useTour(localTour: LocalTour, config?: TourConfig) {
         step.info.description = intl(step.info.description) as LocalId;
     }
     setTour(new GeneralTour(config, steps));
-  }, [localTour]);
+  }, [localTour, intl, config]);
 
   const driver = useMemo(() => {
     const driver = getDriver(tour, config);
     if (started) driver.drive();
     tour.setGoNext(driver.moveNext);
     return driver;
-  }, [tour]);
+  }, [tour, started, config]);
 
   return {
     tour,
@@ -36,6 +36,12 @@ export function useTour(localTour: LocalTour, config?: TourConfig) {
       driver.drive();
       setStarted(true);
     },
+    startFrom: (stepNumber: number) => {
+      driver.drive();
+      driver.moveTo(stepNumber);
+      setStarted(true);
+    },
     stop: driver.destroy,
+    lastStep: !driver.hasNextStep(),
   };
 }
