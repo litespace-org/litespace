@@ -85,8 +85,8 @@ const Content: React.FC<{
                     })
                   : undefined
               }
-              tutorId={tutor.id}
               key={tutor.id}
+              tutorId={tutor.id}
               free={isTutorManager(tutor)}
               bio={tutor.bio}
               name={tutor.name}

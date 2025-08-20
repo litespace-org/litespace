@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import Star from "@litespace/assets/Star";
 import { Void } from "@litespace/types";
 import cn from "classnames";
@@ -41,6 +41,10 @@ export const ProfileCard: React.FC<{
   const intl = useFormatMessage();
   const { sm } = useMediaQuery();
 
+  useEffect(() => {
+    StudentDashboardTour.goNext();
+  }, []);
+
   const BookButton = useMemo(
     () => (
       <Button
@@ -79,18 +83,32 @@ export const ProfileCard: React.FC<{
 
   return (
     <div
+      id={
+        !sm
+          ? StudentDashboardTour.stepId(3, {
+              next: () => {
+                if (onBook) onBook();
+                StudentDashboardTour.goNext();
+              },
+            })
+          : undefined
+      }
       className={cn(
         "md:pt-10 md:px-10 flex flex-col gap-4 sm:gap-0 items-stretch w-full"
       )}
     >
       <div className="flex">
         <div
-          id={StudentDashboardTour.stepId(3, {
-            next: () => {
-              if (onBook) onBook();
-              StudentDashboardTour.goNext();
-            },
-          })}
+          id={
+            sm
+              ? StudentDashboardTour.stepId(3, {
+                  next: () => {
+                    if (onBook) onBook();
+                    StudentDashboardTour.goNext();
+                  },
+                })
+              : undefined
+          }
           className="flex gap-4 md:gap-10 lg:justify-start"
         >
           <div
@@ -102,10 +120,7 @@ export const ProfileCard: React.FC<{
             <AvatarV2 src={image} alt={name} id={id} object="cover" />
           </div>
 
-          <div
-            onLoadCapture={() => StudentDashboardTour.goNext()}
-            className="sm:flex sm:flex-col w-full sm:gap-5 min-w-max"
-          >
+          <div className="sm:flex sm:flex-col w-full sm:gap-5 min-w-max">
             <div className="flex flex-col gap-1 md:gap-2">
               <Typography
                 tag="h3"
