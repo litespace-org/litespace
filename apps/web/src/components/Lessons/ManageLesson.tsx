@@ -75,8 +75,8 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
       };
     }
     return {
-      start: now.current.startOf("week"),
-      end: now.current.startOf("week").add(1, "week"),
+      start: now.current.startOf("day"),
+      end: now.current.add(6, "days").endOf("day"),
     };
   }, [info]);
   const slotBoundries = useMemo(
