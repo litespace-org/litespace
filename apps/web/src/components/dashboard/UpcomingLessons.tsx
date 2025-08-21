@@ -36,6 +36,7 @@ export const UpcomingLessons = () => {
     users: user ? [user?.id] : [],
     userOnly: true,
     after: now,
+    canceled: false,
     size: 4,
   });
 
