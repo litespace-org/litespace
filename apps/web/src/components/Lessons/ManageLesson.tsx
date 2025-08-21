@@ -92,8 +92,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   const lessons = useFindLessons({
     canceled: false,
     users: user ? [user?.id] : [],
-    after: weekBoundaries.start.toISOString(),
-    before: weekBoundaries.end.toISOString(),
+    after: now.current.toISOString(),
     userOnly: true,
     size: 1,
   });
