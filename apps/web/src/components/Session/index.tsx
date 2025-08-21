@@ -28,7 +28,7 @@ const Main: React.FC<{
   onLeave,
 }) => {
   const tokenQuery = useGetSessionToken(sessionId);
-  const { room, publised } = useRoom(tokenQuery.data?.token);
+  const { room, publised } = useRoom(sessionId, tokenQuery.data?.token);
 
   useOnError({
     type: "query",

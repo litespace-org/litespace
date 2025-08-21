@@ -23,10 +23,13 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller } from "@/components/Session/Controllers";
 import { isLocalAudioTrack, isLocalVideoTrack } from "@/lib/livekit";
+import { useSocket } from "@litespace/headless/socket";
+import { ISession, Wss } from "@litespace/types";
 
 const serverUrl = sockets.livekit[env.server];
 
-export function useRoom(token?: string) {
+export function useRoom(sessionId: ISession.Id, token?: string) {
+  const { socket } = useSocket();
   const [connected, setConnected] = useState<boolean>(false);
   const [publised, setPublished] = useState<boolean>(false);
   const room = useMemo(() => {
@@ -40,11 +43,13 @@ export function useRoom(token?: string) {
   }, []);
 
   const onParticipantDisconnected = useCallback(() => {
+    socket?.emit(Wss.ClientEvent.LeaveSession, { sessionId });
     const audio = new Audio("/leave-session.mp3");
     audio.play();
   }, []);
 
   const onLocalTrackPublished = useCallback(() => {
+    socket?.emit(Wss.ClientEvent.JoinSession, { sessionId });
     setPublished(true);
     const audio = new Audio("/join-session.mp3");
     audio.play();
@@ -211,6 +216,7 @@ export function useDeviceError() {
 }
 
 export function usePreview() {
+  const { connected: socketConnected } = useSocket();
   const room = useRoomContext();
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
@@ -328,9 +334,10 @@ export function usePreview() {
   }, [audioTrack, onAudioTrackMute, onAudioTrackUnmute]);
 
   const join = useCallback(() => {
+    if (!socketConnected) return console.error("the socket is disconnection!");
     if (videoTrack) room.localParticipant.publishTrack(videoTrack);
     if (audioTrack) room.localParticipant.publishTrack(audioTrack);
-  }, [audioTrack, room.localParticipant, videoTrack]);
+  }, [audioTrack, room.localParticipant, videoTrack, socketConnected]);
 
   return {
     toggleBackgroundBlur,

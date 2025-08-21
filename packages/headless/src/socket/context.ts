@@ -3,13 +3,17 @@ import { createContext, useContext } from "react";
 import { Socket } from "socket.io-client";
 
 type Context = {
-  reconnect: Void;
   socket: Socket<Wss.ServerEventsMap, Wss.ClientEventsMap> | null;
+  reconnect: Void;
+  disconnect: Void;
+  connected: boolean;
 };
 
 export const SocketContext = createContext<Context>({
   socket: null,
   reconnect: () => {},
+  disconnect: () => {},
+  connected: false,
 });
 
 export function useSocket() {
