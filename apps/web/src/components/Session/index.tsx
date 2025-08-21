@@ -28,7 +28,7 @@ const Main: React.FC<{
   onLeave,
 }) => {
   const tokenQuery = useGetSessionToken(sessionId);
-  const { room, publised } = useRoom(sessionId, tokenQuery.data?.token);
+  const { room, published } = useRoom(sessionId, tokenQuery.data?.token);
 
   useOnError({
     type: "query",
@@ -52,7 +52,7 @@ const Main: React.FC<{
 
   return (
     <RoomContext.Provider value={room}>
-      {!publised ? (
+      {!published ? (
         <PreSession
           type={type}
           start={start}
@@ -68,13 +68,12 @@ const Main: React.FC<{
         />
       ) : null}
 
-      {publised ? (
+      {published ? (
         <Session
           localMember={localMember}
           remoteMember={remoteMember}
           leave={() => {
-            room.disconnect();
-            onLeave();
+            room.disconnect().then(() => onLeave());
           }}
         />
       ) : null}

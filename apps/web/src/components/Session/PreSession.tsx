@@ -40,7 +40,7 @@ const PreSession: React.FC<{
   useEffect(() => {
     console.log("socket connection:", connected);
     if (!connected) reconnect();
-  }, [connected, reconnect])
+  }, [connected, reconnect]);
 
   const tracks: TrackReference[] = useTracks();
   const {
@@ -201,16 +201,20 @@ const PreSession: React.FC<{
           />
         </div>
 
-        {!connected ?
+        {!connected ? (
           <div className="flex justify-center items-center w-full border-2 border-destructive-700 bg-destructive-50 p-4 gap-2 rounded-lg">
             <Typography tag="span" className="text-destructive-700">
               {intl("labels.connection-error")}
             </Typography>
-            <Button onClick={() => reconnect()} type="error" variant="secondary">
+            <Button
+              onClick={() => reconnect()}
+              type="error"
+              variant="secondary"
+            >
               {intl("labels.reconnect")}
             </Button>
           </div>
-        : null}
+        ) : null}
       </div>
     </div>
   );
