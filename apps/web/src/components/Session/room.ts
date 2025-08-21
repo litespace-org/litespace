@@ -31,7 +31,7 @@ const serverUrl = sockets.livekit[env.server];
 export function useRoom(sessionId: ISession.Id, token?: string) {
   const { socket } = useSocket();
   const [connected, setConnected] = useState<boolean>(false);
-  const [publised, setPublished] = useState<boolean>(false);
+  const [published, setPublished] = useState<boolean>(false);
   const room = useMemo(() => {
     return new Room({
       // Optimize video quality for each participant's screen
@@ -42,28 +42,44 @@ export function useRoom(sessionId: ISession.Id, token?: string) {
     });
   }, []);
 
-  const onParticipantDisconnected = useCallback(() => {
+  const onConnected = useCallback(() => {
+    socket?.emit(Wss.ClientEvent.JoinSession, { sessionId });
+  }, [socket, sessionId]);
+
+  const onDisconnected = useCallback(() => {
     socket?.emit(Wss.ClientEvent.LeaveSession, { sessionId });
+  }, [socket, sessionId]);
+
+  const onParticipantDisconnected = useCallback(() => {
     const audio = new Audio("/leave-session.mp3");
     audio.play();
   }, []);
 
   const onLocalTrackPublished = useCallback(() => {
-    socket?.emit(Wss.ClientEvent.JoinSession, { sessionId });
     setPublished(true);
     const audio = new Audio("/join-session.mp3");
     audio.play();
   }, []);
 
   useEffect(() => {
+    room.on(RoomEvent.Connected, onConnected);
+    room.on(RoomEvent.Disconnected, onDisconnected);
     room.on(RoomEvent.LocalTrackPublished, onLocalTrackPublished);
     room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
 
     return () => {
+      room.off(RoomEvent.Connected, onConnected);
+      room.off(RoomEvent.Disconnected, onDisconnected);
       room.off(RoomEvent.LocalTrackPublished, onLocalTrackPublished);
       room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
     };
-  }, [onLocalTrackPublished, onParticipantDisconnected, room]);
+  }, [
+    onLocalTrackPublished,
+    onParticipantDisconnected,
+    onConnected,
+    onDisconnected,
+    room,
+  ]);
 
   useEffect(() => {
     if (connected || !token) return;
@@ -72,7 +88,7 @@ export function useRoom(sessionId: ISession.Id, token?: string) {
 
   return {
     room,
-    publised,
+    published,
     connected,
   };
 }

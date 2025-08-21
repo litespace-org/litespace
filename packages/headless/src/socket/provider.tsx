@@ -28,7 +28,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const reconnect = useCallback(() => {
     if (socket !== null) {
       socket.connect();
-      return
+      return;
     }
     if (!token) return;
     setSocket((prev) => {
@@ -38,8 +38,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [server, token, socket]);
 
   const disconnect = useCallback(() => {
-    if (socket !== null)
-      socket.disconnect();
+    if (socket !== null) socket.disconnect();
   }, [socket]);
 
   useEffect(() => reconnect(), [reconnect]);
@@ -72,12 +71,14 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [onConnect, onConnectionError, onDisconnect, socket]);
 
   return (
-    <SocketContext.Provider value={{ 
-      socket, 
-      reconnect, 
-      disconnect,
-      connected,
-    }}>
+    <SocketContext.Provider
+      value={{
+        socket,
+        reconnect,
+        disconnect,
+        connected,
+      }}
+    >
       {children}
     </SocketContext.Provider>
   );
