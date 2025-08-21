@@ -8,6 +8,10 @@ import Ready from "@/components/Session/Ready";
 import { useTracks } from "@livekit/components-react";
 import { TrackReference } from "@/components/Session/types";
 import { Dialogs, DialogTypes } from "@/components/Session/Dialogs";
+import { useSocket } from "@litespace/headless/socket";
+import { Typography } from "@litespace/ui/Typography";
+import { Button } from "@litespace/ui/Button";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 const PreSession: React.FC<{
   type: ISession.Type;
@@ -30,6 +34,14 @@ const PreSession: React.FC<{
   start: sessionStart,
   duration: sessionDuration,
 }) => {
+  const intl = useFormatMessage();
+  const { reconnect, connected } = useSocket();
+
+  useEffect(() => {
+    console.log("socket connection:", connected);
+    if (!connected) reconnect();
+  }, [connected, reconnect])
+
   const tracks: TrackReference[] = useTracks();
   const {
     loading,
@@ -171,14 +183,14 @@ const PreSession: React.FC<{
         />
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2">
         <div className="md:h-[calc(100%-24px-40px)] flex items-center justify-center">
           <Ready
             type={type}
             start={sessionStart}
             duration={sessionDuration}
             join={join}
-            disabled={!audioTrack && !videoTrack}
+            disabled={!connected || (!audioTrack && !videoTrack)}
             remoteMember={{
               id: remoteMemberId,
               role: remoteMemberRole,
@@ -188,6 +200,17 @@ const PreSession: React.FC<{
             }}
           />
         </div>
+
+        {!connected ?
+          <div className="flex justify-center items-center w-full border-2 border-destructive-700 bg-destructive-50 p-4 gap-2 rounded-lg">
+            <Typography tag="span" className="text-destructive-700">
+              {intl("labels.connection-error")}
+            </Typography>
+            <Button onClick={() => reconnect()} type="error" variant="secondary">
+              {intl("labels.reconnect")}
+            </Button>
+          </div>
+        : null}
       </div>
     </div>
   );
