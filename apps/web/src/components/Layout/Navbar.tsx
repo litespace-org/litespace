@@ -1,26 +1,22 @@
-import React, { useCallback, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import cn from "classnames";
 import dayjs from "dayjs";
+import React, { useCallback, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import Menu from "@litespace/assets/Menu";
-import Crown from "@litespace/assets/Crown";
-import { Button } from "@litespace/ui/Button";
-import { Web } from "@litespace/utils/routes";
-import { IUser, Void } from "@litespace/types";
-import { Typography } from "@litespace/ui/Typography";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { useUser } from "@litespace/headless/context/user";
-import { Tooltip } from "@litespace/ui/Tooltip";
 import { ProfileInfo, SubscriptionQuota } from "@/components/Navbar";
 import { useSaveLogs } from "@/hooks/logger";
+import Crown from "@litespace/assets/Crown";
 import { useSubscription } from "@litespace/headless/context/subscription";
+import { useUser } from "@litespace/headless/context/user";
+import { IUser } from "@litespace/types";
+import { Button } from "@litespace/ui/Button";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Tooltip } from "@litespace/ui/Tooltip";
+import { Typography } from "@litespace/ui/Typography";
 import { isTutorRole } from "@litespace/utils";
+import { Web } from "@litespace/utils/routes";
 
-const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
-  const { md } = useMediaQuery();
-
+const Navbar: React.FC = () => {
   return (
     <div className="shadow-app-navbar shadow lg:shadow-app-navbar-mobile w-full z-navbar bg-natural-50">
       <div
@@ -31,16 +27,6 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
         <div className="hidden md:block">
           <Subscription />
         </div>
-
-        {!md ? (
-          <button
-            type="button"
-            onClick={toggleSidebar}
-            className="w-6 h-6 bg-brand-700 bg-opacity-50 rounded-[4px] p-[2px]"
-          >
-            <Menu className="[&>*]:stroke-natural-50" />
-          </button>
-        ) : null}
 
         <div className="ms-auto flex items-center justify-center">
           <User />
