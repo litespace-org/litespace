@@ -30,7 +30,7 @@ const DaySlots: React.FC<{
   const asFreeSubSlots = useCallback(
     (excludeSlotId?: number) => {
       const start = dayjs(iso).startOf("day");
-      const end = start.endOf("day");
+      const end = start.add(1, "day");
       const daySlot: IAvailabilitySlot.Slot = {
         id: 0,
         start: start.toISOString(),

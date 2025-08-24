@@ -134,6 +134,7 @@ export const ManageSchedule: React.FC<Props> = ({
       if (start) slot.start = start;
       if (end) slot.end = end;
 
+      // TODO fix error here
       if (
         isLessonsOutOfRange({
           slot,
