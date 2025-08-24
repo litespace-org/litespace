@@ -244,9 +244,7 @@ export const ManageLessonDialog: React.FC<{
   );
 
   const selectDaySlots = useCallback(
-    (day: Dayjs | null) => {
-      if (!day) return [];
-
+    (day: Dayjs) => {
       const daySlots = unbookedSlots.filter(
         (event) =>
           day.isSame(event.start, "day") || day.isSame(event.end, "day")
@@ -268,6 +266,8 @@ export const ManageLessonDialog: React.FC<{
    * List of all slots including booked and unbooked slots.
    */
   const allSlots = useMemo(() => {
+    if (!date) return [];
+
     const availableSlots = selectDaySlots(date).map((slot) => ({
       ...slot,
       bookable: dayjs(slot.start).isAfter(dayjs()),
@@ -276,7 +276,15 @@ export const ManageLessonDialog: React.FC<{
     return orderSlots(
       concat(
         availableSlots,
-        bookedSlots.map((slot) => ({ ...slot, bookable: false }))
+        bookedSlots
+          .filter(
+            (slot) =>
+              date.isSame(slot.start, "day") || date.isSame(slot.end, "day")
+          )
+          .map((slot) => ({
+            ...slot,
+            bookable: false,
+          }))
       ),
       "asc"
     );
