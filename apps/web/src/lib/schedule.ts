@@ -13,6 +13,7 @@ export const divideSlot = (
   const isSlotTrespassing = dayjs(slot.end).isAfter(endOfSlotDay);
 
   if (!isSlotTrespassing) {
+    if (slot.start === slot.end) return [];
     return [{ ...slot, members }];
   }
 
@@ -22,6 +23,8 @@ export const divideSlot = (
     end: endOfSlotDay.toISOString(),
     members,
   };
+
+  if (firstPart.start === firstPart.end) return [];
 
   return [
     firstPart,

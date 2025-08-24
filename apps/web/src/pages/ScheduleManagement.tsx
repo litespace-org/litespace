@@ -115,6 +115,7 @@ const ScheduleManagement: React.FC = () => {
             });
         });
       });
+
       calendarSlots.push(...divideSlot(slot, members));
     }
 
