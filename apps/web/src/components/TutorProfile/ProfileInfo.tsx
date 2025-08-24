@@ -42,11 +42,11 @@ const ProfileInfo: React.FC<{
               {topics.map((topic) => (
                 <div
                   key={topic}
-                  className="p-[10px] md:py-3 md:px-4 bg-brand-700 rounded-3xl text-center"
+                  className="p-[10px] px-3 py-2 bg-natural-50 rounded-3xl text-center border border-natural-500"
                 >
                   <Typography
                     tag="span"
-                    className="text-natural-50 text-tiny md:text-caption font-normal"
+                    className="text-natural-500 text-tiny md:text-caption font-normal"
                   >
                     {topic}
                   </Typography>
