@@ -167,9 +167,9 @@ const VideoTrack: React.FC<{
           "absolute z-stream-v2-user-name",
           "bg-natural-50 rounded-full px-2",
           {
-            "bottom-4 right-4": size === "lg",
-            "bottom-3 right-3": size === "md",
-            "bottom-2 right-2": size === "sm",
+            "top-4 right-4": size === "lg",
+            "top-3 right-3": size === "md",
+            "top-2 right-2": size === "sm",
           }
         )}
       >

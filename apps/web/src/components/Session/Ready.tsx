@@ -101,7 +101,7 @@ export const Ready: React.FC<{
       isTutorRole(remoteMember.role) &&
       remoteMember.gender === IUser.Gender.Male
     )
-      return intl("session.ready.female-tutor-waiting");
+      return intl("session.ready.male-tutor-waiting");
 
     if (
       type === "lesson" &&
