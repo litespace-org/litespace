@@ -175,11 +175,9 @@ export const ManageLessonDialog: React.FC<{
   };
   slots: IAvailabilitySlot.Self[];
   bookedSlots: IAvailabilitySlot.SubSlot[];
-  isVerified: boolean;
   subscribed: boolean;
   hasBookedLessons: boolean;
   remainingWeeklyMinutes: number;
-  sendVerifyEmail?: Void;
   retry: Void;
   /**
    * Generic function that will submit data either to be booked or edited
@@ -204,12 +202,10 @@ export const ManageLessonDialog: React.FC<{
   loading,
   error,
   confirmationLoading,
-  isVerified,
   subscribed,
   hasBookedLessons,
   remainingWeeklyMinutes,
   dateBoundaries,
-  sendVerifyEmail,
   close,
   onSubmit,
   retry,
@@ -297,18 +293,9 @@ export const ManageLessonDialog: React.FC<{
     () =>
       !error &&
       !loading &&
-      isVerified &&
       !depletedSubscription &&
       (!hasBookedLessons || type === "update" || subscribed),
-    [
-      error,
-      loading,
-      isVerified,
-      depletedSubscription,
-      hasBookedLessons,
-      type,
-      subscribed,
-    ]
+    [error, loading, depletedSubscription, hasBookedLessons, type, subscribed]
   );
 
   return (
@@ -341,7 +328,7 @@ export const ManageLessonDialog: React.FC<{
 
       <div
         className={cn({
-          "!mt-4": !isVerified || hasBookedLessons,
+          "!mt-4": hasBookedLessons,
           "mt-6": step === "date-selection",
           "mt-3 lg:mt-4": step === "time-selection",
         })}
@@ -365,20 +352,9 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {!isVerified &&
-          !error &&
-          !depletedSubscription &&
-          !loading &&
-          type === "book" ? (
-            <Animation key="unverified" id="unverified">
-              <Block close={close} submit={sendVerifyEmail} type="unverified" />
-            </Animation>
-          ) : null}
-
           {hasBookedLessons &&
           !subscribed &&
           !depletedSubscription &&
-          isVerified &&
           !error &&
           !loading &&
           type === "book" ? (

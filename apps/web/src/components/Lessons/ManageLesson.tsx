@@ -1,10 +1,8 @@
-import { VerifyEmail } from "@/components/Common/VerifyEmail";
 import SubscriptionDialog from "@/components/Lessons/SubscriptionDialog";
 import { useOnError } from "@/hooks/error";
 import dayjs from "@/lib/dayjs";
 import { asSlotBoundries } from "@/lib/lesson";
 import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
-import { useRender } from "@litespace/headless/common";
 import { QueryKey } from "@litespace/headless/constants";
 import { useSubscription } from "@litespace/headless/context/subscription";
 import { useUser } from "@litespace/headless/context/user";
@@ -61,8 +59,6 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   const intl = useFormatMessage();
   const invalidate = useInvalidateQuery();
   const now = useRef(dayjs());
-
-  const verifyEmailDialog = useRender();
 
   // ====== get subscribtion details and get the boundries you filter the availability slots on =========
   const { info, remainingWeeklyMinutes } = useSubscription();
@@ -236,7 +232,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
       <ManageLessonDialog
         remainingWeeklyMinutes={asRemainingWeeklyMinutes}
-        open={!verifyEmailDialog.open && !subscribeDialogOpen}
+        open={!subscribeDialogOpen}
         type={payload.type}
         slotId={payload.type === "update" ? payload.slotId : undefined}
         start={payload.type === "update" ? payload.start : undefined}
@@ -252,13 +248,9 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
           tutor.isPending ||
           lessons.query.isPending
         }
-        sendVerifyEmail={() => {
-          verifyEmailDialog.show();
-        }}
         bookedSlots={bookedSlots}
         slots={tutorAvailabilitySlots.data?.slots.list || []}
         onSubmit={onSubmit}
-        isVerified={user?.verifiedEmail}
         subscribed={!!info}
         hasBookedLessons={hasBookedLessons}
         retry={tutorAvailabilitySlots.refetch}
@@ -267,11 +259,6 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
           lessons.query.isError ||
           tutor.isError
         }
-      />
-
-      <VerifyEmail
-        open={verifyEmailDialog.open}
-        close={verifyEmailDialog.hide}
       />
     </>
   );
