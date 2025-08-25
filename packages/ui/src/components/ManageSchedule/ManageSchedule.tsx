@@ -131,16 +131,19 @@ export const ManageSchedule: React.FC<Props> = ({
 
       if (!slot) return;
 
+      const oldStart = slot.start;
       if (start) slot.start = start;
+      const oldEnd = slot.end;
       if (end) slot.end = end;
 
-      // TODO fix error here
+      const withinLessons = scheduledLessons.filter((lesson) =>
+        dayjs(lesson.start).isBetween(oldStart, oldEnd, "ms", "[)")
+      );
+
       if (
         isLessonsOutOfRange({
           slot,
-          lessons: scheduledLessons.filter(
-            (lesson) => dayjs(lesson.start).date() === dayjs(slot.start).date()
-          ),
+          lessons: withinLessons,
         })
       ) {
         toast.warning({

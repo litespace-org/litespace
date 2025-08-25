@@ -38,7 +38,7 @@ export const Menu: React.FC<{
           side="top"
           className={cn(
             "shadow-lesson-event-card bg-natural-50 p-1",
-            "flex flex-col gap-1 rounded-lg min-w-[121px] z-[5]",
+            "flex flex-col gap-1 rounded-lg min-w-[121px] z-20",
             className
           )}
         >

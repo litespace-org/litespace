@@ -25,7 +25,7 @@ import { Optional } from "@litespace/ui/Optional";
 import { divideSlot } from "@/lib/schedule";
 
 const ScheduleManagement: React.FC = () => {
-  const { md } = useMediaQuery();
+  const mq = useMediaQuery();
   const { user } = useUser();
   const { start, end, next, prev } = useCalendarController();
 
@@ -217,7 +217,7 @@ const ScheduleManagement: React.FC = () => {
         severity={deleteDialogProps.severity}
       />
 
-      {md ? (
+      {mq.md ? (
         <Calendar
           date={start}
           slots={calendarSlots}
@@ -228,7 +228,7 @@ const ScheduleManagement: React.FC = () => {
         />
       ) : null}
 
-      {!md ? (
+      {!mq.md ? (
         <SlotsList
           day={start}
           slots={calendarSlots}
