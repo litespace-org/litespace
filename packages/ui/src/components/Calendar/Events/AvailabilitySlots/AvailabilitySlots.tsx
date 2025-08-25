@@ -37,11 +37,13 @@ export const AvailabilitySlot: React.FC<Props> = ({
 }) => {
   const top = useMemo(() => {
     const startDay = dayjs(start);
-    return startDay.diff(startDay.startOf("day"), "hours") * HOUR_HEIGHT + 4; // 4px padding form the top.
+    return (
+      (startDay.diff(startDay.startOf("day"), "minutes") / 60) * HOUR_HEIGHT + 4
+    ); // 4px padding form the top.
   }, [start]);
 
   const height = useMemo(() => {
-    return dayjs(end).diff(start, "hours") * HOUR_HEIGHT - 8; // 4px padding from the bottom.
+    return (dayjs(end).diff(start, "minutes") / 60) * HOUR_HEIGHT - 8; // 4px padding from the bottom.
   }, [start, end]);
 
   return (
@@ -61,42 +63,47 @@ export const AvailabilitySlot: React.FC<Props> = ({
             ) : null}
           </div>
 
-          <div className="flex relative h-9">
-            {members.slice(0, VISIBLE_AVATAR_COUNT + 1).map((member, idx) => (
-              <motion.div
-                key={idx}
-                initial={{
-                  x: idx >= 1 ? -idx * (AVATAR_WIDTH - AVATARS_OVERLAPPING) : 0,
-                }}
-                style={{
-                  position: "absolute",
-                  zIndex: idx === 0 ? 1 : 1,
-                }}
-                whileHover={{ zIndex: 2 }}
-              >
-                <div>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="rounded-full border border-natural-50"
-                  >
-                    {idx !== VISIBLE_AVATAR_COUNT ? (
-                      <MemberAvatar
-                        src={member.image}
-                        alt={member.name}
-                        id={member.id}
-                      />
-                    ) : members.length > VISIBLE_AVATAR_COUNT ? (
-                      <div className="flex items-center justify-center bg-natural-500 text-natural-50 shrink-0 w-9 h-9 rounded-full overflow-hidden">
-                        <Typography tag="span" className="text-caption">
-                          {members.length - VISIBLE_AVATAR_COUNT}+
-                        </Typography>
-                      </div>
-                    ) : null}
-                  </motion.div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          {height > 50 ? (
+            <div className="flex relative h-9">
+              {members.slice(0, VISIBLE_AVATAR_COUNT + 1).map((member, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{
+                    x:
+                      idx >= 1
+                        ? -idx * (AVATAR_WIDTH - AVATARS_OVERLAPPING)
+                        : 0,
+                  }}
+                  style={{
+                    position: "absolute",
+                    zIndex: idx === 0 ? 1 : 1,
+                  }}
+                  whileHover={{ zIndex: 2 }}
+                >
+                  <div>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      className="rounded-full border border-natural-50"
+                    >
+                      {idx !== VISIBLE_AVATAR_COUNT ? (
+                        <MemberAvatar
+                          src={member.image}
+                          alt={member.name}
+                          id={member.id}
+                        />
+                      ) : members.length > VISIBLE_AVATAR_COUNT ? (
+                        <div className="flex items-center justify-center bg-natural-500 text-natural-50 shrink-0 w-9 h-9 rounded-full overflow-hidden">
+                          <Typography tag="span" className="text-caption">
+                            {members.length - VISIBLE_AVATAR_COUNT}+
+                          </Typography>
+                        </div>
+                      ) : null}
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
