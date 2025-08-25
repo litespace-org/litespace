@@ -1,73 +1,36 @@
-import React, { useMemo, useState } from "react";
-import { RadioButton } from "@litespace/ui/RadioButton";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { percentage, price } from "@litespace/utils";
+import React, { useMemo, useRef, useState } from "react";
+import { router } from "@/lib/routes";
+import { IPlan } from "@litespace/types";
+import { PlanCard } from "@litespace/ui/PlanCard";
+import { Tabs } from "@litespace/ui/Tabs";
+import { Web } from "@litespace/utils/routes";
+import { Link } from "react-router-dom";
+import { LocalId } from "@litespace/ui/locales";
+import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { formatDuration } from "@litespace/ui/utils";
-import {
-  MILLISECONDS_IN_SECOND,
-  percentage,
-  price,
-  SECONDS_IN_MINUTE,
-} from "@litespace/utils";
-import { PaymentMethods } from "@/components/Plans/PaymentMethods";
-import { IPlan } from "@litespace/types";
-import PlanPeriod from "@/components/Plans/PlanPeriod";
-import { first, orderBy } from "lodash";
-import { Link } from "react-router-dom";
-import { router } from "@/lib/routes";
-import { Web } from "@litespace/utils/routes";
-import { Button } from "@litespace/ui/Button";
-
-type Plan = Pick<
-  IPlan.Self,
-  | "id"
-  | "weeklyMinutes"
-  | "baseMonthlyPrice"
-  | "monthDiscount"
-  | "quarterDiscount"
-  | "yearDiscount"
->;
 
 const PlansPanel: React.FC<{
-  plans: Plan[];
-  planId: number;
-  setPlanId(planId: number): void;
-}> = ({ plans, planId, setPlanId }) => {
+  period: IPlan.PeriodLiteral;
+  setPeriod(period: IPlan.PeriodLiteral): void;
+}> = ({ period, setPeriod }) => {
   const intl = useFormatMessage();
-  return (
-    <div className="w-full md:w-fit lg:w-[276px] flex flex-col gap-4">
-      {plans.map((plan) => (
-        <div
-          key={plan.id}
-          className={cn(
-            "bg-natural-50 border border-natural-100 rounded-2xl shadow-plan-card-v2 p-4",
-            "flex flex-row gap-1 lg:gap-2 items-center cursor-pointer"
-          )}
-          onClick={() => setPlanId(plan.id)}
-        >
-          <RadioButton
-            name="planId"
-            id={plan.id.toString()}
-            onChange={() => setPlanId(plan.id)}
-            checked={plan.id === planId}
-            className="gap-2"
-          />
 
-          <Typography
-            tag="label"
-            className="text-tiny lg:text-caption font-bold text-natural-950 cursor-pointer"
-            htmlFor={plan.id.toString()}
-          >
-            {intl("plan.labels.per-week", {
-              value: formatDuration(
-                plan.weeklyMinutes * SECONDS_IN_MINUTE * MILLISECONDS_IN_SECOND,
-                {}
-              ),
-            })}
-          </Typography>
-        </div>
-      ))}
+  return (
+    <div className="w-full flex justify-center">
+      <div>
+        <Tabs
+          tab={period}
+          setTab={(tab) => setPeriod(tab as IPlan.PeriodLiteral)}
+          tabs={[
+            { id: "month", label: intl(`plan.labels-month`) },
+            { id: "quarter", label: intl("plan.labels-quarter") },
+            { id: "year", label: intl("plan.labels-year") },
+          ]}
+        />
+      </div>
     </div>
   );
 };
@@ -77,78 +40,94 @@ export const Selector: React.FC<{
 }> = ({ plans }) => {
   const intl = useFormatMessage();
 
-  const ordered = useMemo(() => {
-    return orderBy(plans, (plan) => plan.weeklyMinutes, "asc");
+  const sortedPlans = useMemo(() => {
+    return [...plans].sort((a, b) => a.baseMonthlyPrice - b.baseMonthlyPrice);
   }, [plans]);
 
-  const defaultPlanId = useMemo(() => {
-    return first(ordered)?.id || 0;
-  }, [ordered]);
-
-  const [planId, setPlanId] = useState<number>(defaultPlanId);
   const [period, setPeriod] = useState<IPlan.PeriodLiteral>("month");
-
-  const plan = useMemo(
-    () => ordered.find((plan) => plan.id === planId),
-    [ordered, planId]
-  );
-
-  if (!plan) return null;
+  const titles = useRef<LocalId[]>([
+    "plans.card.beginning.title",
+    "plans.card.advance.title",
+    "plans.card.professional.title",
+  ]);
+  const description = useRef<LocalId[][]>([
+    [
+      "plans.card.beginning.description",
+      "plans.card.beginning.description-1",
+      "plans.card.beginning.description-2",
+    ],
+    [
+      "plans.card.advance.description",
+      "plans.card.advance.description-1",
+      "plans.card.advance.description-2",
+    ],
+    [
+      "plans.card.professional.description",
+      "plans.card.professional.description-1",
+      "plans.card.professional.description-2",
+    ],
+  ]);
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 max-w-screen-xl mx-auto">
-      <PlansPanel
-        plans={ordered}
-        planId={planId}
-        setPlanId={(planId) => setPlanId(planId)}
-      />
+    <div className="flex flex-col gap-[81px] max-w-screen-xl mx-auto">
+      <PlansPanel period={period} setPeriod={setPeriod} />
 
-      <Typography
-        tag="h5"
-        className="text-body font-bold text-natural-950 sm:hidden"
-      >
-        {intl("plan.period.select")}
-      </Typography>
+      <div className="grid grid-cols-1 grid-flow-row md:grid-cols-3 gap-6">
+        {sortedPlans.map((plan, i) => {
+          const featuredLayoutIndex = 1;
+          const Layout = i === featuredLayoutIndex;
 
-      <div className="flex-1">
-        <div className="flex flex-col gap-4">
-          <PlanPeriod
-            period="month"
-            open={period === "month"}
-            select={() => setPeriod("month")}
-            discount={percentage.unscale(plan.monthDiscount)}
-            monthlyPrice={price.unscale(plan.baseMonthlyPrice)}
-            weeklyMinutes={plan.weeklyMinutes}
-          />
-          <PlanPeriod
-            period="quarter"
-            open={period === "quarter"}
-            select={() => setPeriod("quarter")}
-            discount={percentage.unscale(plan.quarterDiscount)}
-            monthlyPrice={price.unscale(plan.baseMonthlyPrice)}
-            weeklyMinutes={plan.weeklyMinutes}
-          />
-          <PlanPeriod
-            period="year"
-            open={period === "year"}
-            select={() => setPeriod("year")}
-            discount={percentage.unscale(plan.yearDiscount)}
-            monthlyPrice={price.unscale(plan.baseMonthlyPrice)}
-            weeklyMinutes={plan.weeklyMinutes}
-          />
-        </div>
-
-        <Link
-          to={router.web({ route: Web.Checkout, period, planId })}
-          tabIndex={-1}
-        >
-          <Button htmlType="button" size="large" className="mt-4 w-full">
-            <Typography tag="span">{intl("plan.subscribe-now")}</Typography>
-          </Button>
-        </Link>
+          return (
+            <div key={i} className="relative flex flex-col items-center">
+              {Layout && (
+                <Typography
+                  tag="span"
+                  className={cn(
+                    "text-caption text-center text-natural-100",
+                    "absolute -top-10 z-10 left-1/2 -translate-x-1/2 overflow-visible",
+                    "hidden md:inline-block whitespace-nowrap font-normal px-[16px] py-[10px] bg-brand-500 rounded-se-2xl rounded-ss-2xl pointer-events-none"
+                  )}
+                >
+                  {intl("plans.card.advance.layout")}
+                </Typography>
+              )}
+              <PlanCard
+                key={i}
+                period={period}
+                title={intl(titles.current[i])}
+                description={intl(description.current[i][0])}
+                features={description.current[i].slice(1).map((f) => intl(f))}
+                discount={
+                  period === "month"
+                    ? percentage.unscale(plan.monthDiscount)
+                    : period === "quarter"
+                      ? percentage.unscale(plan.quarterDiscount)
+                      : percentage.unscale(plan.yearDiscount)
+                }
+                monthlyPrice={price.unscale(plan.baseMonthlyPrice)}
+                weeklyMinutes={plan.weeklyMinutes}
+                subscriptionButton={
+                  <Link
+                    to={router.web({
+                      route: Web.Checkout,
+                      planId: plan.id,
+                      period,
+                    })}
+                    className="w-full"
+                  >
+                    <Button
+                      size="large"
+                      className="mt-6 w-full justify-center py-2 bg-primary-500 font-cairo hover:bg-brand-700"
+                    >
+                      {intl("plan.card.pay.btn")}
+                    </Button>
+                  </Link>
+                }
+              />
+            </div>
+          );
+        })}
       </div>
-
-      <PaymentMethods />
     </div>
   );
 };
