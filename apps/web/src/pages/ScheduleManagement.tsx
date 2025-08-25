@@ -230,7 +230,6 @@ const ScheduleManagement: React.FC = () => {
 
       {!mq.md ? (
         <SlotsList
-          day={start}
           slots={calendarSlots}
           slotActions={{ onEdit, onDelete }}
           loading={slotsQuery.isFetching}

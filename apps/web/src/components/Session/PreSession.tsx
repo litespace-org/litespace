@@ -12,6 +12,7 @@ import { useSocket } from "@litespace/headless/socket";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { RefreshCw } from "react-feather";
 
 const PreSession: React.FC<{
   type: ISession.Type;
@@ -207,12 +208,11 @@ const PreSession: React.FC<{
               {intl("labels.connection-error")}
             </Typography>
             <Button
-              onClick={() => reconnect()}
+              onClick={() => window.location.reload()}
               type="error"
               variant="secondary"
-            >
-              {intl("labels.reconnect")}
-            </Button>
+              endIcon={<RefreshCw className="w-full h-full" />}
+            ></Button>
           </div>
         ) : null}
       </div>
