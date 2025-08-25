@@ -30,7 +30,6 @@ function makeMember() {
 
 export const SlotsWithMultipleLessons: Story = {
   args: {
-    day: dayjs().startOf("week"),
     slotActions: { onDelete: () => {}, onEdit: () => {} },
     slots: [
       {
@@ -57,7 +56,6 @@ export const SlotsWithMultipleLessons: Story = {
 
 export const SlotsWihtoutLessons: Story = {
   args: {
-    day: dayjs().startOf("week"),
     slotActions: { onDelete: () => {}, onEdit: () => {} },
     slots: [
       {

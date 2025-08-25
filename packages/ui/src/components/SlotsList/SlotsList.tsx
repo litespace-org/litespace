@@ -9,20 +9,18 @@ import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
 import { Void } from "@litespace/types";
-import { Dayjs } from "dayjs";
 import { isEmpty } from "lodash";
 import React from "react";
 
 const MAX_MEMBERS_COUNT = 3;
 
 export const SlotsList: React.FC<{
-  day: Dayjs;
   slots?: AvailabilitySlotProps[];
   slotActions?: SlotActions;
   loading: boolean;
   error: boolean;
   retry: Void;
-}> = ({ day, slots = [], slotActions, loading, error, retry }) => {
+}> = ({ slots = [], slotActions, loading, error, retry }) => {
   const intl = useFormatMessage();
 
   if (loading)
@@ -49,7 +47,6 @@ export const SlotsList: React.FC<{
   return (
     <div className="flex flex-col gap-4 mx-auto">
       {slots
-        .filter((slot) => dayjs(slot.start).startOf("week").isSame(day))
         .sort((a, b) => (dayjs(a.start).isBefore(dayjs(b.start)) ? -1 : 1)) // -1 ascending order and 1 descending order
         .map((slot) => {
           const remainingMembers = slot.members.length - MAX_MEMBERS_COUNT;

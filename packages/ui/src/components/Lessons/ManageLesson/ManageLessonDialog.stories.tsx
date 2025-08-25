@@ -57,7 +57,6 @@ export const Primary: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     bookedSlots: [],
-    isVerified: true,
     hasBookedLessons: false,
     slots: makeSlots(5),
     onSubmit() {
@@ -73,7 +72,6 @@ export const DepletedSubscription: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    isVerified: true,
     hasBookedLessons: false,
     remainingWeeklyMinutes: 0,
     slots: [
@@ -113,7 +111,6 @@ export const WithBookedSlots: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    isVerified: true,
     hasBookedLessons: false,
     slots: [
       {
@@ -152,7 +149,6 @@ export const FilterPastSlots: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    isVerified: true,
     hasBookedLessons: false,
     slots: [
       {
@@ -185,7 +181,6 @@ export const LoadingSlots: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     bookedSlots: [],
-    isVerified: true,
     hasBookedLessons: false,
     slots: [],
     onSubmit() {
@@ -203,7 +198,6 @@ export const ConfirmationLoading: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: makeSlots(5),
     bookedSlots: [],
-    isVerified: true,
     hasBookedLessons: false,
     confirmationLoading: true,
     onSubmit() {
@@ -221,7 +215,6 @@ export const LoadingThenShowingSchedule: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: makeSlots(5),
-    isVerified: true,
     hasBookedLessons: false,
     bookedSlots: [],
     onSubmit() {
@@ -249,7 +242,6 @@ export const EmptySchedule: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: [],
     bookedSlots: [],
-    isVerified: true,
     hasBookedLessons: false,
     onSubmit() {
       alert("Lesson booked!!");
@@ -265,12 +257,8 @@ export const Unverified: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: [],
-    isVerified: false,
     hasBookedLessons: false,
     bookedSlots: [],
-    sendVerifyEmail() {
-      alert("Send verify email");
-    },
   },
 };
 
@@ -282,7 +270,6 @@ export const HasBookedLessons: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: [],
-    isVerified: true,
     hasBookedLessons: true,
     bookedSlots: [],
     onSubmit() {
@@ -316,7 +303,6 @@ export const LoadingThenBlocked: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: makeSlots(5),
-    isVerified: true,
     hasBookedLessons: true,
     bookedSlots: [],
     onSubmit() {
