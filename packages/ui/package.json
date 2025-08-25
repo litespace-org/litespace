@@ -15,6 +15,7 @@
     "./SlotsList": "./dist/components/SlotsList/index.js",
     "./Svg": "./dist/components/Svg/index.js",
     "./Card": "./dist/components/Card/index.js",
+    "./PlanCard": "./dist/components/Card/PlanCard/index.js",
     "./Chat": "./dist/components/Chat/index.js",
     "./Checkbox": "./dist/components/Checkbox/index.js",
     "./ConfirmationCode": "./dist/components/ConfirmationCode/index.js",
