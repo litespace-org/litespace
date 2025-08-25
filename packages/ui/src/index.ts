@@ -10,7 +10,7 @@ export { WeekdayPicker, type WeekdayMap } from "@/components/WeekdayPicker";
 export { Duration } from "@/components/Duration";
 export { Popover } from "@/components/Popover";
 export { Calendar, type Event } from "@/components/Calendar";
-export { Card } from "@/components/Card";
+export { Card, PlanCard } from "@/components/Card";
 export { OverviewCard } from "@/components/OverviewCard";
 export { InvoicesOverview } from "@/components/InvoicesOverview";
 export { Accordion, type AccordionItem } from "@/components/Accordion";

@@ -26,6 +26,7 @@
     },
     "./404": "./dist/404.tsx",
     "./Categories": "./dist/Categories.tsx",
+    "./CheckMark": "./dist/CheckMark.tsx",
     "./Crown": "./dist/Crown.tsx",
     "./AbstractLine": "./dist/AbstractLine.tsx",
     "./AccessMicAndCam": "./dist/AccessMicAndCam.tsx",

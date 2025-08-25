@@ -29,21 +29,31 @@ export const Content: React.FC<{
     );
 
   return (
-    <div className="mt-4 md:mt-6">
+    <>
       <Typography
-        tag="h3"
-        className="text-caption md:text-subtitle-1 lg:text-h3 font-semibold text-natural-950 mb-2 md:mb-4 text-center"
+        tag="h2"
+        className="text-natural-950 mb-4 text-body md:text-subtitle-2 font-bold"
       >
-        {intl("plans.header.title")}
+        {intl("plans.title")}
       </Typography>
-      <Typography
-        tag="h5"
-        className="text-tiny md:text-body lg:text-subtitle-1 font-normal md:font-semibold text-natural-600 mb-6 md:mb-10 lg:mb-6 text-center"
-      >
-        {intl("plans.header.description")}
-      </Typography>
-      <Selector plans={list} />
-    </div>
+      <div className="md:mt-6">
+        <Typography
+          tag="h3"
+          className="text-caption md:text-subtitle-1 xl:text-h3 font-semibold text-natural-950 mb-2 md:mb-4 text-center"
+        >
+          {intl("plans.header.title")}
+        </Typography>
+
+        <Typography
+          tag="h5"
+          className="text-tiny md:text-body text-center text-natural-600 lg:text-natural-700 font-semibold md:font-semibold mb-6 md:mb-10 lg:mb-10"
+        >
+          {intl("plans.header.description")}
+        </Typography>
+
+        <Selector plans={list} />
+      </div>
+    </>
   );
 };
 
