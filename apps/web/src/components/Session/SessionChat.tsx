@@ -14,7 +14,8 @@ export const SessionChat: React.FC<{
   memberId: number;
   enabled: boolean;
   close: Void;
-}> = ({ memberId, selfId, enabled, close }) => {
+  onNewMessage: Void;
+}> = ({ memberId, selfId, enabled, close, onNewMessage }) => {
   const roomQuery = useFindRoomByMembers([memberId, selfId]);
 
   const roomId = roomQuery.query.data?.room || null;
@@ -62,6 +63,7 @@ export const SessionChat: React.FC<{
         isTyping={isCurrentRoomTyping}
         otherMember={otherMember}
         close={close}
+        onNewMessage={onNewMessage}
       />
     </div>
   );

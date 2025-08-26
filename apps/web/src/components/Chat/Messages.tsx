@@ -16,6 +16,7 @@ import {
 } from "@litespace/ui/Chat";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import {
+  MessageStream,
   OnMessage,
   useChat,
   useCreateRoom,
@@ -75,15 +76,20 @@ const Messages: React.FC<{
   setTemporaryTutor?: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
   select?: SelectRoom;
   close?: Void;
+  /**
+   * this function gets invoked on each new message
+   */
+  onNewMessage?: Void;
 }> = ({
   room,
   otherMember,
   isTyping,
   isOnline,
   inSession,
-  setTemporaryTutor,
   select,
   close,
+  setTemporaryTutor,
+  onNewMessage,
 }) => {
   const { user } = useUser();
   const intl = useFormatMessage();
@@ -128,8 +134,11 @@ const Messages: React.FC<{
     (action) => {
       resetScroll();
       onMessages(action);
+      if (action.type === MessageStream.Add) {
+        if (onNewMessage) onNewMessage();
+      }
     },
-    [onMessages, resetScroll]
+    [onMessages, resetScroll, onNewMessage]
   );
 
   const {
@@ -319,7 +328,7 @@ const Messages: React.FC<{
           <div
             id="messages-content"
             className={cn(
-              "overflow-x-hidden px-4 h-full flex items-center justify-center"
+              "overflow-x-hidden px-4 h-full flex items-end justify-center"
             )}
           >
             {loading ? (

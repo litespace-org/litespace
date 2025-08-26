@@ -39,7 +39,6 @@ const PreSession: React.FC<{
   const { reconnect, connected } = useSocket();
 
   useEffect(() => {
-    console.log("socket connection:", connected);
     if (!connected) reconnect();
   }, [connected, reconnect]);
 

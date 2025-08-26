@@ -20,6 +20,7 @@ export type Controller = {
   error?: boolean;
   loading?: boolean;
   disabled?: boolean;
+  indicator?: boolean;
 };
 
 const ICON_MAP: Record<
@@ -42,6 +43,7 @@ export const Toggle: React.FC<Controller & { icon: Icon }> = ({
   enabled,
   loading,
   error = false,
+  indicator,
 }) => {
   const icons = useMemo(() => ICON_MAP[icon], [icon]);
   const { varient, type } = useMemo((): {
@@ -85,6 +87,13 @@ export const Toggle: React.FC<Controller & { icon: Icon }> = ({
           <Error className="w-4 h-4 [&>g>path]:stroke-destructive-600" />
         </div>
       ) : null}
+
+      {indicator ? (
+        <>
+          <span className="absolute h-2 w-2 top-[-2px] left-[-2px] animate-ping rounded-full bg-brand-700 opacity-75"></span>
+          <span className="absolute h-2 w-2 top-[-2px] left-[-2px] rounded-full bg-brand-700"></span>
+        </>
+      ) : null}
     </div>
   );
 };
@@ -96,6 +105,7 @@ const Controllers: React.FC<{
   chat?: {
     toggle: Void;
     enabled: boolean;
+    indicator?: boolean;
   };
   leave?: Void;
 }> = ({ audio, video, blur, leave, chat }) => {
@@ -120,7 +130,12 @@ const Controllers: React.FC<{
       />
 
       {chat ? (
-        <Toggle toggle={chat.toggle} enabled={chat.enabled} icon="chat" />
+        <Toggle
+          toggle={chat.toggle}
+          enabled={chat.enabled}
+          icon="chat"
+          indicator={chat.indicator && !chat.enabled}
+        />
       ) : null}
 
       {blur ? (

@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Content from "@/components/Lesson/Content";
 import { useUser } from "@litespace/headless/context/user";
 import cn from "classnames";
+import { useSocket } from "@litespace/headless/socket";
 
 type Params = Replace<UrlParamsOf<Web.Lesson>, "id", string>;
 
@@ -15,6 +16,19 @@ const Lesson: React.FC = () => {
   const logger = useLogger();
   const navigate = useNavigate();
   const { user } = useUser();
+
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (socket?.connected === false) {
+      console.debug("re-connecting web socket...");
+      socket.connect();
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    console.debug("web socket connection: ", socket?.connected);
+  }, [socket?.connected]);
 
   const lessonId = useMemo(() => {
     const id = Number(params.id);

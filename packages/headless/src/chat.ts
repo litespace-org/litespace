@@ -24,7 +24,7 @@ import { ResponseError } from "@litespace/utils";
 type OnSuccess = Void;
 type OnError = (err: ResponseError) => void;
 
-enum MessageStream {
+export enum MessageStream {
   Add = "add",
   Update = "update",
   Delete = "delete",
