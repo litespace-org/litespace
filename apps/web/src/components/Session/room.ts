@@ -22,6 +22,7 @@ import {
   Room,
   RemoteTrackPublication,
   Track,
+  ConnectionQuality,
 } from "livekit-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller } from "@/components/Session/Controllers";
@@ -54,8 +55,24 @@ export function useRoom(sessionId: ISession.Id, token?: string) {
   }, [socket, sessionId]);
 
   const onLocalTrackPublished = useCallback(() => {
+    console.log("Track Published.");
     setPublished(true);
   }, []);
+
+  const onLocalTrackUnpublished = useCallback(() => {
+    console.log("Track Unpublished!");
+    setPublished(false);
+  }, []);
+
+  const onConnectionQualityChanged = useCallback(
+    (quality: ConnectionQuality) => {
+      console.log("connection quality:", quality);
+      if (quality === ConnectionQuality.Lost) {
+        room.disconnect().then(() => setConnected(false));
+      }
+    },
+    [room]
+  );
 
   const onRemoteTrackPublished = useCallback(
     (pub: RemoteTrackPublication) => {
@@ -78,27 +95,36 @@ export function useRoom(sessionId: ISession.Id, token?: string) {
     room.on(RoomEvent.Connected, onConnected);
     room.on(RoomEvent.Disconnected, onDisconnected);
     room.on(RoomEvent.LocalTrackPublished, onLocalTrackPublished);
-    room.on(ParticipantEvent.TrackPublished, onRemoteTrackPublished);
+    room.on(RoomEvent.LocalTrackUnpublished, onLocalTrackUnpublished);
+    room.on(RoomEvent.ConnectionQualityChanged, onConnectionQualityChanged);
+
     room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
+    room.on(ParticipantEvent.TrackPublished, onRemoteTrackPublished);
 
     return () => {
       room.off(RoomEvent.Connected, onConnected);
       room.off(RoomEvent.Disconnected, onDisconnected);
       room.off(RoomEvent.LocalTrackPublished, onLocalTrackPublished);
-      room.off(ParticipantEvent.TrackPublished, onRemoteTrackPublished);
+      room.off(RoomEvent.LocalTrackUnpublished, onLocalTrackUnpublished);
+      room.off(RoomEvent.ConnectionQualityChanged, onConnectionQualityChanged);
+
       room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
+      room.off(ParticipantEvent.TrackPublished, onRemoteTrackPublished);
     };
   }, [
     onConnected,
     onDisconnected,
     onLocalTrackPublished,
+    onLocalTrackUnpublished,
     onRemoteTrackPublished,
     onParticipantDisconnected,
+    onConnectionQualityChanged,
     room,
   ]);
 
   useEffect(() => {
-    if (connected || !token) return;
+    if (!token) return console.error("no server to connect");
+    if (connected) return;
     room.connect(serverUrl, token).then(() => setConnected(true));
   }, [connected, room, token]);
 
