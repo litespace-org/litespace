@@ -18,7 +18,10 @@ import {
   LocalVideoTrack,
   MediaDeviceFailure,
   RoomEvent,
+  ParticipantEvent,
   Room,
+  RemoteTrackPublication,
+  Track,
 } from "livekit-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller } from "@/components/Session/Controllers";
@@ -50,34 +53,47 @@ export function useRoom(sessionId: ISession.Id, token?: string) {
     socket?.emit(Wss.ClientEvent.LeaveSession, { sessionId });
   }, [socket, sessionId]);
 
-  const onParticipantDisconnected = useCallback(() => {
-    const audio = new Audio("/leave-session.mp3");
-    audio.play();
-  }, []);
-
   const onLocalTrackPublished = useCallback(() => {
     setPublished(true);
-    const audio = new Audio("/join-session.mp3");
-    audio.play();
   }, []);
+
+  const onRemoteTrackPublished = useCallback(
+    (pub: RemoteTrackPublication) => {
+      if (published && pub.kind === Track.Kind.Audio) {
+        const audio = new Audio("/join-session.mp3");
+        audio.play();
+      }
+    },
+    [published]
+  );
+
+  const onParticipantDisconnected = useCallback(() => {
+    if (published) {
+      const audio = new Audio("/leave-session.mp3");
+      audio.play();
+    }
+  }, [published]);
 
   useEffect(() => {
     room.on(RoomEvent.Connected, onConnected);
     room.on(RoomEvent.Disconnected, onDisconnected);
     room.on(RoomEvent.LocalTrackPublished, onLocalTrackPublished);
+    room.on(ParticipantEvent.TrackPublished, onRemoteTrackPublished);
     room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
 
     return () => {
       room.off(RoomEvent.Connected, onConnected);
       room.off(RoomEvent.Disconnected, onDisconnected);
       room.off(RoomEvent.LocalTrackPublished, onLocalTrackPublished);
+      room.off(ParticipantEvent.TrackPublished, onRemoteTrackPublished);
       room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
     };
   }, [
-    onLocalTrackPublished,
-    onParticipantDisconnected,
     onConnected,
     onDisconnected,
+    onLocalTrackPublished,
+    onRemoteTrackPublished,
+    onParticipantDisconnected,
     room,
   ]);
 
