@@ -18,13 +18,17 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 export async function down(pgm: MigrationBuilder): Promise<void> {
   pgm.dropConstraint("students", "students_id_fkey", { ifExists: true });
 
-  pgm.addColumn("students", {
-    user_id: {
-      type: "int",
-      notNull: false,
-      references: "users(id)",
+  pgm.addColumn(
+    "students",
+    {
+      user_id: {
+        type: "int",
+        notNull: false,
+        references: "users(id)",
+      },
     },
-  });
+    { ifNotExists: true }
+  );
 
   /** TODO: re-structure the students data accordingly
   const ids = await pgm.db.select("SELECT id FROM students");

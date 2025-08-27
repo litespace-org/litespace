@@ -7,7 +7,7 @@ import Google from "@litespace/assets/Google";
 import { useRender } from "@litespace/headless/common";
 import { useUser } from "@litespace/headless/context/user";
 import { useForm } from "@litespace/headless/form";
-import { useRegisterUser } from "@litespace/headless/user";
+import { useCreateStudent } from "@litespace/headless/student";
 import { IUser } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { Form } from "@litespace/ui/Form";
@@ -60,10 +60,7 @@ const RegisterForm: React.FC<{ role?: Role }> = ({ role }) => {
     },
   });
 
-  // @galal TODO: uncomment this once the student backend PR is done.
-  // const mutation = useCreateStudent({ onSuccess, onError });
-
-  const mutation = useRegisterUser({ onSuccess, onError });
+  const mutation = useCreateStudent({ onSuccess, onError });
 
   // ============= form ==============
   const validators = useMakeValidators<Form>({
@@ -96,7 +93,6 @@ const RegisterForm: React.FC<{ role?: Role }> = ({ role }) => {
       return mutation.mutate({
         email: data.email,
         password: data.password,
-        role, // @galal TODO: remove this once the student backend work is done.
       });
     },
   });

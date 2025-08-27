@@ -73,8 +73,8 @@ const Bio: React.FC<{ next: Void }> = ({ next }) => {
     onSubmit: (data) => {
       if (!user) return;
       updateStudent.mutate({
-        id: user.id,
         payload: {
+          id: user.id,
           career: data.career,
           level: data.level,
           aim: data.aim,
