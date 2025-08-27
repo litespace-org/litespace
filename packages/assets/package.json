@@ -27,6 +27,7 @@
     "./404": "./dist/404.tsx",
     "./Categories": "./dist/Categories.tsx",
     "./Crown": "./dist/Crown.tsx",
+    "./DotsVerticalIcon": "./dist/DotsVerticalIcon.tsx",
     "./AbstractLine": "./dist/AbstractLine.tsx",
     "./AccessMicAndCam": "./dist/AccessMicAndCam.tsx",
     "./AccountPromotion": "./dist/AccountPromotion.tsx",
