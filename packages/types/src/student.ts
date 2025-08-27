@@ -1,4 +1,4 @@
-import { IFilter, IUser } from "@/index";
+import { IFilter, IUser, Paginated } from "@/index";
 
 export enum EnglishLevel {
   Beginner = 1,
@@ -28,9 +28,6 @@ export type Row = {
   updated_at: Date;
 };
 
-export type CreateApiPayload = unknown;
-export type CreateApiResponse = IUser.RegisterApiResponse & unknown;
-
 export type UpdateApiPayload = unknown;
 export type UpdateApiResponse = unknown;
 
@@ -57,3 +54,18 @@ export type FindModelQuery = IFilter.SkippablePagination & {
   englishLevels?: EnglishLevel[];
   learningObjective?: string;
 };
+
+// API Types
+export type CreateApiPayload = Omit<IUser.CreateApiPayload, "role"> & {
+  jobTitle?: string;
+  englishLevel?: EnglishLevel;
+  learningObjective?: string;
+};
+
+export type CreateApiResponse = IUser.RegisterApiResponse & {
+  user: IUser.Self & Self;
+};
+
+export type FindApiQuery = FindModelQuery;
+
+export type FindApiResponse = Paginated<Self>;

@@ -7,6 +7,7 @@ import {
   rooms,
   topics,
   users,
+  students as studentModels,
   ratings,
   tutors,
   availabilitySlots,
@@ -71,6 +72,7 @@ export async function flush() {
     await interviews.builder(tx).del();
     await ratings.builder(tx).del();
     await confirmationCodes.builder(tx).del();
+    await studentModels.builder(tx).del();
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await users.builder(tx).del();

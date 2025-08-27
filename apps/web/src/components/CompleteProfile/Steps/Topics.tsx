@@ -67,8 +67,8 @@ const Bio: React.FC<{ next: Void }> = ({ next }) => {
     onSubmit: (data) => {
       if (!user) return;
       updateStudent.mutate({
-        id: user.id,
         payload: {
+          id: user.id,
           topics: data.topics,
         },
       });
@@ -111,10 +111,6 @@ const Bio: React.FC<{ next: Void }> = ({ next }) => {
             className="w-full text"
             disabled={updateStudent.isPending}
             loading={updateStudent.isPending}
-            onClick={() => {
-              if (!user?.id) return;
-              updateStudent.mutate({ id: user?.id, payload: {} });
-            }}
           >
             {intl("complete-profile.start-your-journey")}
           </Button>

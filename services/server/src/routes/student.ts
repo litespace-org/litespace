@@ -4,6 +4,7 @@ import { Router } from "express";
 const router = Router();
 
 router.post("/", student.create);
-router.put("/:id", student.update);
+router.patch("/", student.update);
+router.get("/list", student.find);
 
 export default router;

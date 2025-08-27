@@ -72,13 +72,8 @@ export function useUpdateStudent({
   const api = useApi();
 
   const update = useCallback(
-    async ({
-      id,
-      payload,
-    }: {
-      id: number;
-      payload: IStudent.UpdateApiPayload;
-    }) => api.student.update(id, payload),
+    async ({ payload }: { payload: IStudent.UpdateApiPayload }) =>
+      api.student.update(payload),
     [api.student]
   );
 

@@ -9,9 +9,8 @@ export class Student extends Base {
   }
 
   async update(
-    id: number,
     payload: IStudent.UpdateApiPayload
-  ): Promise<IStudent.Self> {
-    return this.put({ route: `/api/v1/student/${id}`, payload });
+  ): Promise<IStudent.UpdateApiResponse> {
+    return this.patch({ route: `/api/v1/student/`, payload });
   }
 }

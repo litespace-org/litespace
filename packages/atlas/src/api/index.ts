@@ -83,5 +83,6 @@ export class Api {
     this.subscription = new Subscription(client);
     this.transaction = new Transaction(client);
     this.introVideo = new IntroVideo(client);
+    this.student = new Student(client);
   }
 }
