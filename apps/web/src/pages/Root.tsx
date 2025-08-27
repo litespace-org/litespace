@@ -6,22 +6,24 @@ import { useSaveLogs } from "@/hooks/logger";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 import { router } from "@/lib/routes";
 import { useUser } from "@litespace/headless/context/user";
-import { dayjs, isForbidden } from "@litespace/utils";
-import { Landing, Web } from "@litespace/utils/routes";
 import { isProfileComplete } from "@litespace/utils/tutor";
+import { Landing, Web } from "@litespace/utils/routes";
+import { dayjs, isForbidden, LITESPACE_SUPPORT_URL } from "@litespace/utils";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
 import cn from "classnames";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  Link,
   Outlet,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-
+import { useCheckTimeValidity } from "@/hooks/time";
+import { Typography } from "@litespace/ui/Typography";
+import { Button } from "@litespace/ui/Button";
 import { useTour } from "@/hooks/tour";
 import { StudentDashboardTour } from "@/constants/tour";
-import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import Exit from "@litespace/assets/Exit";
@@ -37,6 +39,7 @@ const publicRoutes: Web[] = [
 const Root: React.FC = () => {
   const { user, meta, error, logout } = useUser();
   const intl = useFormatMessage();
+  const timeValid = useCheckTimeValidity();
 
   const [stepNumber, setStepNumber] = useState(0);
   const [closeTourDialogShow, setCloseTourDialogShow] =
@@ -183,6 +186,19 @@ const Root: React.FC = () => {
           fullScreenPage ? "h-screen overflow-hidden" : "min-h-screen"
         )}
       >
+        {!timeValid ? (
+          <div className="flex flex-wrap gap-2 bg-destructive-700 p-4">
+            <Typography tag="span" className="text-destructive-50">
+              {intl("error.invalid-time-and-zone")}
+            </Typography>
+            <Link to={LITESPACE_SUPPORT_URL} target="_blank" tabIndex={-1}>
+              <Button type="error" variant="secondary">
+                {intl("labels.contact-us")}
+              </Button>
+            </Link>
+          </div>
+        ) : null}
+
         <UnsupportedBrowserDialog />
         <WebrtcCheckDialog />
         <ConfirmationDialog
