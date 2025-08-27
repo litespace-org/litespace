@@ -2,7 +2,20 @@ import { useApi } from "@/api";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { QueryKey } from "@/constants";
-import { IUser } from "@litespace/types";
+import { IUser, IStudent } from "@litespace/types";
+import { usePaginate } from "@/pagination";
+
+export function useStudents(payload?: IStudent.FindModelQuery) {
+  const api = useApi();
+
+  const findStudents = useCallback(
+    ({ page, size }: IStudent.FindModelQuery) =>
+      api.student.find({ page, size, ...payload }),
+    [api.student, payload]
+  );
+
+  return usePaginate(findStudents, [QueryKey.FindStudents, payload]);
+}
 
 export function useFindStudentStats(
   id?: number
