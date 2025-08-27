@@ -22,6 +22,7 @@ import confirmationCode from "@/routes/confirmationCode";
 import report from "@/routes/report";
 import demoSession from "@/routes/demoSession";
 import introVideo from "@/routes/introVideo";
+import students from "@/routes/students";
 
 export default {
   user,
@@ -48,4 +49,5 @@ export default {
   report,
   demoSession,
   introVideo,
+  students,
 };

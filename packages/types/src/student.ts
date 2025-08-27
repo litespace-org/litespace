@@ -1,4 +1,4 @@
-import { IFilter } from "@/index";
+import { IFilter, Paginated } from "@/index";
 
 export enum EnglishLevel {
   Beginner = 1,
@@ -52,3 +52,32 @@ export type FindModelQuery = IFilter.SkippablePagination & {
   englishLevels?: EnglishLevel[];
   learningObjective?: string;
 };
+
+// API Types
+export type CreateApiPayload = {
+  email: string;
+  password: string;
+  name?: string;
+  jobTitle?: string;
+  englishLevel?: EnglishLevel;
+  learningObjective?: string;
+};
+
+export type CreateApiResponse = {
+  user: {
+    id: number;
+    email: string;
+    name: string | null;
+    role: number; // Student role
+    verifiedEmail: boolean;
+    verifiedPhone: boolean;
+    verifiedWhatsApp: boolean;
+    creditScore: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  student: Self;
+  token: string;
+};
+
+export type FindApiResponse = Paginated<Self>;
