@@ -11,6 +11,7 @@
     "dev": "env-cmd nodemon src/index.ts",
     "user": "env-cmd ts-node scripts/user.ts",
     "whatsapp": "env-cmd ts-node scripts/whatsapp.ts",
+    "erpnext": "env-cmd ts-node scripts/erpnext.ts",
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "test": "jest --runInBand --detectOpenHandles --forceExit",
     "test:local": "env-cmd -f .env.test pnpm run test",

@@ -62,9 +62,9 @@ export const servers: Record<Server, Record<Env.Server, string>> = {
     production: "https://echo.litespace.org",
   },
   erpnext: {
-    local: "https://erpnext-pro.k.erpnext.com",
-    staging: "https://erpnext-pro.k.erpnext.com",
-    production: "https://litespace.k.erpnext.com",
+    local: "https://erp.staging.litespace.org",
+    staging: "https://erp.staging.litespace.org",
+    production: "https://erp.litespace.org",
   },
   whatsapp: {
     local: "https://graph.facebook.com",

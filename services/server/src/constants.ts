@@ -175,6 +175,11 @@ export const paymobConfig = {
   },
 };
 
+export const erpnextConfig = {
+  publicKey: zod.string().trim().parse(process.env.ERPNEXT_PUBLIC_KEY),
+  secretKey: zod.string().trim().parse(process.env.ERPNEXT_SECRET_KEY),
+};
+
 export const INTRO_VIDEO_MIN_MINUTES = 1;
 export const INTRO_VIDEO_MAX_MINUTES = 3;
 

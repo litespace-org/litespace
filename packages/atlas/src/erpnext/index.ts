@@ -5,7 +5,15 @@ import { Document } from "@/erpnext/document";
 export class ErpNext {
   public readonly document: Document;
 
-  constructor(env: Env.Server, key: string, secret: string) {
+  constructor({
+    env,
+    key,
+    secret,
+  }: {
+    env: Env.Server;
+    key: string;
+    secret: string;
+  }) {
     const client = createClient("erpnext", env, {
       type: TokenType.Basic,
       username: key,
