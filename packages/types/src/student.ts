@@ -1,3 +1,5 @@
+import { IFilter, Paginated } from "@/index";
+
 export enum EnglishLevel {
   Beginner = 1,
   PreIntermediate = 2,
@@ -29,3 +31,53 @@ export type Row = {
 
 export type Column = keyof Row;
 export type Field = keyof Self;
+
+export type CreateModelPayload = {
+  userId: number;
+  jobTitle?: string | null;
+  englishLevel?: EnglishLevel | null;
+  learningObjective?: string | null;
+};
+
+export type UpdateModelPayload = {
+  id: number;
+  jobTitle?: string | null;
+  englishLevel?: EnglishLevel | null;
+  learningObjective?: string | null;
+};
+
+export type FindModelQuery = IFilter.SkippablePagination & {
+  ids?: number[];
+  jobTitle?: string;
+  englishLevels?: EnglishLevel[];
+  learningObjective?: string;
+};
+
+// API Types
+export type CreateApiPayload = {
+  email: string;
+  password: string;
+  name?: string;
+  jobTitle?: string;
+  englishLevel?: EnglishLevel;
+  learningObjective?: string;
+};
+
+export type CreateApiResponse = {
+  user: {
+    id: number;
+    email: string;
+    name: string | null;
+    role: number; // Student role
+    verifiedEmail: boolean;
+    verifiedPhone: boolean;
+    verifiedWhatsApp: boolean;
+    creditScore: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  student: Self;
+  token: string;
+};
+
+export type FindApiResponse = Paginated<Self>;

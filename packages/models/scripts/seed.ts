@@ -1,6 +1,7 @@
 import {
   knex,
   users,
+  students as studentModels,
   tutors,
   ratings,
   plans,
@@ -111,6 +112,7 @@ async function main(): Promise<void> {
       },
       tx
     );
+    await studentModels.create({ userId: student.id }, tx);
 
     await users.update(student.id, { gender: IUser.Gender.Male }, tx);
     return student;
@@ -133,6 +135,7 @@ async function main(): Promise<void> {
             },
             tx
           );
+          await studentModels.create({ userId: student.id }, tx);
 
           await users.update(
             student.id,
