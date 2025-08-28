@@ -18,7 +18,8 @@ const SubscriptionQouta: React.FC<{
   }, [remainingMinutes, weeklyMinutes]);
 
   const consumption = useMemo(() => {
-    return 100 - remaining;
+    const safeRemaining = Number.isNaN(remaining) ? 0 : remaining;
+    return 100 - safeRemaining;
   }, [remaining]);
 
   return (
