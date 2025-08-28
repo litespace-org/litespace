@@ -75,6 +75,7 @@ const Main: React.FC<{
         <Session
           localMember={localMember}
           remoteMember={remoteMember}
+          start={start}
           leave={() => {
             room.disconnect().then(() => onLeave());
           }}
