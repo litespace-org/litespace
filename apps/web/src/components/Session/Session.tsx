@@ -26,12 +26,14 @@ import {
 } from "@/components/Session/room";
 import { SessionChat } from "@/components/Session/SessionChat";
 import { useSearchParams } from "react-router-dom";
+import SessionTimer from "@/components/Session/SessionTimer";
 
 const Session: React.FC<{
   localMember: LocalMember;
   remoteMember: RemoteMember;
   leave: Void;
-}> = ({ localMember, remoteMember, leave }) => {
+  start: string;
+}> = ({ localMember, remoteMember, leave, start }) => {
   const mq = useMediaQuery();
   const [chat, setChat] = useState(false);
   const [_, setParams] = useSearchParams();
@@ -79,7 +81,8 @@ const Session: React.FC<{
 
   return (
     <div className="h-full flex flex-col gap-10">
-      <div className="h-[calc(100%-80px)] flex gap-6">
+      <div className="h-[calc(100%-80px)] flex gap-6 relative">
+        <SessionTimer start={start} />
         <VideoStreams
           selfTrackRef={videoTrackRef.local}
           selfId={localMember.id}
