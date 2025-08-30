@@ -2,12 +2,23 @@ import { Base } from "@/lib/base";
 import { IErpNext } from "@litespace/types";
 
 export class Document extends Base {
-  async createDocument<P extends object, R>(
+  private async createDocument<P extends object, R>(
     doc: IErpNext.DocType,
     payload: P
   ): Promise<R> {
     return this.post<P, { data: R }>({
       route: `/api/v2/document/${doc}`,
+      payload,
+    }).then((res) => res.data);
+  }
+
+  private async updateDocument<P extends object, R>(
+    doc: IErpNext.DocType,
+    docname: string,
+    payload: P
+  ): Promise<R> {
+    return this.put<P, { data: R }>({
+      route: `/api/v2/document/${doc}/${docname}`,
       payload,
     }).then((res) => res.data);
   }
@@ -103,6 +114,26 @@ export class Document extends Base {
         allocated_amount: ref.allocatedAmount,
         doctype: "Payment Entry Reference",
       })),
+    });
+  }
+
+  async createLead(payload: IErpNext.CreateLeadApiPayload): Promise<void> {
+    return this.createDocument("Lead", {
+      name: payload.name,
+      first_name: payload.firstName,
+      last_name: payload.lastName,
+      email_id: payload.email,
+      mobile_no: payload.phone,
+    });
+  }
+
+  async updateLead(payload: IErpNext.UpdateLeadApiPayload): Promise<void> {
+    return this.updateDocument("Lead", payload.name, {
+      name: payload.name,
+      first_name: payload.firstName,
+      last_name: payload.lastName,
+      email_id: payload.email,
+      mobile_no: payload.phone,
     });
   }
 

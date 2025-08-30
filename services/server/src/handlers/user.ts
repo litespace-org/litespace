@@ -75,6 +75,7 @@ import {
   isTutor,
   isTutorManager,
   isRegularTutor,
+  getEmailUserName,
 } from "@litespace/utils/user";
 import { encodeAuthJwt } from "@litespace/auth";
 import { cache } from "@/lib/cache";
@@ -98,6 +99,7 @@ import { generateConfirmationCode } from "@/lib/confirmationCodes";
 import { findFullTutorsQuery } from "@litespace/schemas/user";
 import { isEmailValid } from "@/lib/validateEmail";
 import { isUserSubscribed } from "@/lib/subscription";
+import { erpnext } from "@/lib/erpnext";
 
 const createUserPayload: ZodSchema<IUser.CreateApiPayload> = zod.object({
   role,
@@ -211,10 +213,22 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
     const tutor = isTutor(user);
     const admin = isAdmin(creator);
+
     if (tutor) await tutors.create(user.id, tx);
     if (tutor && admin) await tutors.update(user.id, { activated: true }, tx);
     return user;
   });
+
+  // Create Lead document in ErpNext server
+  if (isStudent(user))
+    erpnext.document
+      .createLead({
+        name: `LEAD-${user.id}`,
+        firstName: user.name || getEmailUserName(user.email) || "Unkown",
+        email: user.email,
+        phone: user.phone || undefined,
+      })
+      .catch((e) => console.warn("ErpNext Not Working:", e));
 
   const { code } = await confirmationCodes.create({
     userId: user.id,
@@ -351,6 +365,17 @@ function update(_: ApiContext) {
           // reset notification method incase the user phone got updated
           notificationMethod: newPhone ? null : notificationMethod,
         };
+
+        // Create Lead document in ErpNext server
+        if (isStudent(target))
+          erpnext.document
+            .updateLead({
+              name: `LEAD-${id}`,
+              firstName: user.name || getEmailUserName(user.email) || "Unkown",
+              email: newEmail ? email : undefined,
+              phone: newPhone ? phone : undefined,
+            })
+            .catch((e) => console.warn("ErpNext Not Working:", e));
 
         const updated = await users.update(id, updateUserPayload, tx);
 

@@ -1,4 +1,14 @@
-export type DocType = "Sales Invoice" | "Payment Entry" | "Customer" | "Item";
+import { DocBoolean } from "@/erpnext/common";
+import { Lead } from "@/erpnext/lead";
+
+export * from "@/erpnext/lead";
+
+export type DocType =
+  | "Sales Invoice"
+  | "Payment Entry"
+  | "Customer"
+  | "Item"
+  | "Lead";
 
 export type DocMethod = "submit" | "cancel";
 
@@ -40,8 +50,6 @@ export type PartyType = "Customer" | "Employee" | "Shareholder" | "Supplier";
 export type Company = "LiteSpace";
 
 export type StockUom = "Unit";
-
-export type DocBoolean = 0 | 1;
 
 export type ItemCode = "WM120" | "WM150" | "WM180";
 
@@ -174,6 +182,7 @@ export type DocTypeMap = {
   "Payment Entry": unknown;
   Customer: Customer;
   Item: Item;
+  Lead: Lead;
 };
 
 export type CreateSalesInvoiceApiPayload = {
