@@ -15,7 +15,7 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src/", "tests/", "fixtures/"],
+  "include": ["src/", "tests/", "scripts/", "fixtures/"],
   "exclude": ["node_module"],
   "ts-node": {
     "require": ["tsconfig-paths/register"]

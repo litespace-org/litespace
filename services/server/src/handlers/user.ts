@@ -75,6 +75,7 @@ import {
   isTutor,
   isTutorManager,
   isRegularTutor,
+  getEmailUserName,
 } from "@litespace/utils/user";
 import { encodeAuthJwt } from "@litespace/auth";
 import { cache } from "@/lib/cache";
@@ -213,28 +214,21 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     const tutor = isTutor(user);
     const admin = isAdmin(creator);
 
-    // Create Lead document in ErpNext server
-    if (isStudent(user)) {
-      const userNameParts = user.name?.split(" ");
-      erpnext.document
-        .createLead({
-          name: `LEAD-${user.id}`,
-          firstName: userNameParts
-            ? userNameParts[0]
-            : user.email.split("@")[0],
-          lastName: userNameParts
-            ? userNameParts[userNameParts?.length - 1]
-            : undefined,
-          email: user.email,
-          phone: user.phone || undefined,
-        })
-        .catch((e) => console.warn("ErpNext Not Working:", e));
-    }
-
     if (tutor) await tutors.create(user.id, tx);
     if (tutor && admin) await tutors.update(user.id, { activated: true }, tx);
     return user;
   });
+
+  // Create Lead document in ErpNext server
+  if (isStudent(user))
+    erpnext.document
+      .createLead({
+        name: `LEAD-${user.id}`,
+        firstName: user.name || getEmailUserName(user.email) || "Unkown",
+        email: user.email,
+        phone: user.phone || undefined,
+      })
+      .catch((e) => console.warn("ErpNext Not Working:", e));
 
   const { code } = await confirmationCodes.create({
     userId: user.id,
@@ -373,22 +367,15 @@ function update(_: ApiContext) {
         };
 
         // Create Lead document in ErpNext server
-        if (isStudent(target)) {
-          const userNameParts = (name || target.name)?.split(" ");
+        if (isStudent(target))
           erpnext.document
             .updateLead({
               name: `LEAD-${id}`,
-              firstName: userNameParts
-                ? userNameParts[0]
-                : (email || target.email).split("@")[0],
-              lastName: userNameParts
-                ? userNameParts[userNameParts?.length - 1]
-                : undefined,
+              firstName: user.name || getEmailUserName(user.email) || "Unkown",
               email: newEmail ? email : undefined,
               phone: newPhone ? phone : undefined,
             })
             .catch((e) => console.warn("ErpNext Not Working:", e));
-        }
 
         const updated = await users.update(id, updateUserPayload, tx);
 

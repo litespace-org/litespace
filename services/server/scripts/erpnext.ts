@@ -1,6 +1,7 @@
 import { users } from "@litespace/models";
-import { erpnext } from "../src/lib/erpnext";
+import { erpnext } from "@/lib/erpnext";
 import { IUser } from "@litespace/types";
+import { getEmailUserName } from "@litespace/utils/user";
 
 async function main() {
   const curUsers = await users.find({
@@ -14,12 +15,7 @@ async function main() {
       return erpnext.document
         .createLead({
           name: `LEAD-${user.id}`,
-          firstName: userNameParts
-            ? userNameParts[0]
-            : user.email.split("@")[0],
-          lastName: userNameParts
-            ? userNameParts[userNameParts?.length - 1]
-            : undefined,
+          firstName: user.name || getEmailUserName(user.email) || "Unkown",
           email: user.email,
           phone: user.phone || undefined,
         })
