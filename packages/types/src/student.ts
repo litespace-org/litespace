@@ -1,3 +1,5 @@
+import { IStudent } from ".";
+
 export enum EnglishLevel {
   Beginner = 1,
   PreIntermediate = 2,
@@ -25,6 +27,13 @@ export type Row = {
   learning_objective: string | null;
   created_at: Date;
   updated_at: Date;
+};
+
+export type UpdateApiPayload = {
+  career?: string;
+  level?: IStudent.EnglishLevel;
+  aim?: string;
+  topics?: string[];
 };
 
 export type Column = keyof Row;

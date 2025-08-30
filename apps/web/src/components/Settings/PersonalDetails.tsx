@@ -8,7 +8,7 @@ import { Button } from "@litespace/ui/Button";
 import { IUser } from "@litespace/types";
 import { useForm } from "@litespace/headless/form";
 import {
-  getNullableFiledUpdatedValue,
+  getNullableFieldUpdatedValue,
   getOptionalFieldUpdatedValue,
   isEmptyObject,
   optional,
@@ -68,12 +68,12 @@ function asUpdatePayload(
   updated: Form
 ) {
   return {
-    name: getNullableFiledUpdatedValue(current.name, updated.name || null),
-    phone: getNullableFiledUpdatedValue(current.phone, updated.phone || null),
+    name: getNullableFieldUpdatedValue(current.name, updated.name || null),
+    phone: getNullableFieldUpdatedValue(current.phone, updated.phone || null),
     email: getOptionalFieldUpdatedValue(current.email, updated.email),
-    city: getNullableFiledUpdatedValue(current.city, updated.city),
+    city: getNullableFieldUpdatedValue(current.city, updated.city),
     notice: getOptionalFieldUpdatedValue(current.notice, updated.notice),
-    gender: getNullableFiledUpdatedValue(current.gender, updated.gender),
+    gender: getNullableFieldUpdatedValue(current.gender, updated.gender),
   };
 }
 

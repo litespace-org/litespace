@@ -63,4 +63,5 @@ export enum FieldError {
   ShortContactRequestMessage = "short-contact-request-message",
   LongContactRequestMessage = "long-contact-request-message",
   InvalidType = "invalid-type",
+  InvalidEnglishLevel = "invalid-english-level",
 }
