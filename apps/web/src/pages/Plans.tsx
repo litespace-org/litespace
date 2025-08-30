@@ -17,7 +17,7 @@ const Plans: React.FC = () => {
   });
 
   return (
-    <div className="w-full p-4 md:p-6 mx-auto max-w-screen-3xl">
+    <div className="w-full p-4 md:p-4 lg:p-6 mx-auto max-w-screen-3xl">
       <Content
         loading={query.isLoading}
         error={query.isError}
