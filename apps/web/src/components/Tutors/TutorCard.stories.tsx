@@ -23,7 +23,7 @@ type Story = StoryObj<typeof TutorCard>;
 export const Primary: Story = {
   args: {
     tutorId: 1,
-    bio: faker.lorem.words(145),
+    about: faker.lorem.words(145),
     name: faker.lorem.words(2),
     rating: 5,
     image: faker.image.urlPicsumPhotos(),
@@ -35,7 +35,7 @@ export const Primary: Story = {
 export const NoRating: Story = {
   args: {
     tutorId: 1,
-    bio: faker.lorem.words(5),
+    about: faker.lorem.words(5),
     name: faker.lorem.words(2),
     image: faker.image.urlPicsumPhotos(),
   },
@@ -44,7 +44,7 @@ export const NoRating: Story = {
 export const FractionalRating: Story = {
   args: {
     tutorId: 1,
-    bio: faker.lorem.words(5),
+    about: faker.lorem.words(5),
     name: faker.lorem.words(2),
     image: faker.image.urlPicsumPhotos(),
     rating: 3.988732,
@@ -55,26 +55,26 @@ export const Free: Story = {
   args: {
     free: true,
     tutorId: 1,
-    bio: faker.lorem.words(5),
+    about: faker.lorem.words(5),
     name: faker.lorem.words(2),
     image: faker.image.urlPicsumPhotos(),
   },
 };
 
-export const LongBio: Story = {
+export const Longabout: Story = {
   args: {
     tutorId: 1,
-    bio: faker.lorem.words(40),
+    about: faker.lorem.words(40),
     name: faker.lorem.words(2),
     rating: 5,
     image: faker.image.urlPicsumPhotos(),
   },
 };
 
-export const NoBio: Story = {
+export const Noabout: Story = {
   args: {
     tutorId: 1,
-    bio: null,
+    about: null,
     name: faker.lorem.words(2),
     rating: 5,
     image: faker.image.urlPicsumPhotos(),
