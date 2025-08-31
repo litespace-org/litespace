@@ -19,14 +19,14 @@ const MAXIMUM_CARD_TOPICS_NUM = 4;
 export const TutorCard: React.FC<{
   id?: string;
   tutorId: number;
-  bio: string | null;
+  about: string | null;
   name: string | null;
   free?: boolean;
   image: string | null;
   rating?: number;
   topics: string[];
   onBook: Void;
-}> = ({ id, tutorId, bio, name, image, rating, free, topics, onBook }) => {
+}> = ({ id, tutorId, about, name, image, rating, free, topics, onBook }) => {
   const intl = useFormatMessage();
 
   return (
@@ -60,12 +60,12 @@ export const TutorCard: React.FC<{
             </Typography>
             {rating ? <Rating rating={rating} /> : null}
           </div>
-          <Optional show={!!bio}>
+          <Optional show={!!about}>
             <Typography
               tag="p"
-              className="text-tiny text-natural-800 line-clamp-2 mb-2"
+              className="text-tiny text-natural-800 line-clamp-1 mb-2"
             >
-              {bio}
+              {about}
             </Typography>
           </Optional>
 

@@ -68,8 +68,8 @@ const Content: React.FC<{
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {tutors.map((tutor, i) =>
           isValidTutorName(tutor.name) === true &&
-          isValidTutorAbout(tutor.about) === true &&
-          isValidTutorBio(tutor.bio) === true ? (
+          isValidTutorBio(tutor.bio) === true &&
+          isValidTutorAbout(tutor.about) === true ? (
             <TutorCard
               id={
                 i === 0
@@ -88,7 +88,7 @@ const Content: React.FC<{
               key={tutor.id}
               tutorId={tutor.id}
               free={isTutorManager(tutor)}
-              bio={tutor.bio}
+              about={tutor.about}
               name={tutor.name}
               rating={tutor.avgRating}
               onBook={() => openBookingDialog(tutor)}
