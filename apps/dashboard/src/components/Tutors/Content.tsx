@@ -1,4 +1,6 @@
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
+import { ONBOARD_ITEMS_MAP } from "@/components/utils/tutor";
+import { useMissedData } from "@/hooks/tutors";
 import dayjs from "@/lib/dayjs";
 import Calendar from "@litespace/assets/Calendar";
 import InfoCircle from "@litespace/assets/InfoCircle";
@@ -52,6 +54,8 @@ export const Content: React.FC<{
   }, [intl, toast]);
 
   const update = useUpdateUser({ onSuccess, onError });
+
+  const getMissedData = useMissedData();
 
   const columns = useMemo(
     () => [
@@ -124,7 +128,7 @@ export const Content: React.FC<{
           <div className="flex gap-2 items-center">
             <Typography
               tag="h5"
-              className="text-body text-natural-800 font-semibold "
+              className="text-body text-natural-800 font-semibold"
             >
               {dayjs(info.getValue()).format("D/M/YYYY")}
             </Typography>
@@ -183,8 +187,38 @@ export const Content: React.FC<{
           />
         ),
       }),
+      columnHelper.display({
+        id: "missedData",
+        header: () => (
+          <div className="flex gap-[10px]">
+            <InfoCircle className="w-6 h-6 [&>*]:stroke-natural-950" />
+            <Typography
+              tag="h6"
+              className="text-body text-natural-950 font-bold"
+            >
+              {intl("dashboard.tutors.table.missed-data")}
+            </Typography>
+          </div>
+        ),
+        cell: (info) => {
+          const missedData = getMissedData(info.row.original);
+
+          return (
+            <Typography
+              tag="span"
+              className="text-body text-natural-800 font-semibold"
+            >
+              {missedData
+                .map((val) =>
+                  intl(ONBOARD_ITEMS_MAP[val as keyof ITutor.OnboardInfo])
+                )
+                .join(" - ")}
+            </Typography>
+          );
+        },
+      }),
     ],
-    [columnHelper, intl, update]
+    [columnHelper, getMissedData, intl, update]
   );
 
   if (loading || error || !tutors)

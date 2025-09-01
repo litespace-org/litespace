@@ -18,6 +18,23 @@ export type Self = {
   updatedAt: string;
 };
 
+export type OnboardInfo = {
+  activated: boolean;
+  verifiedEmail: boolean;
+  verifiedPhone: boolean;
+  video: string;
+  image: string;
+  thumbnail: string;
+  name: string;
+  gender: IUser.Gender;
+  birthYear: IFilter.Numeric;
+  about: string;
+  bio: string;
+  phone: string;
+  role: IUser.Role;
+  city: IUser.City;
+};
+
 export type Full = IUser.Self &
   OmitProp<Self, "createdAt" | "updatedAt"> & {
     meta: {
