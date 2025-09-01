@@ -366,7 +366,7 @@ function update(_: ApiContext) {
           notificationMethod: newPhone ? null : notificationMethod,
         };
 
-        // Create Lead document in ErpNext server
+        // Update Lead document in ErpNext server
         if (isStudent(target))
           erpnext.document
             .updateLead({
