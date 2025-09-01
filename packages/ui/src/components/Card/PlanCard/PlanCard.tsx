@@ -4,10 +4,7 @@ import { formatNumber } from "@/components/utils";
 import CheckMark from "@litespace/assets/CheckMark";
 import { IPlan } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import {
-  percentage,
-  PLAN_PERIOD_LITERAL_TO_MONTH_COUNT,
-} from "@litespace/utils";
+import { PLAN_PERIOD_LITERAL_TO_MONTH_COUNT } from "@litespace/utils";
 import cn from "classnames";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -44,8 +41,7 @@ export const PlanCard: React.FC<{
 
   const totalPriceAfterDiscount = useMemo(() => {
     return (
-      totalPriceBeforeDiscount -
-      (discount / totalPriceBeforeDiscount) * totalPriceBeforeDiscount
+      totalPriceBeforeDiscount - (discount * totalPriceBeforeDiscount) / 100
     );
   }, [discount, totalPriceBeforeDiscount]);
 
@@ -179,7 +175,7 @@ const DiscountBadge: React.FC<{
       }
     >
       {intl.rich("plan.discount", {
-        value: percentage.unscale(discount),
+        value: discount,
       })}
     </Typography>
   );
