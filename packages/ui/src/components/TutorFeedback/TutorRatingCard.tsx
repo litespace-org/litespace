@@ -89,16 +89,18 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
       />
 
       {!isEditing && !feedback ? null : (
-        <Typography
-          tag="span"
-          className={cn(
-            "line-clamp-5 text-center text-natural-800 font-semibold md:font-normal lg:font-semibold tiny"
-          )}
-        >
-          {!feedback && isEditing
-            ? intl("tutor.rating.feedback.placeholder")
-            : feedback}
-        </Typography>
+        <div className="flex-1 w-full overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent">
+          <Typography
+            tag="span"
+            className={cn(
+              "text-center text-natural-800 font-semibold md:font-normal lg:font-semibold tiny"
+            )}
+          >
+            {!feedback && isEditing
+              ? intl("tutor.rating.feedback.placeholder")
+              : feedback}
+          </Typography>
+        </div>
       )}
 
       <Typography
