@@ -4,7 +4,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { LocalId } from "@litespace/ui/locales";
 import { PlanCard } from "@litespace/ui/PlanCard";
 import { Tabs } from "@litespace/ui/Tabs";
-import { price } from "@litespace/utils";
+import { percentage, price } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
 import React, { useMemo, useRef, useState } from "react";
 
@@ -73,7 +73,7 @@ export const Selector: React.FC<{
 
       <div className="flex flex-col items-center md:grid md:grid-cols-2 xl:grid-cols-3 justify-items-center gap-4 lg:gap-6">
         {sortedPlans.map((plan, idx) => {
-          const discount = () => {
+          const getDiscount = () => {
             if (period === "month") return plan.monthDiscount;
             if (period === "quarter") return plan.quarterDiscount;
             return plan.yearDiscount;
@@ -86,7 +86,7 @@ export const Selector: React.FC<{
               title={intl(titles.current[idx])}
               description={intl(description.current[idx][0])}
               features={description.current[idx].slice(1).map((f) => intl(f))}
-              discount={discount()}
+              discount={percentage.unscale(getDiscount())}
               monthlyPrice={price.unscale(plan.baseMonthlyPrice)}
               weeklyMinutes={plan.weeklyMinutes}
               subscriptionLink={router.web({
