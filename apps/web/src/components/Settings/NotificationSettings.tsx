@@ -19,6 +19,7 @@ import {
   useVerifyPhoneCode,
 } from "@litespace/headless/confirmationCode";
 import { Typography } from "@litespace/ui/Typography";
+import UnverifiedPhonePage from "@/components/Settings/UnverifiedPhonePage";
 
 type Form = {
   notificationMethod: IUser.Self["notificationMethod"];
@@ -42,7 +43,8 @@ const NotificationSettings: React.FC<{
   notificationMethod: IUser.NotificationMethod | null;
   phone: string | null;
   verifiedWhatsApp: boolean;
-}> = ({ id, notificationMethod, verifiedWhatsApp, phone }) => {
+  verifiedPhone: boolean;
+}> = ({ id, notificationMethod, verifiedWhatsApp, phone, verifiedPhone }) => {
   const intl = useFormatMessage();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [sentCode, setSentCode] = useState<boolean>(false);
@@ -165,6 +167,8 @@ const NotificationSettings: React.FC<{
     },
     [form, phone, sendPhoneCodeMutation, verifiedWhatsApp]
   );
+
+  if (!verifiedPhone) return <UnverifiedPhonePage />;
 
   return (
     <div className="md:max-w-[344px] lg:max-w-[400px] grow md:grow-0 h-full flex flex-col">

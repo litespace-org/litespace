@@ -306,7 +306,7 @@ function update(_: ApiContext) {
       if (isStudio(user) && tutor?.studioId !== user.id)
         return next(forbidden());
 
-      // non-admins cannot update tutor `activet` status.
+      // non-admins cannot update tutor `activate` status.
       if (!isAdmin(user) && activated !== undefined) return next(forbidden());
 
       // non-admins cannot update tutor `bypassOnboarding` status.
@@ -357,13 +357,15 @@ function update(_: ApiContext) {
           phone,
           image,
           email,
-          // reset user verification status incase his email or phone got updated.
+          // reset verification status if email or phone updated
           verifiedEmail: newEmail ? false : undefined,
           verifiedPhone: newPhone ? false : undefined,
           verifiedWhatsApp: newPhone ? false : undefined,
           password: password ? hashPassword(password.new) : undefined,
-          // reset notification method incase the user phone got updated
-          notificationMethod: newPhone ? null : notificationMethod,
+          // default notifications when new phone provided
+          notificationMethod: newPhone
+            ? IUser.NotificationMethod.Whatsapp
+            : notificationMethod,
         };
 
         // Update Lead document in ErpNext server
