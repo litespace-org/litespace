@@ -77,6 +77,7 @@ const Content: React.FC<{
           id={user.id}
           phone={user.phone}
           verifiedWhatsApp={user.verifiedWhatsApp}
+          verifiedPhone={user.verifiedPhone}
           notificationMethod={user.notificationMethod}
         />
       ) : null}
