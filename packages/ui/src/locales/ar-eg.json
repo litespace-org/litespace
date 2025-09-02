@@ -692,18 +692,20 @@
   "tutor-settings.verify-email.title": "تأكيد البريد الإلكترونى الخاص بك",
   "tutor-settings.verify-email.description": "قم بتأكيد بريدك الالكتروني لتتمكن من استقبال حجوزات الطلاب، تفقد بريدك الإلكتروني للعثور على رابط التأكيد.",
   "tutor-settings.verify-phone.title": "تأكيد رقم الهاتف الخاص بك",
-  "tutor-settings.verify-phone.description": "أكد رقم هاتفك حتي تتمكن من استقبال حجوزات الطلاب و استقبال اشعارات قبل بدايه الحصص",
+  "tutor-settings.verify-phone.description": "أكد رقم هاتفك حتي تتمكن من استقبال حجوزات الطلاب و استقبال إشعارات قبل بدايه الحصص",
   "student-settings.topics.selection-dialog.title": "اخبرنا بالمزيد عن نفسك !",
   "student-settings.topics.selection-dialog.description": "لنجعل تجربتك التعليمية ممتعة وشخصية! اختر المواضيع التي تود الحديث عنها في جلساتك مع معلمينا، وسنقوم بتوصية معلمين يناسبون اهتماماتك.",
   "tutor-settings.topics.selection-dialog.title": "شارك خبراتك لتجذب الطلاب الذين يشاركونك الشغف!",
   "tutor-settings.topics.selection-dialog.description": "حدد المجالات التي تبرع فيها أو تهتم بها، مثل الرياضة أو التكنولوجيا أو علم النفس، لنساعدك في تخصيص تجربة تدريسية تناسب اهتمامات طلابك وتزيد من تفاعلهم وحماسهم للتعلم.",
-  "student-settings.add-topics-button.label": "قم بأضافة الموضوعات المفضلة الخاصة بك",
-  "tutor-settings.add-topics-button.label": "قم بأضافة مجالات الخبرة الخاصة بك",
+  "student-settings.add-topics-button.label": "قم بإضافة الموضوعات المفضلة الخاصة بك",
+  "tutor-settings.add-topics-button.label": "قم بإضافة مجالات الخبرة الخاصة بك",
   "shared-settings.topics.selection-dialog.loading": "برجاء الانتظار... جاري تحميل المفضلات!",
   "shared-settings.topics.selection-dialog.loading-error": " عذرًا، حدث خطأ أثناء تحميل المفضلات. برجاء المحاولة مرة أخرى",
   "shared-settings.topics.selection-dialog.update-error": " عذرًا، حدث خطأ أثناء تحديث المفضلات. برجاء المحاولة مرة أخرى",
   "shared-settings.save": "حفظ التغيرات",
-  "shared-settings.notification.title": "ادارة الاشعارات",
+  "shared-settings.notification.title": "إدارة الإشعارات",
+  "shared-settings.notification.description-1": "ابقَ على اطلاع بكل جديد ولا تفوّت أي تحديث!",
+  "shared-settings.notification.description-2": "فعّل الإشعارات الآن لتصلك الرسائل المهمة مباشرة على واتساب.",
   "shared-settings.edit.notification.label": "طريقة تلقي الإشعارات",
   "shared-settings.edit.notification.placeholder": "واتساب/تيليجرام",
   "shared-settings.edit.notification.whatsapp": "واتساب",
@@ -718,7 +720,7 @@
   "shared-settings.notifications.lesson-date.description": "سيتم اشعارك بميعاد الدرس قبله بيوم و قبله بساعه",
   "shared-settings.notifications.messages.title": "إشعارات الرسائل",
   "shared-settings.notifications.messages.description": "سوف يتم اشعارك بجميع الرسائل الواردة",
-  "shared-settings.notifications.coming-soon.title": "قريبا 🎉",
+  "shared-settings.notifications.coming-soon.title": "قريبًا 🎉",
   "shared-settings.notifications.coming-soon.description": "بإمكانك التحكم في الاشعارات بمجرد ان يتم تفعيل هذه الخاصية.",
   "shared-settings.edit.password.current": "كلمة المرور الحالية",
   "shared-settings.edit.password.new": "كلمة المرور الجديدة",
