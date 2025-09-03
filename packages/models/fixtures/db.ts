@@ -8,6 +8,7 @@ import {
   sessionEvents,
   topics,
   users,
+  students as studentsModel,
   ratings,
   tutors,
   availabilitySlots,
@@ -32,6 +33,7 @@ import {
   IPlan,
   IReport,
   IIntroVideo,
+  IStudent,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -68,6 +70,7 @@ export async function flush() {
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await confirmationCodes.builder(tx).del();
+    await studentsModel.builder(tx).del();
     await users.builder(tx).del();
     await contactRequests.builder(tx).del();
   });
@@ -245,6 +248,19 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
   });
 }
 
+async function student(studentPayload?: Partial<IStudent.CreateModelPayload>) {
+  const usr = await user({ role: IUser.Role.Student });
+  await studentsModel.create({
+    userId: usr.id,
+    jobTitle: studentPayload?.jobTitle || faker.name.jobTitle(),
+    englishLevel:
+      studentPayload?.englishLevel || IStudent.EnglishLevel.Beginner,
+    learningObjective:
+      studentPayload?.learningObjective || faker.lorem.sentence(),
+  });
+  return usr;
+}
+
 async function tutor(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
   userPayload?: Partial<IUser.UpdateModelPayload>,
@@ -257,10 +273,6 @@ async function tutor(
   const data = await tutors.findById(tutor.id);
   if (!data) throw new Error("tutor not found");
   return data;
-}
-
-function student() {
-  return user({ role: IUser.Role.Student });
 }
 
 async function tutorManager(

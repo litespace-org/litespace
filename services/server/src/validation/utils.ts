@@ -12,6 +12,7 @@ import {
   IPlan,
   IAvailabilitySlot,
   IDemoSession,
+  IStudent,
 } from "@litespace/types";
 import zod, { ZodLiteral } from "zod";
 
@@ -94,6 +95,10 @@ export const planPeriod = zod.nativeEnum(IPlan.Period);
 
 export const interviewStatus = zod.coerce.number(
   zod.nativeEnum(IInterview.Status)
+);
+
+export const studentEnglishLevel = zod.coerce.number(
+  zod.nativeEnum(IStudent.EnglishLevel)
 );
 
 export const slotPurpose = zod.coerce.number(
