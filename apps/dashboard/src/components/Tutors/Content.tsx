@@ -14,6 +14,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo } from "react";
+import { TUTOR_DATA_ITEMS, TUTOR_DATA_ITEMS_MAP } from "../utils/tutor";
 
 export const Content: React.FC<{
   refetch: Void;
@@ -52,6 +53,17 @@ export const Content: React.FC<{
   }, [intl, toast]);
 
   const update = useUpdateUser({ onSuccess, onError });
+
+  const getMissedData = useCallback(
+    () => (info: ITutor.Full) => {
+      const missedData: string[] = [];
+      for (const key of TUTOR_DATA_ITEMS) {
+        if (info[key] === null || info[key] === undefined) missedData.push(key);
+      }
+      return missedData;
+    },
+    []
+  );
 
   const columns = useMemo(
     () => [
@@ -124,7 +136,7 @@ export const Content: React.FC<{
           <div className="flex gap-2 items-center">
             <Typography
               tag="h5"
-              className="text-body text-natural-800 font-semibold "
+              className="text-body text-natural-800 font-semibold"
             >
               {dayjs(info.getValue()).format("D/M/YYYY")}
             </Typography>
@@ -183,8 +195,38 @@ export const Content: React.FC<{
           />
         ),
       }),
+      columnHelper.display({
+        id: "missedData",
+        header: () => (
+          <div className="flex gap-[10px]">
+            <InfoCircle className="w-6 h-6 [&>*]:stroke-natural-950" />
+            <Typography
+              tag="h6"
+              className="text-body text-natural-950 font-bold"
+            >
+              {intl("dashboard.tutors.table.missed-data")}
+            </Typography>
+          </div>
+        ),
+        cell: (info) => {
+          const missedData = getMissedData();
+
+          return (
+            <Typography
+              tag="span"
+              className="text-body text-natural-800 font-semibold"
+            >
+              {missedData(info.row.original)
+                .map((val) =>
+                  intl(TUTOR_DATA_ITEMS_MAP[val as keyof ITutor.Full])
+                )
+                .join(" - ")}
+            </Typography>
+          );
+        },
+      }),
     ],
-    [columnHelper, intl, update]
+    [columnHelper, getMissedData, intl, update]
   );
 
   if (loading || error || !tutors)
