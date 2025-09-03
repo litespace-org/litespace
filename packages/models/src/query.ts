@@ -2,7 +2,8 @@ import { Pool } from "pg";
 import { IFilter, NumericString } from "@litespace/types";
 import init, { Knex } from "knex";
 import zod from "zod";
-import { entries, invert, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
+import { keys } from "@litespace/utils/utils";
 import dayjs from "@/lib/dayjs";
 
 export type WithOptionalTx<T> = T & { tx?: Knex.Transaction };
@@ -300,7 +301,7 @@ export function fromRow<
   Row extends object,
   Self extends object,
   Field extends keyof Self,
-  Map extends Record<keyof Self, keyof Row>,
+  Map extends { [K in keyof Self]: keyof Row },
 >(
   row: Select<Row, Field, Map>,
   map: Map,
@@ -308,17 +309,20 @@ export function fromRow<
     [K in keyof Self]?: (value: Row[Map[K]]) => Self[K];
   }
 ): Pick<Self, Field> {
-  const inverted = invert(map) as Record<keyof Row, keyof Self>;
-  const self: Partial<Record<keyof Self, unknown>> = {};
+  const self: Partial<Record<keyof Map, unknown>> = {};
 
-  for (const [key, value] of entries(row)) {
-    const safeKey = key as keyof Row;
-    const safeValue = value as Row[keyof Row];
-    const field: keyof Self = inverted[safeKey];
-    if (transform?.[field])
-      self[field] = transform?.[field]?.(safeValue as Row[Map[keyof Self]]);
-    else if (value instanceof Date) self[field] = value.toISOString();
-    else self[field] = value;
+  // map each self field from its corresponding row column to support duplicate mappings
+  for (const column of keys(row)) {
+    const value = row[column];
+    if (value === undefined) continue;
+
+    for (const field of keys<{ [K in keyof Self]: keyof Row }>(map)) {
+      if (map[field] !== column) continue;
+      const fn = transform?.[field];
+      if (fn) self[field] = fn(value);
+      else if (value instanceof Date) self[field] = value.toISOString();
+      else self[field] = value;
+    }
   }
 
   return self as Pick<Self, Field>;

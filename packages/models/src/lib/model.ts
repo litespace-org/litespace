@@ -30,7 +30,7 @@ function asColumnMap<T extends ObjectKey>(
 export class Model<
   Row extends BaseRow,
   Self extends BaseSelf,
-  FieldColumnMap extends Record<keyof Self, keyof Row>,
+  FieldColumnMap extends { [K in keyof Self]: keyof Row },
 > {
   protected transform: TransformRowMap<Self, Row, FieldColumnMap> | undefined;
   protected columnsMap: Record<keyof Row, string>;
@@ -72,6 +72,10 @@ export class Model<
   from<T extends keyof Self>(
     row: Select<Row, T, FieldColumnMap>
   ): Pick<Self, T> {
-    return fromRow(row, this.fieldColumnMap, this.transform);
+    return fromRow<Row, Self, T, FieldColumnMap>(
+      row,
+      this.fieldColumnMap,
+      this.transform
+    );
   }
 }
