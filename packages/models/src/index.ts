@@ -7,6 +7,7 @@ export { invites } from "@/invites";
 export { lessons } from "@/lessons";
 export { messages } from "@/messages";
 export { plans } from "@/plans";
+export { planInvites } from "@/planInvites";
 export { subscriptions } from "@/subscriptions";
 export { ratings } from "@/ratings";
 export { reports } from "@/reports";
