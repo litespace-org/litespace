@@ -73,6 +73,11 @@ export const Selector: React.FC<{
 
       <div className="flex flex-col items-center md:grid md:grid-cols-2 xl:grid-cols-3 justify-items-center gap-4 lg:gap-6">
         {sortedPlans.map((plan, idx) => {
+          const index =
+            idx < description.current.length
+              ? idx
+              : description.current.length - 1;
+
           const getDiscount = () => {
             if (period === "month") return plan.monthDiscount;
             if (period === "quarter") return plan.quarterDiscount;
@@ -83,9 +88,9 @@ export const Selector: React.FC<{
             <PlanCard
               key={idx}
               period={period}
-              title={intl(titles.current[idx])}
-              description={intl(description.current[idx][0])}
-              features={description.current[idx].slice(1).map((f) => intl(f))}
+              title={intl(titles.current[index])}
+              description={intl(description.current[index][0])}
+              features={description.current[index].slice(1).map((f) => intl(f))}
               discount={percentage.unscale(getDiscount())}
               monthlyPrice={price.unscale(plan.baseMonthlyPrice)}
               weeklyMinutes={plan.weeklyMinutes}
@@ -94,7 +99,7 @@ export const Selector: React.FC<{
                 planId: plan.id,
                 period,
               })}
-              mostCommon={idx === MOST_COMMON_PLAN_INDEX}
+              mostCommon={index === MOST_COMMON_PLAN_INDEX}
             />
           );
         })}

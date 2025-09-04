@@ -131,6 +131,13 @@ const Sidebar: React.FC = () => {
       Icon: Tag,
     };
 
+    const planInvites: LinkInfo = {
+      label: intl("dashboard.plan-invites.title"),
+      route: Dashboard.PlanInvites,
+      isActive: match(Dashboard.PlanInvites),
+      Icon: Tag,
+    };
+
     const interviews: LinkInfo = {
       label: intl("dashboard.sidebar.interviews"),
       route: Dashboard.Interviews,
@@ -165,6 +172,7 @@ const Sidebar: React.FC = () => {
       users,
       invoices,
       plans,
+      planInvites,
       topics,
       interviews,
       photoSession,

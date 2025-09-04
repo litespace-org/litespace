@@ -42,7 +42,10 @@ const routeConfigMap: Record<Dashboard, RouteConfig> = {
     whitelist: [regularAdmin, studio],
   },
   [Dashboard.Plans]: {
-    whitelist: [regularAdmin],
+    whitelist: [superAdmin],
+  },
+  [Dashboard.PlanInvites]: {
+    whitelist: [superAdmin],
   },
   [Dashboard.Interviews]: {
     whitelist: [regularAdmin],
