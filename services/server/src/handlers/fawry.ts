@@ -31,6 +31,7 @@ import { clientRouter } from "@/lib/client";
 import { Web } from "@litespace/utils/routes";
 import {
   knex,
+  planInvites,
   plans,
   subscriptions,
   transactions,
@@ -165,6 +166,14 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());
 
+  if (plan.forInvitesOnly) {
+    const { total: invited } = await planInvites.find({
+      planIds: [plan.id],
+      userIds: [user.id],
+    });
+    if (invited) return next(forbidden());
+  }
+
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
   const { total, totalScaled } = calculatePlanPrice({ period, plan });
 
@@ -228,6 +237,14 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
 
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());
+
+  if (plan.forInvitesOnly) {
+    const { total: invited } = await planInvites.find({
+      planIds: [plan.id],
+      userIds: [user.id],
+    });
+    if (invited) return next(forbidden());
+  }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
   const { total, totalScaled } = calculatePlanPrice({ period, plan });
@@ -295,6 +312,14 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());
 
+  if (plan.forInvitesOnly) {
+    const { total: invited } = await planInvites.find({
+      planIds: [plan.id],
+      userIds: [user.id],
+    });
+    if (invited) return next(forbidden());
+  }
+
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
   const { total, totalScaled } = calculatePlanPrice({ period, plan });
 
@@ -353,6 +378,17 @@ async function payWithBankInstallments(
   if (!allowed) return next(forbidden());
 
   const payload = payWithBankInstallmentsPayload.parse(req.body);
+
+  const plan = await plans.findById(payload.planId);
+  if (!plan) return next(notfound.plan());
+
+  if (plan.forInvitesOnly) {
+    const { total: invited } = await planInvites.find({
+      planIds: [plan.id],
+      userIds: [user.id],
+    });
+    if (invited) return next(forbidden());
+  }
 
   // TODO: store transaction in the database
   const txId = Math.floor(Math.random() * 1000); // TODO: get transaction id from the db

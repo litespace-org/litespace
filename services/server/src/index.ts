@@ -98,6 +98,7 @@ app.use("/api/v1/availability-slot", routes.availabilitySlot);
 app.use("/api/v1/rating", routes.rating);
 app.use("/api/v1/chat", routes.chat);
 app.use("/api/v1/plan", routes.plan);
+app.use("/api/v1/plan-invite", routes.planInvites);
 app.use("/api/v1/coupon", routes.coupon);
 app.use("/api/v1/invite", routes.invite);
 app.use("/api/v1/invoice", routes.invoice(context));

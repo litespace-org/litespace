@@ -4,6 +4,7 @@ import { Auth } from "@/api/auth";
 import { AvailabilitySlot } from "@/api/availabilitySlot";
 import { Env } from "@litespace/types";
 import { Plan } from "@/api/plan";
+import { PlanInvite } from "@/api/planInvite";
 import { Coupon } from "@/api/coupon";
 import { Invite } from "@/api/invite";
 import { Report } from "@/api/report";
@@ -33,6 +34,7 @@ export class Api {
   public readonly availabilitySlot: AvailabilitySlot;
   public readonly contactRequest: ContactRequest;
   public readonly plan: Plan;
+  public readonly planInvite: PlanInvite;
   public readonly coupon: Coupon;
   public readonly invite: Invite;
   public readonly report: Report;
@@ -61,6 +63,7 @@ export class Api {
     this.availabilitySlot = new AvailabilitySlot(client);
     this.contactRequest = new ContactRequest(client);
     this.plan = new Plan(client);
+    this.planInvite = new PlanInvite(client);
     this.coupon = new Coupon(client);
     this.invite = new Invite(client);
     this.report = new Report(client);

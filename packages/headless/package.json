@@ -11,6 +11,7 @@
     "./asset": "./dist/asset.js",
     "./availabilitySlots": "./dist/availabilitySlots.js",
     "./plans": "./dist/plans.js",
+    "./planInvites": "./dist/planInvites.js",
     "./server": "./dist/server/index.js",
     "./api": "./dist/api/index.js",
     "./echo": "./dist/echo/index.js",
