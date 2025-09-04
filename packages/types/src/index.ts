@@ -10,6 +10,7 @@ export * as IRating from "@/rating";
 export * as IMessage from "@/message";
 export * as ISession from "@/session";
 export * as IPlan from "@/plan";
+export * as IPlanInvites from "@/planInvites";
 export * as ICoupon from "@/coupon";
 export * as IInvite from "@/invite";
 export * as IReport from "@/report";
