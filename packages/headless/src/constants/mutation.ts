@@ -44,4 +44,7 @@ export enum MutationKey {
   FindLastDemoSession = "find-last-demo-session",
   CreateDemoSession = "create-demo-session",
   CancelDemoSession = "cancel-demo-session",
+  CreatePlanInvite = "create-plan-invite",
+  UpdatePlanInvite = "update-plan-invite",
+  DeletePlanInvite = "delete-plan-invite",
 }

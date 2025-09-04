@@ -5,6 +5,7 @@ import availabilitySlot from "@/routes/availabilitySlot";
 import rating from "@/routes/rating";
 import chat from "@/routes/chat";
 import plan from "@/routes/plan";
+import planInvites from "@/routes/planInvite";
 import coupon from "@/routes/coupon";
 import invite from "@/routes/invite";
 import lesson from "@/routes/lesson";
@@ -31,6 +32,7 @@ export default {
   invoice,
   contactRequest,
   plan,
+  planInvites,
   chat,
   rating,
   coupon,

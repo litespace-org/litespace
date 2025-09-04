@@ -8,7 +8,12 @@ import {
   notfound,
   phoneRequired,
 } from "@/lib/error";
-import { plans, subscriptions, transactions } from "@litespace/models";
+import {
+  planInvites,
+  plans,
+  subscriptions,
+  transactions,
+} from "@litespace/models";
 import zod, { ZodSchema } from "zod";
 import { id, planPeriod } from "@/validation/utils";
 import {
@@ -62,6 +67,14 @@ async function createCheckoutUrl(
   // ensure that the plan do exist
   const plan = await plans.findById(planId);
   if (!plan) return next(notfound.plan());
+
+  if (plan.forInvitesOnly) {
+    const { total: invited } = await planInvites.find({
+      planIds: [plan.id],
+      userIds: [user.id],
+    });
+    if (invited) return next(forbidden());
+  }
 
   // create payment transaction
   const tx = await transactions.create({
