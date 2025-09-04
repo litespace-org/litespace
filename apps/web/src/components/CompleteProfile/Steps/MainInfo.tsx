@@ -4,7 +4,7 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useUser } from "@litespace/headless/context/user";
 import { useForm } from "@litespace/headless/form";
 import { useInvalidateQuery } from "@litespace/headless/query";
-import { useUpdateStudent } from "@litespace/headless/student";
+import { useUpdateUser } from "@litespace/headless/user";
 import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { Form } from "@litespace/ui/Form";
@@ -60,7 +60,8 @@ const MainInfo: React.FC<{ next: Void }> = ({ next }) => {
     },
   });
 
-  const updateStudent = useUpdateStudent({ onSuccess, onError });
+  // @galal TODO: use useUpdateStudent once the backend the done.
+  const updateStudent = useUpdateUser({ onSuccess, onError });
 
   // ============= Form ==============
   const validators = useMakeValidators<IForm>({

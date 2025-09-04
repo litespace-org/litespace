@@ -162,6 +162,28 @@ const List: React.FC<
           />
         ),
       }),
+      columnHelper.accessor("forInvitesOnly", {
+        id: "forInvitesOnly",
+        header: () => (
+          <Typography tag="p" className="text-body font-bold text-natural-950">
+            {intl("dashboard.plans.for-invites-only")}
+          </Typography>
+        ),
+        cell: (info) => (
+          <Switch
+            size="medium"
+            id="toggle-plan-invites-only"
+            checked={info.getValue()}
+            onChange={(checked) =>
+              mutation.mutate({
+                id: info.row.original.id,
+                payload: { forInvitesOnly: checked },
+              })
+            }
+            disabled={mutation.isPending}
+          />
+        ),
+      }),
       columnHelper.display({
         id: "actions",
         header: () => (

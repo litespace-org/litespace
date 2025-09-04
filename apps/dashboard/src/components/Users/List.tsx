@@ -13,6 +13,9 @@ import { Link } from "react-router-dom";
 import ImageField from "@/components/Common/ImageField";
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
 import { NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL } from "@litespace/utils/constants";
+import { usePlans } from "@litespace/headless/plans";
+import { useCreatePlanInvite } from "@litespace/headless/planInvites";
+import { useUser } from "@litespace/headless/context/user";
 
 const List: React.FC<{
   query: UseQueryResult<IUser.FindUsersApiResponse, Error>;
@@ -24,6 +27,19 @@ const List: React.FC<{
 }> = ({ query, ...props }) => {
   const intl = useFormatMessage();
   const columnHelper = createColumnHelper<IUser.Self>();
+
+  const { user } = useUser();
+
+  const plans = usePlans();
+
+  const createPlanInvite = useCreatePlanInvite({
+    onSuccess: () => alert("Done."),
+    onError: (e) => {
+      alert("Failed!");
+      console.error(e);
+    },
+  });
+
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
@@ -108,30 +124,31 @@ const List: React.FC<{
 
       columnHelper.display({
         id: "actions",
-        cell: () => (
+        cell: ({ row }) => (
           <ActionsMenu
-            actions={[
-              {
-                id: 1,
-                label: intl("global.labels.edit"),
+            actions={
+              plans.query.data?.list.map((plan, i) => ({
+                id: i,
+                label: intl("labels.invite") + `-${plan.id}`,
                 onClick() {
-                  alert("edit");
+                  if (!user) return;
+
+                  if (row.original.role !== IUser.Role.Student)
+                    return alert("not allowed!");
+
+                  createPlanInvite.mutate({
+                    userIds: [row.original.id],
+                    planId: plan.id,
+                    createdBy: user.id,
+                  });
                 },
-              },
-              {
-                id: 2,
-                label: intl("labels.delete"),
-                danger: true,
-                onClick() {
-                  alert("Delete user!!!");
-                },
-              },
-            ]}
+              })) || []
+            }
           />
         ),
       }),
     ],
-    [columnHelper, intl]
+    [columnHelper, intl, createPlanInvite, plans.query.data, user]
   );
 
   if (query.isLoading || query.error)
