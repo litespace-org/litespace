@@ -175,7 +175,7 @@ function create(context: ApiContext) {
         }
       );
 
-      if (tutor.phone && tutor.verifiedPhone && tutor.notificationMethod)
+      if (tutor.phone && tutor.notificationMethod)
         sendMsg({
           to: tutor.phone,
           template: {
@@ -257,7 +257,6 @@ function update(context: ApiContext) {
 
       if (
         otherMember.phone &&
-        otherMember.verifiedPhone &&
         otherMember.notificationMethod
       )
         sendMsg({
@@ -433,7 +432,6 @@ function cancel(_context: ApiContext) {
 
       if (
         otherMember.phone &&
-        otherMember.verifiedPhone &&
         otherMember.notificationMethod
       )
         sendMsg({
