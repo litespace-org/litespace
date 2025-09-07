@@ -13,7 +13,7 @@ import {
 } from "@litespace/headless/lessons";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
-import { IAvailabilitySlot, ILesson, IUser, Void } from "@litespace/types";
+import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
 import { ManageLessonDialog } from "@litespace/ui/Lessons";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -61,7 +61,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   const now = useRef(dayjs());
 
   // ====== get subscribtion details and get the boundries you filter the availability slots on =========
-  const { info, remainingWeeklyMinutes } = useSubscription();
+  const { info, remainingWeeklyMinutes, refetch } = useSubscription();
   const weekBoundaries = useMemo(() => {
     if (info) {
       const boundaries = getCurrentWeekBoundaries(info.start);
@@ -99,14 +99,14 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   // ====== get tutorInfo =========
   const { query: tutor } = useFindTutorInfo(tutorId);
 
-  const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(
-    !info && tutor.data?.role === IUser.Role.Tutor
-  );
+  const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(!info);
 
   useEffect(
     () =>
-      setSubscribeDialogOpen(!info && tutor.data?.role === IUser.Role.Tutor),
-    [info, tutor.data]
+      setSubscribeDialogOpen(
+        !info || (info.id === -1 && remainingWeeklyMinutes === 0)
+      ),
+    [info, remainingWeeklyMinutes]
   );
 
   const tutorAvailabilitySlots = useFindAvailabilitySlots({
@@ -191,21 +191,25 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
       duration: ILesson.Duration;
     }) => {
       if (payload.type === "book")
-        return createLessonMutation.mutate({
-          tutorId,
+        return createLessonMutation
+          .mutateAsync({
+            tutorId,
+            slotId,
+            duration,
+            start,
+          })
+          .then(() => refetch());
+
+      updateLessonMutation
+        .mutateAsync({
+          lessonId: payload.lessonId,
           slotId,
           duration,
           start,
-        });
-
-      updateLessonMutation.mutate({
-        lessonId: payload.lessonId,
-        slotId,
-        duration,
-        start,
-      });
+        })
+        .then(() => refetch());
     },
-    [payload, createLessonMutation, tutorId, updateLessonMutation]
+    [payload, createLessonMutation, tutorId, updateLessonMutation, refetch]
   );
 
   const bookedSlots = useMemo(() => {

@@ -5,9 +5,10 @@ export enum Period {
   Month,
   Quarter,
   Year,
+  FreeTrial,
 }
 
-export type PeriodLiteral = "month" | "quarter" | "year";
+export type PeriodLiteral = "month" | "quarter" | "year" | "free-trial";
 
 export type Row = {
   id: number;

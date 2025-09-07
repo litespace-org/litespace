@@ -8,15 +8,13 @@ import {
   forbidden,
   busyTutor,
   bad,
-  reachedBookingLimit,
-  subscriptionRequired,
   noEnoughMinutes,
   lessonTimePassed,
   weekBoundariesViolation,
 } from "@/lib/error";
 import { dayjs, getSubSlots, nameof, safe } from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";
-import { lessons, subscriptions } from "@litespace/models";
+import { lessons } from "@litespace/models";
 import { first, last } from "lodash";
 
 const findLessons = mockApi<
@@ -208,34 +206,6 @@ describe("/api/v1/lesson/", () => {
       expect(res).to.deep.eq(bad());
     });
 
-    it("should respond with reachedBookingLimit in case an unsubscribed user books more than one lesson", async () => {
-      const student = await db.student();
-      const tutor = await db.tutor();
-
-      await db.lesson({
-        student: student.id,
-        tutor: tutor.id,
-      });
-
-      const slot = await db.slot({
-        userId: tutor.id,
-        start: dayjs().add(1, "day").toISOString(),
-        end: dayjs().add(2, "day").toISOString(),
-      });
-
-      const res = await createLesson({
-        user: student,
-        body: {
-          tutorId: tutor.id,
-          slotId: slot.id,
-          start: slot.start,
-          duration: ILesson.Duration.Short,
-        },
-      });
-
-      expect(res).to.deep.eq(reachedBookingLimit());
-    });
-
     it("should respond with busyTutor in case the tutor has already a lesson at the specified time", async () => {
       const student = await db.student();
       const tutor = await db.tutorManager();
@@ -265,76 +235,6 @@ describe("/api/v1/lesson/", () => {
       });
 
       expect(res).to.deep.eq(busyTutor());
-    });
-
-    it("should respond with subscriptionRequired in case an unsubscribed student is booking with a regular tutor", async () => {
-      const student = await db.student();
-
-      const tutor = await db.tutor();
-      const slot = await db.slot({
-        userId: tutor.id,
-        start: dayjs().add(1, "day").toISOString(),
-        end: dayjs().add(2, "day").toISOString(),
-      });
-
-      const res = await createLesson({
-        user: student,
-        body: {
-          tutorId: tutor.id,
-          slotId: slot.id,
-          start: slot.start,
-          duration: ILesson.Duration.Short,
-        },
-      });
-
-      expect(res).to.deep.eq(subscriptionRequired());
-    });
-
-    it("should respond with subscriptionRequired in case the subscription is no longer valid (ended)", async () => {
-      const student = await db.student();
-      await db.subscription({
-        userId: student.id,
-        start: dayjs().subtract(4, "week").toISOString(),
-        end: dayjs().subtract(1, "minute").toISOString(),
-      });
-
-      const tutor = await db.tutor();
-      const slot = await db.slot({ userId: tutor.id });
-
-      const res = await createLesson({
-        user: student,
-        body: {
-          tutorId: tutor.id,
-          slotId: slot.id,
-          start: slot.start,
-          duration: ILesson.Duration.Short,
-        },
-      });
-
-      expect(res).to.deep.eq(subscriptionRequired());
-    });
-
-    it("should respond with subscriptionRequired in case the subscription is terminated", async () => {
-      const student = await db.student();
-      const sub = await db.subscription({ userId: student.id });
-      await subscriptions.update(sub.id, {
-        terminatedAt: dayjs().toISOString(),
-      });
-
-      const tutor = await db.tutor();
-      const slot = await db.slot({ userId: tutor.id });
-
-      const res = await createLesson({
-        user: student,
-        body: {
-          tutorId: tutor.id,
-          slotId: slot.id,
-          start: slot.start,
-          duration: ILesson.Duration.Short,
-        },
-      });
-
-      expect(res).to.deep.eq(subscriptionRequired());
     });
 
     it("should respond with noEnoughMinutes in case the student remaining minutes quota is less than the lesson dur", async () => {

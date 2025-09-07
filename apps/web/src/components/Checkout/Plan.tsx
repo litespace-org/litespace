@@ -18,6 +18,7 @@ const PLAN_PERIOD_LITERAL_TO_MESSAGE_ID: Record<IPlan.PeriodLiteral, LocalId> =
     month: "checkout.plan.period.month",
     quarter: "checkout.plan.period.quarter",
     year: "checkout.plan.period.year",
+    "free-trial": "checkout.plan.period.free-trial",
   };
 
 const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({

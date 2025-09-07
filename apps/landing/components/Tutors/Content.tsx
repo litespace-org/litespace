@@ -1,6 +1,6 @@
 import TutorCard from "@/components/Tutors/TutorCard";
 import { router } from "@/lib/routes";
-import { ITutor, IUser } from "@litespace/types";
+import { ITutor } from "@litespace/types";
 import { Web } from "@litespace/utils/routes";
 import React from "react";
 
@@ -29,7 +29,6 @@ const Content: React.FC<{
               rating={tutor.avgRating}
               profileUrl={profileUrl}
               imageUrl={tutor.image}
-              free={tutor.role === IUser.Role.TutorManager}
             />
           </div>
         );

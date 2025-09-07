@@ -25,7 +25,7 @@ import {
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Block } from "@/components/Lessons/ManageLesson/Block";
 import NoMoreMinutes from "@litespace/assets/NoMoreMinutes";
-import { MIN_LESSON_DURATION } from "@litespace/utils";
+import { MAX_LESSON_DURATION, MIN_LESSON_DURATION } from "@litespace/utils";
 import LongRightArrow from "@litespace/assets/LongRightArrow";
 import LongLeftArrow from "@litespace/assets/LongLeftArrow";
 
@@ -215,7 +215,11 @@ export const ManageLessonDialog: React.FC<{
   const { sm } = useMediaQuery();
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>("date-selection");
-  const [duration, setDuration] = useState<number>(initials.duration || 15);
+  const [duration, setDuration] = useState<number>(
+    initials.duration || remainingWeeklyMinutes < MAX_LESSON_DURATION
+      ? MIN_LESSON_DURATION
+      : MAX_LESSON_DURATION
+  );
   const [lessonDetails, setLessonDetails] = useState<{
     start: string | null;
     slotId: number | null;

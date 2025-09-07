@@ -27,7 +27,6 @@ export const Primary: Story = {
     name: faker.lorem.words(2),
     rating: 5,
     image: faker.image.urlPicsumPhotos(),
-    free: true,
     topics: range(7).map((_) => faker.lorem.word()),
   },
 };
@@ -48,16 +47,6 @@ export const FractionalRating: Story = {
     name: faker.lorem.words(2),
     image: faker.image.urlPicsumPhotos(),
     rating: 3.988732,
-  },
-};
-
-export const Free: Story = {
-  args: {
-    free: true,
-    tutorId: 1,
-    about: faker.lorem.words(5),
-    name: faker.lorem.words(2),
-    image: faker.image.urlPicsumPhotos(),
   },
 };
 

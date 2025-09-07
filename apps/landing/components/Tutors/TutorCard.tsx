@@ -15,8 +15,7 @@ export const TutorCard: React.FC<{
   imageUrl: string | null;
   rating: number;
   profileUrl: string;
-  free?: boolean;
-}> = ({ id, name, about, imageUrl, profileUrl, rating, free }) => {
+}> = ({ id, name, about, imageUrl, profileUrl, rating }) => {
   const intl = useFormatMessage();
 
   return (
@@ -36,7 +35,6 @@ export const TutorCard: React.FC<{
             "rounded-t-[10px] grow overflow-hidden relative"
           )}
         >
-          {free ? <Free /> : null}
           <AvatarV2 src={imageUrl} alt={name} id={id} object="cover" />
         </div>
 
@@ -65,18 +63,6 @@ export const TutorCard: React.FC<{
         </Button>
       </div>
     </Link>
-  );
-};
-
-const Free: React.FC = () => {
-  const intl = useFormatMessage();
-
-  return (
-    <div className="absolute px-3 py-[6px] z-free-badge top-4 right-0 flex items-center justify-center rounded-l-[12px] bg-natural-0 border-l border-t border-b border-brand-500">
-      <Typography tag="span" className="text-brand-500 text-tiny font-semibold">
-        {intl("home/tutors/card/free")}
-      </Typography>
-    </div>
   );
 };
 

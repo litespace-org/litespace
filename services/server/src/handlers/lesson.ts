@@ -12,10 +12,8 @@ import {
 import {
   bad,
   busyTutor,
-  reachedBookingLimit,
   forbidden,
   notfound,
-  subscriptionRequired,
   noEnoughMinutes,
   illegal,
   lessonTimePassed,
@@ -36,7 +34,6 @@ import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import {
   isAdmin,
-  isRegularTutor,
   isStudent,
   isTutorManager,
   isUser,
@@ -46,7 +43,10 @@ import { first, isEmpty, isEqual } from "lodash";
 import { AFRICA_CAIRO_TIMEZONE, genSessionId } from "@litespace/utils";
 import { withImageUrls } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
-import { calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription } from "@/lib/subscription";
+import {
+  calcRemainingWeeklyMinutesBySubscription,
+  generateFreeSubscription,
+} from "@/lib/subscription";
 import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
 import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
 import { isBookable } from "@/lib/session";
@@ -95,6 +95,7 @@ function create(context: ApiContext) {
       const payload: ILesson.CreateApiPayload = createLessonPayload.parse(
         req.body
       );
+
       const tutor = await users.findById(payload.tutorId);
       if (!tutor) return next(notfound.tutor());
 
@@ -104,46 +105,35 @@ function create(context: ApiContext) {
       // lesson should be in the future
       if (dayjs.utc(payload.start).isBefore(dayjs.utc())) return next(bad());
 
-      const sub = await subscriptions
-        .find({
-          users: [user.id],
-          terminated: false,
-          end: { after: dayjs.utc().toISOString() },
-        })
-        .then(({ list }) => first(list));
+      const sub =
+        (await subscriptions
+          .find({
+            users: [user.id],
+            terminated: false,
+            end: { after: dayjs.utc().toISOString() },
+          })
+          .then(({ list }) => first(list))) ||
+        generateFreeSubscription({
+          userId: user.id,
+          userCreatedAt: user.createdAt,
+        });
 
-      // unsubscribed user is allowed to have only one not-canceled lesson at a
-      // time.
-      const userLessons = await lessons.find({
-        users: [user.id],
-        after: dayjs.utc().toISOString(),
-        canceled: false,
+      const remainingMinutes = await calcRemainingWeeklyMinutesBySubscription({
+        userId: sub.userId,
+        start: sub.start,
+        weeklyMinutes: sub.weeklyMinutes,
       });
-      if (!sub && userLessons.total !== 0) return next(reachedBookingLimit());
 
-      // unsubscribed users cannot book lessons with paid (regular) tutors
-      if (!sub && isRegularTutor(tutor)) return next(subscriptionRequired());
+      if (remainingMinutes < payload.duration) return next(noEnoughMinutes());
 
-      // subscribed users with no enough minutes quota should not be able to
-      // book with paid/unpaid tutors
-      if (sub) {
-        const remainingMinutes =
-          await calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription({
-            userId: sub.userId,
-            start: sub.start,
-            weeklyMinutes: sub.weeklyMinutes,
-          });
-        if (remainingMinutes < payload.duration) return next(noEnoughMinutes());
-
-        // subscribed users should not be able to book lessons not within the
-        // current week
-        const weekBoundaries = getCurrentWeekBoundaries(sub.start);
-        const within = dayjs
-          .utc(payload.start)
-          .add(payload.duration, "minutes")
-          .isBetween(weekBoundaries.start, weekBoundaries.end, "minutes", "[]");
-        if (!within) return next(weekBoundariesViolation());
-      }
+      // subscribed users should not be able to book lessons not within the
+      // current week
+      const weekBoundaries = getCurrentWeekBoundaries(sub.start);
+      const within = dayjs
+        .utc(payload.start)
+        .add(payload.duration, "minutes")
+        .isBetween(weekBoundaries.start, weekBoundaries.end, "minutes", "[]");
+      if (!within) return next(weekBoundariesViolation());
 
       const price = isTutorManager(tutor)
         ? 0

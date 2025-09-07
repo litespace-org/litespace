@@ -1,5 +1,5 @@
 import { router } from "@/lib/routes";
-import CalendarV2 from "@litespace/assets/CalendarV2";
+import Timer2 from "@litespace/assets/Timer2";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
@@ -25,7 +25,7 @@ export const SubscriptionDialog: React.FC<{
       title={
         <div className="w-12 h-12 bg-brand-50 rounded-full flex items-center justify-center">
           <div className="bg-brand-100 rounded-full flex items-center justify-center p-1">
-            <CalendarV2 className="[&>*]:stroke-brand-500 w-6 h-6" />
+            <Timer2 className="[&>*]:stroke-brand-500 w-6 h-6" />
           </div>
         </div>
       }
