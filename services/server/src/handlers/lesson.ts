@@ -185,7 +185,7 @@ function create(context: ApiContext) {
         }
       );
 
-      if (tutor.phone && tutor.verifiedPhone && tutor.notificationMethod)
+      if (tutor.phone && tutor.notificationMethod)
         sendMsg({
           to: tutor.phone,
           template: {
@@ -265,11 +265,7 @@ function update(context: ApiContext) {
       const otherMember = members.find((member) => member.userId !== user.id);
       if (!otherMember) return;
 
-      if (
-        otherMember.phone &&
-        otherMember.verifiedPhone &&
-        otherMember.notificationMethod
-      )
+      if (otherMember.phone && otherMember.notificationMethod)
         sendMsg({
           to: otherMember.phone,
           template: {
@@ -441,11 +437,7 @@ function cancel(_context: ApiContext) {
       const otherMember = members.find((member) => member.userId !== user.id);
       if (!otherMember) return;
 
-      if (
-        otherMember.phone &&
-        otherMember.verifiedPhone &&
-        otherMember.notificationMethod
-      )
+      if (otherMember.phone && otherMember.notificationMethod)
         sendMsg({
           to: otherMember.phone,
           template: {
