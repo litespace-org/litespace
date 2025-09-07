@@ -407,6 +407,7 @@ export default {
       "plan-card-v2": "0px 4px 20px 0px rgba(0, 0, 0, .03)",
       "time-selection": "0px 4px 15px 0px #00000008",
       "mobile-sidebar": "0px -4px 25px 0px rgba(0, 0, 0, 0.08)",
+      "sidebar-more-menu": "0px 4px 20px 0px rgba(0, 0, 0, .15)",
     },
   },
   plugins: [
