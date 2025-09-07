@@ -20,7 +20,10 @@ import { isAdmin, isStudent, isSuperAdmin } from "@litespace/utils/user";
 import { lessons, subscriptions, transactions } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
 import { first, max, sum } from "lodash";
-import { calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription } from "@/lib/subscription";
+import {
+  calcRemainingWeeklyMinutesBySubscription,
+  generateFreeSubscription,
+} from "@/lib/subscription";
 import { price, safe } from "@litespace/utils";
 import { fawry } from "@/fawry/api";
 import { fawryConfig } from "@/constants";
@@ -116,15 +119,20 @@ async function findUserSubscription(
     end: { after: now.toISOString() },
   });
 
-  const subscription = first(list);
+  const subscription =
+    first(list) ||
+    generateFreeSubscription({
+      userId: user.id,
+      userCreatedAt: user.createdAt,
+    });
 
-  const remainingWeeklyMinutes = subscription
-    ? await calculateRemainingWeeklyMinutesOfCurrentWeekBySubscription({
-        start: subscription.start,
-        userId: subscription.userId,
-        weeklyMinutes: subscription.weeklyMinutes,
-      })
-    : 0;
+  const remainingWeeklyMinutes = await calcRemainingWeeklyMinutesBySubscription(
+    {
+      start: subscription.start,
+      userId: subscription.userId,
+      weeklyMinutes: subscription.weeklyMinutes,
+    }
+  );
 
   const response: ISubscription.FindUserSubscriptionApiResponse = {
     info: subscription || null,

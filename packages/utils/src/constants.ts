@@ -46,7 +46,7 @@ export const MAX_INVOICE_AMOUNT = 50_000;
 
 export const MIN_LESSON_DURATION = 15;
 export const MAX_LESSON_DURATION = 30;
-export const LESSON_DURATION_LIST = [MIN_LESSON_DURATION, MAX_LESSON_DURATION];
+export const LESSON_DURATION_LIST = [MAX_LESSON_DURATION, MIN_LESSON_DURATION];
 
 export const MIN_PLAN_WEEKLY_MINUTES = MIN_LESSON_DURATION;
 export const MAX_PLAN_DISCOUNT_UNSCALED = 100;
@@ -143,6 +143,7 @@ export const PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL: Record<
   [IPlan.Period.Month]: "month",
   [IPlan.Period.Quarter]: "quarter",
   [IPlan.Period.Year]: "year",
+  [IPlan.Period.FreeTrial]: "free-trial",
 };
 
 export const PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD: Record<
@@ -152,12 +153,14 @@ export const PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD: Record<
   month: IPlan.Period.Month,
   quarter: IPlan.Period.Quarter,
   year: IPlan.Period.Year,
+  "free-trial": IPlan.Period.FreeTrial,
 };
 
 export const PLAN_PERIOD_TO_MONTH_COUNT: Record<IPlan.Period, number> = {
   [IPlan.Period.Month]: 1,
   [IPlan.Period.Quarter]: 3,
   [IPlan.Period.Year]: 12,
+  [IPlan.Period.FreeTrial]: 1200,
 };
 
 export const PLAN_PERIOD_LITERAL_TO_MONTH_COUNT: Record<
@@ -167,6 +170,7 @@ export const PLAN_PERIOD_LITERAL_TO_MONTH_COUNT: Record<
   month: 1,
   quarter: 3,
   year: 12,
+  "free-trial": 1200,
 };
 
 export const PLAN_PERIOD_LITERAL_TO_WEEK_COUNT: Record<
@@ -176,12 +180,16 @@ export const PLAN_PERIOD_LITERAL_TO_WEEK_COUNT: Record<
   month: 4,
   quarter: 12,
   year: 52,
+  "free-trial": 5200,
 };
 
 export const PLAN_PERIOD_TO_WEEK_COUNT: Record<IPlan.Period, number> = {
   [IPlan.Period.Month]: 4,
   [IPlan.Period.Quarter]: 12,
   [IPlan.Period.Year]: 52,
+  [IPlan.Period.FreeTrial]: 5200,
 };
 
 export const INTRO_VIDEO_EXPIRY_MONTHS = 3;
+
+export const STUDENT_FREE_WEEKLY_MINUTES = 60;

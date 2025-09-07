@@ -1,11 +1,11 @@
-import { calculateRemainingWeeklyMinutesOfCurrentWeekByUserId } from "@/lib/subscription";
+import { calcRemainingWeeklyMinutesByUserId } from "@/lib/subscription";
 import time from "@fixtures/time";
 import { nameof } from "@litespace/utils";
 import { expect } from "@fixtures/chai";
 import db from "@fixtures/db";
 import { subscriptions } from "@litespace/models";
 
-describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
+describe(nameof(calcRemainingWeeklyMinutesByUserId), () => {
   beforeEach(async () => {
     return await db.flush();
   });
@@ -13,7 +13,7 @@ describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
   it("should return zero in case the user has no subscription", async () => {
     const user = await db.student();
     await expect(
-      calculateRemainingWeeklyMinutesOfCurrentWeekByUserId(user.id)
+      calcRemainingWeeklyMinutesByUserId(user.id)
     ).to.eventually.be.eq(0);
   });
 
@@ -32,7 +32,7 @@ describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
     });
 
     await expect(
-      calculateRemainingWeeklyMinutesOfCurrentWeekByUserId(user.id)
+      calcRemainingWeeklyMinutesByUserId(user.id)
     ).to.eventually.be.eq(0);
   });
 
@@ -47,7 +47,7 @@ describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
     });
 
     await expect(
-      calculateRemainingWeeklyMinutesOfCurrentWeekByUserId(user.id)
+      calcRemainingWeeklyMinutesByUserId(user.id)
     ).to.eventually.be.eq(0);
   });
 
@@ -62,7 +62,7 @@ describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
     });
 
     await expect(
-      calculateRemainingWeeklyMinutesOfCurrentWeekByUserId(user.id)
+      calcRemainingWeeklyMinutesByUserId(user.id)
     ).to.eventually.be.eq(120);
   });
 
@@ -83,7 +83,7 @@ describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
     });
 
     await expect(
-      calculateRemainingWeeklyMinutesOfCurrentWeekByUserId(user.id)
+      calcRemainingWeeklyMinutesByUserId(user.id)
     ).to.eventually.be.eq(90);
   });
 
@@ -110,7 +110,7 @@ describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
     });
 
     await expect(
-      calculateRemainingWeeklyMinutesOfCurrentWeekByUserId(user.id)
+      calcRemainingWeeklyMinutesByUserId(user.id)
     ).to.eventually.be.eq(60);
   });
 
@@ -138,7 +138,7 @@ describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
     });
 
     await expect(
-      calculateRemainingWeeklyMinutesOfCurrentWeekByUserId(user.id)
+      calcRemainingWeeklyMinutesByUserId(user.id)
     ).to.eventually.be.eq(90);
   });
 
@@ -172,7 +172,7 @@ describe(nameof(calculateRemainingWeeklyMinutesOfCurrentWeekByUserId), () => {
     });
 
     await expect(
-      calculateRemainingWeeklyMinutesOfCurrentWeekByUserId(user.id)
+      calcRemainingWeeklyMinutesByUserId(user.id)
     ).to.eventually.be.eq(90);
   });
 });

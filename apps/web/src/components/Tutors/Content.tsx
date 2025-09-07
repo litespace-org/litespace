@@ -11,7 +11,6 @@ import {
   isValidTutorBio,
   isValidTutorName,
 } from "@litespace/utils";
-import { isTutorManager } from "@litespace/utils";
 import { NotificationsDialog } from "@/components/Lessons/NotificationDialog";
 import { useUser } from "@litespace/headless/context/user";
 import { router } from "@/lib/routes";
@@ -87,7 +86,6 @@ const Content: React.FC<{
               }
               key={tutor.id}
               tutorId={tutor.id}
-              free={isTutorManager(tutor)}
               about={tutor.about}
               name={tutor.name}
               rating={tutor.avgRating}

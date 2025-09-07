@@ -27,6 +27,7 @@ export function getPlanPeriodDiscount(
     [IPlan.Period.Month]: plan.monthDiscount,
     [IPlan.Period.Quarter]: plan.quarterDiscount,
     [IPlan.Period.Year]: plan.yearDiscount,
+    [IPlan.Period.FreeTrial]: 0,
   };
 
   return map[planPeriod];

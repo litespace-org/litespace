@@ -48,7 +48,7 @@ const Subscription: React.FC = () => {
 
   if (loading || !user || isTutorRole(user.role)) return null;
 
-  if (!info || ended)
+  if ((info?.id === -1 && remainingWeeklyMinutes === 0) || ended)
     return (
       <Link to={Web.Plans} tabIndex={-1}>
         <Button
@@ -69,13 +69,13 @@ const Subscription: React.FC = () => {
   return (
     <Tooltip
       content={intl("navbar.subscription.tooltip", {
-        day: dayjs(info.start).format("dddd"),
+        day: dayjs(info?.start).format("dddd"),
       })}
     >
       <div>
         <SubscriptionQuota
           remainingMinutes={remainingWeeklyMinutes}
-          weeklyMinutes={info.weeklyMinutes}
+          weeklyMinutes={info?.weeklyMinutes || 0}
         />
       </div>
     </Tooltip>
