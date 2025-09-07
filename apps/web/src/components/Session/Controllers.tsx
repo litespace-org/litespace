@@ -123,8 +123,19 @@ export const Toggle: React.FC<Controller & { icon: Icon }> = ({
 
       {indicator ? (
         <>
-          <span className="absolute h-2 w-2 top-[-2px] left-[-2px] animate-ping rounded-full bg-brand-700 opacity-75"></span>
-          <span className="absolute h-2 w-2 top-[-2px] left-[-2px] rounded-full bg-brand-700"></span>
+          <Typography
+            tag="span"
+            className={cn(
+              "text-caption text-natural-50",
+              "flex items-center justify-center",
+              "absolute aspect-square rounded-full bg-brand-500",
+              indicator <= 9
+                ? "top-[-30%] right-[-20%] px-[14%]"
+                : "top-[-35%] right-[-25%] px-[9%]"
+            )}
+          >
+            {indicator > 9 ? "+9" : indicator}
+          </Typography>
         </>
       ) : null}
     </div>
@@ -138,7 +149,7 @@ const Controllers: React.FC<{
   chat?: {
     toggle: Void;
     enabled: boolean;
-    indicator?: boolean;
+    indicator?: number;
   };
   leave?: Void;
   className?: string;
@@ -202,7 +213,7 @@ const Controllers: React.FC<{
           toggle={chat.toggle}
           enabled={chat.enabled}
           icon="chat"
-          indicator={chat.indicator && !chat.enabled}
+          indicator={chat.indicator}
         />
       ) : null}
 
