@@ -849,9 +849,10 @@ const MoreSidebarItem: React.FC<{
   return (
     <ActionsMenu
       sideOffset={30}
-      menuClassName="p-2 [&>div]:mb-[6px] [&>div:nth-of-type(1)]:mb-4 [&>:last-child]:mb-0"
+      menuClassName="p-2 [&>div]:mb-[6px] [&>div:nth-of-type(1)]:mb-4 [&>:last-child]:mb-0 shadow-sidebar-more-menu me-4"
       subContentItemClassName="min-h-fit p-2 first-of-type:px-0"
       actions={actions}
+      scrollableBackdrop={false}
       onOpenChange={(open) => {
         if (!setActive) return;
         setActive(open);

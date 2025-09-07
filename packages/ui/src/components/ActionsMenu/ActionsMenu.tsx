@@ -67,6 +67,7 @@ export const ActionsMenu: React.FC<{
   sideOffset?: number;
   itemClassName?: string;
   subContentItemClassName?: string;
+  scrollableBackdrop?: boolean;
 }> = ({
   actions,
   children,
@@ -79,9 +80,10 @@ export const ActionsMenu: React.FC<{
   subContentItemClassName,
   itemClassName,
   sideOffset = 5,
+  scrollableBackdrop = true,
 }) => {
   return (
-    <Root dir="rtl" onOpenChange={onOpenChange}>
+    <Root dir="rtl" onOpenChange={onOpenChange} modal={scrollableBackdrop}>
       <Trigger disabled={disabled} asChild>
         {children || (
           <button
