@@ -134,11 +134,12 @@ describe("/api/v1/user/", () => {
     });
   });
 
+  // TODO: populate this suite with more unit tests
   describe("GET /api/v1/user/tutor/list/onboarded", () => {
-    it("should retrieve a list of onboarded tutors with the tutor managers at the top for unsubscribed users", async () => {
+    it("should retrieve a list of onboarded tutors", async () => {
       const student = await db.student();
 
-      await Promise.all([
+      const tutors = await Promise.all([
         db.onboardedTutor(),
         db.onboardedTutorManager(),
         db.onboardedTutor(),
@@ -146,28 +147,26 @@ describe("/api/v1/user/", () => {
         db.onboardedTutor(),
       ]);
 
-      const res = await findOnboardedTutors({ user: student });
-      expect(res.body?.total).to.eq(5);
-      expect(res.body?.list[0].role).to.eq(IUser.Role.TutorManager);
-      expect(res.body?.list[1].role).to.eq(IUser.Role.TutorManager);
-    });
-
-    it("should retrieve a list of onboarded tutors with the regular tutors at the top for subscribed users", async () => {
-      const student = await db.student();
-      await db.validSubscription(student.id);
-
+      const now = dayjs();
       await Promise.all([
-        db.onboardedTutorManager(),
-        db.onboardedTutor(),
-        db.onboardedTutorManager(),
-        db.onboardedTutor(),
-        db.onboardedTutorManager(),
+        db.slot({
+          userId: tutors[0].id,
+          start: now.add(2, "days").toISOString(),
+        }),
+        db.slot({
+          userId: tutors[1].id,
+          start: now.add(1, "days").toISOString(),
+        }),
+        db.slot({
+          userId: tutors[2].id,
+          start: now.add(1, "hour").toISOString(),
+        }),
       ]);
 
       const res = await findOnboardedTutors({ user: student });
       expect(res.body?.total).to.eq(5);
-      expect(res.body?.list[0].role).to.eq(IUser.Role.Tutor);
-      expect(res.body?.list[1].role).to.eq(IUser.Role.Tutor);
+      expect(res.body?.list[0].id).to.eq(tutors[2].id);
+      expect(res.body?.list[1].id).to.eq(tutors[1].id);
     });
   });
 

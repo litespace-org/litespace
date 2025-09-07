@@ -1,10 +1,20 @@
-import { ILesson, ITutor, IUser } from "@litespace/types";
+import { IAvailabilitySlot, ILesson, ITutor, IUser } from "@litespace/types";
 import { Knex } from "knex";
-import { tutors, knex, lessons, topics, ratings } from "@litespace/models";
-import { first, orderBy } from "lodash";
+import {
+  tutors,
+  knex,
+  lessons,
+  topics,
+  ratings,
+  availabilitySlots,
+} from "@litespace/models";
+import { filter, first, orderBy, sortBy } from "lodash";
 import { cache } from "@/lib/cache";
 import { withImageUrl } from "@/lib/user";
 import { isOnboarded } from "@litespace/utils/tutor";
+import dayjs from "dayjs";
+import { getSubslots } from "@/lib/availabilitySlot";
+import { subtractSlotsBatch } from "@litespace/utils";
 
 export type TutorsCache = ITutor.Cache[];
 
@@ -81,33 +91,61 @@ export function isPublicTutor(
 }
 
 /*
- * an ancillary function used in 'findOnboardedTutors' user handler
+ * an ancillary function used in 'findOnboardedTutors' user handler.
+ * sort tutors by the nearest time available, avgRating, and lessonCount.
  */
-export function orderTutors({
-  tutors,
-  userGender,
-  subscribed,
-}: {
-  tutors: ITutor.Cache[];
-  userGender?: IUser.Gender;
-  subscribed?: boolean;
-}): ITutor.Cache[] {
-  const iteratees = [
-    "role",
-    (tutor: ITutor.Cache) => {
-      if (!userGender) return 0; // disable ordering by gender if user is not logged in or gender is unkown
-      if (!tutor.gender) return Infinity;
-      const same = userGender === tutor.gender;
-      return same ? 0 : 1;
-    },
-    "notice",
-  ];
-  const orders: Array<"asc" | "desc"> = [
-    subscribed ? "asc" : "desc",
-    "asc",
-    "asc",
-  ];
-  return orderBy(tutors, iteratees, orders);
+export async function orderTutors(
+  tutors: ITutor.Cache[]
+): Promise<ITutor.Cache[]> {
+  const now = dayjs().toISOString();
+  const slots = await availabilitySlots
+    .find({
+      userIds: tutors.map((tutor) => tutor.id),
+      purposes: [
+        IAvailabilitySlot.Purpose.General,
+        IAvailabilitySlot.Purpose.Lesson,
+      ],
+      start: { gt: now },
+      full: true,
+    })
+    .then((res) => res.list);
+
+  // get the empty slots/subslots
+  const bookedSubslots = await getSubslots({
+    slotIds: slots.map((s) => s.id),
+    userIds: tutors.map((tutor) => tutor.id),
+    after: now,
+    // Just to lessen the computation power required
+    before: dayjs(now).add(6, "days").endOf("day").toISOString(),
+  });
+  const subslots = subtractSlotsBatch({
+    slots,
+    subslots: bookedSubslots,
+  });
+
+  // extend the tutors objects with `nearestStotTime` attribute.
+  const extendedTutors = tutors.map((tutor) => {
+    const tSlotIds = filter(slots, (s) => s.userId === tutor.id).map(
+      (s) => s.id
+    );
+
+    const tSubslots = filter(subslots, (sb) => tSlotIds.includes(sb.parent));
+    const nearestStart = sortBy(tSubslots, ["start"])[0];
+
+    return {
+      ...tutor,
+      nearestSlotTime: nearestStart
+        ? dayjs(nearestStart.start).unix()
+        : undefined,
+    };
+  });
+
+  // order/sort tutors by the nearestSlotTime
+  return orderBy(
+    extendedTutors,
+    ["nearestSlotTime", "avgRating", "lessonCount"],
+    ["asc", "desc", "desc"]
+  );
 }
 
 /**
