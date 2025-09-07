@@ -44,8 +44,7 @@ const Session: React.FC<{
   const videoController = useVideoController();
   const audioController = useAudioController();
 
-  const [newMessageIndicator, setNewMessageIndicator] =
-    useState<boolean>(false);
+  const [newMessageIndicator, setNewMessageIndicator] = useState<number>(0);
 
   const videoTrackRef = useMemo(() => {
     const local = videoTracks.find(
@@ -114,7 +113,7 @@ const Session: React.FC<{
           memberId={remoteMember.id}
           selfId={localMember.id}
           onNewMessage={() => {
-            setNewMessageIndicator(true);
+            setNewMessageIndicator((prev) => prev + 1);
             if (!chat) {
               const audio = new Audio("/new-message.mp3");
               audio.play();
@@ -128,7 +127,7 @@ const Session: React.FC<{
           enabled: chat,
           toggle: () => {
             setChat((prev) => !prev);
-            setNewMessageIndicator(false);
+            setNewMessageIndicator(0);
           },
           indicator: newMessageIndicator,
         }}

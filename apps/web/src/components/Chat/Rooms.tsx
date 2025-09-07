@@ -125,6 +125,7 @@ const Rooms: React.FC<{
       <div className="flex flex-col justify-stretch gap-4">
         {data.map((data) => {
           const room = "roomId" in data;
+
           return (
             <ChatRoom
               key={room ? data.roomId : `t-${data.id}`}
