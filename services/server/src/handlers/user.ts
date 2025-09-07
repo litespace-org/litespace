@@ -98,7 +98,6 @@ import {
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
 import { findFullTutorsQuery } from "@litespace/schemas/user";
 import { isEmailValid } from "@/lib/validateEmail";
-import { isUserSubscribed } from "@/lib/subscription";
 import { erpnext } from "@/lib/erpnext";
 
 const createUserPayload: ZodSchema<IUser.CreateApiPayload> = zod.object({
@@ -559,12 +558,6 @@ async function findOnboardedTutors(req: Request, res: Response) {
     ? await cache.tutors.getAll()
     : await cacheTutors();
 
-  // order tutors based on time of the first event, gender of the user
-  // online state, and notice.
-  const user = req.user;
-  const userGender =
-    isUser(user) && user.gender ? (user.gender as IUser.Gender) : undefined;
-
   const filtered = query.search
     ? tutorsCache.filter((tutor) => {
         if (!query.search) return true;
@@ -575,12 +568,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
       })
     : tutorsCache;
 
-  const ordered = orderTutors({
-    tutors: filtered,
-    userGender,
-    subscribed:
-      isUser(user) && user.id ? await isUserSubscribed(user.id) : false,
-  });
+  const ordered = await orderTutors(filtered);
 
   // paginate the ordered (tutors) list
   const page = query.page || 1;
@@ -593,7 +581,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
   // ITutor.FindOnboardedTutorsApiResponse list attribute
   const list = paginated.map((tutor) => ({
     ...tutor,
-    slots: [], // TODO: retrieve AvailabilitySlots from the db
+    slots: [], // TODO
   }));
 
   // DONE: Update the response to match the new design in (@/architecture/v1.0/tutors.md)
