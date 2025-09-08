@@ -2,8 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { decodeAuthJwt } from "@/jwt";
 import { users } from "@litespace/models";
-import { safe } from "@litespace/utils/error";
+import { ResponseError, safe } from "@litespace/utils/error";
 import { isAdmin } from "@litespace/utils/user";
+import { ApiError, ApiErrorCode } from "@litespace/types";
+
+const error = (errorCode: ApiErrorCode, statusCode: number, message?: string) =>
+  new ResponseError({
+    errorCode,
+    statusCode,
+    message,
+  });
 
 export function authMiddleware({ jwtSecret }: { jwtSecret: string }) {
   return safeRequest(
@@ -15,7 +23,8 @@ export function authMiddleware({ jwtSecret }: { jwtSecret: string }) {
 
       if (type === "Bearer") {
         const id = await safe(async () => decodeAuthJwt(token, jwtSecret));
-        if (id instanceof Error) return next();
+        if (id instanceof Error)
+          return next(error(ApiError.Unauthenticated, 401));
 
         const user = await users.findById(id);
         if (user) req.user = user;
