@@ -8,6 +8,7 @@ import {
   sessionEvents,
   topics,
   users,
+  students,
   ratings,
   tutors,
   availabilitySlots,
@@ -32,6 +33,7 @@ import {
   IPlan,
   IReport,
   IIntroVideo,
+  IStudent,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
@@ -68,6 +70,7 @@ export async function flush() {
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await confirmationCodes.builder(tx).del();
+    await students.builder(tx).del();
     await users.builder(tx).del();
     await contactRequests.builder(tx).del();
   });
@@ -245,6 +248,32 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
   });
 }
 
+/**
+ * behaves as studentUser
+ */
+async function student(
+  studentPayload?: Partial<IStudent.CreateModelPayload>,
+  userPayload?: Partial<IUser.CreatePayload>
+): Promise<IUser.Self> {
+  const info = await user({ ...userPayload, role: IUser.Role.Student });
+  await students.create({
+    userId: info.id,
+    ...studentPayload,
+  });
+  return info;
+}
+
+async function nativeStudent(
+  studentPayload?: Partial<IStudent.CreateModelPayload>,
+  userPayload?: Partial<IUser.CreatePayload>
+): Promise<IStudent.Self> {
+  const info = await user({ ...userPayload, role: IUser.Role.Student });
+  return await students.create({
+    userId: info.id,
+    ...studentPayload,
+  });
+}
+
 async function tutor(
   tutorPayload?: Partial<ITutor.UpdatePayload>,
   userPayload?: Partial<IUser.UpdateModelPayload>,
@@ -257,10 +286,6 @@ async function tutor(
   const data = await tutors.findById(tutor.id);
   if (!data) throw new Error("tutor not found");
   return data;
-}
-
-function student() {
-  return user({ role: IUser.Role.Student });
 }
 
 async function tutorManager(
@@ -276,12 +301,12 @@ async function tutorManager(
   return data;
 }
 
-async function students(count: number) {
-  return await Promise.all(range(0, count).map(() => student()));
-}
-
 async function makeTutors(count: number) {
   return await Promise.all(range(0, count).map(() => tutor()));
+}
+
+async function makeStudents(count: number) {
+  return await Promise.all(range(0, count).map(() => student()));
 }
 
 export type MakeLessonsReturn = Array<{
@@ -571,8 +596,8 @@ export default {
   user,
   tutor,
   student,
+  nativeStudent,
   tutorManager,
-  students,
   interview,
   lesson,
   flush,
@@ -587,6 +612,7 @@ export default {
   rating: makeRating,
   message: makeMessage,
   make: {
+    students: makeStudents,
     lessons: makeLessons,
     interviews: makeInterviews,
     tutors: makeTutors,

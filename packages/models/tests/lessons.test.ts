@@ -152,7 +152,7 @@ describe("Lessons", () => {
     describe("Complex (Many students)", () => {
       it("should count unique students", async () => {
         const tutor = await fixtures.tutor();
-        const students = await fixtures.students(3);
+        const students = await fixtures.make.students(3);
         const slot = await fixtures.slot({ userId: tutor.id });
         const futureLessons = [1, 2, 3];
         const pastLessons = [3, 2, 1];
@@ -250,7 +250,7 @@ describe("Lessons", () => {
 
     beforeEach(async () => {
       tutor = await fixtures.tutor();
-      const students = await fixtures.students(5);
+      const students = await fixtures.make.students(5);
       const slot = await fixtures.slot({ userId: tutor.id });
       /**
        * - 5 students
@@ -532,7 +532,7 @@ describe("Lessons", () => {
 
     it("should find all lessons in the database", async () => {
       const tutor = await fixtures.tutor();
-      const students = await fixtures.students(5);
+      const students = await fixtures.make.students(5);
       const slot = await fixtures.slot({ userId: tutor.id });
       const future = [2, 2, 2, 1, 1];
       const past = [3, 3, 3, 2, 2];
@@ -578,7 +578,7 @@ describe("Lessons", () => {
 
     it("should find all lessons in the database (with pagination)", async () => {
       const tutor = await fixtures.tutor();
-      const students = await fixtures.students(2);
+      const students = await fixtures.make.students(2);
       const slot = await fixtures.slot({ userId: tutor.id });
       const future = [2, 2];
       const past = [3, 4];
@@ -611,7 +611,7 @@ describe("Lessons", () => {
 
     it("should filter users lessons using `future`, `past`, `ratified` and `canceled` flags", async () => {
       const tutor = await fixtures.tutor();
-      const students = await fixtures.students(2);
+      const students = await fixtures.make.students(2);
       const slot = await fixtures.slot({ userId: tutor.id });
       const future = [2, 2];
       const past = [3, 4];
@@ -886,7 +886,7 @@ describe("Lessons", () => {
 
     it("should tutor lessons with pagination", async () => {
       const firstTutor = await fixtures.tutor();
-      const firstTutorStudents = await fixtures.students(2);
+      const firstTutorStudents = await fixtures.make.students(2);
       const firstTutorSlot = await fixtures.slot({ userId: firstTutor.id });
       const firstTutorFutureLesson = [2, 2];
       const firstTutorPastLessons = [3, 4];
@@ -906,7 +906,7 @@ describe("Lessons", () => {
       });
 
       const secondTutor = await fixtures.tutor();
-      const secondTutorStudents = await fixtures.students(2);
+      const secondTutorStudents = await fixtures.make.students(2);
       const secondTutorSlot = await fixtures.slot({ userId: secondTutor.id });
       const secondTutorFutureLessons = [1, 1];
       const secondTutorPastLessons = [2, 3];
@@ -1092,7 +1092,7 @@ describe("Lessons", () => {
   describe(nameof(lessons.countLessonsBatch), () => {
     it("should return lesson counts for multiple users", async () => {
       const [tutor1, tutor2, noLessonsTutor] = await fixtures.make.tutors(3);
-      const students = await fixtures.students(2);
+      const students = await fixtures.make.students(2);
       const slot1 = await fixtures.slot({ userId: tutor1.id });
       const slot2 = await fixtures.slot({ userId: tutor2.id });
 
