@@ -1,15 +1,14 @@
-import { router } from "@/lib/routes";
 import { capture } from "@/lib/sentry";
 import { ErrorHandler } from "@/modules/MediaCall/ErrorHandler";
 import { CallError } from "@/modules/MediaCall/types";
+import { useUser } from "@litespace/headless/context/user";
 import { useLogger } from "@litespace/headless/logger";
 import { ApiErrorCode, Optional, Void } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { LocalId } from "@litespace/ui/locales";
 import { useToast } from "@litespace/ui/Toast";
-import { isForbidden, ResponseError } from "@litespace/utils";
-import { Web } from "@litespace/utils/routes";
+import { isUnauthenticated, ResponseError } from "@litespace/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +36,7 @@ export function useOnError(
 ) {
   const client = useQueryClient();
   const navigate = useNavigate();
+  const user = useUser();
   const handlerRef = useRef<Optional<Handler | null>>(payload.handler);
   const resetQueryRef = useRef<Optional<Void>>(undefined);
   const logger = useLogger();
@@ -57,12 +57,9 @@ export function useOnError(
       capture(error);
 
       // Direct the user to the login page.
-      if (isForbidden(error) && !disableAutoNavigate)
-        return navigate(
-          router.web({
-            route: Web.Login,
-          })
-        );
+      if (isUnauthenticated(error) && !disableAutoNavigate) {
+        return user.logout();
+      }
 
       if (!handlerRef.current) return;
       const messageId = getErrorMessageId(error);

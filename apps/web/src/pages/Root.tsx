@@ -2,13 +2,21 @@ import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowser
 import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
+import { StudentDashboardTour } from "@/constants/tour";
 import { useSaveLogs } from "@/hooks/logger";
+import { useCheckTimeValidity } from "@/hooks/time";
+import { useTour } from "@/hooks/tour";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 import { router } from "@/lib/routes";
+import Exit from "@litespace/assets/Exit";
 import { useUser } from "@litespace/headless/context/user";
-import { isProfileComplete } from "@litespace/utils/tutor";
-import { Landing, Web } from "@litespace/utils/routes";
+import { Button } from "@litespace/ui/Button";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Typography } from "@litespace/ui/Typography";
 import { dayjs, isForbidden, LITESPACE_SUPPORT_URL } from "@litespace/utils";
+import { Landing, Web } from "@litespace/utils/routes";
+import { isProfileComplete } from "@litespace/utils/tutor";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
 import cn from "classnames";
 import React, { useEffect, useMemo, useState } from "react";
@@ -19,14 +27,6 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { useCheckTimeValidity } from "@/hooks/time";
-import { Typography } from "@litespace/ui/Typography";
-import { Button } from "@litespace/ui/Button";
-import { useTour } from "@/hooks/tour";
-import { StudentDashboardTour } from "@/constants/tour";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
-import Exit from "@litespace/assets/Exit";
 
 const publicRoutes: Web[] = [
   Web.Login,

@@ -28,4 +28,4 @@ export const walletPaymentQrCode = {
   remove: () => remove(CacheKey.WalletQr),
 };
 
-export const cache = { save, load };
+export const cache = { save, load, remove };
