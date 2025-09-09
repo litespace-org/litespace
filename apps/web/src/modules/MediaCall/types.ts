@@ -6,15 +6,11 @@ export type Device = {
   type: DeviceType;
 };
 
-export interface AudioTrack extends MediaStreamTrack {
-  readonly kind: "audio";
-}
+export type AudioTrack = MediaStreamTrack;
 
-export interface VideoTrack extends MediaStreamTrack {
-  readonly kind: "video";
-}
+export type VideoTrack = MediaStreamTrack;
 
-export interface MediaTrack extends MediaStreamTrack {}
+export type MediaTrack = MediaStreamTrack;
 
 export type MemberTracks = {
   mic?: AudioTrack;
@@ -23,7 +19,7 @@ export type MemberTracks = {
 };
 
 export interface DeviceManager {
-  listDevices(): Device[] | Promise<Device[]>;
+  listDevices(): Promise<Device[]>;
   grantPermissionFor(device: Device): Promise<MediaTrack | null>;
   grantMicPerm(): Promise<AudioTrack | null>;
   grantCamPerm(): Promise<VideoTrack | null>;

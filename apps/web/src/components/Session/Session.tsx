@@ -1,66 +1,31 @@
-import {
-  useConnectionState,
-  useLocalParticipant,
-  useRemoteParticipant,
-  useTracks,
-} from "@livekit/components-react";
-import { ConnectionQuality, ConnectionState, Track } from "livekit-client";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  LocalMember,
-  RemoteMember,
-  TrackReference,
-} from "@/components/Session/types";
+import { LocalMember, RemoteMember } from "@/components/Session/types";
 import VideoStreams from "@/components/Session/VideoStreams";
-import { nullable } from "@litespace/utils";
 import { Layout } from "@litespace/headless/sessions";
 import { simulateMobile } from "@/lib/window";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import AudioStreams from "@/components/Session/AudioStreams";
 import Controllers from "@/components/Session/Controllers";
 import { Void } from "@litespace/types";
-import {
-  useAudioController,
-  useBlurController,
-  useVideoController,
-} from "@/components/Session/room";
 import { SessionChat } from "@/components/Session/SessionChat";
 import { useSearchParams } from "react-router-dom";
+import { useMediaCall } from "@/hooks/mediaCall";
+import AudioStream from "./AudioStream";
+import VideoStream from "./VideoStream";
+import { useUser } from "@litespace/headless/context/user";
 
 const Session: React.FC<{
   localMember: LocalMember;
   remoteMember: RemoteMember;
   leave: Void;
-}> = ({ localMember, remoteMember, leave }) => {
+}> = () => {
   const mq = useMediaQuery();
+  const call = useMediaCall();
+  const { user } = useUser();
   const [chat, setChat] = useState(false);
   const [_, setParams] = useSearchParams();
-
-  const videoTracks = useTracks([Track.Source.Camera]);
-  const localParticipant = useLocalParticipant();
-  const remoteParticipant = useRemoteParticipant(remoteMember.id.toString());
-  const connectionState = useConnectionState();
-  const blurController = useBlurController();
-  const videoController = useVideoController();
-  const audioController = useAudioController();
-
   const [newMessageIndicator, setNewMessageIndicator] =
     useState<boolean>(false);
-
-  const videoTrackRef = useMemo(() => {
-    const local = videoTracks.find(
-      (track: TrackReference) => track.participant.isLocal
-    ) as TrackReference | undefined;
-
-    const remote = videoTracks.find(
-      (track: TrackReference) => !track.participant.isLocal
-    ) as TrackReference | undefined;
-
-    return {
-      local: nullable(local),
-      remote: nullable(remote),
-    };
-  }, [videoTracks]);
 
   const layout = useMemo((): Layout => {
     if (simulateMobile()) return "simulated-mobile";
@@ -72,14 +37,23 @@ const Session: React.FC<{
   // set nav to remove the nav and sidebars
   useEffect(() => {
     setParams({ nav: "false" });
-    return () => {
-      setParams({ nav: "true" });
-    };
+    return () => setParams({ nav: "true" });
   }, [setParams]);
 
   return (
     <div className="h-full flex flex-col gap-10">
       <div className="h-[calc(100%-80px)] flex gap-6">
+        members:
+        {call.inMembers.map((member, i) => (
+          <div key={i} className="flex flex-col">
+            <div>{member.id}</div>
+            <VideoStream track={member.tracks.cam} />
+            {member.id !== user?.id.toString() ? (
+              <AudioStream track={member.tracks.mic} />
+            ) : null}
+          </div>
+        ))}
+        {/*
         <VideoStreams
           selfTrackRef={videoTrackRef.local}
           selfId={localMember.id}
@@ -121,9 +95,10 @@ const Session: React.FC<{
             }
           }}
         />
+        */}
       </div>
 
-      <Controllers
+      {/*<Controllers
         chat={{
           enabled: chat,
           toggle: () => {
@@ -136,7 +111,7 @@ const Session: React.FC<{
         audio={audioController}
         video={videoController}
         blur={blurController}
-      />
+      />*/}
     </div>
   );
 };

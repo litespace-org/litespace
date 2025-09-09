@@ -8,6 +8,7 @@ import Content from "@/components/Lesson/Content";
 import { useUser } from "@litespace/headless/context/user";
 import cn from "classnames";
 import { useSocket } from "@litespace/headless/socket";
+import { MediaCallProvider } from "@/hooks/mediaCall";
 
 type Params = Replace<UrlParamsOf<Web.Lesson>, "id", string>;
 
@@ -15,8 +16,8 @@ const Lesson: React.FC = () => {
   const params = useParams<Params>();
   const logger = useLogger();
   const navigate = useNavigate();
-  const { user } = useUser();
 
+  const { user } = useUser();
   const { socket } = useSocket();
 
   useEffect(() => {
@@ -46,14 +47,16 @@ const Lesson: React.FC = () => {
   if (!lessonId || !user) return null;
 
   return (
-    <div
-      className={cn(
-        // standard page layout styles.
-        "flex-1 overflow-hidden p-4"
-      )}
-    >
-      <Content lessonId={lessonId} self={user} />
-    </div>
+    <MediaCallProvider lessonId={lessonId}>
+      <div
+        className={cn(
+          // standard page layout styles.
+          "flex-1 overflow-hidden p-4"
+        )}
+      >
+        <Content lessonId={lessonId} self={user} />
+      </div>
+    </MediaCallProvider>
   );
 };
 

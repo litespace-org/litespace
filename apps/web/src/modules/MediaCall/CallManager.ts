@@ -1,17 +1,21 @@
 import { CallSession } from "./CallSession";
-import { DeviceManager, AudioTrack, VideoTrack, Device } from "./types";
+import { DeviceManager, Device } from "./types";
 
 export class CallManager {
-  protected session: CallSession;
+  protected sess: CallSession;
   protected dm: DeviceManager;
 
   constructor(session: CallSession, dm: DeviceManager) {
-    this.session = session;
+    this.sess = session;
     this.dm = dm;
   }
 
-  get s() {
-    return this.session;
+  get session() {
+    return this.sess;
+  }
+
+  get media() {
+    return this.dm;
   }
 
   async publishTrackFromDevice(deviceId: Device["id"]) {
@@ -22,11 +26,10 @@ export class CallManager {
     const track = await this.dm.grantPermissionFor(device);
     if (!track) throw Error("permission not granted!");
 
-    if (device.type === "mic")
-      this.session.getMemberByIndex(0)!.publishMicTrack(track as AudioTrack);
+    if (device.type === "mic") this.session.curMember.publishMicTrack(track);
     else if (device.type === "cam")
-      this.session.getMemberByIndex(0)!.publishCamTrack(track as VideoTrack);
+      this.session.curMember.publishCamTrack(track);
     else if (device.type === "screen")
-      this.session.getMemberByIndex(0)!.publishScreenTrack(track as VideoTrack);
+      this.session.curMember.publishScreenTrack(track);
   }
 }
