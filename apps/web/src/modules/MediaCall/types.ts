@@ -6,15 +6,11 @@ export type Device = {
   type: DeviceType;
 };
 
-export interface AudioTrack extends MediaStreamTrack {
-  readonly kind: "audio";
-}
+export type AudioTrack = MediaStreamTrack;
 
-export interface VideoTrack extends MediaStreamTrack {
-  readonly kind: "video";
-}
+export type VideoTrack = MediaStreamTrack;
 
-export interface MediaTrack extends MediaStreamTrack {}
+export type MediaTrack = MediaStreamTrack;
 
 export type MemberTracks = {
   mic?: AudioTrack;
@@ -23,9 +19,34 @@ export type MemberTracks = {
 };
 
 export interface DeviceManager {
-  listDevices(): Device[] | Promise<Device[]>;
+  getDevices(): Device[];
+  detectDevices(): Promise<Device[]>;
   grantPermissionFor(device: Device): Promise<MediaTrack | null>;
   grantMicPerm(): Promise<AudioTrack | null>;
   grantCamPerm(): Promise<VideoTrack | null>;
   grantScreenPerm(): Promise<VideoTrack | null>;
 }
+
+export enum CallError {
+  IndexOutOfRange = 1,
+  CannotRemoveJoinedMember,
+  NotAllowedToJoinSession,
+  MemberAlreadyInSession,
+  FullSession,
+  TrackNotFound,
+  UserMediaAccessDenied,
+  MicNotFound,
+  CamNotFound,
+}
+
+export const CallErrorMessage: Record<CallError, string> = Object.freeze({
+  [CallError.IndexOutOfRange]: "index out of range.",
+  [CallError.CannotRemoveJoinedMember]: "cannot remove a joined member.",
+  [CallError.NotAllowedToJoinSession]: "not allowed to join the session.",
+  [CallError.MemberAlreadyInSession]: "the member is already in the session!",
+  [CallError.FullSession]: "the session is full!",
+  [CallError.TrackNotFound]: "no track found!",
+  [CallError.UserMediaAccessDenied]: "counldn't get access to user media.",
+  [CallError.MicNotFound]: "cannot find a mic device.",
+  [CallError.CamNotFound]: "cannot find a cam device",
+});

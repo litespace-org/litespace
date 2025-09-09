@@ -19,14 +19,14 @@ export function useUsers(
   return usePaginate(findUsers, ["find-users", filter]);
 }
 
-export function useFindUserById(id: string | number): {
-  query: UseQueryResult<IUser.Self>;
+export function useFindUserById(id?: string | number): {
+  query: UseQueryResult<IUser.Self | null>;
   keys: unknown[];
 } {
   const api = useApi();
 
   const findUserById = useCallback(
-    async () => await api.user.findById(id),
+    async () => (id ? await api.user.findById(id) : null),
     [api.user, id]
   );
 

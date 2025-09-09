@@ -4,18 +4,13 @@ import { IUser } from "@litespace/types";
 import { INTERVIEW_DURATION } from "@litespace/utils/constants";
 import { first } from "lodash";
 import React, { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import Session from "@/components/Session";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
-import { isRegularTutorRole, isTutorManagerRole } from "@litespace/utils/user";
-import { Web } from "@litespace/utils/routes";
+import PreSession from "@/components/Session/PreSession";
 
 const Content: React.FC<{ interviewId: number; self: IUser.Self }> = ({
   interviewId,
   self,
 }) => {
-  const navigate = useNavigate();
-
   const { query: interviewsQuery } = useFindInterviews({
     ids: [interviewId],
     size: 1,
@@ -56,18 +51,12 @@ const Content: React.FC<{ interviewId: number; self: IUser.Self }> = ({
     );
 
   return (
-    <Session
+    <PreSession
       type="interview"
       sessionId={interview.sessionId}
-      remoteMember={remoteMember}
-      localMember={self}
-      onLeave={() => {
-        if (isTutorManagerRole(self.role)) return navigate(Web.TutorDashboard);
-        if (isRegularTutorRole(remoteMember.role))
-          return navigate(Web.TutorOnboarding);
-      }}
       start={interview.start}
       duration={INTERVIEW_DURATION}
+      member={remoteMember}
     />
   );
 };

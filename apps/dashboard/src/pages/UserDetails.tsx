@@ -56,7 +56,7 @@ const UserDetails = () => {
       <BackLink to="/users" name="dashboard.users.title" />
 
       <UserDetailsContent
-        user={query.data}
+        user={query.data || undefined}
         tutor={tutorQuery.data || undefined}
         tutorStats={teachingTutorStats.data}
         loading={

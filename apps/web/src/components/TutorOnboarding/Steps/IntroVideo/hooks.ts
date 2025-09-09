@@ -1,4 +1,3 @@
-import { isLocalAudioTrack, isLocalVideoTrack } from "@/lib/livekit";
 import { safePromise } from "@litespace/utils/error";
 import { BackgroundBlur } from "@livekit/track-processors";
 import {
@@ -6,6 +5,8 @@ import {
   LocalVideoTrack,
   Track,
   createLocalTracks,
+  isAudioTrack,
+  isVideoTrack,
 } from "livekit-client";
 import { isEmpty } from "lodash";
 import { useCallback, useRef, useState } from "react";
@@ -43,8 +44,8 @@ export function useRecord() {
     if (
       !videoTrack ||
       !audioTrack ||
-      !isLocalVideoTrack(videoTrack) ||
-      !isLocalAudioTrack(audioTrack)
+      !isVideoTrack(videoTrack) ||
+      !isAudioTrack(audioTrack)
     )
       return;
 
@@ -72,8 +73,8 @@ export function useRecord() {
     if (
       !videoTrack ||
       !audioTrack ||
-      !isLocalVideoTrack(videoTrack) ||
-      !isLocalAudioTrack(audioTrack) ||
+      !isVideoTrack(videoTrack) ||
+      !isAudioTrack(audioTrack) ||
       !stream
     )
       return;

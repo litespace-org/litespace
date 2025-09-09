@@ -5,11 +5,13 @@ import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Loading } from "@litespace/ui/Loading";
-import { VideoTrack as BaseVideoTrack } from "@livekit/components-react";
-import { TrackReference } from "@/components/Session/types";
+import VideoStream from "@/components/Session/VideoStream";
+import { VideoTrack, AudioTrack } from "@/modules/MediaCall/types";
+import AudioStream from "@/components/Session/AudioStream";
 
-const VideoTrack: React.FC<{
-  trackRef: TrackReference | null;
+const MemberStream: React.FC<{
+  videoTrack?: VideoTrack;
+  audioTrack?: AudioTrack;
   muted?: boolean;
   video?: boolean;
   audio?: boolean;
@@ -20,7 +22,8 @@ const VideoTrack: React.FC<{
   userName: string | null;
   loading?: boolean;
 }> = ({
-  trackRef,
+  videoTrack,
+  audioTrack,
   video,
   audio,
   speaking,
@@ -111,54 +114,54 @@ const VideoTrack: React.FC<{
         ) : null}
       </div>
 
-      {trackRef ? (
-        <BaseVideoTrack
-          trackRef={trackRef}
-          onClick={() => {
-            setFillHorizontally(!fillHorizontally);
-            setDirty(true);
-          }}
-          autoPlay
-          muted
-          // ref: https://css-tricks.com/what-does-playsinline-mean-in-web-video/
-          playsInline
+      <VideoStream
+        track={videoTrack}
+        onClick={() => {
+          setFillHorizontally(!fillHorizontally);
+          setDirty(true);
+        }}
+        autoPlay
+        muted
+        // ref: https://css-tricks.com/what-does-playsinline-mean-in-web-video/
+        playsInline
+        /**
+         * @desc when the media stream is rendered, user is expecting to see himself
+         * mirrored (as if he is looking into a mirror). To achieve this, we
+         * need to flip the media stream using css.
+         *
+         * @ref https://webrtchacks.com/mirror-framerate/
+         *
+         * @tip disable the `transform` to notice the difference.
+         */
+        style={{ transform: "scale(-1,1)" }}
+        className={
           /**
-           * @desc when the media stream is rendered, user is expecting to see himself
-           * mirrored (as if he is looking into a mirror). To achieve this, we
-           * need to flip the media stream using css.
-           *
-           * @ref https://webrtchacks.com/mirror-framerate/
-           *
-           * @tip disable the `transform` to notice the difference.
+           * a video must be positioned absolute as it will overflow from its
+           * parent if we do otherwise.
            */
-          style={{ transform: "scale(-1,1)" }}
-          className={
+          cn("absolute", "cursor-pointer", {
             /**
-             * a video must be positioned absolute as it will overflow from its
-             * parent if we do otherwise.
+             * when the user disables the camera, the video element will be black.
+             * in this case, we should mark it as "hidden/invisible" not to
+             * interfer with the styling.
+             *
+             * @tip disable the line below to notice the difference.
              */
-            cn("absolute", "cursor-pointer", {
-              /**
-               * when the user disables the camera, the video element will be black.
-               * in this case, we should mark it as "hidden/invisible" not to
-               * interfer with the styling.
-               *
-               * @tip disable the line below to notice the difference.
-               */
-              invisible: !video,
-              /**
-               * @note `w-full` vs `h-full`
-               * - `w-full` (default): The video element will take the full width of
-               *   the card, potentially cropping the video vertically.
-               * - `h-full`: The video element will take the full height of the card,
-               *   potentially cropping the video horizontally.
-               */
-              "h-full": !fillHorizontally,
-              "w-full": fillHorizontally,
-            })
-          }
-        />
-      ) : null}
+            invisible: !video,
+            /**
+             * @note `w-full` vs `h-full`
+             * - `w-full` (default): The video element will take the full width of
+             *   the card, potentially cropping the video vertically.
+             * - `h-full`: The video element will take the full height of the card,
+             *   potentially cropping the video horizontally.
+             */
+            "h-full": !fillHorizontally,
+            "w-full": fillHorizontally,
+          })
+        }
+      />
+
+      {audioTrack ? <AudioStream track={audioTrack} /> : null}
 
       <div // Ref: https://css-tricks.com/design-considerations-text-images/
         id="user-name"
@@ -181,4 +184,4 @@ const VideoTrack: React.FC<{
   );
 };
 
-export default VideoTrack;
+export default MemberStream;

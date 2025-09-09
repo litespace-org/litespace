@@ -1,32 +1,41 @@
-import { CallSession } from "./CallSession";
-import { DeviceManager, AudioTrack, VideoTrack, Device } from "./types";
+import { CallSession } from "@/modules/MediaCall/CallSession";
+import { DeviceManager, Device, CallError } from "@/modules/MediaCall/types";
+import { ErrorHandler } from "@/modules/MediaCall/ErrorHandler";
 
 export class CallManager {
-  protected session: CallSession;
+  protected sess: CallSession;
   protected dm: DeviceManager;
+  public eh: ErrorHandler;
 
-  constructor(session: CallSession, dm: DeviceManager) {
-    this.session = session;
+  constructor(session: CallSession, dm: DeviceManager, eh: ErrorHandler) {
+    this.sess = session;
     this.dm = dm;
+    this.eh = eh;
   }
 
-  get s() {
-    return this.session;
+  get session() {
+    return this.sess;
   }
 
-  async publishTrackFromDevice(deviceId: Device["id"]) {
-    const devices = await this.dm.listDevices();
-    const device = devices.find((d) => d.id === deviceId);
-    if (!device) throw Error("device not found!");
+  get media() {
+    return this.dm;
+  }
 
-    const track = await this.dm.grantPermissionFor(device);
-    if (!track) throw Error("permission not granted!");
+  async publishTrackFromDevice(deviceId: Device["id"], type: Device["type"]) {
+    const devices = await this.dm.detectDevices();
+    const device = devices.find((d) => d.id === deviceId && d.type === type);
+    if (!device) return this.eh.throw(CallError.TrackNotFound);
 
-    if (device.type === "mic")
-      this.session.getMemberByIndex(0)!.publishMicTrack(track as AudioTrack);
+    const track = await this.dm
+      .grantPermissionFor(device)
+      .catch(() => this.eh.throw(CallError.UserMediaAccessDenied));
+
+    if (!track) return this.eh.throw(CallError.TrackNotFound);
+
+    if (device.type === "mic") this.session.curMember.publishMicTrack(track);
     else if (device.type === "cam")
-      this.session.getMemberByIndex(0)!.publishCamTrack(track as VideoTrack);
+      this.session.curMember.publishCamTrack(track);
     else if (device.type === "screen")
-      this.session.getMemberByIndex(0)!.publishScreenTrack(track as VideoTrack);
+      this.session.curMember.publishScreenTrack(track);
   }
 }

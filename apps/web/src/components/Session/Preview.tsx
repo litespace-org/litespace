@@ -1,17 +1,24 @@
-import React, { RefObject } from "react";
+import React, { useEffect, useRef } from "react";
 import cn from "classnames";
 import { AvatarV2 } from "@litespace/ui/Avatar";
 import { Typography } from "@litespace/ui/Typography";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
+import { VideoTrack } from "@/modules/MediaCall/types";
+import { useUser } from "@litespace/headless/context/user";
 
 const Preview: React.FC<{
-  videoRef: RefObject<HTMLVideoElement>;
-  userId: number;
-  image: string | null;
-  name: string | null;
+  videoTrack?: VideoTrack;
   video: boolean;
   audio: boolean;
-}> = ({ videoRef, userId, image, name, audio, video }) => {
+}> = ({ videoTrack, audio, video }) => {
+  const { user } = useUser();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current && videoTrack)
+      videoRef.current.srcObject = new MediaStream([videoTrack]);
+  }, [videoTrack]);
+
   return (
     <div className="relative w-full h-full rounded-2xl bg-natural-100 overflow-hidden">
       <div
@@ -40,17 +47,17 @@ const Preview: React.FC<{
         )}
       >
         <div className={cn("rounded-full overflow-hidden w-24 h-24")}>
-          <AvatarV2 src={image} alt={name} id={userId} />
+          <AvatarV2 id={user?.id} src={user?.image} alt={user?.name} />
         </div>
 
         <Typography
           tag="p"
           className={cn(
             "text-natural-700 font-medium text-center text-subtitle-1",
-            name ? "block" : "hidden"
+            user?.name ? "block" : "hidden"
           )}
         >
-          {name}
+          {user?.name}
         </Typography>
       </div>
 

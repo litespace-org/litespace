@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
 import { ToastId, ToastType } from "@/components/Toast/types";
 import { ButtonVariant } from "@/components/Button";
 
@@ -60,5 +60,8 @@ export function useToast() {
     [toast]
   );
 
-  return { success, info, error, warning };
+  return useMemo(
+    () => ({ success, info, error, warning }),
+    [success, info, error, warning]
+  );
 }

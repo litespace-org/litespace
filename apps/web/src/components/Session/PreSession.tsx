@@ -1,63 +1,43 @@
 import { ISession, IUser } from "@litespace/types";
-import React, { useEffect, useMemo, useState } from "react";
-import Preview from "@/components/Session/Preview";
-import { usePreview } from "@/components/Session/room";
-import Controllers, { Controller } from "@/components/Session/Controllers";
-import { supportsBackgroundProcessors } from "@livekit/track-processors";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Ready from "@/components/Session/Ready";
-import { useTracks } from "@livekit/components-react";
-import { TrackReference } from "@/components/Session/types";
-import { Dialogs, DialogTypes } from "@/components/Session/Dialogs";
 import { useSocket } from "@litespace/headless/socket";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { RefreshCw } from "react-feather";
+import { useUser } from "@litespace/headless/context/user";
+import { useGetSessionToken } from "@litespace/headless/sessions";
+import { sockets } from "@litespace/atlas";
+import { env } from "@/lib/env";
+import { useMediaCall } from "@/hooks/mediaCall";
+import InSession from "@/components/Session/InSession";
+import { CallError, Device } from "@/modules/MediaCall/types";
+import Preview from "@/components/Session/Preview";
+import Controllers, { Controller } from "@/components/Session/Controllers";
+import { Dialogs, DialogTypes } from "@/components/Session/Dialogs";
+import { RemoteMember } from "@/components/Session/types";
 
 const PreSession: React.FC<{
   type: ISession.Type;
   start: string;
   duration: number;
-  localMemberId: number;
-  localMemberRole: IUser.Role;
-  localMemberName: string | null;
-  localMemberImage: string | null;
-  remoteMemberId: number;
-  remoteMemberRole: IUser.Role;
+  sessionId: ISession.Id;
+  member: RemoteMember;
 }> = ({
   type,
-  localMemberId,
-  localMemberRole,
-  localMemberName,
-  localMemberImage,
-  remoteMemberId,
-  remoteMemberRole,
+  sessionId,
   start: sessionStart,
   duration: sessionDuration,
+  member,
 }) => {
   const intl = useFormatMessage();
-  const { reconnect, connected } = useSocket();
+  const { user } = useUser();
+  const call = useMediaCall();
+  const socket = useSocket();
 
-  useEffect(() => {
-    if (!connected) reconnect();
-  }, [connected, reconnect]);
-
-  const tracks: TrackReference[] = useTracks();
-  const {
-    loading,
-    error,
-    success,
-    start,
-    join,
-    videoRef,
-    videoTrack,
-    audioTrack,
-    audioEnabled,
-    videoEnabled,
-    toggleBackgroundBlur,
-    togglingBackgroundBlur,
-    backgroundBlurEnabled,
-  } = usePreview();
+  const [connecting, setConnecting] = useState<boolean>(false);
+  const [devices, setDevices] = useState<Device[]>([]);
 
   const [dialog, setDialog] = useState<{
     visible: boolean;
@@ -67,99 +47,117 @@ const PreSession: React.FC<{
     type: "encourage-dialog",
   });
 
-  const remoteMemberJoined = useMemo(() => {
-    return !!tracks.find(
-      (track) => track.participant.identity === remoteMemberId.toString()
-    );
-  }, [remoteMemberId, tracks]);
+  useEffect(() => {
+    call.manager?.media.detectDevices().then((list) => {
+      setDevices([...list]);
+      const audioDevice = list.find((d) => d.type === "mic");
+      const camDevice = list.find((d) => d.type === "cam");
+      if (audioDevice)
+        call.manager?.publishTrackFromDevice(audioDevice.id, "mic");
+      if (camDevice) call.manager?.publishTrackFromDevice(camDevice.id, "cam");
+    });
+  }, [call.manager]);
 
   useEffect(() => {
-    if (loading || error || success) return;
-    start();
-  }, [error, loading, start, success]);
+    if (!socket.connected) socket.reconnect();
+  }, [socket.connected, socket]);
+
+  const sessionAccessToken = useGetSessionToken(sessionId);
+
+  const connect = useCallback(() => {
+    setConnecting(true);
+    call.manager?.session
+      .connect(
+        sockets.livekit[env.server],
+        sessionAccessToken.data?.token || ""
+      )
+      .then(() => setConnecting(false));
+  }, [sessionAccessToken.data, call.manager?.session]);
 
   const controllers = useMemo(() => {
     const audio: Controller = {
       toggle: () => {
-        if (!audioTrack) return;
+        const audioTrack = call.curMember?.tracks.mic;
+        const videoTrack = call.curMember?.tracks.cam;
+        if (!audioTrack) {
+          const audioDevice = devices.find((d) => d.type === "mic");
+          if (!audioDevice)
+            return call.errorHandler?.throw(CallError.MicNotFound);
+          return call.manager?.publishTrackFromDevice(audioDevice.id, "mic");
+        }
         // turning the mic off
-        if (audioEnabled) {
-          return audioTrack.mute();
+        if (audioTrack.enabled) {
+          return call.curMember?.setMicStatus(false);
         }
         // turning the mic on
-        if (!audioEnabled) {
-          if (!videoEnabled) {
+        if (!audioTrack.enabled) {
+          if (!videoTrack?.enabled) {
             setDialog({
               type: "encourage-dialog",
               visible: true,
             });
           }
-          return audioTrack.unmute();
+          return call.curMember?.setMicStatus(true);
         }
       },
-      enabled: audioEnabled,
-      error: !audioTrack,
+      enabled: !!call.curMember?.tracks.mic?.enabled,
+      error: !call.curMember?.tracks.mic,
     };
 
     const video: Controller = {
       toggle: () => {
-        if (!videoTrack) return;
+        const videoTrack = call.curMember?.tracks.cam;
+        if (!videoTrack) {
+          const camDevice = devices.find((d) => d.type === "cam");
+          if (!camDevice)
+            return call.errorHandler?.throw(CallError.CamNotFound);
+          return call.manager?.publishTrackFromDevice(camDevice.id, "cam");
+        }
         // turning the cam off
-        if (videoEnabled) {
+        if (videoTrack.enabled) {
           setDialog({
             type: "discourage-dialog",
             visible: true,
           });
-          return videoTrack.mute();
+          return call.curMember?.setCamStatus(false);
         }
         // turning the cam on
-        if (!videoEnabled) {
-          return videoTrack.unmute();
+        if (!videoTrack.enabled) {
+          return call.curMember?.setCamStatus(true);
         }
       },
-      enabled: videoEnabled,
-      error: !videoTrack,
-    };
-
-    const blur: Controller = {
-      toggle: toggleBackgroundBlur,
-      enabled: backgroundBlurEnabled,
-      error: false,
-      loading: togglingBackgroundBlur,
+      enabled: !!call.curMember?.tracks.cam?.enabled,
+      error: !call.curMember?.tracks.cam,
     };
 
     return {
       audio,
       video,
-      blur: supportsBackgroundProcessors() && videoTrack ? blur : undefined,
     };
-  }, [
-    audioEnabled,
-    audioTrack,
-    backgroundBlurEnabled,
-    toggleBackgroundBlur,
-    togglingBackgroundBlur,
-    videoEnabled,
-    videoTrack,
-  ]);
+  }, [call.curMember, call.manager, devices, call.errorHandler]);
+
+  if (!user) return null;
+
+  if (call.connected)
+    return <InSession controllers={controllers} member={member} />;
 
   return (
     <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 md:mt-28 max-h-full">
-      {[IUser.Role.TutorManager, IUser.Role.Tutor].includes(localMemberRole) &&
+      {[IUser.Role.TutorManager, IUser.Role.Tutor].includes(user?.role) &&
       dialog.visible ? (
         <Dialogs
           type={dialog.type}
           setPermission={(perm) => {
             if (perm === "mic-only") {
-              audioTrack?.unmute();
+              call.curMember?.setMicStatus(true);
             } else if (perm === "cam-only") {
-              videoTrack?.unmute();
+              call.curMember?.setCamStatus(true);
             } else if (perm === "mic-and-camera") {
-              audioTrack?.unmute();
-              videoTrack?.unmute();
+              call.curMember?.setMicStatus(true);
+              call.curMember?.setCamStatus(true);
             }
           }}
-          turnCamOff={() => videoTrack?.mute()}
+          turnCamOff={() => call.curMember?.setCamStatus(false)}
           close={() => setDialog((prev) => ({ ...prev, visible: false }))}
         />
       ) : null}
@@ -167,20 +165,13 @@ const PreSession: React.FC<{
       <div className="flex flex-col items-center justify-center gap-6 md:w-[480px] lg:w-[640px] h-full overflow-hidden">
         <div className="w-full max-h-[calc(100%-40px)] overflow-hidden aspect-mobile md:aspect-desktop">
           <Preview
-            videoRef={videoRef}
-            audio={audioEnabled}
-            video={videoEnabled}
-            userId={localMemberId}
-            image={localMemberImage}
-            name={localMemberName}
+            videoTrack={call.curMember?.tracks.cam}
+            audio={!!call.curMember?.tracks.mic?.enabled}
+            video={!!call.curMember?.tracks.cam?.enabled}
           />
         </div>
 
-        <Controllers
-          audio={controllers.audio}
-          video={controllers.video}
-          blur={controllers.blur}
-        />
+        <Controllers audio={controllers.audio} video={controllers.video} />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -189,19 +180,22 @@ const PreSession: React.FC<{
             type={type}
             start={sessionStart}
             duration={sessionDuration}
-            join={join}
-            disabled={!connected || (!audioTrack && !videoTrack)}
+            join={connect}
+            disabled={!socket.connected || !sessionAccessToken.data?.token}
+            loading={connecting}
             remoteMember={{
-              id: remoteMemberId,
-              role: remoteMemberRole,
-              // TODO: write the corret gender
+              id: member.id,
+              role: member.role,
+              // TODO: get the member gender
               gender: IUser.Gender.Male,
-              joined: remoteMemberJoined,
+              joined: call.inMembers
+                .map((m) => m.id)
+                .includes(member.id.toString()),
             }}
           />
         </div>
 
-        {!connected ? (
+        {!socket.connected ? (
           <div className="flex justify-center items-center w-full border-2 border-destructive-700 bg-destructive-50 p-4 gap-2 rounded-lg">
             <Typography tag="span" className="text-destructive-700">
               {intl("labels.connection-error")}
