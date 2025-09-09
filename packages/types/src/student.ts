@@ -32,8 +32,13 @@ export type Row = {
 export type CreateApiPayload = unknown;
 export type CreateApiResponse = IUser.RegisterApiResponse & unknown;
 
-export type UpdateApiPayload = unknown;
-export type UpdateApiResponse = unknown;
+export type UpdateApiPayload = {
+  job_title: string | null;
+  english_level: EnglishLevel | null;
+  learning_objective: string | null;
+};
+
+export type UpdateApiResponse = Self;
 
 export type Column = keyof Row;
 export type Field = keyof Self;
