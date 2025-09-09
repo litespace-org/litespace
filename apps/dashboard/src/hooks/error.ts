@@ -3,7 +3,7 @@ import { useLogger } from "@litespace/headless/logger";
 import { ApiErrorCode, Optional, Void } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { LocalId } from "@litespace/ui/locales";
-import { isForbidden, ResponseError } from "@litespace/utils";
+import { isUnauthenticated, ResponseError } from "@litespace/utils";
 import { Dashboard } from "@litespace/utils/routes";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef } from "react";
@@ -48,7 +48,7 @@ export function useOnError(payload: OnErrorPayload) {
       logger.error(error);
 
       // Direct the user to the login page.
-      if (isForbidden(error))
+      if (isUnauthenticated(error))
         return navigate(router.dashboard({ route: Dashboard.Login }));
 
       if (!handlerRef.current) return;
