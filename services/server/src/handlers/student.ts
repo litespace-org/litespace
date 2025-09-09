@@ -21,13 +21,22 @@ import { CONFIRMATION_CODE_VALIDITY_MINUTES } from "@litespace/utils";
 import { environment, jwtSecret } from "@/constants";
 import dayjs from "@/lib/dayjs";
 import { sendBackgroundMessage } from "@/workers";
-import { isAdmin } from "@litespace/utils/user";
+import { isAdmin, isStudent } from "@litespace/utils/user";
 
 const createStudentPayload: ZodSchema<IStudent.CreateApiPayload> = zod.object({
   email,
   password,
   jobTitle: string.optional(),
   englishLevel: studentEnglishLevel.optional(),
+  learningObjective: string.optional(),
+});
+
+const updateStudentSchema: ZodSchema<IStudent.UpdateApiPayload> = zod.object({
+  id,
+  jobTitle: string.optional(),
+  englishLevel: zod.coerce
+    .number(zod.nativeEnum(IStudent.EnglishLevel))
+    .optional(),
   learningObjective: string.optional(),
 });
 
@@ -97,11 +106,20 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-export async function update(
-  _req: Request,
-  res: Response,
-  _next: NextFunction
-) {
+// TODO: make it more general; in the sense that it can be used
+// to update both student and user info.
+async function update(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const payload: IStudent.UpdateApiPayload = updateStudentSchema.parse(
+    req.body
+  );
+  if (user.id !== payload.id) return next(forbidden());
+
+  await students.update(payload);
+
   res.sendStatus(200);
 }
 

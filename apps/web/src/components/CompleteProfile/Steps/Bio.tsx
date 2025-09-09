@@ -75,9 +75,9 @@ const Bio: React.FC<{ next: Void }> = ({ next }) => {
       updateStudent.mutate({
         payload: {
           id: user.id,
-          career: data.career,
-          level: data.level,
-          aim: data.aim,
+          jobTitle: data.career,
+          englishLevel: data.level,
+          learningObjective: data.aim,
         },
       });
     },

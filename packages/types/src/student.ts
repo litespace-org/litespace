@@ -28,9 +28,6 @@ export type Row = {
   updated_at: Date;
 };
 
-export type UpdateApiPayload = unknown;
-export type UpdateApiResponse = unknown;
-
 export type Column = keyof Row;
 export type Field = keyof Self;
 
@@ -65,6 +62,15 @@ export type CreateApiPayload = Omit<IUser.CreateApiPayload, "role"> & {
 export type CreateApiResponse = IUser.RegisterApiResponse & {
   user: IUser.Self & Self;
 };
+
+export type UpdateApiPayload = {
+  id: number;
+  jobTitle?: string;
+  englishLevel?: EnglishLevel;
+  learningObjective?: string;
+};
+
+export type UpdateApiResponse = unknown;
 
 export type FindApiQuery = FindModelQuery;
 
