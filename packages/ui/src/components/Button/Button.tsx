@@ -41,6 +41,7 @@ export const Button: React.FC<{
     () => ({
       primary: variant === "primary",
       secondary: variant === "secondary",
+      bold: variant === "bold",
 
       main: type === "main",
       warning: type === "warning",
@@ -98,6 +99,9 @@ export const Button: React.FC<{
             is.natural && is.primary,
           "bg-natural-50 hover:bg-natural-100 active:bg-natural-200":
             is.natural && is.secondary,
+
+          "bg-natural-200 hover:bg-natural-200 active:bg-natural-300 focus-visible:bg-natural-100 disabled:bg-natural-200":
+            is.natural && is.bold,
         },
         // Text color
         {

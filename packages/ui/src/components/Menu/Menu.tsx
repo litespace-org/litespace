@@ -7,7 +7,7 @@ import React from "react";
 
 export type MenuAction = {
   label: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   onClick?: Void;
   disabled?: boolean;
 };
@@ -68,7 +68,7 @@ export const Menu: React.FC<{
               )}
               onClick={onClick}
             >
-              <div className="w-4 h-4">{icon}</div>
+              {icon ? <div className="w-4 h-4">{icon}</div> : null}
 
               <Typography
                 tag="span"

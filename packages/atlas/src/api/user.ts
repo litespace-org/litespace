@@ -10,8 +10,7 @@ export class User extends Base {
   }
 
   async findById(id: number | string): Promise<IUser.Self> {
-    const { data } = await this.client.get<IUser.Self>(`/api/v1/user/${id}`);
-    return data;
+    return await this.get({ route: `/api/v1/user/${id}` });
   }
 
   async findCurrentUser(): Promise<IUser.FindCurrentUserApiResponse> {

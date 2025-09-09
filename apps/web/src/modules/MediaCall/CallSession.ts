@@ -1,20 +1,63 @@
-import { CallMember } from "./CallMember";
+import { CallMember } from "@/modules/MediaCall/CallMember";
+import { AudioTrack, CallError, VideoTrack } from "@/modules/MediaCall/types";
+import { ErrorHandler } from "@/modules/MediaCall/ErrorHandler";
+
+export type EventExt = {
+  before?: (session: CallSession) => unknown;
+  after?: (session: CallSession) => unknown;
+};
+
+export interface EventsExtensions {
+  onMemberConnect?: EventExt;
+  onMemberDisconnect?: EventExt;
+  onMemberMicPublish?: EventExt;
+  onMemberMicChange?: EventExt;
+  onMemberCamPublish?: EventExt;
+  onMemberCamChange?: EventExt;
+  onMemberScreenPublish?: EventExt;
+  onMemberScreenChange?: EventExt;
+}
 
 export abstract class CallSession {
-  private members: CallMember[];
-  private joinedMembers: CallMember[];
+  protected members: CallMember[];
+  protected joinedMembers: CallMember[];
+  private ext: EventsExtensions;
+  private eh: ErrorHandler;
 
-  constructor(members: CallMember[]) {
-    this.members = members;
+  constructor(
+    memberIds: Array<CallMember["id"]>,
+    ext?: EventsExtensions,
+    eh?: ErrorHandler
+  ) {
+    this.members = memberIds.map((id) => new CallMember(id, this));
     this.joinedMembers = [];
+    this.ext = ext || {};
+    this.eh = eh || new ErrorHandler();
   }
 
-  async connect(..._params: any[]): Promise<any> {
+  /**
+   * by convention the current member is stored at the top of members array.
+   */
+  get curMember() {
+    return this.members[0];
+  }
+
+  /**
+   * connect to session by the current member.
+   */
+  async connect(..._params: unknown[]): Promise<unknown> {
     throw Error("not implemented!");
   }
 
-  async disconnect(): Promise<any> {
+  /**
+   * disconnect from session by the current member.
+   */
+  async disconnect(): Promise<unknown> {
     throw Error("not implemented!");
+  }
+
+  getJoinedMembers(): CallMember[] | null {
+    return this.joinedMembers;
   }
 
   getMember(memberId: CallMember["id"]): CallMember | null {
@@ -25,13 +68,26 @@ export abstract class CallSession {
     return this.members[i] || null;
   }
 
-  protected addMember(member: CallMember) {
-    this.members.push(member);
+  setMember(index: number, member: CallMember) {
+    if (index >= this.members.length)
+      return this.eh.throw(CallError.IndexOutOfRange);
+
+    const joinedTargetIndex = this.joinedMembers.findIndex(
+      (m) => m.id === this.members[index].id
+    );
+    this.members[index] = member;
+
+    if (joinedTargetIndex !== -1)
+      this.joinedMembers[joinedTargetIndex] = member;
   }
 
-  protected rmvMember(memberId: CallMember["id"]) {
+  addMember(memberId: CallMember["id"]) {
+    this.members.push(new CallMember(memberId, this));
+  }
+
+  rmvMember(memberId: CallMember["id"]) {
     if (this.hasJoined(memberId))
-      return console.error("cannot remove joined member.");
+      return this.eh.throw(CallError.CannotRemoveJoinedMember);
     this.members = this.members.filter((m) => m.id !== memberId);
   }
 
@@ -41,12 +97,17 @@ export abstract class CallSession {
 
   canJoin(memberId: CallMember["id"]): boolean {
     if (!this.members.map((m) => m.id).includes(memberId)) {
-      console.error("not allowed to join this session!");
+      this.eh.throw(CallError.NotAllowedToJoinSession);
+      return false;
+    }
+
+    if (this.hasJoined(memberId)) {
+      this.eh.throw(CallError.MemberAlreadyInSession);
       return false;
     }
 
     if (this.isFull()) {
-      console.error("the session is full; not expected!");
+      this.eh.throw(CallError.FullSession);
       return false;
     }
 
@@ -57,32 +118,50 @@ export abstract class CallSession {
     return this.joinedMembers.map((m) => m.id).includes(memberId);
   }
 
-  protected onMemberConnect(memberId: CallMember["id"]) {
+  protected execEventExt(fn?: (session: CallSession) => unknown) {
+    if (fn) return fn(this);
+  }
+
+  onMemberConnect(memberId: CallMember["id"]) {
+    this.execEventExt(this.ext.onMemberConnect?.before);
+
     if (!this.canJoin(memberId)) return;
     const member = this.members.find((m) => m.id === memberId);
     this.joinedMembers.push(member!);
+
+    this.execEventExt(this.ext.onMemberConnect?.after);
   }
 
-  protected onMemberDisconnect(memberId: CallMember["id"]) {
-    if (!this.canJoin(memberId)) return;
+  onMemberDisconnect(memberId: CallMember["id"]) {
+    this.execEventExt(this.ext.onMemberDisconnect?.before);
+
     this.joinedMembers = this.joinedMembers.filter((m) => m.id !== memberId);
+
+    this.execEventExt(this.ext.onMemberDisconnect?.after);
   }
 
-  protected onMemberMicChange(memberId: CallMember["id"], enabled: boolean) {
-    if (!this.hasJoined(memberId)) return console.error("member not joined!");
-    const member = this.getMember(memberId)!;
-    member.setMicStatus(enabled);
+  onMemberMicPublish(_memberId: CallMember["id"], _track: AudioTrack) {
+    this.execEventExt(this.ext.onMemberMicPublish?.before);
+    this.execEventExt(this.ext.onMemberMicPublish?.after);
   }
 
-  protected onMemberCamChange(memberId: CallMember["id"], enabled: boolean) {
-    if (!this.hasJoined(memberId)) return console.error("member not joined!");
-    const member = this.getMember(memberId)!;
-    member.setCamStatus(enabled);
+  onMemberCamPublish(_memberId: CallMember["id"], _track: VideoTrack) {
+    this.execEventExt(this.ext.onMemberCamPublish?.before);
+    this.execEventExt(this.ext.onMemberCamPublish?.after);
   }
 
-  protected onMemberScreenChange(memberId: CallMember["id"], enabled: boolean) {
-    if (!this.hasJoined(memberId)) return console.error("member not joined!");
-    const member = this.getMember(memberId)!;
-    member.setScreenStatus(enabled);
+  onMemberMicChange(_memberId: CallMember["id"], _state: boolean) {
+    this.execEventExt(this.ext.onMemberMicChange?.before);
+    this.execEventExt(this.ext.onMemberMicChange?.after);
+  }
+
+  onMemberCamChange(_memberId: CallMember["id"], _state: boolean) {
+    this.execEventExt(this.ext.onMemberCamChange?.before);
+    this.execEventExt(this.ext.onMemberCamChange?.after);
+  }
+
+  onMemberScreenChange(_memberId: CallMember["id"], _state: boolean) {
+    this.execEventExt(this.ext.onMemberScreenChange?.before);
+    this.execEventExt(this.ext.onMemberScreenChange?.after);
   }
 }

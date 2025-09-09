@@ -3,18 +3,16 @@ import { useOnError } from "@/hooks/error";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { IUser } from "@litespace/types";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
-import Session from "@/components/Session";
 import { RemoteMember } from "@/components/Session/types";
-import { asRateLessonQuery } from "@/lib/query";
-import { router } from "@/lib/routes";
-import { Web } from "@litespace/utils/routes";
-import { useNavigate } from "react-router-dom";
+
+import PreSession from "@/components/Session/PreSession";
+import { useUser } from "@litespace/headless/context/user";
 
 const Content: React.FC<{
   lessonId: number;
   self: IUser.Self;
 }> = ({ lessonId, self }) => {
-  const navigate = useNavigate();
+  const { user } = useUser();
   const lessonQuery = useFindLesson(lessonId);
 
   useOnError({
@@ -54,33 +52,15 @@ const Content: React.FC<{
       </div>
     );
 
+  if (!user) return null;
+
   return (
-    <Session
-      type="lesson"
-      sessionId={lessonQuery.data.lesson.sessionId}
-      localMember={self}
-      remoteMember={member}
-      onLeave={() => {
-        if (!lessonQuery.data) return;
-        const student = self.role === IUser.Role.Student;
-
-        const query = asRateLessonQuery({
-          lessonId: lessonId,
-          start: lessonQuery.data.lesson.start,
-          tutorId: member.id,
-          tutorName: member.name,
-          duration: lessonQuery.data.lesson.duration,
-        });
-
-        navigate(
-          router.web({
-            route: Web.UpcomingLessons,
-            query: student ? query : {},
-          })
-        );
-      }}
+    <PreSession
+      type={"lesson"}
       start={lessonQuery.data.lesson.start}
       duration={lessonQuery.data.lesson.duration}
+      sessionId={lessonQuery.data.lesson.sessionId}
+      member={member}
     />
   );
 };
