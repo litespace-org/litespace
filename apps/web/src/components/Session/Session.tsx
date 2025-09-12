@@ -31,7 +31,8 @@ const Session: React.FC<{
   localMember: LocalMember;
   remoteMember: RemoteMember;
   leave: Void;
-}> = ({ localMember, remoteMember, leave }) => {
+  start: string;
+}> = ({ localMember, remoteMember, leave, start }) => {
   const mq = useMediaQuery();
   const [chat, setChat] = useState(false);
   const [_, setParams] = useSearchParams();
@@ -79,7 +80,7 @@ const Session: React.FC<{
 
   return (
     <div className="h-full flex flex-col gap-10">
-      <div className="h-[calc(100%-80px)] flex gap-6">
+      <div className="h-[calc(100%-80px)] flex gap-6 relative">
         <VideoStreams
           selfTrackRef={videoTrackRef.local}
           selfId={localMember.id}
@@ -105,6 +106,7 @@ const Session: React.FC<{
             connectionState === ConnectionState.Reconnecting
           }
           layout={layout}
+          startTime={start}
         />
 
         <AudioStreams />

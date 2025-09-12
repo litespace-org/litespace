@@ -9,7 +9,7 @@ import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
 import { first, range } from "lodash";
-import { bad, forbidden, notfound, unverifiedPhone } from "@/lib/error";
+import { bad, forbidden, notfound } from "@/lib/error";
 import handlers from "@/handlers/user";
 import { nameof } from "@litespace/utils";
 
@@ -118,19 +118,6 @@ describe("/api/v1/user/", () => {
 
       const updated = await tutors.findById(tutor.id);
       expect(updated?.bypassOnboarding).to.be.true;
-    });
-
-    it("should respond with Error when trying to update notification method with unverified phone", async () => {
-      const user = await db.user({
-        verifiedPhone: false,
-        role: IUser.Role.Student,
-      });
-      const res = await updateUser({
-        user,
-        params: { id: user.id },
-        body: { notificationMethod: IUser.NotificationMethod.Whatsapp },
-      });
-      expect(res).to.deep.eq(unverifiedPhone());
     });
   });
 

@@ -25,7 +25,6 @@ import {
   invalidEmail,
   notfound,
   unexpected,
-  unverifiedPhone,
   wrongPassword,
 } from "@/lib/error";
 import {
@@ -330,11 +329,6 @@ function update(_: ApiContext) {
 
         const validPassword = isValidPassword(password.new);
         if (validPassword !== true) return next(apierror(validPassword, 400));
-      }
-
-      // prevent users from updating notification method without verified phone
-      if (notificationMethod !== undefined && !target.verifiedPhone) {
-        return next(unverifiedPhone());
       }
 
       // remove assets from the object store
