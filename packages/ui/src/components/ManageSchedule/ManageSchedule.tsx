@@ -17,8 +17,7 @@ import { Dayjs } from "dayjs";
 import { Optional } from "@/components/Optional";
 import { isLessonsOutOfRange } from "@/lib/schedule";
 import { useToast } from "@/components/Toast";
-
-const WEEK_DAYS = 7;
+import { DAYS_OF_WEEK, HALF_WEEK } from "@/constants/number";
 
 export type Props = {
   initialSlots: IAvailabilitySlot.Slot[];
@@ -62,8 +61,8 @@ export const ManageSchedule: React.FC<Props> = ({
   const intl = useFormatMessage();
   const toast = useToast();
   const [slots, setSlots] = useState<Slot[]>([]);
-  const weekStart = useMemo(() => dayjs(date).startOf("week"), [date]);
-  const { md } = useMediaQuery();
+  const weekStart = useMemo(() => dayjs(date), [date]);
+  const { md, xl } = useMediaQuery();
 
   const days = useMemo(() => {
     if (singleDay) {
@@ -72,12 +71,12 @@ export const ManageSchedule: React.FC<Props> = ({
       return [{ day, slots: daySlots }];
     }
 
-    return range(WEEK_DAYS).map((index) => {
+    return range(xl ? DAYS_OF_WEEK : HALF_WEEK).map((index) => {
       const day = weekStart.add(index, "day").startOf("day");
       const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
       return { day, slots: daySlots };
     });
-  }, [date, singleDay, slots, weekStart]);
+  }, [date, singleDay, slots, weekStart, xl]);
 
   const today = useMemo(() => dayjs(), []);
 
@@ -268,6 +267,7 @@ const Header: React.FC<{
   weekStart: Dayjs;
 }> = ({ loading, prev, next, weekStart }) => {
   const intl = useFormatMessage();
+  const { xl } = useMediaQuery();
   return (
     <div className="pt-4 lg:pt-6 pb-3">
       <div className="flex items-center justify-center gap-4 mb-4 lg:mb-6">
@@ -286,7 +286,9 @@ const Header: React.FC<{
         >
           {weekStart.format("D MMMM")}
           {" - "}
-          {weekStart.add(6, "days").format("D MMMM")}
+          {weekStart
+            .add(xl ? DAYS_OF_WEEK - 1 : HALF_WEEK - 1, "days")
+            .format("D MMMM")}
         </Typography>
 
         <Button
