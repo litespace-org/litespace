@@ -182,8 +182,9 @@ const Root: React.FC = () => {
 
       <div
         className={cn(
-          "flex flex-col w-full overflow-x-hidden pb-[100px] md:pb-0",
-          fullScreenPage ? "h-screen overflow-hidden" : "min-h-screen"
+          "flex flex-col w-full overflow-x-hidden",
+          fullScreenPage ? "h-screen overflow-hidden" : "min-h-screen",
+          { "pb-[100px] md:pb-0": showNavigation && !!user }
         )}
       >
         {!timeValid ? (
