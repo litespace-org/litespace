@@ -2,6 +2,7 @@ import { Meta, StoryObj } from "@storybook/react";
 import LessonCard, { Props } from "@/components/Lessons/LessonCard";
 import dayjs from "@/lib/dayjs";
 import { faker } from "@faker-js/faker/locale/ar";
+import { range } from "lodash";
 
 const meta: Meta<Props> = {
   title: "Lessons/LessonCard",
@@ -30,6 +31,8 @@ export const BeforeJoinForStudent: Story = {
       name: faker.person.fullName(),
       image: url,
       role: "tutor",
+      topics: range(7).map(() => faker.lorem.words(1)),
+      level: "C1"
     },
     ...actions,
   },
@@ -45,6 +48,8 @@ export const BeforeJoinForTutor: Story = {
       name: faker.person.fullName(),
       image: url,
       role: "student",
+      topics: range(7).map(() => faker.lorem.words(1)),
+      level: "C1"
     },
     ...actions,
   },
@@ -60,6 +65,8 @@ export const CanJoinLesson: Story = {
       name: faker.person.fullName(),
       image: url,
       role: "tutor",
+      topics: range(7).map(() => faker.lorem.words(1)),
+      level: "C1",
     },
     ...actions,
   },
@@ -75,6 +82,8 @@ export const CanJoinLessonNow: Story = {
       name: faker.person.fullName(),
       image: url,
       role: "tutor",
+      topics: range(7).map(() => faker.lorem.words(1)),
+      level: "C1",
     },
     ...actions,
   },
@@ -90,6 +99,8 @@ export const AfterLessonStarted: Story = {
       name: faker.person.fullName(),
       image: url,
       role: "tutor",
+      topics: range(7).map(() => faker.lorem.words(1)),
+      level: "C1",
     },
     ...actions,
   },
@@ -105,6 +116,8 @@ export const LessonAboutToEnd: Story = {
       name: faker.person.fullName(),
       image: url,
       role: "tutor",
+      topics: range(7).map(() => faker.lorem.words(1)),
+      level: "C1",
     },
     ...actions,
   },
@@ -120,6 +133,8 @@ export const AfterLessonFinishForStudent: Story = {
       name: faker.person.fullName(),
       image: url,
       role: "tutor",
+      topics: range(7).map(() => faker.lorem.words(1)),
+      level: "C1",
     },
     ...actions,
   },

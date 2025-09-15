@@ -6,6 +6,7 @@ import Content from "@/components/StudentSettings/Content";
 import { isValidTab } from "@/components/StudentSettings/utils";
 import { useUser } from "@litespace/headless/context/user";
 import { StudentSettingsTabId } from "@litespace/utils/routes";
+import { LessonCard } from "@litespace/ui/Lessons";
 
 const StudentSettings: React.FC = () => {
   const intl = useFormatMessage();
@@ -27,6 +28,19 @@ const StudentSettings: React.FC = () => {
         fetching={fetching}
       />
 
+      <LessonCard
+        start="2025-09-15T10:00"
+        duration={60}
+        canceled={null}
+        member={{ id: 1, name: "Jane Doe", image: null, role: "tutor" }}
+        sendingMessage={false}
+        disabled={false}
+        onRebook={() => {}}
+        onJoin={() => {}}
+        onEdit={() => {}}
+        onCancel={() => {}}
+        onSendMsg={() => {}}
+      />
       <Content tab={tab} user={user} setTab={(tab) => setParams({ tab })} />
     </div>
   );
