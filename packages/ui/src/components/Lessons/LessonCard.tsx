@@ -11,6 +11,8 @@ import { Menu, type MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import CheckCircle from "@litespace/assets/CheckCircle";
+import Calendar from "@litespace/assets/Calendar";
+import Clock from "@litespace/assets/Clock";
 
 export type Props = {
   start: string;
@@ -239,20 +241,43 @@ export const LessonCard: React.FC<Props> = ({
             >
               {member.name}
             </Typography>
-            <Typography
-              tag="span"
-              className="text-natural-700 text-tiny font-normal"
-            >
-              {dayjs(start).format("dddd، D MMMM")}
-            </Typography>
-            <Typography
-              tag="span"
-              className="text-natural-700 flex items-center text-tiny font-normal"
-            >
-              {dayjs(start).format("h:mm a")}
-              {" - "}
-              {dayjs(start).add(duration, "minutes").format("h:mm a")}
-            </Typography>
+
+            <div className="flex">
+              <div className="flex">
+                <Clock className="w-3.5 h-3.5 gap-1 " />
+                <Typography
+                  tag="span"
+                  className="text-natural-700 text-tiny font-normal"
+                >
+                  {dayjs(start).format("dddd، D MMMM")}
+                </Typography>
+              </div>
+
+              <div className="flex">
+                <Calendar className="w-3.5 h-3.5" />
+                <Typography
+                  tag="span"
+                  className="text-natural-700 flex items-center text-tiny font-normal"
+                >
+                  {dayjs(start).format("h:mm a")}
+                  {" - "}
+                  {dayjs(start).add(duration, "minutes").format("h:mm a")}
+                </Typography>
+              </div>
+            </div>
+
+            <div className="mt-2 flex items-center gap-1">
+              
+              {["item", "item", "item", "item"].map((language) => (
+                <Typography
+                  key={language}
+                  tag="span"
+                  className="text-brand-500 text-tiny font-medium"
+                >
+                  {language}
+                </Typography>
+              ))}
+            </div>
           </div>
         </div>
         {button}
