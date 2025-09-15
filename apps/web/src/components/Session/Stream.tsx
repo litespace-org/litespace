@@ -7,7 +7,6 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Loading } from "@litespace/ui/Loading";
 import { VideoTrack as BaseVideoTrack } from "@livekit/components-react";
 import { TrackReference } from "@/components/Session/types";
-import SessionTimer from "@/components/Session/SessionTimer";
 
 const VideoTrack: React.FC<{
   trackRef: TrackReference | null;
@@ -20,9 +19,7 @@ const VideoTrack: React.FC<{
   userImage: string | null;
   userName: string | null;
   loading?: boolean;
-  startTime: string;
 }> = ({
-  startTime,
   trackRef,
   video,
   audio,
@@ -62,23 +59,19 @@ const VideoTrack: React.FC<{
         <Loading size="medium" />
       </div>
 
-      <div className="absolute top-4 left-4 gap-[16px] flex items-center px-2 py-1 z-20">
-        <SessionTimer startTime={startTime} />
-        {audio === false && (
-          <div
-            className={cn(
-              "z-stream-v2-mute-icon",
-              "flex items-center justify-center bg-[#0000004D] backdrop-blur-[7.5px]",
-              "rounded-full",
-              {
-                "w-8 h-8": size === "md" || size === "lg",
-                "w-6 h-6": size === "sm",
-              }
-            )}
-          >
-            <MicrophoneSlash className="w-4 h-4 [&_*]:stroke-natural-50" />
-          </div>
+      <div
+        className={cn(
+          "absolute z-stream-v2-mute-icon",
+          "flex items-center justify-center bg-[#0000004D] backdrop-blur-[7.5px]",
+          "rounded-full",
+          !audio ? "visible" : "invisible",
+          {
+            "top-4 left-4 w-8 h-8": size === "md" || size === "lg",
+            "top-2 left-2 w-6 h-6": size === "sm",
+          }
         )}
+      >
+        <MicrophoneSlash className="w-4 h-4 [&_*]:stroke-natural-50" />
       </div>
 
       <div

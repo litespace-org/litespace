@@ -25,6 +25,7 @@ import {
   invalidEmail,
   notfound,
   unexpected,
+  unverifiedPhone,
   wrongPassword,
 } from "@/lib/error";
 import {
