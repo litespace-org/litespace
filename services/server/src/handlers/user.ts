@@ -332,6 +332,11 @@ function update(_: ApiContext) {
         if (validPassword !== true) return next(apierror(validPassword, 400));
       }
 
+      // prevent users from updating notification method without verified phone
+      if (notificationMethod !== undefined && !target.verifiedPhone) {
+        return next(unverifiedPhone());
+      }
+
       // remove assets from the object store
       if (image === null && target.image) s3.drop(target.image);
       if (tutor && video === null && tutor.video) s3.drop(tutor.video);

@@ -95,7 +95,7 @@ function getReminderMsgForMember({
 }): IMessenger.Message | null {
   const tz = lessonStart.tz(AFRICA_CAIRO_TIMEZONE);
 
-  if (!member.notificationMethod || !member.phone)
+  if (!member.notificationMethod || !member.phone || !member.verifiedPhone)
     return null;
 
   const url = router.web({
