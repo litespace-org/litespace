@@ -22,7 +22,6 @@ const VideoStreams: React.FC<{
   memberConnected: boolean;
   connecting: boolean;
   layout: Layout;
-  startTime: string;
 }> = ({
   selfTrackRef,
   selfId,
@@ -40,7 +39,6 @@ const VideoStreams: React.FC<{
   memberSpeaking,
   memberConnected,
   connecting,
-  startTime,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -52,7 +50,6 @@ const VideoStreams: React.FC<{
       >
         {memberConnected ? (
           <Stream
-            startTime={startTime}
             trackRef={memberTrackRef}
             userId={memberId}
             userImage={memberImage}
@@ -72,7 +69,6 @@ const VideoStreams: React.FC<{
           >
             <div className="w-32 sm:w-60 lg:w-72 aspect-mobile md:aspect-desktop">
               <Stream
-                startTime={startTime}
                 trackRef={selfTrackRef}
                 userId={selfId}
                 userImage={selfImage}
@@ -87,7 +83,6 @@ const VideoStreams: React.FC<{
           </Movable>
         ) : (
           <Stream
-            startTime={startTime}
             trackRef={selfTrackRef}
             userId={selfId}
             userImage={selfImage}
