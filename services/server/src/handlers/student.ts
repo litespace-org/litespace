@@ -15,6 +15,7 @@ import {
   pageSize,
   studentEnglishLevel,
   timePeriod,
+  withNamedId,
 } from "@/validation/utils";
 import { encodeAuthJwt } from "@litespace/auth";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
@@ -22,7 +23,7 @@ import { CONFIRMATION_CODE_VALIDITY_MINUTES } from "@litespace/utils";
 import { environment, jwtSecret } from "@/constants";
 import dayjs from "@/lib/dayjs";
 import { sendBackgroundMessage } from "@/workers";
-import { isAdmin, isStudent } from "@litespace/utils/user";
+import { isAdmin, isStudent, isTutor } from "@litespace/utils/user";
 
 const createStudentPayload: ZodSchema<IStudent.CreateApiPayload> = zod.object({
   email,
@@ -128,11 +129,25 @@ async function update(req: Request, res: Response, next: NextFunction) {
 
 export async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = isAdmin(user);
+  const allowed = isAdmin(user) || isStudent(user) || isTutor(user);
   if (!allowed) return next(forbidden());
 
   const query: IStudent.FindApiQuery = findStudentsQuery.parse(req.query);
-  const result = await students.findMany(query);
+  const result = await students.find(query);
+  res.status(200).json(result);
+}
+
+export async function findById(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isAdmin(user) || isStudent(user) || isTutor(user);
+  if (!allowed) return next(forbidden());
+
+  const { id }: IStudent.FindByIdApiQuery = withNamedId("id").parse(req.params);
+  const result = await students.findById(id);
   res.status(200).json(result);
 }
 
@@ -140,4 +155,5 @@ export default {
   create: safeRequest(create),
   update: safeRequest(update),
   find: safeRequest(find),
+  findById: safeRequest(findById),
 };

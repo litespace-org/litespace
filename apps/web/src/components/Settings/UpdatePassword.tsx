@@ -88,11 +88,14 @@ const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
     <div className="max-w-[400px] grow md:grow-0 flex flex-col">
       <Typography
         tag="h2"
-        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
+        className="hidden md:block text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
       >
         {intl("student-settings.password.title")}
       </Typography>
-      <form onSubmit={form.onSubmit} className="w-full flex flex-col gap-4">
+      <form
+        onSubmit={form.onSubmit}
+        className="w-full flex flex-col gap-2 md:gap-4"
+      >
         <Password
           required
           name="current"

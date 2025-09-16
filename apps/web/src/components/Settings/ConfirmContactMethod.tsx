@@ -80,13 +80,13 @@ const VerifyPhoneSection: React.FC<{
   const verifyPHoneDialog = useRender();
 
   return (
-    <div className="flex flex-wrap lg:flex-nowrap lg:gap-[57px] items-end">
+    <div className="flex flex-col xl:flex-row lg:gap-6 items-end">
       <VerifyPhone
         phone={phone}
         open={verifyPHoneDialog.open}
         close={verifyPHoneDialog.hide}
       />
-      <div>
+      <div className={cn(forStudent ? "self-start" : "self-end")}>
         <Typography
           className="text-subtitle-2 font-bold text-natural-950"
           tag="h3"
@@ -108,7 +108,10 @@ const VerifyPhoneSection: React.FC<{
       <Button
         onClick={verifyPHoneDialog.show}
         size="large"
-        className="mt-4 lg:mt-0 min-w-[173px]"
+        className={cn(
+          "mt-4 lg:mt-0 min-w-[173px]",
+          forStudent ? "self-start xl:self-end" : "self-end"
+        )}
         variant="secondary"
       >
         {intl("student-settings.verify-phone.title")}

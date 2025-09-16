@@ -71,8 +71,15 @@ export enum Dashboard {
 
 export type StudentSettingsTabId =
   | "personal"
-  | "public-info"
   | "password"
   | "notifications"
-  | "topics"
+  | "public-info"
+  | "refunds";
+
+export type MobileStudentSettingsTabId =
+  | "settings"
+  | "personal"
+  | "password"
+  | "notifications"
+  | "public-info"
   | "refunds";
