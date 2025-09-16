@@ -1,9 +1,9 @@
 import { useApi } from "@/api";
+import { MutationKey, QueryKey } from "@/constants";
+import { OnError, OnSuccess } from "@/types/query";
+import { IStudent, IUser } from "@litespace/types";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
-import { MutationKey, QueryKey } from "@/constants";
-import { IStudent, IUser } from "@litespace/types";
-import { OnError, OnSuccess } from "@/types/query";
 
 export function useFindStudentStats(
   id?: number
@@ -82,5 +82,19 @@ export function useUpdateStudent({
     mutationKey: [MutationKey.UpdateStudent],
     onSuccess,
     onError,
+  });
+}
+
+export function useFindStudentById(
+  id: number
+): UseQueryResult<IStudent.FindStudentMetaApiResponse> {
+  const api = useApi();
+  const find = useCallback(async () => {
+    return api.student.findById(id);
+  }, [api.student, id]);
+
+  return useQuery({
+    queryFn: find,
+    queryKey: ["find-student-by-id"],
   });
 }

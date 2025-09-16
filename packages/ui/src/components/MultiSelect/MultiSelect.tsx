@@ -85,7 +85,7 @@ export const MultiSelect = ({
               {isEmpty(selectedOptions) ? (
                 <Typography
                   tag="span"
-                  className="flex-1 text-natural-400 text-start"
+                  className="flex-1 text-natural-600 text-start text-caption font-medium"
                 >
                   {placeholder}
                 </Typography>
