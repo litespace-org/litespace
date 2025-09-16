@@ -21,7 +21,7 @@ export const Tabs = <T extends string>({
   setTab: (id: T) => void;
 }) => {
   return (
-    <div className="border border-natural-200 rounded-xl flex items-center justify-between w-full max-w-[530px]">
+    <div className="px-1 border border-natural-200 rounded-xl flex items-center justify-between w-full max-w-[530px]">
       {tabs.map(({ id, label, important, disabled }) => (
         <Tab
           key={id}
@@ -57,7 +57,7 @@ const Tab: React.FC<{
       <Typography
         tag="h6"
         className={cn(
-          "relative font-normal md:font-medium text-tiny md:text-body whitespace-nowrap w-fit",
+          "relative font-normal md:font-medium text-tiny md:text-body md:whitespace-nowrap w-fit",
           active
             ? "text-brand-700"
             : "text-natural-500 group-hover:text-brand-500 group-active:text-brand-700"

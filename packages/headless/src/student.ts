@@ -85,9 +85,7 @@ export function useUpdateStudent({
   });
 }
 
-export function useFindStudentById(
-  id: number
-): UseQueryResult<IStudent.FindStudentMetaApiResponse> {
+export function useFindStudentById(id: number): UseQueryResult<IStudent.Self> {
   const api = useApi();
   const find = useCallback(async () => {
     return api.student.findById(id);
@@ -95,6 +93,6 @@ export function useFindStudentById(
 
   return useQuery({
     queryFn: find,
-    queryKey: ["find-student-by-id"],
+    queryKey: [QueryKey.FindStudentById],
   });
 }
