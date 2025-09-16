@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Alert } from "@/components/Alert";
+import { Alert, AlertType } from "@/components/Alert";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { faker } from "@faker-js/faker/locale/ar";
 
@@ -31,6 +31,27 @@ export const ErrorTitleOnly: StoryObj<Component> = {
 export const ErrorDescriptionOnly: StoryObj<Component> = {
   args: {
     children: faker.lorem.words(5),
+  },
+};
+
+export const Info: StoryObj<Component> = {
+  args: {
+    children: faker.lorem.words(5),
+    type: AlertType.Info,
+  },
+};
+
+export const Success: StoryObj<Component> = {
+  args: {
+    children: faker.lorem.words(5),
+    type: AlertType.Success,
+  },
+};
+
+export const Warning: StoryObj<Component> = {
+  args: {
+    children: faker.lorem.words(5),
+    type: AlertType.Warning,
   },
 };
 
