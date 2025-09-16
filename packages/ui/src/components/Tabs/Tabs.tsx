@@ -57,7 +57,7 @@ const Tab: React.FC<{
       <Typography
         tag="h6"
         className={cn(
-          "relative font-normal md:font-medium text-tiny whitespace-nowrap w-fit",
+          "relative font-normal md:font-medium text-tiny md:text-body whitespace-nowrap w-fit",
           active
             ? "text-brand-500"
             : "text-natural-500 group-hover:text-brand-500 group-active:text-brand-700"
