@@ -13,4 +13,8 @@ export class Student extends Base {
   ): Promise<IStudent.UpdateApiResponse> {
     return this.patch({ route: `/api/v1/student/`, payload });
   }
+
+  async findById(id: number): Promise<IStudent.FindStudentMetaApiResponse> {
+    return this.get({ route: `api/v1/student/${id}` });
+  }
 }

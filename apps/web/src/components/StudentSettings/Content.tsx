@@ -5,7 +5,6 @@ import { TabsV2 } from "@litespace/ui/Tabs";
 import NotificationSettings from "@/components/Settings/NotificationSettings";
 import UpdatePassword from "@/components/Settings/UpdatePassword";
 import PersonalDetails from "@/components/Settings/PersonalDetails";
-import TopicSelection from "@/components/Settings/TopicSelection";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import { IUser } from "@litespace/types";
 import { Tab } from "@/components/StudentSettings/types";
@@ -17,6 +16,7 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import ProfileAvatar from "@litespace/assets/ProfileAvatar";
 import { Lock, Paperclip, DollarSign } from "react-feather";
 import Notification from "@litespace/assets/Notification";
+import StudentPublicInfo from "@/components/Settings/StudentPublicInfo";
 
 const Content: React.FC<{
   tab: StudentSettingsTabId;
@@ -32,6 +32,11 @@ const Content: React.FC<{
         Icon: ProfileAvatar,
         label: intl("shared-settings.personal.title"),
         important: isPersonalInfoIncomplete(user),
+      },
+      {
+        id: "public-info",
+        label: intl("student-settings.public-info.title"),
+        important: false,
       },
       {
         id: "password",
@@ -86,6 +91,12 @@ const Content: React.FC<{
         />
       ) : null}
 
+      {tab === "public-info" ? (
+        <div className="max-w-[530px] grow flex">
+          <StudentPublicInfo id={user.id} />
+        </div>
+      ) : null}
+
       {tab === "password" ? <UpdatePassword id={user.id} /> : null}
 
       {tab === "notifications" ? (
@@ -97,6 +108,7 @@ const Content: React.FC<{
           notificationMethod={user.notificationMethod}
         />
       ) : null}
+<<<<<<< HEAD
 
       {tab === "topics" ? (
         <div className="max-w-[530px] grow flex">
@@ -106,6 +118,8 @@ const Content: React.FC<{
 
       {mq.md && tab === "refunds" ? <RefundsTable /> : null}
       {!mq.md && tab === "refunds" ? <RefundsList /> : null}
+=======
+>>>>>>> e99ae026 (update(web): update student settings page design)
     </div>
   );
 };
