@@ -29,7 +29,7 @@ export { Avatar } from "@/components/Avatar";
 export { VideoPlayer } from "@/components/VideoPlayer";
 export { Tabs } from "@/components/Tabs";
 export { Timeline, type TimelineItem } from "@/components/Timeline";
-export { Alert, AlertType } from "@/components/Alert";
+export { Alert, AlertV2, AlertType } from "@/components/Alert";
 export { Switch } from "@/components/Switch";
 export { Stepper } from "@/components/Stepper";
 export { Table } from "@/components/Table";
