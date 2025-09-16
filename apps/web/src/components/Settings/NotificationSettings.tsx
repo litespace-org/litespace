@@ -20,6 +20,7 @@ import {
 } from "@litespace/headless/confirmationCode";
 import { Typography } from "@litespace/ui/Typography";
 import UnverifiedPhoneFragment from "@/components/Settings/UnverifiedPhoneFragment";
+import cn from "classnames";
 
 type Form = {
   notificationMethod: IUser.Self["notificationMethod"];
@@ -46,6 +47,7 @@ const NotificationSettings: React.FC<{
   verifiedPhone: boolean;
 }> = ({ id, notificationMethod, verifiedWhatsApp, phone, verifiedPhone }) => {
   const intl = useFormatMessage();
+  const [step, setStep] = useState<"enable" | "choose">("enable");
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [sentCode, setSentCode] = useState<boolean>(false);
   const [unresolvedPhone, setUnresolvedPhone] = useState<boolean>(false);
@@ -69,7 +71,8 @@ const NotificationSettings: React.FC<{
 
   const onUpdateUserSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
-  }, [invalidateQuery]);
+    toast.success({ title: intl("student-settings.updated-successfully") });
+  }, [intl, invalidateQuery, toast]);
 
   const onSendCodeSuccess = useCallback(() => {
     setSentCode(true);
@@ -150,34 +153,67 @@ const NotificationSettings: React.FC<{
     ];
   }, [form]);
 
-  const onChange = useCallback(
-    (value: IUser.NotificationMethod) => {
-      form.set("notificationMethod", value);
+  // const onChange = useCallback(
+  //   (value: IUser.NotificationMethod) => {
+  //     form.set("notificationMethod", value);
+  //
+  //     const isVerificationNeeded =
+  //       value === IUser.NotificationMethod.Whatsapp && !verifiedWhatsApp;
+  //
+  //     if (isVerificationNeeded) setShowDialog(true);
+  //
+  //     if (phone && isVerificationNeeded)
+  //       sendPhoneCodeMutation.mutate({
+  //         method: NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[value],
+  //         phone,
+  //       });
+  //   },
+  //   [form, phone, sendPhoneCodeMutation, verifiedWhatsApp]
+  // );
 
-      const isVerificationNeeded =
-        value === IUser.NotificationMethod.Whatsapp && !verifiedWhatsApp;
-
-      if (isVerificationNeeded) setShowDialog(true);
-
-      if (phone && isVerificationNeeded)
-        sendPhoneCodeMutation.mutate({
-          method: NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL[value],
-          phone,
-        });
+  const handleNotificationsState = useCallback(
+    (enabled: boolean) => {
+      if (enabled && !verifiedPhone) {
+        // setStep("choose");
+        // return setShowDialog(true);
+      }
+      updateUserMutation.mutate({
+        id,
+        payload: {
+          notificationMethod: enabled ? IUser.NotificationMethod.Whatsapp : null,
+        },
+      });
     },
-    [form, phone, sendPhoneCodeMutation, verifiedWhatsApp]
+    [verifiedPhone]
   );
 
-  if (!verifiedPhone) return <UnverifiedPhoneFragment />;
-
   return (
-    <div className="md:max-w-[344px] lg:max-w-[400px] grow md:grow-0 h-full flex flex-col">
+    <div
+      className={cn(
+        {
+          "sm:max-w-[450px] md:max-w-[650px] lg:max-w-[650px]":
+            step === "enable",
+          "md:max-w-[344px] lg:max-w-[400px]": step === "choose",
+        },
+        "grow md:grow-0 h-full flex flex-col"
+      )}
+    >
       <Typography
         tag="h2"
-        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
+        className="hidden md:block text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
       >
         {intl("shared-settings.notification.title")}
       </Typography>
+
+      {step === "enable" && !verifiedPhone ? (
+        <UnverifiedPhoneFragment
+          notificationMethod={notificationMethod}
+          save={(notificationsEnabled) =>
+            handleNotificationsState(notificationsEnabled)
+          }
+        />
+      ) : null}
+
       {showDialog ? (
         <VerifyNotificationMethodDialog
           method={selectedMethod}
@@ -191,27 +227,30 @@ const NotificationSettings: React.FC<{
           verifing={verifyPhoneCodeMutation.isPending}
         />
       ) : null}
-      <form onSubmit={form.onSubmit} className="grow flex flex-col">
-        <Select
-          onChange={onChange}
-          id="notification-method"
-          label={intl("shared-settings.edit.notification.label")}
-          placeholder={intl("shared-settings.edit.notification.placeholder")}
-          value={optional(form.state.notificationMethod)}
-          options={options}
-        />
-        <Button
-          size="large"
-          disabled={
-            updateUserMutation.isPending ||
-            form.state.notificationMethod === notificationMethod
-          }
-          onClick={form.submit}
-          className="mt-6"
-        >
-          {intl("shared-settings.save")}
-        </Button>
-      </form>
+
+      {/* {step === "choose" ? ( */}
+      {/*   <form onSubmit={form.onSubmit} className="grow flex flex-col"> */}
+      {/*     <Select */}
+      {/*       onChange={onChange} */}
+      {/*       id="notification-method" */}
+      {/*       label={intl("shared-settings.edit.notification.label")} */}
+      {/*       placeholder={intl("shared-settings.edit.notification.placeholder")} */}
+      {/*       value={optional(form.state.notificationMethod)} */}
+      {/*       options={options} */}
+      {/*     /> */}
+      {/*     <Button */}
+      {/*       size="large" */}
+      {/*       disabled={ */}
+      {/*         updateUserMutation.isPending || */}
+      {/*         form.state.notificationMethod === notificationMethod */}
+      {/*       } */}
+      {/*       onClick={form.submit} */}
+      {/*       className="mt-6" */}
+      {/*     > */}
+      {/*       {intl("shared-settings.save")} */}
+      {/*     </Button> */}
+      {/*   </form> */}
+      {/* ) : null} */}
     </div>
   );
 };

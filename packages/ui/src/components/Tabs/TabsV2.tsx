@@ -55,7 +55,7 @@ const Tab: React.FC<{
     <button
       type="button"
       className={cn(
-        "relative px-1 sm:px-4 py-[10px] group rounded-xl",
+        "relative px-1 sm:px-3 lg:px-4 py-[10px] group rounded-xl",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-offset-0 focus-visible:ring-brand-500",
         "flex items-center justify-center",
         { "bg-natural-50 rounded-xl": active },
@@ -73,7 +73,7 @@ const Tab: React.FC<{
         {Icon ? (
           <Icon
             className={cn(
-              "w-4 h-4",
+              "w-4 h-4 [&>*]:fill-transparent",
               active ? "[&>*]:stroke-brand-500" : "[&>*]:stroke-natural-700"
             )}
           />

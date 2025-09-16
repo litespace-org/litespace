@@ -131,3 +131,27 @@ export function useDeleteTopic({
     onError,
   });
 }
+
+export function useUpdateUserTopics({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess;
+  onError: OnError;
+}) {
+  const api = useApi();
+
+  const update = useCallback(
+    async (payload: ITopic.ReplaceUserTopicsApiPayload) => {
+      return await api.topic.replaceUserTopics(payload);
+    },
+    [api.topic]
+  );
+
+  return useMutation({
+    mutationFn: update,
+    mutationKey: [MutationKey.UdpateUsertopics],
+    onSuccess,
+    onError,
+  });
+}

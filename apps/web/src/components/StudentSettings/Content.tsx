@@ -1,42 +1,48 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import React, { useMemo } from "react";
 import { TabsV2 } from "@litespace/ui/Tabs";
+import React, { useMemo } from "react";
 
 import NotificationSettings from "@/components/Settings/NotificationSettings";
-import UpdatePassword from "@/components/Settings/UpdatePassword";
 import PersonalDetails from "@/components/Settings/PersonalDetails";
-import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
-import { IUser } from "@litespace/types";
-import { Tab } from "@/components/StudentSettings/types";
-import { isPersonalInfoIncomplete } from "@/components/Settings/utils";
-import { StudentSettingsTabId } from "@litespace/utils/routes";
 import RefundsList from "@/components/Settings/RefundsList";
-import RefundsTable from "@/components/StudentSettings/RefundsTable";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import ProfileAvatar from "@litespace/assets/ProfileAvatar";
-import { Lock, Paperclip, DollarSign } from "react-feather";
-import Notification from "@litespace/assets/Notification";
 import StudentPublicInfo from "@/components/Settings/StudentPublicInfo";
+import UpdatePassword from "@/components/Settings/UpdatePassword";
+import { isPersonalInfoIncomplete } from "@/components/Settings/utils";
+import MobileSettingsPages from "@/components/StudentSettings/MobileSettingsPage";
+import RefundsTable from "@/components/StudentSettings/RefundsTable";
+import { Tab } from "@/components/StudentSettings/types";
+import Categories from "@litespace/assets/Categories";
+import Lock from "@litespace/assets/Lock";
+import Notification from "@litespace/assets/Notification";
+import ProfileAvatar from "@litespace/assets/ProfileAvatar";
+import Wallet from "@litespace/assets/Wallet";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { IUser } from "@litespace/types";
+import {
+  MobileStudentSettingsTabId,
+  StudentSettingsTabId,
+} from "@litespace/utils/routes";
+import { Button } from "@litespace/ui/Button";
+import RightArrowHead from "@litespace/assets/RightArrowHead";
+import { Typography } from "@litespace/ui/Typography";
+import cn from "classnames";
+
+export type ITab = StudentSettingsTabId | MobileStudentSettingsTabId;
 
 const Content: React.FC<{
-  tab: StudentSettingsTabId;
-  setTab: (tab: StudentSettingsTabId) => void;
+  tab: ITab;
+  setTab: (tab: ITab) => void;
   user: IUser.Self;
 }> = ({ tab, setTab, user }) => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
-  const tabs: Tab[] = useMemo(() => {
+  const largeScreenTabs: Tab[] = useMemo(() => {
     return [
       {
         id: "personal",
         Icon: ProfileAvatar,
         label: intl("shared-settings.personal.title"),
         important: isPersonalInfoIncomplete(user),
-      },
-      {
-        id: "public-info",
-        label: intl("student-settings.public-info.title"),
-        important: false,
       },
       {
         id: "password",
@@ -51,29 +57,59 @@ const Content: React.FC<{
         important: !user.notificationMethod,
       },
       {
-        id: "topics",
-        Icon: Paperclip,
-        label: intl("student-settings.topics.title"),
+        id: "public-info",
+        Icon: Categories,
+        label: intl("student-settings.public-info.title"),
         important: false,
       },
       {
         id: "refunds",
-        Icon: DollarSign,
+        Icon: Wallet,
         label: intl("student-settings.refunds.title"),
         important: false,
       },
     ];
   }, [intl, user]);
 
+  const mobileTabs: Tab[] = useMemo(() => {
+    const settingsTab: Tab = {
+      id: "settings",
+      label: intl("student-settings.profile.title"),
+    };
+
+    return [settingsTab, ...largeScreenTabs];
+  }, [intl, largeScreenTabs]);
+
+  const tabs = useMemo(
+    () => (mq.md ? largeScreenTabs : mobileTabs),
+    [largeScreenTabs, mobileTabs, mq.md]
+  );
   return (
     <div className="grow flex flex-col">
-      <div className="mb-6 md:hidden">
-        <UploadPhoto id={user.id} name={user.name} image={user.image} />
+      <div className="flex md:hidden gap-2 items-center mb-6">
+        <Button
+          variant="secondary"
+          type="natural"
+          className={cn("!bg-transparent !border-none !pe-0", {
+            hidden: tab === "settings",
+          })}
+          startIcon={
+            <RightArrowHead className="icon w-[7.1px] h-[15.8px] [&>*]:stroke-[1.5px] ![&>*]:stroke-[#292D32] _-my-1" />
+          }
+          onClick={() => setTab("settings")}
+        />
+        <Typography tag="h3" className="text-body font-bold text-natural-950">
+          {tabs.find((t) => t?.id === tab)?.label}
+        </Typography>
       </div>
 
-      <div className="max-w-[450px] md:max-w-fit mb-6 lg:mb-10">
-        <TabsV2 tabs={tabs} tab={tab} setTab={setTab} />
+      <div className="hidden md:block max-w-[450px] md:max-w-fit mb-6 lg:mb-10">
+        <TabsV2 tabs={mq.md ? tabs : mobileTabs} tab={tab} setTab={setTab} />
       </div>
+
+      {tab === "settings" ? (
+        <MobileSettingsPages tabs={mobileTabs} user={user} setTab={setTab} />
+      ) : null}
 
       {tab === "personal" ? (
         <PersonalDetails
@@ -91,12 +127,6 @@ const Content: React.FC<{
         />
       ) : null}
 
-      {tab === "public-info" ? (
-        <div className="max-w-[530px] grow flex">
-          <StudentPublicInfo id={user.id} />
-        </div>
-      ) : null}
-
       {tab === "password" ? <UpdatePassword id={user.id} /> : null}
 
       {tab === "notifications" ? (
@@ -108,18 +138,15 @@ const Content: React.FC<{
           notificationMethod={user.notificationMethod}
         />
       ) : null}
-<<<<<<< HEAD
 
-      {tab === "topics" ? (
+      {tab === "public-info" ? (
         <div className="max-w-[530px] grow flex">
-          <TopicSelection />
+          <StudentPublicInfo id={user.id} />
         </div>
       ) : null}
 
       {mq.md && tab === "refunds" ? <RefundsTable /> : null}
       {!mq.md && tab === "refunds" ? <RefundsList /> : null}
-=======
->>>>>>> e99ae026 (update(web): update student settings page design)
     </div>
   );
 };

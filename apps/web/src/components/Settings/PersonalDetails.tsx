@@ -201,120 +201,118 @@ const PersonalDetails: React.FC<Props> = ({
       <Typography
         data-student={forStudent}
         tag="h2"
-        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6 data-[student=false]:block"
+        className="hidden md:block text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6 data-[student=false]:block"
       >
         {intl("tutor-settings.tabs.personal-settings")}
       </Typography>
 
-      <form
-        onSubmit={form.onSubmit}
-        className="flex flex-wrap md:flex-nowrap gap-6 md:gap-10 md:mt-6"
-      >
-        <div className="w-full md:w-[320px] lg:w-[400px] flex-shrink-0">
-          <div className="w-full flex flex-col gap-2 md:gap-4">
-            <div
-              data-student={forStudent}
-              className="hidden data-[student=true]:block"
-            >
+      <form onSubmit={form.onSubmit}>
+        <div className="flex flex-col gap-6 md:mt-6">
+          <div className="flex flex-col md:flex-row gap-10">
+            <div className="w-full flex flex-col gap-2 md:gap-4 md:w-[320px] lg:w-[400px] flex-shrink-0">
+              <div
+                data-student={forStudent}
+                className="hidden data-[student=true]:block"
+              >
+                <Input
+                  id="name"
+                  name="name"
+                  value={form.state.name}
+                  onChange={(e) => form.set("name", e.target.value)}
+                  label={intl("labels.name")}
+                  placeholder={intl("labels.name.placeholder")}
+                  state={form.errors?.name ? "error" : undefined}
+                  helper={form.errors?.name}
+                  autoComplete="off"
+                />
+              </div>
+
               <Input
-                id="name"
-                name="name"
-                value={form.state.name}
-                onChange={(e) => form.set("name", e.target.value)}
-                label={intl("labels.name")}
-                placeholder={intl("labels.name.placeholder")}
-                state={form.errors?.name ? "error" : undefined}
-                helper={form.errors?.name}
+                id="email"
+                name="email"
+                value={form.state.email}
+                onChange={(e) => form.set("email", e.target.value)}
+                label={intl("labels.email")}
+                placeholder={intl("labels.email.placeholder")}
+                state={form.errors?.email ? "error" : undefined}
+                helper={form.errors?.email}
                 autoComplete="off"
+                disabled={!forStudent}
               />
+
+              <PatternInput
+                id="phone"
+                name="phone"
+                mask=" "
+                format="### #### ####"
+                value={optional(form.state.phone)}
+                onValueChange={(e) => form.set("phone", e.value)}
+                label={intl("labels.phone")}
+                placeholder={intl("labels.phone.placeholder")}
+                state={form.errors?.phone ? "error" : undefined}
+                helper={form.errors?.phone}
+                autoComplete="off"
+                dir="ltr"
+              />
+
+              <Select
+                id="city"
+                value={optional(form.state.city)}
+                onChange={(value) => form.set("city", value)}
+                options={cityOptions}
+                label={intl("labels.city")}
+                placeholder={intl("labels.city.placeholder")}
+                state={form.errors.city ? "error" : undefined}
+                helper={form.errors?.city}
+              />
+
+              <Select
+                id="gender"
+                value={optional(form.state.gender)}
+                onChange={(value) => form.set("gender", value)}
+                options={genderOptions}
+                label={intl("labels.gender")}
+                placeholder={intl("labels.gender.student-placeholder")}
+                state={form.errors.gender ? "error" : undefined}
+                helper={form.errors?.gender}
+              />
+
+              {!forStudent ? (
+                <NumericInput
+                  id="notice"
+                  name="notice"
+                  value={optional(form.state.notice)}
+                  onValueChange={({ floatValue }) =>
+                    form.set("notice", floatValue || 0)
+                  }
+                  dir="rtl"
+                  label={intl("labels.notice")}
+                  placeholder={intl("labels.notice.placeholder")}
+                  state={form.errors?.notice ? "error" : undefined}
+                  helper={noticeHelper}
+                  autoComplete="off"
+                  thousandSeparator=","
+                />
+              ) : null}
             </div>
 
-            <Input
-              id="email"
-              name="email"
-              value={form.state.email}
-              onChange={(e) => form.set("email", e.target.value)}
-              label={intl("labels.email")}
-              placeholder={intl("labels.email.placeholder")}
-              state={form.errors?.email ? "error" : undefined}
-              helper={form.errors?.email}
-              autoComplete="off"
-              disabled={!forStudent}
-            />
-
-            <PatternInput
-              id="phone"
-              name="phone"
-              mask=" "
-              format="### #### ####"
-              value={optional(form.state.phone)}
-              onValueChange={(e) => form.set("phone", e.value)}
-              label={intl("labels.phone")}
-              placeholder={intl("labels.phone.placeholder")}
-              state={form.errors?.phone ? "error" : undefined}
-              helper={form.errors?.phone}
-              autoComplete="off"
-              dir="ltr"
-            />
-
-            <Select
-              id="city"
-              value={optional(form.state.city)}
-              onChange={(value) => form.set("city", value)}
-              options={cityOptions}
-              label={intl("labels.city")}
-              placeholder={intl("labels.city.placeholder")}
-              state={form.errors.city ? "error" : undefined}
-              helper={form.errors?.city}
-            />
-
-            <Select
-              id="gender"
-              value={optional(form.state.gender)}
-              onChange={(value) => form.set("gender", value)}
-              options={genderOptions}
-              label={intl("labels.gender")}
-              placeholder={intl("labels.gender.student-placeholder")}
-              state={form.errors.gender ? "error" : undefined}
-              helper={form.errors?.gender}
-            />
-
-            {!forStudent ? (
-              <NumericInput
-                id="notice"
-                name="notice"
-                value={optional(form.state.notice)}
-                onValueChange={({ floatValue }) =>
-                  form.set("notice", floatValue || 0)
-                }
-                dir="rtl"
-                label={intl("labels.notice")}
-                placeholder={intl("labels.notice.placeholder")}
-                state={form.errors?.notice ? "error" : undefined}
-                helper={noticeHelper}
-                autoComplete="off"
-                thousandSeparator=","
+            <div className="md:max-w-[320px] lg:max-w-[640px] flex flex-col gap-6">
+              <ConfirmContactMethod
+                forStudent={forStudent}
+                verifiedEmail={verifiedEmail}
+                verifiedPhone={verifiedPhone}
+                phone={phone}
               />
-            ) : null}
+            </div>
           </div>
           <Button
             size="large"
             disabled={mutation.isPending || unchanged}
             loading={mutation.isPending}
-            className="mt-6"
             htmlType="submit"
           >
             {intl("shared-settings.save")}
           </Button>
-        </div>
-
-        <div className="max-w-[320px] lg:max-w-[640px] flex flex-col gap-6">
-          <ConfirmContactMethod
-            forStudent={forStudent}
-            verifiedEmail={verifiedEmail}
-            verifiedPhone={verifiedPhone}
-            phone={phone}
-          />
         </div>
       </form>
     </div>

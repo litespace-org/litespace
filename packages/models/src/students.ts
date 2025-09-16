@@ -73,7 +73,28 @@ export class Students extends Model<
       .where(this.column("id"), id);
   }
 
-  async findMany({
+  async findOneBy<T extends keyof IStudent.Row>(
+    key: T,
+    value: IStudent.Row[T]
+  ): Promise<IStudent.Self | null> {
+    const rows = await this.findManyBy(key, value);
+    return first(rows) || null;
+  }
+
+  async findById(id: number): Promise<IStudent.Self | null> {
+    return await this.findOneBy("id", id);
+  }
+
+  async findManyBy<T extends keyof IStudent.Row>(
+    key: T,
+    value: IStudent.Row[T]
+  ): Promise<IStudent.Self[]> {
+    const rows = await this.builder().select("*").where(key, value);
+
+    return rows.map((row) => this.from(row));
+  }
+
+  async find({
     tx,
     ids,
     jobTitle,
