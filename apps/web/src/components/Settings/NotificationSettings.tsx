@@ -46,6 +46,7 @@ const NotificationSettings: React.FC<{
   verifiedPhone: boolean;
 }> = ({ id, notificationMethod, verifiedWhatsApp, phone, verifiedPhone }) => {
   const intl = useFormatMessage();
+  const [step, setStep] = useState<"enable" | "choose">("enable");
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [sentCode, setSentCode] = useState<boolean>(false);
   const [unresolvedPhone, setUnresolvedPhone] = useState<boolean>(false);
@@ -69,7 +70,8 @@ const NotificationSettings: React.FC<{
 
   const onUpdateUserSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
-  }, [invalidateQuery]);
+    toast.success({ title: intl("student-settings.updated-successfully") });
+  }, [intl, invalidateQuery, toast]);
 
   const onSendCodeSuccess = useCallback(() => {
     setSentCode(true);
@@ -168,16 +170,34 @@ const NotificationSettings: React.FC<{
     [form, phone, sendPhoneCodeMutation, verifiedWhatsApp]
   );
 
-  if (!verifiedPhone) return <UnverifiedPhoneFragment />;
+  const handleNotificationsState = useCallback(
+    (enabled: boolean) => {
+      if (enabled && !verifiedPhone) {
+        setStep("choose");
+        return setShowDialog(true);
+      }
+    },
+    [verifiedPhone]
+  );
 
   return (
     <div className="md:max-w-[344px] lg:max-w-[400px] grow md:grow-0 h-full flex flex-col">
       <Typography
         tag="h2"
-        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
+        className="hidden md:block text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
       >
         {intl("shared-settings.notification.title")}
       </Typography>
+
+      {step === "enable" && !verifiedPhone ? (
+        <UnverifiedPhoneFragment
+          notificationMethod={notificationMethod}
+          save={(notificationsEnabled) =>
+            handleNotificationsState(notificationsEnabled)
+          }
+        />
+      ) : null}
+
       {showDialog ? (
         <VerifyNotificationMethodDialog
           method={selectedMethod}
@@ -191,27 +211,30 @@ const NotificationSettings: React.FC<{
           verifing={verifyPhoneCodeMutation.isPending}
         />
       ) : null}
-      <form onSubmit={form.onSubmit} className="grow flex flex-col">
-        <Select
-          onChange={onChange}
-          id="notification-method"
-          label={intl("shared-settings.edit.notification.label")}
-          placeholder={intl("shared-settings.edit.notification.placeholder")}
-          value={optional(form.state.notificationMethod)}
-          options={options}
-        />
-        <Button
-          size="large"
-          disabled={
-            updateUserMutation.isPending ||
-            form.state.notificationMethod === notificationMethod
-          }
-          onClick={form.submit}
-          className="mt-6"
-        >
-          {intl("shared-settings.save")}
-        </Button>
-      </form>
+
+      {step === "choose" ? (
+        <form onSubmit={form.onSubmit} className="grow flex flex-col">
+          <Select
+            onChange={onChange}
+            id="notification-method"
+            label={intl("shared-settings.edit.notification.label")}
+            placeholder={intl("shared-settings.edit.notification.placeholder")}
+            value={optional(form.state.notificationMethod)}
+            options={options}
+          />
+          <Button
+            size="large"
+            disabled={
+              updateUserMutation.isPending ||
+              form.state.notificationMethod === notificationMethod
+            }
+            onClick={form.submit}
+            className="mt-6"
+          >
+            {intl("shared-settings.save")}
+          </Button>
+        </form>
+      ) : null}
     </div>
   );
 };

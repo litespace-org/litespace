@@ -88,7 +88,7 @@ const UpdatePassword: React.FC<{ id: number }> = ({ id }) => {
     <div className="max-w-[400px] grow md:grow-0 flex flex-col">
       <Typography
         tag="h2"
-        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
+        className="hidden md:block text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
       >
         {intl("student-settings.password.title")}
       </Typography>

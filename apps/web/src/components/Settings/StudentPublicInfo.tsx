@@ -5,7 +5,8 @@ import {
   useFindStudentById,
   useUpdateStudent,
 } from "@litespace/headless/student";
-import { useInfiniteTopics } from "@litespace/headless/topic";
+import { useInfiniteTopics, useUserTopics } from "@litespace/headless/topic";
+import { useUpdateUserTopics } from "@litespace/headless/user";
 import { IStudent, ITopic } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { Form } from "@litespace/ui/Form";
@@ -18,10 +19,11 @@ import { Select } from "@litespace/ui/Select";
 import { Textarea } from "@litespace/ui/Textarea";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
+import { isEqual } from "lodash";
 import React, { useCallback, useMemo } from "react";
 
 type IForm = {
-  topics: ITopic.Self["name"]["ar"][];
+  topics: ITopic.Self[];
   career: string;
   level: IStudent.EnglishLevel;
   aim: string;
@@ -31,9 +33,10 @@ export const StudentPublicInfo: React.FC<{ id: number }> = ({ id }) => {
   const intl = useFormatMessage();
   const toast = useToast();
 
-  const { data } = useFindStudentById(id);
+  const { data: studentData } = useFindStudentById(id);
 
   const { list: allTopics } = useInfiniteTopics();
+  const { query: studentTopics } = useUserTopics();
 
   const onSuccess = useCallback(() => {
     toast.success({
@@ -41,7 +44,7 @@ export const StudentPublicInfo: React.FC<{ id: number }> = ({ id }) => {
     });
   }, [intl, toast]);
 
-  const onError = useOnError({
+  const studentOnError = useOnError({
     type: "mutation",
     handler: ({ messageId }) => {
       toast.error({
@@ -51,7 +54,24 @@ export const StudentPublicInfo: React.FC<{ id: number }> = ({ id }) => {
     },
   });
 
-  const updateStudent = useUpdateStudent({ onSuccess, onError });
+  const topicOnError = useOnError({
+    type: "mutation",
+    handler: ({ messageId }) => {
+      toast.error({
+        title: intl("complete-profile.update.error"),
+        description: intl(messageId),
+      });
+    },
+  });
+
+  const updateStudentTopics = useUpdateUserTopics({
+    onError: topicOnError,
+  });
+
+  const updateStudent = useUpdateStudent({
+    onSuccess,
+    onError: studentOnError,
+  });
 
   const validators = useMakeValidators<IForm>({
     career: { required: false },
@@ -59,24 +79,50 @@ export const StudentPublicInfo: React.FC<{ id: number }> = ({ id }) => {
     aim: { required: false },
   });
 
+  const studentTopicsIds = useMemo(
+    () => studentTopics.data?.map((topic) => topic.id),
+    [studentTopics.data]
+  );
+
   const form = useForm<IForm>({
     defaults: {
-      topics: data?.topics.map((topic) => topic.name.ar) || [],
-      career: data?.career || intl("labels.jobs.student"),
-      level: data?.level || IStudent.EnglishLevel.Beginner,
-      aim: data?.aim || "",
+      topics: studentTopics.data || [],
+      career: studentData?.jobTitle || "",
+      level: studentData?.englishLevel || IStudent.EnglishLevel.Beginner,
+      aim: studentData?.learningObjective || "",
     },
     validators,
     onSubmit(data) {
-      updateStudent.mutate({
-        id,
-        payload: {
-          topics: data.topics,
-          career: data.career,
-          level: data.level,
-          aim: data.aim,
-        },
-      });
+      if (isEqual(studentTopics.data, data.topics))
+        return updateStudent.mutate({
+          payload: {
+            id,
+            englishLevel: data.level,
+            jobTitle: data.career,
+            learningObjective: data.aim,
+          },
+        });
+
+      return updateStudentTopics
+        .mutateAsync({
+          addTopics: data.topics
+            .filter((topic) => !studentTopicsIds?.includes(topic.id))
+            .map((topic) => topic.id),
+          removeTopics:
+            studentTopicsIds?.filter(
+              (topic) => !data.topics.map((tp) => tp.id).includes(topic)
+            ) || [],
+        })
+        .then(() =>
+          updateStudent.mutate({
+            payload: {
+              id,
+              englishLevel: data.level,
+              jobTitle: data.career,
+              learningObjective: data.aim,
+            },
+          })
+        );
     },
   });
 
@@ -93,7 +139,10 @@ export const StudentPublicInfo: React.FC<{ id: number }> = ({ id }) => {
     <div className="w-full">
       <Form onSubmit={form.onSubmit} className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">
-          <Typography tag="h5" className="text-subtitle-2 font-bold">
+          <Typography
+            tag="h5"
+            className="hidden md:block text-subtitle-2 font-bold"
+          >
             {intl("student-settings.public-info.title")}
           </Typography>
           <MultiSelect
@@ -101,12 +150,17 @@ export const StudentPublicInfo: React.FC<{ id: number }> = ({ id }) => {
             options={
               allTopics?.map((topic) => ({
                 label: topic.name.ar,
-                value: topic.name.ar,
+                value: topic.id,
               })) || []
             }
             placeholder={intl("complete-profile.topics.placeholder")}
-            values={form.state.topics}
-            setValues={(values) => form.set("topics", values)}
+            values={form.state.topics.map((topic) => topic.id)}
+            setValues={(values) =>
+              form.set(
+                "topics",
+                allTopics?.filter((topic) => values.includes(topic.id)) || []
+              )
+            }
           />
 
           <Input

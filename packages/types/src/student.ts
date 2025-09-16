@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { IFilter, IUser, Paginated } from "@/index";
-=======
-import { IFilter, ITopic, IUser } from "@/index";
->>>>>>> 9805f504 (update(web): update student settings page design)
 
 export enum EnglishLevel {
   Beginner = 1,
@@ -86,9 +82,7 @@ export type UpdateApiResponse = unknown;
 export type FindApiQuery = FindModelQuery;
 
 export type FindApiResponse = Paginated<Self>;
-export type FindStudentMetaApiResponse = Self & {
-  career: string;
-  level: EnglishLevel;
-  aim: string;
-  topics: ITopic.Self[];
-};
+
+export type FindByIdApiQuery = { id: number };
+
+export type FindByIdApiResponse = Self;
