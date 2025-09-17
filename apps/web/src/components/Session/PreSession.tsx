@@ -139,7 +139,13 @@ const PreSession: React.FC<{
   if (!user) return null;
 
   if (call.connected)
-    return <InSession controllers={controllers} member={member} />;
+    return (
+      <InSession
+        controllers={controllers}
+        member={member}
+        startDate={sessionStart}
+      />
+    );
 
   return (
     <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 md:mt-28 max-h-full">

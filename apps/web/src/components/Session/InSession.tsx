@@ -12,7 +12,8 @@ const InSession: React.FC<{
     audio: Controller;
     video: Controller;
   };
-}> = ({ member, controllers }) => {
+  startDate?: string;
+}> = ({ member, controllers, startDate }) => {
   const call = useMediaCall();
   const [chat, setChat] = useState(false);
   const [_, setParams] = useSearchParams();
@@ -31,7 +32,7 @@ const InSession: React.FC<{
   return (
     <div className="h-full flex flex-col gap-10">
       <div className="h-[calc(100%-80px)] flex gap-6">
-        <CallMembers remoteMember={member} />
+        <CallMembers remoteMember={member} sessionStartDate={startDate} />
 
         <SessionChat
           close={() => setChat(false)}
