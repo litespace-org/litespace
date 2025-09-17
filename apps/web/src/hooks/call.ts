@@ -5,7 +5,7 @@ import { ISession, Wss } from "@litespace/types";
 import hark from "hark";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { isEmpty } from "lodash";
+import { isEmpty, sum } from "lodash";
 import { useSocket } from "@litespace/headless/socket";
 
 export function useShareScreen() {
@@ -328,4 +328,35 @@ export function useFullScreen() {
   }, [onFullScreen, toggleFullScreenByKeyboard]);
 
   return { isFullScreen, toggleFullScreen, ref };
+}
+
+export function useIsSpeaking(audioTrack?: MediaStreamTrack) {
+  const [speakingIndicator, setSpeakingIndicator] = useState<number>(0);
+
+  useEffect(() => {
+    if (!audioTrack) return;
+    const mediaStream = new MediaStream();
+    mediaStream.addTrack(audioTrack);
+
+    const audioContext = new AudioContext();
+    const audioTrackSource = audioContext.createMediaStreamSource(mediaStream);
+
+    const analyser = audioContext.createAnalyser();
+    audioTrackSource.connect(analyser);
+
+    const interval = setInterval(() => {
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(dataArray);
+
+      const indicator = Math.floor(sum(dataArray.slice(50)) / 512);
+      setSpeakingIndicator(indicator);
+    }, 128);
+
+    return () => clearInterval(interval);
+  }, [audioTrack]);
+
+  return {
+    indicator: speakingIndicator,
+    isSpeaking: speakingIndicator > 5,
+  };
 }

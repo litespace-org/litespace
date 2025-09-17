@@ -162,7 +162,10 @@ const Controllers: React.FC<{
       onClick={() => setDevices(call.manager?.media.getDevices() || [])}
     >
       <Toggle
-        toggle={audio.toggle}
+        toggle={() => {
+          setDevices(call.manager?.media.getDevices() || []);
+          audio.toggle();
+        }}
         enabled={audio.enabled}
         error={audio.error}
         loading={audio.loading}
@@ -175,7 +178,10 @@ const Controllers: React.FC<{
       />
 
       <Toggle
-        toggle={video.toggle}
+        toggle={() => {
+          setDevices(call.manager?.media.getDevices() || []);
+          video.toggle();
+        }}
         enabled={video.enabled}
         error={video.error}
         loading={video.loading}
