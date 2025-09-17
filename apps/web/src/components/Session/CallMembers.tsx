@@ -44,7 +44,6 @@ const CallMembers: React.FC<{
             userName={member?.name || ""}
             audio={memberObj.tracks.mic?.enabled}
             video={memberObj.tracks.cam?.enabled}
-            speaking={false} // TODO
             size="lg"
           />
         ) : null}
@@ -56,13 +55,14 @@ const CallMembers: React.FC<{
           >
             <div className="w-32 sm:w-60 lg:w-72 aspect-mobile md:aspect-desktop">
               <MemberStream
+                currentMember={true}
+                audioTrack={userObj.tracks.mic}
                 videoTrack={userObj.tracks.cam}
                 userId={user.id}
                 userImage={user.image}
                 userName={user.name}
                 audio={userObj.tracks.mic?.enabled}
                 video={userObj.tracks.cam?.enabled}
-                speaking={false} // TODO
                 size="sm"
                 muted
               />
@@ -70,14 +70,15 @@ const CallMembers: React.FC<{
           </Movable>
         ) : (
           <MemberStream
+            currentMember={true}
             sessionStartDate={sessionStartDate}
+            audioTrack={userObj.tracks.mic}
             videoTrack={userObj.tracks.cam}
             userId={user.id}
             userImage={user.image}
             userName={user.name}
             audio={userObj.tracks.mic?.enabled}
             video={userObj.tracks.cam?.enabled}
-            speaking={false} // TODO
             size="lg"
             muted
           />

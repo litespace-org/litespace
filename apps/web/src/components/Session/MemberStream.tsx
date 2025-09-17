@@ -8,7 +8,8 @@ import { Loading } from "@litespace/ui/Loading";
 import VideoStream from "@/components/Session/VideoStream";
 import { VideoTrack, AudioTrack } from "@/modules/MediaCall/types";
 import AudioStream from "@/components/Session/AudioStream";
-import SessionTimer from "./SessionTimer";
+import SessionTimer from "@/components/Session/SessionTimer";
+import { useIsSpeaking } from "@/hooks/call";
 
 const MemberStream: React.FC<{
   videoTrack?: VideoTrack;
@@ -16,7 +17,7 @@ const MemberStream: React.FC<{
   muted?: boolean;
   video?: boolean;
   audio?: boolean;
-  speaking?: boolean;
+  currentMember?: boolean;
   size?: "sm" | "md" | "lg";
   userId: number;
   userImage: string | null;
@@ -28,7 +29,7 @@ const MemberStream: React.FC<{
   audioTrack,
   video,
   audio,
-  speaking,
+  currentMember,
   userId,
   userImage,
   userName,
@@ -39,6 +40,7 @@ const MemberStream: React.FC<{
   const [dirty, setDirty] = useState(false);
   const [fillHorizontally, setFillHorizontally] = useState(true);
   const mq = useMediaQuery();
+  const { isSpeaking } = useIsSpeaking(audioTrack);
 
   useEffect(() => {
     if (dirty) return;
@@ -51,7 +53,7 @@ const MemberStream: React.FC<{
       className={cn(
         "relative flex items-center justify-center bg-natural-100 rounded-2xl",
         "w-full h-full max-h-full overflow-hidden",
-        speaking && "ring-4 ring-secondary-400"
+        isSpeaking && "ring-4 ring-secondary-400"
       )}
     >
       <div
@@ -169,7 +171,7 @@ const MemberStream: React.FC<{
         }
       />
 
-      {audioTrack ? <AudioStream track={audioTrack} /> : null}
+      {audioTrack && !currentMember ? <AudioStream track={audioTrack} /> : null}
 
       <div // Ref: https://css-tricks.com/design-considerations-text-images/
         id="user-name"
