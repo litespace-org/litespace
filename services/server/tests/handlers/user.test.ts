@@ -139,13 +139,13 @@ describe("/api/v1/user/", () => {
     it("should retrieve a list of onboarded tutors", async () => {
       const student = await db.student();
 
-      const tutors = await Promise.all([
-        db.onboardedTutor(),
-        db.onboardedTutorManager(),
-        db.onboardedTutor(),
-        db.onboardedTutorManager(),
-        db.onboardedTutor(),
-      ]);
+      const tutors = [
+        await db.onboardedTutor(),
+        await db.onboardedTutorManager(),
+        await db.onboardedTutor(),
+        await db.onboardedTutorManager(),
+        await db.onboardedTutor(),
+      ];
 
       const now = dayjs();
       await Promise.all([
