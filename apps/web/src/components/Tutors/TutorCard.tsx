@@ -73,14 +73,15 @@ export const TutorCard: React.FC<{
                 if (idx <= MAXIMUM_CARD_TOPICS_NUM)
                   return (
                     <Tooltip
+                      key={idx}
                       content={
                         <div className="flex flex-col">
                           {idx === MAXIMUM_CARD_TOPICS_NUM
-                            ? topics
-                                .slice(4)
-                                .map((topic) => (
-                                  <Typography tag="span">{topic}</Typography>
-                                ))
+                            ? topics.slice(4).map((topic, i) => (
+                                <Typography key={i} tag="span">
+                                  {topic}
+                                </Typography>
+                              ))
                             : topic}
                         </div>
                       }
