@@ -7,7 +7,7 @@ import { DAYS_IN_WEEK } from "@/constants";
  * @note it will return -1 incase the subscription hasn't started yet.
  */
 export function getCurrentWeekIndex(start: string) {
-  const now = dayjs.utc();
+  const now = dayjs.utc().endOf("day");
   if (now.isBefore(start)) return -1;
   const days = now.diff(start, "days");
   const week = days / DAYS_IN_WEEK;
