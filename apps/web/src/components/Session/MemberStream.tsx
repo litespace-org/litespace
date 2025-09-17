@@ -8,6 +8,7 @@ import { Loading } from "@litespace/ui/Loading";
 import VideoStream from "@/components/Session/VideoStream";
 import { VideoTrack, AudioTrack } from "@/modules/MediaCall/types";
 import AudioStream from "@/components/Session/AudioStream";
+import SessionTimer from "./SessionTimer";
 
 const MemberStream: React.FC<{
   videoTrack?: VideoTrack;
@@ -21,6 +22,7 @@ const MemberStream: React.FC<{
   userImage: string | null;
   userName: string | null;
   loading?: boolean;
+  sessionStartDate?: string;
 }> = ({
   videoTrack,
   audioTrack,
@@ -32,6 +34,7 @@ const MemberStream: React.FC<{
   userName,
   loading,
   size = "md",
+  sessionStartDate,
 }) => {
   const [dirty, setDirty] = useState(false);
   const [fillHorizontally, setFillHorizontally] = useState(true);
@@ -62,19 +65,24 @@ const MemberStream: React.FC<{
         <Loading size="medium" />
       </div>
 
-      <div
-        className={cn(
-          "absolute z-stream-v2-mute-icon",
-          "flex items-center justify-center bg-[#0000004D] backdrop-blur-[7.5px]",
-          "rounded-full",
-          !audio ? "visible" : "invisible",
-          {
-            "top-4 left-4 w-8 h-8": size === "md" || size === "lg",
-            "top-2 left-2 w-6 h-6": size === "sm",
-          }
-        )}
-      >
-        <MicrophoneSlash className="w-4 h-4 [&_*]:stroke-natural-50" />
+      <div className="absolute left-4 top-4 flex flex-row-reverse gap-2 items-center">
+        {sessionStartDate ? (
+          <SessionTimer startTime={sessionStartDate} />
+        ) : null}
+        <div
+          className={cn(
+            "z-stream-v2-mute-icon",
+            "flex items-center justify-center bg-[#0000004D] backdrop-blur-[7.5px]",
+            "rounded-full",
+            !audio ? "visible" : "invisible",
+            {
+              "top-4 left-4 w-8 h-8": size === "md" || size === "lg",
+              "top-2 left-2 w-6 h-6": size === "sm",
+            }
+          )}
+        >
+          <MicrophoneSlash className="w-4 h-4 [&_*]:stroke-natural-50" />
+        </div>
       </div>
 
       <div

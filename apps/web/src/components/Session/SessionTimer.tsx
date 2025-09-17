@@ -32,7 +32,7 @@ const SessionTimer: React.FC<{
   );
 
   return (
-    <div className="flex h-[30px] px-[8px] py-3 justify-center items-center gap-1.5 bg-[#0D0D0D4D] backdrop-blur-[7.5px] rounded-[80px] z-[20]">
+    <div className="flex h-8 px-[8px] py-3 justify-center items-center gap-1.5 bg-[#0D0D0D4D] backdrop-blur-[7.5px] rounded-[80px] z-20">
       <Typography tag="span" className="text-base font-medium text-natural-50">
         {formattedTime}
       </Typography>

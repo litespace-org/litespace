@@ -7,7 +7,8 @@ import { RemoteMember } from "@/components/Session/types";
 
 const CallMembers: React.FC<{
   remoteMember: RemoteMember;
-}> = ({ remoteMember: member }) => {
+  sessionStartDate?: string;
+}> = ({ remoteMember: member, sessionStartDate }) => {
   const ref = useRef<HTMLDivElement>(null);
   const call = useMediaCall();
 
@@ -35,6 +36,7 @@ const CallMembers: React.FC<{
       >
         {memberObj ? (
           <MemberStream
+            sessionStartDate={sessionStartDate}
             videoTrack={memberObj.tracks.cam}
             audioTrack={memberObj.tracks.mic}
             userId={member?.id || -1}
@@ -68,6 +70,7 @@ const CallMembers: React.FC<{
           </Movable>
         ) : (
           <MemberStream
+            sessionStartDate={sessionStartDate}
             videoTrack={userObj.tracks.cam}
             userId={user.id}
             userImage={user.image}
