@@ -18,7 +18,7 @@ import { ManageLessonDialog } from "@litespace/ui/Lessons";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { isTutorManager, MAX_LESSON_DURATION } from "@litespace/utils";
-import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
+import { getWeekBoundaries } from "@litespace/utils/subscription";
 import { nullable } from "@litespace/utils/utils";
 import React, {
   useCallback,
@@ -62,9 +62,10 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   // ====== get subscribtion details and get the boundries you filter the availability slots on =========
   const { info, remainingWeeklyMinutes, refetch } = useSubscription();
+
   const weekBoundaries = useMemo(() => {
     if (info) {
-      const boundaries = getCurrentWeekBoundaries(info.start);
+      const boundaries = getWeekBoundaries(info.end);
       return {
         start: dayjs(boundaries.start),
         end: dayjs(boundaries.end),
@@ -75,6 +76,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
       end: now.current.add(6, "days").endOf("day"),
     };
   }, [info]);
+
   const slotBoundries = useMemo(
     () =>
       asSlotBoundries({
