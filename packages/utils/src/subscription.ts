@@ -49,3 +49,30 @@ export function getCurrentWeekBoundaries(start: string): {
     end: weekEnd.toISOString(),
   };
 }
+
+/**
+ * @param end subscription end is iso datetime string.
+ */
+export function getWeekBoundaries(end: string): {
+  /**
+   * week start in as iso datetime string.
+   */
+  start: string;
+  /**
+   * week end in as iso datetime string.
+   */
+  end: string;
+} {
+  const today = dayjs.utc().startOf("day");
+  const subscriptionEnd = dayjs.utc(end).endOf("day");
+
+  const weekEndCandidate = today.add(6, "days").endOf("day");
+  const endBoundary = weekEndCandidate.isAfter(end)
+    ? subscriptionEnd
+    : weekEndCandidate;
+
+  return {
+    start: today.toISOString(),
+    end: endBoundary.toISOString(),
+  };
+}
