@@ -173,6 +173,7 @@
     "./SoundSmall": "./dist/SoundSmall.tsx",
     "./Sound": "./dist/Sound.tsx",
     "./Spinner": "./dist/Spinner.tsx",
+    "./Circle": "./dist/Circle.tsx",
     "./Star": "./dist/Star.tsx",
     "./StartMessaging": "./dist/StartMessaging.tsx",
     "./StartNewMessage": "./dist/StartNewMessage.tsx",
