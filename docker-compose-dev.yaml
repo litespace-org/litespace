@@ -17,22 +17,6 @@ services:
       - postgres
     restart: unless-stopped
 
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-dev@litespace.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-
-    ports:
-      - "127.0.0.1:5050:80"
-    networks:
-      - postgres
-    restart: unless-stopped
-
   redis:
     container_name: redis
     image: redis/redis-stack-server:latest
@@ -43,34 +27,6 @@ services:
     volumes:
       - redis:/data
     networks:
-      - redis
-
-  docmost:
-    container_name: docmost
-    image: docmost/docmost:latest
-    depends_on:
-      - postgres
-      - redis
-    environment:
-      APP_URL: "http://localhost:3006"
-      APP_SECRET: "770i6T4e01tVprQyMb/FrCnIIhgmwRJS0WrGM0IWpAI="
-      DATABASE_URL: "postgres://postgres:litespace@postgres:5432/docmost?schema=public"
-      REDIS_URL: "redis://redis:6379"
-      MAIL_DRIVER: "smtp"
-      SMTP_HOST: "mail.litespace.org"
-      SMTP_PORT: 465
-      SMTP_USERNAME: dev
-      SMTP_PASSWORD: ${DOCMOST_EMAIL_PASSOWRD}
-      SMTP_SECURE: true
-      MAIL_FROM_ADDRESS: dev@litespace.org
-      MAIL_FROM_NAME: LiteSpace Dev
-    ports:
-      - "3006:3000"
-    restart: unless-stopped
-    volumes:
-      - docmost:/app/data/storage
-    networks:
-      - postgres
       - redis
 
 networks:
@@ -84,9 +40,5 @@ networks:
 volumes:
   postgres:
     name: postgres
-  pgadmin:
-    name: pgadmin
-  docmost:
-    name: docmost
   redis:
     name: redis

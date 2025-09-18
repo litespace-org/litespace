@@ -1,3 +1,4 @@
+import { ISubscription } from "@litespace/types";
 import { dayjs } from "@/dayjs";
 import { DAYS_IN_WEEK } from "@/constants";
 
@@ -50,10 +51,7 @@ export function getCurrentWeekBoundaries(start: string): {
   };
 }
 
-/**
- * @param end subscription end is iso datetime string.
- */
-export function getWeekBoundaries(end: string): {
+export function getPseudoWeekBoundaries(): {
   /**
    * week start in as iso datetime string.
    */
@@ -64,15 +62,12 @@ export function getWeekBoundaries(end: string): {
   end: string;
 } {
   const today = dayjs.utc().startOf("day");
-  const subscriptionEnd = dayjs.utc(end).endOf("day");
-
-  const weekEndCandidate = today.add(6, "days").endOf("day");
-  const endBoundary = weekEndCandidate.isAfter(end)
-    ? subscriptionEnd
-    : weekEndCandidate;
-
   return {
     start: today.toISOString(),
-    end: endBoundary.toISOString(),
+    end: today.add(6, "days").endOf("day").toISOString(),
   };
+}
+
+export function isPseudoSubscription(sub: ISubscription.Self): boolean {
+  return sub.id === -1;
 }
