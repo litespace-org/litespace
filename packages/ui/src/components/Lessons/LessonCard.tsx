@@ -11,6 +11,9 @@ import { Menu, type MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import CheckCircle from "@litespace/assets/CheckCircle";
+import Calendar from "@litespace/assets/Calendar";
+import AllMessages from "@litespace/assets/AllMessages";
+import Clock from "@litespace/assets/Clock";
 
 export type Props = {
   start: string;
@@ -24,7 +27,10 @@ export type Props = {
      * @note role shall be `student` when the current user is tutor and vice versa
      */
     role: "tutor" | "student";
+    topics: Array<string>;
+    level: string;
   };
+
   sendingMessage: boolean;
   disabled: boolean;
   onRebook: Void;
@@ -173,6 +179,7 @@ export const LessonCard: React.FC<Props> = ({
 
   const button = (
     <Button
+      type="natural"
       size="large"
       className={cn("w-full mt-auto")}
       disabled={disabled}
@@ -181,7 +188,7 @@ export const LessonCard: React.FC<Props> = ({
     >
       <Typography
         tag="span"
-        className="text-natural-50 text-caption font-semibold"
+        className="text-natural-700 text-caption font-semibold"
       >
         {action.label}
       </Typography>
@@ -229,33 +236,87 @@ export const LessonCard: React.FC<Props> = ({
       </div>
       <div className="flex flex-col gap-6">
         <div className="flex gap-2">
-          <div className="w-[65px] h-[65px] rounded-full overflow-hidden">
-            <AvatarV2 src={member.image} alt={member.name} id={member.id} />
+          <div className="relative min-w-[74px] min-h-[74px] aspect-square shrink-0">
+            <div
+              className={cn(
+                "absolute w-[19px] h-[19px] right-0 top-0  p-0.5 bg-success-700 rounded-full z-10",
+                "flex items-center justify-center"
+              )}
+            >
+              <Typography tag="span" className="text-natural-0 text-[10px]">
+                {member.level}
+              </Typography>
+            </div>
+            <div className="w-full h-full rounded-full overflow-hidden">
+              <AvatarV2 src={member.image} alt={member.name} id={member.id} />
+            </div>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex w-full flex-col gap-1">
             <Typography
               tag="span"
               className="text-caption font-bold leading-[21px] text-natural-950"
             >
               {member.name}
             </Typography>
-            <Typography
-              tag="span"
-              className="text-natural-700 text-tiny font-normal"
-            >
-              {dayjs(start).format("dddd، D MMMM")}
-            </Typography>
-            <Typography
-              tag="span"
-              className="text-natural-700 flex items-center text-tiny font-normal"
-            >
-              {dayjs(start).format("h:mm a")}
-              {" - "}
-              {dayjs(start).add(duration, "minutes").format("h:mm a")}
-            </Typography>
+
+            <div className="flex justify-between">
+              <div className="flex">
+                <Clock className="w-3.5 h-3.5 gap-1 " />
+                <Typography
+                  tag="span"
+                  className="text-natural-700 flex items-center text-tiny font-normal"
+                >
+                  z{dayjs(start).format("h:mm a")}
+                  {" - "}
+                  {dayjs(start).add(duration, "minutes").format("h:mm a")}
+                </Typography>
+              </div>
+
+              <div className="flex">
+                <Calendar className="w-3.5 h-3.5" />
+                <Typography
+                  tag="span"
+                  className="text-natural-700 text-tiny font-normal"
+                >
+                  {dayjs(start).format("dddd، D MMMM")}
+                </Typography>
+              </div>
+            </div>
+
+            <div className="mt-2 flex items-center gap-1">
+              {member.topics.map((topic, index) => {
+                if (index < 4)
+                  return (
+                    <Typography
+                      key={topic}
+                      tag="span"
+                      className="border border-natural-500 rounded-[200px] px-1.5 py-1"
+                    >
+                      {topic}
+                    </Typography>
+                  );
+                if (index === 4)
+                  return (
+                    <Typography
+                      key={index}
+                      tag="span"
+                      className="border border-natural-500 rounded-[200px] px-1.5 py-1"
+                    >
+                      {member.topics.length - 4}+
+                    </Typography>
+                  );
+              })}
+            </div>
           </div>
         </div>
-        {button}
+        <div className="flex gap-4">
+          {button}
+          <Button
+            startIcon={<AllMessages className="icon w-4 h-4" />}
+            type="natural"
+            size="large"
+          />
+        </div>
       </div>
     </div>
   );

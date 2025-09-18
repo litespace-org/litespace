@@ -21,6 +21,8 @@ import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isStudent } from "@litespace/utils/user";
+import { range } from "lodash";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -172,6 +174,8 @@ export const Content: React.FC<{
                     otherMember.role === IUser.Role.Student
                       ? "student"
                       : "tutor",
+                  topics: range(7).map(() => faker.lorem.words(1)),
+                  level: "C1",
                 }}
                 sendingMessage={sendingMessageLessonId === item.lesson.id}
                 disabled={!!sendingMessageLessonId}
