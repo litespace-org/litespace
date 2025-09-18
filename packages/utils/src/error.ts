@@ -38,6 +38,13 @@ export function isForbidden(error: unknown) {
   );
 }
 
+export function isUnauthenticated(error: unknown) {
+  return (
+    error instanceof ResponseError &&
+    (error.statusCode === 401 || error.errorCode === ApiError.Unauthenticated)
+  );
+}
+
 export function isRateLimited(error: unknown) {
   return (
     (error &&
