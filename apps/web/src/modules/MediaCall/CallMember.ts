@@ -4,6 +4,7 @@ import {
   AudioTrack,
   VideoTrack,
   CallError,
+  MemberConnectionState,
 } from "@/modules/MediaCall/types";
 import { ErrorHandler } from "@/modules/MediaCall/ErrorHandler";
 
@@ -12,12 +13,23 @@ export class CallMember {
   readonly tracks: MemberTracks;
   private session: CallSession;
   private eh: ErrorHandler;
+  private connState: MemberConnectionState;
 
   constructor(id: string, session: CallSession, eh?: ErrorHandler) {
     this.id = id;
     this.tracks = {};
     this.session = session;
     this.eh = eh || new ErrorHandler();
+    this.connState = MemberConnectionState.Disconnected;
+  }
+
+  get connectionState() {
+    return this.connState;
+  }
+
+  setConnectionState(state: MemberConnectionState) {
+    this.connState = state;
+    this.session.onMemberConnectionStateChange(this.id, this.connectionState);
   }
 
   publishMicTrack(track?: AudioTrack) {
@@ -61,7 +73,8 @@ export class CallMember {
   }
 
   clone(): CallMember {
-    const cloned = new CallMember(this.id, this.session);
+    const cloned = new CallMember(this.id, this.session, this.eh);
+    cloned.connState = this.connState;
     if (this.tracks.mic) cloned.tracks.mic = this.tracks.mic;
     if (this.tracks.cam) cloned.tracks.cam = this.tracks.cam;
     if (this.tracks.screen) cloned.tracks.screen = this.tracks.screen;

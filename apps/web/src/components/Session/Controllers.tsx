@@ -141,7 +141,8 @@ const Controllers: React.FC<{
     indicator?: boolean;
   };
   leave?: Void;
-}> = ({ audio, video, blur, leave, chat }) => {
+  className?: string;
+}> = ({ audio, video, blur, leave, chat, className }) => {
   const call = useMediaCall();
 
   const [devices, setDevices] = useState<Device[]>([]);
@@ -158,7 +159,10 @@ const Controllers: React.FC<{
   return (
     <div
       dir="ltr"
-      className="flex items-center justify-center gap-6"
+      className={cn(
+        "flex items-center justify-center gap-4 xs:gap-6",
+        className
+      )}
       onClick={() => setDevices(call.manager?.media.getDevices() || [])}
     >
       <Toggle

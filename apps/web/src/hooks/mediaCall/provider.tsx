@@ -47,6 +47,12 @@ export const MediaCallProvider: React.FC<{
         onMemberCamChange: {
           after: (s) => setCurMember(() => s.curMember.clone()),
         },
+        onMemberConnectionStateChange: {
+          after: (s) => {
+            setInMembers(() => [...(s.getJoinedMembers() || [])]);
+            setCurMember(() => s.curMember.clone());
+          },
+        },
       },
       errorHandler || undefined
     );

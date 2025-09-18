@@ -50,3 +50,10 @@ export const CallErrorMessage: Record<CallError, string> = Object.freeze({
   [CallError.MicNotFound]: "cannot find a mic device.",
   [CallError.CamNotFound]: "cannot find a cam device",
 });
+
+export enum MemberConnectionState {
+  Disconnected = 1,
+  Connecting,
+  Connected,
+  PoorlyConnected,
+}

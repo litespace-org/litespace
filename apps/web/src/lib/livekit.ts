@@ -1,8 +1,15 @@
 import { CallMember } from "@/modules/MediaCall/CallMember";
 import { CallSession, EventsExtensions } from "@/modules/MediaCall/CallSession";
 import { ErrorHandler } from "@/modules/MediaCall/ErrorHandler";
-import { AudioTrack } from "@/modules/MediaCall/types";
-import { ConnectionState, Room, RoomEvent, Track } from "livekit-client";
+import { AudioTrack, MemberConnectionState } from "@/modules/MediaCall/types";
+import {
+  ConnectionQuality,
+  ConnectionState,
+  ParticipantEvent,
+  Room,
+  RoomEvent,
+  Track,
+} from "livekit-client";
 
 export class LivekitCallSession extends CallSession {
   private room: Room;
@@ -41,9 +48,41 @@ export class LivekitCallSession extends CallSession {
     this.room.on(RoomEvent.ConnectionStateChanged, (state) => {
       console.log("connection state:", state);
       if (state === ConnectionState.Connected)
-        return this.onMemberConnect(curMemberId);
-      if (state === ConnectionState.Disconnected)
-        return this.onMemberDisconnect(curMemberId);
+        this.curMember.setConnectionState(MemberConnectionState.Connected);
+      else if (state === ConnectionState.Disconnected)
+        this.curMember.setConnectionState(MemberConnectionState.Disconnected);
+      else this.curMember.setConnectionState(MemberConnectionState.Connecting);
+    });
+
+    this.room.on(RoomEvent.ConnectionQualityChanged, (quality) => {
+      console.log("connection quality:", quality);
+      if (quality === ConnectionQuality.Poor)
+        this.curMember.setConnectionState(
+          MemberConnectionState.PoorlyConnected
+        );
+      if (quality === ConnectionQuality.Good)
+        this.curMember.setConnectionState(MemberConnectionState.Connected);
+      if (quality === ConnectionQuality.Excellent)
+        this.curMember.setConnectionState(MemberConnectionState.Connected);
+    });
+
+    this.room.on(ParticipantEvent.ConnectionQualityChanged, (quality, p) => {
+      if (quality === ConnectionQuality.Poor)
+        this.getMember(p.identity)?.setConnectionState(
+          MemberConnectionState.PoorlyConnected
+        );
+      if (quality === ConnectionQuality.Good)
+        this.getMember(p.identity)?.setConnectionState(
+          MemberConnectionState.Connected
+        );
+      if (quality === ConnectionQuality.Excellent)
+        this.getMember(p.identity)?.setConnectionState(
+          MemberConnectionState.Connected
+        );
+      if (quality === ConnectionQuality.Lost)
+        this.getMember(p.identity)?.setConnectionState(
+          MemberConnectionState.Disconnected
+        );
     });
 
     this.room.on(RoomEvent.ParticipantConnected, (p) => {

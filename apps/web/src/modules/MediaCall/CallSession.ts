@@ -1,5 +1,10 @@
 import { CallMember } from "@/modules/MediaCall/CallMember";
-import { AudioTrack, CallError, VideoTrack } from "@/modules/MediaCall/types";
+import {
+  AudioTrack,
+  CallError,
+  MemberConnectionState,
+  VideoTrack,
+} from "@/modules/MediaCall/types";
 import { ErrorHandler } from "@/modules/MediaCall/ErrorHandler";
 
 export type EventExt = {
@@ -10,6 +15,7 @@ export type EventExt = {
 export interface EventsExtensions {
   onMemberConnect?: EventExt;
   onMemberDisconnect?: EventExt;
+  onMemberConnectionStateChange?: EventExt;
   onMemberMicPublish?: EventExt;
   onMemberMicChange?: EventExt;
   onMemberCamPublish?: EventExt;
@@ -163,5 +169,13 @@ export abstract class CallSession {
   onMemberScreenChange(_memberId: CallMember["id"], _state: boolean) {
     this.execEventExt(this.ext.onMemberScreenChange?.before);
     this.execEventExt(this.ext.onMemberScreenChange?.after);
+  }
+
+  onMemberConnectionStateChange(
+    _memberId: CallMember["id"],
+    _state: MemberConnectionState
+  ) {
+    this.execEventExt(this.ext.onMemberConnectionStateChange?.before);
+    this.execEventExt(this.ext.onMemberConnectionStateChange?.after);
   }
 }
