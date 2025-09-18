@@ -2,13 +2,15 @@ import React, { useMemo } from "react";
 import { AlertCircle, AlertTriangle, CheckCircle, Info } from "react-feather";
 import { AlertType } from "@/components/Alert/types";
 import { Typography } from "@/components/Typography";
+import cn from "classnames";
 
 export const AlertV2: React.FC<{
   type: AlertType;
   title: string;
   icon?: React.ReactNode;
   action?: React.ReactNode;
-}> = ({ type, title, icon, action }) => {
+  className?: string;
+}> = ({ type, title, icon, action, className }) => {
   const {
     icon: customIcon,
     error,
@@ -26,7 +28,12 @@ export const AlertV2: React.FC<{
   }, [icon, type]);
 
   return (
-    <div className="flex flex-wrap bg-natural-100 rounded-xl py-[13.5px] px-4 flex items-center gap-2">
+    <div
+      className={cn(
+        "flex flex-wrap bg-natural-100 rounded-xl py-[13.5px] px-4 flex items-center gap-2",
+        className
+      )}
+    >
       <div>
         {customIcon ? icon : null}
         {error ? <AlertCircle className="text-destructive-600" /> : null}

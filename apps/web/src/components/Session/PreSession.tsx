@@ -36,6 +36,7 @@ const PreSession: React.FC<{
   const call = useMediaCall();
   const socket = useSocket();
 
+  const [connectedOnce, setConnectedOnce] = useState<boolean>(false);
   const [connecting, setConnecting] = useState<boolean>(false);
   const [devices, setDevices] = useState<Device[]>([]);
 
@@ -71,7 +72,10 @@ const PreSession: React.FC<{
         sockets.livekit[env.server],
         sessionAccessToken.data?.token || ""
       )
-      .then(() => setConnecting(false));
+      .then(() => {
+        setConnecting(false);
+        setConnectedOnce(true);
+      });
   }, [sessionAccessToken.data, call.manager?.session]);
 
   const controllers = useMemo(() => {
@@ -138,7 +142,7 @@ const PreSession: React.FC<{
 
   if (!user) return null;
 
-  if (call.connected)
+  if (call.connected || connectedOnce)
     return (
       <InSession
         controllers={controllers}
