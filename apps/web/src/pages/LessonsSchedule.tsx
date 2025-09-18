@@ -26,7 +26,7 @@ import { capture } from "@/lib/sentry";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { useSubscription } from "@litespace/headless/context/subscription";
-import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
+import { useSubscriptionWeekBoundaries } from "@litespace/headless/subscription";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -37,19 +37,7 @@ const LessonsSchedule: React.FC = () => {
   const { md, lg } = useMediaQuery();
 
   const { info } = useSubscription();
-  const weekBoundaries = useMemo(() => {
-    if (info) {
-      const boundaries = getCurrentWeekBoundaries(info.start);
-      return {
-        start: dayjs(boundaries.start),
-        end: dayjs(boundaries.end),
-      };
-    }
-    return {
-      start: dayjs().startOf("week"),
-      end: dayjs().startOf("week").add(1, "week"),
-    };
-  }, [info]);
+  const weekBoundaries = useSubscriptionWeekBoundaries(info);
 
   const [date, setDate] = useState(weekBoundaries.start);
   const [view, setView] = useState<View>("list");

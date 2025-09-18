@@ -47,7 +47,11 @@ import {
   calcRemainingWeeklyMinutesBySubscription,
   generateFreeSubscription,
 } from "@/lib/subscription";
-import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
+import {
+  getCurrentWeekBoundaries,
+  getPseudoWeekBoundaries,
+  isPseudoSubscription,
+} from "@litespace/utils/subscription";
 import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
 import { isBookable } from "@/lib/session";
 import { sendMsg } from "@/lib/messenger";
@@ -118,17 +122,16 @@ function create(context: ApiContext) {
           userCreatedAt: user.createdAt,
         });
 
-      const remainingMinutes = await calcRemainingWeeklyMinutesBySubscription({
-        userId: sub.userId,
-        start: sub.start,
-        weeklyMinutes: sub.weeklyMinutes,
-      });
+      const remainingMinutes =
+        await calcRemainingWeeklyMinutesBySubscription(sub);
 
       if (remainingMinutes < payload.duration) return next(noEnoughMinutes());
 
       // subscribed users should not be able to book lessons not within the
       // current week
-      const weekBoundaries = getCurrentWeekBoundaries(sub.start);
+      const weekBoundaries = isPseudoSubscription(sub)
+        ? getPseudoWeekBoundaries()
+        : getCurrentWeekBoundaries(sub.start);
       const within = dayjs
         .utc(payload.start)
         .add(payload.duration, "minutes")
