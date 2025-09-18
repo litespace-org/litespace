@@ -1,9 +1,10 @@
 import { useApi } from "@/api";
-import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
 import { MutationKey, QueryKey } from "@/constants";
-import { IStudent, IUser } from "@litespace/types";
 import { OnError, OnSuccess } from "@/types/query";
+import { IStudent, IUser } from "@litespace/types";
+import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import { sample } from "lodash";
+import { useCallback, useMemo } from "react";
 
 export function useFindStudentStats(
   id?: number
@@ -87,5 +88,38 @@ export function useUpdateStudent({
     mutationKey: [MutationKey.UpdateStudent],
     onSuccess,
     onError,
+  });
+}
+
+const levelValues = Object.values(IStudent.EnglishLevel).filter(
+  (value) => typeof value === "number"
+);
+
+function getRandomLevel() {
+  const randomLevel = sample(levelValues);
+  return randomLevel as IStudent.EnglishLevel;
+}
+
+export function useStudentMeta(): UseQueryResult<{
+  career: string;
+  level: IStudent.EnglishLevel;
+  aim: string;
+}> {
+  const find = useCallback(async () => {
+    return {
+      career: sample([
+        "labels.jobs.student",
+        "labels.jobs.tutor",
+        "labels.jobs.doctor",
+        "labels.jobs.police-officer",
+      ]),
+      level: getRandomLevel(),
+      aim: "labels.random-aim",
+    };
+  }, []);
+
+  return useQuery({
+    queryFn: find,
+    queryKey: ["find-student-meta"],
   });
 }

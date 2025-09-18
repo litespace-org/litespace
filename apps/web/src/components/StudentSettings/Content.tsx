@@ -5,12 +5,12 @@ import { Tabs } from "@litespace/ui/Tabs";
 import NotificationSettings from "@/components/Settings/NotificationSettings";
 import UpdatePassword from "@/components/Settings/UpdatePassword";
 import PersonalDetails from "@/components/Settings/PersonalDetails";
-import TopicSelection from "@/components/Settings/TopicSelection";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import { IUser } from "@litespace/types";
 import { Tab } from "@/components/StudentSettings/types";
 import { isPersonalInfoIncomplete } from "@/components/Settings/utils";
 import { StudentSettingsTabId } from "@litespace/utils/routes";
+import StudentPublicInfo from "@/components/Settings/StudentPublicInfo";
 
 const Content: React.FC<{
   tab: StudentSettingsTabId;
@@ -27,6 +27,11 @@ const Content: React.FC<{
         important: isPersonalInfoIncomplete(user),
       },
       {
+        id: "public-info",
+        label: intl("student-settings.public-info.title"),
+        important: false,
+      },
+      {
         id: "password",
         label: intl("shared-settings.password.title"),
         important: !user.password,
@@ -35,11 +40,6 @@ const Content: React.FC<{
         id: "notifications",
         label: intl("shared-settings.notification.title"),
         important: !user.notificationMethod,
-      },
-      {
-        id: "topics",
-        label: intl("student-settings.topics.title"),
-        important: false,
       },
     ];
   }, [intl, user]);
@@ -70,6 +70,12 @@ const Content: React.FC<{
         />
       ) : null}
 
+      {tab === "public-info" ? (
+        <div className="max-w-[530px] grow flex">
+          <StudentPublicInfo />
+        </div>
+      ) : null}
+
       {tab === "password" ? <UpdatePassword id={user.id} /> : null}
 
       {tab === "notifications" ? (
@@ -79,12 +85,6 @@ const Content: React.FC<{
           verifiedWhatsApp={user.verifiedWhatsApp}
           notificationMethod={user.notificationMethod}
         />
-      ) : null}
-
-      {tab === "topics" ? (
-        <div className="max-w-[530px] grow flex">
-          <TopicSelection />
-        </div>
       ) : null}
     </div>
   );
