@@ -126,13 +126,8 @@ async function findUserSubscription(
       userCreatedAt: user.createdAt,
     });
 
-  const remainingWeeklyMinutes = await calcRemainingWeeklyMinutesBySubscription(
-    {
-      start: subscription.start,
-      userId: subscription.userId,
-      weeklyMinutes: subscription.weeklyMinutes,
-    }
-  );
+  const remainingWeeklyMinutes =
+    await calcRemainingWeeklyMinutesBySubscription(subscription);
 
   const response: ISubscription.FindUserSubscriptionApiResponse = {
     info: subscription || null,

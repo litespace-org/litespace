@@ -1,34 +1,34 @@
 import dayjs from "@/lib/dayjs";
 import { lessons, subscriptions } from "@litespace/models";
 import { first } from "lodash";
-import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
+import {
+  getCurrentWeekBoundaries,
+  getPseudoWeekBoundaries,
+  isPseudoSubscription,
+} from "@litespace/utils/subscription";
 import { IPlan, ISubscription } from "@litespace/types";
 import {
   PLAN_PERIOD_TO_MONTH_COUNT,
   STUDENT_FREE_WEEKLY_MINUTES,
 } from "@litespace/utils";
 
-export async function calcRemainingWeeklyMinutesBySubscription({
-  start,
-  weeklyMinutes,
-  userId,
-}: {
-  start: string;
-  weeklyMinutes: number;
-  userId: number;
-}) {
-  const week = getCurrentWeekBoundaries(start);
+export async function calcRemainingWeeklyMinutesBySubscription(
+  sub: ISubscription.Self
+) {
+  const week = isPseudoSubscription(sub)
+    ? getPseudoWeekBoundaries()
+    : getCurrentWeekBoundaries(sub.start);
 
   const minutes = await lessons.sumDuration({
-    users: [userId],
-    after: week.start,
+    users: [sub.userId],
+    after: isPseudoSubscription(sub) ? sub.start : week.start,
     before: week.end,
     canceled: false,
     ratified: true,
   });
 
-  if (minutes > weeklyMinutes) return 0;
-  return weeklyMinutes - minutes;
+  if (minutes > sub.weeklyMinutes) return 0;
+  return sub.weeklyMinutes - minutes;
 }
 
 export async function calcRemainingWeeklyMinutesByUserId(userId: number) {
@@ -43,11 +43,7 @@ export async function calcRemainingWeeklyMinutesByUserId(userId: number) {
   const subscription = first(list);
   if (!subscription) return 0;
 
-  return calcRemainingWeeklyMinutesBySubscription({
-    start: subscription.start,
-    weeklyMinutes: subscription.weeklyMinutes,
-    userId: subscription.userId,
-  });
+  return calcRemainingWeeklyMinutesBySubscription(subscription);
 }
 
 export async function isUserSubscribed(userId: number): Promise<boolean> {
