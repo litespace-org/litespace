@@ -17,6 +17,7 @@ import Preview from "@/components/Session/Preview";
 import Controllers, { Controller } from "@/components/Session/Controllers";
 import { Dialogs, DialogTypes } from "@/components/Session/Dialogs";
 import { RemoteMember } from "@/components/Session/types";
+import { useToast } from "@litespace/ui/Toast";
 
 const PreSession: React.FC<{
   type: ISession.Type;
@@ -32,6 +33,7 @@ const PreSession: React.FC<{
   member,
 }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
   const { user } = useUser();
   const call = useMediaCall();
   const socket = useSocket();
@@ -75,8 +77,12 @@ const PreSession: React.FC<{
       .then(() => {
         setConnecting(false);
         setConnectedOnce(true);
+      })
+      .catch(() => {
+        setConnecting(false);
+        toast.error({ title: intl("labels.connection-error") });
       });
-  }, [sessionAccessToken.data, call.manager?.session]);
+  }, [sessionAccessToken.data, call.manager?.session, intl, toast]);
 
   const controllers = useMemo(() => {
     const audio: Controller = {
