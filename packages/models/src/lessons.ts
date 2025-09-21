@@ -270,7 +270,7 @@ export class Lessons {
     const queryBuilder = baseBuilder
       .clone()
       .select(this.rows.lesson)
-      .orderBy(this.columns.lessons("start"), "desc");
+      .orderBy(this.columns.lessons("start"), "asc");
 
     const rows = await withSkippablePagination(queryBuilder, pagination);
     return { list: rows.map((row) => this.from(row)), total };

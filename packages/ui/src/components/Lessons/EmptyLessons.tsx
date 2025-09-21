@@ -35,7 +35,7 @@ export const EmptyLessons: React.FC<{
             tag="span"
             className="text-natural-50 text-base font-bold"
           >
-            {intl("lessons.button.find-tutors")}
+            {intl("lessons.empty.button.find-tutors")}
           </Typography>
         </Link>
       ) : null}
