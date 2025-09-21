@@ -2,6 +2,7 @@ import { ChatSummary } from "@/components/dashboard/ChatSummary";
 import { PastLessons } from "@/components/dashboard/PastLessons";
 import { StudentOverview } from "@/components/dashboard/StudentOverview";
 import { UpcomingLessons } from "@/components/dashboard/UpcomingLessons";
+import { SuggestedTutors } from "@/components/dashboard/SuggestedTutors";
 import { useOnError } from "@/hooks/error";
 import { router } from "@/lib/routes";
 import EmptyStudentDashboard from "@litespace/assets/EmptyStudentDashboard";
@@ -12,14 +13,19 @@ import { Loading } from "@litespace/ui/Loading";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Web } from "@litespace/utils/routes";
-import React from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useTutors } from "@litespace/headless/tutor";
 
 const StudentDashboard: React.FC = () => {
   const mq = useMediaQuery();
   const intl = useFormatMessage();
+  const tutors = useTutors();
 
   const { query, keys } = useFindPersonalizedStudentStats();
+  const dashboardTutor = useMemo(() => {
+    return tutors.list?.slice(0, 3) || [];
+  }, [tutors.list]);
 
   useOnError({
     type: "query",
@@ -56,8 +62,17 @@ const StudentDashboard: React.FC = () => {
               isPending={query.isLoading}
               refetch={query.refetch}
             />
+
             <PastLessons />
+
+            <SuggestedTutors
+              tutors={dashboardTutor}
+              loading={tutors.query.isLoading}
+              error={tutors.query.isError}
+              refetch={tutors.query.refetch}
+            />
           </div>
+
           <div className="flex flex-col gap-6 lg:w-[312px] shrink-0">
             <UpcomingLessons />
             <ChatSummary />
@@ -75,9 +90,23 @@ const StudentDashboard: React.FC = () => {
             isPending={query.isLoading}
             refetch={query.refetch}
           />
-          <UpcomingLessons />
+
           <PastLessons />
-          <ChatSummary />
+
+          <SuggestedTutors
+            tutors={dashboardTutor}
+            loading={tutors.query.isLoading}
+            error={tutors.query.isError}
+            refetch={tutors.query.refetch}
+          />
+          <div className="flex flex-col md:flex-row items-stretch gap-4">
+            <div className="flex-1 ">
+              <ChatSummary />
+            </div>
+            <div className="flex-1">
+              <UpcomingLessons />
+            </div>
+          </div>
         </div>
       ) : null}
     </div>
@@ -95,7 +124,7 @@ const EmptyDashboard: React.FC = () => {
           {intl("student-dashboard.empty-state.desc")}
         </Typography>
         <Link to={router.web({ route: Web.Tutors, full: true })} tabIndex={-1}>
-          <Button className="w-full" size="large">
+          <Button className="w-full" type="main" size="large">
             {intl("student-dashboard.empty-state.btn")}
           </Button>
         </Link>
