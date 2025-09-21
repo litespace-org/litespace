@@ -32,9 +32,9 @@ const createPlanPayload: ZodSchema<IPlan.CreateApiPayload> = zod.object({
 const updatePlanPayload: ZodSchema<IPlan.UpdateApiPayload> = zod.object({
   weeklyMinutes: zod.optional(number),
   baseMonthlyPrice: zod.optional(number),
-  monthDiscount: zod.optional(number),
-  quarterDiscount: zod.optional(number),
-  yearDiscount: zod.optional(number),
+  monthDiscount: zod.optional(discount),
+  quarterDiscount: zod.optional(discount),
+  yearDiscount: zod.optional(discount),
   forInvitesOnly: zod.optional(boolean),
   active: zod.optional(boolean),
 });
