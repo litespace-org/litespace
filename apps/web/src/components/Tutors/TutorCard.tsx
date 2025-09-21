@@ -25,7 +25,18 @@ export const TutorCard: React.FC<{
   rating?: number;
   topics: string[];
   onBook: Void;
-}> = ({ id, tutorId, about, name, image, rating, topics, onBook }) => {
+  buttonSize?: "small" | "medium" | "large";
+}> = ({
+  id,
+  tutorId,
+  about,
+  name,
+  image,
+  rating,
+  topics,
+  onBook,
+  buttonSize = "medium",
+}) => {
   const intl = useFormatMessage();
 
   return (
@@ -108,7 +119,7 @@ export const TutorCard: React.FC<{
         <Button
           htmlType="button"
           className="w-full mt-auto text-body font-medium"
-          size="medium"
+          size={buttonSize}
           onClick={(event) => {
             event.preventDefault();
             onBook();

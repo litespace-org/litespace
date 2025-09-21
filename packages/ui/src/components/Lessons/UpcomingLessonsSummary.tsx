@@ -161,10 +161,15 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
             className="inline-block w-full mt-auto"
             tabIndex={-1}
           >
-            <Button size="large" className="w-full">
+            <Button
+              size="large"
+              type="natural"
+              variant="secondary"
+              className="w-full"
+            >
               <Typography
                 tag="span"
-                className="text-natural-50 font-semibold text-caption"
+                className="text-natural-700 font-medium text-body"
               >
                 {intl("student-dashboard.button.show-all-lessons")}
               </Typography>
@@ -208,10 +213,15 @@ const EmptyUpcomingLessonsComponent: React.FC<{
         className="intline-block w-full"
         tabIndex={-1}
       >
-        <Button className="w-full" size="large">
+        <Button
+          className="w-full"
+          type="natural"
+          variant="secondary"
+          size="large"
+        >
           <Typography
             tag="span"
-            className="text-natural-50 font-semibold text-caption"
+            className="text-natural-700 font-medium text-body"
           >
             {isTutor
               ? intl("tutor-dashboard.upcoming-lessons.create-your-schedule")
