@@ -1,12 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
 import { useUser } from "@litespace/headless/context/user";
-import { useInfiniteLessons } from "@litespace/headless/lessons";
+import { useFindLessons } from "@litespace/headless/lessons";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { PastLessonsSummary, PastLessonsTable } from "@litespace/ui/Lessons";
 import { Typography } from "@litespace/ui/Typography";
 import { ILesson, IUser } from "@litespace/types";
 import ManageLesson from "@/components/Lessons/ManageLesson";
-import { InView } from "react-intersection-observer";
 import { Loading } from "@litespace/ui/Loading";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import dayjs from "dayjs";
@@ -65,15 +64,19 @@ export const PastLessons: React.FC = () => {
   const { user } = useUser();
   const now = useMemo(() => dayjs.utc().toISOString(), []);
 
-  const lessonsQuery = useInfiniteLessons({
+  const lessonsQuery = useFindLessons({
     users: user ? [user?.id] : [],
     userOnly: true,
     before: now,
+    size: 4,
   });
 
   const lessons = useMemo(
-    () => (user ? asLessons(lessonsQuery.list, user.role, user.id) : []),
-    [lessonsQuery.list, user]
+    () =>
+      user
+        ? asLessons(lessonsQuery.query.data?.list || null, user.role, user.id)
+        : [],
+    [lessonsQuery.query.data?.list, user]
   );
 
   const { lessonId: sendingMessageLessonId, onSendMessage } =
@@ -81,31 +84,35 @@ export const PastLessons: React.FC = () => {
 
   useOnError({
     type: "query",
-    keys: lessonsQuery.keys,
+    keys: lessonsQuery.query.keys,
     error: lessonsQuery.query.error,
   });
 
   if (!mq.md)
     return (
-      <PastLessonsSummary
-        tutorsRoute={Web.Tutors}
-        onRebook={openRebookingDialog}
-        lessons={lessons}
-        loading={lessonsQuery.query.isPending}
-        error={lessonsQuery.query.isError}
-        retry={lessonsQuery.query.refetch}
-        isTutor={
-          user?.role === IUser.Role.Tutor ||
-          user?.role === IUser.Role.TutorManager
-        }
-        onSendMessage={onSendMessage}
-        sendingMessage={sendingMessageLessonId}
-        more={() => {
-          if (lessonsQuery.query.hasNextPage) lessonsQuery.more();
-        }}
-        hasMore={lessonsQuery.query.hasNextPage}
-        loadingMore={lessonsQuery.query.isFetching}
-      />
+      <div>
+        <PastLessonsSummary
+          tutorsRoute={Web.Tutors}
+          onRebook={openRebookingDialog}
+          lessons={lessons}
+          loading={lessonsQuery.query.isPending}
+          error={lessonsQuery.query.isError}
+          retry={lessonsQuery.query.refetch}
+          isTutor={
+            user?.role === IUser.Role.Tutor ||
+            user?.role === IUser.Role.TutorManager
+          }
+          onSendMessage={onSendMessage}
+          sendingMessage={sendingMessageLessonId}
+        />
+        {tutor ? (
+          <ManageLesson
+            type="book"
+            tutorId={tutor}
+            close={closeRebookingDialog}
+          />
+        ) : null}
+      </div>
     );
 
   return (
@@ -141,15 +148,6 @@ export const PastLessons: React.FC = () => {
         onSendMessage={onSendMessage}
         sendingMessage={sendingMessageLessonId}
       />
-
-      {!lessonsQuery.query.isFetching && lessonsQuery.query.hasNextPage ? (
-        <InView
-          as="div"
-          onChange={(inView) => {
-            if (inView && lessonsQuery.query.hasNextPage) lessonsQuery.more();
-          }}
-        />
-      ) : null}
 
       {lessonsQuery.query.isFetching && !lessonsQuery.query.isLoading ? (
         <Loading />
