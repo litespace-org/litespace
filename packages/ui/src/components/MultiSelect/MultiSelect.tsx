@@ -16,7 +16,7 @@ import cn from "classnames";
 import { isEmpty } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 
-export const MultiSelect = <T,>({
+export const MultiSelect = ({
   options,
   values = [],
   placeholder,
@@ -25,13 +25,13 @@ export const MultiSelect = <T,>({
   label,
   setValues,
 }: {
-  options: MultiSelectOption<T>[];
-  values?: T[];
+  options: MultiSelectOption<number>[];
+  values?: number[];
   placeholder?: string;
   error?: boolean;
   hasSearchIcon?: boolean;
   label?: string;
-  setValues?: (values: T[]) => void;
+  setValues?: (values: number[]) => void;
 }) => {
   const [offset, setOffset] = useState(5);
   const [open, setOpen] = useState(false);
@@ -41,7 +41,7 @@ export const MultiSelect = <T,>({
   );
 
   const toggleItem = useCallback(
-    (optionValue: T) => {
+    (optionValue: number) => {
       if (!setValues) return;
       const copy = structuredClone(values);
       // remove

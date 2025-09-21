@@ -3,7 +3,6 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useUser } from "@litespace/headless/context/user";
 import { useForm } from "@litespace/headless/form";
 import { useInvalidateQuery } from "@litespace/headless/query";
-import { useUpdateStudent } from "@litespace/headless/student";
 import { useInfiniteTopics, useUserTopics } from "@litespace/headless/topic";
 import { useUpdateUserTopics } from "@litespace/headless/user";
 import { Void } from "@litespace/types";
@@ -16,7 +15,7 @@ import { useToast } from "@litespace/ui/Toast";
 import React, { useCallback, useMemo } from "react";
 
 type IForm = {
-  topics: string[];
+  topicIds: number[];
 };
 
 const Bio: React.FC<{ next: Void }> = ({ next }) => {
@@ -55,7 +54,6 @@ const Bio: React.FC<{ next: Void }> = ({ next }) => {
 
   const { query: userTopics } = useUserTopics();
 
-  const updateStudent = useUpdateStudent({ onSuccess, onError });
   const updateUserTopics = useUpdateUserTopics({ onSuccess, onError });
 
   const userTopicIds = useMemo(
@@ -65,23 +63,23 @@ const Bio: React.FC<{ next: Void }> = ({ next }) => {
 
   // ============= Form ==============
   const validators = useMakeValidators<IForm>({
-    topics: { required: false },
+    topicIds: { required: false },
   });
 
   const form = useForm<IForm>({
     defaults: {
-      topics: [],
+      topicIds: [],
     },
     validators,
     onSubmit: (data) => {
       if (!user) return;
       updateUserTopics.mutate({
-        addTopics: data.topics
-          .filter((topic) => !userTopicIds?.includes(Number(topic)))
-          .map((t) => Number(t)),
-        removeTopics: (userTopicIds || [])
-          .filter((topic) => !data.topics.includes(topic.toString()))
-          .map((t) => Number(t)),
+        addTopics: data.topicIds.filter(
+          (topicId) => !userTopicIds?.includes(topicId)
+        ),
+        removeTopics: (userTopicIds || []).filter(
+          (topicId) => !data.topicIds.includes(topicId)
+        ),
       });
     },
   });
@@ -95,12 +93,12 @@ const Bio: React.FC<{ next: Void }> = ({ next }) => {
             options={
               allTopics?.map((topic) => ({
                 label: topic.name.ar,
-                value: topic.name.ar,
+                value: topic.id,
               })) || []
             }
             placeholder={intl("complete-profile.topics.placeholder")}
-            values={form.state.topics}
-            setValues={(values) => form.set("topics", values)}
+            values={form.state.topicIds}
+            setValues={(values) => form.set("topicIds", values)}
           />
         </div>
         <div className="flex gap-4 items-center">
@@ -111,7 +109,7 @@ const Bio: React.FC<{ next: Void }> = ({ next }) => {
             htmlType="button"
             className="w-full text"
             variant="secondary"
-            disabled={updateStudent.isPending}
+            disabled={updateUserTopics.isPending}
           >
             {intl("labels.skip")}
           </Button>
@@ -120,8 +118,8 @@ const Bio: React.FC<{ next: Void }> = ({ next }) => {
             size="large"
             htmlType="submit"
             className="w-full text"
-            disabled={updateStudent.isPending}
-            loading={updateStudent.isPending}
+            disabled={updateUserTopics.isPending}
+            loading={updateUserTopics.isPending}
           >
             {intl("complete-profile.start-your-journey")}
           </Button>
