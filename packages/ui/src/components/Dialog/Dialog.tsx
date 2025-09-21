@@ -107,6 +107,7 @@ export const Dialog: React.FC<{
             </div>
           ) : null}
         </Overlay>
+
         <Content
           ref={dialogRef}
           dir="rtl"

@@ -54,8 +54,8 @@ export const PastLessonsSummary: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "border border-transparent hover:border-natural-100 h-min-96",
-        "rounded-lg p-4 shadow-ls-x-small bg-natural-50"
+        "border border-natural-100 h-min-96",
+        "rounded-lg p-4 bg-natural-50"
       )}
     >
       <Typography
@@ -237,8 +237,10 @@ export const Row: React.FC<RowProps> = ({
       </div>
       <div className="mr-auto">
         <Button
+          type="main"
           size="large"
-          className="flex items-center justify-center bg-brand-700 rounded-lg !px-2"
+          variant="secondary"
+          className="flex items-center justify-center rounded-lg !px-2"
           onClick={onClick}
           disabled={buttonDisabled}
           loading={buttonLoading}
@@ -246,7 +248,7 @@ export const Row: React.FC<RowProps> = ({
           {isTutor ? (
             <SendSVG className="[&>*]:stroke-natural-50 w-6 h-6" />
           ) : (
-            <AddCalendarSVG className="[&>*]:stroke-natural-50 w-4 h-4" />
+            <AddCalendarSVG className="[&>*]:stroke-brand-500 w-4 h-4" />
           )}
         </Button>
       </div>

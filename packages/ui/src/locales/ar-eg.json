@@ -269,6 +269,7 @@
   "platform.rating.question.description": "رأيك يهمنا لتحسين تجربتك على منصتنا. أخبرنا بما أعجبك وما يمكننا تطويره لنكون دائماً عند توقعاتك.",
   "student-dashboard.overview.title": "نظرة عامة",
   "student-dashboard.past-lessons.title": "الحصص السابقة",
+  "student-dashboard.suggested-tutors": "المعلمون المقترحون لك",
   "tutor-card.book-now": "احجز الان",
   "tutors.title": "كل المعلمين",
   "tutors.loading": "برجاء الانتظار... جاري تحميل بيانات المعلمين!",
@@ -779,6 +780,8 @@
   "student-dashboard.upcoming-lessons-summary.error": "عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
   "student-dashboard.past-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس السابقة!",
   "student-dashboard.past-lessons.error": "عذرًا، حدث خطأ أثناء تحميل الدروس السابقة، برجاء المحاولة مرة أخرى",
+  "student-dashboard-tutors.loading": "برجاء الانتظار... جاري تحميل المعلمين المقترحين لك",
+  "student-dashboard-tutors.error": "عذرا حدث خطأ أثناء اقتراح معلمين برجاء المحاولة مرة أخرى",
   "tour.sdashboard/1.title": "👋 مرحبًا بك في رحلتك لتعلّم اللغة!",
   "tour.sdashboard/1.description": "من خلال صفحة المدرّسين، تستطيع ان تستعرض كل المعلمين وتقوم بـ حجز جلسة مباشرة مع أيّ معلم منهم. كل ما عليك هو ان تضغط على المدرّس المناسب لك، وتستعرض ملفه الشخصي، مواعيده المتاحة، وتبدأ الحجز في الحال!",
   "tour.sdashboard/2.title": "هل وجدت المعلم المناسب لك؟",
