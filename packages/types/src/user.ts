@@ -196,6 +196,7 @@ export type RefreshAuthTokenApiResponse = string;
 
 export type FindModelQuery<T extends Field = Field> =
   IFilter.SkippablePagination & {
+    ids?: number[];
     role?: Role;
     verified?: boolean;
     gender?: Gender;

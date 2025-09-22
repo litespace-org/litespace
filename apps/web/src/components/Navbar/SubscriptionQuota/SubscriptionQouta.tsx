@@ -8,7 +8,8 @@ import cn from "classnames";
 const SubscriptionQouta: React.FC<{
   weeklyMinutes: number;
   remainingMinutes: number;
-}> = ({ weeklyMinutes, remainingMinutes }) => {
+  isFreeTrial?: boolean;
+}> = ({ weeklyMinutes, remainingMinutes, isFreeTrial = false }) => {
   const intl = useFormatMessage();
 
   const remaining = useMemo(() => {
@@ -22,6 +23,14 @@ const SubscriptionQouta: React.FC<{
     return 100 - safeRemaining;
   }, [remaining]);
 
+  const titleMessage = isFreeTrial
+    ? "navbar.subscription.free-trial"
+    : "navbar.subscription.personal-quota";
+
+  const remainingMessage = isFreeTrial
+    ? "navbar.subscription.free-trial-rest"
+    : "navbar.subscription.rest-of-quota";
+
   return (
     <div className="flex flex-col gap-1">
       <div className="flex justify-between">
@@ -31,7 +40,7 @@ const SubscriptionQouta: React.FC<{
             tag="span"
             className="text-natural-950 text-caption font-bold"
           >
-            {intl("navbar.subscription.personal-quota")}
+            {intl(titleMessage)}
           </Typography>
         </div>
 
@@ -59,7 +68,7 @@ const SubscriptionQouta: React.FC<{
         tag="span"
         className="text-natural-950 text-tiny font-semibold text-right"
       >
-        {intl("navbar.subscription.rest-of-quota", {
+        {intl(remainingMessage, {
           value: formatMinutes(remainingMinutes),
         })}
       </Typography>

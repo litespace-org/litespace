@@ -1,6 +1,6 @@
 import cn from "classnames";
-import dayjs from "dayjs";
-import React, { useCallback, useMemo } from "react";
+import dayjs from "@/lib/dayjs";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ProfileInfo, SubscriptionQuota } from "@/components/Navbar";
@@ -8,7 +8,8 @@ import { useSaveLogs } from "@/hooks/logger";
 import Crown from "@litespace/assets/Crown";
 import { useSubscription } from "@litespace/headless/context/subscription";
 import { useUser } from "@litespace/headless/context/user";
-import { IUser } from "@litespace/types";
+import { useInfiniteLessons } from "@litespace/headless/lessons";
+import { IPlan, ILesson, IUser } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Tooltip } from "@litespace/ui/Tooltip";
@@ -25,7 +26,7 @@ const Navbar: React.FC = () => {
         })}
       >
         <div className="hidden md:block">
-          <Subscription />
+          <NavBarTimer fallback={<Subscription />} />
         </div>
 
         <div className="ms-auto flex items-center justify-center">
@@ -76,9 +77,98 @@ const Subscription: React.FC = () => {
         <SubscriptionQuota
           remainingMinutes={remainingWeeklyMinutes}
           weeklyMinutes={info?.weeklyMinutes || 0}
+          isFreeTrial={info?.period === IPlan.Period.FreeTrial}
         />
       </div>
     </Tooltip>
+  );
+};
+
+const getCountdown = (start?: string | null): string | null => {
+  if (!start) return null;
+
+  const diff = dayjs(start).diff(dayjs());
+  if (diff <= 0 || diff > 4 * 3600 * 1000) return null;
+
+  return dayjs.utc(diff).format("hh:mm:ss");
+};
+
+const useNextLessonCountdown = () => {
+  const { user } = useUser();
+
+  const userId = user?.id;
+  const isTutor = user ? isTutorRole(user.role) : false;
+
+  const now = useMemo(() => dayjs().toISOString(), []);
+  const lessonsQuery = useInfiniteLessons({
+    users: !userId || isTutor ? [] : [userId],
+    userOnly: true,
+    after: now,
+    canceled: false,
+    size: 1,
+    future: true,
+  });
+
+  const nextLessonStart = useMemo(() => {
+    if (!userId || isTutor) return null;
+
+    const list = lessonsQuery.list as
+      | ILesson.FindUserLessonsApiResponse["list"]
+      | null;
+    const nextLesson = list?.find((item) =>
+      dayjs(item.lesson.start).isAfter(dayjs())
+    );
+    return nextLesson?.lesson.start ?? null;
+  }, [isTutor, lessonsQuery.list, userId]);
+
+  const [time, setTime] = useState<string | null>(() =>
+    getCountdown(nextLessonStart)
+  );
+
+  useEffect(() => {
+    const initial = getCountdown(nextLessonStart);
+    setTime(initial);
+    if (!initial) return;
+
+    const interval = window.setInterval(() => {
+      const value = getCountdown(nextLessonStart);
+      if (!value) {
+        setTime(null);
+        window.clearInterval(interval);
+        return;
+      }
+      setTime(value);
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [nextLessonStart]);
+
+  if (!userId || isTutor) return null;
+
+  return time;
+};
+
+const NavBarTimer: React.FC<{ fallback: React.ReactNode }> = ({ fallback }) => {
+  const intl = useFormatMessage();
+  const countdown = useNextLessonCountdown();
+
+  if (!countdown) return <>{fallback}</>;
+
+  const [hours, minutes, seconds] = countdown.split(":");
+
+  return (
+    <div className="flex flex-col items-end gap-2">
+      <Typography tag="span" className="text-natural-700 text-tiny font-medium">
+        {intl("lessons.next-lesson-countdown")}
+      </Typography>
+      <div className="flex items-center gap-2 text-2xl font-semibold text-brand-600">
+        <span className="rounded-lg bg-natural-100 px-3 py-2">{seconds}</span>
+        <span>:</span>
+        <span className="rounded-lg bg-natural-100 px-3 py-2">{minutes}</span>
+        <span>:</span>
+        <span className="rounded-lg bg-natural-100 px-3 py-2">{hours}</span>
+      </div>
+    </div>
   );
 };
 
