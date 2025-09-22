@@ -1,8 +1,8 @@
-import React from "react";
-import { ISession, IUser, Void } from "@litespace/types";
+import React, { useMemo, useCallback, useEffect } from "react";
+import { ISession, IUser, Void, Wss } from "@litespace/types";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
-import { useMemo } from "react";
+import { useFindSessionMembers } from "@litespace/headless/session";
 import dayjs from "dayjs";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { LocalId } from "@litespace/ui/locales";
@@ -12,6 +12,7 @@ import {
   isTutorManagerRole,
   isTutorRole,
 } from "@litespace/utils";
+import { useSocket } from "@litespace/headless/socket";
 
 const SESSION_TO_MESSAGE_IDS: Record<
   ISession.Type,
@@ -44,81 +45,93 @@ const SESSION_TO_MESSAGE_IDS: Record<
 } as const;
 
 export const Ready: React.FC<{
+  sessionId: ISession.Id;
   type: ISession.Type;
-  remoteMember: {
-    id: number;
-    role: IUser.Role;
-    gender: IUser.Gender;
-    joined: boolean;
-  };
   start: string;
   duration: number;
   join: Void;
   loading?: boolean;
   disabled?: boolean;
-}> = ({ type, remoteMember, join, start, duration, loading, disabled }) => {
+}> = ({ sessionId, type, join, start, duration, loading, disabled }) => {
   const intl = useFormatMessage();
+  const { socket } = useSocket();
   const messageIds = useMemo(() => SESSION_TO_MESSAGE_IDS[type], [type]);
 
-  const waiting = useMemo(() => {
-    if (
-      type === "interview" &&
-      isTutorManagerRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.male-interviewer-waiting");
+  const findMembers = useFindSessionMembers(sessionId);
 
-    if (
-      type === "interview" &&
-      isTutorManagerRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.female-interviewer-waiting");
+  useEffect(() => {
+    socket?.on(Wss.ServerEvent.MemberJoinedSession, () => {
+      findMembers.refetch();
+    });
+    socket?.on(Wss.ServerEvent.MemberLeftSession, () => {
+      findMembers.refetch();
+    });
+  }, [socket, findMembers]);
 
-    if (
-      type === "interview" &&
-      isRegularTutorRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.male-tutor-waiting");
+  const genWaitingMessage = useCallback(
+    (member: { role: IUser.Role; gender: IUser.Gender | null }) => {
+      if (!member.gender) member.gender = IUser.Gender.Male;
 
-    if (
-      type === "interview" &&
-      isRegularTutorRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.male-tutor-waiting");
+      if (
+        type === "interview" &&
+        isTutorManagerRole(member.role) &&
+        member.gender === IUser.Gender.Male
+      )
+        return intl("session.ready.male-interviewer-waiting");
 
-    if (
-      type === "lesson" &&
-      isTutorRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Female
-    )
-      return intl("session.ready.female-tutor-waiting");
+      if (
+        type === "interview" &&
+        isTutorManagerRole(member.role) &&
+        member.gender === IUser.Gender.Male
+      )
+        return intl("session.ready.female-interviewer-waiting");
 
-    if (
-      type === "lesson" &&
-      isTutorRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.male-tutor-waiting");
+      if (
+        type === "interview" &&
+        isRegularTutorRole(member.role) &&
+        member.gender === IUser.Gender.Male
+      )
+        return intl("session.ready.male-tutor-waiting");
 
-    if (
-      type === "lesson" &&
-      isStudentRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Male
-    )
-      return intl("session.ready.male-student-waiting");
+      if (
+        type === "interview" &&
+        isRegularTutorRole(member.role) &&
+        member.gender === IUser.Gender.Male
+      )
+        return intl("session.ready.male-tutor-waiting");
 
-    if (
-      type === "lesson" &&
-      isStudentRole(remoteMember.role) &&
-      remoteMember.gender === IUser.Gender.Female
-    )
-      return intl("session.ready.female-student-waiting");
+      if (
+        type === "lesson" &&
+        isTutorRole(member.role) &&
+        member.gender === IUser.Gender.Female
+      )
+        return intl("session.ready.female-tutor-waiting");
 
-    throw new Error("unsupported session or user role, should never happen");
-  }, [remoteMember.role, remoteMember.gender, type, intl]);
+      if (
+        type === "lesson" &&
+        isTutorRole(member.role) &&
+        member.gender === IUser.Gender.Male
+      )
+        return intl("session.ready.male-tutor-waiting");
+
+      if (
+        type === "lesson" &&
+        isStudentRole(member.role) &&
+        member.gender === IUser.Gender.Male
+      )
+        return intl("session.ready.male-student-waiting");
+
+      if (
+        type === "lesson" &&
+        isStudentRole(member.role) &&
+        member.gender === IUser.Gender.Female
+      )
+        return intl("session.ready.female-student-waiting");
+
+      throw new Error("unsupported session or user role, should never happen");
+    },
+    [type, intl]
+  );
 
   const timing = useMemo(() => {
     const now = dayjs();
@@ -155,13 +168,15 @@ export const Ready: React.FC<{
           {intl("session.ready.title")}
         </Typography>
 
-        <Typography
-          tag="p"
-          data-show={remoteMember.joined}
-          className="text-natural-800 font-semibold text-caption hidden data-[show=true]:block"
-        >
-          {waiting}
-        </Typography>
+        {findMembers.data?.map((member, i) => (
+          <Typography
+            key={i}
+            tag="p"
+            className="text-natural-800 font-semibold text-caption"
+          >
+            {genWaitingMessage(member)}
+          </Typography>
+        ))}
 
         <Typography
           tag="p"

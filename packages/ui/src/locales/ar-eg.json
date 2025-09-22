@@ -236,7 +236,7 @@
   "session.ready.male-tutor-waiting": "المعلم ينتظرك الاّن",
   "session.ready.female-tutor-waiting": "المعلمة تنتظرك الاّن",
   "session.ready.male-student-waiting": "الطالب ينتظرك الاّن",
-  "session.ready.female-student-waiting": "الطالبة نتظرك الاّن",
+  "session.ready.female-student-waiting": "الطالبة تنتظرك الآن",
   "session.ready.male-interviewer-waiting": "المحاور ينتظرك الاّن",
   "session.ready.female-interviewer-waiting": "المحاورة نتظرك الاّن",
   "session.ready.lesson.started-since": "بدأت الحصة منذ {time}",

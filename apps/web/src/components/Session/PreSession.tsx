@@ -1,4 +1,4 @@
-import { ISession, IUser } from "@litespace/types";
+import { ISession, IUser, Wss } from "@litespace/types";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Ready from "@/components/Session/Ready";
 import { useSocket } from "@litespace/headless/socket";
@@ -63,7 +63,8 @@ const PreSession: React.FC<{
 
   useEffect(() => {
     if (!socket.connected) socket.reconnect();
-  }, [socket.connected, socket]);
+    socket.socket?.emit(Wss.ClientEvent.PreJoinSession, { sessionId });
+  }, [socket.connected, socket, sessionId]);
 
   const sessionAccessToken = useGetSessionToken(sessionId);
 
@@ -194,21 +195,13 @@ const PreSession: React.FC<{
       <div className="flex flex-col gap-2">
         <div className="md:h-[calc(100%-24px-40px)] flex items-center justify-center">
           <Ready
+            sessionId={sessionId}
             type={type}
             start={sessionStart}
             duration={sessionDuration}
             join={connect}
             disabled={!socket.connected || !sessionAccessToken.data?.token}
             loading={connecting}
-            remoteMember={{
-              id: member.id,
-              role: member.role,
-              // TODO: get the member gender
-              gender: IUser.Gender.Male,
-              joined: call.inMembers
-                .map((m) => m.id)
-                .includes(member.id.toString()),
-            }}
           />
         </div>
 

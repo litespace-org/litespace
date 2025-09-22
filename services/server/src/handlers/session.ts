@@ -10,6 +10,7 @@ import { AccessToken } from "livekit-server-sdk";
 import { livekitConfig } from "@/constants";
 import { sessionId } from "@/validation/utils";
 import zod, { ZodSchema } from "zod";
+import { users } from "@litespace/models";
 
 const findSessionMembersParams: ZodSchema<ISession.FindSessionMembersApiParams> =
   zod.object({ sessionId });
@@ -32,8 +33,19 @@ async function findSessionMembers(
   const ok = await canAccessSession({ sessionId, userId: user.id });
   if (!ok) return next(forbidden());
 
-  const members = await cache.session.getMembers(sessionId);
-  const response: ISession.FindSessionMembersApiResponse = members;
+  const memberIds = await cache.session.getMembers(sessionId);
+  const { list: members } = memberIds.length
+    ? await users.find({ ids: memberIds, full: true })
+    : { list: [] };
+  const response: ISession.FindSessionMembersApiResponse = members.map(
+    (member) => ({
+      id: member.id,
+      name: member.name,
+      role: member.role,
+      gender: member.gender,
+    })
+  );
+
   res.status(200).json(response);
 }
 
