@@ -49,7 +49,7 @@ const InSession: React.FC<{
     socket?.on("disconnect", () => {
       socket?.emit(Wss.ClientEvent.LeaveSession, { sessionId });
     });
-  }, [socket]);
+  }, [socket, sessionId]);
 
   // set nav to remove the nav and sidebars
   useEffect(() => {
@@ -97,7 +97,7 @@ const InSession: React.FC<{
       });
 
     alertRender.show();
-  }, [call.curMember, alertRender, intl, socket]);
+  }, [call.curMember, alertRender, intl, socket, connState, sessionId]);
 
   if (!call.curMember || !call.manager?.session.getMemberByIndex(1))
     return null;

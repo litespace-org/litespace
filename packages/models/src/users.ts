@@ -1,6 +1,7 @@
 import {
   countRows,
   knex,
+  withListFilter,
   WithOptionalTx,
   withSkippablePagination,
 } from "@/query";
@@ -144,6 +145,7 @@ export class Users extends Model<
 
   async find<T extends IUser.Field = IUser.Field>({
     tx,
+    ids,
     role,
     verified,
     gender,
@@ -155,6 +157,7 @@ export class Users extends Model<
   > {
     const base = this.builder(tx);
 
+    withListFilter(base, this.column("id"), ids);
     if (role) base.andWhere(this.column("role"), role);
     if (verified) base.andWhere(this.column("verified_email"), verified);
     if (gender) base.andWhere(this.column("gender"), gender);
