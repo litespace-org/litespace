@@ -151,6 +151,7 @@ const PreSession: React.FC<{
   if (call.connected || connectedOnce)
     return (
       <InSession
+        sessionId={sessionId}
         controllers={controllers}
         member={member}
         startDate={sessionStart}
