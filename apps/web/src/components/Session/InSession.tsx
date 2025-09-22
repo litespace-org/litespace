@@ -12,29 +12,44 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Button } from "@litespace/ui/Button";
 import Close2 from "@litespace/assets/Close2";
 import cn from "classnames";
+import { ISession, Wss } from "@litespace/types";
+import { useSocket } from "@litespace/headless/socket";
 
 const InSession: React.FC<{
+  sessionId: ISession.Id;
   member: RemoteMember;
   controllers: {
     audio: Controller;
     video: Controller;
   };
   startDate?: string;
-}> = ({ member, controllers, startDate }) => {
+}> = ({ sessionId, member, controllers, startDate }) => {
   const call = useMediaCall();
   const intl = useFormatMessage();
+  const { socket } = useSocket();
 
   const [chat, setChat] = useState(false);
   const [_, setParams] = useSearchParams();
   const [newMessageIndicator, setNewMessageIndicator] =
     useState<boolean>(false);
 
+  const [connState, setConnState] = useState<
+    MemberConnectionState | undefined
+  >();
   const alertRender = useRender();
   const [alertData, setAlertData] = useState<{
     title: string;
     icon?: React.ReactNode;
     action?: React.ReactNode;
   } | null>(null);
+
+  // inform the backend that the user entered session
+  // and inform that he/she left on disconnect
+  useEffect(() => {
+    socket?.on("disconnect", () => {
+      socket?.emit(Wss.ClientEvent.LeaveSession, { sessionId });
+    });
+  }, [socket]);
 
   // set nav to remove the nav and sidebars
   useEffect(() => {
@@ -44,12 +59,19 @@ const InSession: React.FC<{
 
   useEffect(() => {
     const state = call.curMember?.connectionState;
+    // No changes just return
+    // Note: curMember object changes frequently
+    if (state === connState) return;
+
+    setConnState(state);
 
     if (state === MemberConnectionState.Connected) {
+      socket?.emit(Wss.ClientEvent.JoinSession, { sessionId });
       alertRender.hide();
       setAlertData(null);
       return;
-    } else if (state === MemberConnectionState.Disconnected)
+    } else if (state === MemberConnectionState.Disconnected) {
+      socket?.emit(Wss.ClientEvent.LeaveSession, { sessionId });
       setAlertData({
         title: intl("session.connection-lost"),
         action: (
@@ -62,7 +84,7 @@ const InSession: React.FC<{
           </Button>
         ),
       });
-    else if (state === MemberConnectionState.Connecting)
+    } else if (state === MemberConnectionState.Connecting)
       setAlertData({ title: intl("session.trying-to-reconnect") });
     else if (state === MemberConnectionState.PoorlyConnected)
       setAlertData({
@@ -75,7 +97,7 @@ const InSession: React.FC<{
       });
 
     alertRender.show();
-  }, [call.curMember, alertRender, intl]);
+  }, [call.curMember, alertRender, intl, socket]);
 
   if (!call.curMember || !call.manager?.session.getMemberByIndex(1))
     return null;
