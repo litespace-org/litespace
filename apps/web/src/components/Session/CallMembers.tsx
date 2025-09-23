@@ -1,6 +1,5 @@
 import React, { useMemo, useRef } from "react";
 import MemberStream from "@/components/Session/MemberStream";
-import { Movable } from "@litespace/ui/Movable";
 import { useMediaCall } from "@/hooks/mediaCall";
 import { useUser } from "@litespace/headless/context/user";
 import { RemoteMember } from "@/components/Session/types";
@@ -8,7 +7,8 @@ import { RemoteMember } from "@/components/Session/types";
 const CallMembers: React.FC<{
   remoteMember: RemoteMember;
   sessionStartDate?: string;
-}> = ({ remoteMember: member, sessionStartDate }) => {
+  sessionDuration?: number;
+}> = ({ remoteMember: member, sessionStartDate, sessionDuration }) => {
   const ref = useRef<HTMLDivElement>(null);
   const call = useMediaCall();
 
@@ -37,6 +37,7 @@ const CallMembers: React.FC<{
         {memberObj ? (
           <MemberStream
             sessionStartDate={sessionStartDate}
+            sessionDuration={sessionDuration}
             videoTrack={memberObj.tracks.cam}
             audioTrack={memberObj.tracks.mic}
             userId={member?.id || -1}
@@ -49,10 +50,7 @@ const CallMembers: React.FC<{
         ) : null}
 
         {memberObj ? (
-          <Movable
-            container={ref}
-            className="absolute bottom-4 right-4 z-session-movable-stream shadow-session-movable-stream rounded-lg"
-          >
+          <div className="absolute -bottom-4 sm:-bottom-8 right-4 z-session-movable-stream shadow-session-movable-stream rounded-lg">
             <div className="w-32 sm:w-60 lg:w-72 aspect-mobile md:aspect-desktop">
               <MemberStream
                 currentMember={true}
@@ -67,11 +65,12 @@ const CallMembers: React.FC<{
                 muted
               />
             </div>
-          </Movable>
+          </div>
         ) : (
           <MemberStream
             currentMember={true}
             sessionStartDate={sessionStartDate}
+            sessionDuration={sessionDuration}
             audioTrack={userObj.tracks.mic}
             videoTrack={userObj.tracks.cam}
             userId={user.id}

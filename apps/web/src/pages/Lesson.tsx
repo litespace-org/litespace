@@ -51,7 +51,7 @@ const Lesson: React.FC = () => {
       <div
         className={cn(
           // standard page layout styles.
-          "flex-1 overflow-hidden p-4"
+          "flex-1 overflow-auto p-4"
         )}
       >
         <Content lessonId={lessonId} self={user} />
