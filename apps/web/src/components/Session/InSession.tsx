@@ -23,10 +23,11 @@ const InSession: React.FC<{
     video: Controller;
   };
   startDate?: string;
-}> = ({ sessionId, member, controllers, startDate }) => {
+  sessionDuration?: number;
+}> = ({ sessionId, member, controllers, startDate, sessionDuration }) => {
   const call = useMediaCall();
   const intl = useFormatMessage();
-  const { socket } = useSocket();
+  const { socket, reconnect } = useSocket();
 
   const [chat, setChat] = useState(false);
   const [_, setParams] = useSearchParams();
@@ -120,7 +121,11 @@ const InSession: React.FC<{
             "h-[90%]": alertRender.open && alertData,
           })}
         >
-          <CallMembers remoteMember={member} sessionStartDate={startDate} />
+          <CallMembers
+            remoteMember={member}
+            sessionStartDate={startDate}
+            sessionDuration={sessionDuration}
+          />
 
           <SessionChat
             close={() => setChat(false)}
@@ -145,6 +150,7 @@ const InSession: React.FC<{
             toggle: () => {
               setChat((prev) => !prev);
               setNewMessageIndicator(false);
+              if (!socket?.connected) reconnect();
             },
             indicator: newMessageIndicator,
           }}

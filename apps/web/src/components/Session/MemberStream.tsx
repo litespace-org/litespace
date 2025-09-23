@@ -24,6 +24,7 @@ const MemberStream: React.FC<{
   userName: string | null;
   loading?: boolean;
   sessionStartDate?: string;
+  sessionDuration?: number;
 }> = ({
   videoTrack,
   audioTrack,
@@ -36,6 +37,7 @@ const MemberStream: React.FC<{
   loading,
   size = "md",
   sessionStartDate,
+  sessionDuration,
 }) => {
   const [dirty, setDirty] = useState(false);
   const [fillHorizontally, setFillHorizontally] = useState(true);
@@ -69,7 +71,10 @@ const MemberStream: React.FC<{
 
       <div className="absolute left-4 top-4 flex flex-row-reverse gap-2 items-center">
         {sessionStartDate ? (
-          <SessionTimer startTime={sessionStartDate} />
+          <SessionTimer
+            startTime={sessionStartDate}
+            duration={sessionDuration}
+          />
         ) : null}
         <div
           className={cn(

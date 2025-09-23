@@ -172,11 +172,12 @@ const PreSession: React.FC<{
         controllers={controllers}
         member={member}
         startDate={sessionStart}
+        sessionDuration={sessionDuration}
       />
     );
 
   return (
-    <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 md:mt-28 max-h-full">
+    <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 md:mt-[10vh] max-h-full">
       {[IUser.Role.TutorManager, IUser.Role.Tutor].includes(user?.role) &&
       dialog.visible ? (
         <Dialogs
