@@ -24,18 +24,26 @@ export class CallManager {
   async publishTrackFromDevice(deviceId: Device["id"], type: Device["type"]) {
     const devices = await this.dm.detectDevices();
     const device = devices.find((d) => d.id === deviceId && d.type === type);
-    if (!device) return this.eh.throw(CallError.TrackNotFound);
+    if (!device) {
+      this.eh.throw(CallError.TrackNotFound);
+      throw Error(`CallError Code: ${CallError.TrackNotFound}`);
+    }
 
-    const track = await this.dm
-      .grantPermissionFor(device)
-      .catch(() => this.eh.throw(CallError.UserMediaAccessDenied));
+    const track = await this.dm.grantPermissionFor(device).catch(() => {
+      this.eh.throw(CallError.UserMediaAccessDenied);
+      throw Error(`CallError Code: ${CallError.UserMediaAccessDenied}`);
+    });
 
-    if (!track) return this.eh.throw(CallError.TrackNotFound);
+    if (!track) {
+      this.eh.throw(CallError.TrackNotFound);
+      throw Error(`CallError Code: ${CallError.TrackNotFound}`);
+    }
 
-    if (device.type === "mic") this.session.curMember.publishMicTrack(track);
-    else if (device.type === "cam")
-      this.session.curMember.publishCamTrack(track);
-    else if (device.type === "screen")
-      this.session.curMember.publishScreenTrack(track);
+    if (device.type === "mic")
+      return this.session.curMember.publishMicTrack(track);
+    if (device.type === "cam")
+      return this.session.curMember.publishCamTrack(track);
+    if (device.type === "screen")
+      return this.session.curMember.publishScreenTrack(track);
   }
 }

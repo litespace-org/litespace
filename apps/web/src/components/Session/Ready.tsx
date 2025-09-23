@@ -49,10 +49,22 @@ export const Ready: React.FC<{
   type: ISession.Type;
   start: string;
   duration: number;
+  micGranted: boolean;
   join: Void;
+  enableMic: Void;
   loading?: boolean;
   disabled?: boolean;
-}> = ({ sessionId, type, join, start, duration, loading, disabled }) => {
+}> = ({
+  sessionId,
+  type,
+  join,
+  start,
+  duration,
+  loading,
+  disabled,
+  micGranted,
+  enableMic,
+}) => {
   const intl = useFormatMessage();
   const { socket } = useSocket();
   const messageIds = useMemo(() => SESSION_TO_MESSAGE_IDS[type], [type]);
@@ -185,14 +197,28 @@ export const Ready: React.FC<{
           {timing}
         </Typography>
       </div>
-      <Button
-        size="large"
-        onClick={join}
-        disabled={disabled || loading}
-        loading={loading}
-      >
-        {intl("session.ready.join")}
-      </Button>
+
+      {micGranted ? (
+        <Button
+          size="large"
+          onClick={join}
+          disabled={disabled || loading}
+          loading={loading}
+        >
+          {intl("session.ready.join")}
+        </Button>
+      ) : null}
+
+      {!micGranted ? (
+        <div className="flex flex-col items-center justify-center gap-2 max-w-[274px]">
+          <Typography tag="span" className="text-caption text-destructive-700">
+            {intl("session.ready.enable-mic-alert")}
+          </Typography>
+          <Button size="large" type="natural" onClick={enableMic}>
+            {intl("session.ready.enable-mic-and-join")}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 };
