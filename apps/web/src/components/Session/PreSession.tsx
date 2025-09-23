@@ -18,6 +18,10 @@ import Controllers, { Controller } from "@/components/Session/Controllers";
 import { Dialogs, DialogTypes } from "@/components/Session/Dialogs";
 import { RemoteMember } from "@/components/Session/types";
 import { useToast } from "@litespace/ui/Toast";
+import { useRender } from "@litespace/headless/common";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import Microphone from "@litespace/assets/Microphone";
+import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 
 const PreSession: React.FC<{
   type: ISession.Type;
@@ -38,9 +42,12 @@ const PreSession: React.FC<{
   const call = useMediaCall();
   const socket = useSocket();
 
+  const howToEnableMicDialog = useRender();
+
   const [connectedOnce, setConnectedOnce] = useState<boolean>(false);
   const [connecting, setConnecting] = useState<boolean>(false);
   const [devices, setDevices] = useState<Device[]>([]);
+  const [micGranted, setMicGranted] = useState<boolean>(false);
 
   const [dialog, setDialog] = useState<{
     visible: boolean;
@@ -53,11 +60,20 @@ const PreSession: React.FC<{
   useEffect(() => {
     call.manager?.media.detectDevices().then((list) => {
       setDevices([...list]);
+
       const audioDevice = list.find((d) => d.type === "mic");
       const camDevice = list.find((d) => d.type === "cam");
+
       if (audioDevice)
-        call.manager?.publishTrackFromDevice(audioDevice.id, "mic");
-      if (camDevice) call.manager?.publishTrackFromDevice(camDevice.id, "cam");
+        call.manager
+          ?.publishTrackFromDevice(audioDevice.id, "mic")
+          .then(() => setMicGranted(true))
+          .catch(() => setMicGranted(false));
+
+      if (camDevice)
+        call.manager
+          ?.publishTrackFromDevice(camDevice.id, "cam")
+          .catch(() => console.error("failed to publish cam track!"));
     });
   }, [call.manager]);
 
@@ -200,8 +216,15 @@ const PreSession: React.FC<{
             start={sessionStart}
             duration={sessionDuration}
             join={connect}
-            disabled={!socket.connected || !sessionAccessToken.data?.token}
+            // TODO: user howToEnableMicDialog.show once the video is available
+            enableMic={controllers.audio.toggle}
+            disabled={
+              !socket.connected ||
+              !sessionAccessToken.data?.token ||
+              !micGranted
+            }
             loading={connecting}
+            micGranted={micGranted}
           />
         </div>
 
@@ -219,6 +242,21 @@ const PreSession: React.FC<{
           </div>
         ) : null}
       </div>
+
+      <ConfirmationDialog
+        title={intl("session.how-to-enable-mic-dialog.title")}
+        open={false} // TODO: use howToEnableMicDialog.open once the video is available
+        close={howToEnableMicDialog.hide}
+        actions={{
+          primary: {
+            label: intl("labels.got-it"),
+            onClick: howToEnableMicDialog.hide,
+          },
+        }}
+        icon={<Microphone />}
+      >
+        <VideoPlayer />
+      </ConfirmationDialog>
     </div>
   );
 };

@@ -117,6 +117,7 @@ export const ConfirmationDialog: React.FC<{
   type?: DialogType;
   icon: React.ReactNode;
   loading?: boolean;
+  children?: React.ReactNode;
 }> = ({
   type = "main",
   description,
@@ -128,6 +129,7 @@ export const ConfirmationDialog: React.FC<{
   close,
   closable = true,
   loading,
+  children,
 }) => {
   return (
     <Root open={open}>
@@ -213,6 +215,8 @@ export const ConfirmationDialog: React.FC<{
               ) : null}
             </div>
           ) : null}
+
+          {children}
 
           {actions ? (
             <Actions
