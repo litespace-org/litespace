@@ -5,7 +5,6 @@ import { LocalStorage } from "@/storage/local";
 import { CacheKey } from "@/constants";
 import { useFindTutorMeta } from "@/tutor";
 import { useServer } from "@/server";
-import dayjs from "@/lib/dayjs";
 import { useRefreshAuthToken } from "@/auth";
 import { TokenType } from "@litespace/atlas";
 import { isTutor } from "@litespace/utils";
@@ -32,30 +31,24 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [userData, setUserData] = useState<Data>(userCache || defaultData);
-  const { token, tokenPayload, tokenExpired, setBearerToken, removeToken } =
-    useServer();
+  const { token, tokenExpired, setBearerToken, removeToken } = useServer();
 
   // =================== refersh token =====================
+  const [tokenRefreshed, setTokenRefreshed] = useState(false);
 
-  const refershToken = useRefreshAuthToken({
+  const refreshToken = useRefreshAuthToken({
     onSuccess: (token) => {
       setBearerToken(token, true);
+      setTokenRefreshed(true);
     },
   });
 
-  const shouldRefreshToken = useMemo(() => {
-    return (
-      token?.type === TokenType.Bearer &&
-      !!tokenPayload?.exp &&
-      // Refersh the auth token if it has 2 days left until expiry.
-      dayjs.unix(tokenPayload.exp).utc().diff(dayjs.utc(), "day", true) <= 2
-    );
-  }, [token?.type, tokenPayload?.exp]);
-
   useEffect(() => {
-    if (shouldRefreshToken && !refershToken.isPending && !refershToken.isError)
-      refershToken.mutate();
-  }, [refershToken, shouldRefreshToken]);
+    if (tokenRefreshed) return;
+    if (token?.type !== TokenType.Bearer) return;
+    if (refreshToken.isPending) return;
+    refreshToken.mutate();
+  }, [token?.type, refreshToken, tokenRefreshed]);
 
   //=================== User state handlers =====================
   const setData: Context["set"] = useCallback(
