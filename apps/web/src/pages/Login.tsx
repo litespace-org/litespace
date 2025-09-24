@@ -21,7 +21,7 @@ const Login: React.FC = () => {
     if (!authToken) return;
     if (isStudent(user)) navigate(Web.StudentDashboard);
     if (isTutor(user)) navigate(Web.TutorDashboard);
-  }, [user]);
+  }, [user, navigate]);
 
   return (
     <div className="flex flex-row justify-center lg:justify-between xl:justify-center gap-32 h-full p-4 sm:p-6">

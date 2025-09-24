@@ -11,7 +11,6 @@ import { useToast } from "@litespace/ui/Toast";
 import { isUnauthenticated, ResponseError } from "@litespace/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 export type ErrorPayload = {
   raw: unknown;
@@ -35,7 +34,6 @@ export function useOnError(
   disableAutoNavigate?: boolean
 ) {
   const client = useQueryClient();
-  const navigate = useNavigate();
   const user = useUser();
   const handlerRef = useRef<Optional<Handler | null>>(payload.handler);
   const resetQueryRef = useRef<Optional<Void>>(undefined);
@@ -69,7 +67,7 @@ export function useOnError(
         errorCode: error instanceof ResponseError ? error.errorCode : undefined,
       });
     },
-    [logger, navigate, disableAutoNavigate]
+    [logger, disableAutoNavigate, user]
   );
 
   useEffect(() => {
