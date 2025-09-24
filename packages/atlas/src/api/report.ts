@@ -6,9 +6,17 @@ export class Report extends Base {
   async create(
     payload: IReport.CreateApiPayload & IReport.CreateApiFiles
   ): Promise<void> {
+    const files = asFormData({
+      screenshot: payload.screenshot,
+      log: payload.log,
+    });
+
     return this.post({
       route: "/api/v1/report/with/asset",
-      payload: asFormData(payload),
+      payload: {
+        ...payload,
+        ...files,
+      },
     });
   }
 

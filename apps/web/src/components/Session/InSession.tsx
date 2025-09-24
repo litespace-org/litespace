@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SessionChat } from "@/components/Session/SessionChat";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Controllers, { Controller } from "@/components/Session/Controllers";
 import CallMembers from "@/components/Session/CallMembers";
 import { useMediaCall } from "@/hooks/mediaCall";
@@ -11,22 +11,41 @@ import { MemberConnectionState } from "@/modules/MediaCall/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Button } from "@litespace/ui/Button";
 import Close2 from "@litespace/assets/Close2";
-import cn from "classnames";
-import { ISession, Wss } from "@litespace/types";
+import { ISession, IUser, Wss } from "@litespace/types";
 import { useSocket } from "@litespace/headless/socket";
+import { useCreateReport } from "@litespace/headless/report";
+import { useUser } from "@litespace/headless/context/user";
+import dayjs from "@/lib/dayjs";
+import { useOnError } from "@/hooks/error";
+import { useToast } from "@litespace/ui/Toast";
+import { useCancelLesson } from "@litespace/headless/lessons";
+import { Web } from "@litespace/utils/routes";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import CallIncoming from "@litespace/assets/CallIncoming";
 
 const InSession: React.FC<{
   sessionId: ISession.Id;
-  member: RemoteMember;
+  sessionTypeId: number;
+  remoteMember: RemoteMember;
   controllers: {
     audio: Controller;
     video: Controller;
   };
   startDate?: string;
   sessionDuration?: number;
-}> = ({ sessionId, member, controllers, startDate, sessionDuration }) => {
+}> = ({
+  sessionId,
+  sessionTypeId,
+  remoteMember,
+  controllers,
+  startDate,
+  sessionDuration,
+}) => {
   const call = useMediaCall();
   const intl = useFormatMessage();
+  const toast = useToast();
+  const navigate = useNavigate();
+  const { user } = useUser();
   const { socket, reconnect } = useSocket();
 
   const [chat, setChat] = useState(false);
@@ -37,8 +56,16 @@ const InSession: React.FC<{
   const [connState, setConnState] = useState<
     MemberConnectionState | undefined
   >();
-  const alertRender = useRender();
-  const [alertData, setAlertData] = useState<{
+
+  const connAlertRender = useRender();
+  const [connAlertData, setConnAlertData] = useState<{
+    title: string;
+    icon?: React.ReactNode;
+    action?: React.ReactNode;
+  } | null>(null);
+
+  const timeAlertRender = useRender();
+  const [timeAlertData, setTimeAlertData] = useState<{
     title: string;
     icon?: React.ReactNode;
     action?: React.ReactNode;
@@ -68,12 +95,12 @@ const InSession: React.FC<{
 
     if (state === MemberConnectionState.Connected) {
       socket?.emit(Wss.ClientEvent.JoinSession, { sessionId });
-      alertRender.hide();
-      setAlertData(null);
+      connAlertRender.hide();
+      setConnAlertData(null);
       return;
     } else if (state === MemberConnectionState.Disconnected) {
       socket?.emit(Wss.ClientEvent.LeaveSession, { sessionId });
-      setAlertData({
+      setConnAlertData({
         title: intl("session.connection-lost"),
         action: (
           <Button
@@ -86,19 +113,119 @@ const InSession: React.FC<{
         ),
       });
     } else if (state === MemberConnectionState.Connecting)
-      setAlertData({ title: intl("session.trying-to-reconnect") });
+      setConnAlertData({ title: intl("session.trying-to-reconnect") });
     else if (state === MemberConnectionState.PoorlyConnected)
-      setAlertData({
+      setConnAlertData({
         title: intl("session.poor-connection"),
         action: (
-          <button onClick={alertRender.hide}>
+          <button onClick={connAlertRender.hide}>
             <Close2 className="w-6 h-6" />
           </button>
         ),
       });
 
-    alertRender.show();
-  }, [call.curMember, alertRender, intl, socket, connState, sessionId]);
+    connAlertRender.show();
+  }, [call.curMember, connAlertRender, intl, socket, connState, sessionId]);
+
+  const [memberJoinedOnce, setMemberJoinedOnce] = useState(false);
+  useEffect(() => {
+    if (memberJoinedOnce) return;
+    setMemberJoinedOnce(call.inMembers.length > 1);
+  }, [call.inMembers, memberJoinedOnce]);
+
+  const onError = useOnError({
+    type: "mutation",
+    handler: (e) => toast.error({ title: intl(e.messageId) }),
+  });
+
+  const cancelLessonDialog = useRender();
+
+  const createReport = useCreateReport({
+    onSuccess: () => {
+      toast.success({ title: intl("report.successfully.sent") });
+      cancelLessonDialog.show();
+    },
+    onError,
+  });
+
+  const cancelLesson = useCancelLesson({
+    onSuccess: () => navigate(Web.UpcomingLessons),
+    onError,
+  });
+
+  // render an alert component based on three factors: one: the difference between
+  // the current time and the session time, two: the role of the current user, and
+  // three: the joined call members.
+  // In a nutshell, an alert should render to students based on the current time
+  // and whether the tutor joined or not.
+  useEffect(() => {
+    if (user?.role !== IUser.Role.Student) return;
+
+    const interval = setInterval(() => {
+      // Even though it may lead to unwanted behaviour, it yet kept
+      // at the top for optimization.
+      if (memberJoinedOnce) return;
+
+      const now = dayjs();
+
+      if (now.isAfter(dayjs(startDate).add(3, "minutes"))) {
+        setTimeAlertData({
+          title: intl("session.alert.tutor-cannot-join"),
+          action: (
+            <Button
+              size="small"
+              variant="secondary"
+              onClick={() =>
+                createReport.mutate({
+                  title: `tutor absence`,
+                  description: `tutor ${remoteMember.id} didn't attend session ${sessionId}`,
+                })
+              }
+            >
+              {intl("session.label.tutor-didnot-attend")}
+            </Button>
+          ),
+        });
+        timeAlertRender.show();
+        return;
+      }
+
+      if (now.isAfter(startDate)) {
+        setTimeAlertData({
+          title: intl("session.alert.wait-tutor"),
+          action: (
+            <button onClick={timeAlertRender.hide}>
+              <Close2 className="w-6 h-6" />
+            </button>
+          ),
+        });
+        timeAlertRender.show();
+        return;
+      }
+
+      setTimeAlertData({
+        title: intl("session.alert.wait-session-start"),
+        action: (
+          <button onClick={timeAlertRender.hide}>
+            <Close2 className="w-6 h-6" />
+          </button>
+        ),
+      });
+      timeAlertRender.show();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [
+    user,
+    intl,
+    createReport,
+    remoteMember.id,
+    sessionId,
+    timeAlertRender,
+    memberJoinedOnce,
+    startDate,
+    sessionDuration,
+  ]);
 
   if (!call.curMember || !call.manager?.session.getMemberByIndex(1))
     return null;
@@ -106,23 +233,29 @@ const InSession: React.FC<{
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-col h-[90%] gap-6">
-        {alertRender.open && alertData ? (
-          <AlertV2
-            type={AlertType.Info}
-            title={alertData.title}
-            icon={alertData.icon}
-            action={alertData.action}
-          />
-        ) : null}
+        <div className="flex flex-col gap-2">
+          {connAlertRender.open && connAlertData ? (
+            <AlertV2
+              type={AlertType.Info}
+              title={connAlertData.title}
+              icon={connAlertData.icon}
+              action={connAlertData.action}
+            />
+          ) : null}
 
-        <div
-          className={cn("flex gap-6", {
-            "h-full": !(alertRender.open && alertData),
-            "h-[90%]": alertRender.open && alertData,
-          })}
-        >
+          {timeAlertRender.open && timeAlertData ? (
+            <AlertV2
+              type={AlertType.Info}
+              title={timeAlertData.title}
+              icon={timeAlertData.icon}
+              action={timeAlertData.action}
+            />
+          ) : null}
+        </div>
+
+        <div className="flex gap-6 h-full">
           <CallMembers
-            remoteMember={member}
+            remoteMember={remoteMember}
             sessionStartDate={startDate}
             sessionDuration={sessionDuration}
           />
@@ -165,6 +298,25 @@ const InSession: React.FC<{
           video={controllers.video}
         />
       </div>
+
+      <ConfirmationDialog
+        title={intl("session.cancel-dialog.title")}
+        description={intl("session.cancel-dialog.description")}
+        icon={<CallIncoming />}
+        type="error"
+        actions={{
+          primary: {
+            label: intl("cancel-lesson.confirm-and-cancel"),
+            onClick: () => cancelLesson.mutate(sessionTypeId),
+          },
+          secondary: {
+            label: intl("cancel-lesson.cancel-and-return"),
+            onClick: cancelLessonDialog.hide,
+          },
+        }}
+        open={cancelLessonDialog.open}
+        close={cancelLessonDialog.hide}
+      />
     </div>
   );
 };
