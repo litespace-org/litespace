@@ -60,6 +60,7 @@ const Content: React.FC<{
       start={lessonQuery.data.lesson.start}
       duration={lessonQuery.data.lesson.duration}
       sessionId={lessonQuery.data.lesson.sessionId}
+      sessionTypeId={lessonId}
       member={member}
     />
   );

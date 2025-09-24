@@ -54,6 +54,7 @@ const Content: React.FC<{ interviewId: number; self: IUser.Self }> = ({
     <PreSession
       type="interview"
       sessionId={interview.sessionId}
+      sessionTypeId={interviewId}
       start={interview.start}
       duration={INTERVIEW_DURATION}
       member={remoteMember}

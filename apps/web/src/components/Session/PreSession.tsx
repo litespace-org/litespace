@@ -28,10 +28,15 @@ const PreSession: React.FC<{
   start: string;
   duration: number;
   sessionId: ISession.Id;
+  /**
+   * lessonId, interviewId... etc
+   */
+  sessionTypeId: number;
   member: RemoteMember;
 }> = ({
   type,
   sessionId,
+  sessionTypeId,
   start: sessionStart,
   duration: sessionDuration,
   member,
@@ -169,8 +174,9 @@ const PreSession: React.FC<{
     return (
       <InSession
         sessionId={sessionId}
+        sessionTypeId={sessionTypeId}
         controllers={controllers}
-        member={member}
+        remoteMember={member}
         startDate={sessionStart}
         sessionDuration={sessionDuration}
       />
