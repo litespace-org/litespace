@@ -102,7 +102,7 @@ const Chat: React.FC = () => {
     <div
       className={cn(
         "w-full mx-auto flex flex-row overflow-hidden grow",
-        "max-h-chat-mobile md:max-h-chat-tablet lg:max-h-chat-desktop"
+        "max-h-[calc(100vh-165px)] md:max-h-chat-tablet lg:max-h-chat-desktop"
       )}
     >
       {(!temporaryTutor && !otherMember) || mq.lg ? (
@@ -131,16 +131,18 @@ const Chat: React.FC = () => {
         </div>
       ) : null}
 
-      {temporaryTutor || otherMember ? (
-        <Messages
-          isTyping={isCurrentRoomTyping}
-          isOnline={isOtherMemberOnline}
-          room={selected.room}
-          otherMember={temporaryTutor || otherMember}
-          setTemporaryTutor={setTemporaryTutor}
-          select={select}
-        />
-      ) : null}
+      <div className="w-full">
+        {temporaryTutor || otherMember ? (
+          <Messages
+            isTyping={isCurrentRoomTyping}
+            isOnline={isOtherMemberOnline}
+            room={selected.room}
+            otherMember={temporaryTutor || otherMember}
+            setTemporaryTutor={setTemporaryTutor}
+            select={select}
+          />
+        ) : null}
+      </div>
     </div>
   );
 };

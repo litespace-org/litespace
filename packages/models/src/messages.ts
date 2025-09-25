@@ -99,8 +99,7 @@ export class Messages {
       .where(this.column("read"), false)
       .andWhere(this.column("room_id"), room)
       .andWhere(this.column("user_id"), user)
-      .groupBy(this.column("created_at"))
-      .orderBy([{ column: this.column("created_at"), order: "desc" }]);
+      .groupBy(this.column("user_id"));
     return await countRows(base);
   }
 

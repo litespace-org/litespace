@@ -124,17 +124,19 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
         room: roomId,
       });
 
-      const unreadMessagesCount = await messages.findUnreadCount({
-        user: userId,
-        room: roomId,
-      });
-
       // members of this specific room
       const roomMembers = await withImageUrls(
         members.filter((member) => member.roomId === roomId)
       );
       const currentMember = roomMembers.find((member) => member.id === userId);
       const otherMember = roomMembers.find((member) => member.id !== userId);
+
+      const unreadMessagesCount = otherMember
+        ? await messages.findUnreadCount({
+            user: otherMember.id,
+            room: roomId,
+          })
+        : 0;
 
       if (!currentMember || !otherMember)
         throw Error("unreachable; should never happen.");

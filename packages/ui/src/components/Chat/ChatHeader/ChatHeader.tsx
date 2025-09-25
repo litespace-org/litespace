@@ -22,7 +22,19 @@ export const ChatHeader: React.FC<{
   inSession?: boolean;
   book: Void;
   back: Void;
-}> = ({ name, image, online, id, lastSeen, role, book, back, inSession }) => {
+  className?: string;
+}> = ({
+  name,
+  image,
+  online,
+  id,
+  lastSeen,
+  role,
+  book,
+  back,
+  inSession,
+  className,
+}) => {
   const intl = useFormatMessage();
 
   return (
@@ -31,7 +43,8 @@ export const ChatHeader: React.FC<{
         "flex justify-between rounded-t-2xl",
         inSession
           ? "py-6 px-4 sm:p-4 shadow-chat-header lg:shadow-transparent"
-          : "shadow-chat-header px-6 py-4"
+          : "shadow-chat-header px-6 py-4",
+        className
       )}
     >
       <div

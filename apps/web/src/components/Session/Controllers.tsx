@@ -16,6 +16,7 @@ import cn from "classnames";
 import { useRender } from "@litespace/headless/common";
 import { useMediaCall } from "@/hooks/mediaCall";
 import { Device } from "@/modules/MediaCall/types";
+import { Typography } from "@litespace/ui/Typography";
 
 type Icon = "microphone" | "camera" | "blur" | "screen" | "chat";
 
@@ -25,7 +26,7 @@ export type Controller = {
   error?: boolean;
   loading?: boolean;
   disabled?: boolean;
-  indicator?: boolean;
+  indicator?: number;
   menu?: Array<{
     label: string;
     action: Void;
@@ -122,21 +123,19 @@ export const Toggle: React.FC<Controller & { icon: Icon }> = ({
       ) : null}
 
       {indicator ? (
-        <>
-          <Typography
-            tag="span"
-            className={cn(
-              "text-caption text-natural-50",
-              "flex items-center justify-center",
-              "absolute aspect-square rounded-full bg-brand-500",
-              indicator <= 9
-                ? "top-[-30%] right-[-20%] px-[14%]"
-                : "top-[-35%] right-[-25%] px-[9%]"
-            )}
-          >
-            {indicator > 9 ? "+9" : indicator}
-          </Typography>
-        </>
+        <Typography
+          tag="span"
+          className={cn(
+            "text-caption text-natural-50",
+            "flex items-center justify-center",
+            "absolute aspect-square rounded-full bg-brand-500",
+            indicator <= 9
+              ? "top-[-30%] right-[-20%] px-[14%]"
+              : "top-[-35%] right-[-25%] px-[9%]"
+          )}
+        >
+          {indicator > 9 ? "+9" : indicator}
+        </Typography>
       ) : null}
     </div>
   );
@@ -176,6 +175,15 @@ const Controllers: React.FC<{
       )}
       onClick={() => setDevices(call.manager?.media.getDevices() || [])}
     >
+      {chat ? (
+        <Toggle
+          toggle={chat.toggle}
+          enabled={chat.enabled}
+          icon="chat"
+          indicator={chat.indicator}
+        />
+      ) : null}
+
       <Toggle
         toggle={() => {
           setDevices(call.manager?.media.getDevices() || []);
@@ -207,15 +215,6 @@ const Controllers: React.FC<{
           action: () => call.manager?.publishTrackFromDevice(m.id, m.type),
         }))}
       />
-
-      {chat ? (
-        <Toggle
-          toggle={chat.toggle}
-          enabled={chat.enabled}
-          icon="chat"
-          indicator={chat.indicator}
-        />
-      ) : null}
 
       {blur ? (
         <Toggle
