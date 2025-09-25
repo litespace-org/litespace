@@ -17,6 +17,7 @@ import { IUser } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Web } from "@litespace/utils/routes";
 import { useOnError } from "@/hooks/error";
+import { MAX_LESSON_DURATION } from "@litespace/utils";
 
 type RateLessonParams = {
   tutorId: number | null;
@@ -65,7 +66,9 @@ const UpcomingLessons: React.FC = () => {
   const lessons = useInfiniteLessons({
     userOnly: true,
     users: user ? [user?.id] : [],
-    after: now.current,
+    after: dayjs(now.current)
+      .subtract(MAX_LESSON_DURATION, "minutes")
+      .toISOString(),
     canceled: false,
   });
 
