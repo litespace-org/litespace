@@ -45,7 +45,6 @@ export const ForgetPasswordDialog: React.FC<{
 
   return (
     <Dialog
-      position={sm ? "center" : "bottom"}
       open={open}
       close={close}
       title={

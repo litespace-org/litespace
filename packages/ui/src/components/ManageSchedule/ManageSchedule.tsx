@@ -62,7 +62,7 @@ export const ManageSchedule: React.FC<Props> = ({
   const toast = useToast();
   const [slots, setSlots] = useState<Slot[]>([]);
   const weekStart = useMemo(() => dayjs(date), [date]);
-  const { md, xl } = useMediaQuery();
+  const { xl } = useMediaQuery();
 
   const days = useMemo(() => {
     if (singleDay) {
@@ -226,7 +226,6 @@ export const ManageSchedule: React.FC<Props> = ({
         </Typography>
       }
       className="overflow-y-auto w-full md:w-[548px]"
-      position={md ? "center" : "bottom"}
     >
       <Optional show={!singleDay}>
         <Header

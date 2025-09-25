@@ -49,7 +49,6 @@ export const VerifyNotificationMethodDialog: React.FC<Props> = ({
           {intl("notification-method.dialog.title")}
         </Typography>
       }
-      position={mq.sm ? "center" : "bottom"}
       className={mq.sm ? "w-[512px]" : "w-full"}
       close={close}
       open

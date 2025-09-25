@@ -1,6 +1,5 @@
 import { router } from "@/lib/routes";
 import Timer2 from "@litespace/assets/Timer2";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
@@ -13,13 +12,11 @@ export const SubscriptionDialog: React.FC<{
   open: boolean;
   close: Void;
 }> = ({ open, close }) => {
-  const { md } = useMediaQuery();
   const intl = useFormatMessage();
 
   return (
     <Dialog
       className="max-w-[400px]"
-      position={md ? "center" : "bottom"}
       open={open}
       close={close}
       title={
