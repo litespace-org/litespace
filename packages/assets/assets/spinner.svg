@@ -35,6 +35,6 @@
         }
     </style>
     <g class="spinner_V8m1">
-        <circle cx="12" cy="12" r="9.5" fill="none" stroke-width="2"></circle>
+        <circle cx="12" cy="12" r="10" fill="none" stroke-width="2"></circle>
     </g>
 </svg>
