@@ -300,7 +300,9 @@ const Messages: React.FC<{
   return (
     <div
       id="messages-container"
-      className={cn("flex-1 flex flex-col bg-natural-50 h-full")}
+      className={cn(
+        "flex-1 flex flex-col justify-between bg-natural-50 h-full"
+      )}
     >
       {room === null ? <NoSelection /> : null}
 
@@ -319,12 +321,7 @@ const Messages: React.FC<{
       ) : null}
 
       {room ? (
-        <div
-          className={cn(
-            "flex flex-col h-full gap-2",
-            "max-h-[calc(100%-72px)] md:max-h-[calc(100%-88px)] lg:max-h-[calc(100%-106px)]"
-          )}
-        >
+        <div className={"flex flex-col h-[85%] gap-2"}>
           <div
             id="messages-content"
             className={cn(
@@ -430,6 +427,7 @@ const Messages: React.FC<{
               </ul>
             )}
           </div>
+
           <div id="messages-footer" className="flex flex-col gap-2 mt-auto">
             {isTyping && otherMember ? (
               <div className="mt-4 lg:mt-9">

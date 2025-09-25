@@ -50,8 +50,7 @@ const InSession: React.FC<{
 
   const [chat, setChat] = useState(false);
   const [_, setParams] = useSearchParams();
-  const [newMessageIndicator, setNewMessageIndicator] =
-    useState<boolean>(false);
+  const [newMessageIndicator, setNewMessageIndicator] = useState<number>(0);
 
   const [connState, setConnState] = useState<
     MemberConnectionState | undefined
@@ -266,7 +265,7 @@ const InSession: React.FC<{
             selfId={Number(call.curMember.id)} // TODO: make it more error tolerant
             memberId={Number(call.manager.session.getMemberByIndex(1)?.id)}
             onNewMessage={() => {
-              setNewMessageIndicator(true);
+              setNewMessageIndicator((prev) => prev + 1);
               if (!chat) {
                 const audio = new Audio("/new-message.mp3");
                 audio.play();
@@ -282,7 +281,7 @@ const InSession: React.FC<{
             enabled: chat,
             toggle: () => {
               setChat((prev) => !prev);
-              setNewMessageIndicator(false);
+              setNewMessageIndicator(0);
               if (!socket?.connected) reconnect();
             },
             indicator: newMessageIndicator,

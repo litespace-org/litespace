@@ -39,8 +39,6 @@ const RoomsPanel: React.FC<{
   );
   const { rooms, keyword, update } = useRoomManager(isStudent);
 
-  console.log("HERE", rooms.all.list);
-
   useOnError({
     type: "query",
     keys: rooms.pinned.keys,
