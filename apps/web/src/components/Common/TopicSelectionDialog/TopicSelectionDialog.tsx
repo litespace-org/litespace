@@ -8,7 +8,6 @@ import { Button } from "@litespace/ui/Button";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { concat, isEmpty, uniq } from "lodash";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { InView } from "react-intersection-observer";
 
 type Props = {
@@ -48,7 +47,6 @@ export const TopicSelectionDialog: React.FC<Props> = ({
   more,
 }) => {
   const intl = useFormatMessage();
-  const mq = useMediaQuery();
   const [selection, setSelection] = useState<number[]>([]);
 
   useEffect(() => {
@@ -104,7 +102,6 @@ export const TopicSelectionDialog: React.FC<Props> = ({
       className="w-full md:w-[512px]"
       close={confirming ? undefined : onClose}
       open={opened}
-      position={mq.sm ? "center" : "bottom"}
     >
       <div className="flex flex-col items-center justify-center mt-4 md:mt-2">
         <Typography

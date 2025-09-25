@@ -314,7 +314,6 @@ export const ManageLessonDialog: React.FC<{
     <Dialog
       open={open}
       close={close}
-      position={sm ? "center" : "bottom"}
       title={
         <Typography
           tag="header"

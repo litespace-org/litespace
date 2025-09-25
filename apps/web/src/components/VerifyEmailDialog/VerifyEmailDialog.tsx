@@ -24,7 +24,6 @@ export const VerifyEmailDialog: React.FC<{
 
   return (
     <Dialog
-      position={sm ? "center" : "bottom"}
       title={
         <Typography
           tag="p"

@@ -79,7 +79,6 @@ const RatingDialog: React.FC<DialogProps> = ({
           </Typography>
         </div>
       }
-      position={mq.md ? "center" : "bottom"}
       close={close}
     >
       <div className="flex flex-col gap-4 sm:gap-6 items-center justify-center mt-4 sm:mt-6">

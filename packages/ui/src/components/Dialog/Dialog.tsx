@@ -15,6 +15,7 @@ import { Button } from "@/components/Button";
 import CloseIcon from "@litespace/assets/Close";
 import { Loading, LoadingError } from "@/components/Loading";
 import { useFormatMessage } from "@/hooks";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 export const Dialog: React.FC<{
   container?: Element | null;
@@ -37,7 +38,7 @@ export const Dialog: React.FC<{
   className,
   open,
   description,
-  position = "center",
+  position,
   headless = false,
   variant = "default",
   mediaLoading,
@@ -48,6 +49,12 @@ export const Dialog: React.FC<{
 }) => {
   const intl = useFormatMessage();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const mq = useMediaQuery();
+
+  const dialogPosition = useMemo<"center" | "bottom">(() => {
+    if (position) return position;
+    return mq.sm ? "center" : "bottom";
+  }, [position, mq.sm]);
 
   const hiddenTitle = useMemo(() => {
     if (variant === "media" || headless) return true;
@@ -119,14 +126,15 @@ export const Dialog: React.FC<{
               "outline-none": variant === "media",
             },
             {
-              "rounded-[32px]": variant === "default" && position === "center",
-              "rounded-t-[24px]": position === "bottom",
+              "rounded-[32px]":
+                variant === "default" && dialogPosition === "center",
+              "rounded-t-[24px]": dialogPosition === "bottom",
               "rounded-lg": variant === "media",
             },
             {
               "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 focus-visible:ring-4 focus-visible:ring-brand-500":
-                position === "center",
-              "left-1/2 bottom-0 -translate-x-1/2": position === "bottom",
+                dialogPosition === "center",
+              "left-1/2 bottom-0 -translate-x-1/2": dialogPosition === "bottom",
             },
             className
           )}
