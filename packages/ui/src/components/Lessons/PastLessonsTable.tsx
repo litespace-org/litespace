@@ -181,6 +181,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                         lesson.currentMember,
                       ]);
                   }}
+                  type="natural"
                   variant={lg && !xl ? "primary" : "secondary"}
                   size="large"
                   disabled={!!sendingMessage}
@@ -190,7 +191,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                   {!lg || xl ? (
                     <Typography
                       tag="span"
-                      className="text-body text-brand-700 font-medium"
+                      className="text-body whitespace-nowrap text-natural-700 font-medium"
                     >
                       {isTutor
                         ? intl("tutor-dashboard.table.send-message")
