@@ -229,7 +229,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
           },
           {
             id: 2,
-            label: intl("labels.not.uplaoded"),
+            label: intl("labels.not.uploaded"),
             checked: receipt === false,
             onClick: () => setReceipt(false),
           },
