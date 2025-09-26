@@ -5,12 +5,19 @@ import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
 import { Void } from "@litespace/types";
 import cn from "classnames";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import More from "@litespace/assets/More";
 import { Menu, type MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import CheckCircle from "@litespace/assets/CheckCircle";
+import AllMessages from "@litespace/assets/AllMessages";
 
 export type Props = {
   start: string;
@@ -34,6 +41,16 @@ export type Props = {
   onSendMsg: Void;
 };
 
+type LessonStatus =
+  | "canceled-by-you"
+  | "canceled-by-student"
+  | "canceled-by-tutor"
+  | "not-started"
+  | "just-started"
+  | "started"
+  | "about-to-end"
+  | "ended";
+
 export const LessonCard: React.FC<Props> = ({
   start,
   duration,
@@ -53,6 +70,8 @@ export const LessonCard: React.FC<Props> = ({
     [duration, start]
   );
 
+  const lessonStatusRef = useRef<LessonStatus | null>(null);
+
   // for code readability
   const currentUserRole = useMemo(() => {
     return member.role === "student" ? "tutor" : "student";
@@ -62,27 +81,39 @@ export const LessonCard: React.FC<Props> = ({
     const now = dayjs();
 
     // canceled by the cur user
-    if (canceled === currentUserRole) return intl("lessons.canceled-by-you");
+    if (canceled === currentUserRole) {
+      lessonStatusRef.current = "canceled-by-you";
+      return intl("lesson.canceled-by-you");
+    }
 
     // canceled by the tutor and the cur user is the student
-    if (canceled === "tutor") return intl("lessons.canceled-by-tutor");
+    if (canceled === "tutor") {
+      lessonStatusRef.current = "canceled-by-tutor";
+      return intl("lesson.canceled-by-tutor");
+    }
 
     // canceled by the student and the cur user is the tutor
-    if (canceled === "student") return intl("lessons.canceled-by-student");
+    if (canceled === "student") {
+      lessonStatusRef.current = "canceled-by-student";
+      return intl("lesson.canceled-by-student");
+    }
 
     // before start of lesson
-    if (!canceled && now.isBefore(start, "second"))
-      return intl("lessons.time-to-join", {
+    if (!canceled && now.isBefore(start, "second")) {
+      lessonStatusRef.current = "not-started";
+      return intl("lesson.time-to-join", {
         value: dayjs(start).fromNow(true),
         finish: null,
       });
-
+    }
     // at first 3 minutes of lessons
     if (
       !canceled &&
       now.isBetween(start, dayjs(start).add(3, "minutes"), "seconds", "[]")
-    )
-      return intl("lessons.can-join-now");
+    ) {
+      lessonStatusRef.current = "just-started";
+      return intl("lesson.can-join-now");
+    }
 
     // at the first half of the lesson
     if (
@@ -93,10 +124,12 @@ export const LessonCard: React.FC<Props> = ({
         "seconds",
         "(]"
       )
-    )
-      return intl("lessons.time-from-start", {
+    ) {
+      lessonStatusRef.current = "started";
+      return intl("lesson.time-from-start", {
         value: dayjs().diff(start, "minute"),
       });
+    }
 
     // at the second half of the lesson
     if (
@@ -107,13 +140,18 @@ export const LessonCard: React.FC<Props> = ({
         "seconds",
         "[]"
       )
-    )
-      return intl("lessons.time-to-end-lesson", {
+    ) {
+      lessonStatusRef.current = "about-to-end";
+      return intl("lesson.time-to-end-lesson", {
         value: dayjs(end).fromNow(true),
       });
+    }
 
     // after finish of the lesson
-    if (!canceled && now.isAfter(end)) return intl("lessons.end");
+    if (!canceled && now.isAfter(end)) {
+      lessonStatusRef.current = "ended";
+      return intl("lesson.ended");
+    }
   }, [canceled, currentUserRole, intl, start, duration, end]);
 
   const [title, setTitle] = useState<string | undefined>(getTitle());
@@ -132,12 +170,12 @@ export const LessonCard: React.FC<Props> = ({
         ? [
             // Student related actions
             {
-              label: intl("lessons.menu.edit"),
+              label: intl("lesson-card.menu.edit"),
               icon: <CalendarEdit />,
               onClick: () => onEdit(),
             },
             {
-              label: intl("lessons.menu.cancel"),
+              label: intl("lesson-card.menu.cancel"),
               icon: <CalendarRemove />,
               onClick: () => onCancel(),
             },
@@ -145,7 +183,7 @@ export const LessonCard: React.FC<Props> = ({
         : [
             // Tutor related actions
             {
-              label: intl("lessons.menu.cancel"),
+              label: intl("lesson-card.menu.cancel"),
               icon: <CalendarRemove />,
               onClick: () => onCancel(),
             },
@@ -157,36 +195,63 @@ export const LessonCard: React.FC<Props> = ({
     const ended = end.isBefore(dayjs());
     if (currentUserRole === "student" && (ended || canceled))
       return {
-        label: intl("lessons.button.rebook"),
+        label: intl("lesson-card.button.rebook"),
         onClick: onRebook,
       };
     if (currentUserRole === "tutor" && (ended || canceled))
       return {
-        label: intl("lessons.button.send-message"),
+        label: intl("lesson-card.button.send-message"),
         onClick: onSendMsg,
       };
     return {
-      label: intl("lessons.button.join"),
+      label: intl("lesson-card.button.join"),
       onClick: onJoin,
     };
   }, [canceled, currentUserRole, end, intl, onJoin, onRebook, onSendMsg]);
 
+  const buttonType = useMemo(() => {
+    if (
+      lessonStatusRef.current === "just-started" ||
+      lessonStatusRef.current === "started" ||
+      lessonStatusRef.current === "about-to-end"
+    )
+      return "main";
+    return "natural";
+  }, []);
+
   const button = (
     <Button
       size="large"
-      className={cn("w-full mt-auto")}
+      className={cn("w-full mt-auto [&>*]:text")}
       disabled={disabled}
       onClick={action.onClick}
-      loading={sendingMessage}
+      loading={
+        sendingMessage &&
+        action.label === intl("lesson-card.button.send-message")
+      }
+      type={buttonType}
     >
-      <Typography
-        tag="span"
-        className="text-natural-50 text-caption font-semibold"
-      >
-        {action.label}
-      </Typography>
+      {action.label}
     </Button>
   );
+
+  const canRenderMsgButton = useMemo(() => {
+    if (
+      currentUserRole === "tutor" &&
+      lessonStatusRef.current === "not-started"
+    )
+      return true;
+
+    if (
+      (currentUserRole === "student" && canceled) ||
+      (currentUserRole === "student" &&
+        lessonStatusRef.current === "not-started") ||
+      (currentUserRole === "student" && lessonStatusRef.current === "ended")
+    )
+      return true;
+
+    return false;
+  }, [canceled, currentUserRole]);
 
   return (
     <div
@@ -205,7 +270,7 @@ export const LessonCard: React.FC<Props> = ({
                 "text-brand-700 line-clamp-1 truncate text-caption font-semibold"
               )}
             >
-              {intl("lessons.end")}
+              {intl("lesson.ended")}
             </Typography>
           </div>
         ) : (
@@ -255,7 +320,20 @@ export const LessonCard: React.FC<Props> = ({
             </Typography>
           </div>
         </div>
-        {button}
+        <div className="flex gap-4">
+          {button}
+          {canRenderMsgButton ? (
+            <Button
+              size="large"
+              variant="secondary"
+              type={buttonType}
+              startIcon={<AllMessages className="icon" />}
+              onClick={onSendMsg}
+              loading={sendingMessage}
+              disabled={sendingMessage}
+            />
+          ) : null}
+        </div>
       </div>
     </div>
   );
