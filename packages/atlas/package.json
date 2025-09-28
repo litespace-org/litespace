@@ -30,6 +30,9 @@
       "node": "./dist/cjs/index.js"
     }
   },
+  "react-native": {
+    "./": "./dist/cjs/index.js"
+  },
   "devDependencies": {
     "typescript": "^5.4.5",
     "npm-watch": "^0.13.0",

@@ -8,10 +8,7 @@ const Home: React.FC = () => {
     <ThemedView>
       <ThemedView style={styles.container}>
         <Pressable>
-          <Link href="/login">Login</Link>
-        </Pressable>
-        <Pressable>
-          <Link href="/call">Call</Link>
+          <Link href="/login">Home</Link>
         </Pressable>
       </ThemedView>
     </ThemedView>
