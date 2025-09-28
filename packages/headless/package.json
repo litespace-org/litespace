@@ -53,6 +53,7 @@
   },
   "react-native": {
     "./auth": "./dist/auth.js",
+    "./api": "./dist/api/index.js",
     "./plans": "./dist/plans.js",
     "./server": "./dist/server/index.js",
     "./atlas": "./dist/atlas/index.js",

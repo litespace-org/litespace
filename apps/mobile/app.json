@@ -42,7 +42,7 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": ["expo-router", "@config-plugins/react-native-webrtc"],
+    "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
     },

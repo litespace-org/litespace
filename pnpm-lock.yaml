@@ -418,9 +418,6 @@ importers:
 
   apps/mobile:
     dependencies:
-      '@config-plugins/react-native-webrtc':
-        specifier: ^9.0.0
-        version: 9.0.0(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
       '@expo/vector-icons':
         specifier: ^14.0.2
         version: 14.1.0(expo-font@12.0.10(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)))(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)
@@ -454,9 +451,6 @@ importers:
       expo-constants:
         specifier: ~16.0.2
         version: 16.0.2(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-      expo-dev-client:
-        specifier: ~4.0.28
-        version: 4.0.29(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
       expo-font:
         specifier: ~12.0.9
         version: 12.0.10(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
@@ -508,9 +502,6 @@ importers:
       react-native-web:
         specifier: ~0.19.10
         version: 0.19.13(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      react-native-webrtc:
-        specifier: ^124.0.4
-        version: 124.0.5(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))
     devDependencies:
       '@babel/core':
         specifier: ^7.20.0
@@ -2080,7 +2071,7 @@ importers:
         version: 29.7.0
       '@remotion/tailwind':
         specifier: ^4.0.280
-        version: 4.0.301(@remotion/bundler@4.0.301(@swc/core@1.11.24)(bufferutil@4.0.9)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(utf-8-validate@5.0.10))(ts-node@10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5))(typescript@5.4.5)(webpack@5.96.1(@swc/core@1.11.24)(esbuild@0.25.0))
+        version: 4.0.301(@remotion/bundler@4.0.301(@swc/core@1.11.24)(bufferutil@4.0.9)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(utf-8-validate@5.0.10))(ts-node@10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5))(typescript@5.4.5)(webpack@5.97.1(@swc/core@1.11.24))
       '@types/chai':
         specifier: ^4.3.16
         version: 4.3.20
@@ -3180,11 +3171,6 @@ packages:
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
-
-  '@config-plugins/react-native-webrtc@9.0.0':
-    resolution: {integrity: sha512-XHqEIR3iejek1YGZT5441j7i7LI1YdI4yM7nP4PMgswT/hzBnII4Ra9uiIaG105dmqioYgkn2TcScqyOf2MCtQ==}
-    peerDependencies:
-      expo: ^51
 
   '@cryptography/aes@0.1.1':
     resolution: {integrity: sha512-PcYz4FDGblO6tM2kSC+VzhhK62vml6k6/YAkiWtyPvrgJVfnDRoHGDtKn5UiaRRUrvUTTocBpvc2rRgTCqxjsg==}
@@ -8085,8 +8071,8 @@ packages:
       eslint: ^9.31.0
       typescript: '>=4'
 
-  '@whiskeysockets/libsignal-node@https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/4d08331a833727c338c1a90041d17b870210dfae':
-    resolution: {tarball: https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/4d08331a833727c338c1a90041d17b870210dfae}
+  '@whiskeysockets/libsignal-node@https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/e81ecfc32eb74951d789ab37f7e341ab66d5fff1':
+    resolution: {tarball: https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/e81ecfc32eb74951d789ab37f7e341ab66d5fff1}
     version: 2.0.1
 
   '@xmldom/xmldom@0.7.13':
@@ -8189,9 +8175,6 @@ packages:
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
-
-  ajv@8.11.0:
-    resolution: {integrity: sha512-wGgprdCvMalC0BztXvitD2hC04YffAvtsUn93JbGXYLAtCUO4xd17mCCZQxUOItiBwZvJScWo8NIvQMQ71rdpg==}
 
   ajv@8.17.1:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
@@ -10401,33 +10384,8 @@ packages:
     peerDependencies:
       expo: '*'
 
-  expo-build-properties@0.12.5:
-    resolution: {integrity: sha512-donC1le0PYfLKCPKRMGQoixuWuwDWCngzXSoQXUPsgHTDHQUKr8aw+lcWkTwZcItgNovcnk784I0dyfYDcxybA==}
-    peerDependencies:
-      expo: '*'
-
   expo-constants@16.0.2:
     resolution: {integrity: sha512-9tNY3OVO0jfiMzl7ngb6IOyR5VFzNoN5OOazUWoeGfmMqVB5kltTemRvKraK9JRbBKIw+SOYLEmF0sEqgFZ6OQ==}
-    peerDependencies:
-      expo: '*'
-
-  expo-dev-client@4.0.29:
-    resolution: {integrity: sha512-aANlw9dC4PJEPaRNpe+X5xwyYI+aCIcbZklAAsFlkv2/05gLrsvAFgmQpRtowAzF+VggHWde1eKUOeUccAYIEg==}
-    peerDependencies:
-      expo: '*'
-
-  expo-dev-launcher@4.0.29:
-    resolution: {integrity: sha512-0a0SL8mc4FrqPeGxJHe9kf0kG+Di+38Gd+HP5DEL9dcOa8m2qffKnk22UcyujCT6+Qk0OUK1s53nnfqFB26uVw==}
-    peerDependencies:
-      expo: '*'
-
-  expo-dev-menu-interface@1.8.4:
-    resolution: {integrity: sha512-FpYI57EUu9qTSOOi+FZJ58xkCGJK7QD0mTiXK/y1I8lRdZGjCmdBqVvC4dAx2GcbIT78EPxaVf4/90tK/KRK6A==}
-    peerDependencies:
-      expo: '*'
-
-  expo-dev-menu@5.0.23:
-    resolution: {integrity: sha512-ztDvrSdFGkRbMoQlGLyKMS6CslMGylonVW4kQHUrBQApCL0c2NtRwLlr2bA1SXF0S7qYdPPg/ayLnj7DDR5X2w==}
     peerDependencies:
       expo: '*'
 
@@ -10441,9 +10399,6 @@ packages:
     peerDependencies:
       expo: '*'
 
-  expo-json-utils@0.13.1:
-    resolution: {integrity: sha512-mlfaSArGVb+oJmUcR22jEONlgPp0wj4iNIHfQ2je9Q8WTOqMc0Ws9tUciz3JdJnhffdHqo/k8fpvf0IRmN5HPA==}
-
   expo-keep-awake@13.0.2:
     resolution: {integrity: sha512-kKiwkVg/bY0AJ5q1Pxnm/GvpeB6hbNJhcFsoOWDh2NlpibhCLaHL826KHUM+WsnJRbVRxJ+K9vbPRHEMvFpVyw==}
     peerDependencies:
@@ -10451,11 +10406,6 @@ packages:
 
   expo-linking@6.3.1:
     resolution: {integrity: sha512-xuZCntSBGWCD/95iZ+mTUGTwHdy8Sx+immCqbUBxdvZ2TN61P02kKg7SaLS8A4a/hLrSCwrg5tMMwu5wfKr35g==}
-
-  expo-manifests@0.14.3:
-    resolution: {integrity: sha512-L3b5/qocBPiQjbW0cpOHfnqdKZbTJS7sA3mgeDJT+mWga/xYsdpma1EfNmsuvrOzjLGjStr1k1fceM9Bl49aqQ==}
-    peerDependencies:
-      expo: '*'
 
   expo-modules-autolinking@1.11.3:
     resolution: {integrity: sha512-oYh8EZEvYF5TYppxEKUTTJmbr8j7eRRnrIxzZtMvxLTXoujThVPMFS/cbnSnf2bFm1lq50TdDNABhmEi7z0ngQ==}
@@ -10494,11 +10444,6 @@ packages:
 
   expo-system-ui@3.0.7:
     resolution: {integrity: sha512-KAs72F5JKhdIfPR9ZNVlRubTPK9uUuevPy5oYEp12xNEzSQcjZKvypH5NpwJuNWkXzrp3n3vZ+3pXsudA7J3KA==}
-    peerDependencies:
-      expo: '*'
-
-  expo-updates-interface@0.16.2:
-    resolution: {integrity: sha512-929XBU70q5ELxkKADj1xL0UIm3HvhYhNAOZv5DSk7rrKvLo7QDdPyl+JVnwZm9LrkNbH4wuE2rLoKu1KMgZ+9A==}
     peerDependencies:
       expo: '*'
 
@@ -13940,6 +13885,7 @@ packages:
   puppeteer@24.10.1:
     resolution: {integrity: sha512-7T3rfSaaPt5A31VITV5YKQ4wPCCv4aPn8byDaV+9lhDU9v7BWYY4Ncwerw3ZR5mIolrh/PvzGdIDK7yiBth75g==}
     engines: {node: '>=18'}
+    deprecated: < 24.10.2 is no longer supported
     hasBin: true
 
   pure-rand@6.1.0:
@@ -18018,11 +17964,6 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@config-plugins/react-native-webrtc@9.0.0(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))':
-    dependencies:
-      expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
-      expo-build-properties: 0.12.5(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-
   '@cryptography/aes@0.1.1': {}
 
   '@cspotcode/source-map-support@0.8.1':
@@ -21429,15 +21370,15 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@remotion/tailwind@4.0.301(@remotion/bundler@4.0.301(@swc/core@1.11.24)(bufferutil@4.0.9)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(utf-8-validate@5.0.10))(ts-node@10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5))(typescript@5.4.5)(webpack@5.96.1(@swc/core@1.11.24)(esbuild@0.25.0))':
+  '@remotion/tailwind@4.0.301(@remotion/bundler@4.0.301(@swc/core@1.11.24)(bufferutil@4.0.9)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(utf-8-validate@5.0.10))(ts-node@10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5))(typescript@5.4.5)(webpack@5.97.1(@swc/core@1.11.24))':
     dependencies:
       '@remotion/bundler': 4.0.301(@swc/core@1.11.24)(bufferutil@4.0.9)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(utf-8-validate@5.0.10)
       autoprefixer: 10.4.20(postcss@8.4.47)
-      css-loader: 5.2.7(webpack@5.96.1(@swc/core@1.11.24)(esbuild@0.25.0))
+      css-loader: 5.2.7(webpack@5.97.1(@swc/core@1.11.24))
       postcss: 8.4.47
-      postcss-loader: 7.3.4(postcss@8.4.47)(typescript@5.4.5)(webpack@5.96.1(@swc/core@1.11.24)(esbuild@0.25.0))
+      postcss-loader: 7.3.4(postcss@8.4.47)(typescript@5.4.5)(webpack@5.97.1(@swc/core@1.11.24))
       postcss-preset-env: 8.5.1(postcss@8.4.47)
-      style-loader: 4.0.0(webpack@5.96.1(@swc/core@1.11.24)(esbuild@0.25.0))
+      style-loader: 4.0.0(webpack@5.97.1(@swc/core@1.11.24))
       tailwindcss: 3.4.13(ts-node@10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5))
     transitivePeerDependencies:
       - ts-node
@@ -23809,7 +23750,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@whiskeysockets/libsignal-node@https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/4d08331a833727c338c1a90041d17b870210dfae':
+  '@whiskeysockets/libsignal-node@https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/e81ecfc32eb74951d789ab37f7e341ab66d5fff1':
     dependencies:
       curve25519-js: 0.0.4
       protobufjs: 6.8.8
@@ -23897,13 +23838,6 @@ snapshots:
       fast-deep-equal: 3.1.3
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
-      uri-js: 4.4.1
-
-  ajv@8.11.0:
-    dependencies:
-      fast-deep-equal: 3.1.3
-      json-schema-traverse: 1.0.0
-      require-from-string: 2.0.2
       uri-js: 4.4.1
 
   ajv@8.17.1:
@@ -24369,7 +24303,7 @@ snapshots:
       axios: 1.9.0
       cache-manager: 5.7.6
       libphonenumber-js: 1.12.4
-      libsignal: '@whiskeysockets/libsignal-node@https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/4d08331a833727c338c1a90041d17b870210dfae'
+      libsignal: '@whiskeysockets/libsignal-node@https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/e81ecfc32eb74951d789ab37f7e341ab66d5fff1'
       lodash: 4.17.21
       music-metadata: 7.14.0
       pino: 9.6.0
@@ -25199,6 +25133,20 @@ snapshots:
       schema-utils: 3.3.0
       semver: 7.7.2
       webpack: 5.96.1(@swc/core@1.11.24)(esbuild@0.25.0)
+
+  css-loader@5.2.7(webpack@5.97.1(@swc/core@1.11.24)):
+    dependencies:
+      icss-utils: 5.1.0(postcss@8.4.47)
+      loader-utils: 2.0.4
+      postcss: 8.4.47
+      postcss-modules-extract-imports: 3.1.0(postcss@8.4.47)
+      postcss-modules-local-by-default: 4.2.0(postcss@8.4.47)
+      postcss-modules-scope: 3.2.1(postcss@8.4.47)
+      postcss-modules-values: 4.0.0(postcss@8.4.47)
+      postcss-value-parser: 4.2.0
+      schema-utils: 3.3.0
+      semver: 7.7.2
+      webpack: 5.97.1(@swc/core@1.11.24)
 
   css-mediaquery@0.1.2: {}
 
@@ -26166,7 +26114,7 @@ snapshots:
       '@typescript-eslint/parser': 8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5)
       eslint: 9.26.0(jiti@1.21.7)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7))
+      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0)(eslint@9.26.0(jiti@1.21.7))
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-typescript@3.7.0)(eslint@9.26.0(jiti@1.21.7))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.26.0(jiti@1.21.7))
       eslint-plugin-react: 7.37.4(eslint@9.26.0(jiti@1.21.7))
@@ -26195,7 +26143,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7)):
+  eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@9.26.0(jiti@1.21.7)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.1(supports-color@5.5.0)
@@ -26211,14 +26159,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7)):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@9.26.0(jiti@1.21.7)):
     dependencies:
       debug: 3.2.7(supports-color@8.1.1)
     optionalDependencies:
       '@typescript-eslint/parser': 8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5)
       eslint: 9.26.0(jiti@1.21.7)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7))
+      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0)(eslint@9.26.0(jiti@1.21.7))
     transitivePeerDependencies:
       - supports-color
 
@@ -26233,7 +26181,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.26.0(jiti@1.21.7)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7)))(eslint@9.26.0(jiti@1.21.7))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.22.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@9.26.0(jiti@1.21.7))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -26529,12 +26477,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  expo-build-properties@0.12.5(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
-    dependencies:
-      ajv: 8.17.1
-      expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
-      semver: 7.7.2
-
   expo-constants@16.0.2(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
     dependencies:
       '@expo/config': 9.0.4
@@ -26542,38 +26484,6 @@ snapshots:
       expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - supports-color
-
-  expo-dev-client@4.0.29(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
-    dependencies:
-      expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
-      expo-dev-launcher: 4.0.29(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-      expo-dev-menu: 5.0.23(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-      expo-dev-menu-interface: 1.8.4(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-      expo-manifests: 0.14.3(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-      expo-updates-interface: 0.16.2(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-    transitivePeerDependencies:
-      - supports-color
-
-  expo-dev-launcher@4.0.29(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
-    dependencies:
-      ajv: 8.11.0
-      expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
-      expo-dev-menu: 5.0.23(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-      expo-manifests: 0.14.3(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-      resolve-from: 5.0.0
-      semver: 7.7.2
-    transitivePeerDependencies:
-      - supports-color
-
-  expo-dev-menu-interface@1.8.4(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
-    dependencies:
-      expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
-
-  expo-dev-menu@5.0.23(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
-    dependencies:
-      expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
-      expo-dev-menu-interface: 1.8.4(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10))
-      semver: 7.7.2
 
   expo-file-system@17.0.1(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
     dependencies:
@@ -26583,8 +26493,6 @@ snapshots:
     dependencies:
       expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
       fontfaceobserver: 2.3.0
-
-  expo-json-utils@0.13.1: {}
 
   expo-keep-awake@13.0.2(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
     dependencies:
@@ -26596,14 +26504,6 @@ snapshots:
       invariant: 2.2.4
     transitivePeerDependencies:
       - expo
-      - supports-color
-
-  expo-manifests@0.14.3(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
-    dependencies:
-      '@expo/config': 9.0.4
-      expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
-      expo-json-utils: 0.13.1
-    transitivePeerDependencies:
       - supports-color
 
   expo-modules-autolinking@1.11.3:
@@ -26665,10 +26565,6 @@ snapshots:
       expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - supports-color
-
-  expo-updates-interface@0.16.2(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
-    dependencies:
-      expo: 51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)
 
   expo-web-browser@13.0.3(expo@51.0.39(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(bufferutil@4.0.9)(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)(utf-8-validate@5.0.10)):
     dependencies:
@@ -30432,13 +30328,13 @@ snapshots:
       postcss: 8.5.3
       ts-node: 10.9.2(@swc/core@1.11.24)(@types/node@22.15.17)(typescript@5.4.5)
 
-  postcss-loader@7.3.4(postcss@8.4.47)(typescript@5.4.5)(webpack@5.96.1(@swc/core@1.11.24)(esbuild@0.25.0)):
+  postcss-loader@7.3.4(postcss@8.4.47)(typescript@5.4.5)(webpack@5.97.1(@swc/core@1.11.24)):
     dependencies:
       cosmiconfig: 8.3.6(typescript@5.4.5)
       jiti: 1.21.7
       postcss: 8.4.47
       semver: 7.7.2
-      webpack: 5.96.1(@swc/core@1.11.24)(esbuild@0.25.0)
+      webpack: 5.97.1(@swc/core@1.11.24)
     transitivePeerDependencies:
       - typescript
 
@@ -31159,15 +31055,6 @@ snapshots:
       styleq: 0.1.3
     transitivePeerDependencies:
       - encoding
-
-  react-native-webrtc@124.0.5(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10)):
-    dependencies:
-      base64-js: 1.5.1
-      debug: 4.3.4
-      event-target-shim: 6.0.2
-      react-native: 0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.2.79)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - supports-color
 
   react-native-webrtc@124.0.5(react-native@0.74.5(@babel/core@7.27.1)(@babel/preset-env@7.27.2(@babel/core@7.27.1))(@types/react@18.3.21)(bufferutil@4.0.9)(react@18.2.0)(utf-8-validate@5.0.10)):
     dependencies:
@@ -32483,6 +32370,10 @@ snapshots:
     dependencies:
       webpack: 5.96.1(@swc/core@1.11.24)(esbuild@0.25.0)
 
+  style-loader@4.0.0(webpack@5.97.1(@swc/core@1.11.24)):
+    dependencies:
+      webpack: 5.97.1(@swc/core@1.11.24)
+
   styled-jsx@5.1.1(@babel/core@7.24.5)(react@18.2.0):
     dependencies:
       client-only: 0.0.1
@@ -32793,6 +32684,17 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.11.24(@swc/helpers@0.5.15)
       esbuild: 0.25.0
+
+  terser-webpack-plugin@5.3.11(@swc/core@1.11.24)(webpack@5.97.1(@swc/core@1.11.24)):
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.25
+      jest-worker: 27.5.1
+      schema-utils: 4.3.0
+      serialize-javascript: 6.0.2
+      terser: 5.37.0
+      webpack: 5.97.1(@swc/core@1.11.24)
+    optionalDependencies:
+      '@swc/core': 1.11.24(@swc/helpers@0.5.15)
 
   terser-webpack-plugin@5.3.11(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)(webpack@5.97.1(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)):
     dependencies:
@@ -33668,6 +33570,36 @@ snapshots:
       schema-utils: 3.3.0
       tapable: 2.2.1
       terser-webpack-plugin: 5.3.11(@swc/core@1.11.24)(esbuild@0.25.0)(webpack@5.96.1(@swc/core@1.11.24)(esbuild@0.25.0))
+      watchpack: 2.4.2
+      webpack-sources: 3.2.3
+    transitivePeerDependencies:
+      - '@swc/core'
+      - esbuild
+      - uglify-js
+
+  webpack@5.97.1(@swc/core@1.11.24):
+    dependencies:
+      '@types/eslint-scope': 3.7.7
+      '@types/estree': 1.0.7
+      '@webassemblyjs/ast': 1.14.1
+      '@webassemblyjs/wasm-edit': 1.14.1
+      '@webassemblyjs/wasm-parser': 1.14.1
+      acorn: 8.14.0
+      browserslist: 4.24.5
+      chrome-trace-event: 1.0.4
+      enhanced-resolve: 5.18.0
+      es-module-lexer: 1.6.0
+      eslint-scope: 5.1.1
+      events: 3.3.0
+      glob-to-regexp: 0.4.1
+      graceful-fs: 4.2.11
+      json-parse-even-better-errors: 2.3.1
+      loader-runner: 4.3.0
+      mime-types: 2.1.35
+      neo-async: 2.6.2
+      schema-utils: 3.3.0
+      tapable: 2.2.1
+      terser-webpack-plugin: 5.3.11(@swc/core@1.11.24)(webpack@5.97.1(@swc/core@1.11.24))
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     transitivePeerDependencies:
