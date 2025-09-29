@@ -27,11 +27,9 @@
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
-      "node": "./dist/cjs/index.js"
+      "node": "./dist/cjs/index.js",
+      "react-native": "./dist/esm/index.js"
     }
-  },
-  "react-native": {
-    "./": "./dist/cjs/index.js"
   },
   "devDependencies": {
     "typescript": "^5.4.5",

@@ -34,6 +34,8 @@ const queryClient = new QueryClient({
   },
 });
 
+const storage = new LocalStorage();
+
 createRoot(document.getElementById("root")!).render(
   <IntlProvider
     messages={locales["ar-EG"]}
@@ -45,7 +47,7 @@ createRoot(document.getElementById("root")!).render(
         <AppConfigProvider>
           <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
             <QueryClientProvider client={queryClient}>
-              <ServerProvider server={env.server} storage={new LocalStorage()}>
+              <ServerProvider server={env.server} storage={storage}>
                 <ApiProvider>
                   <SocketProvider>
                     <UserProvider>

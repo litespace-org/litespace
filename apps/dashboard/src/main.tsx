@@ -23,9 +23,12 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
+      refetchOnWindowFocus: false,
     },
   },
 });
+
+const storage = new LocalStorage();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -39,10 +42,7 @@ createRoot(document.getElementById("root")!).render(
           <AppConfigProvider>
             <ToastProvider>
               <QueryClientProvider client={queryClient}>
-                <ServerProvider
-                  server={env.server}
-                  storage={new LocalStorage()}
-                >
+                <ServerProvider server={env.server} storage={storage}>
                   <ApiProvider>
                     <SocketProvider>
                       <UserProvider>
