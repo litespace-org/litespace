@@ -1,20 +1,21 @@
-import { CacheKey } from "@/constants/cache";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AbstractStorage } from "@/storage/types";
+import { CacheKey } from "@/constants/cache";
 
-export class LocalStorage implements AbstractStorage {
+export class MobileStorage implements AbstractStorage {
   async set<T>(key: CacheKey, value: T): Promise<T> {
-    localStorage.setItem(key, JSON.stringify(value));
+    await AsyncStorage.setItem(key, JSON.stringify(value));
     return value;
   }
 
   async get<T>(key: CacheKey): Promise<T | null> {
-    const value = localStorage.getItem(key);
+    const value = await AsyncStorage.getItem(key);
     if (!value) return null;
     const parsed = JSON.parse(value);
     return parsed as T;
   }
 
   async remove(key: CacheKey): Promise<void> {
-    localStorage.removeItem(key);
+    await AsyncStorage.removeItem(key);
   }
 }

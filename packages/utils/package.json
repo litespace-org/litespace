@@ -127,25 +127,6 @@
       "types": "./dist/cjs/index.d.ts"
     }
   },
-  "react-native": {
-    "./chat": "./dist/cjs/chat.js",
-    "./constants": "./dist/cjs/constants.js",
-    "./dayjs": "./dist/cjs/dayjs.js",
-    "./diff": "./dist/cjs/diff.js",
-    "./duration": "./dist/cjs/duration.js",
-    "./error": "./dist/cjs/error.js",
-    "./interview": "./dist/cjs/interview.js",
-    "./lesson": "./dist/cjs/lesson.js",
-    "./log": "./dist/cjs/log.js",
-    "./time": "./dist/cjs/time.js",
-    "./tutor": "./dist/cjs/tutor.js",
-    "./user": "./dist/cjs/user.js",
-    "./utils": "./dist/cjs/utils.js",
-    "./value": "./dist/cjs/value.js",
-    "./withdrawMethod": "./dist/cjs/withdrawMethod.js",
-    "./validation": "./dist/cjs/validation/index.js",
-    "./routes": "./dist/cjs/routes/index.js"
-  },
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
     "@jest/globals": "^29.7.0",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Env } from "@litespace/types";
 import { ServerContext, Context } from "@/server/context";
 import { AuthToken, TokenType } from "@litespace/atlas";
@@ -26,9 +26,13 @@ export const ServerProvider: React.FC<{
   children?: React.ReactNode;
   storage?: AbstractStorage;
 }> = ({ children, server, storage }) => {
-  const [token, setToken] = useState<AuthToken | null>(
-    storage?.get(CacheKey.AuthToken) || null
-  );
+  const [token, setToken] = useState<AuthToken | null>(null);
+
+  useEffect(() => {
+    storage
+      ?.get<AuthToken>(CacheKey.AuthToken)
+      .then((token) => setToken(token));
+  }, [storage]);
 
   const setAuthToken = useCallback(
     (token: AuthToken, remember: boolean = true) => {
