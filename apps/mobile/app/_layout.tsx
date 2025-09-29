@@ -8,6 +8,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { IntlProvider } from "react-intl";
 import { ApiProvider } from "@litespace/headless/api";
 import { SocketProvider } from "@litespace/headless/socket";
 import { ServerProvider } from "@litespace/headless/server";
@@ -18,6 +19,7 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
+import { locales } from "@/locales";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -80,13 +82,21 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <GluestackUIProvider mode="light">
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-        </Stack>
-      </ThemeProvider>
-    </GluestackUIProvider>
+    <IntlProvider
+      messages={locales["ar-EG"]}
+      locale="ar-EG"
+      defaultLocale="ar-EG"
+    >
+      <GluestackUIProvider mode="light">
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+          </Stack>
+        </ThemeProvider>
+      </GluestackUIProvider>
+    </IntlProvider>
   );
 }
