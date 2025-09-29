@@ -21,8 +21,6 @@ const defaultData: Data = {
 
 const cache = new LocalStorage();
 
-const userCache = cache.get<Data>(CacheKey.User);
-
 /**
  * - Cache and load user data and metadata.
  * - Set auth token on refersh user data.
@@ -30,8 +28,12 @@ const userCache = cache.get<Data>(CacheKey.User);
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [userData, setUserData] = useState<Data>(userCache || defaultData);
+  const [userData, setUserData] = useState<Data>(defaultData);
   const { token, tokenExpired, setBearerToken, removeToken } = useServer();
+
+  useEffect(() => {
+    cache.get<Data>(CacheKey.User).then((data) => data && setUserData(data));
+  }, []);
 
   // =================== refersh token =====================
   const [tokenRefreshed, setTokenRefreshed] = useState(false);
