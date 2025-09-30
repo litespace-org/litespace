@@ -17,6 +17,7 @@ import { isEmpty } from "lodash";
 import { ITutor, IUser } from "@litespace/types";
 import { useUser } from "@litespace/headless/context/user";
 import { useOnError } from "@/hooks/error";
+import { useFindFullTutors } from "@litespace/headless/tutor";
 
 const RoomsPanel: React.FC<{
   selectedRoom: number | UncontactedTutorRoomId | null;
@@ -39,6 +40,9 @@ const RoomsPanel: React.FC<{
   );
   const { rooms, keyword, update } = useRoomManager(isStudent);
 
+  const allTutors = useFindFullTutors();
+  console.log("all data: " + allTutors.query.data);
+  console.log("all tutors: " + allTutors);
   useOnError({
     type: "query",
     keys: rooms.pinned.keys,
@@ -153,6 +157,23 @@ const RoomsPanel: React.FC<{
             error={rooms.uncontactedTutors.query.isError}
             more={rooms.uncontactedTutors.more}
             canLoadMore={rooms.uncontactedTutors.canLoadMore}
+            roomId={selectedRoom}
+          />
+        ) : null}
+
+        {user?.role === IUser.Role.Student ? (
+          <Rooms
+            type="uncontacted-tutors"
+            selectUncontacted={selectTemporary}
+            data={
+              (allTutors.query.data?.list ??
+                []) as unknown as ITutor.FullUncontactedTutorInfo[]
+            }
+            pending={allTutors.query.isPending}
+            fetching={allTutors.query.isFetching}
+            refetch={allTutors.query.refetch}
+            error={allTutors.query.isError}
+            more={() => {}}
             roomId={selectedRoom}
           />
         ) : null}
