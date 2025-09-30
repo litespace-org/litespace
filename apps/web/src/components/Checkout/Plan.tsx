@@ -47,7 +47,7 @@ const Plan: React.FC<{ data: IPlan.Self; period: IPlan.PeriodLiteral }> = ({
           tag="span"
           className="text-caption lg:text-body font-medium md:font-normal"
         >
-          {intl("checkout.plan.houry-quota", {
+          {intl("checkout.plan.hourly-quota", {
             hours: formatMinutes(data.weeklyMinutes),
             weeks: formatWeeks(PLAN_PERIOD_LITERAL_TO_WEEK_COUNT[period]),
           })}
