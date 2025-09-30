@@ -636,7 +636,7 @@
   "chat.create.room.error": "حدث خطا أثناء بدء المحادثة برجاء المحاولة مرة أخرى",
   "chat.pinned.title": "المحادثات المثبتة",
   "chat.all": "جميع الرسائل",
-  "chat.search": "ابحث هنا",
+  "chat.search": "ابحث عن معلم",
   "chat.online": "نشط الان",
   "chat.offline": "نشط {time}",
   "chat.book": "احجز الاّن",
