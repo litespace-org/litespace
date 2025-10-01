@@ -21,6 +21,8 @@ import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isStudent } from "@litespace/utils/user";
+import { range } from "lodash";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -113,7 +115,7 @@ export const Content: React.FC<{
 
   return (
     <div>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-2 md:gap-x-3 gap-y-4 md:gap-y-6">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(385px,1fr))] gap-x-2 md:gap-x-3 gap-y-4 md:gap-y-6">
         {list.map((item) => {
           const tutor = item.members.find(
             (member) =>
@@ -172,6 +174,8 @@ export const Content: React.FC<{
                     otherMember.role === IUser.Role.Student
                       ? "student"
                       : "tutor",
+                  topics: range(7).map(() => faker.lorem.words(1)),
+                  level: "C1",
                 }}
                 sendingMessage={sendingMessageLessonId === item.lesson.id}
                 disabled={!!sendingMessageLessonId}
