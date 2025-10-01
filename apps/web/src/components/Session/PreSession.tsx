@@ -179,6 +179,7 @@ const PreSession: React.FC<{
         remoteMember={member}
         startDate={sessionStart}
         sessionDuration={sessionDuration}
+        devices={devices}
       />
     );
 
@@ -212,7 +213,11 @@ const PreSession: React.FC<{
           />
         </div>
 
-        <Controllers audio={controllers.audio} video={controllers.video} />
+        <Controllers
+          audio={controllers.audio}
+          video={controllers.video}
+          devices={devices}
+        />
       </div>
 
       <div className="flex flex-col gap-2">
