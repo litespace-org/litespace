@@ -1,7 +1,7 @@
 import { Void } from "@litespace/types";
 import { Button, ButtonType, ButtonVariant } from "@litespace/ui/Button";
 import { Menu } from "@litespace/ui/Menu";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import CallIncoming from "@litespace/assets/CallIncoming";
 import Video from "@litespace/assets/Video";
 import Grid from "@litespace/assets/Grid";
@@ -144,6 +144,7 @@ export const Toggle: React.FC<Controller & { icon: Icon }> = ({
 const Controllers: React.FC<{
   audio: Controller;
   video: Controller;
+  devices: Device[];
   blur?: Controller;
   chat?: {
     toggle: Void;
@@ -152,10 +153,8 @@ const Controllers: React.FC<{
   };
   leave?: Void;
   className?: string;
-}> = ({ audio, video, blur, leave, chat, className }) => {
+}> = ({ audio, video, devices, blur, leave, chat, className }) => {
   const call = useMediaCall();
-
-  const [devices, setDevices] = useState<Device[]>([]);
 
   const microphones = useMemo(
     () => devices.filter((d) => d.type === "mic") || [],
@@ -173,7 +172,6 @@ const Controllers: React.FC<{
         "flex items-center justify-center gap-4 xs:gap-6",
         className
       )}
-      onClick={() => setDevices(call.manager?.media.getDevices() || [])}
     >
       {chat ? (
         <Toggle
@@ -185,10 +183,7 @@ const Controllers: React.FC<{
       ) : null}
 
       <Toggle
-        toggle={() => {
-          setDevices(call.manager?.media.getDevices() || []);
-          audio.toggle();
-        }}
+        toggle={() => audio.toggle()}
         enabled={audio.enabled}
         error={audio.error}
         loading={audio.loading}
@@ -201,10 +196,7 @@ const Controllers: React.FC<{
       />
 
       <Toggle
-        toggle={() => {
-          setDevices(call.manager?.media.getDevices() || []);
-          video.toggle();
-        }}
+        toggle={() => video.toggle()}
         enabled={video.enabled}
         error={video.error}
         loading={video.loading}

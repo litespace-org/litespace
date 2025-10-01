@@ -1,3 +1,3 @@
 ### Summary
 
-Write a summary of the chagnes you made.
+<!-- Write a summary of the changes you made -->

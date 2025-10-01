@@ -7,7 +7,7 @@ import { useMediaCall } from "@/hooks/mediaCall";
 import { RemoteMember } from "@/components/Session/types";
 import { AlertType, AlertV2 } from "@litespace/ui/Alert";
 import { useRender } from "@litespace/headless/common";
-import { MemberConnectionState } from "@/modules/MediaCall/types";
+import { Device, MemberConnectionState } from "@/modules/MediaCall/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Button } from "@litespace/ui/Button";
 import Close2 from "@litespace/assets/Close2";
@@ -22,6 +22,7 @@ import { useCancelLesson } from "@litespace/headless/lessons";
 import { Web } from "@litespace/utils/routes";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import CallIncoming from "@litespace/assets/CallIncoming";
+import { MIN_LESSON_DURATION } from "@litespace/utils";
 
 const InSession: React.FC<{
   sessionId: ISession.Id;
@@ -31,6 +32,7 @@ const InSession: React.FC<{
     audio: Controller;
     video: Controller;
   };
+  devices: Device[];
   startDate?: string;
   sessionDuration?: number;
 }> = ({
@@ -40,6 +42,7 @@ const InSession: React.FC<{
   controllers,
   startDate,
   sessionDuration,
+  devices,
 }) => {
   const call = useMediaCall();
   const intl = useFormatMessage();
@@ -129,8 +132,9 @@ const InSession: React.FC<{
   const [memberJoinedOnce, setMemberJoinedOnce] = useState(false);
   useEffect(() => {
     if (memberJoinedOnce) return;
+    if (call.inMembers.length > 1) timeAlertRender.hide();
     setMemberJoinedOnce(call.inMembers.length > 1);
-  }, [call.inMembers, memberJoinedOnce]);
+  }, [call.inMembers, memberJoinedOnce, timeAlertRender]);
 
   const onError = useOnError({
     type: "mutation",
@@ -158,36 +162,46 @@ const InSession: React.FC<{
   // In a nutshell, an alert should render to students based on the current time
   // and whether the tutor joined or not.
   useEffect(() => {
+    // return if the user is not a student
     if (user?.role !== IUser.Role.Student) return;
 
+    // return if the session is already finished
+    const now = dayjs();
+    if (
+      now.isAfter(
+        dayjs(startDate).add(sessionDuration || MIN_LESSON_DURATION, "minutes")
+      )
+    )
+      return;
+
+    // return if the tutor is already in the session
+    if (memberJoinedOnce) return;
+
+    // show report-tutor alert and return if tutor not joined
+    if (now.isAfter(dayjs(startDate).add(3, "minutes"))) {
+      setTimeAlertData({
+        title: intl("session.alert.tutor-cannot-join"),
+        action: (
+          <Button
+            size="small"
+            variant="secondary"
+            onClick={() =>
+              createReport.mutate({
+                title: `tutor absence`,
+                description: `tutor ${remoteMember.id} didn't attend session ${sessionId}`,
+              })
+            }
+          >
+            {intl("session.label.tutor-didnot-attend")}
+          </Button>
+        ),
+      });
+      timeAlertRender.show();
+      return;
+    }
+
     const interval = setInterval(() => {
-      // Even though it may lead to unwanted behaviour, it yet kept
-      // at the top for optimization.
-      if (memberJoinedOnce) return;
-
       const now = dayjs();
-
-      if (now.isAfter(dayjs(startDate).add(3, "minutes"))) {
-        setTimeAlertData({
-          title: intl("session.alert.tutor-cannot-join"),
-          action: (
-            <Button
-              size="small"
-              variant="secondary"
-              onClick={() =>
-                createReport.mutate({
-                  title: `tutor absence`,
-                  description: `tutor ${remoteMember.id} didn't attend session ${sessionId}`,
-                })
-              }
-            >
-              {intl("session.label.tutor-didnot-attend")}
-            </Button>
-          ),
-        });
-        timeAlertRender.show();
-        return;
-      }
 
       if (now.isAfter(startDate)) {
         setTimeAlertData({
@@ -242,7 +256,7 @@ const InSession: React.FC<{
             />
           ) : null}
 
-          {timeAlertRender.open && timeAlertData ? (
+          {timeAlertRender.open && timeAlertData && !memberJoinedOnce ? (
             <AlertV2
               type={AlertType.Info}
               title={timeAlertData.title}
@@ -295,6 +309,7 @@ const InSession: React.FC<{
           }
           audio={controllers.audio}
           video={controllers.video}
+          devices={devices}
         />
       </div>
 
