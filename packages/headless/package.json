@@ -49,7 +49,8 @@
     "./paymob": "./dist/paymob.js",
     "./transaction": "./dist/transaction.js",
     "./confirmationCode": "./dist/confirmationCode.js",
-    "./studio": "./dist/studio.js"
+    "./studio": "./dist/studio.js",
+    "./time": "./dist/time.js"
   },
   "scripts": {
     "build": "tsc",

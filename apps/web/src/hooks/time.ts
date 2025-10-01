@@ -1,16 +1,17 @@
-import { dayjs } from "@litespace/utils";
 import { useEffect, useState } from "react";
+import { dayjs } from "@litespace/utils";
+import { useCurrentTZHour } from "@litespace/headless/time";
 
 export function useCheckTimeValidity(): boolean {
-  const [valid, setValid] = useState<boolean>(true);
+  const [valid, setValid] = useState(true);
+
+  const tzHourQuery = useCurrentTZHour(dayjs.tz.guess());
 
   useEffect(() => {
-    fetch(
-      `https://timeapi.io/api/time/current/zone?timeZone=${dayjs.tz.guess()}`
-    )
-      .then((res) => res.json())
-      .then((res) => setValid(res.hour === dayjs.tz().hour()));
-  }, []);
+    setValid(
+      tzHourQuery.data?.hour === dayjs.tz().hour() || tzHourQuery.isPending
+    );
+  }, [tzHourQuery.data, tzHourQuery.isPending]);
 
   return valid;
 }

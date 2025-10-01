@@ -52,4 +52,5 @@ export enum QueryKey {
   GetPaymentStatus = "get-payment-status",
   GetSessionToken = "get-session-token",
   SelectInterviewer = "select-interviewer",
+  GetCurrentTZHour = "get-cur-tz-hour",
 }

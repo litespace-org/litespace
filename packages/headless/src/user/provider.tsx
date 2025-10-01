@@ -6,7 +6,6 @@ import { CacheKey } from "@/constants";
 import { useFindTutorMeta } from "@/tutor";
 import { useServer } from "@/server";
 import { useRefreshAuthToken } from "@/auth";
-import { TokenType } from "@litespace/atlas";
 import { isTutor } from "@litespace/utils";
 
 type Data = {
@@ -36,21 +35,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   // =================== refersh token =====================
-  const [tokenRefreshed, setTokenRefreshed] = useState(false);
-
   const refreshToken = useRefreshAuthToken({
     onSuccess: (token) => {
       setBearerToken(token, true);
-      setTokenRefreshed(true);
     },
   });
-
-  useEffect(() => {
-    if (tokenRefreshed) return;
-    if (token?.type !== TokenType.Bearer) return;
-    if (refreshToken.isPending) return;
-    refreshToken.mutate();
-  }, [token?.type, refreshToken, tokenRefreshed]);
+  // eslint-disable-next-line
+  useEffect(() => refreshToken.mutate(), []);
 
   //=================== User state handlers =====================
   const setData: Context["set"] = useCallback(

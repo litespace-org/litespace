@@ -13,6 +13,7 @@ export function useRefreshAuthToken({
   onError?: OnError;
 }) {
   const api = useApi();
+
   const refresh = useCallback(() => api.auth.refreshToken(), [api.auth]);
 
   return useMutation({
