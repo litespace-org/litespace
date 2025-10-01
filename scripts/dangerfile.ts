@@ -1,12 +1,14 @@
 import { warn, danger } from "danger";
 
-const CLICKUP_TASK_URL = /https:\/\/app.clickup.com\/t\/([a-zA-Z0-9]*)/gi;
-
 const pullRequestDescription = danger.github.pr.body;
 
-function getClickupTask() {
-  const urls: string[] | null = pullRequestDescription.match(CLICKUP_TASK_URL);
-  if (!urls) return warn("No clickup task found in this pull request");
+function checkSummary() {
+  if (pullRequestDescription.length < 65)
+    return warn(
+      "Make sure to right an adequate summary of the changes you have made."
+    );
+  if (pullRequestDescription.length < 15)
+    return fail("Please write a summary of the changes you've made.");
 }
 
-getClickupTask();
+checkSummary();
