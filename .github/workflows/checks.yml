@@ -2,7 +2,6 @@ name: Checks
 
 env:
   DANGER_GITHUB_API_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
-  CLICKUP_API_TOKEN: ${{ secrets.CLICKUP_API_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
 
 on:
@@ -47,5 +46,3 @@ jobs:
         run: pnpm check:all
       - name: Pull request audit using dangerjs
         run: pnpm danger ci --dangerfile scripts/dangerfile.ts
-      - name: Create ClickUp tasks for reviewers
-        run: pnpm clickup pr-review-tasks -t "${{ github.event.pull_request.title }}" -d "${{ github.event.pull_request.body }}" -n ${{ github.event.number }}
