@@ -40,8 +40,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setBearerToken(token, true);
     },
   });
-  // eslint-disable-next-line
-  useEffect(() => refreshToken.mutate(), []);
+
+  useEffect(() => {
+    if (userData.user) refreshToken.mutate();
+    // eslint-disable-next-line
+  }, []);
 
   //=================== User state handlers =====================
   const setData: Context["set"] = useCallback(
