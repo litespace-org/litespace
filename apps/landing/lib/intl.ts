@@ -10,11 +10,13 @@ import { LocalMap } from "@/locales/request";
 const COOKIE_NAME = "NEXT_LOCALE";
 
 export async function getUserLocale() {
-  return cookies().get(COOKIE_NAME)?.value || defaultLocale;
+  const cookie = await cookies();
+  return cookie.get(COOKIE_NAME)?.value || defaultLocale;
 }
 
 export async function setUserLocale(locale: Locale) {
-  cookies().set(COOKIE_NAME, locale);
+  const cookie = await cookies();
+  cookie.set(COOKIE_NAME, locale);
 }
 
 export async function formatMessage() {

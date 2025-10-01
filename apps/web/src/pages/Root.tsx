@@ -1,10 +1,10 @@
+import { InvalidTimeDialog } from "@/components/Common/InvalidTimeDialog";
 import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowserDialog";
 import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
 import { StudentDashboardTour } from "@/constants/tour";
 import { useSaveLogs } from "@/hooks/logger";
-import { useCheckTimeValidity } from "@/hooks/time";
 import { useTour } from "@/hooks/tour";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 import { router } from "@/lib/routes";
@@ -13,15 +13,13 @@ import { useUser } from "@litespace/headless/context/user";
 import { Button } from "@litespace/ui/Button";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Typography } from "@litespace/ui/Typography";
-import { dayjs, isForbidden, LITESPACE_SUPPORT_URL } from "@litespace/utils";
+import { dayjs, isForbidden } from "@litespace/utils";
 import { Landing, Web } from "@litespace/utils/routes";
 import { isProfileComplete } from "@litespace/utils/tutor";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
 import cn from "classnames";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Link,
   Outlet,
   useLocation,
   useNavigate,
@@ -39,13 +37,11 @@ const publicRoutes: Web[] = [
 const Root: React.FC = () => {
   const { user, meta, error, logout } = useUser();
   const intl = useFormatMessage();
-  const timeValid = useCheckTimeValidity();
 
   const [stepNumber, setStepNumber] = useState(0);
-  const [closeTourDialogShow, setCloseTourDialogShow] =
-    useState<boolean>(false);
+  const [tourDialogOpen, setTourDialogOpen] = useState<boolean>(false);
 
-  const config = useMemo(
+  const tourConfig = useMemo(
     () => ({
       nextButton: <Button size="large">{intl("labels.next")}</Button>,
       prevButton: (
@@ -53,14 +49,14 @@ const Root: React.FC = () => {
           {intl("labels.prev")}
         </Button>
       ),
-      onStop: () => setCloseTourDialogShow(true),
+      onStop: () => setTourDialogOpen(true),
       onNext: () => setStepNumber((prev) => prev + 1),
       onPrev: () => setStepNumber((prev) => prev - 1),
     }),
     [intl]
   );
 
-  const studentTour = useTour(StudentDashboardTour, config);
+  const studentTour = useTour(StudentDashboardTour, tourConfig);
 
   /**
    * `nav` is a url param used to hide the page navigation. It is mainlly used
@@ -187,25 +183,12 @@ const Root: React.FC = () => {
           { "pb-[100px] md:pb-0": showNavigation && !!user }
         )}
       >
-        {!timeValid ? (
-          <div className="flex flex-wrap gap-2 bg-destructive-700 p-4">
-            <Typography tag="span" className="text-destructive-50">
-              {intl("error.invalid-time-and-zone")}
-            </Typography>
-            <Link to={LITESPACE_SUPPORT_URL} target="_blank" tabIndex={-1}>
-              <Button type="error" variant="secondary">
-                {intl("labels.contact-us")}
-              </Button>
-            </Link>
-          </div>
-        ) : null}
-
+        <InvalidTimeDialog />
         <UnsupportedBrowserDialog />
         <WebrtcCheckDialog />
+
         <ConfirmationDialog
-          open={
-            closeTourDialogShow && stepNumber !== studentTour.tour.steps.length
-          }
+          open={tourDialogOpen && stepNumber !== studentTour.tour.steps.length}
           title={intl("stop-tour-dialog.title")}
           description={intl("stop-tour-dialog.description")}
           icon={<Exit />}
@@ -213,14 +196,14 @@ const Root: React.FC = () => {
             primary: {
               label: intl("stop-tour-dialog.continue"),
               onClick: () => {
-                setCloseTourDialogShow(false);
+                setTourDialogOpen(false);
                 studentTour.startFrom(stepNumber);
               },
             },
             secondary: {
               label: intl("labels.leave"),
               onClick: () => {
-                setCloseTourDialogShow(false);
+                setTourDialogOpen(false);
                 studentTour.stop();
               },
             },

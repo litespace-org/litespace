@@ -22,6 +22,7 @@ import transaction from "@/routes/transaction";
 import subscription from "@/routes/subscription";
 import confirmationCode from "@/routes/confirmationCode";
 import report from "@/routes/report";
+import time from "@/routes/time";
 import demoSession from "@/routes/demoSession";
 import introVideo from "@/routes/introVideo";
 
@@ -52,4 +53,5 @@ export default {
   report,
   demoSession,
   introVideo,
+  time,
 };

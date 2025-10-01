@@ -2,7 +2,7 @@ import { IShortUrl } from "@litespace/types";
 import { redirect, notFound } from "next/navigation";
 
 type Props = {
-  params: { name: IShortUrl.Id };
+  params: Promise<{ name: IShortUrl.Id }>;
 };
 
 const urls: Record<IShortUrl.Id, string> = {
@@ -19,7 +19,7 @@ const urls: Record<IShortUrl.Id, string> = {
 };
 
 export default async function Url({ params }: Props) {
-  const url = urls[params.name];
+  const url = urls[(await params).name];
   if (url) return redirect(url);
   return notFound();
 }

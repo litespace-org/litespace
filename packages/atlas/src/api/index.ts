@@ -26,6 +26,7 @@ import { Subscription } from "@/api/subscription";
 import { Transaction } from "@/api/transaction";
 import { IntroVideo } from "@/api/introVideo";
 import { Paymob } from "@/api/paymob";
+import { Time } from "@/api/time";
 
 export class Api {
   public readonly user: User;
@@ -54,6 +55,7 @@ export class Api {
   public readonly subscription: Subscription;
   public readonly transaction: Transaction;
   public readonly introVideo: IntroVideo;
+  public readonly time: Time;
 
   constructor(server: Env.Server, token: AuthToken | null) {
     const client = createClient("api", server, token);
@@ -84,5 +86,6 @@ export class Api {
     this.transaction = new Transaction(client);
     this.introVideo = new IntroVideo(client);
     this.student = new Student(client);
+    this.time = new Time(client);
   }
 }
