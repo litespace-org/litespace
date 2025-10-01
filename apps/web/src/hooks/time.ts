@@ -9,9 +9,16 @@ export function useCheckTimeValidity(): boolean {
 
   useEffect(() => {
     setValid(
-      tzHourQuery.data?.hour === dayjs.tz().hour() || tzHourQuery.isPending
+      tzHourQuery.data?.hour === dayjs.tz().hour() ||
+        tzHourQuery.isPending ||
+        // NOTE: errors are ignored. In case your considered to
+        // remove this condition. Put in mind that if you didn't
+        // remove the invalid-time-dialog from the <root> as well,
+        // users will get stuck in the login page, as then this
+        // query will have 403 error constantly.
+        tzHourQuery.isError
     );
-  }, [tzHourQuery.data, tzHourQuery.isPending]);
+  }, [tzHourQuery.data, tzHourQuery.isPending, tzHourQuery.isError]);
 
   return valid;
 }
