@@ -29,7 +29,7 @@ describe("/api/v1/plan/", () => {
       expect(res).to.deep.eq(forbidden());
     });
 
-    it("should respond with forbidden in case the plan is not public.", async () => {
+    it("should respond with not-found in case the plan is not active.", async () => {
       const student = await db.user({ role: IUser.Role.Student });
       const plan = await db.plan({ active: false });
 
@@ -38,7 +38,7 @@ describe("/api/v1/plan/", () => {
         params: { id: plan.id },
       });
 
-      expect(res).to.deep.eq(forbidden());
+      expect(res).to.deep.eq(notfound.plan());
     });
 
     it("should respond with notfound in case the plan is not found.", async () => {
