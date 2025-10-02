@@ -42,6 +42,11 @@ export const conflictingLessons = () => error(ApiError.ConflictingLessons, 409);
 
 export const lessonTimePassed = () => error(ApiError.LessonTimePassed, 409);
 
+export const lessonNotStarted = () => error(ApiError.LessonNotStarted, 409);
+
+export const lessonAlreadyStarted = () =>
+  error(ApiError.LessonAlreadyStarted, 409);
+
 export const conflictingSchedule = () =>
   error(ApiError.ConflictingSchedule, 409);
 

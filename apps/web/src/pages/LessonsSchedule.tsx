@@ -231,7 +231,7 @@ const LessonsSchedule: React.FC = () => {
       {lessonId ? (
         <CancelLesson
           close={() => setLessonId(null)}
-          onCancel={() => cancelLesson.mutate(lessonId)}
+          onCancel={() => cancelLesson.mutate({ id: lessonId })}
           loading={cancelLesson.isPending}
           open
         />

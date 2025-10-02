@@ -66,6 +66,8 @@ export enum ApiError {
   IntroVideoNotFound = "intro-video-not-found",
   LargeFileSize = "large-file-size",
   LessonTimePassed = "lesson-time-passed",
+  LessonNotStarted = "lesson-not-started",
+  LessonAlreadyStarted = "lesson-already-started",
   NotRoomMember = "not-room-member",
   InvalidUserName = "api-invalid-user-name",
   PhoneRequired = "phone-required",

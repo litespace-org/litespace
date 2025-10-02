@@ -67,13 +67,13 @@ export function useCancelLesson({
   onSuccess,
   onError,
 }: {
-  onSuccess: OnSuccess<void>;
+  onSuccess: OnSuccess<ILesson.CancelLessonApiResponse>;
   onError: OnError;
 }) {
   const api = useApi();
 
   const cancel = useCallback(
-    (id: number) => {
+    ({ id }: ILesson.CancelLessonApiParams) => {
       return api.lesson.cancel(id);
     },
     [api.lesson]
@@ -82,6 +82,30 @@ export function useCancelLesson({
   return useMutation({
     mutationFn: cancel,
     mutationKey: [MutationKey.CancelLesson],
+    onSuccess,
+    onError,
+  });
+}
+
+export function useReportLesson({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess<ILesson.ReportLessonApiResponse>;
+  onError: OnError;
+}) {
+  const api = useApi();
+
+  const report = useCallback(
+    ({ id }: ILesson.ReportLessonApiParams) => {
+      return api.lesson.report(id);
+    },
+    [api.lesson]
+  );
+
+  return useMutation({
+    mutationFn: report,
+    mutationKey: [MutationKey.ReportLesson],
     onSuccess,
     onError,
   });

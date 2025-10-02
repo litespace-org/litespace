@@ -18,6 +18,8 @@ import {
   illegal,
   lessonTimePassed,
   weekBoundariesViolation,
+  lessonAlreadyStarted,
+  lessonNotStarted,
 } from "@/lib/error";
 import { IAvailabilitySlot, ILesson, Wss } from "@litespace/types";
 import {
@@ -35,6 +37,7 @@ import { calculateLessonPrice } from "@litespace/utils/lesson";
 import {
   isAdmin,
   isStudent,
+  isTutor,
   isTutorManager,
   isUser,
 } from "@litespace/utils/user";
@@ -76,6 +79,7 @@ const findLessonsQuery: ZodSchema<ILesson.FindLessonsApiQuery> = zod.object({
   size: zod.optional(pageSize),
   ratified: zod.optional(jsonBoolean),
   canceled: zod.optional(jsonBoolean),
+  reported: zod.optional(jsonBoolean),
   future: zod.optional(jsonBoolean),
   past: zod.optional(jsonBoolean),
   now: zod.optional(jsonBoolean),
@@ -401,56 +405,81 @@ async function findLessonById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-function cancel(_context: ApiContext) {
-  return safeRequest(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const user = req.user;
-      const allowed = isUser(user);
-      if (!allowed) return next(forbidden());
+async function cancel(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user) || isTutor(user);
+  if (!allowed) return next(forbidden());
 
-      const { lessonId } = withNamedId("lessonId").parse(req.params);
-      const lesson = await lessons.findById(lessonId);
-      if (!lesson) return next(notfound.lesson());
+  const { lessonId } = withNamedId("lessonId").parse(req.params);
+  const lesson = await lessons.findById(lessonId);
+  if (!lesson) return next(notfound.lesson());
 
-      if (dayjs(lesson.start).add(lesson.duration, "minutes").isBefore(dayjs()))
-        return next(lessonTimePassed());
+  if (dayjs(lesson.start).add(lesson.duration, "minutes").isBefore(dayjs()))
+    return next(lessonTimePassed());
 
-      const members = await lessons.findLessonMembers([lessonId]);
-      const member = members.map((member) => member.userId).includes(user.id);
-      if (!member) return next(forbidden());
+  if (dayjs(lesson.start).isBefore(dayjs()))
+    return next(lessonAlreadyStarted());
 
-      await lessons.cancel({
-        canceledBy: user.id,
-        ids: [lessonId],
-      });
+  const members = await lessons.findLessonMembers([lessonId]);
+  const member = members.map((member) => member.userId).includes(user.id);
+  if (!member) return next(forbidden());
 
-      res.status(200).send();
+  await lessons.cancel({
+    canceledBy: user.id,
+    ids: [lessonId],
+  });
 
-      // Notify the other member that the lesson is canceled
-      const otherMember = members.find((member) => member.userId !== user.id);
-      if (!otherMember) return;
+  res.status(200).send();
 
-      if (otherMember.phone && otherMember.notificationMethod)
-        sendMsg({
-          to: otherMember.phone,
-          template: {
-            name: "lesson_canceled",
-            parameters: {
-              date: dayjs(lesson.start)
-                .tz(AFRICA_CAIRO_TIMEZONE)
-                .format("ddd D MMM hh:mm A"),
-            },
-          },
-          method: otherMember.notificationMethod,
-        });
-    }
-  );
+  // Notify the other member that the lesson is canceled
+  const otherMember = members.find((member) => member.userId !== user.id);
+  if (!otherMember) return;
+
+  if (otherMember.phone && otherMember.notificationMethod)
+    sendMsg({
+      to: otherMember.phone,
+      template: {
+        name: "lesson_canceled",
+        parameters: {
+          date: dayjs(lesson.start)
+            .tz(AFRICA_CAIRO_TIMEZONE)
+            .format("ddd D MMM hh:mm A"),
+        },
+      },
+      method: otherMember.notificationMethod,
+    });
+}
+
+async function report(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const { lessonId } = withNamedId("lessonId").parse(req.params);
+  const lesson = await lessons.findById(lessonId);
+  if (!lesson) return next(notfound.lesson());
+
+  if (dayjs(lesson.start).add(lesson.duration, "minutes").isBefore(dayjs()))
+    return next(lessonTimePassed());
+
+  if (dayjs(lesson.start).isAfter(dayjs())) return next(lessonNotStarted());
+
+  // TODO: include error waitForTutor
+
+  const members = await lessons.findLessonMembers([lessonId]);
+  const member = members.map((member) => member.userId).includes(user.id);
+  if (!member) return next(forbidden());
+
+  await lessons.report({ ids: [lessonId] });
+
+  res.status(200).send();
 }
 
 export default {
   create,
-  cancel,
   update,
+  cancel: safeRequest(cancel),
+  report: safeRequest(report),
   findLessons: safeRequest(findLessons),
   findLessonById: safeRequest(findLessonById),
   findAttendedLessonsStats: safeRequest(findAttendedLessonsStats),
