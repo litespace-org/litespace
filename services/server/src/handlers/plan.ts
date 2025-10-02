@@ -1,5 +1,5 @@
 import { forbidden, notfound } from "@/lib/error";
-import { plans } from "@litespace/models";
+import { plans, planInvites } from "@litespace/models";
 import {
   boolean,
   dateFilter,
@@ -151,10 +151,15 @@ async function findById(req: Request, res: Response, next: NextFunction) {
 
   const { id } = withNamedId("id").parse(req.params);
   const plan = await plans.findById(id);
-  if (!plan) return next(notfound.plan());
+  if (!plan || !plan.active) return next(notfound.plan());
 
-  const publicPlan = plan.active && !plan.forInvitesOnly;
-  if (isRegularUser(user) && !publicPlan) return next(forbidden());
+  if (plan.forInvitesOnly && isRegularUser(user)) {
+    const { total: invited } = await planInvites.find({
+      planIds: [plan.id],
+      userIds: [user.id],
+    });
+    if (!invited) return next(forbidden());
+  }
 
   const response: IPlan.FindByIdApiResponse = plan;
   res.status(200).json(response);
