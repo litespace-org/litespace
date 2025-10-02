@@ -606,7 +606,7 @@ async function plan(
     monthDiscount: payload?.monthDiscount || randomDiscount(),
     quarterDiscount: payload?.quarterDiscount || randomDiscount(),
     yearDiscount: payload?.yearDiscount || randomDiscount(),
-    forInvitesOnly: or.boolean(payload?.forInvitesOnly),
+    forInvitesOnly: payload?.forInvitesOnly || false,
     active: or.boolean(payload?.active),
   });
 }

@@ -171,7 +171,7 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
       planIds: [plan.id],
       userIds: [user.id],
     });
-    if (invited) return next(forbidden());
+    if (!invited) return next(forbidden());
   }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
@@ -243,7 +243,7 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
       planIds: [plan.id],
       userIds: [user.id],
     });
-    if (invited) return next(forbidden());
+    if (!invited) return next(forbidden());
   }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
@@ -317,7 +317,7 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
       planIds: [plan.id],
       userIds: [user.id],
     });
-    if (invited) return next(forbidden());
+    if (!invited) return next(forbidden());
   }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
@@ -387,7 +387,7 @@ async function payWithBankInstallments(
       planIds: [plan.id],
       userIds: [user.id],
     });
-    if (invited) return next(forbidden());
+    if (!invited) return next(forbidden());
   }
 
   // TODO: store transaction in the database
