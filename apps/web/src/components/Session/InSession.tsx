@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { SessionChat } from "@/components/Session/SessionChat";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import Controllers, { Controller } from "@/components/Session/Controllers";
 import CallMembers from "@/components/Session/CallMembers";
-import { useMediaCall } from "@/hooks/mediaCall";
+import Controllers, { Controller } from "@/components/Session/Controllers";
+import PostSessionDialogs from "@/components/Session/PostSessionDialogs";
+import { SessionChat } from "@/components/Session/SessionChat";
 import { RemoteMember } from "@/components/Session/types";
-import { AlertType, AlertV2 } from "@litespace/ui/Alert";
-import { useRender } from "@litespace/headless/common";
-import { Device, MemberConnectionState } from "@/modules/MediaCall/types";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Button } from "@litespace/ui/Button";
-import Close2 from "@litespace/assets/Close2";
-import { ISession, IUser, Wss } from "@litespace/types";
-import { useSocket } from "@litespace/headless/socket";
-import { useCreateReport } from "@litespace/headless/report";
-import { useUser } from "@litespace/headless/context/user";
-import dayjs from "@/lib/dayjs";
 import { useOnError } from "@/hooks/error";
-import { useToast } from "@litespace/ui/Toast";
-import { useReportLesson } from "@litespace/headless/lessons";
-import { Web } from "@litespace/utils/routes";
-import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import { useMediaCall } from "@/hooks/mediaCall";
+import dayjs from "@/lib/dayjs";
+import { Device, MemberConnectionState } from "@/modules/MediaCall/types";
 import CallIncoming from "@litespace/assets/CallIncoming";
+import Close2 from "@litespace/assets/Close2";
+import { useRender } from "@litespace/headless/common";
+import { useUser } from "@litespace/headless/context/user";
+import { useReportLesson } from "@litespace/headless/lessons";
+import { useCreateReport } from "@litespace/headless/report";
+import { useSocket } from "@litespace/headless/socket";
+import { ISession, IUser, Wss } from "@litespace/types";
+import { AlertType, AlertV2 } from "@litespace/ui/Alert";
+import { Button } from "@litespace/ui/Button";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useToast } from "@litespace/ui/Toast";
 import { MIN_LESSON_DURATION } from "@litespace/utils";
+import { Web } from "@litespace/utils/routes";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const InSession: React.FC<{
   sessionId: ISession.Id;
@@ -54,6 +55,8 @@ const InSession: React.FC<{
   const [chat, setChat] = useState(false);
   const [_, setParams] = useSearchParams();
   const [newMessageIndicator, setNewMessageIndicator] = useState<number>(0);
+
+  const [postSession, setPostSession] = useState(false);
 
   const [connState, setConnState] = useState<
     MemberConnectionState | undefined
@@ -309,7 +312,7 @@ const InSession: React.FC<{
             call.manager?.session.disconnect().then(
               // this approach makes the lesson page more robust by avoiding
               // akward scenarios. Like livekit not emitting the disconnect event.
-              () => document.location.reload()
+              () => setPostSession(true)
             )
           }
           audio={controllers.audio}
@@ -336,6 +339,13 @@ const InSession: React.FC<{
         open={reportLessonDialog.open}
         close={reportLessonDialog.hide}
       />
+
+      {user?.role === IUser.Role.Student ? (
+        <PostSessionDialogs
+          postSession={postSession}
+          tutorName={remoteMember.name}
+        />
+      ) : null}
     </div>
   );
 };

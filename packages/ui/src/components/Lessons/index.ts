@@ -5,3 +5,4 @@ export { PastLessonsTable } from "@/components/Lessons/PastLessonsTable";
 export { PastLessonsSummary } from "@/components/Lessons/PastLessonsSummary";
 export { UpcomingLessonsSummary } from "@/components/Lessons/UpcomingLessonsSummary";
 export { CancelLesson } from "@/components/Lessons/CancelLesson/CancelLesson";
+export { RateLesson } from "@/components/Lessons/RateLesson";
