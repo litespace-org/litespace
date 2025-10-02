@@ -1,7 +1,7 @@
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { LessonCard, EmptyLessons, CancelLesson } from "@litespace/ui/Lessons";
 import { ILesson, IUser, Void } from "@litespace/types";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { InView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 import { useCancelLesson } from "@litespace/headless/lessons";
@@ -21,6 +21,7 @@ import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isStudent } from "@litespace/utils/user";
+import dayjs from "@/lib/dayjs";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -83,6 +84,33 @@ export const Content: React.FC<{
   const { lessonId: sendingMessageLessonId, onSendMessage } =
     useNavigateToRoom();
 
+  const pastLessons = useMemo(
+    () => list?.filter(({ lesson }) => dayjs(lesson.start).isBefore(dayjs())),
+    [list]
+  );
+
+  const currentAndNextLessons = useMemo(
+    () => list?.filter(({ lesson }) => dayjs(lesson.start).isAfter(dayjs())),
+    [list]
+  );
+
+  const allSortedLessons = useMemo(() => {
+    const sortedPastLessons = pastLessons?.sort(
+      (a, b) =>
+        dayjs(b.lesson.start).toDate().getTime() -
+        dayjs(a.lesson.start).toDate().getTime()
+    );
+
+    const sortedNextLessons = currentAndNextLessons?.sort(
+      (a, b) =>
+        dayjs(a.lesson.start).toDate().getTime() -
+        dayjs(b.lesson.start).toDate().getTime()
+    );
+
+    if (!sortedNextLessons || !sortedPastLessons) return [];
+    return [...sortedNextLessons, ...sortedPastLessons];
+  }, [currentAndNextLessons, pastLessons]);
+
   if (loading)
     return (
       <div className="mt-[15vh]">
@@ -113,72 +141,81 @@ export const Content: React.FC<{
 
   return (
     <div>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-2 md:gap-x-3 gap-y-4 md:gap-y-6">
-        {list.map((item) => {
-          const tutor = item.members.find(
-            (member) =>
-              member.role === IUser.Role.Tutor ||
-              member.role === IUser.Role.TutorManager
-          );
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-x-2 md:gap-x-3 gap-y-4 md:gap-y-6">
+        {allSortedLessons
+          .sort(
+            (a, b) =>
+              dayjs(a.lesson.start).toDate().getTime() -
+              dayjs(b.lesson.start).toDate().getTime()
+          )
+          .map((item) => {
+            const tutor = item.members.find(
+              (member) =>
+                member.role === IUser.Role.Tutor ||
+                member.role === IUser.Role.TutorManager
+            );
 
-          const otherMember = item.members.find(
-            (member) => member.role !== user.role
-          );
+            const otherMember = item.members.find(
+              (member) => member.role !== user.role
+            );
 
-          if (!tutor || !otherMember) return null;
-          return (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              key={item.lesson.id}
-            >
-              <LessonCard
-                start={item.lesson.start}
-                duration={item.lesson.duration}
-                onJoin={() =>
-                  navigate(
-                    router.web({
-                      route: Web.Lesson,
-                      id: item.lesson.id,
-                    })
-                  )
-                }
-                onCancel={() => setCancelLessonId(item.lesson.id)}
-                onEdit={() => {
-                  setManageLessonData({
-                    type: "update",
-                    lessonId: item.lesson.id,
-                    slotId: item.lesson.slotId,
-                    start: item.lesson.start,
-                    duration: item.lesson.duration,
-                    tutorId: tutor.userId,
-                  });
-                }}
-                onRebook={() =>
-                  setManageLessonData({ type: "book", tutorId: tutor.userId })
-                }
-                onSendMsg={() =>
-                  onSendMessage(item.lesson.id, [user.id, otherMember?.userId])
-                }
-                canceled={getCancellerRole(
-                  item.lesson.canceledBy,
-                  tutor.userId
-                )}
-                member={{
-                  id: otherMember.userId,
-                  name: otherMember.name,
-                  image: otherMember.image,
-                  role:
-                    otherMember.role === IUser.Role.Student
-                      ? "student"
-                      : "tutor",
-                }}
-                sendingMessage={sendingMessageLessonId === item.lesson.id}
-                disabled={!!sendingMessageLessonId}
-              />
-            </motion.div>
-          );
-        })}
+            if (!tutor || !otherMember) return null;
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                key={item.lesson.id}
+              >
+                <LessonCard
+                  start={item.lesson.start}
+                  duration={item.lesson.duration}
+                  onJoin={() =>
+                    navigate(
+                      router.web({
+                        route: Web.Lesson,
+                        id: item.lesson.id,
+                      })
+                    )
+                  }
+                  onCancel={() => setCancelLessonId(item.lesson.id)}
+                  onEdit={() => {
+                    setManageLessonData({
+                      type: "update",
+                      lessonId: item.lesson.id,
+                      slotId: item.lesson.slotId,
+                      start: item.lesson.start,
+                      duration: item.lesson.duration,
+                      tutorId: tutor.userId,
+                    });
+                  }}
+                  onRebook={() =>
+                    setManageLessonData({ type: "book", tutorId: tutor.userId })
+                  }
+                  onSendMsg={() =>
+                    onSendMessage(item.lesson.id, [
+                      user.id,
+                      otherMember?.userId,
+                    ])
+                  }
+                  canceled={getCancellerRole(
+                    item.lesson.canceledBy,
+                    tutor.userId
+                  )}
+                  member={{
+                    id: otherMember.userId,
+                    name: otherMember.name,
+                    image: otherMember.image,
+                    role:
+                      otherMember.role === IUser.Role.Student
+                        ? "student"
+                        : "tutor",
+                  }}
+                  sendingMessage={sendingMessageLessonId === item.lesson.id}
+                  disabled={!!sendingMessageLessonId}
+                />
+              </motion.div>
+            );
+          })}
       </div>
 
       {fetching ? (
