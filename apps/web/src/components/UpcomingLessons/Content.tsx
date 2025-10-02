@@ -199,7 +199,7 @@ export const Content: React.FC<{
       {cancelLessonId ? (
         <CancelLesson
           close={() => setCancelLessonId(null)}
-          onCancel={() => cancelLesson.mutate(cancelLessonId)}
+          onCancel={() => cancelLesson.mutate({ id: cancelLessonId })}
           loading={cancelLesson.isPending}
           open
         />

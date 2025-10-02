@@ -18,7 +18,7 @@ import { useUser } from "@litespace/headless/context/user";
 import dayjs from "@/lib/dayjs";
 import { useOnError } from "@/hooks/error";
 import { useToast } from "@litespace/ui/Toast";
-import { useCancelLesson } from "@litespace/headless/lessons";
+import { useReportLesson } from "@litespace/headless/lessons";
 import { Web } from "@litespace/utils/routes";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import CallIncoming from "@litespace/assets/CallIncoming";
@@ -69,6 +69,7 @@ const InSession: React.FC<{
   const timeAlertRender = useRender();
   const [timeAlertData, setTimeAlertData] = useState<{
     title: string;
+    id?: number;
     icon?: React.ReactNode;
     action?: React.ReactNode;
   } | null>(null);
@@ -141,17 +142,14 @@ const InSession: React.FC<{
     handler: (e) => toast.error({ title: intl(e.messageId) }),
   });
 
-  const cancelLessonDialog = useRender();
+  const reportLessonDialog = useRender();
 
   const createReport = useCreateReport({
-    onSuccess: () => {
-      toast.success({ title: intl("report.successfully.sent") });
-      cancelLessonDialog.show();
-    },
+    onSuccess: () => {},
     onError,
   });
 
-  const cancelLesson = useCancelLesson({
+  const reportLesson = useReportLesson({
     onSuccess: () => navigate(Web.UpcomingLessons),
     onError,
   });
@@ -178,19 +176,24 @@ const InSession: React.FC<{
     if (memberJoinedOnce) return;
 
     // show report-tutor alert and return if tutor not joined
-    if (now.isAfter(dayjs(startDate).add(3, "minutes"))) {
+    if (
+      now.isAfter(dayjs(startDate).add(3, "minutes")) &&
+      timeAlertData?.id !== 3
+    ) {
       setTimeAlertData({
+        id: 3,
         title: intl("session.alert.tutor-cannot-join"),
         action: (
           <Button
             size="small"
             variant="secondary"
-            onClick={() =>
+            onClick={() => {
               createReport.mutate({
                 title: `tutor absence`,
                 description: `tutor ${remoteMember.id} didn't attend session ${sessionId}`,
-              })
-            }
+              });
+              reportLessonDialog.show();
+            }}
           >
             {intl("session.label.tutor-didnot-attend")}
           </Button>
@@ -234,10 +237,12 @@ const InSession: React.FC<{
     createReport,
     remoteMember.id,
     sessionId,
-    timeAlertRender,
-    memberJoinedOnce,
     startDate,
     sessionDuration,
+    memberJoinedOnce,
+    timeAlertRender,
+    timeAlertData,
+    reportLessonDialog,
   ]);
 
   if (!call.curMember || !call.manager?.session.getMemberByIndex(1))
@@ -302,7 +307,7 @@ const InSession: React.FC<{
           }}
           leave={() =>
             call.manager?.session.disconnect().then(
-              // this approuch makes the lesson page more robust by avoiding
+              // this approach makes the lesson page more robust by avoiding
               // akward scenarios. Like livekit not emitting the disconnect event.
               () => document.location.reload()
             )
@@ -314,22 +319,22 @@ const InSession: React.FC<{
       </div>
 
       <ConfirmationDialog
-        title={intl("session.cancel-dialog.title")}
-        description={intl("session.cancel-dialog.description")}
+        title={intl("session.report-dialog.title")}
+        description={intl("session.report-dialog.description")}
         icon={<CallIncoming />}
         type="error"
         actions={{
           primary: {
-            label: intl("cancel-lesson.confirm-and-cancel"),
-            onClick: () => cancelLesson.mutate(sessionTypeId),
+            label: intl("labels.report"),
+            onClick: () => reportLesson.mutate({ id: sessionTypeId }),
           },
           secondary: {
             label: intl("cancel-lesson.cancel-and-return"),
-            onClick: cancelLessonDialog.hide,
+            onClick: reportLessonDialog.hide,
           },
         }}
-        open={cancelLessonDialog.open}
-        close={cancelLessonDialog.hide}
+        open={reportLessonDialog.open}
+        close={reportLessonDialog.hide}
       />
     </div>
   );

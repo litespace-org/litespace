@@ -32,9 +32,9 @@ const updateLesson = mockApi<ILesson.UpdateApiPayload>(
   handlers.update(mockApiContext())
 );
 
-const cancelLesson = mockApi<object, { lessonId: number }>(
-  handlers.cancel(mockApiContext())
-);
+const cancelLesson = mockApi<object, { lessonId: number }>(handlers.cancel);
+
+// TODO: write unit tests for handlers.report
 
 const findAttendedLessonsStats = mockApi<
   object,

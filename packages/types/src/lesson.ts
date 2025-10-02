@@ -7,6 +7,7 @@ export type Row = {
   price: number;
   slot_id: number;
   session_id: ISession.Id;
+  reported: boolean;
   canceled_by: number | null;
   canceled_at: Date | null;
   created_at: Date;
@@ -31,6 +32,10 @@ export type Self = {
   price: number;
   slotId: number;
   sessionId: ISession.Id;
+  /**
+   * true if the student has reported the tutor
+   */
+  reported: boolean;
   /**
    * ID of the member who canceled the lesson.
    */
@@ -134,10 +139,17 @@ export type CreateLessonApiResponse = Self;
 
 export type UpdateLessonApiResponse = void;
 
+export type CancelLessonApiParams = { id: number };
+export type CancelLessonApiResponse = void;
+
+export type ReportLessonApiParams = { id: number };
+export type ReportLessonApiResponse = void;
+
 export type FindLessonsApiQuery = IFilter.SkippablePagination & {
   users?: number[];
   ratified?: boolean;
   canceled?: boolean;
+  reported?: boolean;
   future?: boolean;
   past?: boolean;
   now?: boolean;

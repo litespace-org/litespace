@@ -17,6 +17,7 @@ import {
   WithOptionalTx,
   WithTx,
   withSkippablePagination,
+  withBooleanFilter,
 } from "@/query";
 import zod from "zod";
 
@@ -26,6 +27,7 @@ type SearchFilter = {
    */
   users?: number[];
   canceled?: boolean;
+  reported?: boolean;
   ratified?: boolean;
   /**
    * @deprecated use `after` instead
@@ -94,6 +96,7 @@ export class Lessons {
       price: this.columns.lessons("price"),
       slot_id: this.columns.lessons("slot_id"),
       session_id: this.columns.lessons("session_id"),
+      reported: this.columns.lessons("reported"),
       canceled_by: this.columns.lessons("canceled_by"),
       canceled_at: this.columns.lessons("canceled_at"),
       created_at: this.columns.lessons("created_at"),
@@ -173,6 +176,16 @@ export class Lessons {
       .lessons.update({
         canceled_by: canceledBy,
         canceled_at: now,
+        updated_at: now,
+      })
+      .whereIn(this.columns.lessons("id"), ids);
+  }
+
+  async report({ ids, tx }: WithOptionalTx<{ ids: number[] }>): Promise<void> {
+    const now = dayjs.utc().toDate();
+    await this.builder(tx)
+      .lessons.update({
+        reported: true,
         updated_at: now,
       })
       .whereIn(this.columns.lessons("id"), ids);
@@ -289,6 +302,7 @@ export class Lessons {
   async sum({
     ratified = true,
     canceled = true,
+    reported = false,
     future = true,
     past = true,
     after,
@@ -302,6 +316,7 @@ export class Lessons {
     const filter: SearchFilter = {
       users,
       canceled,
+      reported,
       ratified,
       future,
       past,
@@ -471,12 +486,14 @@ export class Lessons {
     }));
   }
 
+  // TODO: refactor this function
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
     {
       users,
       ratified = true,
       canceled = true,
+      reported = false,
       future = true,
       past = true,
       strict = false,
@@ -498,14 +515,19 @@ export class Lessons {
         )
         .whereIn(this.columns.members("user_id"), users);
 
-    const canceledOnly = canceled && !ratified;
-    const ratifiedOnly = ratified && !canceled;
+    const canceledOnly = canceled && !ratified && !reported;
+    const ratifiedOnly = ratified && !canceled && !reported;
 
     if (canceledOnly)
       builder.where(this.columns.lessons("canceled_by"), "IS NOT", null);
 
-    if (ratifiedOnly)
-      builder.where(this.columns.lessons("canceled_by"), "IS", null);
+    if (ratifiedOnly) {
+      builder
+        .where(this.columns.lessons("canceled_by"), "IS", null)
+        .andWhere(this.columns.lessons("reported"), false);
+    }
+
+    withBooleanFilter(builder, this.columns.lessons("reported"), reported);
 
     const futureOnly = future && !past;
     const pastOnly = past && !future;
@@ -546,6 +568,7 @@ export class Lessons {
       price: row.price,
       slotId: row.slot_id,
       sessionId: row.session_id,
+      reported: row.reported,
       canceledBy: row.canceled_by,
       canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
       createdAt: row.created_at.toISOString(),

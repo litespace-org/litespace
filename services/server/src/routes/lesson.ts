@@ -5,12 +5,13 @@ import lesson from "@/handlers/lesson";
 export default function router(context: ApiContext) {
   const router = Router();
 
-  router.post("/", lesson.create(context));
-  router.patch("/", lesson.update(context));
   router.get("/attended/stats", lesson.findAttendedLessonsStats);
   router.get("/list", lesson.findLessons);
   router.get("/:id", lesson.findLessonById);
-  router.delete("/:lessonId", lesson.cancel(context));
+  router.post("/", lesson.create(context));
+  router.patch("/", lesson.update(context));
+  router.patch("/cancel/:lessonId", lesson.cancel);
+  router.patch("/report/:lessonId", lesson.report);
 
   return router;
 }

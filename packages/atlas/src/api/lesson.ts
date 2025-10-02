@@ -31,7 +31,11 @@ export class Lesson extends Base {
   }
 
   async cancel(id: number): Promise<void> {
-    return this.del({ route: `/api/v1/lesson/${id}` });
+    return this.patch({ route: `/api/v1/lesson/cancel/${id}` });
+  }
+
+  async report(id: number): Promise<void> {
+    return this.patch({ route: `/api/v1/lesson/report/${id}` });
   }
 
   /**

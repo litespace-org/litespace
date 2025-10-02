@@ -24,7 +24,7 @@ export async function calcRemainingWeeklyMinutesBySubscription(
     after: isPseudoSubscription(sub) ? sub.start : week.start,
     before: week.end,
     canceled: false,
-    ratified: true,
+    reported: false,
   });
 
   if (minutes > sub.weeklyMinutes) return 0;
