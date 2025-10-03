@@ -18,6 +18,7 @@ import {
   WithTx,
   withSkippablePagination,
   withBooleanFilter,
+  withNullableListFilter,
 } from "@/query";
 import zod from "zod";
 
@@ -63,6 +64,10 @@ type SearchFilter = {
    * Filter only lessons that blogs to the provided slot ids.
    */
   slots?: number[];
+  /**
+   * Filter by transaction ids.
+   */
+  txs?: number[] | null;
 };
 
 type BaseAggregateParams = SearchFilter & { tx?: Knex.Transaction };
@@ -96,6 +101,7 @@ export class Lessons {
       price: this.columns.lessons("price"),
       slot_id: this.columns.lessons("slot_id"),
       session_id: this.columns.lessons("session_id"),
+      tx_id: this.columns.lessons("tx_id"),
       reported: this.columns.lessons("reported"),
       canceled_by: this.columns.lessons("canceled_by"),
       canceled_at: this.columns.lessons("canceled_at"),
@@ -117,6 +123,7 @@ export class Lessons {
         duration: payload.duration,
         slot_id: payload.slot,
         session_id: payload.session,
+        tx_id: payload.txId,
         price: payload.price,
         created_at: now,
         updated_at: now,
@@ -245,6 +252,13 @@ export class Lessons {
     return rows.map((row) => this.asPopulatedMember(row));
   }
 
+  async findOne(
+    payload: WithOptionalTx<IFilter.SkippablePagination & SearchFilter>
+  ): Promise<ILesson.Self | null> {
+    const { list } = await this.find(payload);
+    return first(list) || null;
+  }
+
   /**
    * @typedef {SearchFilter} Payload
    * @typedef {IFilter.SkippablePagination}
@@ -260,6 +274,7 @@ export class Lessons {
     before,
     slots,
     strict,
+    txs,
     ...pagination
   }: WithOptionalTx<IFilter.SkippablePagination & SearchFilter>): Promise<
     Paginated<ILesson.Self>
@@ -274,6 +289,7 @@ export class Lessons {
       before,
       slots,
       strict,
+      txs,
     });
 
     const total = await countRows(baseBuilder.clone(), {
@@ -500,6 +516,7 @@ export class Lessons {
       after,
       before,
       slots = [],
+      txs,
     }: SearchFilter
   ): Knex.QueryBuilder<R, T> {
     //! Because of the one-to-many relationship between the lesson and its
@@ -528,6 +545,7 @@ export class Lessons {
     }
 
     withBooleanFilter(builder, this.columns.lessons("reported"), reported);
+    withNullableListFilter(builder, this.columns.lessons("tx_id"), txs);
 
     const futureOnly = future && !past;
     const pastOnly = past && !future;
@@ -568,6 +586,7 @@ export class Lessons {
       price: row.price,
       slotId: row.slot_id,
       sessionId: row.session_id,
+      txId: row.tx_id,
       reported: row.reported,
       canceledBy: row.canceled_by,
       canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,

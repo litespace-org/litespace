@@ -204,7 +204,7 @@ describe("/api/v1/sub/", () => {
 
       const tx = await db.transaction({
         userId: student.id,
-        providerRefNum: 1,
+        providerRefNum: "1",
         amount: 2500,
       });
       const sub = await db.subscription({

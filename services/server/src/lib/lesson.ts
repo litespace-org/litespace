@@ -1,7 +1,10 @@
-import { ILesson } from "@litespace/types";
+import { ILesson, ITransaction } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { DayLessonsMap } from "@/types/lesson";
 import { sum } from "lodash";
+import { knex, lessons, transactions, txLessonTemp } from "@litespace/models";
+import { platformConfig } from "@/constants";
+import { genSessionId } from "@litespace/utils";
 
 export function getDayLessonsMap(lessons: Array<ILesson.Self>): DayLessonsMap {
   const dayLessonsMap: DayLessonsMap = {};
@@ -34,4 +37,63 @@ export function inflateDayLessonsMap(map: DayLessonsMap) {
   }
 
   return inflatted;
+}
+
+export async function upsertLessonByTxStatus({
+  txId,
+  userId,
+  status,
+  fawryRefNumber,
+}: {
+  txId: number;
+  userId: number;
+  status: ITransaction.Status;
+  fawryRefNumber: string;
+}) {
+  const lesson = await lessons.findOne({ txs: [txId] });
+
+  await knex.transaction(async (tx) => {
+    // Update the transaction with the latest status.
+    await transactions.update(
+      txId,
+      {
+        status:
+          status === ITransaction.Status.New
+            ? ITransaction.Status.Processed
+            : status,
+        providerRefNum: fawryRefNumber,
+      },
+      tx
+    );
+
+    // Terminate subscription in case the tx was canceled, refunded, or failed.
+    if (
+      lesson &&
+      (status === ITransaction.Status.Canceled ||
+        status === ITransaction.Status.Refunded ||
+        status === ITransaction.Status.Failed)
+    )
+      return await lessons.cancel({ ids: [lesson.id], canceledBy: userId });
+
+    if (!lesson && status === ITransaction.Status.Paid) {
+      await knex.transaction(async (tx) => {
+        const txLesson = await txLessonTemp.findByTxId({ tx, txId });
+        if (!txLesson) throw new Error("Temporary lesson data not found.");
+
+        await lessons.create({
+          tx,
+          txId,
+          duration: txLesson.duration,
+          start: txLesson.start,
+          tutor: txLesson.tutorId,
+          slot: txLesson.slotId,
+          student: userId,
+          price: platformConfig.tutorHourlyRate,
+          session: genSessionId("lesson"),
+        });
+
+        await txLessonTemp.delete({ tx, txId });
+      });
+    }
+  });
 }
