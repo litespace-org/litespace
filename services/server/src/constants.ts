@@ -110,6 +110,7 @@ export const platformConfig = {
    * Tutor hourly rate scaled in EGP price (scaled).
    */
   tutorHourlyRate: price.scale(150),
+  totalHourRate: price.scale(255),
   /**
    * Tutor interview duration in minutes
    */
