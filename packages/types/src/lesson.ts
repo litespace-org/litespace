@@ -1,4 +1,4 @@
-import { ISession, IFilter, IUser, Paginated } from "@/index";
+import { ISession, IFilter, IUser, Paginated, IFawry } from "@/index";
 
 export type Row = {
   id: number;
@@ -7,6 +7,7 @@ export type Row = {
   price: number;
   slot_id: number;
   session_id: ISession.Id;
+  tx_id: number | null;
   reported: boolean;
   canceled_by: number | null;
   canceled_at: Date | null;
@@ -30,7 +31,14 @@ export type Self = {
    * Example: 10.01 EGP is represented as 1001.
    */
   price: number;
+  /**
+   * The slot id that this lesson belongs to.
+   */
   slotId: number;
+  /**
+   * The transaction id that is was used the process this lesson payment.
+   */
+  txId: number | null;
   sessionId: ISession.Id;
   /**
    * true if the student has reported the tutor
@@ -103,6 +111,7 @@ export type CreatePayload = {
   student: number;
   slot: number;
   session: ISession.Id;
+  txId?: number | null;
   /**
    * Lesson price scaled to the power of 2.
    */
@@ -206,3 +215,24 @@ export type FindAttendedLessonsStatsApiResponse = Array<{
   paidLessonCount: number;
   freeLessonCount: number;
 }>;
+
+export type CreateWithCardApiPayload = CreateApiPayload & {
+  cardToken: string;
+  cvv: string;
+  phone?: string;
+};
+
+export type CreateWithEWalletApiPayload = CreateApiPayload & {
+  wallet: string;
+  phone?: string;
+};
+
+export type CreateWithRefNumApiPayload = CreateApiPayload & {
+  phone?: string;
+};
+
+export type CreateWithCardApiResponse = IFawry.PayWithCardResponse;
+
+export type CreateWithEWalletApiResponse = IFawry.PayWithEWalletResponse;
+
+export type CreateWithRefNumApiResponse = IFawry.PayWithRefNumResponse;

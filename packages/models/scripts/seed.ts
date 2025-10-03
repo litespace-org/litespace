@@ -156,8 +156,6 @@ async function main(): Promise<void> {
     const transaction = await transactions.create({
       amount: 1200,
       paymentMethod: ITransaction.PaymentMethod.EWallet,
-      planId: plan1.id,
-      planPeriod: IPlan.Period.Month,
       providerRefNum: idx.toString(),
       userId: student.id,
       status: ITransaction.Status.Paid,

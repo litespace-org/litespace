@@ -9,10 +9,12 @@ import {
   phoneRequired,
 } from "@/lib/error";
 import {
+  knex,
   planInvites,
   plans,
   subscriptions,
   transactions,
+  txPlanTemp,
 } from "@litespace/models";
 import zod, { ZodSchema } from "zod";
 import { id, planPeriod } from "@/validation/utils";
@@ -79,8 +81,8 @@ async function createCheckoutUrl(
   // create payment transaction
   const tx = await transactions.create({
     userId: user.id,
-    planId,
-    planPeriod,
+    // planId,
+    // planPeriod,
     paymentMethod,
     amount: calculatePlanPrice({
       plan,
@@ -141,28 +143,39 @@ async function onCheckout(req: Request, res: Response, next: NextFunction) {
   );
   if (!transaction) return next(notfound.transaction());
 
-  const plan = await plans.findById(transaction.planId);
+  // const plan = await plans.findById(transaction.planId);
+  const plan = await plans.findById(1);
   if (!plan) return next(notfound.plan());
 
   if (payload.transaction.success) {
     transactions.update(transaction.id, { status: ITransaction.Status.Paid });
 
-    const weekCount = PLAN_PERIOD_TO_WEEK_COUNT[transaction.planPeriod];
-
     const start =
       dayjs.utc(payload.transaction.created_at).startOf("day") ||
       dayjs.utc().startOf("day");
 
-    const end = start.add(weekCount, "week");
+    await knex.transaction(async (tx) => {
+      const txPlan = await txPlanTemp.findByTxId({ tx, txId: transaction.id });
+      if (!txPlan) throw new Error("Temporary plan data not found.");
 
-    await subscriptions.create({
-      txId: transaction.id,
-      period: transaction.planPeriod,
-      planId: transaction.planId,
-      weeklyMinutes: plan.weeklyMinutes,
-      userId: transaction.userId,
-      start: start.toISOString(),
-      end: end.toISOString(),
+      const plan = await plans.findById(txPlan.planId);
+      if (!plan) throw new Error("Plan not found");
+
+      const weekCount = PLAN_PERIOD_TO_WEEK_COUNT[txPlan.planPeriod];
+      const end = start.add(weekCount, "week");
+
+      await subscriptions.create({
+        tx,
+        txId: transaction.id,
+        planId: txPlan.planId,
+        period: txPlan.planPeriod,
+        weeklyMinutes: plan.weeklyMinutes,
+        userId: transaction.userId,
+        start: start.toISOString(),
+        end: end.toISOString(),
+      });
+
+      await txPlanTemp.delete({ tx, txId: transaction.id });
     });
   } else if (payload.transaction.is_refunded)
     transactions.update(transaction.id, {

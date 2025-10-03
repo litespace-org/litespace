@@ -530,8 +530,6 @@ async function transaction(
     amount: payload?.amount || randomInt(1000),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
-    planId: await or.planId(payload?.planId),
-    planPeriod: or.planPeriod(payload?.planPeriod),
   });
 }
 
