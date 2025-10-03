@@ -1,5 +1,10 @@
 import { IFilter, IPlan, Paginated } from "@/index";
 
+export enum Type {
+  Subscription,
+  PaidLesson,
+}
+
 export enum Status {
   New,
   Paid,
@@ -21,10 +26,9 @@ export enum PaymentMethod {
 export type Row = {
   id: number;
   user_id: number;
-  plan_id: number;
-  plan_period: IPlan.Period;
   amount: number;
   status: Status;
+  type: Type;
   payment_method: PaymentMethod;
   provider_ref_num: string | null;
   created_at: Date;
@@ -34,13 +38,12 @@ export type Row = {
 export type Self = {
   id: number;
   userId: number;
-  planId: number;
-  planPeriod: IPlan.Period;
   /**
    * the price, with two decimal point, represeted as an integer (multiplies by 100)
    */
   amount: number;
   status: Status;
+  type: Type;
   paymentMethod: PaymentMethod;
   /**
    * this is defined to map between transactions and ref numbers
@@ -82,10 +85,9 @@ export type FindByIdApiResponse = Self;
 
 export type CreatePayload = {
   userId: number;
-  planId: number;
-  planPeriod: IPlan.Period;
   amount: number;
   paymentMethod: PaymentMethod;
+  type: Type;
   /**
    * this is defined to map between transactions and ref numbers
    * from third party services. e.g. fawry orderRefNum.

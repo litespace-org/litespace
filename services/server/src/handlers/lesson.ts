@@ -20,8 +20,14 @@ import {
   weekBoundariesViolation,
   lessonAlreadyStarted,
   lessonNotStarted,
+  fawryError,
 } from "@/lib/error";
-import { IAvailabilitySlot, ILesson, Wss } from "@litespace/types";
+import {
+  IAvailabilitySlot,
+  ILesson,
+  ITransaction,
+  Wss,
+} from "@litespace/types";
 import {
   lessons,
   users,
@@ -29,6 +35,8 @@ import {
   rooms,
   availabilitySlots,
   subscriptions,
+  transactions,
+  txLessonTemp,
 } from "@litespace/models";
 import { Knex } from "knex";
 import safeRequest from "express-async-handler";
@@ -43,8 +51,8 @@ import {
 } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import { first, isEmpty, isEqual } from "lodash";
-import { AFRICA_CAIRO_TIMEZONE, genSessionId } from "@litespace/utils";
-import { withImageUrls } from "@/lib/user";
+import { AFRICA_CAIRO_TIMEZONE, genSessionId, price } from "@litespace/utils";
+import { selectPhone, withImageUrls } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import {
   calcRemainingWeeklyMinutesBySubscription,
@@ -58,6 +66,9 @@ import {
 import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
 import { isBookable } from "@/lib/session";
 import { sendMsg } from "@/lib/messenger";
+import { tutor } from "@litespace/auth";
+import { fawry } from "@/fawry/api";
+import { encodeMerchantRefNumber } from "@/fawry/lib/ids";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
@@ -92,6 +103,107 @@ const findAttendedLessonsStatsQuery = zod.object({
   after: zod.string().datetime(),
   before: zod.string().datetime(),
 });
+
+const createWithCardPayload: ZodSchema<ILesson.CreateWithCardApiPayload> =
+  createLessonPayload.and(
+    zod.object({
+      cardToken: zod.string(),
+      cvv: zod.string().length(3),
+      phone: zod.string().optional(),
+    })
+  );
+
+async function buyLessonWithCard() {
+  return safeRequest(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.user;
+      const allowed = isStudent(user);
+      if (!allowed) return next(forbidden());
+
+      const payload = createWithCardPayload.parse(req.body);
+      const { valid, phone, update } = selectPhone(user.phone, payload.phone);
+      if (!valid || !phone)
+        return next(bad("Invalid or missing phone number."));
+      // update user phone if needed.
+      if (update) await users.update(user.id, { phone });
+
+      const scaledAmount = calculateLessonPrice(
+        platformConfig.totalHourRate,
+        payload.duration
+      );
+
+      const unscaledAmount = price.unscale(scaledAmount);
+
+      const transaction = await knex.transaction(async (tx) => {
+        const transaction = await transactions.create({
+          tx,
+          userId: user.id,
+          providerRefNum: null,
+          amount: scaledAmount,
+          paymentMethod: ITransaction.PaymentMethod.Card,
+          type: ITransaction.Type.PaidLesson,
+        });
+
+        await txLessonTemp.create({
+          tx,
+          txId: transaction.id,
+          tutorId: payload.tutorId,
+          slotId: payload.slotId,
+          start: payload.start,
+          duration: payload.duration,
+        });
+
+        return transaction;
+      });
+
+      const result = await fawry.payWithCard({
+        customer: {
+          id: user.id,
+          email: user.email,
+          name: user.name || "LiteSpace Student",
+          phone,
+        },
+        merchantRefNum: encodeMerchantRefNumber({
+          transactionId: transaction.id,
+          createdAt: transaction.createdAt,
+        }),
+        amount: unscaledAmount,
+        cardToken: payload.cardToken,
+        cvv: payload.cvv,
+      });
+
+      if (result.statusCode !== 200) {
+        await transactions.update(transaction.id, {
+          status: ITransaction.Status.Failed,
+        });
+        return next(fawryError(result.statusDescription));
+      }
+
+      await transactions.update(transaction.id, {
+        status: ITransaction.Status.Processed,
+      });
+
+      const response: ILesson.CreateWithCardApiResponse = {
+        transactionId: transaction.id,
+        redirectUrl: result.nextAction.redirectUrl,
+      };
+
+      res.status(200).json(response);
+    }
+  );
+}
+
+// async function buyLessonWithFawryRefNum(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {}
+
+// async function buyLessonWithEWallet(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {}
 
 function create(context: ApiContext) {
   return safeRequest(
@@ -483,4 +595,5 @@ export default {
   findLessons: safeRequest(findLessons),
   findLessonById: safeRequest(findLessonById),
   findAttendedLessonsStats: safeRequest(findAttendedLessonsStats),
+  buyLessonWithCard,
 };

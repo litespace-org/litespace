@@ -13,16 +13,16 @@ import dayjs from "dayjs";
 export class Transactions {
   table = "transactions" as const;
 
-  async create(
-    payload: ITransaction.CreatePayload
-  ): Promise<ITransaction.Self> {
+  async create({
+    tx,
+    ...payload
+  }: WithOptionalTx<ITransaction.CreatePayload>): Promise<ITransaction.Self> {
     const now = new Date();
-    const rows = await this.builder().insert(
+    const rows = await this.builder(tx).insert(
       {
         user_id: payload.userId,
-        plan_id: payload.planId,
-        plan_period: payload.planPeriod,
         amount: payload.amount,
+        type: payload.type,
         status: payload.status || ITransaction.Status.New,
         payment_method: payload.paymentMethod,
         provider_ref_num: payload.providerRefNum,
@@ -84,10 +84,9 @@ export class Transactions {
     return {
       id: row.id,
       userId: row.user_id,
-      planId: row.plan_id,
-      planPeriod: row.plan_period,
       amount: row.amount,
       status: row.status,
+      type: row.type,
       paymentMethod: row.payment_method,
       providerRefNum: row.provider_ref_num,
       createdAt: row.created_at.toISOString(),
@@ -100,8 +99,6 @@ export class Transactions {
     {
       ids = [],
       users = [],
-      plans = [],
-      planPeriods = [],
       amount,
       statuses = [],
       paymentMethods = [],
@@ -113,11 +110,6 @@ export class Transactions {
     if (!isEmpty(ids)) builder.whereIn(this.column("id"), ids);
 
     if (!isEmpty(users)) builder.whereIn(this.column("user_id"), users);
-
-    if (!isEmpty(plans)) builder.whereIn(this.column("plan_id"), plans);
-
-    if (!isEmpty(planPeriods))
-      builder.whereIn(this.column("plan_period"), planPeriods);
 
     if (typeof amount === "number")
       builder.where(this.column("amount"), amount);
