@@ -11,7 +11,7 @@ const FIELD_TO_COLUMN = {
   createdAt: "created_at",
 } satisfies Record<ITxPlanTemp.Field, ITxPlanTemp.Column>;
 
-export class TxPlanTemp extends Model<
+export class TxPlanTemps extends Model<
   ITxPlanTemp.Row,
   ITxPlanTemp.Self,
   typeof FIELD_TO_COLUMN
@@ -62,4 +62,4 @@ export class TxPlanTemp extends Model<
   }
 }
 
-export const txPlanTemp = new TxPlanTemp();
+export const txPlanTemps = new TxPlanTemps();

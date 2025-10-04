@@ -37,7 +37,11 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       references: "transactions(id)",
     },
     tutor_id: { type: "int", notNull: true, references: "users(id)" },
-    slot_id: { type: "int", notNull: true, references: "slots(id)" },
+    slot_id: {
+      type: "int",
+      notNull: true,
+      references: "availability_slots(id)",
+    },
     start: { type: "timestamp", notNull: true },
     duration: { type: "int", notNull: true },
     created_at: { type: "timestamp", notNull: true },

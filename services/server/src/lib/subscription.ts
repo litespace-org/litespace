@@ -5,7 +5,7 @@ import {
   plans,
   subscriptions,
   transactions,
-  txPlanTemp,
+  txPlanTemps,
 } from "@litespace/models";
 import { first } from "lodash";
 import {
@@ -127,7 +127,7 @@ export async function upsertSubscriptionByTxStatus({
 
     if (!subscription && status === ITransaction.Status.Paid) {
       await knex.transaction(async (tx) => {
-        const txPlan = await txPlanTemp.findByTxId({ tx, txId });
+        const txPlan = await txPlanTemps.findByTxId({ tx, txId });
         if (!txPlan) throw new Error("Temporary plan data not found.");
 
         const plan = await plans.findById(txPlan.planId);
@@ -147,7 +147,7 @@ export async function upsertSubscriptionByTxStatus({
           end: end.toISOString(),
         });
 
-        await txPlanTemp.delete({ tx, txId });
+        await txPlanTemps.delete({ tx, txId });
       });
     }
   });
