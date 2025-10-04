@@ -3,7 +3,7 @@ import handlers from "@/handlers/plan";
 import { IPlan, IUser } from "@litespace/types";
 import { mockApi } from "@fixtures/mockApi";
 import { expect } from "chai";
-import { forbidden, notfound } from "@/lib/error";
+import { forbidden, notfound } from "@/lib/error/api";
 
 const create = mockApi<IPlan.CreateApiPayload, object, object, IPlan.Self>(
   handlers.create

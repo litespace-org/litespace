@@ -9,7 +9,7 @@ import {
   forbidden,
   illegalInvoiceUpdate,
   notfound,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { getMockFile } from "@fixtures/file";
 
 const createInvoice = mockApi<IInvoice.CreateApiPayload>(handlers.create);

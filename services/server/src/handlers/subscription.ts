@@ -8,7 +8,7 @@ import {
   forbidden,
   notfound,
   subscriptionUncancellable,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import {
   id,
   pageNumber,

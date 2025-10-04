@@ -5,7 +5,7 @@ import {
   illegalInvoiceUpdate,
   notfound,
   unexpected,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { getRequestFile, upload } from "@/lib/assets";
 import { ApiContext } from "@/types/api";
 import {

@@ -1,4 +1,4 @@
-import { forbidden } from "@/lib/error";
+import { forbidden } from "@/lib/error/api";
 import s3 from "@/lib/s3";
 import { IAsset } from "@litespace/types";
 import { isUser } from "@litespace/utils/user";

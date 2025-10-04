@@ -3,7 +3,7 @@ import handlers from "@/handlers/transaction";
 import { ITransaction, IUser } from "@litespace/types";
 import { mockApi } from "@fixtures/mockApi";
 import { expect } from "chai";
-import { forbidden, notfound } from "@/lib/error";
+import { forbidden, notfound } from "@/lib/error/api";
 
 const find = mockApi<ITransaction.FindApiQuery>(handlers.find);
 const findById = mockApi<object, { id: number }, object, IUser.Self>(

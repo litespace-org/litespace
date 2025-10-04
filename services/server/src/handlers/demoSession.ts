@@ -6,7 +6,7 @@ import {
   inActiveTutorManager,
   notfound,
   unauthenticated,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import {
   dateFilter,
   datetime,
