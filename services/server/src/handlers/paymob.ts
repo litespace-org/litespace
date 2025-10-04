@@ -14,7 +14,7 @@ import {
   plans,
   subscriptions,
   transactions,
-  txPlanTemp,
+  txPlanTemps,
 } from "@litespace/models";
 import zod, { ZodSchema } from "zod";
 import { id, planPeriod } from "@/validation/utils";
@@ -159,7 +159,7 @@ async function onCheckout(req: Request, res: Response, next: NextFunction) {
       dayjs.utc().startOf("day");
 
     await knex.transaction(async (tx) => {
-      const txPlan = await txPlanTemp.findByTxId({ tx, txId: transaction.id });
+      const txPlan = await txPlanTemps.findByTxId({ tx, txId: transaction.id });
       if (!txPlan) throw new Error("Temporary plan data not found.");
 
       const plan = await plans.findById(txPlan.planId);
@@ -179,7 +179,7 @@ async function onCheckout(req: Request, res: Response, next: NextFunction) {
         end: end.toISOString(),
       });
 
-      await txPlanTemp.delete({ tx, txId: transaction.id });
+      await txPlanTemps.delete({ tx, txId: transaction.id });
     });
   } else if (payload.transaction.is_refunded)
     transactions.update({

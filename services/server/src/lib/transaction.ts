@@ -1,8 +1,8 @@
 import {
   knex,
   transactions,
-  txLessonTemp,
-  txPlanTemp,
+  txLessonTemps,
+  txPlanTemps,
 } from "@litespace/models";
 import { ILesson, IPlan, ITransaction } from "@litespace/types";
 
@@ -33,7 +33,7 @@ export async function createPaidLessonTx({
       paymentMethod,
     });
 
-    await txLessonTemp.create({
+    await txLessonTemps.create({
       tx,
       start,
       slotId,
@@ -69,7 +69,7 @@ export async function createPaidPlanTx({
       type: ITransaction.Type.PaidPlan,
     });
 
-    await txPlanTemp.create({
+    await txPlanTemps.create({
       tx,
       planId,
       planPeriod,

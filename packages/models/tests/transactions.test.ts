@@ -16,7 +16,7 @@ describe("transactions", () => {
         userId: user.id,
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
-        type: ITransaction.Type.Subscription,
+        type: ITransaction.Type.PaidPlan,
         providerRefNum: null,
       });
       expect(newTransaction.id).to.be.greaterThanOrEqual(1);
@@ -35,7 +35,7 @@ describe("transactions", () => {
         userId: user.id,
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
-        type: ITransaction.Type.Subscription,
+        type: ITransaction.Type.PaidPlan,
         providerRefNum: null,
       });
 
@@ -57,7 +57,7 @@ describe("transactions", () => {
         userId: user.id,
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
-        type: ITransaction.Type.Subscription,
+        type: ITransaction.Type.PaidPlan,
         providerRefNum: null,
       });
 
@@ -93,7 +93,7 @@ describe("transactions", () => {
           userId: user.id,
           amount: 200,
           paymentMethod: ITransaction.PaymentMethod.Card,
-          type: ITransaction.Type.Subscription,
+          type: ITransaction.Type.PaidPlan,
           providerRefNum: null,
         });
       }
@@ -102,7 +102,7 @@ describe("transactions", () => {
         users: users2.map((u) => u.id),
         amount: 200,
         paymentMethods: [ITransaction.PaymentMethod.Card],
-        providerRefNums: [null],
+        providerRefNums: null,
       });
 
       expect(res.total).to.be.eq(3);
@@ -117,7 +117,7 @@ describe("transactions", () => {
         userId: user.id,
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
-        type: ITransaction.Type.Subscription,
+        type: ITransaction.Type.PaidPlan,
         providerRefNum: null,
       });
 
