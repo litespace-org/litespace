@@ -39,7 +39,8 @@ describe("transactions", () => {
         providerRefNum: null,
       });
 
-      const updated = await transactions.update(created.id, {
+      const updated = await transactions.update({
+        id: created.id,
         status: ITransaction.Status.Paid,
       });
 
@@ -60,7 +61,8 @@ describe("transactions", () => {
         providerRefNum: null,
       });
 
-      const updated = await transactions.update(created.id, {
+      const updated = await transactions.update({
+        id: created.id,
         providerRefNum: "123",
       });
 
