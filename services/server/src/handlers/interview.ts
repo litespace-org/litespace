@@ -6,7 +6,7 @@ import {
   forbidden,
   notfound,
   unexpected,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { canBeInterviewed } from "@/lib/interview";
 import {
   interviews,

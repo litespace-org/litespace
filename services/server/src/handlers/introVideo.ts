@@ -15,7 +15,7 @@ import {
   inActiveTutorManager,
   shortVideoDur,
   longVideoDur,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { canReview, canUpdate, chooseReviewer } from "@/lib/introVideo";
 import { introVideos } from "@litespace/models";
 import { IIntroVideo } from "@litespace/types";

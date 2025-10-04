@@ -1,7 +1,7 @@
 import db from "@fixtures/db";
 import dayjs from "@/lib/dayjs";
 import { expect } from "chai";
-import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error";
+import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error/api";
 import { availabilitySlots, lessons } from "@litespace/models";
 import { first } from "lodash";
 import handlers from "@/handlers/availabilitySlot";

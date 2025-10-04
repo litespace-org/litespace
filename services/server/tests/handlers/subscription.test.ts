@@ -10,7 +10,7 @@ import {
   forbidden,
   notfound,
   subscriptionUncancellable,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { subscriptions, transactions } from "@litespace/models";
 import dayjs from "dayjs";
 import { PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL } from "@litespace/utils";
