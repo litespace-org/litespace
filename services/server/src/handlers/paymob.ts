@@ -7,7 +7,7 @@ import {
   invalidUserName,
   notfound,
   phoneRequired,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import {
   knex,
   planInvites,
@@ -89,6 +89,7 @@ async function createCheckoutUrl(
       period: planPeriod,
     }).total,
     providerRefNum: null,
+    type: ITransaction.Type.PaidPlan,
   });
 
   // get payment integration id from the method
@@ -148,7 +149,10 @@ async function onCheckout(req: Request, res: Response, next: NextFunction) {
   if (!plan) return next(notfound.plan());
 
   if (payload.transaction.success) {
-    transactions.update(transaction.id, { status: ITransaction.Status.Paid });
+    transactions.update({
+      id: transaction.id,
+      status: ITransaction.Status.Paid,
+    });
 
     const start =
       dayjs.utc(payload.transaction.created_at).startOf("day") ||
@@ -178,11 +182,13 @@ async function onCheckout(req: Request, res: Response, next: NextFunction) {
       await txPlanTemp.delete({ tx, txId: transaction.id });
     });
   } else if (payload.transaction.is_refunded)
-    transactions.update(transaction.id, {
+    transactions.update({
+      id: transaction.id,
       status: ITransaction.Status.Refunded,
     });
   else if (transaction.status === ITransaction.Status.New)
-    transactions.update(transaction.id, {
+    transactions.update({
+      id: transaction.id,
       status: ITransaction.Status.Processed,
     });
 

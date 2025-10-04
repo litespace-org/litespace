@@ -5,7 +5,7 @@ import {
   forbidden,
   invalidVerificationCode,
   notfound,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { confirmationCodes, knex, users } from "@litespace/models";
 import { IConfirmationCode, IUser } from "@litespace/types";
 import {
