@@ -1,4 +1,4 @@
-import { forbidden, notfound } from "@/lib/error";
+import { forbidden, notfound } from "@/lib/error/api";
 import { planInvites, plans } from "@litespace/models";
 import {
   date,

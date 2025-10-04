@@ -1,6 +1,9 @@
 import crypto from "node:crypto";
 import s3 from "@/lib/s3";
 import { isValidPhone } from "@litespace/utils";
+import { users } from "@litespace/models";
+import { IUser } from "@litespace/types";
+import { InvalidPhoneNumber, MissingPhoneNumber } from "@/lib/error/local";
 
 export function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -64,4 +67,16 @@ export function selectPhone(
     phone,
     update: valid && !userPhone,
   };
+}
+
+export async function withPhone(
+  user: IUser.Self,
+  backupPhone?: string
+): Promise<string | InvalidPhoneNumber | MissingPhoneNumber> {
+  const { valid, phone, update } = selectPhone(user.phone, backupPhone);
+  if (!valid) throw new InvalidPhoneNumber("Provided phone number is invalid");
+  if (!phone) return new MissingPhoneNumber("Phone number is required.");
+  // update user phone if needed.
+  if (update) await users.update(user.id, { phone });
+  return phone;
 }

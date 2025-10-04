@@ -1,4 +1,4 @@
-import { empty, forbidden, notfound } from "@/lib/error";
+import { empty, forbidden, notfound } from "@/lib/error/api";
 import { mockApi } from "@fixtures/mockApi";
 import db, { faker } from "@fixtures/db";
 import { topics } from "@litespace/models";

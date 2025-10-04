@@ -1,17 +1,81 @@
-import { environment } from "@/constants";
-import dayjs from "@/lib/dayjs";
-/**
- * @description  Generate random transaction reference id.
- */
-export function genTxRid({
-  transactionId,
-  createdAt,
+import {
+  knex,
+  transactions,
+  txLessonTemps,
+  txPlanTemps,
+} from "@litespace/models";
+import { ILesson, IPlan, ITransaction } from "@litespace/types";
+
+export async function createPaidLessonTx({
+  userId,
+  scaledAmount,
+  tutorId,
+  slotId,
+  start,
+  duration,
+  paymentMethod,
 }: {
-  transactionId: number;
-  createdAt: string;
-}): number {
-  if (environment === "production") return transactionId;
-  const seconds = dayjs.utc(createdAt).unix();
-  const id = seconds.toString() + transactionId.toString();
-  return Number(id);
+  userId: number;
+  scaledAmount: number;
+  tutorId: number;
+  slotId: number;
+  start: string;
+  duration: ILesson.Duration;
+  paymentMethod: ITransaction.PaymentMethod;
+}): Promise<ITransaction.Self> {
+  return await knex.transaction(async (tx) => {
+    const transaction = await transactions.create({
+      tx,
+      userId: userId,
+      providerRefNum: null,
+      amount: scaledAmount,
+      type: ITransaction.Type.PaidLesson,
+      paymentMethod,
+    });
+
+    await txLessonTemps.create({
+      tx,
+      start,
+      slotId,
+      tutorId,
+      duration,
+      txId: transaction.id,
+    });
+
+    return transaction;
+  });
+}
+
+export async function createPaidPlanTx({
+  userId,
+  scaledAmount,
+  paymentMethod,
+  planId,
+  planPeriod,
+}: {
+  userId: number;
+  scaledAmount: number;
+  paymentMethod: ITransaction.PaymentMethod;
+  planId: number;
+  planPeriod: IPlan.Period;
+}) {
+  return await knex.transaction(async (tx) => {
+    const transaction = await transactions.create({
+      tx,
+      userId: userId,
+      providerRefNum: null,
+      amount: scaledAmount,
+      paymentMethod,
+      type: ITransaction.Type.PaidPlan,
+    });
+
+    await txPlanTemps.create({
+      tx,
+      planId,
+      planPeriod,
+      txId: transaction.id,
+    });
+
+    return transaction;
+  });
 }

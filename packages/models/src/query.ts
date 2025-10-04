@@ -2,7 +2,15 @@ import { Pool } from "pg";
 import { IFilter, NumericString } from "@litespace/types";
 import init, { Knex } from "knex";
 import zod from "zod";
-import { entries, invert, isEmpty } from "lodash";
+import {
+  entries,
+  invert,
+  isArray,
+  isEmpty,
+  isNull,
+  isString,
+  isUndefined,
+} from "lodash";
 import dayjs from "@/lib/dayjs";
 
 export type WithOptionalTx<T> = T & { tx?: Knex.Transaction };
@@ -243,10 +251,27 @@ export function withListFilter<R extends object, T, V extends string | number>(
   if (!values || isEmpty(values)) return builder;
   if (typeof column == "string") return builder.whereIn(column, values);
   return builder.where((builder) => {
-    column.forEach((column) => {
-      builder.orWhereIn(column, values);
-    });
+    column.forEach((column) => builder.orWhereIn(column, values));
   });
+}
+
+export function withNullableListFilter<
+  R extends object,
+  T,
+  V extends string | number,
+>(
+  builder: Knex.QueryBuilder<R, T>,
+  column: string | string[],
+  value?: V[] | null
+): Knex.QueryBuilder<R, T> {
+  if (isUndefined(value)) return builder;
+  if (isNull(value) && isString(column)) return builder.where(column, null);
+  if (isArray(value) && isString(column)) return builder.whereIn(column, value);
+  if (isArray(value) && isArray(column))
+    return builder.where((builder) => {
+      column.forEach((column) => builder.orWhereIn(column, value));
+    });
+  return builder;
 }
 
 export async function count(table: string): Promise<number> {

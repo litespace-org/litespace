@@ -1,5 +1,5 @@
 import { cache } from "@/lib/cache";
-import { bad, forbidden } from "@/lib/error";
+import { bad, forbidden } from "@/lib/error/api";
 import { canAccessSession } from "@/lib/session";
 import { isUser } from "@litespace/utils/user";
 import { isSessionId, optional } from "@litespace/utils";

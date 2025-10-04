@@ -1,5 +1,5 @@
 import { Paginated } from "@/utils";
-import { IFilter } from ".";
+import { IFilter } from "@/index";
 
 export enum Period {
   Month,

@@ -43,7 +43,7 @@
     "ts-patch": "^3.2.1",
     "ts-jest": "^29.2.3",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
-    "typescript": "^5.4.5",
+    "typescript": "5.9.2",
     "typescript-transform-paths": "^3.5.2"
   }
 }

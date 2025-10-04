@@ -4,7 +4,7 @@ import { safe } from "@litespace/utils";
 import { expect } from "chai";
 import handlers from "@/handlers/contactRequest";
 import { FieldError, IContactRequest } from "@litespace/types";
-import { apierror } from "@/lib/error";
+import { apierror } from "@/lib/error/api";
 
 const createContactRequest =
   mockApi<IContactRequest.CreateContactRequestApiPayload>(handlers.create);

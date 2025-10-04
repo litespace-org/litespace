@@ -10,7 +10,7 @@ import {
   forbidden,
   notfound,
   subscriptionUncancellable,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { subscriptions, transactions } from "@litespace/models";
 import dayjs from "dayjs";
 import { PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL } from "@litespace/utils";
@@ -204,7 +204,7 @@ describe("/api/v1/sub/", () => {
 
       const tx = await db.transaction({
         userId: student.id,
-        providerRefNum: 1,
+        providerRefNum: "1",
         amount: 2500,
       });
       const sub = await db.subscription({

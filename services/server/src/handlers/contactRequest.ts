@@ -13,7 +13,7 @@ import {
   isValidUserName,
   safe,
 } from "@litespace/utils";
-import { apierror } from "@/lib/error";
+import { apierror } from "@/lib/error/api";
 
 const createPayload: ZodSchema<IContactRequest.CreateContactRequestApiPayload> =
   zod.object({

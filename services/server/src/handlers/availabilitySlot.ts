@@ -1,4 +1,4 @@
-import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error";
+import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error/api";
 import {
   datetime,
   id,

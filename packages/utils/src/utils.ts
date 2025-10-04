@@ -107,3 +107,13 @@ export function invert<K extends ObjectKey, V extends ObjectKey>(
 export function keys<T extends object>(object: T): Array<keyof T> {
   return Object.keys(object) as Array<keyof T>;
 }
+
+export function count<T>(list: T[], callback: (item: T) => boolean): number {
+  let counter = 0;
+
+  for (const item of list) {
+    if (callback(item)) counter += 1;
+  }
+
+  return counter;
+}

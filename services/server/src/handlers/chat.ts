@@ -11,7 +11,13 @@ import {
   jsonBoolean,
   pageSize,
 } from "@/validation/utils";
-import { empty, exists, forbidden, notfound, notRoomMember } from "@/lib/error";
+import {
+  empty,
+  exists,
+  forbidden,
+  notfound,
+  notRoomMember,
+} from "@/lib/error/api";
 import {
   isAdmin,
   isTutorManager,

@@ -2,7 +2,7 @@ import zod, { ZodSchema } from "zod";
 import { ITransaction } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { forbidden, notfound } from "@/lib/error";
+import { forbidden, notfound } from "@/lib/error/api";
 import {
   id,
   pageNumber,

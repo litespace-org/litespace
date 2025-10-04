@@ -193,3 +193,5 @@ export const PLAN_PERIOD_TO_WEEK_COUNT: Record<IPlan.Period, number> = {
 export const INTRO_VIDEO_EXPIRY_MONTHS = 3;
 
 export const STUDENT_FREE_WEEKLY_MINUTES = 60;
+
+export const MAX_PAID_LESSON_COUNT = 2;

@@ -39,6 +39,9 @@ export * as ITransaction from "@/transaction";
 export * as IDemoSession from "@/demoSession";
 export * as IDocmost from "@/docmost";
 export * as IErpNext from "@/erpnext";
+export * as ITxPlanTemp from "@/txPlanTemp";
+export * as ITxLessonTemp from "@/txLessonTemp";
+export * as IRefundRequest from "@/refundRequest";
 
 export * from "@/api";
 export * from "@/utils";

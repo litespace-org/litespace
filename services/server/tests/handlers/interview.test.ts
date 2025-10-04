@@ -9,7 +9,7 @@ import {
   conflictingInterview,
   forbidden,
   notfound,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import dayjs from "dayjs";
 import { interviews } from "@litespace/models";
 import {

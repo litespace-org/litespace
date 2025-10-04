@@ -14,7 +14,7 @@ import {
   notfound,
   shortVideoDur,
   unexpected,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import db from "@fixtures/db";
 import { getMockFile } from "@fixtures/file";
 import { mockApi } from "@fixtures/mockApi";

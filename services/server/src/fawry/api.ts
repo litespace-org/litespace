@@ -3,7 +3,7 @@ import { Base } from "@litespace/atlas";
 import { Requests, Responses } from "@/fawry/types";
 import { FAWRY_API_URL_CURRENT, FAWRY_ROUTES } from "@/fawry/constants";
 import { genSignature } from "@/fawry/lib";
-import { forgeFawryPayload } from "@/lib/fawry";
+import { forgeFawryPayload } from "@/fawry/lib/utils";
 import axios, { AxiosInstance } from "axios";
 import https from "node:https";
 

@@ -1,5 +1,5 @@
 import { lessons, ratings, tutors, users } from "@litespace/models";
-import { exists, forbidden, notfound } from "@/lib/error";
+import { exists, forbidden, notfound } from "@/lib/error/api";
 import { Request, Response } from "express";
 import { NextFunction } from "express";
 import safeRequest from "express-async-handler";

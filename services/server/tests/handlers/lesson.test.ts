@@ -11,7 +11,7 @@ import {
   noEnoughMinutes,
   lessonTimePassed,
   weekBoundariesViolation,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { dayjs, getSubSlots, nameof, safe } from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";
 import { lessons } from "@litespace/models";

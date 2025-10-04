@@ -7,7 +7,7 @@ import {
   forbidden,
   invalidVerificationCode,
   notfound,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import dayjs from "@/lib/dayjs";
 import { IConfirmationCode, IUser } from "@litespace/types";
 import { mockApi } from "@fixtures/mockApi";

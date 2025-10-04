@@ -11,7 +11,7 @@ import {
   inActiveTutorManager,
   notfound,
   unauthenticated,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { demoSessions, tutors } from "@litespace/models";
 import { first } from "lodash";
 
