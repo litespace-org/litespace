@@ -9,7 +9,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     type: {
       type: "int",
       notNull: true,
-      default: 0, // 0 => subscription, 1 => paid lesson.
+      default: 0, // 0 => paid plan, 1 => paid lesson.
     },
   });
 

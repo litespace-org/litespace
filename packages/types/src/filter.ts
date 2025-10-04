@@ -58,3 +58,7 @@ export type Date =
       lt?: string;
       noeq?: string;
     };
+
+export type NullableList<T> = T[] | null;
+
+export type List<T> = T[];

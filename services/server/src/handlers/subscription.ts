@@ -8,6 +8,7 @@ import {
   forbidden,
   notfound,
   subscriptionUncancellable,
+  unexpected,
 } from "@/lib/error/api";
 import {
   id,
@@ -20,14 +21,13 @@ import { isAdmin, isStudent, isSuperAdmin } from "@litespace/utils/user";
 import { lessons, subscriptions, transactions } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
 import { first, max, sum } from "lodash";
-import {
-  calcRemainingWeeklyMinutesBySubscription,
-  generateFreeSubscription,
-} from "@/lib/subscription";
+import { calcRemainingWeeklyMinutesBySubscription } from "@/lib/subscription";
 import { price, safe } from "@litespace/utils";
 import { fawry } from "@/fawry/api";
 import { fawryConfig } from "@/constants";
 import { genSignature } from "@/fawry/lib";
+import { checkStudentPaidLessonStatus } from "@/lib/lesson";
+import { Unexpected } from "@/lib/error/local";
 
 const findQuery: ZodSchema<ISubscription.FindApiQuery> = zod.object({
   ids: id.array().optional(),
@@ -119,19 +119,23 @@ async function findUserSubscription(
     end: { after: now.toISOString() },
   });
 
-  const subscription =
-    first(list) ||
-    generateFreeSubscription({
-      userId: user.id,
-      userCreatedAt: user.createdAt,
-    });
+  const subscription = first(list) || null;
+  const status = subscription
+    ? await checkStudentPaidLessonStatus(user.id)
+    : null;
 
-  const remainingWeeklyMinutes =
-    await calcRemainingWeeklyMinutesBySubscription(subscription);
+  if (status instanceof Unexpected) return next(unexpected(status.message));
+
+  const remainingWeeklyMinutes = subscription
+    ? await calcRemainingWeeklyMinutesBySubscription(subscription)
+    : 0;
 
   const response: ISubscription.FindUserSubscriptionApiResponse = {
-    info: subscription || null,
+    info: subscription,
     remainingWeeklyMinutes,
+    isEligibleForPaidLessons: status?.isEligibleForPaidLessons || false,
+    isPaidLessonAvailble: status?.isPaidLessonAvailble || false,
+    paymentNeeded: status?.paymentNeeded || false,
   };
 
   res.status(200).json(response);
