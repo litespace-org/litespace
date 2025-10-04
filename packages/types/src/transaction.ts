@@ -1,7 +1,7 @@
-import { IFilter, IPlan, Paginated } from "@/index";
+import { IFilter, Paginated } from "@/index";
 
 export enum Type {
-  Subscription,
+  PaidPlan,
   PaidLesson,
 }
 
@@ -60,17 +60,20 @@ export type Self = {
   updatedAt: string;
 };
 
+export type Field = keyof Self;
+
+export type Column = keyof Row;
+
 export type FindFilterModel = {
-  ids?: number[];
-  users?: number[];
-  plans?: number[];
-  planPeriods?: IPlan.Period[];
-  amount?: number | { gte: number; lte: number; gt: number; lt: number };
-  statuses?: Status[];
-  paymentMethods?: PaymentMethod[];
-  providerRefNums?: Array<string | null>;
-  after?: string;
-  before?: string;
+  ids?: IFilter.List<number>;
+  users?: IFilter.List<number>;
+  amount?: IFilter.Numeric;
+  statuses?: IFilter.List<Status>;
+  types?: IFilter.List<Type>;
+  paymentMethods?: IFilter.List<PaymentMethod>;
+  providerRefNums?: IFilter.NullableList<string>;
+  createdAt?: IFilter.Date;
+  updatedAt?: IFilter.Date;
 };
 
 export type FindQueryModel = IFilter.SkippablePagination & FindFilterModel;
@@ -96,7 +99,8 @@ export type CreatePayload = {
   status?: Status;
 };
 
-export type UpdatePayload = {
+export type UpdateModelPayload = {
+  id: number;
   status?: Status;
   /**
    * this is defined to map between transactions and ref numbers

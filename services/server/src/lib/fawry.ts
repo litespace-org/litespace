@@ -1,7 +1,6 @@
 import { fawry } from "@/fawry/api";
 import { encodeMerchantRefNumber } from "@/fawry/lib/ids";
 import { Customer } from "@/fawry/types/requests";
-import { PayWithCard } from "@/fawry/types/responses";
 import { transactions } from "@litespace/models";
 import { ITransaction, IUser } from "@litespace/types";
 import { FawryError } from "@/lib/error/local";
