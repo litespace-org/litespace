@@ -1,4 +1,4 @@
-import { forbidden } from "@/lib/error";
+import { forbidden } from "@/lib/error/api";
 import { isUser } from "@litespace/utils/user";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";

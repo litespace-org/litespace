@@ -3,7 +3,7 @@ import handlers from "@/handlers/student";
 import { mockApi } from "@fixtures/mockApi";
 import { expect } from "chai";
 import { IStudent, IUser } from "@litespace/types";
-import { exists } from "@/lib/error";
+import { exists } from "@/lib/error/api";
 import { ZodError } from "zod";
 
 const createStudent = mockApi<

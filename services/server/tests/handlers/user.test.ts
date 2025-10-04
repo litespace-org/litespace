@@ -9,7 +9,7 @@ import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
 import { first, range } from "lodash";
-import { bad, forbidden, notfound } from "@/lib/error";
+import { bad, forbidden, notfound } from "@/lib/error/api";
 import handlers from "@/handlers/user";
 import { nameof } from "@litespace/utils";
 

@@ -26,7 +26,7 @@ import {
   notfound,
   unexpected,
   wrongPassword,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import {
   hashPassword,
   isSamePassword,

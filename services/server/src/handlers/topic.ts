@@ -1,4 +1,4 @@
-import { apierror, bad, empty, forbidden, notfound } from "@/lib/error";
+import { apierror, bad, empty, forbidden, notfound } from "@/lib/error/api";
 import {
   id,
   pageNumber,

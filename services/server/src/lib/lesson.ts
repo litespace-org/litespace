@@ -51,20 +51,17 @@ export async function upsertLessonByTxStatus({
   fawryRefNumber: string;
 }) {
   const lesson = await lessons.findOne({ txs: [txId] });
+  const newTxStatus =
+    status === ITransaction.Status.New ? ITransaction.Status.Processed : status;
 
   await knex.transaction(async (tx) => {
     // Update the transaction with the latest status.
-    await transactions.update(
-      txId,
-      {
-        status:
-          status === ITransaction.Status.New
-            ? ITransaction.Status.Processed
-            : status,
-        providerRefNum: fawryRefNumber,
-      },
-      tx
-    );
+    await transactions.update({
+      tx,
+      id: txId,
+      status: newTxStatus,
+      providerRefNum: fawryRefNumber,
+    });
 
     // Terminate subscription in case the tx was canceled, refunded, or failed.
     if (
