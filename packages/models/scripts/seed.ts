@@ -159,7 +159,7 @@ async function main(): Promise<void> {
       providerRefNum: idx.toString(),
       userId: student.id,
       status: ITransaction.Status.Paid,
-      type: ITransaction.Type.Subscription,
+      type: ITransaction.Type.PaidPlan,
     });
 
     await subscriptions.create({
