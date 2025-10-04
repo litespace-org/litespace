@@ -38,7 +38,7 @@ import {
   plans,
   subscriptions,
   transactions,
-  txPlanTemp,
+  txPlanTemps,
 } from "@litespace/models";
 import { ApiContext } from "@/types/api";
 import { OrderStatus, PaymentMethod } from "@/fawry/types/ancillaries";
@@ -716,7 +716,7 @@ async function syncPaymentStatus(
       });
 
     if (paid && !subscription) {
-      const txPlan = await txPlanTemp.findByTxId({
+      const txPlan = await txPlanTemps.findByTxId({
         tx,
         txId: transaction.id,
       });
@@ -743,7 +743,7 @@ async function syncPaymentStatus(
         end: end.toISOString(),
       });
 
-      await txPlanTemp.delete({ tx, txId: transaction.id });
+      await txPlanTemps.delete({ tx, txId: transaction.id });
     }
   });
 

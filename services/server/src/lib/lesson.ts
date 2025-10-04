@@ -2,7 +2,7 @@ import { ILesson, ITransaction } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { DayLessonsMap } from "@/types/lesson";
 import { first, isEmpty, sum } from "lodash";
-import { knex, lessons, transactions, txLessonTemp } from "@litespace/models";
+import { knex, lessons, transactions, txLessonTemps } from "@litespace/models";
 import { platformConfig } from "@/constants";
 import { MAX_PAID_LESSON_COUNT, count, genSessionId } from "@litespace/utils";
 import { Unexpected } from "@/lib/error/local";
@@ -75,7 +75,7 @@ export async function upsertLessonByTxStatus({
 
     if (!lesson && status === ITransaction.Status.Paid) {
       await knex.transaction(async (tx) => {
-        const txLesson = await txLessonTemp.findByTxId({ tx, txId });
+        const txLesson = await txLessonTemps.findByTxId({ tx, txId });
         if (!txLesson) throw new Error("Temporary lesson data not found.");
 
         await lessons.create({
@@ -90,7 +90,7 @@ export async function upsertLessonByTxStatus({
           session: genSessionId("lesson"),
         });
 
-        await txLessonTemp.delete({ tx, txId });
+        await txLessonTemps.delete({ tx, txId });
       });
     }
   });

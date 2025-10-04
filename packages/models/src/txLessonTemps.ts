@@ -13,7 +13,7 @@ const FIELD_TO_COLUMN = {
   createdAt: "created_at",
 } satisfies Record<ITxLessonTemp.Field, ITxLessonTemp.Column>;
 
-export class TxLessonTemp extends Model<
+export class TxLessonTemps extends Model<
   ITxLessonTemp.Row,
   ITxLessonTemp.Self,
   typeof FIELD_TO_COLUMN
@@ -66,4 +66,4 @@ export class TxLessonTemp extends Model<
   }
 }
 
-export const txLessonTemp = new TxLessonTemp();
+export const txLessonTemps = new TxLessonTemps();
