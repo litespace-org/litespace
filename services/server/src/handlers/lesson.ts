@@ -21,6 +21,7 @@ import {
   lessonAlreadyStarted,
   lessonNotStarted,
   fawryError,
+  unexpected,
 } from "@/lib/error/api";
 import {
   IAvailabilitySlot,
@@ -61,12 +62,16 @@ import {
   getPseudoWeekBoundaries,
   isPseudoSubscription,
 } from "@litespace/utils/subscription";
-import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
+import {
+  checkStudentPaidLessonStatus,
+  getDayLessonsMap,
+  inflateDayLessonsMap,
+} from "@/lib/lesson";
 import { isBookable } from "@/lib/session";
 import { sendMsg } from "@/lib/messenger";
 import { createPaidLessonTx } from "@/lib/transaction";
 import { performPayWithCardTx, performPayWithEWalletTx } from "@/lib/fawry";
-import { FawryError } from "@/lib/error/local";
+import { FawryError, Unexpected } from "@/lib/error/local";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
@@ -263,6 +268,11 @@ function create(context: ApiContext) {
       const payload: ILesson.CreateApiPayload = createLessonPayload.parse(
         req.body
       );
+
+      const status = await checkStudentPaidLessonStatus(user.id);
+      if (status instanceof Unexpected) return next(unexpected(status.message));
+      if (!status.isPaidLessonAvailble || status.paymentNeeded)
+        return next(forbidden());
 
       const tutor = await users.findById(payload.tutorId);
       if (!tutor) return next(notfound.tutor());

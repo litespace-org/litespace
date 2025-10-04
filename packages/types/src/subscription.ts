@@ -71,9 +71,7 @@ export type ModelFindFilter = {
   plans?: number[];
   periods?: IPlan.Period[];
   transactions?: number[];
-  weeklyMinutes?:
-    | number
-    | { gte?: number; lte?: number; gt?: number; lt?: number };
+  weeklyMinutes?: IFilter.Numeric;
   terminated?: boolean;
   extended?: boolean;
   start?: { after?: string; before?: string };
@@ -91,6 +89,9 @@ export type FindByIdApiResponse = Self;
 export type FindUserSubscriptionApiResponse = {
   info: Self | null;
   remainingWeeklyMinutes: number;
+  isEligibleForPaidLessons: boolean;
+  isPaidLessonAvailble: boolean;
+  paymentNeeded: boolean;
 };
 
 export type FindUserSubscriptionApiQuery = {

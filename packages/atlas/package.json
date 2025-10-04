@@ -32,7 +32,7 @@
     }
   },
   "devDependencies": {
-    "typescript": "^5.4.5",
+    "typescript": "5.9.2",
     "npm-watch": "^0.13.0",
     "ts-patch": "^3.2.1"
   },

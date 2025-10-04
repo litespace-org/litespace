@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "ts-patch": "^3.2.1",
-    "typescript": "^5.4.5",
+    "typescript": "5.9.2",
     "typescript-eslint": "^8.0.1",
     "typescript-transform-paths": "^3.5.2"
   },

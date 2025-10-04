@@ -222,17 +222,16 @@ export type CreateWithCardApiPayload = CreateApiPayload & {
   phone?: string;
 };
 
-export type CreateWithEWalletApiPayload = CreateApiPayload & {
-  wallet: string;
+export type CreateWithFawryRefNumApiPayload = CreateApiPayload & {
   phone?: string;
 };
 
-export type CreateWithRefNumApiPayload = CreateApiPayload & {
+export type CreateWithEWalletApiPayload = CreateApiPayload & {
   phone?: string;
 };
 
 export type CreateWithCardApiResponse = IFawry.PayWithCardResponse;
 
-export type CreateWithEWalletApiResponse = IFawry.PayWithEWalletResponse;
+export type CreateWithFawryRefNumApiResponse = IFawry.PayWithRefNumResponse;
 
-export type CreateWithRefNumApiResponse = IFawry.PayWithRefNumResponse;
+export type CreateWithEWalletApiResponse = IFawry.PayWithEWalletResponse;
