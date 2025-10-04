@@ -533,7 +533,7 @@ async function transaction(
     amount: payload?.amount || randomInt(100, 1000),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
-    type: payload?.type || ITransaction.Type.Subscription,
+    type: payload?.type || ITransaction.Type.PaidPlan,
   });
 }
 
