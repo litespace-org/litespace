@@ -2,7 +2,7 @@ import db, { faker } from "@fixtures/db";
 import handlers from "@/handlers/report";
 import { IReport, IUser } from "@litespace/types";
 import { mockApi } from "@fixtures/mockApi";
-import { forbidden, notfound } from "@/lib/error";
+import { forbidden, notfound } from "@/lib/error/api";
 import { expect } from "chai";
 import { reports } from "@litespace/models";
 import { first } from "lodash";

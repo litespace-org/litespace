@@ -5,7 +5,7 @@ import { range } from "lodash";
 import { IMessage, IRoom } from "@litespace/types";
 import handlers from "@/handlers/chat";
 import { mockApi } from "@fixtures/mockApi";
-import { empty, forbidden } from "@/lib/error";
+import { empty, forbidden } from "@/lib/error/api";
 import { cache } from "@/lib/cache";
 
 const findUserRooms = mockApi<

@@ -6,7 +6,7 @@ import {
   notfound,
   serviceUnavailable,
   wrongPassword,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { knex, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import { isSamePassword, withImageUrl } from "@/lib/user";

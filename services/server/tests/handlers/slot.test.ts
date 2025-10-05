@@ -1,7 +1,7 @@
 import db from "@fixtures/db";
 import dayjs from "@/lib/dayjs";
 import { expect } from "chai";
-import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error";
+import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error/api";
 import { availabilitySlots, lessons } from "@litespace/models";
 import { first } from "lodash";
 import handlers from "@/handlers/availabilitySlot";
@@ -144,6 +144,7 @@ describe("/api/v1/availability-slot/", () => {
               type: "create",
               start: now.toISOString(),
               end: now.add(6, "hours").toISOString(),
+              purpose: IAvailabilitySlot.Purpose.Lesson,
             },
           ],
         },
@@ -163,6 +164,7 @@ describe("/api/v1/availability-slot/", () => {
               type: "create",
               start: now.add(1, "hour").toISOString(),
               end: now.add(6, "hours").toISOString(),
+              purpose: IAvailabilitySlot.Purpose.Lesson,
             },
           ],
         },
@@ -197,6 +199,7 @@ describe("/api/v1/availability-slot/", () => {
               type: "create",
               start: now.add(1, "hour").toISOString(),
               end: now.add(6, "hours").toISOString(),
+              purpose: IAvailabilitySlot.Purpose.Lesson,
             },
           ],
         },
@@ -216,6 +219,7 @@ describe("/api/v1/availability-slot/", () => {
               type: "create",
               start: now.subtract(2, "hour").toISOString(),
               end: now.subtract(1, "hours").toISOString(),
+              purpose: IAvailabilitySlot.Purpose.Lesson,
             },
           ],
         },
@@ -235,6 +239,7 @@ describe("/api/v1/availability-slot/", () => {
               type: "create",
               start: now.add(4, "hours").toISOString(),
               end: now.add(2, "hours").toISOString(),
+              purpose: IAvailabilitySlot.Purpose.Lesson,
             },
           ],
         },

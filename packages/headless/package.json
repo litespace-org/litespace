@@ -90,7 +90,7 @@
     "nodemon": "^3.1.0",
     "npm-watch": "^0.13.0",
     "ts-patch": "^3.2.1",
-    "typescript": "^5.4.5",
+    "typescript": "5.9.2",
     "typescript-transform-paths": "^3.5.2"
   },
   "keywords": [],

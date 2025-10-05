@@ -1,6 +1,6 @@
 import { transactions } from "@/transactions";
 import fixtures from "@fixtures/db";
-import { IPlan, ITransaction } from "@litespace/types";
+import { ITransaction } from "@litespace/types";
 import { nameof } from "@litespace/utils/utils";
 import { expect } from "chai";
 
@@ -12,14 +12,12 @@ describe("transactions", () => {
   describe(nameof(transactions.create), () => {
     it("should successfully create a new transaction", async () => {
       const user = await fixtures.tutor();
-      const plan = await fixtures.plan();
       const newTransaction = await transactions.create({
         userId: user.id,
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
+        type: ITransaction.Type.PaidPlan,
         providerRefNum: null,
-        planId: plan.id,
-        planPeriod: IPlan.Period.Month,
       });
       expect(newTransaction.id).to.be.greaterThanOrEqual(1);
       expect(newTransaction.amount).to.be.eq(200);
@@ -33,17 +31,16 @@ describe("transactions", () => {
   describe(nameof(transactions.update), () => {
     it("should successfully update the transaction status", async () => {
       const user = await fixtures.tutor();
-      const plan = await fixtures.plan();
       const created = await transactions.create({
         userId: user.id,
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
+        type: ITransaction.Type.PaidPlan,
         providerRefNum: null,
-        planId: plan.id,
-        planPeriod: IPlan.Period.Month,
       });
 
-      const updated = await transactions.update(created.id, {
+      const updated = await transactions.update({
+        id: created.id,
         status: ITransaction.Status.Paid,
       });
 
@@ -56,17 +53,16 @@ describe("transactions", () => {
 
     it("should successfully update the transaction providerRefNum", async () => {
       const user = await fixtures.tutor();
-      const plan = await fixtures.plan();
       const created = await transactions.create({
         userId: user.id,
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
+        type: ITransaction.Type.PaidPlan,
         providerRefNum: null,
-        planId: plan.id,
-        planPeriod: IPlan.Period.Month,
       });
 
-      const updated = await transactions.update(created.id, {
+      const updated = await transactions.update({
+        id: created.id,
         providerRefNum: "123",
       });
 
@@ -92,16 +88,13 @@ describe("transactions", () => {
         fixtures.tutor(),
       ]);
 
-      const plan = await fixtures.plan();
-
       for (const user of [...users1, ...users2]) {
         await transactions.create({
           userId: user.id,
           amount: 200,
           paymentMethod: ITransaction.PaymentMethod.Card,
+          type: ITransaction.Type.PaidPlan,
           providerRefNum: null,
-          planId: plan.id,
-          planPeriod: IPlan.Period.Month,
         });
       }
 
@@ -109,7 +102,7 @@ describe("transactions", () => {
         users: users2.map((u) => u.id),
         amount: 200,
         paymentMethods: [ITransaction.PaymentMethod.Card],
-        providerRefNums: [null],
+        providerRefNums: null,
       });
 
       expect(res.total).to.be.eq(3);
@@ -119,15 +112,13 @@ describe("transactions", () => {
   describe(nameof(transactions.findById), () => {
     it("should retrieve a specific transaction with its id", async () => {
       const user = await fixtures.tutor();
-      const plan = await fixtures.plan();
 
       const tx = await transactions.create({
         userId: user.id,
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
+        type: ITransaction.Type.PaidPlan,
         providerRefNum: null,
-        planId: plan.id,
-        planPeriod: IPlan.Period.Month,
       });
 
       const res = await transactions.findById(tx.id);

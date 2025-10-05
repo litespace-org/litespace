@@ -1,4 +1,4 @@
-import { exists, forbidden, notfound } from "@/lib/error";
+import { exists, forbidden, notfound } from "@/lib/error/api";
 import db, { flush } from "@fixtures/db";
 import { ratings } from "@litespace/models";
 import { expect } from "chai";

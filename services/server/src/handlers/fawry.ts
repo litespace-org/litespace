@@ -8,15 +8,18 @@ import {
   isStudent,
   PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD,
   PLAN_PERIOD_TO_MONTH_COUNT,
-  PLAN_PERIOD_TO_WEEK_COUNT,
   price,
   safePromise,
 } from "@litespace/utils";
 import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
 
 import { fawry } from "@/fawry/api";
-import { bad, fawryError, forbidden, notfound } from "@/lib/error";
-import { forgeFawryPayload } from "@/lib/fawry";
+import { bad, fawryError, forbidden, notfound } from "@/lib/error/api";
+import {
+  performPayWithCardTx,
+  performPayWithEWalletTx,
+  performPayWithFawryRefNumTx,
+} from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
 import { fawryConfig } from "@/constants";
 import { id, unionOfLiterals } from "@/validation/utils";
@@ -35,7 +38,7 @@ import {
   plans,
   subscriptions,
   transactions,
-  users,
+  txPlanTemps,
 } from "@litespace/models";
 import { ApiContext } from "@/types/api";
 import { OrderStatus, PaymentMethod } from "@/fawry/types/ancillaries";
@@ -45,9 +48,14 @@ import {
   encodeMerchantRefNumber,
 } from "@/fawry/lib/ids";
 import { calculatePlanPrice } from "@/lib/plan";
-import { selectPhone } from "@/lib/user";
+import { withPhone } from "@/lib/user";
 import { FawryStatusEnum, FawryStatusMap } from "@/fawry/types/errors";
 import { first } from "lodash";
+import { upsertSubscriptionByTxStatus } from "@/lib/subscription";
+import { upsertLessonByTxStatus } from "@/lib/lesson";
+import { createPaidPlanTx } from "@/lib/transaction";
+import { FawryError } from "@/lib/error/local";
+import { forgeFawryPayload } from "@/fawry/lib/utils";
 
 const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "month",
@@ -157,11 +165,8 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const payload: IFawry.PayWithCardPayload = payWithCardPayload.parse(req.body);
-
-  const { valid, phone, update } = selectPhone(user.phone, payload.phone);
-  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
-  // update user phone if needed.
-  if (update) await users.update(user.id, { phone });
+  const phone = await withPhone(user, payload.phone);
+  if (phone instanceof Error) return next(bad(phone.message));
 
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());
@@ -177,48 +182,31 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
   const { total, totalScaled } = calculatePlanPrice({ period, plan });
 
-  const transaction = await transactions.create({
+  const transaction = await createPaidPlanTx({
     userId: user.id,
-    providerRefNum: null,
+    scaledAmount: totalScaled,
+    paymentMethod: ITransaction.PaymentMethod.Card,
     planId: plan.id,
     planPeriod: period,
-    amount: totalScaled,
-    paymentMethod: ITransaction.PaymentMethod.Card,
   });
 
-  const result = await fawry.payWithCard({
-    customer: {
-      id: user.id,
-      email: user.email,
-      name: user.name || "LiteSpace Student",
-      phone,
-    },
-    merchantRefNum: encodeMerchantRefNumber({
-      transactionId: transaction.id,
-      createdAt: transaction.createdAt,
-    }),
-    amount: total,
-    cardToken: payload.cardToken,
+  const result = await performPayWithCardTx({
+    user,
+    phone,
+    transaction,
     cvv: payload.cvv,
+    unscaledAmount: total,
+    cardToken: payload.cardToken,
   });
 
-  if (result.statusCode !== 200) {
-    await transactions.update(transaction.id, {
-      status: ITransaction.Status.Failed,
-    });
-    return next(fawryError(result.statusDescription));
-  }
-
-  await transactions.update(transaction.id, {
-    status: ITransaction.Status.Processed,
-  });
+  if (result instanceof FawryError) return next(fawryError(result.message));
 
   const response: IFawry.PayWithCardResponse = {
     transactionId: transaction.id,
-    redirectUrl: result.nextAction.redirectUrl,
+    redirectUrl: result.redirectUrl,
   };
 
-  res.json(response);
+  res.status(200).json(response);
 }
 
 async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
@@ -230,10 +218,8 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
     req.body
   );
 
-  const { valid, phone, update } = selectPhone(user.phone, payload.phone);
-  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
-  // update user phone if needed.
-  if (update) await users.update(user.id, { phone });
+  const phone = await withPhone(user, payload.phone);
+  if (phone instanceof Error) return next(bad(phone.message));
 
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());
@@ -249,50 +235,29 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
   const { total, totalScaled } = calculatePlanPrice({ period, plan });
 
-  const transaction = await transactions.create({
+  const transaction = await createPaidPlanTx({
     userId: user.id,
-    providerRefNum: null,
+    scaledAmount: totalScaled,
+    paymentMethod: ITransaction.PaymentMethod.Fawry,
     planId: plan.id,
     planPeriod: period,
-    amount: totalScaled,
-    paymentMethod: ITransaction.PaymentMethod.Fawry,
   });
 
-  const merchantRefNumber = encodeMerchantRefNumber({
-    transactionId: transaction.id,
-    createdAt: transaction.createdAt,
+  const result = await performPayWithFawryRefNumTx({
+    user,
+    phone,
+    transaction,
+    unscaledTotal: total,
   });
 
-  const { referenceNumber, statusCode, statusDescription } =
-    await fawry.payWithRefNum({
-      amount: total,
-      customer: {
-        id: user.id,
-        email: user.email,
-        name: user.name || "LiteSpace Student",
-        phone,
-      },
-      merchantRefNum: merchantRefNumber,
-    });
-
-  if (statusCode !== 200 || !referenceNumber) {
-    await transactions.update(transaction.id, {
-      status: ITransaction.Status.Failed,
-    });
-    return next(fawryError(statusDescription));
-  }
-
-  await transactions.update(transaction.id, {
-    status: ITransaction.Status.Processed,
-    providerRefNum: referenceNumber,
-  });
+  if (result instanceof FawryError) return next(fawryError(result.message));
 
   const response: IFawry.PayWithRefNumResponse = {
     transactionId: transaction.id,
-    referenceNumber: Number(referenceNumber),
+    referenceNumber: Number(result.referenceNumber),
   };
 
-  res.json(response);
+  res.status(200).json(response);
 }
 
 async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
@@ -304,10 +269,8 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
     req.body
   );
 
-  const { valid, phone, update } = selectPhone(user.phone, payload.phone);
-  if (!valid || !phone) return next(bad("Invalid or missing phone number"));
-  // update user phone if needed.
-  if (update) await users.update(user.id, { phone });
+  const phone = await withPhone(user, payload.phone);
+  if (phone instanceof Error) return next(bad(phone.message));
 
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());
@@ -323,46 +286,27 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
   const { total, totalScaled } = calculatePlanPrice({ period, plan });
 
-  const transaction = await transactions.create({
+  const transaction = await createPaidPlanTx({
     userId: user.id,
-    providerRefNum: null,
+    scaledAmount: totalScaled,
+    paymentMethod: ITransaction.PaymentMethod.EWallet,
     planId: plan.id,
     planPeriod: period,
-    amount: totalScaled,
-    paymentMethod: ITransaction.PaymentMethod.EWallet,
   });
 
-  const merchantRefNumber = encodeMerchantRefNumber({
-    transactionId: transaction.id,
-    createdAt: transaction.createdAt,
+  const result = await performPayWithEWalletTx({
+    user,
+    phone,
+    transaction,
+    unscaledAmount: total,
   });
 
-  const payment = await fawry.payWithEWallet({
-    merchantRefNum: merchantRefNumber,
-    amount: total,
-    customer: {
-      id: user.id,
-      email: user.email,
-      name: user.name || "LiteSpace Student",
-      phone,
-    },
-  });
-
-  if (payment.statusCode !== 200) {
-    await transactions.update(transaction.id, {
-      status: ITransaction.Status.Failed,
-    });
-    return next(fawryError(payment.statusDescription));
-  }
-
-  await transactions.update(transaction.id, {
-    status: ITransaction.Status.Processed,
-  });
+  if (result instanceof FawryError) return next(fawryError(result.message));
 
   const response: IFawry.PayWithEWalletResponse = {
     transactionId: transaction.id,
-    referenceNumber: payment.referenceNumber,
-    walletQr: payment.walletQr || null,
+    referenceNumber: result.referenceNumber,
+    walletQr: result.walletQr,
   };
 
   res.status(200).json(response);
@@ -486,7 +430,8 @@ async function cancelUnpaidOrder(
   if (result instanceof Error)
     return next(fawryError("Failed to cancel order"));
 
-  await transactions.update(transaction.id, {
+  await transactions.update({
+    id: transaction.id,
     status: ITransaction.Status.Canceled,
   });
 
@@ -523,7 +468,8 @@ async function refund(req: Request, res: Response, next: NextFunction) {
     });
     const tx = first(list);
     if (!tx) return next(notfound.transaction());
-    await transactions.update(tx.id, {
+    await transactions.update({
+      id: tx.id,
       status:
         tx.amount < payload.refundAmount
           ? ITransaction.Status.PartialRefunded
@@ -663,10 +609,10 @@ function setPaymentStatus(context: ApiContext) {
     if (signature !== payload.messageSignature)
       return next(forbidden("Invalid signature"));
 
-    const transactionId = decodeMerchantRefNumber(payload.merchantRefNumber);
+    const txId = decodeMerchantRefNumber(payload.merchantRefNumber);
     const userId = Number(payload.customerMerchantId);
 
-    const transaction = await transactions.findById(transactionId);
+    const transaction = await transactions.findById(txId);
     if (!transaction)
       return next(
         bad(
@@ -688,57 +634,27 @@ function setPaymentStatus(context: ApiContext) {
     if (method !== transaction.paymentMethod)
       return next(bad("payment method mismatch; should never happen"));
 
-    const plan = await plans.findById(transaction.planId);
-    if (!plan) throw new Error("Plan not found; should never happen");
+    if (transaction.type === ITransaction.Type.PaidPlan)
+      await upsertSubscriptionByTxStatus({
+        status,
+        txId: transaction.id,
+        userId: transaction.userId,
+        fawryRefNumber: payload.fawryRefNumber,
+      });
 
-    const subscription = await subscriptions.findByTxId(transaction.id);
-    const weekCount = PLAN_PERIOD_TO_WEEK_COUNT[transaction.planPeriod];
-    const now = dayjs.utc();
-    const end = now.add(weekCount, "week");
-
-    await knex.transaction(async (tx) => {
-      // Update the transaction with the latest status.
-      await transactions.update(
-        transactionId,
-        {
-          status:
-            status === ITransaction.Status.New
-              ? ITransaction.Status.Processed
-              : status,
-          providerRefNum: payload.fawryRefNumber,
-        },
-        tx
-      );
-
-      // Terminate subscription in case the tx was canceled, refunded, or failed.
-      if (
-        subscription &&
-        (status === ITransaction.Status.Canceled ||
-          status === ITransaction.Status.Refunded ||
-          status === ITransaction.Status.Failed)
-      )
-        return await subscriptions.update(subscription.id, {
-          terminatedAt: now.toISOString(),
-        });
-
-      if (!subscription && status === ITransaction.Status.Paid)
-        await subscriptions.create({
-          tx,
-          txId: transactionId,
-          period: transaction.planPeriod,
-          planId: transaction.planId,
-          weeklyMinutes: plan.weeklyMinutes,
-          userId,
-          start: now.toISOString(),
-          end: end.toISOString(),
-        });
-    });
+    if (transaction.type === ITransaction.Type.PaidLesson)
+      await upsertLessonByTxStatus({
+        status,
+        txId: transaction.id,
+        userId: transaction.userId,
+        fawryRefNumber: payload.fawryRefNumber,
+      });
 
     // notify user that his transaction status got updated
     context.io
       .to(asUserRoomId(userId))
       .emit(Wss.ServerEvent.TransactionStatusUpdate, {
-        transactionId,
+        transactionId: txId,
         status,
       });
 
@@ -774,24 +690,17 @@ async function syncPaymentStatus(
     return;
   }
 
-  const plan = await plans.findById(transaction.planId);
-  if (!plan) throw new Error("plan not found, should never happen");
-
-  const weekCount = PLAN_PERIOD_TO_MONTH_COUNT[transaction.planPeriod];
   const subscription = await subscriptions.findByTxId(transaction.id);
 
   await knex.transaction(async (tx) => {
-    await transactions.update(
-      transaction.id,
-      {
-        status:
-          status === ITransaction.Status.New
-            ? ITransaction.Status.Processed
-            : status,
-        providerRefNum: payment.fawryRefNumber,
-      },
-      tx
-    );
+    await transactions.update({
+      id: transaction.id,
+      status:
+        status === ITransaction.Status.New
+          ? ITransaction.Status.Processed
+          : status,
+      providerRefNum: payment.fawryRefNumber,
+    });
 
     const paid = status === ITransaction.Status.Paid;
 
@@ -807,21 +716,34 @@ async function syncPaymentStatus(
       });
 
     if (paid && !subscription) {
+      const txPlan = await txPlanTemps.findByTxId({
+        tx,
+        txId: transaction.id,
+      });
+      if (!txPlan) throw new Error("Temporary plan data not found.");
+
+      const plan = await plans.findById(txPlan.planId);
+      if (!plan) throw new Error("Plan not found");
+
       // Default to now in case the payment time is missing.
       const start =
         dayjs.utc(payment.paymentTime).startOf("day") ||
         dayjs.utc().startOf("day");
+      const weekCount = PLAN_PERIOD_TO_MONTH_COUNT[txPlan.planPeriod];
       const end = start.add(weekCount, "week");
-      return subscriptions.create({
+
+      await subscriptions.create({
         tx,
         txId: transaction.id,
-        period: transaction.planPeriod,
-        planId: transaction.planId,
+        period: txPlan.planPeriod,
+        planId: txPlan.planId,
         weeklyMinutes: plan.weeklyMinutes,
         userId: transaction.userId,
         start: start.toISOString(),
         end: end.toISOString(),
       });
+
+      await txPlanTemps.delete({ tx, txId: transaction.id });
     }
   });
 

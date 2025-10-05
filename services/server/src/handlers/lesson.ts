@@ -20,8 +20,15 @@ import {
   weekBoundariesViolation,
   lessonAlreadyStarted,
   lessonNotStarted,
-} from "@/lib/error";
-import { IAvailabilitySlot, ILesson, Wss } from "@litespace/types";
+  fawryError,
+  unexpected,
+} from "@/lib/error/api";
+import {
+  IAvailabilitySlot,
+  ILesson,
+  ITransaction,
+  Wss,
+} from "@litespace/types";
 import {
   lessons,
   users,
@@ -43,8 +50,8 @@ import {
 } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import { first, isEmpty, isEqual } from "lodash";
-import { AFRICA_CAIRO_TIMEZONE, genSessionId } from "@litespace/utils";
-import { withImageUrls } from "@/lib/user";
+import { AFRICA_CAIRO_TIMEZONE, genSessionId, price } from "@litespace/utils";
+import { withImageUrls, withPhone } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import {
   calcRemainingWeeklyMinutesBySubscription,
@@ -55,9 +62,16 @@ import {
   getPseudoWeekBoundaries,
   isPseudoSubscription,
 } from "@litespace/utils/subscription";
-import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
+import {
+  checkStudentPaidLessonStatus,
+  getDayLessonsMap,
+  inflateDayLessonsMap,
+} from "@/lib/lesson";
 import { isBookable } from "@/lib/session";
 import { sendMsg } from "@/lib/messenger";
+import { createPaidLessonTx } from "@/lib/transaction";
+import { performPayWithCardTx, performPayWithEWalletTx } from "@/lib/fawry";
+import { FawryError, Unexpected } from "@/lib/error/local";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
@@ -93,6 +107,157 @@ const findAttendedLessonsStatsQuery = zod.object({
   before: zod.string().datetime(),
 });
 
+const createWithCardPayload: ZodSchema<ILesson.CreateWithCardApiPayload> =
+  createLessonPayload.and(
+    zod.object({
+      cardToken: zod.string(),
+      cvv: zod.string().length(3),
+      phone: zod.string().optional(),
+    })
+  );
+
+const createWithFawryRefNumPayload: ZodSchema<ILesson.CreateWithFawryRefNumApiPayload> =
+  createLessonPayload.and(zod.object({ phone: zod.string().optional() }));
+
+const createWithEWalletPayload: ZodSchema<ILesson.CreateWithEWalletApiPayload> =
+  createLessonPayload.and(zod.object({ phone: zod.string().optional() }));
+
+async function createWithCard(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const payload = createWithCardPayload.parse(req.body);
+  const phone = await withPhone(user, payload.phone);
+  if (phone instanceof Error) return next(bad(phone.message));
+
+  const scaledAmount = calculateLessonPrice(
+    platformConfig.totalHourRate,
+    payload.duration
+  );
+  const unscaledAmount = price.unscale(scaledAmount);
+  const transaction = await createPaidLessonTx({
+    userId: user.id,
+    scaledAmount,
+    tutorId: payload.tutorId,
+    slotId: payload.slotId,
+    start: payload.start,
+    duration: payload.duration,
+    paymentMethod: ITransaction.PaymentMethod.Card,
+  });
+
+  const result = await performPayWithCardTx({
+    user,
+    phone,
+    transaction,
+    unscaledAmount,
+    cvv: payload.cvv,
+    cardToken: payload.cardToken,
+  });
+
+  if (result instanceof FawryError) return next(fawryError(result.message));
+
+  const response: ILesson.CreateWithCardApiResponse = {
+    transactionId: transaction.id,
+    redirectUrl: result.redirectUrl,
+  };
+
+  res.status(200).json(response);
+}
+
+async function createWithFawryRefNum(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const payload = createWithFawryRefNumPayload.parse(req.body);
+  const phone = await withPhone(user, payload.phone);
+  if (phone instanceof Error) return next(bad(phone.message));
+
+  const scaledAmount = calculateLessonPrice(
+    platformConfig.totalHourRate,
+    payload.duration
+  );
+  const unscaledAmount = price.unscale(scaledAmount);
+
+  const transaction = await createPaidLessonTx({
+    userId: user.id,
+    scaledAmount,
+    tutorId: payload.tutorId,
+    slotId: payload.slotId,
+    start: payload.start,
+    duration: payload.duration,
+    paymentMethod: ITransaction.PaymentMethod.Fawry,
+  });
+
+  const result = await performPayWithEWalletTx({
+    user,
+    phone,
+    transaction,
+    unscaledAmount,
+  });
+
+  if (result instanceof FawryError) return next(fawryError(result.message));
+
+  const response: ILesson.CreateWithFawryRefNumApiResponse = {
+    transactionId: transaction.id,
+    referenceNumber: Number(result.referenceNumber),
+  };
+
+  res.status(200).json(response);
+}
+
+async function createWithEWallet(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const payload = createWithEWalletPayload.parse(req.body);
+  const phone = await withPhone(user, payload.phone);
+  if (phone instanceof Error) return next(bad(phone.message));
+
+  const scaledAmount = calculateLessonPrice(
+    platformConfig.totalHourRate,
+    payload.duration
+  );
+  const unscaledAmount = price.unscale(scaledAmount);
+
+  const transaction = await createPaidLessonTx({
+    userId: user.id,
+    scaledAmount,
+    tutorId: payload.tutorId,
+    slotId: payload.slotId,
+    start: payload.start,
+    duration: payload.duration,
+    paymentMethod: ITransaction.PaymentMethod.EWallet,
+  });
+
+  const result = await performPayWithEWalletTx({
+    user,
+    phone,
+    transaction,
+    unscaledAmount,
+  });
+
+  if (result instanceof FawryError) return next(fawryError(result.message));
+
+  const response: ILesson.CreateWithEWalletApiResponse = {
+    transactionId: transaction.id,
+    referenceNumber: result.referenceNumber,
+    walletQr: result.walletQr,
+  };
+
+  res.status(200).json(response);
+}
+
 function create(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -103,6 +268,11 @@ function create(context: ApiContext) {
       const payload: ILesson.CreateApiPayload = createLessonPayload.parse(
         req.body
       );
+
+      const status = await checkStudentPaidLessonStatus(user.id);
+      if (status instanceof Unexpected) return next(unexpected(status.message));
+      if (!status.isPaidLessonAvailble || status.paymentNeeded)
+        return next(forbidden());
 
       const tutor = await users.findById(payload.tutorId);
       if (!tutor) return next(notfound.tutor());
@@ -483,4 +653,7 @@ export default {
   findLessons: safeRequest(findLessons),
   findLessonById: safeRequest(findLessonById),
   findAttendedLessonsStats: safeRequest(findAttendedLessonsStats),
+  createWithCard: safeRequest(createWithCard),
+  createWithFawrRefNum: safeRequest(createWithFawryRefNum),
+  createWithEWallet: safeRequest(createWithEWallet),
 };
