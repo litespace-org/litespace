@@ -17,7 +17,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     tx_id: { type: "int", references: "transactions(id)", default: null },
   });
 
-  pgm.createTable("tx-plan-temp", {
+  pgm.createTable("tx_plan_temp", {
     tx_id: {
       type: "int",
       primaryKey: true,
@@ -29,7 +29,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     created_at: { type: "timestamp", notNull: true },
   });
 
-  pgm.createTable("tx-lesson-temp", {
+  pgm.createTable("tx_lesson_temp", {
     tx_id: {
       type: "int",
       primaryKey: true,
@@ -51,6 +51,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 export async function down(pgm: MigrationBuilder): Promise<void> {
   pgm.dropColumn("transactions", ["type"], { ifExists: true });
   pgm.dropColumn("lessons", ["tx_id"], { ifExists: true });
-  pgm.dropTable("tx-plan-temp", { ifExists: true });
-  pgm.dropTable("tx-lesson-temp", { ifExists: true });
+  pgm.dropTable("tx_plan_temp", { ifExists: true });
+  pgm.dropTable("tx_lesson_temp", { ifExists: true });
 }

@@ -98,6 +98,17 @@ export type PopulatedMember = {
   verifiedPhone: boolean;
 };
 
+export type PaidLessonStatusLiteral =
+  | "not-eligible"
+  | "eligible-with-payment"
+  | "eligible-without-payment";
+
+export enum PaidLessonStatus {
+  NotEligible,
+  EligibleWithPayment,
+  EligitbleWithoutPayment,
+}
+
 export type CreatePayload = {
   /**
    * ISO UTC datetime.

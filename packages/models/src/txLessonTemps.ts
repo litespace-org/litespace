@@ -20,7 +20,7 @@ export class TxLessonTemps extends Model<
 > {
   constructor() {
     super({
-      table: "tx-lesson-temp",
+      table: "tx_lesson_temp",
       fieldColumnMap: FIELD_TO_COLUMN,
     });
   }

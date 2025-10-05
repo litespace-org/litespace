@@ -1,4 +1,5 @@
 import { IFilter, IPlan, Paginated } from "@/index";
+import { PaidLessonStatus } from "@/lesson";
 
 export type Row = {
   id: number;
@@ -89,9 +90,7 @@ export type FindByIdApiResponse = Self;
 export type FindUserSubscriptionApiResponse = {
   info: Self | null;
   remainingWeeklyMinutes: number;
-  isEligibleForPaidLessons: boolean;
-  isPaidLessonAvailble: boolean;
-  paymentNeeded: boolean;
+  paidLessonStatus: PaidLessonStatus;
 };
 
 export type FindUserSubscriptionApiQuery = {
