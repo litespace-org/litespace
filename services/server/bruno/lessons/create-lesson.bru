@@ -1,0 +1,24 @@
+meta {
+  name: create-lesson
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{api}}/api/v1/lesson/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "tutorId": 29,
+    "slotId": 174,
+    "start": "2025-10-25T08:30:00.000Z",
+    "duration": 30
+  }
+}
+
+settings {
+  encodeUrl: true
+}

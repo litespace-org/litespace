@@ -209,22 +209,22 @@ export function down(pgm: MigrationBuilder) {
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
-  pgm.dropTable("user_topics", { ifExists: true });
-  pgm.dropTable("topics", { ifExists: true });
-  pgm.dropTable("messages", { ifExists: true });
-  pgm.dropTable("room_members", { ifExists: true });
-  pgm.dropTable("rooms", { ifExists: true });
-  pgm.dropTable("subscriptions", { ifExists: true });
-  pgm.dropTable("invites", { ifExists: true });
-  pgm.dropTable("coupons", { ifExists: true });
-  pgm.dropTable("plans", { ifExists: true });
-  pgm.dropTable("gifts", { ifExists: true });
-  pgm.dropTable("ratings", { ifExists: true });
-  pgm.dropTable("interviews", { ifExists: true });
-  pgm.dropTable("lesson_members", { ifExists: true });
-  pgm.dropTable("lessons", { ifExists: true });
-  pgm.dropTable("tutors", { ifExists: true });
-  pgm.dropTable("availability_slots", { ifExists: true });
+  pgm.dropTable("user_topics", { ifExists: true, cascade: true });
+  pgm.dropTable("topics", { ifExists: true, cascade: true });
+  pgm.dropTable("messages", { ifExists: true, cascade: true });
+  pgm.dropTable("room_members", { ifExists: true, cascade: true });
+  pgm.dropTable("rooms", { ifExists: true, cascade: true });
+  pgm.dropTable("subscriptions", { ifExists: true, cascade: true });
+  pgm.dropTable("invites", { ifExists: true, cascade: true });
+  pgm.dropTable("coupons", { ifExists: true, cascade: true });
+  pgm.dropTable("plans", { ifExists: true, cascade: true });
+  pgm.dropTable("gifts", { ifExists: true, cascade: true });
+  pgm.dropTable("ratings", { ifExists: true, cascade: true });
+  pgm.dropTable("interviews", { ifExists: true, cascade: true });
+  pgm.dropTable("lesson_members", { ifExists: true, cascade: true });
+  pgm.dropTable("lessons", { ifExists: true, cascade: true });
+  pgm.dropTable("tutors", { ifExists: true, cascade: true });
+  pgm.dropTable("availability_slots", { ifExists: true, cascade: true });
   pgm.dropTable("users", { ifExists: true, cascade: true });
   pgm.dropTable("contact_requests", { ifExists: true });
 

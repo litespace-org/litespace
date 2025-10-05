@@ -18,7 +18,7 @@ import {
   PLAN_PERIOD_TO_MONTH_COUNT,
   STUDENT_FREE_WEEKLY_MINUTES,
 } from "@litespace/utils";
-import { PLAN_PERIOD_TO_WEEK_COUNT } from "node_modules/@litespace/utils/dist/esm";
+import { PLAN_PERIOD_TO_WEEK_COUNT } from "@litespace/utils";
 
 export async function calcRemainingWeeklyMinutesBySubscription(
   sub: ISubscription.Self
@@ -101,6 +101,7 @@ export async function upsertSubscriptionByTxStatus({
   fawryRefNumber: string;
 }) {
   const subscription = await subscriptions.findByTxId(txId);
+  const txPlan = await txPlanTemps.findByTxId({ txId });
   const now = dayjs.utc();
   const newTxStatus =
     status === ITransaction.Status.New ? ITransaction.Status.Processed : status;
@@ -114,20 +115,23 @@ export async function upsertSubscriptionByTxStatus({
       providerRefNum: fawryRefNumber,
     });
 
-    // Terminate subscription in case the tx was canceled, refunded, or failed.
-    if (
-      subscription &&
-      (status === ITransaction.Status.Canceled ||
-        status === ITransaction.Status.Refunded ||
-        status === ITransaction.Status.Failed)
-    )
-      return await subscriptions.update(subscription.id, {
-        terminatedAt: now.toISOString(),
+    const terminated =
+      status === ITransaction.Status.Canceled ||
+      status === ITransaction.Status.Refunded ||
+      status === ITransaction.Status.PartialRefunded ||
+      status === ITransaction.Status.Failed;
+
+    if (terminated)
+      return await knex.transaction(async (tx) => {
+        if (txPlan) await txPlanTemps.delete({ tx, txId });
+        if (subscription)
+          await subscriptions.update(subscription.id, {
+            terminatedAt: now.toISOString(),
+          });
       });
 
     if (!subscription && status === ITransaction.Status.Paid) {
       await knex.transaction(async (tx) => {
-        const txPlan = await txPlanTemps.findByTxId({ tx, txId });
         if (!txPlan) throw new Error("Temporary plan data not found.");
 
         const plan = await plans.findById(txPlan.planId);

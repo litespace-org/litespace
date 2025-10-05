@@ -1,0 +1,26 @@
+meta {
+  name: create-lesson-with-card
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api}}/api/v1/lesson/card
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "tutorId": 30,
+    "slotId": 174,
+    "start": "2025-10-24T08:00:00.000Z",
+    "duration": 30,
+    "cardToken": "1748a28ad75d2ad076b0c994b73137052c08dacc927a26091fc202af6e5f617c",
+    "cvv": "123"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
