@@ -28,7 +28,7 @@ const List: React.FC<{
   const columns = useMemo(() => {
     return [
       columnHelper.accessor("lesson.id", {
-        header: intl("global.labels.id"),
+        header: intl("labels.id"),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor((row) => row.members, {
@@ -37,9 +37,9 @@ const List: React.FC<{
           const members = info.getValue();
           return (
             <div className="flex flex-row items-start justify-start gap-2">
-              {members.map((member) => (
+              {/*{members.map((member) => (
                 <UserPopover id={member.userId} key={member.userId} />
-              ))}
+              ))}*/}
             </div>
           );
         },
@@ -97,30 +97,22 @@ const List: React.FC<{
     ];
   }, [columnHelper, intl]);
 
-  if (query.isLoading || query.error)
+  if (query.isLoading || query.error || !query.data)
     return (
       <LoadingFragment
         loading={
           query.isLoading
-            ? {
-                text: intl("dashboard.lessons.loading"),
-                size: "large",
-              }
+            ? { text: intl("dashboard.lessons.loading"), size: "large" }
             : undefined
         }
         error={
-          query.error
-            ? {
-                text: intl("dashboard.lessons.error"),
-                size: "medium",
-              }
+          query.error || !query.data
+            ? { text: intl("dashboard.lessons.error"), size: "medium" }
             : undefined
         }
         refetch={query.refetch}
       />
     );
-
-  if (!query.data) return null;
 
   return (
     <div>

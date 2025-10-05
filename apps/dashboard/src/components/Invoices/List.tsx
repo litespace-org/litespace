@@ -37,7 +37,7 @@ const List: React.FC<{
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
-        header: intl("global.labels.id"),
+        header: intl("labels.id"),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor("userId", {

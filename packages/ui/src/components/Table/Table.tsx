@@ -8,7 +8,7 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 import type { Header, TableOptions } from "@tanstack/react-table";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import cn from "classnames";
 import { usePageSize } from "@litespace/headless/config";
 import ChevronRight from "@litespace/assets/ChevronRight";
@@ -39,6 +39,15 @@ type TableProps<T extends object> = TableNaviationProps & {
   headless?: boolean;
   textAlign?: TextAlign;
 };
+
+const options: SelectList<number> = [
+  { label: "10", value: 10 },
+  { label: "20", value: 20 },
+  { label: "30", value: 30 },
+  { label: "40", value: 40 },
+  { label: "50", value: 50 },
+];
+
 export const Table = <T extends object>({
   data,
   textAlign = "top-center",
@@ -60,17 +69,6 @@ export const Table = <T extends object>({
   });
 
   const pageSize = usePageSize();
-
-  const options = useMemo(
-    (): SelectList<number> => [
-      { label: "10", value: 10 },
-      { label: "20", value: 20 },
-      { label: "30", value: 30 },
-      { label: "40", value: 40 },
-      { label: "50", value: 50 },
-    ],
-    []
-  );
 
   const sort = useCallback(
     (header: Header<T, unknown>) => {
@@ -158,7 +156,7 @@ export const Table = <T extends object>({
         <footer className="relative flex items-center justify-center gap-2 pt-4">
           <div className="absolute top-4 right-0 w-16">
             <Select
-              size="small"
+              size="large"
               options={options}
               value={pageSize.value}
               onChange={pageSize.set}

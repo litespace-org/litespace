@@ -15,7 +15,7 @@ const DateField: React.FC<{ date: string }> = ({ date }) => {
         </div>
       }
     >
-      <div className="w-fit">
+      <div>
         <Typography
           tag="p"
           className="text-body font-semibold text-natural-800"

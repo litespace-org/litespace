@@ -1,9 +1,10 @@
 import { useApi } from "@/api";
 import { usePaginate, UsePaginateResult } from "@/pagination";
 import { IFilter, IUser, Void } from "@litespace/types";
-import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { QueryKey } from "@/constants";
+import { useExtendedQuery } from "@/query";
 
 export function useUsers(
   filter?: Omit<IUser.FindUsersApiQuery, "page" | "size">
@@ -19,25 +20,18 @@ export function useUsers(
   return usePaginate(findUsers, ["find-users", filter]);
 }
 
-export function useFindUserById(id?: string | number): {
-  query: UseQueryResult<IUser.Self | null>;
-  keys: unknown[];
-} {
+export function useFindUserById(id?: string | number) {
   const api = useApi();
 
-  const findUserById = useCallback(
-    async () => (id ? await api.user.findById(id) : null),
-    [api.user, id]
-  );
+  const findUserById = useCallback(async () => {
+    if (!id) return null;
+    return await api.user.findById(id);
+  }, [api.user, id]);
 
-  const keys = useMemo(() => [QueryKey.FindUserById, id], [id]);
-
-  const query = useQuery({
-    queryKey: keys,
+  return useExtendedQuery({
+    queryKey: [QueryKey.FindUserById, id],
     queryFn: findUserById,
   });
-
-  return { query, keys };
 }
 
 export function useCreateUser({
