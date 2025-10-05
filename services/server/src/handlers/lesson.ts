@@ -24,11 +24,11 @@ import {
 import { IAvailabilitySlot, ILesson, Wss } from "@litespace/types";
 import {
   lessons,
-  users,
   knex,
   rooms,
   availabilitySlots,
   subscriptions,
+  tutors,
 } from "@litespace/models";
 import { Knex } from "knex";
 import safeRequest from "express-async-handler";
@@ -104,14 +104,19 @@ function create(context: ApiContext) {
         req.body
       );
 
-      const tutor = await users.findById(payload.tutorId);
+      const tutor = await tutors.findById(payload.tutorId);
       if (!tutor) return next(notfound.tutor());
 
       const slot = await availabilitySlots.findById(payload.slotId);
       if (!slot) return next(notfound.slot());
 
-      // lesson should be in the future
-      if (dayjs.utc(payload.start).isBefore(dayjs.utc())) return next(bad());
+      // lesson should be in the future & before the tutors' notice period
+      if (
+        dayjs
+          .utc(payload.start)
+          .isBefore(dayjs.utc().subtract(tutor.notice, "minute"))
+      )
+        return next(bad());
 
       const sub =
         (await subscriptions

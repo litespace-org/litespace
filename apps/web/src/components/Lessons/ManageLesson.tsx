@@ -74,20 +74,20 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     [weekBoundaries.start, weekBoundaries.end]
   );
 
+  // ====== get tutorInfo =========
+  const { query: tutor } = useFindTutorInfo(tutorId);
+
   // ====== Check if user has any booked lessons =========
   const lessons = useFindLessons({
     canceled: false,
     users: user ? [user?.id] : [],
-    after: now.current.toISOString(),
+    after: now.current.add(tutor.data?.notice || 0, "minutes").toISOString(),
     userOnly: true,
     size: 1,
   });
   const hasBookedLessons = useMemo(() => {
     return !!lessons.query.data && !!lessons.query.data.list.length;
   }, [lessons]);
-
-  // ====== get tutorInfo =========
-  const { query: tutor } = useFindTutorInfo(tutorId);
 
   const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(!info);
 
