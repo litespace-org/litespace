@@ -27,6 +27,7 @@ import { Transaction } from "@/api/transaction";
 import { IntroVideo } from "@/api/introVideo";
 import { Paymob } from "@/api/paymob";
 import { Time } from "@/api/time";
+import { SessionEvent } from "@/api/sessionEvent";
 
 export class Api {
   public readonly user: User;
@@ -56,6 +57,7 @@ export class Api {
   public readonly transaction: Transaction;
   public readonly introVideo: IntroVideo;
   public readonly time: Time;
+  public readonly sessionEvent: SessionEvent;
 
   constructor(server: Env.Server, token: AuthToken | null) {
     const client = createClient("api", server, token);
@@ -87,5 +89,6 @@ export class Api {
     this.introVideo = new IntroVideo(client);
     this.student = new Student(client);
     this.time = new Time(client);
+    this.sessionEvent = new SessionEvent(client);
   }
 }

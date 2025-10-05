@@ -58,4 +58,29 @@ describe("Events", () => {
     const res = await sessionEvents.find({ users: [user2.id] });
     expect(res).have.length(2);
   });
+
+  it("should retrieve a meta list of events", async () => {
+    const user1 = await db.user({ role: IUser.Role.Tutor });
+    const { lesson } = await db.lesson({ tutor: user1.id });
+
+    await knex.transaction(async (tx) => {
+      return sessionEvents.createMany(
+        [
+          {
+            type: ISessionEvent.EventType.UserJoined,
+            userId: user1.id,
+            sessionId: lesson.sessionId,
+          },
+        ],
+        tx
+      );
+    });
+
+    const res = await sessionEvents.findMeta({ userIds: [user1.id] });
+
+    expect(res.total).to.eq(1);
+    expect(res.list).have.length(1);
+    expect(res.list[0].userName).to.eq(user1.name);
+    expect(res.list[0].sessionStart).to.eq(lesson.start);
+  });
 });

@@ -38,6 +38,7 @@ export enum QueryKey {
   FindTutorInfo = "find-tutor-info",
   FindUserTopics = "find-user-topics",
   FindSessionMembers = "find-session-members",
+  FindSessionEvents = "find-session-events",
   FindRoomByMembers = "find-room-by-members",
   FindStudioTutor = "find-studio-tutor",
   FindStudioTutors = "find-studio-tutors",
