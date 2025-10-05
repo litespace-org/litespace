@@ -1,13 +1,11 @@
-import { router } from "@/lib/route";
+import { useUser } from "@litespace/headless/context/user";
 import { useLogger } from "@litespace/headless/logger";
 import { ApiErrorCode, Optional, Void } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { LocalId } from "@litespace/ui/locales";
 import { isUnauthenticated, ResponseError } from "@litespace/utils";
-import { Dashboard } from "@litespace/utils/routes";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 
 export type ErrorPayload = {
   raw: unknown;
@@ -26,9 +24,12 @@ type OnErrorPayload = QueryPayload | MutationPayload;
 
 type Handler = (payload: ErrorPayload) => void;
 
-export function useOnError(payload: OnErrorPayload) {
+export function useOnError(
+  payload: OnErrorPayload,
+  disableAutoNavigate?: boolean
+) {
   const client = useQueryClient();
-  const navigate = useNavigate();
+  const user = useUser();
   const handlerRef = useRef<Optional<Handler | null>>(payload.handler);
   const resetQueryRef = useRef<Optional<Void>>(undefined);
   const logger = useLogger();
@@ -48,8 +49,9 @@ export function useOnError(payload: OnErrorPayload) {
       logger.error(error);
 
       // Direct the user to the login page.
-      if (isUnauthenticated(error))
-        return navigate(router.dashboard({ route: Dashboard.Login }));
+      if (isUnauthenticated(error) && !disableAutoNavigate) {
+        return user.logout();
+      }
 
       if (!handlerRef.current) return;
       const messageId = getErrorMessageId(error);
@@ -59,7 +61,7 @@ export function useOnError(payload: OnErrorPayload) {
         errorCode: error instanceof ResponseError ? error.errorCode : undefined,
       });
     },
-    [logger, navigate]
+    [logger, disableAutoNavigate, user]
   );
 
   useEffect(() => {

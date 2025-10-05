@@ -16,7 +16,7 @@ const UserPopover: React.FC<{ id: number }> = ({ id }) => {
   return (
     <HoverCard
       content={
-        <div className="flex w-72 min-h-16">
+        <div className="flex w-72 min-h-16 bg-natural-0">
           {user.isLoading ? <Loading /> : null}
 
           {user.error ? (

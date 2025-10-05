@@ -5,9 +5,10 @@ import {
   getCoreRowModel,
   useReactTable,
   flexRender,
+  getSortedRowModel,
 } from "@tanstack/react-table";
-import type { TableOptions } from "@tanstack/react-table";
-import { useMemo } from "react";
+import type { Header, TableOptions } from "@tanstack/react-table";
+import { useCallback, useMemo } from "react";
 import cn from "classnames";
 import { usePageSize } from "@litespace/headless/config";
 import ChevronRight from "@litespace/assets/ChevronRight";
@@ -38,7 +39,6 @@ type TableProps<T extends object> = TableNaviationProps & {
   headless?: boolean;
   textAlign?: TextAlign;
 };
-
 export const Table = <T extends object>({
   data,
   textAlign = "top-center",
@@ -56,6 +56,7 @@ export const Table = <T extends object>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   const pageSize = usePageSize();
@@ -69,6 +70,22 @@ export const Table = <T extends object>({
       { label: "50", value: 50 },
     ],
     []
+  );
+
+  const sort = useCallback(
+    (header: Header<T, unknown>) => {
+      if (!header.column.getCanSort())
+        return console.error("cannot sort by", header.column.id);
+      console.log("sorting by", header.column.id);
+
+      table.setSorting((prev) => [
+        {
+          id: header.column.id,
+          desc: prev[0]?.id === header.column.id ? !prev[0]?.desc : true,
+        },
+      ]);
+    },
+    [table]
   );
 
   return (
@@ -92,6 +109,7 @@ export const Table = <T extends object>({
                       className="p-4 truncate text-start"
                       colSpan={header.colSpan}
                       scope="col"
+                      onClick={() => sort(header)}
                     >
                       {header.isPlaceholder
                         ? null
@@ -106,7 +124,7 @@ export const Table = <T extends object>({
             </thead>
           ) : null}
           <tbody className="border-b bg-surface-200">
-            {table.getRowModel().rows.map((row) => (
+            {table.getSortedRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <td
