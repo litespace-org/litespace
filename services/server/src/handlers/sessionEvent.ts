@@ -1,4 +1,4 @@
-import { forbidden } from "@/lib/error";
+import { forbidden } from "@/lib/error/api";
 import { isAdmin } from "@litespace/utils/user";
 import { ISessionEvent } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";

@@ -18,7 +18,7 @@ export class TxPlanTemps extends Model<
 > {
   constructor() {
     super({
-      table: "tx-plan-temp",
+      table: "tx_plan_temp",
       fieldColumnMap: FIELD_TO_COLUMN,
     });
   }

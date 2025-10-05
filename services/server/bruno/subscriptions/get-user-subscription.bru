@@ -1,0 +1,19 @@
+meta {
+  name: get-user-subscription
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{api}}/api/v1/sub/user?userId=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  userId: 10
+}
+
+settings {
+  encodeUrl: true
+}
