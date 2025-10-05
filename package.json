@@ -82,8 +82,8 @@
     "@types/autocannon": "^7.12.5",
     "@types/ms": "^2.1.0",
     "@types/node": "^22.7.5",
-    "@typescript-eslint/eslint-plugin": "^8.12.2",
-    "@typescript-eslint/parser": "^8.12.2",
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
     "autocannon": "^8.0.0",
     "axios": "^1.7.7",
     "commander": "^13.1.0",
@@ -118,5 +118,5 @@
       "sharp"
     ]
   },
-  "packageManager": "pnpm@10.16.1+sha512.0e155aa2629db8672b49e8475da6226aa4bdea85fdcdfdc15350874946d4f3c91faaf64cbdc4a5d1ab8002f473d5c3fcedcd197989cf0390f9badd3c04678706"
+  "packageManager": "pnpm@10.18.1"
 }

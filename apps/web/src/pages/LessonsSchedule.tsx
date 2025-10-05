@@ -84,6 +84,7 @@ const LessonsSchedule: React.FC = () => {
     toast.success({ title: intl("cancel-lesson.success") });
     setLessonId(null);
     invalidate([QueryKey.FindInfiniteLessons]);
+    invalidate([QueryKey.FindLessons]);
   }, [toast, intl, invalidate]);
 
   const onCancelError = useCallback(
