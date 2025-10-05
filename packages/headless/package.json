@@ -50,7 +50,8 @@
     "./transaction": "./dist/transaction.js",
     "./confirmationCode": "./dist/confirmationCode.js",
     "./studio": "./dist/studio.js",
-    "./time": "./dist/time.js"
+    "./time": "./dist/time.js",
+    "./sessionEvent": "./dist/sessionEvent.js"
   },
   "scripts": {
     "build": "tsc",

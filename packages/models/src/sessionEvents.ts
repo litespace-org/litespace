@@ -1,8 +1,15 @@
-import { column, knex, WithOptionalTx } from "@/query";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withPagination,
+} from "@/query";
 import { first, isEmpty } from "lodash";
-import { ISessionEvent } from "@litespace/types";
+import { ISessionEvent, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
+import { users, lessons } from "@/index";
 
 export class SessionEvents {
   table = "session_events";
@@ -83,6 +90,52 @@ export class SessionEvents {
     return rows.map((row) => this.from(row));
   }
 
+  async findMeta({
+    userIds,
+    sessionIds,
+    page,
+    size,
+    tx,
+  }: WithOptionalTx<ISessionEvent.FindModelQuery>): Promise<
+    Paginated<ISessionEvent.MetaSelf>
+  > {
+    const builder = this.builder(tx);
+
+    if (userIds && !isEmpty(userIds))
+      builder.whereIn(this.column("user_id"), userIds);
+
+    if (sessionIds && !isEmpty(sessionIds))
+      builder.whereIn(this.column("session_id"), sessionIds);
+
+    const total = await countRows(builder.clone(), {
+      column: this.column("id"),
+      distinct: true,
+    });
+
+    builder
+      .join(users.table, this.column("user_id"), users.column("id"))
+      .join(
+        lessons.table.lessons,
+        this.column("session_id"),
+        lessons.columns.lessons("session_id")
+      );
+
+    const rows = await withPagination(builder, { page, size }).select(
+      this.column("id"),
+      this.column("type"),
+      this.column("user_id"),
+      this.column("session_id"),
+      this.column("created_at"),
+      "users.name as user_name",
+      "lessons.start as session_start"
+    );
+
+    return {
+      list: rows.map((row) => this.fromMeta(row as ISessionEvent.MetaRow)),
+      total,
+    };
+  }
+
   from(row: ISessionEvent.Row): ISessionEvent.Self {
     return {
       id: row.id,
@@ -90,6 +143,18 @@ export class SessionEvents {
       userId: row.user_id,
       sessionId: row.session_id,
       createdAt: row.created_at.toISOString(),
+    };
+  }
+
+  fromMeta(row: ISessionEvent.MetaRow): ISessionEvent.MetaSelf {
+    return {
+      id: row.id,
+      type: row.type,
+      userId: row.user_id,
+      userName: row.user_name,
+      sessionId: row.session_id,
+      createdAt: row.created_at.toISOString(),
+      sessionStart: row.session_start.toISOString(),
     };
   }
 

@@ -1,4 +1,5 @@
-import { ISession } from "@/index";
+import { ISession, Paginated } from "@/index";
+import { Pagination } from "@/filter";
 
 export enum EventType {
   UserJoined = 1,
@@ -13,6 +14,11 @@ export type Row = {
   created_at: Date;
 };
 
+export type MetaRow = Row & {
+  user_name: string;
+  session_start: Date;
+};
+
 export type Self = {
   id: number;
   type: EventType;
@@ -20,9 +26,22 @@ export type Self = {
   sessionId: ISession.Id;
   createdAt: string;
 };
+export type MetaSelf = Self & {
+  userName: string;
+  sessionStart: string;
+};
 
 export type CreatePayload = {
   type: EventType;
   userId: number;
   sessionId: ISession.Id;
 };
+
+export type FindModelQuery = Pagination & {
+  userIds?: number[];
+  sessionIds?: number[];
+};
+
+export type FindApiQuery = FindModelQuery;
+
+export type FindApiResponse = Paginated<MetaSelf>;

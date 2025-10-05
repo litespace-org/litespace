@@ -20,6 +20,7 @@ const PhotoSession = lazy(() => import("@/pages/PhotoSession"));
 const Tutor = lazy(() => import("@/pages/Tutor"));
 const Tutors = lazy(() => import("@/pages/Tutors"));
 const PlanInvites = lazy(() => import("@/pages/PlanInvites"));
+const SessionEvents = lazy(() => import("@/pages/SessionEvents"));
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       { path: Dashboard.Interviews, element: <Page page={<Interviews />} /> },
       { path: Dashboard.Lessons, element: <Page page={<Lessons />} /> },
       { path: Dashboard.Topics, element: <Page page={<Topics />} /> },
+      {
+        path: Dashboard.SessionEvents,
+        element: <Page page={<SessionEvents />} />,
+      },
       {
         path: Dashboard.PlatformSettings,
         element: <Page page={<PlatformSettings />} />,

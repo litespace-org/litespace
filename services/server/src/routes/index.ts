@@ -25,6 +25,7 @@ import report from "@/routes/report";
 import time from "@/routes/time";
 import demoSession from "@/routes/demoSession";
 import introVideo from "@/routes/introVideo";
+import sessionEvent from "@/routes/sessionEvent";
 
 export default {
   user,
@@ -54,4 +55,5 @@ export default {
   demoSession,
   introVideo,
   time,
+  sessionEvent,
 };
