@@ -149,7 +149,11 @@ async function create(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const payload: IInvoice.CreateApiPayload = createPayload.parse(req.body);
-  const acquired = await lessons.sumPrice({ past: true, canceled: false });
+  const acquired = await lessons.sumPrice({
+    users: [user.id],
+    future: false,
+    canceled: false,
+  });
 
   // todo: add verbose error response about what is wrong with the invoice
   const validations = [
