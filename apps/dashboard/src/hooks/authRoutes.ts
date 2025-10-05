@@ -74,6 +74,9 @@ const routeConfigMap: Record<Dashboard, RouteConfig> = {
   [Dashboard.Tutor]: {
     whitelist: [regularAdmin],
   },
+  [Dashboard.SessionEvents]: {
+    whitelist: [superAdmin, regularAdmin],
+  },
   [Dashboard.Tutors]: {
     whitelist: [superAdmin, regularAdmin],
   },

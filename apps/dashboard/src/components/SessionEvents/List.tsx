@@ -5,7 +5,6 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
-import DateField from "@/components/Common/DateField";
 import TimeField from "@/components/Common/TimeField";
 
 const List: React.FC<
