@@ -1,0 +1,15 @@
+meta {
+  name: find-availability-slots
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{api}}/api/v1/availability-slot/
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

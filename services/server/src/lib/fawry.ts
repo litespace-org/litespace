@@ -65,12 +65,12 @@ export async function performPayWithFawryRefNumTx({
   user,
   phone,
   transaction,
-  unscaledTotal,
+  unscaledAmount,
 }: {
   user: IUser.Self;
   phone: string;
   transaction: ITransaction.Self;
-  unscaledTotal: number;
+  unscaledAmount: number;
 }): Promise<{ referenceNumber: string } | FawryError> {
   const { statusCode, referenceNumber, statusDescription } =
     await fawry.payWithRefNum({
@@ -79,7 +79,7 @@ export async function performPayWithFawryRefNumTx({
         transactionId: transaction.id,
         createdAt: transaction.createdAt,
       }),
-      amount: unscaledTotal,
+      amount: unscaledAmount,
     });
 
   if (statusCode !== 200 || !referenceNumber) {

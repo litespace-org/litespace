@@ -1,5 +1,5 @@
 import zod, { ZodSchema } from "zod";
-import { IPlan, ISubscription } from "@litespace/types";
+import { ILesson, IPlan, ISubscription } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import {
@@ -26,7 +26,10 @@ import { price, safe } from "@litespace/utils";
 import { fawry } from "@/fawry/api";
 import { fawryConfig } from "@/constants";
 import { genSignature } from "@/fawry/lib";
-import { checkStudentPaidLessonStatus } from "@/lib/lesson";
+import {
+  checkStudentPaidLessonState,
+  CheckStudentPaidLessonStateReturn,
+} from "@/lib/lesson";
 import { Unexpected } from "@/lib/error/local";
 
 const findQuery: ZodSchema<ISubscription.FindApiQuery> = zod.object({
@@ -120,11 +123,11 @@ async function findUserSubscription(
   });
 
   const subscription = first(list) || null;
-  const status = subscription
-    ? await checkStudentPaidLessonStatus(user.id)
-    : null;
+  const state: CheckStudentPaidLessonStateReturn = !subscription
+    ? await checkStudentPaidLessonState(user.id)
+    : { status: ILesson.PaidLessonStatus.NotEligible };
 
-  if (status instanceof Unexpected) return next(unexpected(status.message));
+  if (state instanceof Unexpected) return next(unexpected(state.message));
 
   const remainingWeeklyMinutes = subscription
     ? await calcRemainingWeeklyMinutesBySubscription(subscription)
@@ -133,9 +136,7 @@ async function findUserSubscription(
   const response: ISubscription.FindUserSubscriptionApiResponse = {
     info: subscription,
     remainingWeeklyMinutes,
-    isEligibleForPaidLessons: status?.isEligibleForPaidLessons || false,
-    isPaidLessonAvailble: status?.isPaidLessonAvailble || false,
-    paymentNeeded: status?.paymentNeeded || false,
+    paidLessonStatus: state.status,
   };
 
   res.status(200).json(response);

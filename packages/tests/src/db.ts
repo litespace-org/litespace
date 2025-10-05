@@ -50,7 +50,6 @@ dayjs.extend(utc);
 export async function flush() {
   await knex.transaction(async (tx) => {
     await subscriptions.builder(tx).del();
-    await transactions.builder(tx).del();
     await plans.builder(tx).del();
     await sessionEvents.builder(tx).del();
     await topics.builder(tx).userTopics.del();
@@ -60,6 +59,7 @@ export async function flush() {
     await rooms.builder(tx).rooms.del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
+    await transactions.builder(tx).del();
     await interviews.builder(tx).del();
     await ratings.builder(tx).del();
     await confirmationCodes.builder(tx).del();
@@ -205,6 +205,7 @@ export async function lesson(
       duration: payload?.duration || sample([15, 30]),
       price: payload?.price || faker.number.int(500),
       slot: await or.slotId(payload?.slot, tutor),
+      txId: payload?.txId,
       student,
       tutor,
       tx,
@@ -530,7 +531,8 @@ async function transaction(
     amount: payload?.amount || randomInt(1000),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
-    type: ITransaction.Type.PaidPlan,
+    type: payload?.type || ITransaction.Type.PaidPlan,
+    status: payload?.status || ITransaction.Status.New,
   });
 }
 

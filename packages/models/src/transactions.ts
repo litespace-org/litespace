@@ -85,6 +85,13 @@ export class Transactions extends Model<
     return first(list) || null;
   }
 
+  async findOne(
+    payload: WithOptionalTx<ITransaction.FindQueryModel>
+  ): Promise<ITransaction.Self | null> {
+    const { list } = await this.find(payload);
+    return first(list) || null;
+  }
+
   async find({
     tx,
     page,
@@ -108,6 +115,7 @@ export class Transactions extends Model<
     {
       ids,
       users,
+      types,
       amount,
       statuses,
       paymentMethods,
@@ -120,6 +128,7 @@ export class Transactions extends Model<
     withListFilter(builder, this.column("user_id"), users);
     withNumericFilter(builder, this.column("amount"), amount);
     withListFilter(builder, this.column("status"), statuses);
+    withListFilter(builder, this.column("type"), types);
     withListFilter(builder, this.column("payment_method"), paymentMethods);
     withNullableListFilter(
       builder,
