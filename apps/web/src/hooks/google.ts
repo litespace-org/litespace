@@ -63,7 +63,10 @@ export function useGoogle({
       user.set(info);
 
       if (redirect) return navigate(redirect);
-      if (role) return navigate(Web.CompleteProfile);
+
+      if (role === IUser.Role.Student && !info.user.name)
+        return navigate(Web.CompleteProfile);
+
       return navigate(Web.Root);
     },
     [api.auth, intl, navigate, redirect, role, toast, user]
