@@ -108,7 +108,7 @@ const PersonalDetails: React.FC<Props> = ({
       email,
       city,
       gender,
-      notice: notice,
+      notice,
     },
     validators,
     onSubmit: (data) => {
