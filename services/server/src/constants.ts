@@ -1,5 +1,4 @@
 import { Env, IToken } from "@litespace/types";
-import { price } from "@litespace/utils/value";
 import { unionOfLiterals } from "@/validation/utils";
 import zod from "zod";
 
@@ -107,10 +106,10 @@ export const spaceConfig = {
 
 export const platformConfig = {
   /**
-   * Tutor hourly rate scaled in EGP price (scaled).
+   * Tutor hourly rate (unscaled) in EGP price.
    */
-  tutorHourlyRate: price.scale(150),
-  totalHourlyRate: price.scale(255),
+  tutorHourlyRate: 150,
+  totalHourlyRate: 255,
   /**
    * Tutor interview duration in minutes
    */

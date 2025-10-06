@@ -292,6 +292,57 @@ describe("Lessons", () => {
         ).to.be.eq(total);
       });
 
+      it("should include lessons within a specific period", async () => {
+        const tutor = await fixtures.tutor();
+        const tutor2 = await fixtures.tutor();
+
+        const now = dayjs();
+        await Promise.all([
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.subtract(1, "day").toISOString(),
+            price: lessonPrice,
+          }),
+          // NOTE: the only one to be calculated
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.add(1, "hour").toISOString(),
+            price: lessonPrice,
+          }),
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.add(1, "hour").toISOString(),
+            canceled: true,
+            price: lessonPrice,
+          }),
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.add(1, "hour").toISOString(),
+            reported: true,
+            price: lessonPrice,
+          }),
+          fixtures.lesson({
+            tutor: tutor2.id,
+            start: now.add(1, "hour").toISOString(),
+            price: lessonPrice,
+          }),
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.add(1, "day").toISOString(),
+            price: lessonPrice,
+          }),
+        ]);
+
+        const sum = await lessons.sumPrice({
+          users: [tutor.id],
+          after: now.toISOString(),
+          before: now.add(2, "hours").toISOString(),
+          canceled: false,
+          reported: false,
+        });
+        expect(sum).to.eq(lessonPrice * 1);
+      });
+
       it("should ignore canceled lessons", async () => {
         const total =
           (futureLessons +
@@ -374,6 +425,52 @@ describe("Lessons", () => {
             canceled: false,
           })
         ).to.be.eq(totalDuration);
+      });
+
+      it("should include lessons within a specific period", async () => {
+        const tutor = await fixtures.tutor();
+        const tutor2 = await fixtures.tutor();
+
+        const now = dayjs();
+        await Promise.all([
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.subtract(1, "day").toISOString(),
+          }),
+          // NOTE: the only one to be calculated
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.add(1, "hour").toISOString(),
+            duration: ILesson.Duration.Short,
+          }),
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.add(1, "hour").toISOString(),
+            canceled: true,
+          }),
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.add(1, "hour").toISOString(),
+            reported: true,
+          }),
+          fixtures.lesson({
+            tutor: tutor2.id,
+            start: now.add(1, "hour").toISOString(),
+          }),
+          fixtures.lesson({
+            tutor: tutor.id,
+            start: now.add(1, "day").toISOString(),
+          }),
+        ]);
+
+        const sum = await lessons.sumDuration({
+          users: [tutor.id],
+          after: now.toISOString(),
+          before: now.add(2, "hours").toISOString(),
+          canceled: false,
+          reported: false,
+        });
+        expect(sum).to.eq(ILesson.Duration.Short);
       });
     });
 

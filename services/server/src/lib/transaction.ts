@@ -5,10 +5,11 @@ import {
   txPlanTemps,
 } from "@litespace/models";
 import { ILesson, IPlan, ITransaction } from "@litespace/types";
+import { price } from "@litespace/utils";
 
 export async function createPaidLessonTx({
   userId,
-  scaledAmount,
+  amount,
   tutorId,
   slotId,
   start,
@@ -16,7 +17,7 @@ export async function createPaidLessonTx({
   paymentMethod,
 }: {
   userId: number;
-  scaledAmount: number;
+  amount: number;
   tutorId: number;
   slotId: number;
   start: string;
@@ -28,7 +29,7 @@ export async function createPaidLessonTx({
       tx,
       userId: userId,
       providerRefNum: null,
-      amount: scaledAmount,
+      amount: price.scale(amount),
       type: ITransaction.Type.PaidLesson,
       paymentMethod,
     });
@@ -48,13 +49,13 @@ export async function createPaidLessonTx({
 
 export async function createPaidPlanTx({
   userId,
-  scaledAmount,
+  amount,
   paymentMethod,
   planId,
   planPeriod,
 }: {
   userId: number;
-  scaledAmount: number;
+  amount: number;
   paymentMethod: ITransaction.PaymentMethod;
   planId: number;
   planPeriod: IPlan.Period;
@@ -64,7 +65,7 @@ export async function createPaidPlanTx({
       tx,
       userId: userId,
       providerRefNum: null,
-      amount: scaledAmount,
+      amount: price.scale(amount),
       paymentMethod,
       type: ITransaction.Type.PaidPlan,
     });

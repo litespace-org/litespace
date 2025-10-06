@@ -23,14 +23,14 @@ export async function performPayWithCardTx({
   user,
   phone,
   transaction,
-  unscaledAmount,
+  amount,
   cardToken,
   cvv,
 }: {
   user: IUser.Self;
   phone: string;
   transaction: ITransaction.Self;
-  unscaledAmount: number;
+  amount: number;
   cardToken: string;
   cvv: string;
 }): Promise<{ redirectUrl: string; type: string } | FawryError> {
@@ -40,7 +40,7 @@ export async function performPayWithCardTx({
       transactionId: transaction.id,
       createdAt: transaction.createdAt,
     }),
-    amount: unscaledAmount,
+    amount,
     cardToken,
     cvv,
   });
@@ -65,12 +65,12 @@ export async function performPayWithFawryRefNumTx({
   user,
   phone,
   transaction,
-  unscaledAmount,
+  amount,
 }: {
   user: IUser.Self;
   phone: string;
   transaction: ITransaction.Self;
-  unscaledAmount: number;
+  amount: number;
 }): Promise<{ referenceNumber: string } | FawryError> {
   const { statusCode, referenceNumber, statusDescription } =
     await fawry.payWithRefNum({
@@ -79,7 +79,7 @@ export async function performPayWithFawryRefNumTx({
         transactionId: transaction.id,
         createdAt: transaction.createdAt,
       }),
-      amount: unscaledAmount,
+      amount,
     });
 
   if (statusCode !== 200 || !referenceNumber) {
@@ -103,12 +103,12 @@ export async function performPayWithEWalletTx({
   user,
   phone,
   transaction,
-  unscaledAmount,
+  amount,
 }: {
   user: IUser.Self;
   phone: string;
   transaction: ITransaction.Self;
-  unscaledAmount: number;
+  amount: number;
 }): Promise<{ referenceNumber: string; walletQr: string | null } | FawryError> {
   const result = await fawry.payWithEWallet({
     customer: asFawryCustomer({ ...user, phone }),
@@ -116,7 +116,7 @@ export async function performPayWithEWalletTx({
       transactionId: transaction.id,
       createdAt: transaction.createdAt,
     }),
-    amount: unscaledAmount,
+    amount,
   });
 
   if (result.statusCode !== 200) {

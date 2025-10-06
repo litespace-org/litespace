@@ -189,6 +189,7 @@ export async function lesson(
   payload?: Partial<ILesson.CreatePayload> & {
     timing?: "future" | "past";
     canceled?: boolean;
+    reported?: boolean;
   }
 ): Promise<LessonReturn> {
   return await knex.transaction(async (tx: Knex.Transaction) => {
@@ -214,6 +215,12 @@ export async function lesson(
     if (payload?.canceled)
       await lessons.cancel({
         canceledBy: tutor,
+        ids: [data.lesson.id],
+        tx,
+      });
+
+    if (payload?.reported)
+      await lessons.report({
         ids: [data.lesson.id],
         tx,
       });
