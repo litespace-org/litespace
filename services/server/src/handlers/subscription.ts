@@ -20,17 +20,18 @@ import {
 import { isAdmin, isStudent, isSuperAdmin } from "@litespace/utils/user";
 import { lessons, subscriptions, transactions } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
-import { first, max, sum } from "lodash";
+import { first } from "lodash";
 import { calcRemainingWeeklyMinutesBySubscription } from "@/lib/subscription";
-import { price, safe } from "@litespace/utils";
+import { ResponseError, price, safe } from "@litespace/utils";
 import { fawry } from "@/fawry/api";
-import { fawryConfig } from "@/constants";
+import { TRANSACTION_FEES, fawryConfig } from "@/constants";
 import { genSignature } from "@/fawry/lib";
 import {
   checkStudentPaidLessonState,
   CheckStudentPaidLessonStateReturn,
 } from "@/lib/lesson";
 import { Unexpected } from "@/lib/error/local";
+import { calcRefundAmount } from "@/lib/refund";
 
 const findQuery: ZodSchema<ISubscription.FindApiQuery> = zod.object({
   ids: id.array().optional(),
@@ -181,36 +182,28 @@ async function cancel(req: Request, res: Response, next: NextFunction) {
 
   // In case it's not terminated yet; refund money and only then terminate the subscription
   // 1) Evaluate the refund money amount
-  const { list: attendedLessons } = await lessons.find({
-    users: [sub.userId],
-    canceled: false,
-    before: now,
-  });
-  const totalLessonsPrice = sum(attendedLessons.map((l) => l.price));
-
   const transaction = await transactions.findById(sub.txId);
   if (!transaction) return next(notfound.transaction());
-  const payedMoney = transaction.amount;
+  const refundAmount = await calcRefundAmount(transaction, TRANSACTION_FEES);
+  if (refundAmount instanceof ResponseError) return next(refundAmount);
 
-  const refundAmountScaled = max([payedMoney - totalLessonsPrice, 0]) || 0;
-
-  if (refundAmountScaled === 0) {
+  if (refundAmount <= 0) {
     return next(subscriptionUncancellable());
   }
 
   // 2) Refund the money
-  // @TODO: disable refunding after a certain number of days of the subscription; discuss it with the team
-  if (!transaction.providerRefNum) return next(bad("providerRefNum not found"));
+  if (!transaction.providerRefNum)
+    return next(unexpected("providerRefNum not found"));
 
   const fawryRes = await safe(() =>
     fawry.refund({
       merchantCode: fawryConfig.merchantCode,
       referenceNumber: transaction.providerRefNum!.toString(),
-      refundAmount: price.unscale(refundAmountScaled),
+      refundAmount: refundAmount,
       reason: "",
       signature: genSignature.forRefundRequest({
         referenceNumber: transaction.providerRefNum!.toString(),
-        refundAmount: price.unscale(refundAmountScaled),
+        refundAmount: refundAmount,
         reason: "",
       }),
     })
@@ -224,8 +217,20 @@ async function cancel(req: Request, res: Response, next: NextFunction) {
     terminatedBy: user.id,
   });
 
+  // 4) Cancel already booked future lessons
+  const futLessons = await lessons.find({
+    users: [user.id],
+    future: true,
+    canceled: false,
+    full: true,
+  });
+  await lessons.cancel({
+    canceledBy: user.id,
+    ids: futLessons.list.map((l) => l.id),
+  });
+
   const response: ISubscription.CancelApiResponse = {
-    refundAmount: refundAmountScaled,
+    refundAmount: price.scale(refundAmount),
   };
 
   res.status(200).json(response);
