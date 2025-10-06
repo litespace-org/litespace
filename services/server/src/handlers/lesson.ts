@@ -127,6 +127,7 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
 
   const scaledAmount = calculateLessonPrice(payload.duration);
   const unscaledAmount = price.unscale(scaledAmount);
+
   const transaction = await createPaidLessonTx({
     userId: user.id,
     scaledAmount,

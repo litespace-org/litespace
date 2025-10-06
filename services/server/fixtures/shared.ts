@@ -1,20 +1,4 @@
 import { exec } from "node:child_process";
-import {
-  knex,
-  topics,
-  messages,
-  rooms,
-  interviews,
-  lessons,
-  ratings,
-  users,
-  tutors,
-  availabilitySlots,
-  contactRequests,
-  sessionEvents,
-  transactions,
-  invoices,
-} from "@litespace/models";
 
 async function execute(command: string): Promise<string> {
   return await new Promise((resolve, reject) => {
@@ -35,28 +19,4 @@ export async function down() {
 
 export async function up() {
   await execute(`pnpm --filter @litespace/models ${command} up`);
-}
-
-export async function flush() {
-  await knex.transaction(async (tx) => {
-    /**
-     * ! Order matters becuase of the relations
-     */
-    await transactions.builder(tx).del();
-    await invoices.builder(tx).del();
-    await sessionEvents.builder(tx).del();
-    await topics.builder(tx).userTopics.del();
-    await topics.builder(tx).topics.del();
-    await messages.builder(tx).del();
-    await rooms.builder(tx).members.del();
-    await rooms.builder(tx).rooms.del();
-    await lessons.builder(tx).members.del();
-    await lessons.builder(tx).lessons.del();
-    await interviews.builder(tx).del();
-    await ratings.builder(tx).del();
-    await tutors.builder(tx).del();
-    await availabilitySlots.builder(tx).del();
-    await users.builder(tx).del();
-    await contactRequests.builder(tx).del();
-  });
 }

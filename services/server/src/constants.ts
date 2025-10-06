@@ -110,7 +110,7 @@ export const platformConfig = {
    * Tutor hourly rate scaled in EGP price (scaled).
    */
   tutorHourlyRate: price.scale(150),
-  totalHourRate: price.scale(255),
+  totalHourlyRate: price.scale(255),
   /**
    * Tutor interview duration in minutes
    */
@@ -188,3 +188,5 @@ export const INTRO_VIDEO_MAX_MINUTES = 3;
  * max size in megabytes
  */
 export const INTRO_VIDEO_MAX_FILE_SIZE = 400;
+
+export const TRANSACTION_FEES = 0;
