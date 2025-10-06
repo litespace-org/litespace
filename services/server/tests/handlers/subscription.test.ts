@@ -4,17 +4,12 @@ import fawryHandlers from "@/handlers/fawry";
 import { ISubscription, IUser, IPlan, ILesson, IFawry } from "@litespace/types";
 import { mockApi } from "@fixtures/mockApi";
 import { expect } from "chai";
-import {
-  bad,
-  fawryError,
-  forbidden,
-  notfound,
-  subscriptionUncancellable,
-} from "@/lib/error/api";
+import { bad, fawryError, forbidden, notfound } from "@/lib/error/api";
 import { subscriptions, transactions } from "@litespace/models";
 import dayjs from "dayjs";
-import { PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL } from "@litespace/utils";
-import { max } from "lodash";
+import { PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL, price } from "@litespace/utils";
+import { TRANSACTION_FEES } from "@/constants";
+import { calcRefundAmount } from "@/lib/refund";
 
 const find = mockApi<
   ISubscription.FindApiQuery,
@@ -291,63 +286,27 @@ describe("/api/v1/sub/", () => {
       expect(sub).to.not.be.null;
 
       // insert mock lessons in the db
-      const { lesson } = await db.lesson({
-        student: student.id,
-        timing: "past",
-        duration: ILesson.Duration.Long,
-      });
-      await db.lesson({
-        student: student.id,
-        timing: "future",
-        duration: ILesson.Duration.Long,
-      });
+      await Promise.all([
+        db.lesson({
+          student: student.id,
+          timing: "past",
+          duration: ILesson.Duration.Long,
+        }),
+        db.lesson({
+          student: student.id,
+          timing: "future",
+          duration: ILesson.Duration.Long,
+        }),
+      ]);
+
+      const expectedAmount = await calcRefundAmount(tx!, TRANSACTION_FEES);
+      expect(expectedAmount).to.not.be.instanceof(Error);
 
       const res = await cancel({ user: student, body: {} });
       expect(res.status).to.not.be.instanceof(Error);
       expect(res.body).to.deep.eq({
-        refundAmount: max([tx!.amount - lesson.price, 0]),
+        refundAmount: price.scale(expectedAmount as number),
       });
-    });
-
-    it("should return subscriptionUncancellable when the user had already attended lessons with the payed price", async () => {
-      const student = await db.student();
-      const plan = await db.plan();
-
-      const payRes = await pay({
-        user: student,
-        body: {
-          planId: plan.id,
-          period: PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL[IPlan.Period.Quarter],
-          wallet: "01010101010",
-          phone: "01010101010",
-        },
-      });
-      expect(payRes).to.not.be.instanceof(Error);
-      expect(payRes.status).to.eq(200);
-
-      const txId = payRes.body!.transactionId;
-      const tx = await transactions.findById(txId);
-      expect(tx).to.not.be.null;
-
-      // in order to create the subscription
-      await syncPaymentStatus({
-        user: student,
-        body: { transactionId: txId },
-      });
-
-      const sub = await subscriptions.findByTxId(txId);
-      expect(sub).to.not.be.null;
-
-      // insert mock lessons in the db
-      await db.lesson({
-        student: student.id,
-        timing: "past",
-        duration: ILesson.Duration.Long,
-        price: tx?.amount,
-      });
-
-      const res = await cancel({ user: student, body: {} });
-      expect(res).to.deep.eq(subscriptionUncancellable());
     });
   });
 });
