@@ -1176,6 +1176,7 @@
   "error.api.invalid-user-name": "عذرا، يجب إدخال اسمك ثنائي على الأقل من إعدادات الحساب الشخصي.",
   "error.api.phone-required": "عذرا، تأكد من إدخال رقم الهاتف من خلال إعدادات الحساب الشخصي.",
   "error.api.week-boundaries-violation": "عذرا، لا يمكنك حجز جلسة خارج الأسبوع الحالي.",
+  "error.api.non-refundable": "نأسف، لا يمكن استرجاع قيمة الخطة، حيث تم استخدام التطبيق لمدة تتناسب مع المبلغ المدفوع.",
   "error.name.length.short": "إسم قصير جدا",
   "error.name.length.long": "إسم طويل جدا",
   "error.name.invalid": "إسم غير مناسب",

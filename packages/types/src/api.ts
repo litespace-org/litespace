@@ -72,6 +72,7 @@ export enum ApiError {
   InvalidUserName = "api-invalid-user-name",
   PhoneRequired = "phone-required",
   WeekBoundariesViolation = "week-boundaries-violation",
+  NonRefundable = "nonrefundable",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

@@ -126,7 +126,7 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
   if (valid instanceof BusyTutor) return next(busyTutor());
 
   const scaledAmount = calculateLessonPrice(
-    platformConfig.totalHourRate,
+    platformConfig.totalHourlyRate,
     payload.duration
   );
   const unscaledAmount = price.unscale(scaledAmount);
@@ -179,7 +179,7 @@ async function createWithFawryRefNum(
   if (valid instanceof BusyTutor) return next(busyTutor());
 
   const scaledAmount = calculateLessonPrice(
-    platformConfig.totalHourRate,
+    platformConfig.totalHourlyRate,
     payload.duration
   );
   const unscaledAmount = price.unscale(scaledAmount);
@@ -231,7 +231,7 @@ async function createWithEWallet(
   if (valid instanceof BusyTutor) return next(busyTutor());
 
   const scaledAmount = calculateLessonPrice(
-    platformConfig.totalHourRate,
+    platformConfig.totalHourlyRate,
     payload.duration
   );
   const unscaledAmount = price.unscale(scaledAmount);

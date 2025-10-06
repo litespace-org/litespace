@@ -37,7 +37,7 @@ import { Knex } from "knex";
 import { sendMsg } from "@/lib/messenger";
 import { ApiContext } from "@/types/api";
 import { withDevLog } from "@/lib/utils";
-import { noEnoughMinutes, weekBoundariesViolation } from "./error/api";
+import { noEnoughMinutes, weekBoundariesViolation } from "@/lib/error/api";
 
 export function getDayLessonsMap(lessons: Array<ILesson.Self>): DayLessonsMap {
   const dayLessonsMap: DayLessonsMap = {};
