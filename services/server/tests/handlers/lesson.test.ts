@@ -159,7 +159,7 @@ describe("/api/v1/lesson/", () => {
         body: {
           tutorId: 3214,
           slotId: 4132,
-          start: dayjs().toISOString(),
+          start: dayjs().add(1, "hour").toISOString(),
           duration: ILesson.Duration.Short,
         },
       });

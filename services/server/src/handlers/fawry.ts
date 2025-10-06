@@ -63,7 +63,7 @@ import { createPaidPlanTx } from "@/lib/transaction";
 import { FawryError } from "@/lib/error/local";
 import { forgeFawryPayload } from "@/fawry/lib/utils";
 import { withDevLog } from "@/lib/utils";
-import { calcRefundAmount } from "@/lib/refund";
+import { calcRefundAmount, txRefundRepercussion } from "@/lib/refund";
 
 const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "month",
@@ -460,7 +460,7 @@ async function refund(req: Request, res: Response, next: NextFunction) {
 
   const refundAmount = await calcRefundAmount(tx, TRANSACTION_FEES);
   if (refundAmount instanceof ResponseError) return next(refundAmount);
-  if (refundAmount === 0) return next(nonrefundable());
+  if (refundAmount <= 0) return next(nonrefundable());
 
   const { statusCode, statusDescription } = await fawry.refund({
     merchantCode: fawryConfig.merchantCode,
@@ -492,6 +492,7 @@ async function refund(req: Request, res: Response, next: NextFunction) {
           ? ITransaction.Status.PartialRefunded
           : ITransaction.Status.Refunded,
     });
+    txRefundRepercussion(tx);
   }
 
   res.json(response);

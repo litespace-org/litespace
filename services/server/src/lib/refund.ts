@@ -48,3 +48,40 @@ export async function calcRefundAmount(
 
   return max([refundAmount, 0]) || 0;
 }
+
+/**
+ * Repercussions of refunding a transaction
+ */
+export async function txRefundRepercussion(
+  tx: Pick<ITransaction.Self, "id" | "userId" | "type">
+) {
+  if (tx.type === ITransaction.Type.PaidLesson) {
+    const lesson = await lessons.findOne({ users: [tx.userId], txs: [tx.id] });
+    if (!lesson) return;
+    return lessons.cancel({
+      ids: [lesson.id],
+      canceledBy: tx.userId,
+    });
+  } else if (tx.type === ITransaction.Type.PaidPlan) {
+    const sub = await subscriptions.findByTxId(tx.id);
+    if (!sub) return;
+
+    // Terminate the subscription
+    await subscriptions.update(sub.id, {
+      terminatedAt: dayjs().toISOString(),
+      terminatedBy: tx.userId,
+    });
+
+    // Cancel already booked future lessons
+    const futLessons = await lessons.find({
+      users: [tx.userId],
+      future: true,
+      canceled: false,
+      full: true,
+    });
+    await lessons.cancel({
+      canceledBy: tx.userId,
+      ids: futLessons.list.map((l) => l.id),
+    });
+  }
+}
