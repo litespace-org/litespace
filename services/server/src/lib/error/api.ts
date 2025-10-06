@@ -57,6 +57,8 @@ export const busyTutor = () => error(ApiError.BusyTutor, 400);
 
 export const invalidEmail = () => error(ApiError.InvalidEmail, 400);
 
+export const nonrefundable = () => error(ApiError.NonRefundable, 422);
+
 export const busyTutorManager = () => error(ApiError.BusyTutorManager, 400);
 
 export const unexpected = (msg?: string) =>
