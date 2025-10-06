@@ -34,7 +34,7 @@ import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { isAdmin, isStudent, isTutor, isUser } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
 import { isEmpty, isEqual } from "lodash";
-import { AFRICA_CAIRO_TIMEZONE, price, ResponseError } from "@litespace/utils";
+import { AFRICA_CAIRO_TIMEZONE, ResponseError } from "@litespace/utils";
 import { withImageUrls, withPhone } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import {
