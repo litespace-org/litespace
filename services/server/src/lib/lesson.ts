@@ -16,6 +16,7 @@ import { platformConfig } from "@/constants";
 import {
   AFRICA_CAIRO_TIMEZONE,
   MAX_PAID_LESSON_COUNT,
+  ResponseError,
   calculateLessonPrice,
   count,
   genSessionId,
@@ -36,6 +37,7 @@ import { Knex } from "knex";
 import { sendMsg } from "@/lib/messenger";
 import { ApiContext } from "@/types/api";
 import { withDevLog } from "@/lib/utils";
+import { noEnoughMinutes, weekBoundariesViolation } from "./error/api";
 
 export function getDayLessonsMap(lessons: Array<ILesson.Self>): DayLessonsMap {
   const dayLessonsMap: DayLessonsMap = {};
@@ -140,7 +142,8 @@ export type CheckStudentPaidLessonStateReturn =
   | {
       status:
         | ILesson.PaidLessonStatus.EligibleWithPayment
-        | ILesson.PaidLessonStatus.NotEligible;
+        | ILesson.PaidLessonStatus.NotEligible
+        | ILesson.PaidLessonStatus.Eligible;
     }
   | {
       status: ILesson.PaidLessonStatus.EligitbleWithoutPayment;
@@ -236,7 +239,7 @@ export async function checkBookingLessonEligibilityState({
   userId: number;
   duration: ILesson.Duration;
   start: string;
-}): Promise<{ eligible: boolean; txId?: number } | Unexpected> {
+}): Promise<{ eligible: boolean; txId?: number } | Unexpected | ResponseError> {
   const subscription = await subscriptions
     .find({
       users: [userId],
@@ -247,7 +250,7 @@ export async function checkBookingLessonEligibilityState({
 
   const state: CheckStudentPaidLessonStateReturn = !subscription
     ? await checkStudentPaidLessonState(userId)
-    : { status: ILesson.PaidLessonStatus.NotEligible };
+    : { status: ILesson.PaidLessonStatus.Eligible };
 
   withDevLog({
     src: nameof(checkBookingLessonEligibilityState),
@@ -269,6 +272,8 @@ export async function checkBookingLessonEligibilityState({
   const remainingMinutes =
     await calcRemainingWeeklyMinutesBySubscription(subscription);
 
+  if (remainingMinutes < duration) return noEnoughMinutes();
+
   // subscribed users should not be able to book lessons not within the
   // current week
   const weekBoundaries = getCurrentWeekBoundaries(subscription.start);
@@ -277,7 +282,9 @@ export async function checkBookingLessonEligibilityState({
     .add(duration, "minutes")
     .isBetween(weekBoundaries.start, weekBoundaries.end, "minutes", "[]");
 
-  return { eligible: within && remainingMinutes >= duration };
+  if (!within) return weekBoundariesViolation();
+
+  return { eligible: true };
 }
 
 /**

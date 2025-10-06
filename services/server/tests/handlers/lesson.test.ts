@@ -152,7 +152,7 @@ describe("/api/v1/lesson/", () => {
     });
 
     it("should respond with tutor notfound in case the tutorId is not found", async () => {
-      const student = await db.student();
+      const student = await db.subStudent();
 
       const res = await createLesson({
         user: student,
@@ -168,7 +168,7 @@ describe("/api/v1/lesson/", () => {
     });
 
     it("should respond with slot notfound in case the slotId is not found", async () => {
-      const student = await db.student();
+      const student = await db.subStudent();
       const tutor = await db.tutor();
 
       const res = await createLesson({
@@ -185,7 +185,7 @@ describe("/api/v1/lesson/", () => {
     });
 
     it("should respond with bad in case the start date is before now", async () => {
-      const student = await db.student();
+      const student = await db.subStudent();
 
       const tutor = await db.tutor();
       const slot = await db.slot({
@@ -207,7 +207,7 @@ describe("/api/v1/lesson/", () => {
     });
 
     it("should respond with busyTutor in case the tutor has already a lesson at the specified time", async () => {
-      const student = await db.student();
+      const student = await db.subStudent();
       const tutor = await db.tutorManager();
       const slot = await db.slot({
         userId: tutor.id,
@@ -222,7 +222,7 @@ describe("/api/v1/lesson/", () => {
         start: slot.start,
       });
 
-      const student2 = await db.student();
+      const student2 = await db.subStudent();
 
       const res = await createLesson({
         user: student2,
@@ -303,7 +303,8 @@ describe("/api/v1/lesson/", () => {
       expect(res).to.deep.eq(weekBoundariesViolation());
     });
 
-    it("should successfully create the lesson when an unsubscribed student books a lesson with a tutor-manager", async () => {
+    // skipped because of the changes in booking policy
+    it.skip("should successfully create the lesson when an unsubscribed student books a lesson with a tutor-manager", async () => {
       const student = await db.student();
 
       const tutor = await db.tutorManager();

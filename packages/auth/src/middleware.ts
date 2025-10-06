@@ -5,6 +5,15 @@ import { users } from "@litespace/models";
 import { safe } from "@litespace/utils/error";
 import { isAdmin } from "@litespace/utils/user";
 
+/* TODO: uncomment once feat/paid-trail is merged.
+const _error = (errorCode: ApiErrorCode, statusCode: number, message?: string) =>
+  new ResponseError({
+    errorCode,
+    statusCode,
+    message,
+  });
+*/
+
 export function authMiddleware({ jwtSecret }: { jwtSecret: string }) {
   return safeRequest(
     async (req: Request, _res: Response, next: NextFunction) => {
@@ -15,6 +24,9 @@ export function authMiddleware({ jwtSecret }: { jwtSecret: string }) {
 
       if (type === "Bearer") {
         const id = await safe(async () => decodeAuthJwt(token, jwtSecret));
+        // TODO: uncomment this and remove the bottom line
+        // once this feature is ready to be merged.
+        // if (id instanceof Error) return next(error(ApiError.Unauthenticated, 401));
         if (id instanceof Error) return next();
 
         const user = await users.findById(id);
