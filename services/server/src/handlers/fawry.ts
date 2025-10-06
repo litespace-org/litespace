@@ -457,6 +457,7 @@ async function refund(req: Request, res: Response, next: NextFunction) {
     .then((res) => res.list[0]);
 
   if (!tx) return next(notfound.transaction());
+  if (tx.userId !== user.id) return next(forbidden());
 
   const refundAmount = await calcRefundAmount(tx, TRANSACTION_FEES);
   if (refundAmount instanceof ResponseError) return next(refundAmount);

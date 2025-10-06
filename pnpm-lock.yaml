@@ -24649,18 +24649,6 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.22.0
       debug: 4.4.1(supports-color@5.5.0)
       eslint: 9.26.0(jiti@1.21.7)
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - supports-color
-
-  '@typescript-eslint/parser@8.32.1(eslint@9.26.0(jiti@1.21.7))(typescript@5.4.5)':
-    dependencies:
-      '@typescript-eslint/scope-manager': 8.32.1
-      '@typescript-eslint/types': 8.32.1
-      '@typescript-eslint/typescript-estree': 8.32.1(typescript@5.4.5)
-      '@typescript-eslint/visitor-keys': 8.32.1
-      debug: 4.4.0(supports-color@5.5.0)
-      eslint: 9.26.0(jiti@1.21.7)
       typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
@@ -24755,21 +24743,7 @@ snapshots:
 
   '@typescript-eslint/types@8.32.1': {}
 
-  '@typescript-eslint/types@8.38.0': {}
-
-  '@typescript-eslint/typescript-estree@8.22.0(typescript@5.4.5)':
-    dependencies:
-      '@typescript-eslint/types': 8.22.0
-      '@typescript-eslint/visitor-keys': 8.22.0
-      debug: 4.4.1(supports-color@5.5.0)
-      fast-glob: 3.3.3
-      is-glob: 4.0.3
-      minimatch: 9.0.5
-      semver: 7.7.2
-      ts-api-utils: 2.1.0(typescript@5.4.5)
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - supports-color
+  '@typescript-eslint/types@8.45.0': {}
 
   '@typescript-eslint/typescript-estree@8.22.0(typescript@5.9.2)':
     dependencies:
@@ -24782,20 +24756,6 @@ snapshots:
       semver: 7.7.2
       ts-api-utils: 2.1.0(typescript@5.9.2)
       typescript: 5.9.2
-    transitivePeerDependencies:
-      - supports-color
-
-  '@typescript-eslint/typescript-estree@8.32.1(typescript@5.4.5)':
-    dependencies:
-      '@typescript-eslint/types': 8.32.1
-      '@typescript-eslint/visitor-keys': 8.32.1
-      debug: 4.4.1(supports-color@5.5.0)
-      fast-glob: 3.3.3
-      is-glob: 4.0.3
-      minimatch: 9.0.5
-      semver: 7.7.2
-      ts-api-utils: 2.1.0(typescript@5.4.5)
-      typescript: 5.4.5
     transitivePeerDependencies:
       - supports-color
 
@@ -24815,10 +24775,10 @@ snapshots:
 
   '@typescript-eslint/typescript-estree@8.45.0(typescript@5.9.2)':
     dependencies:
-      '@typescript-eslint/project-service': 8.38.0(typescript@5.4.5)
-      '@typescript-eslint/tsconfig-utils': 8.38.0(typescript@5.4.5)
-      '@typescript-eslint/types': 8.38.0
-      '@typescript-eslint/visitor-keys': 8.38.0
+      '@typescript-eslint/project-service': 8.45.0(typescript@5.9.2)
+      '@typescript-eslint/tsconfig-utils': 8.45.0(typescript@5.9.2)
+      '@typescript-eslint/types': 8.45.0
+      '@typescript-eslint/visitor-keys': 8.45.0
       debug: 4.4.1(supports-color@5.5.0)
       fast-glob: 3.3.3
       is-glob: 4.0.3
@@ -31662,7 +31622,7 @@ snapshots:
       yaml: 2.7.0
     optionalDependencies:
       postcss: 8.5.3
-      ts-node: 10.9.2(@swc/core@1.11.24(@swc/helpers@0.5.15))(@types/node@22.15.17)(typescript@5.4.5)
+      ts-node: 10.9.2(@swc/core@1.11.24(@swc/helpers@0.5.15))(@types/node@22.15.17)(typescript@5.9.2)
 
   postcss-load-config@4.0.2(postcss@8.5.3)(ts-node@10.9.2(@swc/core@1.11.24)(@types/node@20.17.46)(typescript@5.9.2)):
     dependencies:
@@ -32050,7 +32010,7 @@ snapshots:
   puppeteer-cluster@0.24.0(puppeteer@24.10.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)):
     dependencies:
       debug: 4.4.0(supports-color@5.5.0)
-      puppeteer: 24.10.1(bufferutil@4.0.9)(typescript@5.4.5)(utf-8-validate@5.0.10)
+      puppeteer: 24.10.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - supports-color
 
@@ -34752,7 +34712,7 @@ snapshots:
     dependencies:
       '@microsoft/api-extractor': 7.43.0(@types/node@22.15.17)
       '@rollup/pluginutils': 5.1.4(rollup@4.40.2)
-      '@vue/language-core': 1.8.27(typescript@5.4.5)
+      '@vue/language-core': 1.8.27(typescript@5.9.2)
       debug: 4.4.0(supports-color@5.5.0)
       kolorist: 1.8.0
       magic-string: 0.30.17

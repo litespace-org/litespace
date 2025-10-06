@@ -5,6 +5,23 @@ import { QueryKey } from "@/constants";
 import { useSocket } from "@/socket";
 import { ITransaction, Wss } from "@litespace/types";
 
+export function useFindTxById(id?: number) {
+  const api = useApi();
+
+  const findById = useCallback(async () => {
+    return id ? api.transaction.findById(id) : null;
+  }, [api.transaction, id]);
+
+  const keys = [QueryKey.FindTxById, id];
+
+  const query = useQuery({
+    queryFn: findById,
+    queryKey: keys,
+  });
+
+  return { query, keys };
+}
+
 export function useFindLastTransaction(config?: { enabled?: boolean }) {
   const api = useApi();
 
