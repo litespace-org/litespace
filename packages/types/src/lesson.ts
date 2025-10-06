@@ -104,9 +104,10 @@ export type PaidLessonStatusLiteral =
   | "eligible-without-payment";
 
 export enum PaidLessonStatus {
-  NotEligible,
-  EligibleWithPayment,
-  EligitbleWithoutPayment,
+  NotEligible = 1,
+  Eligible = 2,
+  EligibleWithPayment = 3,
+  EligitbleWithoutPayment = 4,
 }
 
 export type CreatePayload = {
