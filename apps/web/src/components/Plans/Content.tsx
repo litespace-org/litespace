@@ -1,6 +1,13 @@
 import Selector from "@/components/Plans/Selector";
+import { useOnError } from "@/hooks/error";
+import { env } from "@/lib/env";
+import { useSubscription } from "@litespace/headless/context/subscription";
+import { useRefund } from "@litespace/headless/fawry";
+import { useFindTxById } from "@litespace/headless/transaction";
 import { IPlan, Void } from "@litespace/types";
+import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useToast } from "@litespace/ui/Toast";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { Typography } from "@litespace/ui/Typography";
 import { isEmpty } from "lodash";
@@ -13,6 +20,19 @@ export const Content: React.FC<{
   refetch: Void;
 }> = ({ loading, error, list, refetch }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
+  const { info: sub } = useSubscription();
+  const { query: txQuery } = useFindTxById(sub?.txId);
+
+  const onError = useOnError({
+    type: "mutation",
+    handler: (err) => toast.error({ title: intl(err.messageId) }),
+  });
+
+  const refund = useRefund({
+    onSuccess: () => document.location.reload(),
+    onError,
+  });
 
   if (loading)
     return (
@@ -36,6 +56,21 @@ export const Content: React.FC<{
       >
         {intl("plans.title")}
       </Typography>
+      {sub && env.client !== "production" ? (
+        <Button
+          size="large"
+          loading={refund.isPending}
+          disabled={refund.isPending || txQuery.isPending || !txQuery.data}
+          onClick={() =>
+            refund.mutate({
+              orderRefNum: txQuery.data?.providerRefNum || "",
+              reason: "just testing the refund mechanism",
+            })
+          }
+        >
+          Refund
+        </Button>
+      ) : null}
       <div>
         <Typography
           tag="h3"

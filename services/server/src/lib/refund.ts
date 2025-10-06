@@ -1,7 +1,7 @@
 import { platformConfig } from "@/constants";
 import { lessons, subscriptions } from "@litespace/models";
 import { ITransaction } from "@litespace/types";
-import { dayjs, MINUTES_IN_HOUR, price, ResponseError } from "@litespace/utils";
+import { dayjs, MINUTES_IN_HOUR, ResponseError } from "@litespace/utils";
 import { max } from "lodash";
 import { notfound, unexpected } from "@/lib/error/api";
 import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
@@ -14,7 +14,7 @@ export async function calcRefundAmount(
   txFees: number
 ): Promise<number | ResponseError> {
   // 1) get the paid amount from the transaction
-  const paidAmount = price.unscale(tx.amount);
+  const paidAmount = tx.amount;
 
   if (tx.type === ITransaction.Type.PaidLesson)
     return max([paidAmount - txFees, 0]) || 0;
@@ -52,7 +52,7 @@ export async function calcRefundAmount(
 /**
  * Repercussions of refunding a transaction
  */
-export async function txRefundRepercussion(
+export async function performRefundRepercussion(
   tx: Pick<ITransaction.Self, "id" | "userId" | "type">
 ) {
   if (tx.type === ITransaction.Type.PaidLesson) {

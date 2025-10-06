@@ -1,6 +1,7 @@
 import { Env, IToken } from "@litespace/types";
 import { unionOfLiterals } from "@/validation/utils";
 import zod from "zod";
+import { price } from "@litespace/utils";
 
 export const environment = unionOfLiterals<Env.Server>([
   "local",
@@ -106,10 +107,13 @@ export const spaceConfig = {
 
 export const platformConfig = {
   /**
-   * Tutor hourly rate (unscaled) in EGP price.
+   * Tutor hourly rate (scaled) in EGP price.
    */
-  tutorHourlyRate: 150,
-  totalHourlyRate: 255,
+  tutorHourlyRate: price.scale(150),
+  /**
+   * Total hourly rate (scaled) in EGP price.
+   */
+  totalHourlyRate: price.scale(255),
   /**
    * Tutor interview duration in minutes
    */

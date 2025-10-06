@@ -4,6 +4,7 @@ import { Customer } from "@/fawry/types/requests";
 import { transactions } from "@litespace/models";
 import { ITransaction, IUser } from "@litespace/types";
 import { FawryError } from "@/lib/error/local";
+import { price } from "@litespace/utils";
 
 export function asFawryCustomer({
   id,
@@ -40,7 +41,7 @@ export async function performPayWithCardTx({
       transactionId: transaction.id,
       createdAt: transaction.createdAt,
     }),
-    amount,
+    amount: price.unscale(amount),
     cardToken,
     cvv,
   });
@@ -79,7 +80,7 @@ export async function performPayWithFawryRefNumTx({
         transactionId: transaction.id,
         createdAt: transaction.createdAt,
       }),
-      amount,
+      amount: price.unscale(amount),
     });
 
   if (statusCode !== 200 || !referenceNumber) {
@@ -116,7 +117,7 @@ export async function performPayWithEWalletTx({
       transactionId: transaction.id,
       createdAt: transaction.createdAt,
     }),
-    amount,
+    amount: price.unscale(amount),
   });
 
   if (result.statusCode !== 200) {

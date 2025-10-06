@@ -186,7 +186,7 @@ export function forRefundRequest(
   return generateSignature(
     fawryConfig.merchantCode,
     data.referenceNumber,
-    data.refundAmount,
+    data.refundAmount.toFixed(2),
     data.reason || "",
     fawryConfig.secureKey
   );
