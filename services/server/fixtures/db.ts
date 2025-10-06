@@ -344,6 +344,20 @@ function student() {
   return user({ role: IUser.Role.Student });
 }
 
+/**
+ * Create a subscribed user
+ */
+async function subStudent() {
+  const st = await student();
+  const start = dayjs().startOf("week");
+  await subscription({
+    userId: st.id,
+    start: start.toISOString(),
+    end: start.add(1, "week").toISOString(),
+  });
+  return st;
+}
+
 async function tutorManagerUser(
   userPayload?: Partial<IUser.CreatePayload>,
   tutorPayload?: Partial<ITutor.UpdatePayload>
@@ -700,6 +714,7 @@ export default {
   onboardedTutor,
   onboardedTutorManager,
   student,
+  subStudent,
   tutorManager,
   tutorManagerUser,
   students,
