@@ -8,7 +8,7 @@ import {
   isStudent,
   PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD,
   PLAN_PERIOD_TO_MONTH_COUNT,
-  price,
+  PLAN_PERIOD_TO_WEEK_COUNT,
   safePromise,
 } from "@litespace/utils";
 import { IFawry, IPlan, ITransaction, Wss } from "@litespace/types";
@@ -56,6 +56,7 @@ import { upsertLessonByTxStatus } from "@/lib/lesson";
 import { createPaidPlanTx } from "@/lib/transaction";
 import { FawryError } from "@/lib/error/local";
 import { forgeFawryPayload } from "@/fawry/lib/utils";
+import { calcRefundPrice } from "@/lib/refund";
 
 const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "month",
@@ -106,7 +107,6 @@ const syncPaymentPayload: ZodSchema<IFawry.SyncPaymentStatusPayload> =
 
 const refundPayload: ZodSchema<IFawry.RefundPayload> = zod.object({
   orderRefNum: zod.string(),
-  refundAmount: zod.number(),
   reason: zod.string().optional(),
 });
 
@@ -445,15 +445,23 @@ async function refund(req: Request, res: Response, next: NextFunction) {
 
   const payload = refundPayload.parse(req.body);
 
+  const tx = await transactions
+    .find({ providerRefNums: [payload.orderRefNum] })
+    .then((res) => res.list[0]);
+
+  if (!tx) return next(notfound.transaction());
+
+  const refundAmount = await calcRefundPrice({ userId: user.id, tx });
+
   const { statusCode, statusDescription } = await fawry.refund({
     merchantCode: fawryConfig.merchantCode,
     referenceNumber: payload.orderRefNum,
-    refundAmount: price.unscale(payload.refundAmount),
+    refundAmount,
     reason: payload.reason,
     signature: genSignature.forRefundRequest({
       referenceNumber: payload.orderRefNum,
       reason: payload.reason,
-      refundAmount: price.unscale(payload.refundAmount),
+      refundAmount,
     }),
   });
 
@@ -471,7 +479,7 @@ async function refund(req: Request, res: Response, next: NextFunction) {
     await transactions.update({
       id: tx.id,
       status:
-        tx.amount < payload.refundAmount
+        tx.amount < refundAmount
           ? ITransaction.Status.PartialRefunded
           : ITransaction.Status.Refunded,
     });
