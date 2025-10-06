@@ -195,6 +195,7 @@ export async function lesson(
   payload?: Partial<ILesson.CreatePayload> & {
     timing?: "future" | "past";
     canceled?: boolean;
+    reported?: boolean;
   }
 ): Promise<LessonReturn> {
   return await knex.transaction(async (tx: Knex.Transaction) => {
@@ -222,6 +223,13 @@ export async function lesson(
         ids: [data.lesson.id],
         tx,
       });
+
+    if (payload?.reported)
+      await lessons.report({
+        ids: [data.lesson.id],
+        tx,
+      });
+
     const lesson = await lessons.findById(data.lesson.id);
     return { lesson: lesson || data.lesson, members: data.members };
   });

@@ -34,7 +34,7 @@ import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { isAdmin, isStudent, isTutor, isUser } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import { isEmpty, isEqual } from "lodash";
-import { AFRICA_CAIRO_TIMEZONE, price, ResponseError } from "@litespace/utils";
+import { AFRICA_CAIRO_TIMEZONE, ResponseError } from "@litespace/utils";
 import { withImageUrls, withPhone } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import {
@@ -125,14 +125,14 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const scaledAmount = calculateLessonPrice(
+  const priceAmount = calculateLessonPrice(
     platformConfig.totalHourlyRate,
     payload.duration
   );
-  const unscaledAmount = price.unscale(scaledAmount);
+
   const transaction = await createPaidLessonTx({
     userId: user.id,
-    scaledAmount,
+    amount: priceAmount,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
     start: payload.start,
@@ -144,7 +144,7 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
     user,
     phone,
     transaction,
-    unscaledAmount,
+    amount: priceAmount,
     cvv: payload.cvv,
     cardToken: payload.cardToken,
   });
@@ -178,15 +178,14 @@ async function createWithFawryRefNum(
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const scaledAmount = calculateLessonPrice(
+  const amount = calculateLessonPrice(
     platformConfig.totalHourlyRate,
     payload.duration
   );
-  const unscaledAmount = price.unscale(scaledAmount);
 
   const transaction = await createPaidLessonTx({
     userId: user.id,
-    scaledAmount,
+    amount,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
     start: payload.start,
@@ -198,7 +197,7 @@ async function createWithFawryRefNum(
     user,
     phone,
     transaction,
-    unscaledAmount,
+    amount,
   });
 
   if (result instanceof FawryError) return next(fawryError(result.message));
@@ -230,15 +229,14 @@ async function createWithEWallet(
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const scaledAmount = calculateLessonPrice(
+  const amount = calculateLessonPrice(
     platformConfig.totalHourlyRate,
     payload.duration
   );
-  const unscaledAmount = price.unscale(scaledAmount);
 
   const transaction = await createPaidLessonTx({
     userId: user.id,
-    scaledAmount,
+    amount,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
     start: payload.start,
@@ -250,7 +248,7 @@ async function createWithEWallet(
     user,
     phone,
     transaction,
-    unscaledAmount,
+    amount,
   });
 
   if (result instanceof FawryError) return next(fawryError(result.message));

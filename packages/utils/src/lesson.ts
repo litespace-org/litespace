@@ -2,8 +2,8 @@ import { ILesson } from "@litespace/types";
 import { MINUTES_IN_HOUR } from "@/constants";
 
 /**
- * @param price {number} scaled hourly rate
- * @param duration  {ILesson.Duration}
+ * @param price {number} hourly rate
+ * @param duration {ILesson.Duration}
  * @returns scaled lesson price
  */
 export function calculateLessonPrice(

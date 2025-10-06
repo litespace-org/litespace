@@ -27,7 +27,7 @@ import {
   performPayWithFawryRefNumTx,
 } from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
-import { fawryConfig } from "@/constants";
+import { fawryConfig, TRANSACTION_FEES } from "@/constants";
 import { id, unionOfLiterals } from "@/validation/utils";
 import dayjs from "@/lib/dayjs";
 import {
@@ -63,7 +63,7 @@ import { createPaidPlanTx } from "@/lib/transaction";
 import { FawryError } from "@/lib/error/local";
 import { forgeFawryPayload } from "@/fawry/lib/utils";
 import { withDevLog } from "@/lib/utils";
-import { calcRefundPrice } from "@/lib/refund";
+import { calcRefundAmount } from "@/lib/refund";
 
 const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "month",
@@ -187,11 +187,11 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
   }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
-  const { total, totalScaled } = calculatePlanPrice({ period, plan });
+  const { total } = calculatePlanPrice({ period, plan });
 
   const transaction = await createPaidPlanTx({
     userId: user.id,
-    scaledAmount: totalScaled,
+    amount: total,
     paymentMethod: ITransaction.PaymentMethod.Card,
     planId: plan.id,
     planPeriod: period,
@@ -202,7 +202,7 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
     phone,
     transaction,
     cvv: payload.cvv,
-    unscaledAmount: total,
+    amount: total,
     cardToken: payload.cardToken,
   });
 
@@ -240,11 +240,11 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
   }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
-  const { total, totalScaled } = calculatePlanPrice({ period, plan });
+  const { total } = calculatePlanPrice({ period, plan });
 
   const transaction = await createPaidPlanTx({
     userId: user.id,
-    scaledAmount: totalScaled,
+    amount: total,
     paymentMethod: ITransaction.PaymentMethod.Fawry,
     planId: plan.id,
     planPeriod: period,
@@ -254,7 +254,7 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
     user,
     phone,
     transaction,
-    unscaledAmount: total,
+    amount: total,
   });
 
   if (result instanceof FawryError) return next(fawryError(result.message));
@@ -291,11 +291,11 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
   }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
-  const { total, totalScaled } = calculatePlanPrice({ period, plan });
+  const { total } = calculatePlanPrice({ period, plan });
 
   const transaction = await createPaidPlanTx({
     userId: user.id,
-    scaledAmount: totalScaled,
+    amount: total,
     paymentMethod: ITransaction.PaymentMethod.EWallet,
     planId: plan.id,
     planPeriod: period,
@@ -305,7 +305,7 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
     user,
     phone,
     transaction,
-    unscaledAmount: total,
+    amount: total,
   });
 
   if (result instanceof FawryError) return next(fawryError(result.message));
@@ -458,7 +458,7 @@ async function refund(req: Request, res: Response, next: NextFunction) {
 
   if (!tx) return next(notfound.transaction());
 
-  const refundAmount = await calcRefundPrice({ userId: user.id, tx });
+  const refundAmount = await calcRefundAmount(tx, TRANSACTION_FEES);
   if (refundAmount instanceof ResponseError) return next(refundAmount);
   if (refundAmount === 0) return next(nonrefundable());
 
