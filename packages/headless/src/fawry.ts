@@ -190,3 +190,25 @@ export function useSyncPaymentStatus({
     onError,
   });
 }
+
+export function useRefund({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<IFawry.RefundResponse>;
+  onError?: OnError;
+}) {
+  const api = useApi();
+
+  const sync = useCallback(
+    (payload: IFawry.RefundPayload) => api.fawry.refund(payload),
+    [api.fawry]
+  );
+
+  return useMutation({
+    mutationFn: sync,
+    mutationKey: [MutationKey.FawryRefund],
+    onSuccess,
+    onError,
+  });
+}

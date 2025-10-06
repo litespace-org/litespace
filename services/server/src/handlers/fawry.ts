@@ -63,7 +63,7 @@ import { createPaidPlanTx } from "@/lib/transaction";
 import { FawryError } from "@/lib/error/local";
 import { forgeFawryPayload } from "@/fawry/lib/utils";
 import { withDevLog } from "@/lib/utils";
-import { calcRefundAmount, txRefundRepercussion } from "@/lib/refund";
+import { calcRefundAmount, performRefundRepercussion } from "@/lib/refund";
 
 const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "month",
@@ -186,11 +186,11 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
   }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
-  const { total } = calculatePlanPrice({ period, plan });
+  const planPrice = calculatePlanPrice({ period, plan });
 
   const transaction = await createPaidPlanTx({
     userId: user.id,
-    amount: total,
+    amount: planPrice,
     paymentMethod: ITransaction.PaymentMethod.Card,
     planId: plan.id,
     planPeriod: period,
@@ -201,7 +201,7 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
     phone,
     transaction,
     cvv: payload.cvv,
-    amount: total,
+    amount: planPrice,
     cardToken: payload.cardToken,
   });
 
@@ -239,11 +239,11 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
   }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
-  const { total } = calculatePlanPrice({ period, plan });
+  const planPrice = calculatePlanPrice({ period, plan });
 
   const transaction = await createPaidPlanTx({
     userId: user.id,
-    amount: total,
+    amount: planPrice,
     paymentMethod: ITransaction.PaymentMethod.Fawry,
     planId: plan.id,
     planPeriod: period,
@@ -253,7 +253,7 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
     user,
     phone,
     transaction,
-    amount: total,
+    amount: planPrice,
   });
 
   if (result instanceof FawryError) return next(fawryError(result.message));
@@ -290,11 +290,11 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
   }
 
   const period = PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[payload.period];
-  const { total } = calculatePlanPrice({ period, plan });
+  const planPrice = calculatePlanPrice({ period, plan });
 
   const transaction = await createPaidPlanTx({
     userId: user.id,
-    amount: total,
+    amount: planPrice,
     paymentMethod: ITransaction.PaymentMethod.EWallet,
     planId: plan.id,
     planPeriod: period,
@@ -304,7 +304,7 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
     user,
     phone,
     transaction,
-    amount: total,
+    amount: planPrice,
   });
 
   if (result instanceof FawryError) return next(fawryError(result.message));
@@ -456,6 +456,7 @@ async function refund(req: Request, res: Response, next: NextFunction) {
     .then((res) => res.list[0]);
 
   if (!tx) return next(notfound.transaction());
+  if (tx.userId !== user.id) return next(forbidden());
 
   const refundAmount = await calcRefundAmount(tx, TRANSACTION_FEES);
   if (refundAmount instanceof ResponseError) return next(refundAmount);
@@ -491,7 +492,7 @@ async function refund(req: Request, res: Response, next: NextFunction) {
           ? ITransaction.Status.PartialRefunded
           : ITransaction.Status.Refunded,
     });
-    txRefundRepercussion(tx);
+    performRefundRepercussion(tx);
   }
 
   res.json(response);
