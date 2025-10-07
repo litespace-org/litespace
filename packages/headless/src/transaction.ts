@@ -4,6 +4,7 @@ import { QueryKey } from "@/constants";
 import { useSocket } from "@/socket";
 import { ITransaction, Wss } from "@litespace/types";
 import { useExtendedQuery } from "@/query";
+import { useQuery } from "@tanstack/react-query";
 
 export function useFindTxById(id?: number) {
   const api = useApi();
