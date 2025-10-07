@@ -22,9 +22,9 @@ import { lessons, subscriptions, transactions } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
 import { calcRemainingWeeklyMinutesBySubscription } from "@/lib/subscription";
-import { ResponseError, safe } from "@litespace/utils";
+import { price, ResponseError, safe } from "@litespace/utils";
 import { fawry } from "@/fawry/api";
-import { TRANSACTION_FEES, fawryConfig } from "@/constants";
+import { fawryConfig } from "@/constants";
 import { genSignature } from "@/fawry/lib";
 import {
   checkStudentPaidLessonState,
@@ -184,7 +184,7 @@ async function cancel(req: Request, res: Response, next: NextFunction) {
   // 1) Evaluate the refund money amount
   const transaction = await transactions.findById(sub.txId);
   if (!transaction) return next(notfound.transaction());
-  const refundAmount = await calcRefundAmount(transaction, TRANSACTION_FEES);
+  const refundAmount = await calcRefundAmount(transaction);
   if (refundAmount instanceof ResponseError) return next(refundAmount);
 
   if (refundAmount <= 0) {
@@ -199,11 +199,11 @@ async function cancel(req: Request, res: Response, next: NextFunction) {
     fawry.refund({
       merchantCode: fawryConfig.merchantCode,
       referenceNumber: transaction.providerRefNum!.toString(),
-      refundAmount: refundAmount,
+      refundAmount: price.unscale(refundAmount),
       reason: "",
       signature: genSignature.forRefundRequest({
         referenceNumber: transaction.providerRefNum!.toString(),
-        refundAmount: refundAmount,
+        refundAmount: price.unscale(refundAmount),
         reason: "",
       }),
     })

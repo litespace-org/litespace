@@ -3,6 +3,7 @@ import { IPlan, ITransaction } from "@/index";
 export type CreateCheckoutUrlApiPayload = {
   planId: number;
   planPeriod: IPlan.Period;
+  phone: string;
   paymentMethod:
     | ITransaction.PaymentMethod.Card
     | ITransaction.PaymentMethod.EWallet;

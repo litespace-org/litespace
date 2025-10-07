@@ -7,6 +7,7 @@ import { IframeDialog } from "@litespace/ui/IframeDilaog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import cn from "classnames";
 import { useToast } from "@litespace/ui/Toast";
+import { useUser } from "@litespace/headless/context/user";
 
 const PayWithPaymob: React.FC<{
   className?: string;
@@ -16,6 +17,7 @@ const PayWithPaymob: React.FC<{
     | ITransaction.PaymentMethod.Card
     | ITransaction.PaymentMethod.EWallet;
 }> = ({ className, planId, planPeriod, paymentMethod }) => {
+  const { user } = useUser();
   const intl = useFormatMessage();
   const toast = useToast();
   const [url, setUrl] = useState("");
@@ -33,12 +35,14 @@ const PayWithPaymob: React.FC<{
   });
 
   const onClickHandler = useCallback(() => {
+    if (!user || !user.phone) return;
     createCheckoutUrl.mutate({
       planId,
       planPeriod,
       paymentMethod,
+      phone: user.phone,
     });
-  }, [createCheckoutUrl, planId, planPeriod, paymentMethod]);
+  }, [createCheckoutUrl, planId, planPeriod, paymentMethod, user]);
 
   return (
     <>

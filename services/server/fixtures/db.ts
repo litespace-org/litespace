@@ -603,10 +603,12 @@ async function transaction(
 ): Promise<ITransaction.Self> {
   return await transactions.create({
     userId: await or.studentId(payload?.userId),
-    amount: payload?.amount || randomInt(1000),
+    amount: payload?.amount || randomPrice(),
+    phone: payload?.phone || "",
+    fees: payload?.fees || price.scale(randomInt(20)),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
-    type: ITransaction.Type.PaidPlan,
+    type: payload?.type || ITransaction.Type.PaidPlan,
   });
 }
 

@@ -18,6 +18,8 @@ const FIELD_TO_COLUMN = {
   amount: "amount",
   status: "status",
   type: "type",
+  fees: "fees",
+  phone: "phone",
   paymentMethod: "payment_method",
   providerRefNum: "provider_ref_num",
   createdAt: "created_at",
@@ -47,6 +49,8 @@ export class Transactions extends Model<
         amount: payload.amount,
         type: payload.type,
         status: payload.status || ITransaction.Status.New,
+        fees: payload.fees,
+        phone: payload.phone,
         payment_method: payload.paymentMethod,
         provider_ref_num: payload.providerRefNum,
         created_at: now,
@@ -68,6 +72,7 @@ export class Transactions extends Model<
       .update(
         {
           status: payload.status,
+          fees: payload.fees,
           provider_ref_num: payload.providerRefNum,
         },
         "*"
