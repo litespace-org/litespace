@@ -22,7 +22,7 @@ import { lessons, subscriptions, transactions } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
 import { calcRemainingWeeklyMinutesBySubscription } from "@/lib/subscription";
-import { ResponseError, price, safe } from "@litespace/utils";
+import { ResponseError, safe } from "@litespace/utils";
 import { fawry } from "@/fawry/api";
 import { TRANSACTION_FEES, fawryConfig } from "@/constants";
 import { genSignature } from "@/fawry/lib";
@@ -225,9 +225,7 @@ async function cancel(req: Request, res: Response, next: NextFunction) {
     ids: futLessons.list.map((l) => l.id),
   });
 
-  const response: ISubscription.CancelApiResponse = {
-    refundAmount: price.scale(refundAmount),
-  };
+  const response: ISubscription.CancelApiResponse = { refundAmount };
 
   res.status(200).json(response);
 }

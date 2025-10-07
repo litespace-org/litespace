@@ -17,6 +17,7 @@ describe(nameof(calcRefundAmount), () => {
       type: ITransaction.Type.PaidLesson,
     });
     const refundAmount = await calcRefundAmount(tx, 100);
+    expect(refundAmount).to.not.be.instanceof(Error);
     expect(refundAmount).to.eq(0);
   });
 
@@ -35,7 +36,8 @@ describe(nameof(calcRefundAmount), () => {
       type: ITransaction.Type.PaidPlan,
     });
     const refundAmount = await calcRefundAmount(tx, 100);
-    expect(refundAmount).to.deep.eq(notfound.subscription());
+    expect(refundAmount).to.not.be.instanceof(Error);
+    expect(price.unscale(refundAmount as number)).to.deep.eq(notfound.subscription());
   });
 
   it("should calculate correct refund amount for subscription transaction based on attended hours in current week", async () => {
@@ -104,8 +106,8 @@ describe(nameof(calcRefundAmount), () => {
     const fees = 10; // EGP
 
     const refundAmount = await calcRefundAmount(tx, fees);
-
-    expect(refundAmount).to.eq(paid - timePrice - fees);
+    expect(refundAmount).to.not.be.instanceof(Error);
+    expect(price.unscale(refundAmount as number)).to.eq(paid - timePrice - fees);
   });
 
   it("should return zero when refund amount is negative after accounting for attended hours and transaction fees", async () => {
@@ -155,6 +157,7 @@ describe(nameof(calcRefundAmount), () => {
     ]);
 
     const refundAmount = await calcRefundAmount(tx, 0);
+    expect(refundAmount).to.not.be.instanceof(Error);
     expect(refundAmount).to.eq(0);
   });
 
@@ -211,8 +214,8 @@ describe(nameof(calcRefundAmount), () => {
     const fees = 10; // EGP
 
     const refundAmount = await calcRefundAmount(tx, fees);
-
-    expect(refundAmount).to.eq(paid - timePrice - fees);
+    expect(refundAmount).to.not.be.instanceof(Error);
+    expect(price.unscale(refundAmount as number)).to.eq(paid - timePrice - fees);
   });
 
   it("should handle edge case where subscription start date is in the future", async () => {

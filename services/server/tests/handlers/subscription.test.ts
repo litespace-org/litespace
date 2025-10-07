@@ -305,7 +305,7 @@ describe("/api/v1/sub/", () => {
       const res = await cancel({ user: student, body: {} });
       expect(res.status).to.not.be.instanceof(Error);
       expect(res.body).to.deep.eq({
-        refundAmount: price.scale(expectedAmount as number),
+        refundAmount: expectedAmount,
       });
     });
   });

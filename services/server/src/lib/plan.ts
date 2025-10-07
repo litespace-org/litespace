@@ -20,8 +20,7 @@ export function calculatePlanPrice({
 }) {
   const monthCount = PLAN_PERIOD_TO_MONTH_COUNT[period];
   const discount = percentage.unscale(getPeriodDicount(plan, period));
-  const monthPrice = price.unscale(plan.baseMonthlyPrice);
+  const monthPrice = plan.baseMonthlyPrice;
   const total = monthPrice * monthCount * ((100 - discount) / 100);
-  const totalScaled = price.scale(total);
-  return { total, totalScaled };
+  return total;
 }

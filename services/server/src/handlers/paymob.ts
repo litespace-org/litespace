@@ -87,7 +87,7 @@ async function createCheckoutUrl(
     amount: calculatePlanPrice({
       plan,
       period: planPeriod,
-    }).total,
+    }),
     providerRefNum: null,
     type: ITransaction.Type.PaidPlan,
   });

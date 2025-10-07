@@ -125,14 +125,14 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const priceAmount = calculateLessonPrice(
+  const amount = calculateLessonPrice(
     platformConfig.totalHourlyRate,
     payload.duration
   );
 
   const transaction = await createPaidLessonTx({
     userId: user.id,
-    amount: priceAmount,
+    amount,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
     start: payload.start,
@@ -144,7 +144,7 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
     user,
     phone,
     transaction,
-    amount: priceAmount,
+    amount,
     cvv: payload.cvv,
     cardToken: payload.cardToken,
   });
