@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SessionChat } from "@/components/Session/SessionChat";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Controllers, { Controller } from "@/components/Session/Controllers";
 import CallMembers from "@/components/Session/CallMembers";
 import { useMediaCall } from "@/hooks/mediaCall";
@@ -15,11 +15,10 @@ import { ISession, IUser, Wss } from "@litespace/types";
 import { useSocket } from "@litespace/headless/socket";
 import { useCreateReport } from "@litespace/headless/report";
 import { useUser } from "@litespace/headless/context/user";
+import { useReportLesson } from "@litespace/headless/lessons";
 import dayjs from "@/lib/dayjs";
 import { useOnError } from "@/hooks/error";
 import { useToast } from "@litespace/ui/Toast";
-import { useReportLesson } from "@litespace/headless/lessons";
-import { Web } from "@litespace/utils/routes";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import CallIncoming from "@litespace/assets/CallIncoming";
 import { MIN_LESSON_DURATION } from "@litespace/utils";
@@ -47,7 +46,6 @@ const InSession: React.FC<{
   const call = useMediaCall();
   const intl = useFormatMessage();
   const toast = useToast();
-  const navigate = useNavigate();
   const { user } = useUser();
   const { socket, reconnect } = useSocket();
 
@@ -150,7 +148,7 @@ const InSession: React.FC<{
   });
 
   const reportLesson = useReportLesson({
-    onSuccess: () => navigate(Web.UpcomingLessons),
+    onSuccess: () => {},
     onError,
   });
 

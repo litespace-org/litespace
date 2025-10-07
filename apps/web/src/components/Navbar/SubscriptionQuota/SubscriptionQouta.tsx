@@ -4,11 +4,13 @@ import { formatMinutes, formatPercentage } from "@litespace/ui/utils";
 import React, { useMemo } from "react";
 import Info from "@litespace/assets/Info";
 import cn from "classnames";
+import { IPlan } from "@litespace/types";
 
 const SubscriptionQouta: React.FC<{
   weeklyMinutes: number;
   remainingMinutes: number;
-}> = ({ weeklyMinutes, remainingMinutes }) => {
+  period?: IPlan.Period;
+}> = ({ weeklyMinutes, remainingMinutes, period }) => {
   const intl = useFormatMessage();
 
   const remaining = useMemo(() => {
@@ -59,9 +61,14 @@ const SubscriptionQouta: React.FC<{
         tag="span"
         className="text-natural-950 text-tiny font-semibold text-right"
       >
-        {intl("navbar.subscription.rest-of-quota", {
-          value: formatMinutes(remainingMinutes),
-        })}
+        {intl(
+          period === IPlan.Period.FreeTrial
+            ? "navbar.subscription.rest-of-quota-trial"
+            : "navbar.subscription.rest-of-quota",
+          {
+            value: formatMinutes(remainingMinutes),
+          }
+        )}
       </Typography>
     </div>
   );

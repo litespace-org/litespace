@@ -52,6 +52,9 @@ export const Content: React.FC<{
     queryClient.invalidateQueries({
       queryKey: [QueryKey.FindInfiniteLessons],
     });
+    queryClient.invalidateQueries({
+      queryKey: [QueryKey.FindLessons],
+    });
   }, [toast, intl, queryClient]);
 
   const onCancelError = useCallback(
