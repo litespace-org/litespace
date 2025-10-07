@@ -40,7 +40,7 @@ describe("Students", () => {
       });
       await students.update({ id: student.userId });
 
-      const { list: updatedList } = await students.findMany({
+      const { list: updatedList } = await students.find({
         ids: [student.userId],
       });
       const updated = updatedList[0];
@@ -53,7 +53,7 @@ describe("Students", () => {
     });
   });
 
-  describe(nameof(students.findMany), () => {
+  describe(nameof(students.find), () => {
     it("should filter and select fields", async () => {
       const s1 = await fixtures.nativeStudent({
         jobTitle: "Junior Engineer",
@@ -64,11 +64,11 @@ describe("Students", () => {
         englishLevel: IStudent.EnglishLevel.Advanced,
       });
 
-      const byTitle = await students.findMany({ jobTitle: "Engineer" });
+      const byTitle = await students.find({ jobTitle: "Engineer" });
       expect(byTitle.total).to.eq(1);
       expect(byTitle.list[0].userId).to.eq(s1.userId);
 
-      const { list } = await students.findMany({});
+      const { list } = await students.find({});
       expect(list.map((s) => s.userId)).to.deep.eq([s2.userId, s1.userId]);
       expect(list[0].userId).to.eq(s2.userId);
       expect(list[1].userId).to.eq(s1.userId);
