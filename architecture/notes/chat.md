@@ -10,6 +10,7 @@
   - Show count of unread messages
   - Show actions menu.
 - [ ] Impl. [Message Group](https://www.figma.com/design/4SwhwulDQ3eEDqevWprW9E/LiteSpace?node-id=1648-55795&t=mukSSDJcjSRP07Nw-4) component
+
   ```ts
   interface Props {
     messages: Array<{ text: string[]; createdAt: string }>;
@@ -17,10 +18,12 @@
     image: string | null;
   }
   ```
+
   - It should accept username, image, and a list of messages.
   - It should has two variants `sender` or `receiver`
   - It should sort message by their time and render them accordingly.
   - Renedered message date should be the time for the **oldest** message.
+
 - [ ] Render pinned and all rooms
 - [ ] Render current room messages using the `useMessages` (packages/luna/src/hooks/chat.ts) hook
   - [ ] Reflect selected room
