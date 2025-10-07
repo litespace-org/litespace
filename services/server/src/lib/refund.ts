@@ -10,14 +10,13 @@ import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
  * as described here: https://handbook.litespace.org/s/business/p/refund-policy-oc66GtTqeX
  */
 export async function calcRefundAmount(
-  tx: Pick<ITransaction.Self, "id" | "amount" | "type" | "userId">,
-  txFees: number
+  tx: Pick<ITransaction.Self, "id" | "amount" | "type" | "userId" | "fees">
 ): Promise<number | ResponseError> {
   // 1) get the paid amount from the transaction
   const paidAmount = tx.amount;
 
   if (tx.type === ITransaction.Type.PaidLesson)
-    return max([paidAmount - txFees, 0]) || 0;
+    return max([paidAmount - tx.fees, 0]) || 0;
 
   // 2) calculate the minutes attended in the current week of the subscription
   // and evaluate the corresponding price.
@@ -44,7 +43,7 @@ export async function calcRefundAmount(
   const prevWeeksPrice = totalHours * platformConfig.totalHourlyRate;
 
   // 4) calculate the refund amount
-  const refundAmount = paidAmount - thisWeekPrice - prevWeeksPrice - txFees;
+  const refundAmount = paidAmount - thisWeekPrice - prevWeeksPrice - tx.fees;
 
   return max([refundAmount, 0]) || 0;
 }

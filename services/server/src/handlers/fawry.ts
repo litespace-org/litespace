@@ -6,8 +6,10 @@ import {
   isAdmin,
   isRegularUser,
   isStudent,
+  nameof,
   PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD,
   PLAN_PERIOD_TO_MONTH_COUNT,
+  price,
   ResponseError,
   safePromise,
 } from "@litespace/utils";
@@ -27,7 +29,7 @@ import {
   performPayWithFawryRefNumTx,
 } from "@/lib/fawry";
 import { genSignature } from "@/fawry/lib";
-import { fawryConfig, TRANSACTION_FEES } from "@/constants";
+import { fawryConfig } from "@/constants";
 import { id, unionOfLiterals } from "@/validation/utils";
 import dayjs from "@/lib/dayjs";
 import {
@@ -191,6 +193,7 @@ async function payWithCard(req: Request, res: Response, next: NextFunction) {
 
   const transaction = await createPaidPlanTx({
     userId: user.id,
+    phone,
     amount: planPrice,
     paymentMethod: ITransaction.PaymentMethod.Card,
     planId: plan.id,
@@ -244,6 +247,7 @@ async function payWithRefNum(req: Request, res: Response, next: NextFunction) {
 
   const transaction = await createPaidPlanTx({
     userId: user.id,
+    phone,
     amount: planPrice,
     paymentMethod: ITransaction.PaymentMethod.Fawry,
     planId: plan.id,
@@ -295,6 +299,7 @@ async function payWithEWallet(req: Request, res: Response, next: NextFunction) {
 
   const transaction = await createPaidPlanTx({
     userId: user.id,
+    phone,
     amount: planPrice,
     paymentMethod: ITransaction.PaymentMethod.EWallet,
     planId: plan.id,
@@ -459,19 +464,19 @@ async function refund(req: Request, res: Response, next: NextFunction) {
   if (!tx) return next(notfound.transaction());
   if (tx.userId !== user.id) return next(forbidden());
 
-  const refundAmount = await calcRefundAmount(tx, TRANSACTION_FEES);
+  const refundAmount = await calcRefundAmount(tx);
   if (refundAmount instanceof ResponseError) return next(refundAmount);
   if (refundAmount <= 0) return next(nonrefundable());
 
   const { statusCode, statusDescription } = await fawry.refund({
     merchantCode: fawryConfig.merchantCode,
     referenceNumber: payload.orderRefNum,
-    refundAmount,
+    refundAmount: price.unscale(refundAmount),
     reason: payload.reason,
     signature: genSignature.forRefundRequest({
       referenceNumber: payload.orderRefNum,
       reason: payload.reason,
-      refundAmount,
+      refundAmount: price.unscale(refundAmount),
     }),
   });
 
@@ -486,13 +491,6 @@ async function refund(req: Request, res: Response, next: NextFunction) {
     });
     const tx = first(list);
     if (!tx) return next(notfound.transaction());
-    await transactions.update({
-      id: tx.id,
-      status:
-        tx.amount < refundAmount
-          ? ITransaction.Status.PartialRefunded
-          : ITransaction.Status.Refunded,
-    });
     performRefundRepercussion(tx);
   }
 
@@ -659,6 +657,7 @@ function setPaymentStatus(context: ApiContext) {
         txId: transaction.id,
         userId: transaction.userId,
         fawryRefNumber: payload.fawryRefNumber,
+        fees: price.scale(payload.fawryFees),
       });
 
     if (transaction.type === ITransaction.Type.PaidLesson)
@@ -667,6 +666,7 @@ function setPaymentStatus(context: ApiContext) {
         txId: transaction.id,
         userId: transaction.userId,
         fawryRefNumber: payload.fawryRefNumber,
+        fees: price.scale(payload.fawryFees),
         io: context.io,
       });
 
@@ -703,6 +703,11 @@ async function syncPaymentStatus(
 
   const payment = await fawry.getPaymentStatus(merchantRefNumber);
 
+  withDevLog({
+    src: nameof(syncPaymentStatus),
+    payment,
+  })
+
   const status = ORDER_STATUS_TO_TRANSACTION_STATUS[payment.orderStatus];
 
   if (status === transaction.status) {
@@ -715,6 +720,7 @@ async function syncPaymentStatus(
   await knex.transaction(async (tx) => {
     await transactions.update({
       id: transaction.id,
+      fees: price.scale(payment.fawryFees),
       status:
         status === ITransaction.Status.New
           ? ITransaction.Status.Processed

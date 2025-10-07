@@ -93,11 +93,13 @@ export async function upsertSubscriptionByTxStatus({
   txId,
   userId,
   status,
+  fees,
   fawryRefNumber,
 }: {
   txId: number;
   userId: number;
   status: ITransaction.Status;
+  fees: number;
   fawryRefNumber: string;
 }) {
   const subscription = await subscriptions.findByTxId(txId);
@@ -110,6 +112,7 @@ export async function upsertSubscriptionByTxStatus({
     // Update the transaction with the latest status.
     await transactions.update({
       tx,
+      fees,
       id: txId,
       status: newTxStatus,
       providerRefNum: fawryRefNumber,
