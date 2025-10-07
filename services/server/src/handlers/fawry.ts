@@ -656,7 +656,7 @@ function setPaymentStatus(context: ApiContext) {
         txId: transaction.id,
         userId: transaction.userId,
         fawryRefNumber: payload.fawryRefNumber,
-        fees: price.scale(payload.fawryFees),
+        fees: isNaN(payload.fawryFees) ? 0 : price.scale(payload.fawryFees),
       });
 
     if (transaction.type === ITransaction.Type.PaidLesson)
@@ -665,7 +665,7 @@ function setPaymentStatus(context: ApiContext) {
         txId: transaction.id,
         userId: transaction.userId,
         fawryRefNumber: payload.fawryRefNumber,
-        fees: price.scale(payload.fawryFees),
+        fees: isNaN(payload.fawryFees) ? 0 : price.scale(payload.fawryFees),
         io: context.io,
       });
 
@@ -719,7 +719,7 @@ async function syncPaymentStatus(
   await knex.transaction(async (tx) => {
     await transactions.update({
       id: transaction.id,
-      fees: price.scale(payment.fawryFees),
+      fees: isNaN(payment.fawryFees) ? 0 : price.scale(payment.fawryFees),
       status:
         status === ITransaction.Status.New
           ? ITransaction.Status.Processed

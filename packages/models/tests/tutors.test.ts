@@ -3,7 +3,6 @@ import fixtures from "@fixtures/db";
 import { expect } from "chai";
 import { dayjs, nameof } from "@litespace/utils";
 import { range } from "lodash";
-import { Role } from "@litespace/types/dist/esm/user";
 import { IUser } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/en";
 
@@ -56,8 +55,8 @@ describe(nameof(Tutors), () => {
 
   describe(nameof(tutors.findUncontactedTutorsForStudent), () => {
     it("should retrieve tutors that a specific student hasn't opened a chat room with yet", async () => {
-      const studio = await fixtures.user({ role: Role.Studio });
-      const student = await fixtures.user({ role: Role.Student });
+      const studio = await fixtures.user({ role: IUser.Role.Studio });
+      const student = await fixtures.user({ role: IUser.Role.Student });
 
       const mockTutors = await Promise.all(
         range(0, 5).map(() =>
@@ -97,8 +96,8 @@ describe(nameof(Tutors), () => {
 
   describe(nameof(tutors.findStudioTutors), () => {
     it("should retrieve tutors that subscribed to a specific studioId", async () => {
-      const studio1 = await fixtures.user({ role: Role.Studio });
-      const studio2 = await fixtures.user({ role: Role.Studio });
+      const studio1 = await fixtures.user({ role: IUser.Role.Studio });
+      const studio2 = await fixtures.user({ role: IUser.Role.Studio });
 
       const tutorsSet1 = await Promise.all(
         range(0, 5).map(() => fixtures.tutor({ studioId: studio1.id }))
@@ -123,7 +122,7 @@ describe(nameof(Tutors), () => {
 
   describe(nameof(tutors.findStudioTutor), () => {
     it("should retrieve tutors that subscribed to a specific studioId", async () => {
-      const studio = await fixtures.user({ role: Role.Studio });
+      const studio = await fixtures.user({ role: IUser.Role.Studio });
       const tutor = await fixtures.tutor({ studioId: studio.id });
 
       const res1 = await tutors.findStudioTutor(0);

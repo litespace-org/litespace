@@ -14,6 +14,11 @@ export const unauthenticated = () => error(ApiError.Unauthenticated, 401);
 
 export const forbidden = (msg?: string) => error(ApiError.Forbidden, 403, msg);
 
+export const noEnoughMinutes = () => error(ApiError.NoEnoughMinutes, 403);
+
+export const weekBoundariesViolation = () =>
+  error(ApiError.WeekBoundariesViolation, 403);
+
 export const subscriptionRequired = () =>
   error(ApiError.SubscriptionRequired, 403);
 

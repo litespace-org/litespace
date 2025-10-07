@@ -15,7 +15,6 @@ import {
 import {
   AFRICA_CAIRO_TIMEZONE,
   MAX_PAID_LESSON_COUNT,
-  ResponseError,
   calculateLessonPrice,
   count,
   genSessionId,
@@ -25,9 +24,11 @@ import {
 import {
   BusyTutor,
   InvalidLessonStart,
+  NoEnoughMinutes,
   SlotNotFound,
   TutorNotFound,
   Unexpected,
+  WeekBoundariesViolation,
 } from "@/lib/error/local";
 import { calcRemainingWeeklyMinutesBySubscription } from "@/lib/subscription";
 import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
@@ -36,7 +37,6 @@ import { Knex } from "knex";
 import { sendMsg } from "@/lib/messenger";
 import { ApiContext } from "@/types/api";
 import { withDevLog } from "@/lib/utils";
-import { noEnoughMinutes, weekBoundariesViolation } from "@/lib/error/api";
 
 export function getDayLessonsMap(lessons: Array<ILesson.Self>): DayLessonsMap {
   const dayLessonsMap: DayLessonsMap = {};
@@ -142,10 +142,13 @@ export async function upsertLessonByTxStatus({
 
 export type CheckStudentPaidLessonStateReturn =
   | {
+      status: ILesson.PaidLessonStatus.Eligible;
+      hasPendingPaidLesson: false;
+    }
+  | {
       status:
         | ILesson.PaidLessonStatus.EligibleWithPayment
-        | ILesson.PaidLessonStatus.NotEligible
-        | ILesson.PaidLessonStatus.Eligible;
+        | ILesson.PaidLessonStatus.NotEligible;
       hasPendingPaidLesson: boolean;
     }
   | {
@@ -260,7 +263,12 @@ export async function checkBookingLessonEligibilityState({
   userId: number;
   duration: ILesson.Duration;
   start: string;
-}): Promise<{ eligible: boolean; txId?: number } | Unexpected | ResponseError> {
+}): Promise<
+  | { eligible: boolean; txId?: number }
+  | Unexpected
+  | NoEnoughMinutes
+  | WeekBoundariesViolation
+> {
   const subscription = await subscriptions
     .find({
       users: [userId],
@@ -271,7 +279,10 @@ export async function checkBookingLessonEligibilityState({
 
   const state: CheckStudentPaidLessonStateReturn = !subscription
     ? await checkStudentPaidLessonState(userId)
-    : { status: ILesson.PaidLessonStatus.Eligible };
+    : {
+        status: ILesson.PaidLessonStatus.Eligible,
+        hasPendingPaidLesson: false,
+      };
 
   withDevLog({
     src: nameof(checkBookingLessonEligibilityState),
@@ -287,7 +298,7 @@ export async function checkBookingLessonEligibilityState({
   const remainingMinutes =
     await calcRemainingWeeklyMinutesBySubscription(subscription);
 
-  if (remainingMinutes < duration) return noEnoughMinutes();
+  if (remainingMinutes < duration) return new NoEnoughMinutes();
 
   // subscribed users should not be able to book lessons not within the
   // current week
@@ -297,7 +308,7 @@ export async function checkBookingLessonEligibilityState({
     .add(duration, "minutes")
     .isBetween(weekBoundaries.start, weekBoundaries.end, "minutes", "[]");
 
-  if (!within) return weekBoundariesViolation();
+  if (!within) return new WeekBoundariesViolation();
 
   return { eligible: true };
 }

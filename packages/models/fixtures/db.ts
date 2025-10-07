@@ -46,12 +46,15 @@ import { transactions } from "@/transactions";
 import { subscriptions } from "@/subscriptions";
 import { plans } from "@/plans";
 import { percentage, price } from "@litespace/utils";
+import { txPlanTemps } from "@/txPlanTemps";
+import { txLessonTemps } from "@/txLessonTemps";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
     await demoSessions.builder(tx).del();
     await reports.builder(tx).del();
     await subscriptions.builder(tx).del();
+    await txPlanTemps.builder(tx).del();
     await plans.builder(tx).del();
     await invoices.builder(tx).del();
     await sessionEvents.builder(tx).del();
@@ -61,6 +64,7 @@ export async function flush() {
     await rooms.builder(tx).members.del();
     await rooms.builder(tx).rooms.del();
     await interviews.builder(tx).del();
+    await txLessonTemps.builder(tx).del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
     await transactions.builder(tx).del();
@@ -541,6 +545,7 @@ async function transaction(
     amount: payload?.amount || randomPrice(),
     phone: payload?.phone || "",
     fees: payload?.fees || price.scale(randomInt(20)),
+    status: payload?.status || ITransaction.Status.Paid,
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
     type: payload?.type || ITransaction.Type.PaidPlan,

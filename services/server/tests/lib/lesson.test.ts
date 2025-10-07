@@ -2,7 +2,7 @@ import { checkStudentPaidLessonState } from "@/lib/lesson";
 import { nameof } from "@litespace/utils";
 import { expect } from "@fixtures/chai";
 import { db } from "@litespace/tests";
-import { ILesson, ITransaction, IUser } from "@litespace/types";
+import { ILesson, ITransaction } from "@litespace/types";
 
 describe(nameof(checkStudentPaidLessonState), () => {
   beforeEach(async () => {
@@ -10,7 +10,7 @@ describe(nameof(checkStudentPaidLessonState), () => {
   });
 
   it("should return that the user is eligible for paid lesson and need payment", async () => {
-    const user = await db.user({ role: IUser.Role.Student });
+    const user = await db.student();
     await expect(checkStudentPaidLessonState(user.id)).to.eventually.be.deep.eq(
       {
         status: ILesson.PaidLessonStatus.EligibleWithPayment,
@@ -20,7 +20,7 @@ describe(nameof(checkStudentPaidLessonState), () => {
   });
 
   it("should return that user is not eligible for paid lessons incase exceded that max allowed lessons", async () => {
-    const user = await db.user({ role: IUser.Role.Student });
+    const user = await db.student();
     const tx1 = await db.transaction({
       userId: user.id,
       type: ITransaction.Type.PaidLesson,
@@ -46,7 +46,7 @@ describe(nameof(checkStudentPaidLessonState), () => {
   });
 
   it("should return that the user has a paid lesson available and don't have to pay", async () => {
-    const user = await db.user({ role: IUser.Role.Student });
+    const user = await db.student();
     const tx = await db.transaction({
       userId: user.id,
       type: ITransaction.Type.PaidLesson,
@@ -70,7 +70,7 @@ describe(nameof(checkStudentPaidLessonState), () => {
   });
 
   it("should return that the user is elgible for a paid lesson with payment incase he only has one transaction", async () => {
-    const user = await db.user({ role: IUser.Role.Student });
+    const user = await db.student();
     const tx = await db.transaction({
       userId: user.id,
       type: ITransaction.Type.PaidLesson,
