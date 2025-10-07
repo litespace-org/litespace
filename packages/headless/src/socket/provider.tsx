@@ -18,7 +18,7 @@ const createSocket = (server: Env.Server, token: AuthToken) => {
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { server, token } = useServer();
+  const { server, token, tokenExpired } = useServer();
   const [socket, setSocket] = useState<Socket<
     Wss.ServerEventsMap,
     Wss.ClientEventsMap
@@ -30,12 +30,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       socket.connect();
       return;
     }
-    if (!token) return;
+    if (!token || tokenExpired) return;
     setSocket((prev) => {
       if (prev) prev.disconnect();
       return createSocket(server, token);
     });
-  }, [server, token, socket]);
+  }, [socket, token, tokenExpired, server]);
 
   const disconnect = useCallback(() => {
     if (socket !== null) socket.disconnect();

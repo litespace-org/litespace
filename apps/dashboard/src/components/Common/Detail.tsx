@@ -10,7 +10,7 @@ const Detail: React.FC<{
       <Typography tag="h1" className="text-subtitle-1">
         {label}
       </Typography>
-      <Typography tag="p" className="text-foreground-lighter text-body">
+      <Typography tag="span" className="text-foreground-lighter text-body">
         {children}
       </Typography>
     </div>

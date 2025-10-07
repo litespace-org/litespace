@@ -10,7 +10,7 @@ const Login = lazy(() => import("@/pages/Login"));
 const Plans = lazy(() => import("@/pages/Plans"));
 const Users = lazy(() => import("@/pages/Users"));
 const Interviews = lazy(() => import("@/pages/Interviews"));
-const UserDetails = lazy(() => import("@/pages/UserDetails"));
+const User = lazy(() => import("@/pages/User"));
 const Lessons = lazy(() => import("@/pages/Lessons"));
 const PlatformSettings = lazy(() => import("@/pages/PlatformSettings"));
 const Topics = lazy(() => import("@/pages/Topics"));
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
       { path: Dashboard.Plans, element: <Page page={<Plans />} /> },
       { path: Dashboard.Users, element: <Page page={<Users />} /> },
       { path: Dashboard.Tutors, element: <Page page={<Tutors />} /> },
-      { path: Dashboard.User, element: <Page page={<UserDetails />} /> },
+      { path: Dashboard.User, element: <Page page={<User />} /> },
       { path: Dashboard.Interviews, element: <Page page={<Interviews />} /> },
       { path: Dashboard.Lessons, element: <Page page={<Lessons />} /> },
       { path: Dashboard.Topics, element: <Page page={<Topics />} /> },

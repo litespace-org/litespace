@@ -43,7 +43,7 @@ const List: React.FC<{
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
-        header: intl("global.labels.id"),
+        header: intl("labels.id"),
         cell: (info) => {
           return <Link to={`/user/${info.getValue()}`}>{info.getValue()}</Link>;
         },

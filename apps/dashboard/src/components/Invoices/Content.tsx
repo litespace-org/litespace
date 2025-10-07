@@ -283,7 +283,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
           <ActionsMenu actions={actions} Icon={MixerHorizontalIcon} />
         </div>
       </header>
-      <div className="w-full mt-[15vh]">
+      <div className="w-full">
         {query.data && !query.isLoading ? (
           <List data={query.data} query={query} {...pagination} />
         ) : null}

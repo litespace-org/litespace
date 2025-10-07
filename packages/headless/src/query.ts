@@ -82,7 +82,7 @@ export function useInfinitePaginationQuery<T, K>(
 
 export type UseExtendedQueryResult<
   T,
-  E,
+  E = DefaultError,
   K extends QueryKey = QueryKey,
 > = UseQueryResult<T, E> & { keys: K };
 
@@ -96,5 +96,5 @@ export function useExtendedQuery<
   queryClient?: QueryClient
 ): UseExtendedQueryResult<TData, TError, TQueryKey> {
   const query = useQuery(options, queryClient);
-  return { ...query, keys: options.queryKey };
+  return Object.assign(query, { keys: options.queryKey });
 }

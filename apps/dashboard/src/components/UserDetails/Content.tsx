@@ -1,144 +1,66 @@
-import Detail from "@/components/Common/Detail";
 import DateField from "@/components/Common/DateField";
 import BinaryField from "@/components/Common/BinaryField";
 import GenderField from "@/components/Common/GenderField";
-import cn from "classnames";
-import React, { useState } from "react";
-import { Duration } from "@litespace/utils/duration";
-import { formatMinutes, formatNumber } from "@litespace/ui/utils";
-import { ITutor, IUser, Void } from "@litespace/types";
-import { PersonIcon, CheckCircledIcon } from "@radix-ui/react-icons";
-import { rolesMap } from "@/components/utils/user";
+import React, { useMemo } from "react";
+import { IUser, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
+import LablesTable, { TableLablesRow } from "@/components/Common/LabelsTable";
+import { Typography } from "@litespace/ui/Typography";
 
 const Content: React.FC<{
-  user?: IUser.Self;
-  tutor?: ITutor.Self;
-  tutorStats?: ITutor.FindTutorStatsApiResponse | null;
-  loading?: boolean;
-  error: Error | null;
+  user: IUser.Self | null;
+  loading: boolean;
+  error: boolean;
   refetch: Void;
-}> = ({ user, tutor, tutorStats, loading, error, refetch }) => {
+}> = ({ user, loading, error, refetch }) => {
   const intl = useFormatMessage();
-  // TODO: use a hook to get the online status form the server cache
-  const [onlineStatus] = useState(false);
 
-  if (loading || error)
+  const labels = useMemo((): TableLablesRow[] => {
+    if (!user) return [];
+    return [
+      { label: intl("labels.id"), value: user.id },
+      { label: intl("dashboard.user.name"), value: user.name || "-" },
+      { label: intl("dashboard.user.email"), value: user.email || "-" },
+      { label: intl("dashboard.user.birthYear"), value: user.birthYear || "-" },
+      {
+        label: intl("dashboard.user.hasPassword"),
+        value: <BinaryField yes={user.password} />,
+      },
+      {
+        label: intl("dashboard.user.gender"),
+        value: <GenderField gender={user.gender} />,
+      },
+      {
+        label: intl("global.created-at"),
+        value: <DateField date={user.createdAt} />,
+      },
+      {
+        label: intl("global.updated-at"),
+        value: <DateField date={user.updatedAt} />,
+      },
+    ];
+  }, [intl, user]);
+
+  if (loading || error || !user)
     return (
       <LoadingFragment
-        loading={{ size: "large" }}
-        error={{ size: "medium" }}
+        tight
+        loading={loading ? { size: "large" } : undefined}
+        error={error || !user ? { size: "medium" } : undefined}
         refetch={refetch}
       />
     );
 
-  if (!user) return;
-
   return (
-    <div className="p-4 mx-auto mt-6 border border-border-strong rounded-md shadow-ls-x-small w-full">
-      <div className="flex gap-2 ">
-        <div className="relative">
-          {user.image ? (
-            <div className="overflow-hidden border-2 border-white rounded-full">
-              <img src={user.image} className="rounded-full w-14 h-14" />
-            </div>
-          ) : (
-            <PersonIcon className="w-14 h-14" />
-          )}
-
-          <div
-            className={cn(
-              "absolute left-0 bottom-0 w-4 h-4 rounded-full ring ring-dash-sidebar",
-              onlineStatus ? "bg-green-400" : "bg-gray-600"
-            )}
-          />
-        </div>
-        <div>
-          <h2 className="flex items-center gap-2 text-2xl">
-            <p>{user.name || "-"}</p>
-            {user.verifiedEmail ? (
-              <CheckCircledIcon className="w-6 h-6 text-green-400" />
-            ) : null}
-          </h2>
-          <p className="text-lg text-foreground-light">
-            {intl(rolesMap[user.role])}
-          </p>
-        </div>
-      </div>
-      <div className="grid gap-6 mt-4 sm:grid-cols-2 xl:grid-cols-3">
-        <Detail label={intl("global.labels.id")}>{user.id}</Detail>
-        <Detail label={intl("dashboard.user.name")}>{user.name}</Detail>
-        <Detail label={intl("dashboard.user.email")}>{user.email}</Detail>
-        {tutor ? (
-          <Detail label={intl("dashboard.tutor.bio")}>{tutor.bio}</Detail>
-        ) : null}
-
-        <Detail label={intl("dashboard.user.birthYear")}>
-          {user.birthYear}
-        </Detail>
-
-        {tutor ? (
-          <Detail label={intl("dashboard.tutor.about")}>{tutor.about}</Detail>
-        ) : null}
-
-        {tutor ? (
-          <Detail label={intl("dashboard.tutor.video")}>{tutor.video}</Detail>
-        ) : null}
-
-        <Detail label={intl("dashboard.user.hasPassword")}>
-          <BinaryField yes={user.password} />
-        </Detail>
-
-        <Detail label={intl("dashboard.user.creditScore")}>
-          {formatNumber(user.creditScore)}
-        </Detail>
-
-        <Detail label={intl("dashboard.user.gender")}>
-          <GenderField gender={user.gender} />
-        </Detail>
-
-        {tutor ? (
-          <Detail label={intl("dashboard.tutor.activated")}>
-            <BinaryField yes={tutor.activated} />
-          </Detail>
-        ) : null}
-
-        {tutor ? (
-          <Detail label={intl("dashboard.tutor.notice")}>
-            {tutor.notice ? formatMinutes(tutor.notice) : "-"}
-          </Detail>
-        ) : null}
-
-        <Detail label={intl("global.created-at")}>
-          <DateField date={user.createdAt} />
-        </Detail>
-
-        {tutorStats ? (
-          <>
-            <Detail label={intl("stats.tutor.lesson.count")}>
-              {formatNumber(tutorStats.lessonCount)}
-            </Detail>
-            <Detail label={intl("stats.tutor.student.count")}>
-              {formatNumber(tutorStats.studentCount)}
-            </Detail>
-            <Detail label={intl("stats.tutor.teaching.hours")}>
-              {Duration.from(tutorStats.totalMinutes.toString()).format("ar")}
-            </Detail>
-          </>
-        ) : null}
-
-        <Detail label={intl("global.updated-at")}>
-          <DateField date={user.updatedAt} />
-
-          {tutor ? (
-            <React.Fragment>
-              <br />
-              <DateField date={tutor.updatedAt} />
-            </React.Fragment>
-          ) : null}
-        </Detail>
-      </div>
+    <div>
+      <Typography
+        tag="h4"
+        className="text-subtitle-2 font-bold text-natural-950 mb-3"
+      >
+        {intl("dashboard.user.basic-info")}
+      </Typography>
+      <LablesTable rows={labels} />
     </div>
   );
 };

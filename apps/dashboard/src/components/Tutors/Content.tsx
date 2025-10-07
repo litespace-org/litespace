@@ -2,6 +2,7 @@ import { LoadingFragment } from "@/components/Common/LoadingFragment";
 import { ONBOARD_ITEMS_MAP } from "@/components/utils/tutor";
 import { useMissedData } from "@/hooks/tutors";
 import dayjs from "@/lib/dayjs";
+import { router } from "@/lib/route";
 import Calendar from "@litespace/assets/Calendar";
 import InfoCircle from "@litespace/assets/InfoCircle";
 import Profile from "@litespace/assets/ProfileAvatar";
@@ -10,12 +11,14 @@ import { useUpdateUser } from "@litespace/headless/user";
 import { Element, ITutor, Void } from "@litespace/types";
 import { AvatarV2 as Avatar } from "@litespace/ui/Avatar";
 import { Switch } from "@litespace/ui/Switch";
-import { Table } from "@litespace/ui/Table";
+import { Header, Table } from "@litespace/ui/Table";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Dashboard } from "@litespace/utils/routes";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo } from "react";
+import { Link } from "react-router-dom";
 
 export const Content: React.FC<{
   refetch: Void;
@@ -59,6 +62,20 @@ export const Content: React.FC<{
 
   const columns = useMemo(
     () => [
+      columnHelper.accessor("id", {
+        header: () => <Header Icon={InfoCircle} label={intl("labels.id")} />,
+        cell: (info) => (
+          <Link
+            className="underline"
+            to={router.dashboard({
+              route: Dashboard.Tutor,
+              id: info.getValue(),
+            })}
+          >
+            #{info.getValue()}
+          </Link>
+        ),
+      }),
       columnHelper.accessor("name", {
         header: () => (
           <div className="flex gap-[10px]">

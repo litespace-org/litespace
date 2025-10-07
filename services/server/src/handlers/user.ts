@@ -670,7 +670,7 @@ async function findTutorStats(req: Request, res: Response, next: NextFunction) {
   const { tutor: id } = withNamedId("tutor").parse(req.params);
 
   const tutor = await tutors.findById(id);
-  if (!tutor || !isOnboarded(tutor)) return next(notfound.tutor());
+  if (!tutor) return next(notfound.tutor());
 
   // only include "past" and "fulfilled" lessons
   const filters = {
