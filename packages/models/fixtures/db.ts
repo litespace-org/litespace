@@ -538,7 +538,9 @@ async function transaction(
 ): Promise<ITransaction.Self> {
   return await transactions.create({
     userId: payload?.userId || (await user({})).id,
-    amount: payload?.amount || randomInt(100, 1000),
+    amount: payload?.amount || randomPrice(),
+    phone: payload?.phone || "",
+    fees: payload?.fees || price.scale(randomInt(20)),
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
     type: payload?.type || ITransaction.Type.PaidPlan,

@@ -1,9 +1,5 @@
 import { IPlan } from "@litespace/types";
-import {
-  percentage,
-  PLAN_PERIOD_TO_MONTH_COUNT,
-  price,
-} from "@litespace/utils";
+import { percentage, PLAN_PERIOD_TO_MONTH_COUNT } from "@litespace/utils";
 
 export function getPeriodDicount(plan: IPlan.Self, period: IPlan.Period) {
   if (period === IPlan.Period.Month) return plan.monthDiscount;

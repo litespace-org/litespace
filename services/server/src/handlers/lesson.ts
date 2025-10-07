@@ -131,6 +131,7 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
   const transaction = await createPaidLessonTx({
     userId: user.id,
     scaledAmount,
+    phone,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
     start: payload.start,
@@ -182,6 +183,7 @@ async function createWithFawryRefNum(
   const transaction = await createPaidLessonTx({
     userId: user.id,
     scaledAmount,
+    phone,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
     start: payload.start,
@@ -231,6 +233,7 @@ async function createWithEWallet(
   const transaction = await createPaidLessonTx({
     userId: user.id,
     scaledAmount,
+    phone,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
     start: payload.start,

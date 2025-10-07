@@ -183,3 +183,5 @@ export const queryBoolean: zod.ZodBoolean = zod
   .transform(
     (value) => value === "true" || value === true
   ) as unknown as zod.ZodBoolean;
+
+export const phone = zod.string().max(15).trim();

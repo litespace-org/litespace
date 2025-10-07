@@ -7,8 +7,7 @@ import { expect } from "chai";
 import { bad, fawryError, forbidden, notfound } from "@/lib/error/api";
 import { subscriptions, transactions } from "@litespace/models";
 import dayjs from "dayjs";
-import { PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL, price } from "@litespace/utils";
-import { TRANSACTION_FEES } from "@/constants";
+import { PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL } from "@litespace/utils";
 import { calcRefundAmount } from "@/lib/refund";
 
 const find = mockApi<
@@ -299,7 +298,7 @@ describe("/api/v1/sub/", () => {
         }),
       ]);
 
-      const expectedAmount = await calcRefundAmount(tx!, TRANSACTION_FEES);
+      const expectedAmount = await calcRefundAmount(tx!);
       expect(expectedAmount).to.not.be.instanceof(Error);
 
       const res = await cancel({ user: student, body: {} });

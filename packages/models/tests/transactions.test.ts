@@ -14,6 +14,7 @@ describe("transactions", () => {
       const user = await fixtures.tutor();
       const newTransaction = await transactions.create({
         userId: user.id,
+        phone: user.phone || "",
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
         type: ITransaction.Type.PaidPlan,
@@ -33,6 +34,7 @@ describe("transactions", () => {
       const user = await fixtures.tutor();
       const created = await transactions.create({
         userId: user.id,
+        phone: user.phone || "",
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
         type: ITransaction.Type.PaidPlan,
@@ -55,6 +57,7 @@ describe("transactions", () => {
       const user = await fixtures.tutor();
       const created = await transactions.create({
         userId: user.id,
+        phone: user.phone || "",
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
         type: ITransaction.Type.PaidPlan,
@@ -91,6 +94,7 @@ describe("transactions", () => {
       for (const user of [...users1, ...users2]) {
         await transactions.create({
           userId: user.id,
+          phone: user.phone || "",
           amount: 200,
           paymentMethod: ITransaction.PaymentMethod.Card,
           type: ITransaction.Type.PaidPlan,
@@ -115,6 +119,7 @@ describe("transactions", () => {
 
       const tx = await transactions.create({
         userId: user.id,
+        phone: user.phone || "",
         amount: 200,
         paymentMethod: ITransaction.PaymentMethod.Card,
         type: ITransaction.Type.PaidPlan,

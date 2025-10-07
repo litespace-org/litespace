@@ -8,6 +8,7 @@ import { ILesson, IPlan, ITransaction } from "@litespace/types";
 
 export async function createPaidLessonTx({
   userId,
+  phone,
   amount,
   tutorId,
   slotId,
@@ -16,6 +17,7 @@ export async function createPaidLessonTx({
   paymentMethod,
 }: {
   userId: number;
+  phone: string;
   amount: number;
   tutorId: number;
   slotId: number;
@@ -26,7 +28,8 @@ export async function createPaidLessonTx({
   return await knex.transaction(async (tx) => {
     const transaction = await transactions.create({
       tx,
-      userId: userId,
+      userId,
+      phone,
       providerRefNum: null,
       amount,
       type: ITransaction.Type.PaidLesson,
@@ -48,12 +51,14 @@ export async function createPaidLessonTx({
 
 export async function createPaidPlanTx({
   userId,
+  phone,
   amount,
   paymentMethod,
   planId,
   planPeriod,
 }: {
   userId: number;
+  phone: string;
   amount: number;
   paymentMethod: ITransaction.PaymentMethod;
   planId: number;
@@ -62,7 +67,8 @@ export async function createPaidPlanTx({
   return await knex.transaction(async (tx) => {
     const transaction = await transactions.create({
       tx,
-      userId: userId,
+      userId,
+      phone,
       providerRefNum: null,
       amount,
       paymentMethod,

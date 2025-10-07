@@ -191,5 +191,3 @@ export const INTRO_VIDEO_MAX_MINUTES = 3;
  * max size in megabytes
  */
 export const INTRO_VIDEO_MAX_FILE_SIZE = 400;
-
-export const TRANSACTION_FEES = 0;
