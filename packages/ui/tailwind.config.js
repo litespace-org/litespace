@@ -69,6 +69,7 @@ export default {
         sidebar: "2",
         "free-badge": "2",
         "online-indicator": "2",
+        "recommended-badge": "3",
         "session-movable-stream": "3",
         quote: "10",
         "dialog-overlay": "10",

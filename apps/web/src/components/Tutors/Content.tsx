@@ -89,6 +89,7 @@ const Content: React.FC<{
               tutorId={tutor.id}
               about={tutor.about}
               name={tutor.name}
+              role={tutor.role}
               rating={tutor.avgRating}
               onBook={() => {
                 openBookingDialog(tutor);
