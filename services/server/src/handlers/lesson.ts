@@ -36,7 +36,10 @@ import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { isAdmin, isStudent, isTutor, isUser } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
 import { isEmpty, isEqual } from "lodash";
-import { AFRICA_CAIRO_TIMEZONE } from "@litespace/utils";
+import {
+  AFRICA_CAIRO_TIMEZONE,
+  UNCANCELLABLE_LESSON_HOURS,
+} from "@litespace/utils";
 import { withImageUrls, withPhone } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import {
@@ -512,11 +515,19 @@ async function cancel(req: Request, res: Response, next: NextFunction) {
   const lesson = await lessons.findById(lessonId);
   if (!lesson) return next(notfound.lesson());
 
-  if (dayjs(lesson.start).add(lesson.duration, "minutes").isBefore(dayjs()))
+  const now = dayjs();
+
+  if (dayjs(lesson.start).add(lesson.duration, "minutes").isBefore(now))
     return next(lessonTimePassed());
 
-  if (dayjs(lesson.start).isBefore(dayjs()))
-    return next(lessonAlreadyStarted());
+  if (dayjs(lesson.start).isBefore(now)) return next(lessonAlreadyStarted());
+
+  if (
+    dayjs(lesson.start)
+      .subtract(UNCANCELLABLE_LESSON_HOURS, "hours")
+      .isBefore(now)
+  )
+    return next(forbidden());
 
   const members = await lessons.findLessonMembers([lessonId]);
   const member = members.map((member) => member.userId).includes(user.id);
@@ -557,10 +568,12 @@ async function report(req: Request, res: Response, next: NextFunction) {
   const lesson = await lessons.findById(lessonId);
   if (!lesson) return next(notfound.lesson());
 
-  if (dayjs(lesson.start).add(lesson.duration, "minutes").isBefore(dayjs()))
+  const now = dayjs();
+
+  if (dayjs(lesson.start).add(lesson.duration, "minutes").isBefore(now))
     return next(lessonTimePassed());
 
-  if (dayjs(lesson.start).isAfter(dayjs())) return next(lessonNotStarted());
+  if (dayjs(lesson.start).isAfter(now)) return next(lessonNotStarted());
 
   // TODO: include error waitForTutor
 

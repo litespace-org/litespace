@@ -12,7 +12,13 @@ import {
   noEnoughMinutes,
   weekBoundariesViolation,
 } from "@/lib/error/api";
-import { dayjs, getSubSlots, nameof, safe } from "@litespace/utils";
+import {
+  dayjs,
+  getSubSlots,
+  nameof,
+  safe,
+  UNCANCELLABLE_LESSON_HOURS,
+} from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";
 import { lessons } from "@litespace/models";
 import { first, last } from "lodash";
@@ -632,6 +638,33 @@ describe("Lessons API", () => {
 
       const res = await cancelLesson({
         user: await db.student(),
+        params: { lessonId: lesson.id },
+      });
+
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should respond with forbidden in case the lesson has at maximum 6 hours to start", async () => {
+      const tutor = await db.tutor();
+      const student = await db.student();
+
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().add(10, "days").toISOString(),
+      });
+
+      const { lesson } = await db.lesson({
+        tutor: tutor.id,
+        student: student.id,
+        start: dayjs()
+          .add(UNCANCELLABLE_LESSON_HOURS - 1, "hours")
+          .toISOString(),
+        slot: slot.id,
+      });
+
+      const res = await cancelLesson({
+        user: student,
         params: { lessonId: lesson.id },
       });
 

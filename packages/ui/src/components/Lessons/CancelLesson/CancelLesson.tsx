@@ -3,13 +3,16 @@ import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import React from "react";
 import { Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
+import { Typography } from "@/components/Typography";
 
 export const CancelLesson: React.FC<{
   onCancel: Void;
   close: Void;
   open: boolean;
   loading?: boolean;
-}> = ({ open, loading, close, onCancel }) => {
+  otherMemberName?: string | null;
+  isStudent?: boolean;
+}> = ({ open, loading, otherMemberName, isStudent, close, onCancel }) => {
   const intl = useFormatMessage();
   return (
     <ConfirmationDialog
@@ -18,19 +21,28 @@ export const CancelLesson: React.FC<{
       icon={<CallIncoming />}
       actions={{
         primary: {
-          label: intl("cancel-lesson.confirm-and-cancel"),
+          label: intl("labels.confirm"),
           onClick: onCancel,
           loading: loading,
           disabled: loading,
         },
         secondary: {
-          label: intl("cancel-lesson.cancel-and-return"),
+          label: isStudent ? intl("labels.go-back") : intl("labels.cancel"),
           onClick: close,
         },
       }}
       close={close}
-      title={intl("cancel-lesson.title")}
-      description={intl("cancel-lesson.description")}
-    />
+      title={intl("cancel-lesson.with-tutor.confirm.title", {
+        value: otherMemberName,
+      })}
+    >
+      <Typography tag="p" className="text-caption mt-4">
+        {intl(
+          isStudent
+            ? "cancel-lesson.with-tutor.confirm.description"
+            : "cancel-lesson.description"
+        )}
+      </Typography>
+    </ConfirmationDialog>
   );
 };

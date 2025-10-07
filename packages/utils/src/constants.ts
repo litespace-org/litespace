@@ -194,3 +194,9 @@ export const INTRO_VIDEO_EXPIRY_MONTHS = 3;
 export const STUDENT_FREE_WEEKLY_MINUTES = 60;
 export const MAX_PAID_LESSON_COUNT = 2;
 export const TOTAL_LESSON_HOURLY_RATE = price.scale(255);
+
+/**
+ * The maximum number of hours, before lessons start time,
+ * that makes any lesson uncancellable.
+ */
+export const UNCANCELLABLE_LESSON_HOURS = 6;
