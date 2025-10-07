@@ -744,6 +744,7 @@
   "lessons.button.rebook": "إعادة الحجز",
   "lessons.button.join": "دخول الحصة",
   "lessons.button.send-message": "إرسال رسالة",
+  "lessons.button.contact-student": "تواصل مع الطالب",
   "lessons.button.find-tutors": "تصفح المعلمين",
   "lessons.canceled-by-tutor": "لقد تم إلغاء الحصة من قبل المعلم",
   "lessons.canceled-by-student": "لقد قام الطالب بإلغاء الحصة",
@@ -791,7 +792,7 @@
   "student-dashboard.past-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس السابقة!",
   "student-dashboard.past-lessons.error": "عذرًا، حدث خطأ أثناء تحميل الدروس السابقة، برجاء المحاولة مرة أخرى",
   "tour.sdashboard/1.title": "👋 مرحبًا بك في رحلتك لتعلّم اللغة!",
-  "tour.sdashboard/1.description": "من خلال صفحة المدرّسين، تستطيع ان تستعرض كل المعلمين وتقوم بـ حجز جلسة مباشرة مع أيّ معلم منهم. كل ما عليك هو ان تضغط على المدرّس المناسب لك، وتستعرض ملفه الشخصي، مواعيده المتاحة، وتبدأ الحجز في الحال!",
+  "tour.sdashboard/1.description": "من خلال صفحة المدرّسين، تستطيع ان تستعرض كل المعلمين وتقوم بـ حجز جلسة مباشرة مع أيّ معلم منهم.كل ما عليك هو ان تضغط على المدرّس المناسب لك، وتستعرض ملفه الشخصي، مواعيده المتاحة، وتبدأ الحجز في الحال!",
   "tour.sdashboard/2.title": "هل وجدت المعلم المناسب لك؟",
   "tour.sdashboard/2.description": "اضغط على 'احجز الآن' لكي تبدأ أول جلسة مع المعلم.",
   "tour.sdashboard/3.title": "الفيديو التعريفي للمعلم",
