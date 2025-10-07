@@ -3,9 +3,11 @@ import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowser
 import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
+import { CacheKey } from "@/constants/cache";
 import { StudentDashboardTour } from "@/constants/tour";
 import { useSaveLogs } from "@/hooks/logger";
 import { useTour } from "@/hooks/tour";
+import { cache } from "@/lib/cache";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 import { router } from "@/lib/routes";
 import Exit from "@litespace/assets/Exit";
@@ -49,7 +51,10 @@ const Root: React.FC = () => {
           {intl("labels.prev")}
         </Button>
       ),
-      onStop: () => setTourDialogOpen(true),
+      onStop: () => {
+        setTourDialogOpen(true);
+        cache.save(CacheKey.TourFinished, true);
+      },
       onNext: () => setStepNumber((prev) => prev + 1),
       onPrev: () => setStepNumber((prev) => prev - 1),
     }),
@@ -119,7 +124,10 @@ const Root: React.FC = () => {
 
     // ============ student redirect ========
     if (role.student && root) {
-      if (dayjs().isSame(user.createdAt, "day")) {
+      if (
+        dayjs().isSame(user.createdAt, "day") &&
+        !cache.load(CacheKey.TourFinished)
+      ) {
         navigate(Web.Tutors);
         studentTour.start();
         return;

@@ -1,7 +1,7 @@
 import { Loading, LoadingError } from "@litespace/ui/Loading";
 import { LessonCard, EmptyLessons, CancelLesson } from "@litespace/ui/Lessons";
 import { ILesson, IUser, Void } from "@litespace/types";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { InView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 import { useCancelLesson } from "@litespace/headless/lessons";
@@ -22,6 +22,11 @@ import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isStudent } from "@litespace/utils/user";
 import { useSubscription } from "@litespace/headless/context/subscription";
+import { Dialog } from "@litespace/ui/Dialog";
+import dayjs from "dayjs";
+import { Typography } from "@litespace/ui/Typography";
+import { Button } from "@litespace/ui/Button";
+import { UNCANCELLABLE_LESSON_HOURS } from "@litespace/utils";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -42,14 +47,35 @@ export const Content: React.FC<{
   const { user } = useUser();
   const navigate = useNavigate();
 
-  const [cancelLessonId, setCancelLessonId] = useState<number | null>(null);
+  const [cancelLessonData, setCancelLessonData] = useState<{
+    id: number | null;
+    start: string | null;
+    otherMemberName: string | null;
+    duration: number | null;
+    tutorId: number | null;
+    slotId: number | null;
+  }>({
+    id: null,
+    start: null,
+    otherMemberName: null,
+    duration: null,
+    tutorId: null,
+    slotId: null,
+  });
   const [manageLessonData, setManageLessonData] =
     useState<ManageLessonPayload | null>(null);
 
   const onCancelSuccess = useCallback(() => {
     toast.success({ title: intl("cancel-lesson.success") });
     subscription.refetch();
-    setCancelLessonId(null);
+    setCancelLessonData(() => ({
+      id: null,
+      start: null,
+      otherMemberName: null,
+      duration: null,
+      tutorId: null,
+      slotId: null,
+    }));
     queryClient.invalidateQueries({
       queryKey: [QueryKey.FindInfiniteLessons],
     });
@@ -144,7 +170,16 @@ export const Content: React.FC<{
                     })
                   )
                 }
-                onCancel={() => setCancelLessonId(item.lesson.id)}
+                onCancel={() =>
+                  setCancelLessonData(() => ({
+                    id: item.lesson.id,
+                    start: item.lesson.start,
+                    otherMemberName: otherMember.name,
+                    duration: item.lesson.duration,
+                    tutorId: tutor.userId,
+                    slotId: item.lesson.slotId,
+                  }))
+                }
                 onEdit={() => {
                   setManageLessonData({
                     type: "update",
@@ -197,12 +232,37 @@ export const Content: React.FC<{
         />
       ) : null}
 
-      {cancelLessonId ? (
-        <CancelLesson
-          close={() => setCancelLessonId(null)}
-          onCancel={() => cancelLesson.mutate({ id: cancelLessonId })}
-          loading={cancelLesson.isPending}
-          open
+      {cancelLessonData.id ? (
+        <CancelDialogs
+          isStudent={user.role === IUser.Role.Student}
+          start={cancelLessonData.start}
+          otherMemberName={cancelLessonData.otherMemberName}
+          close={() =>
+            setCancelLessonData({
+              id: null,
+              start: null,
+              otherMemberName: null,
+              duration: null,
+              slotId: null,
+              tutorId: null,
+            })
+          }
+          onEdit={() =>
+            setManageLessonData(() => {
+              return {
+                lessonId: cancelLessonData.id || 0,
+                duration: cancelLessonData.duration || 0,
+                start: cancelLessonData.start || "",
+                slotId: cancelLessonData.slotId || 0,
+                tutorId: cancelLessonData.tutorId || 0,
+                type: "update",
+              };
+            })
+          }
+          cancel={() => {
+            if (!cancelLessonData.id) return;
+            cancelLesson.mutate({ id: cancelLessonData.id });
+          }}
         />
       ) : null}
 
@@ -222,3 +282,119 @@ export const Content: React.FC<{
 };
 
 export default Content;
+
+const CancelDialogs: React.FC<{
+  isStudent: boolean;
+  start: string | null;
+  otherMemberName: string | null;
+  close: Void;
+  onEdit: Void;
+  cancel: Void;
+}> = ({ isStudent, start, otherMemberName, close, onEdit, cancel }) => {
+  const intl = useFormatMessage();
+  const { md } = useMediaQuery();
+
+  const [canCancel, setCanCancel] = useState<boolean>(!isStudent);
+
+  const hoursToStart = useMemo(() => {
+    const now = dayjs();
+    const diff = dayjs(start).diff(now, "hours");
+    return diff;
+  }, [start]);
+
+  const dialogTitle = useMemo(
+    () => intl("cancel-lesson.with-tutor.title", { value: otherMemberName }),
+    [intl, otherMemberName]
+  );
+
+  return (
+    <div>
+      {isStudent ? (
+        <Dialog
+          open={hoursToStart <= UNCANCELLABLE_LESSON_HOURS}
+          close={close}
+          title={dialogTitle}
+          className="w-full sm:max-w-[500px]"
+          position={md ? "center" : "bottom"}
+        >
+          <Typography tag="p" className="mt-4">
+            {intl("cancel-lesson.labels.pleased-to-help")}
+          </Typography>
+          <Typography tag="p" className="mt-1">
+            {intl("cancel-lesson.description.within-6-hours")}
+          </Typography>
+          <Button size="large" onClick={close} className="w-full mt-4">
+            {intl("labels.ok")}
+          </Button>
+        </Dialog>
+      ) : null}
+
+      {isStudent ? (
+        <Dialog
+          open={hoursToStart > UNCANCELLABLE_LESSON_HOURS && !canCancel}
+          close={close}
+          title={dialogTitle}
+          className="w-full sm:max-w-[500px]"
+          position={md ? "center" : "bottom"}
+        >
+          <Typography
+            tag="p"
+            className="font-semibold text-subtitle-1 mt-4 mb-2"
+          >
+            {intl("cancel-lesson.description.before-6-hours-1")}
+          </Typography>
+          <Typography tag="p" className="font-semibold text-caption mb-1">
+            {intl("cancel-lesson.description.before-6-hours-2")}
+          </Typography>
+          <Typography tag="p" className="font-semibold text-caption mb-1">
+            {intl("cancel-lesson.description.before-6-hours-3")}
+          </Typography>
+          <Typography tag="p" className="font-semibold text-caption">
+            {intl("cancel-lesson.description.before-6-hours-4")}
+          </Typography>
+
+          <div className="flex flex-col items-center gap-4 mt-8">
+            <Button
+              type="natural"
+              variant="secondary"
+              onClick={() => setCanCancel(true)}
+            >
+              {intl("cancel-lesson.with-tutor.buttons.cancel")}
+            </Button>
+            <div className="flex w-full gap-4">
+              <Button
+                className="flex-1"
+                size="large"
+                onClick={() => {
+                  onEdit();
+                  close();
+                }}
+              >
+                {intl("cancel-lesson.with-tutor.buttons.change-date")}
+              </Button>
+              <Button
+                variant="secondary"
+                className="flex-1"
+                size="large"
+                onClick={close}
+              >
+                {intl("labels.go-back")}
+              </Button>
+            </div>
+          </div>
+        </Dialog>
+      ) : null}
+
+      <CancelLesson
+        open={canCancel}
+        close={() => {
+          setCanCancel(false);
+          close();
+        }}
+        onCancel={cancel}
+        otherMemberName={otherMemberName}
+        isStudent={isStudent}
+      />
+    </div>
+  );
+};
