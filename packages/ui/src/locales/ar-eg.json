@@ -220,6 +220,8 @@
   "tutor.achievements": "{lessonCount} حصة مع {studentCount} طالب",
   "tutor.book": "حجز حصة",
   "tutor.rating.rate": "رأيك في {tutor}",
+  "tutor.rating.count": "{value} تقييم",
+  "tutor.recommended": "معلم موصي به",
   "tutor.rating.edit": "تعديل التعليق",
   "tutor.rating.delete": "حذف التعليق",
   "tutor.rating.name.placeholder": "أحد طلاب {value}",

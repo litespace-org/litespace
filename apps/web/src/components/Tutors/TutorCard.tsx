@@ -14,6 +14,8 @@ import cn from "classnames";
 import { isEmpty } from "lodash";
 import React from "react";
 import { Link } from "react-router-dom";
+import { useFindTutorRatings } from "@litespace/headless/rating";
+import { Role } from "@litespace/types/dist/esm/user";
 
 const MAXIMUM_CARD_TOPICS_NUM = 4;
 
@@ -23,6 +25,7 @@ export const TutorCard: React.FC<{
   about: string | null;
   name: string | null;
   image: string | null;
+  role?: number;
   rating?: number;
   topics: string[];
   onBook: Void;
@@ -39,6 +42,7 @@ export const TutorCard: React.FC<{
   onBook,
   buttonSize = "medium",
   cardHeight,
+  role,
 }) => {
   const intl = useFormatMessage();
 
@@ -68,8 +72,22 @@ export const TutorCard: React.FC<{
             cardHeight || "h-80 max-h-80"
           )}
         >
+          {role === Role.TutorManager && (
+            <Typography
+              tag="p"
+              className={cn(
+                "absolute top-[27px] left-[-53px] z-recommended-badge w-[190px] h-[28px]",
+                "bg-success-600 text-natural-0 font-cairo font-bold text-tiny antialiased",
+                "flex items-center justify-center align-middle",
+                "-rotate-45"
+              )}
+            >
+              {intl("tutor.recommended")}
+            </Typography>
+          )}
           <AvatarV2 src={image} alt={name} id={tutorId} object="cover" />
         </div>
+
         <div className="flex flex-col">
           <div className="flex justify-between mb-1">
             <Typography
@@ -78,7 +96,7 @@ export const TutorCard: React.FC<{
             >
               {name}
             </Typography>
-            {rating ? <Rating rating={rating} /> : null}
+            {rating ? <Rating tutorId={tutorId} rating={rating} /> : null}
           </div>
           <Optional show={!!about}>
             <Typography
@@ -143,11 +161,25 @@ export const TutorCard: React.FC<{
   );
 };
 
-const Rating: React.FC<{ rating: number }> = ({ rating }) => {
+const Rating: React.FC<{ tutorId: number; rating: number }> = ({
+  tutorId,
+  rating,
+}) => {
+  const { query } = useFindTutorRatings(tutorId, { page: 1, size: 10 });
+  const ratingCount = query.data?.total ?? null;
+  const intl = useFormatMessage();
+
   return (
     <div className="flex items-center gap-1">
       <Typography
-        className="text-tiny font-semibold text-secondary-950"
+        className="text-tiny font-normal font-cairo text-neutral-600"
+        tag="span"
+      >
+        {`(${intl("tutor.rating.count", { value: ratingCount })})`}
+      </Typography>
+
+      <Typography
+        className="text-tiny font-cairo text-secondary-950"
         tag="span"
       >
         {formatNumber(rating, {
