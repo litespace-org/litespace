@@ -72,6 +72,7 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.PhoneRequired]: "error.api.phone-required",
   [ApiError.WeekBoundariesViolation]: "error.api.week-boundaries-violation",
   [ApiError.NonRefundable]: "error.api.non-refundable",
+  [ApiError.NoEnoughMinutes]: "error.api.no-enough-minutes",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
   [FieldError.ShortPassword]: "error.field.short-password",
   [FieldError.LongPassword]: "error.field.long-password",

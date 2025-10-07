@@ -9,6 +9,8 @@ import {
   busyTutor,
   bad,
   lessonTimePassed,
+  noEnoughMinutes,
+  weekBoundariesViolation,
 } from "@/lib/error/api";
 import { dayjs, getSubSlots, nameof, safe } from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";

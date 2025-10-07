@@ -20,6 +20,8 @@ import {
   lessonNotStarted,
   fawryError,
   unexpected,
+  noEnoughMinutes,
+  weekBoundariesViolation,
 } from "@/lib/error/api";
 import {
   IAvailabilitySlot,
@@ -34,7 +36,7 @@ import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { isAdmin, isStudent, isTutor, isUser } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
 import { isEmpty, isEqual } from "lodash";
-import { AFRICA_CAIRO_TIMEZONE, ResponseError } from "@litespace/utils";
+import { AFRICA_CAIRO_TIMEZONE } from "@litespace/utils";
 import { withImageUrls, withPhone } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import {
@@ -56,9 +58,11 @@ import {
   BusyTutor,
   FawryError,
   InvalidLessonStart,
+  NoEnoughMinutes,
   SlotNotFound,
   TutorNotFound,
   Unexpected,
+  WeekBoundariesViolation,
 } from "@/lib/error/local";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
@@ -125,12 +129,11 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const scaledAmount = calculateLessonPrice(payload.duration);
-  const unscaledAmount = price.unscale(scaledAmount);
+  const amount = calculateLessonPrice(payload.duration);
 
   const transaction = await createPaidLessonTx({
     userId: user.id,
-    scaledAmount,
+    amount,
     phone,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
@@ -143,7 +146,7 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
     user,
     phone,
     transaction,
-    unscaledAmount,
+    amount,
     cvv: payload.cvv,
     cardToken: payload.cardToken,
   });
@@ -177,12 +180,11 @@ async function createWithFawryRefNum(
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const scaledAmount = calculateLessonPrice(payload.duration);
-  const unscaledAmount = price.unscale(scaledAmount);
+  const amount = calculateLessonPrice(payload.duration);
 
   const transaction = await createPaidLessonTx({
     userId: user.id,
-    scaledAmount,
+    amount,
     phone,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
@@ -195,7 +197,7 @@ async function createWithFawryRefNum(
     user,
     phone,
     transaction,
-    unscaledAmount,
+    amount,
   });
 
   if (result instanceof FawryError) return next(fawryError(result.message));
@@ -227,12 +229,11 @@ async function createWithEWallet(
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const scaledAmount = calculateLessonPrice(payload.duration);
-  const unscaledAmount = price.unscale(scaledAmount);
+  const amount = calculateLessonPrice(payload.duration);
 
   const transaction = await createPaidLessonTx({
     userId: user.id,
-    scaledAmount,
+    amount,
     phone,
     tutorId: payload.tutorId,
     slotId: payload.slotId,
@@ -245,7 +246,7 @@ async function createWithEWallet(
     user,
     phone,
     transaction,
-    unscaledAmount,
+    amount,
   });
 
   if (result instanceof FawryError) return next(fawryError(result.message));
@@ -278,7 +279,9 @@ function create(context: ApiContext) {
         duration: payload.duration,
       });
       if (state instanceof Unexpected) return next(unexpected(state.message));
-      if (state instanceof ResponseError) return next(state);
+      if (state instanceof NoEnoughMinutes) return next(noEnoughMinutes());
+      if (state instanceof WeekBoundariesViolation)
+        return next(weekBoundariesViolation());
       if (!state.eligible) return next(forbidden());
 
       const lesson = await knex.transaction((tx) =>

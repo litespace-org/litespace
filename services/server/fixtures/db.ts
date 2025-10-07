@@ -21,6 +21,8 @@ import {
   reports,
   introVideos,
   demoSessions,
+  txLessonTemps,
+  txPlanTemps,
 } from "@litespace/models";
 import {
   IInterview,
@@ -58,6 +60,7 @@ export async function flush() {
     await introVideos.builder(tx).del();
     await reports.builder(tx).del();
     await subscriptions.builder(tx).del();
+    await txPlanTemps.builder(tx).del();
     await plans.builder(tx).del();
     await invoices.builder(tx).del();
     await sessionEvents.builder(tx).del();
@@ -66,6 +69,7 @@ export async function flush() {
     await messages.builder(tx).del();
     await rooms.builder(tx).members.del();
     await rooms.builder(tx).rooms.del();
+    await txLessonTemps.builder(tx).del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
     await transactions.builder(tx).del();
@@ -606,6 +610,7 @@ async function transaction(
     amount: payload?.amount || randomPrice(),
     phone: payload?.phone || "",
     fees: payload?.fees || price.scale(randomInt(20)),
+    status: payload?.status || ITransaction.Status.Paid,
     paymentMethod: payload?.paymentMethod || ITransaction.PaymentMethod.Card,
     providerRefNum: payload?.providerRefNum || null,
     type: payload?.type || ITransaction.Type.PaidPlan,

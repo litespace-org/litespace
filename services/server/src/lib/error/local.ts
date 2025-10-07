@@ -13,3 +13,7 @@ export class SlotNotFound extends Error {}
 export class InvalidLessonStart extends Error {}
 
 export class BusyTutor extends Error {}
+
+export class NoEnoughMinutes extends Error {}
+
+export class WeekBoundariesViolation extends Error {}
