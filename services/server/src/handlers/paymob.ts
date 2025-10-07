@@ -17,7 +17,7 @@ import {
   txPlanTemps,
 } from "@litespace/models";
 import zod, { ZodSchema } from "zod";
-import { id, planPeriod } from "@/validation/utils";
+import { id, phone, planPeriod } from "@/validation/utils";
 import {
   dayjs,
   isStudent,
@@ -36,6 +36,7 @@ const createCheckoutUrlPayload: ZodSchema<IPaymob.CreateCheckoutUrlApiPayload> =
   zod.object({
     planId: id,
     planPeriod: planPeriod,
+    phone: phone,
     paymentMethod: zod.union([
       zod.literal(ITransaction.PaymentMethod.Card),
       zod.literal(ITransaction.PaymentMethod.EWallet),
@@ -55,9 +56,8 @@ async function createCheckoutUrl(
   const allowed = isStudent(user);
   if (!allowed) return next(forbidden());
 
-  const { planId, planPeriod, paymentMethod } = createCheckoutUrlPayload.parse(
-    req.body
-  );
+  const { planId, planPeriod, paymentMethod, phone } =
+    createCheckoutUrlPayload.parse(req.body);
 
   // the user must have specified at least his first and middle names.
   if (!user.name || user.name.split(" ").length < 2)
@@ -81,6 +81,7 @@ async function createCheckoutUrl(
   // create payment transaction
   const tx = await transactions.create({
     userId: user.id,
+    phone,
     // planId,
     // planPeriod,
     paymentMethod,

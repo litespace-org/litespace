@@ -14,7 +14,6 @@ export enum Status {
   PartialRefunded,
   Failed,
   Processed,
-  InRefunding,
 }
 
 export enum PaymentMethod {
@@ -30,6 +29,8 @@ export type Row = {
   amount: number;
   status: Status;
   type: Type;
+  fees: number;
+  phone: string;
   payment_method: PaymentMethod;
   provider_ref_num: string | null;
   created_at: Date;
@@ -45,6 +46,8 @@ export type Self = {
   amount: number;
   status: Status;
   type: Type;
+  fees: number;
+  phone: string;
   paymentMethod: PaymentMethod;
   /**
    * this is defined to map between transactions and ref numbers
@@ -92,17 +95,20 @@ export type CreatePayload = {
   amount: number;
   paymentMethod: PaymentMethod;
   type: Type;
+  phone: string;
   /**
    * this is defined to map between transactions and ref numbers
    * from third party services. e.g. fawry orderRefNum.
    */
   providerRefNum: string | null;
+  fees?: number;
   status?: Status;
 };
 
 export type UpdateModelPayload = {
   id: number;
   status?: Status;
+  fees?: number;
   /**
    * this is defined to map between transactions and ref numbers
    * from third party services. e.g. fawry orderRefNum.

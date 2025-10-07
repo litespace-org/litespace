@@ -77,10 +77,12 @@ export async function upsertLessonByTxStatus({
   txId,
   userId,
   status,
+  fees,
   fawryRefNumber,
 }: {
   txId: number;
   userId: number;
+  fees: number;
   status: ITransaction.Status;
   fawryRefNumber: string;
   io: ApiContext["io"];
@@ -95,6 +97,7 @@ export async function upsertLessonByTxStatus({
     // Update the transaction with the latest status.
     await transactions.update({
       tx,
+      fees,
       id: txId,
       status: newTxStatus,
       providerRefNum: fawryRefNumber,

@@ -15,8 +15,9 @@ describe(nameof(calcRefundAmount), () => {
     const tx = await db.transaction({
       amount: price.scale(50),
       type: ITransaction.Type.PaidLesson,
+      fees: price.scale(100),
     });
-    const refundAmount = await calcRefundAmount(tx, 100);
+    const refundAmount = await calcRefundAmount(tx);
     expect(refundAmount).to.not.be.instanceof(Error);
     expect(refundAmount).to.eq(0);
   });
@@ -25,9 +26,10 @@ describe(nameof(calcRefundAmount), () => {
     const tx = await db.transaction({
       amount: price.scale(101),
       type: ITransaction.Type.PaidLesson,
+      fees: price.scale(100),
     });
-    const refundAmount = await calcRefundAmount(tx, 100);
-    expect(refundAmount).to.eq(1);
+    const refundAmount = await calcRefundAmount(tx);
+    expect(refundAmount).to.eq(price.scale(1));
   });
 
   it("should return not found error when subscription is not found for non-paid lesson transaction", async () => {
@@ -35,15 +37,15 @@ describe(nameof(calcRefundAmount), () => {
       amount: 50,
       type: ITransaction.Type.PaidPlan,
     });
-    const refundAmount = await calcRefundAmount(tx, 100);
-    expect(refundAmount).to.not.be.instanceof(Error);
-    expect(price.unscale(refundAmount as number)).to.deep.eq(notfound.subscription());
+    const refundAmount = await calcRefundAmount(tx);
+    expect(refundAmount).to.deep.eq(notfound.subscription());
   });
 
   it("should calculate correct refund amount for subscription transaction based on attended hours in current week", async () => {
     const now = dayjs();
     const paid = 2550;
     const weeklyMinutes = 120;
+    const fees = 10;
 
     const plan = await db.plan({
       baseMonthlyPrice: price.scale(paid),
@@ -55,6 +57,7 @@ describe(nameof(calcRefundAmount), () => {
     const tx = await db.transaction({
       userId: student.id,
       amount: price.scale(paid),
+      fees: price.scale(fees),
     });
 
     await db.subscription({
@@ -102,18 +105,21 @@ describe(nameof(calcRefundAmount), () => {
     ]);
 
     const timeAttended = 1; // Hour
-    const timePrice = timeAttended * platformConfig.totalHourlyRate; // EGP
-    const fees = 10; // EGP
+    const timePrice =
+      timeAttended * price.unscale(platformConfig.totalHourlyRate); // EGP
 
-    const refundAmount = await calcRefundAmount(tx, fees);
+    const refundAmount = await calcRefundAmount(tx);
     expect(refundAmount).to.not.be.instanceof(Error);
-    expect(price.unscale(refundAmount as number)).to.eq(paid - timePrice - fees);
+    expect(price.unscale(refundAmount as number)).to.eq(
+      paid - timePrice - fees
+    );
   });
 
   it("should return zero when refund amount is negative after accounting for attended hours and transaction fees", async () => {
     const now = dayjs();
-    const paid = platformConfig.totalHourlyRate; // EGP
+    const paid = price.unscale(platformConfig.totalHourlyRate); // EGP
     const weeklyMinutes = 120;
+    const fees = 10;
 
     const plan = await db.plan({
       baseMonthlyPrice: price.scale(paid),
@@ -125,6 +131,7 @@ describe(nameof(calcRefundAmount), () => {
     const tx = await db.transaction({
       userId: student.id,
       amount: price.scale(paid),
+      fees: price.scale(fees),
     });
 
     await db.subscription({
@@ -156,7 +163,7 @@ describe(nameof(calcRefundAmount), () => {
       }),
     ]);
 
-    const refundAmount = await calcRefundAmount(tx, 0);
+    const refundAmount = await calcRefundAmount(tx);
     expect(refundAmount).to.not.be.instanceof(Error);
     expect(refundAmount).to.eq(0);
   });
@@ -165,6 +172,7 @@ describe(nameof(calcRefundAmount), () => {
     const now = dayjs();
     const paid = 2550; // EGP
     const weeklyMinutes = 120;
+    const fees = 10;
 
     const plan = await db.plan({
       baseMonthlyPrice: price.scale(paid),
@@ -177,6 +185,7 @@ describe(nameof(calcRefundAmount), () => {
       userId: student.id,
       amount: price.scale(paid),
       type: ITransaction.Type.PaidPlan,
+      fees: price.scale(fees),
     });
 
     await db.subscription({
@@ -210,18 +219,21 @@ describe(nameof(calcRefundAmount), () => {
 
     // the past three weeks and the attended lesson of the current week
     const timeAttended = 3 * (weeklyMinutes / MINUTES_IN_HOUR) + 0.5; // Hour
-    const timePrice = timeAttended * platformConfig.totalHourlyRate; // EGP
-    const fees = 10; // EGP
+    const timePrice =
+      timeAttended * price.unscale(platformConfig.totalHourlyRate); // EGP
 
-    const refundAmount = await calcRefundAmount(tx, fees);
+    const refundAmount = await calcRefundAmount(tx);
     expect(refundAmount).to.not.be.instanceof(Error);
-    expect(price.unscale(refundAmount as number)).to.eq(paid - timePrice - fees);
+    expect(price.unscale(refundAmount as number)).to.eq(
+      paid - timePrice - fees
+    );
   });
 
   it("should handle edge case where subscription start date is in the future", async () => {
     const now = dayjs();
     const paid = 2550; // EGP
     const weeklyMinutes = 120;
+    const fees = 10;
 
     const plan = await db.plan({
       baseMonthlyPrice: price.scale(paid),
@@ -233,6 +245,7 @@ describe(nameof(calcRefundAmount), () => {
     const tx = await db.transaction({
       userId: student.id,
       amount: price.scale(paid),
+      fees: price.scale(fees),
     });
 
     await db.subscription({
@@ -245,7 +258,7 @@ describe(nameof(calcRefundAmount), () => {
       weeklyMinutes,
     });
 
-    const refundAmount = await calcRefundAmount(tx, 0);
+    const refundAmount = await calcRefundAmount(tx);
 
     expect(refundAmount).to.deep.eq(unexpected());
   });
