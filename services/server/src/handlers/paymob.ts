@@ -23,6 +23,7 @@ import {
   isStudent,
   PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL,
   PLAN_PERIOD_TO_WEEK_COUNT,
+  price,
 } from "@litespace/utils";
 import { calculatePlanPrice } from "@/lib/plan";
 import {
@@ -108,8 +109,8 @@ async function createCheckoutUrl(
     items: [
       {
         name: `plan-${planId}-${PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL[planPeriod]}`,
-        amount: tx.amount * 100,
-        description: `Pay ${tx.amount * 100}EGP every ${PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL[planPeriod]}`,
+        amount: price.unscale(tx.amount),
+        description: `Pay ${price.unscale(tx.amount)}EGP every ${PLAN_PERIOD_TO_PLAN_PERIOD_LITERAL[planPeriod]}`,
         quantity: 1,
       },
     ],

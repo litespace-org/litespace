@@ -37,6 +37,7 @@ import { Knex } from "knex";
 import { sendMsg } from "@/lib/messenger";
 import { ApiContext } from "@/types/api";
 import { withDevLog } from "@/lib/utils";
+import { newTxStatus } from "@/lib/transaction";
 
 export function getDayLessonsMap(lessons: Array<ILesson.Self>): DayLessonsMap {
   const dayLessonsMap: DayLessonsMap = {};
@@ -74,23 +75,22 @@ export function inflateDayLessonsMap(map: DayLessonsMap) {
 export async function upsertLessonByTxStatus({
   io,
   txId,
+  txStatus,
+  fawryStatus,
   userId,
-  status,
   fees,
   fawryRefNumber,
 }: {
   txId: number;
   userId: number;
   fees: number;
-  status: ITransaction.Status;
+  txStatus: ITransaction.Status;
+  fawryStatus: ITransaction.Status;
   fawryRefNumber: string;
   io: ApiContext["io"];
 }) {
   const lesson = await lessons.findOne({ txs: [txId] });
   const txLesson = await txLessonTemps.findByTxId({ txId });
-
-  const newTxStatus =
-    status === ITransaction.Status.New ? ITransaction.Status.Processed : status;
 
   await knex.transaction(async (tx) => {
     // Update the transaction with the latest status.
@@ -98,17 +98,17 @@ export async function upsertLessonByTxStatus({
       tx,
       fees,
       id: txId,
-      status: newTxStatus,
+      status: newTxStatus(txStatus, fawryStatus),
       providerRefNum: fawryRefNumber,
     });
 
     const terminated =
-      status === ITransaction.Status.Canceled ||
-      status === ITransaction.Status.Refunded ||
-      status === ITransaction.Status.PartialRefunded ||
-      status === ITransaction.Status.Failed;
+      fawryStatus === ITransaction.Status.Canceled ||
+      fawryStatus === ITransaction.Status.Refunded ||
+      fawryStatus === ITransaction.Status.PartialRefunded ||
+      fawryStatus === ITransaction.Status.Failed;
 
-    const paid = status === ITransaction.Status.Paid;
+    const paid = fawryStatus === ITransaction.Status.Paid;
 
     // Cancel lesson in case the tx was canceled, refunded, or failed.
     if (terminated)

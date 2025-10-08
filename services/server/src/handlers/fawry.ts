@@ -490,6 +490,10 @@ async function refund(req: Request, res: Response, next: NextFunction) {
     });
     const tx = first(list);
     if (!tx) return next(notfound.transaction());
+    await transactions.update({
+      id: tx.id,
+      status: ITransaction.Status.Refunding,
+    });
     performRefundRepercussion(tx);
   }
 
@@ -652,8 +656,9 @@ function setPaymentStatus(context: ApiContext) {
 
     if (transaction.type === ITransaction.Type.PaidPlan)
       await upsertSubscriptionByTxStatus({
-        status,
         txId: transaction.id,
+        txStatus: transaction.status,
+        fawryStatus: status,
         userId: transaction.userId,
         fawryRefNumber: payload.fawryRefNumber,
         fees: isNaN(payload.fawryFees) ? 0 : price.scale(payload.fawryFees),
@@ -661,8 +666,9 @@ function setPaymentStatus(context: ApiContext) {
 
     if (transaction.type === ITransaction.Type.PaidLesson)
       await upsertLessonByTxStatus({
-        status,
         txId: transaction.id,
+        txStatus: transaction.status,
+        fawryStatus: status,
         userId: transaction.userId,
         fawryRefNumber: payload.fawryRefNumber,
         fees: isNaN(payload.fawryFees) ? 0 : price.scale(payload.fawryFees),
@@ -717,17 +723,21 @@ async function syncPaymentStatus(
   const subscription = await subscriptions.findByTxId(transaction.id);
 
   await knex.transaction(async (tx) => {
-    await transactions.update({
-      id: transaction.id,
-      fees: isNaN(payment.fawryFees) ? 0 : price.scale(payment.fawryFees),
-      status:
-        status === ITransaction.Status.New
-          ? ITransaction.Status.Processed
-          : status,
-      providerRefNum: payment.fawryRefNumber,
-    });
-
     const paid = status === ITransaction.Status.Paid;
+
+    // Don't update the transaction status in case it's "Refunding" and fawry
+    // payment status still stuck in the "PAID" status.
+    if (!(paid && transaction.status === ITransaction.Status.Refunding))
+      // Otherwise, sync the transaction with fawry payment status
+      await transactions.update({
+        id: transaction.id,
+        fees: isNaN(payment.fawryFees) ? 0 : price.scale(payment.fawryFees),
+        status:
+          status === ITransaction.Status.New
+            ? ITransaction.Status.Processed
+            : status,
+        providerRefNum: payment.fawryRefNumber,
+      });
 
     // terminate subscription in case the tx was canceled, refunded, or failed.
     if (
