@@ -297,7 +297,7 @@ export const ManageLessonDialog: React.FC<{
   const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
 
   const depletedSubscription = useMemo(
-    () => remainingWeeklyMinutes < MIN_LESSON_DURATION,
+    () => subscribed && remainingWeeklyMinutes < MIN_LESSON_DURATION,
     [remainingWeeklyMinutes]
   );
 
@@ -306,8 +306,8 @@ export const ManageLessonDialog: React.FC<{
       !error &&
       !loading &&
       !depletedSubscription &&
-      (!hasBookedLessons || type === "update" || subscribed),
-    [error, loading, depletedSubscription, hasBookedLessons, type, subscribed]
+      (!hasBookedLessons || type === "update"),
+    [error, loading, depletedSubscription, hasBookedLessons, type]
   );
 
   return (
