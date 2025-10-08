@@ -89,7 +89,9 @@ export const Selector: React.FC<{
               key={idx}
               period={period}
               title={intl(titles.current[index])}
-              description={intl(description.current[index][0])}
+              description={intl(description.current[index][0], {
+                minutes: plan.weeklyMinutes,
+              })}
               features={description.current[index].slice(1).map((f) => intl(f))}
               discount={percentage.unscale(getDiscount())}
               monthlyPrice={price.unscale(plan.baseMonthlyPrice)}
