@@ -19,6 +19,7 @@ import {
   STUDENT_FREE_WEEKLY_MINUTES,
 } from "@litespace/utils";
 import { PLAN_PERIOD_TO_WEEK_COUNT } from "@litespace/utils";
+import { newTxStatus } from "@/lib/transaction";
 
 export async function calcRemainingWeeklyMinutesBySubscription(
   sub: ISubscription.Self
@@ -91,22 +92,22 @@ export function generateFreeSubscription({
 
 export async function upsertSubscriptionByTxStatus({
   txId,
+  txStatus,
+  fawryStatus,
   userId,
-  status,
   fees,
   fawryRefNumber,
 }: {
   txId: number;
+  txStatus: ITransaction.Status;
+  fawryStatus: ITransaction.Status;
   userId: number;
-  status: ITransaction.Status;
   fees: number;
   fawryRefNumber: string;
 }) {
   const subscription = await subscriptions.findByTxId(txId);
   const txPlan = await txPlanTemps.findByTxId({ txId });
   const now = dayjs.utc();
-  const newTxStatus =
-    status === ITransaction.Status.New ? ITransaction.Status.Processed : status;
 
   await knex.transaction(async (tx) => {
     // Update the transaction with the latest status.
@@ -114,15 +115,15 @@ export async function upsertSubscriptionByTxStatus({
       tx,
       fees,
       id: txId,
-      status: newTxStatus,
+      status: newTxStatus(txStatus, fawryStatus),
       providerRefNum: fawryRefNumber,
     });
 
     const terminated =
-      status === ITransaction.Status.Canceled ||
-      status === ITransaction.Status.Refunded ||
-      status === ITransaction.Status.PartialRefunded ||
-      status === ITransaction.Status.Failed;
+      fawryStatus === ITransaction.Status.Canceled ||
+      fawryStatus === ITransaction.Status.Refunded ||
+      fawryStatus === ITransaction.Status.PartialRefunded ||
+      fawryStatus === ITransaction.Status.Failed;
 
     if (terminated)
       return await knex.transaction(async (tx) => {
@@ -133,7 +134,7 @@ export async function upsertSubscriptionByTxStatus({
           });
       });
 
-    if (!subscription && status === ITransaction.Status.Paid) {
+    if (!subscription && fawryStatus === ITransaction.Status.Paid) {
       await knex.transaction(async (tx) => {
         if (!txPlan) throw new Error("Temporary plan data not found.");
 

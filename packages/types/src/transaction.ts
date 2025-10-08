@@ -16,6 +16,7 @@ export enum Status {
   PartialRefunded,
   Failed,
   Processed,
+  Refunding,
 }
 
 export enum PaymentMethod {

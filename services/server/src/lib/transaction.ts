@@ -85,3 +85,19 @@ export async function createPaidPlanTx({
     return transaction;
   });
 }
+
+export function newTxStatus(
+  curStatus: ITransaction.Status,
+  newStatus: ITransaction.Status
+): ITransaction.Status {
+  if (newStatus === ITransaction.Status.New)
+    return ITransaction.Status.Processed;
+
+  if (
+    newStatus === ITransaction.Status.Paid &&
+    curStatus === ITransaction.Status.Refunding
+  )
+    return ITransaction.Status.Refunding;
+
+  return newStatus;
+}
