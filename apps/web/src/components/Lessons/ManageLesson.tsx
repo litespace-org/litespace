@@ -19,14 +19,11 @@ import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { isTutorManager, MAX_LESSON_DURATION } from "@litespace/utils";
 import { useSubscriptionWeekBoundaries } from "@litespace/headless/subscription";
-import { nullable } from "@litespace/utils/utils";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { nstr, nullable } from "@litespace/utils/utils";
+import React, { useCallback, useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
 
 type Base = {
   close: Void;
@@ -57,11 +54,13 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   const { user } = useUser();
   const toast = useToast();
   const intl = useFormatMessage();
+  const navigate = useNavigate();
   const invalidate = useInvalidateQuery();
   const now = useRef(dayjs());
 
   // ====== get subscribtion details and get the boundries you filter the availability slots on =========
-  const { info, remainingWeeklyMinutes, refetch } = useSubscription();
+  const { info, remainingWeeklyMinutes, refetch, paidLessonStatus } =
+    useSubscription();
 
   const weekBoundaries = useSubscriptionWeekBoundaries(info);
 
@@ -75,7 +74,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   );
 
   // ====== get tutorInfo =========
-  const { query: tutor } = useFindTutorInfo(tutorId);
+  const tutor = useFindTutorInfo(tutorId);
 
   // ====== Check if user has any booked lessons =========
   const lessons = useFindLessons({
@@ -89,15 +88,9 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     return !!lessons.query.data && !!lessons.query.data.list.length;
   }, [lessons]);
 
-  const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(!info);
-
-  useEffect(
-    () =>
-      setSubscribeDialogOpen(
-        !info || (info.id === -1 && remainingWeeklyMinutes === 0)
-      ),
-    [info, remainingWeeklyMinutes]
-  );
+  const canBook = useMemo(() => {
+    return !!info || paidLessonStatus !== ILesson.PaidLessonStatus.NotEligible;
+  }, [info, paidLessonStatus]);
 
   const tutorAvailabilitySlots = useFindAvailabilitySlots({
     userIds: [tutorId],
@@ -119,7 +112,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     return 0;
   }, [remainingWeeklyMinutes, tutor.data, info]);
 
-  // ====== Create Lesson Mutation =========
+  // ====== Create lesson mutation =========
   const onCreateSuccess = useCallback(() => {
     if (payload.onSuccess) payload.onSuccess();
     invalidate([QueryKey.FindAvailabilitySlots]);
@@ -144,7 +137,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     onError: onCreateError,
   });
 
-  // ====== Update Lesson Mutation =========
+  // ====== Update lesson mutation =========
   const onUpdateSuccess = useCallback(() => {
     if (payload.onSuccess) payload.onSuccess();
     invalidate([QueryKey.FindAvailabilitySlots]);
@@ -169,7 +162,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     onError: onUpdateError,
   });
 
-  // ====== Submit Lesson Details =========
+  // ====== Submit lesson details =========
   const onSubmit = useCallback(
     ({
       slotId,
@@ -180,6 +173,23 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
       start: string;
       duration: ILesson.Duration;
     }) => {
+      if (
+        payload.type === "book" &&
+        paidLessonStatus === ILesson.PaidLessonStatus.EligibleWithPayment
+      )
+        return navigate(
+          router.web({
+            route: Web.Checkout,
+            query: {
+              type: "paid-lesson",
+              tutorId: nstr(tutorId),
+              slotId: nstr(slotId),
+              duration: nstr(duration),
+              start,
+            },
+          })
+        );
+
       if (payload.type === "book")
         return createLessonMutation
           .mutateAsync({
@@ -199,7 +209,17 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
         })
         .then(() => refetch());
     },
-    [payload, createLessonMutation, tutorId, updateLessonMutation, refetch]
+    [
+      payload.type,
+      // @ts-expect-error property 'lessonId' does not exist on type payload all the time.
+      payload.lessonId,
+      paidLessonStatus,
+      navigate,
+      tutorId,
+      createLessonMutation,
+      updateLessonMutation,
+      refetch,
+    ]
   );
 
   const bookedSlots = useMemo(() => {
@@ -216,17 +236,11 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   return (
     <>
-      <SubscriptionDialog
-        open={subscribeDialogOpen}
-        close={() => {
-          setSubscribeDialogOpen(false);
-          close();
-        }}
-      />
+      <SubscriptionDialog open={!canBook} close={close} />
 
       <ManageLessonDialog
         remainingWeeklyMinutes={asRemainingWeeklyMinutes}
-        open={!subscribeDialogOpen}
+        open={canBook}
         type={payload.type}
         slotId={payload.type === "update" ? payload.slotId : undefined}
         start={payload.type === "update" ? payload.start : undefined}

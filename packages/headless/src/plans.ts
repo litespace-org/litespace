@@ -1,9 +1,10 @@
 import { useApi } from "@/api/context";
 import { IPlan, Void } from "@litespace/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { QueryKey } from "@/constants";
 import { usePaginate } from "@/pagination";
+import { useExtendedQuery } from "@/query";
 
 export function usePlans(payload?: IPlan.FindApiQuery) {
   const api = useApi();
@@ -80,15 +81,19 @@ export function useDeletePlan({
   });
 }
 
-export function useFindPlanById(id: number) {
+export function useFindPlanById(id?: number) {
   const api = useApi();
-  const keys = useMemo(() => [QueryKey.FindPlanById, id], [id]);
-  const findById = useCallback(() => api.plan.findById(id), [api.plan, id]);
+  const findById = useCallback(() => {
+    if (!id)
+      throw new Error(
+        "Unexpected error: trying to find a plan with undefined plan id."
+      );
+    return api.plan.findById(id);
+  }, [api.plan, id]);
 
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: findById,
-    queryKey: keys,
+    queryKey: [QueryKey.FindPlanById, id],
+    enabled: !!id,
   });
-
-  return { query, keys };
 }

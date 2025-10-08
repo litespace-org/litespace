@@ -4,7 +4,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { LocalId } from "@litespace/ui/locales";
 import { PlanCard } from "@litespace/ui/PlanCard";
 import { Tabs } from "@litespace/ui/Tabs";
-import { percentage, price } from "@litespace/utils";
+import { nstr, percentage, price } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
 import React, { useMemo, useRef, useState } from "react";
 
@@ -96,8 +96,11 @@ export const Selector: React.FC<{
               weeklyMinutes={plan.weeklyMinutes}
               subscriptionLink={router.web({
                 route: Web.Checkout,
-                planId: plan.id,
-                period,
+                query: {
+                  type: "paid-plan",
+                  planId: nstr(plan.id),
+                  period,
+                },
               })}
               mostCommon={index === MOST_COMMON_PLAN_INDEX}
             />

@@ -9,7 +9,8 @@ import { first, isEmpty } from "lodash";
 import { ISessionEvent, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { users, lessons } from "@/index";
+import { users } from "@/users";
+import { lessons } from "@/lessons";
 
 export class SessionEvents {
   table = "session_events";

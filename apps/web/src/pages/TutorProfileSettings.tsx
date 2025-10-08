@@ -4,7 +4,6 @@ import React from "react";
 import { useUser } from "@litespace/headless/context/user";
 import Content from "@/components/TutorProfileSettings/Content";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
-import { nullable } from "@litespace/utils";
 import { useOnError } from "@/hooks/error";
 import { ITutor, Void } from "@litespace/types";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
@@ -12,12 +11,12 @@ import { Loading, LoadingError } from "@litespace/ui/Loading";
 const TutorSettings: React.FC = () => {
   const intl = useFormatMessage();
   const { user, fetching } = useUser();
-  const { query, keys } = useFindTutorInfo(nullable(user?.id));
+  const query = useFindTutorInfo(user?.id);
 
   useOnError({
     type: "query",
     error: query.error,
-    keys: keys,
+    keys: query.keys,
   });
 
   return (

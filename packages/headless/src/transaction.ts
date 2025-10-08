@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { useApi } from "@/api";
 import { QueryKey } from "@/constants";
 import { useSocket } from "@/socket";
 import { ITransaction, Wss } from "@litespace/types";
+import { useExtendedQuery } from "@/query";
 
 export function useFindLastTransaction(config?: { enabled?: boolean }) {
   const api = useApi();
@@ -12,15 +12,11 @@ export function useFindLastTransaction(config?: { enabled?: boolean }) {
     return api.transaction.findLast();
   }, [api.transaction]);
 
-  const keys = [QueryKey.FindLastTransaction];
-
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: findLastTransaction,
-    queryKey: keys,
+    queryKey: [QueryKey.FindLastTransaction],
     enabled: config?.enabled,
   });
-
-  return { query, keys };
 }
 
 type TransactionStatusUpdate = {

@@ -84,7 +84,6 @@ const payWithEWalletPayload: ZodSchema<IFawry.PayWithEWalletPayload> =
   zod.object({
     planId: id,
     period: planPeroid,
-    wallet: zod.string(),
     phone: zod.string().optional(),
   });
 

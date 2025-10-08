@@ -33,7 +33,7 @@ const TutorProfile: React.FC = () => {
     return id;
   }, [params.id]);
 
-  const { query: tutor } = useFindTutorInfo(id);
+  const tutor = useFindTutorInfo(id || undefined);
 
   useEffect(() => {
     if (searchParams.get("book")) setOpen(true);

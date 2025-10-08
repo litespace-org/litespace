@@ -120,31 +120,83 @@ export function useCreateLesson({
 }) {
   const api = useApi();
 
-  const bookLesson = useCallback(
-    async ({
-      tutorId,
-      slotId,
-      start,
-      duration,
-    }: {
-      tutorId: number;
-      slotId: number;
-      start: string;
-      duration: ILesson.Duration;
-    }) => {
-      return await api.lesson.create({
-        tutorId,
-        duration,
-        slotId,
-        start,
-      });
-    },
+  const create = useCallback(
+    (payload: ILesson.CreateApiPayload) => api.lesson.create(payload),
     [api.lesson]
   );
 
   return useMutation({
-    mutationFn: bookLesson,
-    mutationKey: [MutationKey.BookLesson],
+    mutationFn: create,
+    mutationKey: [MutationKey.CreateLesson],
+    onSuccess,
+    onError,
+  });
+}
+
+export function useCreateLessonWithCard({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<ILesson.CreateWithCardApiResponse>;
+  onError?: OnError;
+}) {
+  const api = useApi();
+
+  const create = useCallback(
+    (payload: ILesson.CreateWithCardApiPayload) =>
+      api.lesson.createWithCard(payload),
+    [api.lesson]
+  );
+
+  return useMutation({
+    mutationFn: create,
+    mutationKey: [MutationKey.CreateLessonWithCard],
+    onSuccess,
+    onError,
+  });
+}
+
+export function useCreateLessonWithEWallet({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<ILesson.CreateWithEWalletApiResponse>;
+  onError?: OnError;
+}) {
+  const api = useApi();
+
+  const create = useCallback(
+    (payload: ILesson.CreateWithEWalletApiPayload) =>
+      api.lesson.createWithEWallet(payload),
+    [api.lesson]
+  );
+
+  return useMutation({
+    mutationFn: create,
+    mutationKey: [MutationKey.CreateLessonWithEWallet],
+    onSuccess,
+    onError,
+  });
+}
+
+export function useCreateLessonWithFawry({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<ILesson.CreateWithFawryRefNumApiResponse>;
+  onError?: OnError;
+}) {
+  const api = useApi();
+
+  const create = useCallback(
+    (payload: ILesson.CreateWithFawryRefNumApiPayload) =>
+      api.lesson.createWithFawry(payload),
+    [api.lesson]
+  );
+
+  return useMutation({
+    mutationFn: create,
+    mutationKey: [MutationKey.CreateLessonWithFawry],
     onSuccess,
     onError,
   });

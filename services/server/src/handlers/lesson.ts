@@ -32,7 +32,7 @@ import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { isAdmin, isStudent, isTutor, isUser } from "@litespace/utils/user";
-import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
+import { MAX_FULL_FLAG_DAYS } from "@/constants";
 import { isEmpty, isEqual } from "lodash";
 import { AFRICA_CAIRO_TIMEZONE, price } from "@litespace/utils";
 import { withImageUrls, withPhone } from "@/lib/user";
@@ -125,10 +125,7 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const scaledAmount = calculateLessonPrice(
-    platformConfig.totalHourRate,
-    payload.duration
-  );
+  const scaledAmount = calculateLessonPrice(payload.duration);
   const unscaledAmount = price.unscale(scaledAmount);
   const transaction = await createPaidLessonTx({
     userId: user.id,
@@ -178,10 +175,7 @@ async function createWithFawryRefNum(
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const scaledAmount = calculateLessonPrice(
-    platformConfig.totalHourRate,
-    payload.duration
-  );
+  const scaledAmount = calculateLessonPrice(payload.duration);
   const unscaledAmount = price.unscale(scaledAmount);
 
   const transaction = await createPaidLessonTx({
@@ -230,10 +224,7 @@ async function createWithEWallet(
   if (valid instanceof InvalidLessonStart) return next(bad());
   if (valid instanceof BusyTutor) return next(busyTutor());
 
-  const scaledAmount = calculateLessonPrice(
-    platformConfig.totalHourRate,
-    payload.duration
-  );
+  const scaledAmount = calculateLessonPrice(payload.duration);
   const unscaledAmount = price.unscale(scaledAmount);
 
   const transaction = await createPaidLessonTx({

@@ -125,7 +125,10 @@ async function findUserSubscription(
   const subscription = first(list) || null;
   const state: CheckStudentPaidLessonStateReturn = !subscription
     ? await checkStudentPaidLessonState(user.id)
-    : { status: ILesson.PaidLessonStatus.NotEligible };
+    : {
+        status: ILesson.PaidLessonStatus.NotEligible,
+        hasPendingPaidLesson: false,
+      };
 
   if (state instanceof Unexpected) return next(unexpected(state.message));
 
@@ -137,6 +140,7 @@ async function findUserSubscription(
     info: subscription,
     remainingWeeklyMinutes,
     paidLessonStatus: state.status,
+    hasPendingPaidLesson: state.hasPendingPaidLesson,
   };
 
   res.status(200).json(response);
