@@ -40,6 +40,7 @@ export default {
         body: "1rem",
         caption: "0.875rem",
         tiny: "0.75rem",
+        "extra-tiny": "0.625rem",
       },
       blur: {
         ellipse: "100px",

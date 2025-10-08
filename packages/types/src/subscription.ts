@@ -91,6 +91,7 @@ export type FindUserSubscriptionApiResponse = {
   info: Self | null;
   remainingWeeklyMinutes: number;
   paidLessonStatus: PaidLessonStatus;
+  hasPendingPaidLesson: boolean;
 };
 
 export type FindUserSubscriptionApiQuery = {

@@ -58,7 +58,6 @@ export async function flush() {
     await introVideos.builder(tx).del();
     await reports.builder(tx).del();
     await subscriptions.builder(tx).del();
-    await transactions.builder(tx).del();
     await plans.builder(tx).del();
     await invoices.builder(tx).del();
     await sessionEvents.builder(tx).del();
@@ -69,6 +68,7 @@ export async function flush() {
     await rooms.builder(tx).rooms.del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
+    await transactions.builder(tx).del();
     await interviews.builder(tx).del();
     await ratings.builder(tx).del();
     await confirmationCodes.builder(tx).del();

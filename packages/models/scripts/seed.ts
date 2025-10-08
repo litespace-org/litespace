@@ -542,7 +542,7 @@ async function main(): Promise<void> {
         session: `lesson:${randomUUID()}`,
         tutor: tutorId,
         student: student.id,
-        price: calculateLessonPrice(price.scale(100), duration),
+        price: calculateLessonPrice(duration),
         start,
         duration,
         slot: slotId,

@@ -53,9 +53,7 @@ const DemoSession: React.FC<{ tutorId: number; next: Void }> = ({
     return demoSession;
   }, [query.data, next]);
 
-  const { query: tutorQuery } = useFindTutorInfo(
-    lastDemoSession?.tutorId || null
-  );
+  const tutorQuery = useFindTutorInfo(lastDemoSession?.tutorId);
 
   useOnError({
     type: "query",

@@ -17,8 +17,6 @@ export const forbidden = (msg?: string) => error(ApiError.Forbidden, 403, msg);
 export const subscriptionRequired = () =>
   error(ApiError.SubscriptionRequired, 403);
 
-export const noEnoughMinutes = () => error(ApiError.NoEnoughMinutes, 403);
-
 export const subscriptionUncancellable = () =>
   error(ApiError.SubscriptionUncancellable, 403);
 
@@ -82,9 +80,6 @@ export const invalidPhone = () => error(ApiError.InvalidPhone, 400);
 export const unresolvedPhone = () => error(ApiError.UnresolvedPhone, 403);
 
 export const unverifiedPhone = () => error(ApiError.UnverifiedPhone, 403);
-
-export const weekBoundariesViolation = () =>
-  error(ApiError.WeekBoundariesViolation, 403);
 
 export const expiredVerificationCode = () =>
   error(ApiError.ExpiredVerificationCode, 410);

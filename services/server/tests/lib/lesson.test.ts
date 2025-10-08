@@ -14,6 +14,7 @@ describe(nameof(checkStudentPaidLessonState), () => {
     await expect(checkStudentPaidLessonState(user.id)).to.eventually.be.deep.eq(
       {
         status: ILesson.PaidLessonStatus.EligibleWithPayment,
+        hasPendingPaidLesson: false,
       }
     );
   });
@@ -39,6 +40,7 @@ describe(nameof(checkStudentPaidLessonState), () => {
     await expect(checkStudentPaidLessonState(user.id)).to.eventually.be.deep.eq(
       {
         status: ILesson.PaidLessonStatus.NotEligible,
+        hasPendingPaidLesson: true,
       }
     );
   });
@@ -62,6 +64,7 @@ describe(nameof(checkStudentPaidLessonState), () => {
         status: ILesson.PaidLessonStatus.EligitbleWithoutPayment,
         txId: tx.id,
         duration: lesson.duration,
+        hasPendingPaidLesson: false,
       }
     );
   });
@@ -79,6 +82,7 @@ describe(nameof(checkStudentPaidLessonState), () => {
     await expect(checkStudentPaidLessonState(user.id)).to.eventually.be.deep.eq(
       {
         status: ILesson.PaidLessonStatus.EligibleWithPayment,
+        hasPendingPaidLesson: true,
       }
     );
   });

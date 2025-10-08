@@ -1,9 +1,11 @@
-import { ISubscription, Void } from "@litespace/types";
+import { ILesson, ISubscription, Void } from "@litespace/types";
 import { createContext, useContext } from "react";
 
 export type Context = {
   info: ISubscription.Self | null;
   remainingWeeklyMinutes: number;
+  paidLessonStatus: ILesson.PaidLessonStatus;
+  hasPendingPaidLeson: boolean;
   loading: boolean;
   isError: boolean;
   error: unknown | null;

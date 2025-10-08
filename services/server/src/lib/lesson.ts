@@ -12,7 +12,6 @@ import {
   tutors,
   txLessonTemps,
 } from "@litespace/models";
-import { platformConfig } from "@/constants";
 import {
   AFRICA_CAIRO_TIMEZONE,
   MAX_PAID_LESSON_COUNT,
@@ -141,11 +140,13 @@ export type CheckStudentPaidLessonStateReturn =
       status:
         | ILesson.PaidLessonStatus.EligibleWithPayment
         | ILesson.PaidLessonStatus.NotEligible;
+      hasPendingPaidLesson: boolean;
     }
   | {
       status: ILesson.PaidLessonStatus.EligitbleWithoutPayment;
       txId: number;
       duration: ILesson.Duration;
+      hasPendingPaidLesson: boolean;
     }
   | Unexpected;
 
@@ -168,13 +169,23 @@ export async function checkStudentPaidLessonState(
   });
 
   if (isEmpty(txs))
-    return { status: ILesson.PaidLessonStatus.EligibleWithPayment };
+    return {
+      status: ILesson.PaidLessonStatus.EligibleWithPayment,
+      hasPendingPaidLesson: false,
+    };
 
   const { list: paidLessons } = await lessons.find({
     txs: txs.map((tx) => tx.id),
     users: [userId],
     full: true,
   });
+
+  const hasPendingPaidLesson = !!paidLessons.find(
+    (lesson) =>
+      dayjs(lesson.start).add(lesson.duration, "minutes").isAfter(dayjs()) &&
+      !lesson.canceledBy &&
+      !lesson.canceledAt
+  );
 
   withDevLog({
     src: nameof(checkStudentPaidLessonState),
@@ -186,7 +197,10 @@ export async function checkStudentPaidLessonState(
     (lesson) => !lesson.canceledAt && !lesson.canceledBy
   );
   if (fulfilledPaidLessonCount >= MAX_PAID_LESSON_COUNT)
-    return { status: ILesson.PaidLessonStatus.NotEligible };
+    return {
+      status: ILesson.PaidLessonStatus.NotEligible,
+      hasPendingPaidLesson,
+    };
 
   for (const tx of txs) {
     const txLessons = paidLessons.filter((lesson) => lesson.txId === tx.id);
@@ -207,15 +221,19 @@ export async function checkStudentPaidLessonState(
     if (!lesson)
       return {
         status: ILesson.PaidLessonStatus.EligitbleWithoutPayment,
+        hasPendingPaidLesson,
         txId: tx.id,
         duration,
       };
   }
 
   if (txs.length < MAX_PAID_LESSON_COUNT)
-    return { status: ILesson.PaidLessonStatus.EligibleWithPayment };
+    return {
+      status: ILesson.PaidLessonStatus.EligibleWithPayment,
+      hasPendingPaidLesson,
+    };
 
-  return { status: ILesson.PaidLessonStatus.NotEligible };
+  return { status: ILesson.PaidLessonStatus.NotEligible, hasPendingPaidLesson };
 }
 
 export async function getPaidLessonDuration(
@@ -247,7 +265,10 @@ export async function checkBookingLessonEligibilityState({
 
   const state: CheckStudentPaidLessonStateReturn = !subscription
     ? await checkStudentPaidLessonState(userId)
-    : { status: ILesson.PaidLessonStatus.NotEligible };
+    : {
+        status: ILesson.PaidLessonStatus.NotEligible,
+        hasPendingPaidLesson: false,
+      };
 
   withDevLog({
     src: nameof(checkBookingLessonEligibilityState),
@@ -258,13 +279,7 @@ export async function checkBookingLessonEligibilityState({
   if (state instanceof Unexpected) return state;
   if (state.status === ILesson.PaidLessonStatus.EligitbleWithoutPayment)
     return { eligible: true, txId: state.txId };
-
-  if (
-    !subscription ||
-    state.status === ILesson.PaidLessonStatus.NotEligible ||
-    state.status === ILesson.PaidLessonStatus.EligibleWithPayment
-  )
-    return { eligible: false };
+  if (!subscription) return { eligible: false };
 
   const remainingMinutes =
     await calcRemainingWeeklyMinutesBySubscription(subscription);
@@ -276,6 +291,8 @@ export async function checkBookingLessonEligibilityState({
     .utc(start)
     .add(duration, "minutes")
     .isBetween(weekBoundaries.start, weekBoundaries.end, "minutes", "[]");
+
+  console.log({ within, remainingMinutes });
 
   return { eligible: within && remainingMinutes >= duration };
 }
@@ -344,9 +361,7 @@ export async function createLesson({
   });
   if (tutor instanceof Error) return tutor;
 
-  const price = isTutorManager(tutor)
-    ? 0
-    : calculateLessonPrice(platformConfig.tutorHourlyRate, duration);
+  const price = isTutorManager(tutor) ? 0 : calculateLessonPrice(duration);
 
   // Create the lesson with its associated room if it doesn't exist
   const roomMembers = [userId, tutorId];

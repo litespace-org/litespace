@@ -5,10 +5,25 @@ export class Lesson extends Base {
   async create(
     payload: ILesson.CreateApiPayload
   ): Promise<ILesson.CreateLessonApiResponse> {
-    return this.post({
-      route: `/api/v1/lesson/`,
-      payload,
-    });
+    return this.post({ route: "/api/v1/lesson/", payload });
+  }
+
+  async createWithCard(
+    payload: ILesson.CreateWithCardApiPayload
+  ): Promise<ILesson.CreateWithCardApiResponse> {
+    return this.post({ route: `/api/v1/lesson/card`, payload });
+  }
+
+  async createWithEWallet(
+    payload: ILesson.CreateWithEWalletApiPayload
+  ): Promise<ILesson.CreateWithEWalletApiResponse> {
+    return this.post({ route: `/api/v1/lesson/ewallet`, payload });
+  }
+
+  async createWithFawry(
+    payload: ILesson.CreateWithFawryRefNumApiPayload
+  ): Promise<ILesson.CreateWithFawryRefNumApiResponse> {
+    return this.post({ route: `/api/v1/lesson/fawry`, payload });
   }
 
   async findLessons(

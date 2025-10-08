@@ -1,5 +1,7 @@
 import { IFilter, Paginated } from "@/index";
 
+export type TypeLiteral = "paid-plan" | "paid-lesson";
+
 export enum Type {
   PaidPlan,
   PaidLesson,

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import Logo from "@litespace/assets/Logo";
 import { Typography } from "@litespace/ui/Typography";
 import { useFindLastTransaction } from "@litespace/headless/transaction";
@@ -7,41 +7,40 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useOnError } from "@/hooks/error";
 import StatusContainer from "@/components/Checkout/Status";
 import Tabs from "@/components/Checkout/Tabs";
-import { IPlan, ITransaction, Void, Wss } from "@litespace/types";
+import { ITransaction, Void, Wss } from "@litespace/types";
 import { useFindPlanById } from "@litespace/headless/plans";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useSyncPaymentStatus } from "@litespace/headless/fawry";
 import { env } from "@/lib/env";
 import { useSocket } from "@litespace/headless/socket";
 import { useLogger } from "@litespace/headless/logger";
-import { Button } from "@litespace/ui/Button";
-import CheckCircleV2 from "@litespace/assets/CheckCircleV2";
 import { Link } from "react-router-dom";
 import { Web } from "@litespace/utils/routes";
 import { useSubscription } from "@litespace/headless/context/subscription";
 import cn from "classnames";
 import { useToast } from "@litespace/ui/Toast";
+import {
+  Tab,
+  TxTypeDataQuery,
+  TxTypePayload,
+} from "@/components/Checkout/types";
+import { useFindTutorInfo } from "@litespace/headless/tutor";
+import Success from "@/components/Checkout/Success";
 
 const Content: React.FC<{
   userId: number;
-  planId: number;
-  period: IPlan.PeriodLiteral;
   userPhone: string | null;
-}> = ({ userId, planId, period, userPhone }) => {
+  txTypePayload: TxTypePayload;
+  tab: Tab;
+  setTab(tab: Tab): void;
+}> = ({ userId, txTypePayload, userPhone, tab, setTab }) => {
   const transaction = useFindLastTransaction();
-  const plan = useFindPlanById(planId);
-  const { info: subscription } = useSubscription();
+  const txTypeDataQuery = useTxTypeDataQuery(txTypePayload);
 
   useOnError({
     type: "query",
-    error: transaction.query.error,
+    error: transaction.error,
     keys: transaction.keys,
-  });
-
-  useOnError({
-    type: "query",
-    error: plan.query.error,
-    keys: plan.keys,
   });
 
   return (
@@ -49,21 +48,16 @@ const Content: React.FC<{
       <Header />
       <Body
         userId={userId}
-        subscribed={!!subscription}
         userPhone={userPhone}
-        period={period}
-        plan={{
-          loading: plan.query.isLoading,
-          error: plan.query.isError,
-          data: plan.query.data,
-          refetch: plan.query.refetch,
-        }}
+        txTypeDataQuery={txTypeDataQuery}
+        tab={tab}
+        setTab={setTab}
         transaction={{
-          fetching: transaction.query.isFetching,
-          loading: transaction.query.isLoading,
-          error: transaction.query.isError,
-          data: transaction.query.data || null,
-          refetch: transaction.query.refetch,
+          fetching: transaction.isFetching,
+          loading: transaction.isLoading,
+          error: transaction.isError,
+          data: transaction.data || null,
+          refetch: transaction.refetch,
         }}
       />
     </div>
@@ -91,15 +85,10 @@ const Header: React.FC = () => {
 
 const Body: React.FC<{
   userId: number;
-  period: IPlan.PeriodLiteral;
   userPhone: string | null;
-  subscribed: boolean;
-  plan: {
-    loading: boolean;
-    error: boolean;
-    data?: IPlan.Self;
-    refetch: Void;
-  };
+  txTypeDataQuery: TxTypeDataQuery;
+  tab: Tab;
+  setTab(tab: Tab): void;
   transaction: {
     fetching: boolean;
     loading: boolean;
@@ -107,7 +96,7 @@ const Body: React.FC<{
     data: ITransaction.Self | null;
     refetch: Void;
   };
-}> = ({ userId, plan, transaction, period, userPhone, subscribed }) => {
+}> = ({ userId, txTypeDataQuery, transaction, userPhone, tab, setTab }) => {
   const intl = useFormatMessage();
   const logger = useLogger();
   const toast = useToast();
@@ -181,22 +170,27 @@ const Body: React.FC<{
     };
   }, [onTransactionStatusUpdate, socket]);
 
-  if (plan.loading || transaction.loading) return <Loading size="large" />;
+  if (txTypeDataQuery.loading || transaction.loading)
+    return <Loading size="large" />;
 
-  if (plan.error || transaction.error || !plan.data)
+  if (txTypeDataQuery.error || transaction.error || !txTypeDataQuery.data)
     return (
       <LoadingError
         error={intl("checkout.loading-error")}
         size="small"
         retry={() => {
-          if (plan.error || !plan.data) plan.refetch();
+          if (txTypeDataQuery.error || !txTypeDataQuery.data)
+            txTypeDataQuery.refetch();
           if (transaction.error) transaction.refetch();
         }}
       />
     );
 
-  if (transaction.data?.status === ITransaction.Status.Paid && subscribed)
-    return <TransactionDone />;
+  if (
+    transaction.data?.status === ITransaction.Status.Paid &&
+    (subscription.info || subscription.hasPendingPaidLeson)
+  )
+    return <Success type={transaction.data.type} />;
 
   if (transaction.data?.status === ITransaction.Status.Processed)
     return (
@@ -212,46 +206,74 @@ const Body: React.FC<{
   return (
     <Tabs
       userId={userId}
-      plan={plan.data}
-      period={period}
+      txTypeData={txTypeDataQuery}
       phone={userPhone}
       sync={transaction.refetch}
       syncing={transaction.fetching}
       transactionId={transaction.data?.id}
       transactionStatus={transaction.data?.status}
+      tab={tab}
+      setTab={setTab}
     />
   );
 };
 
-const TransactionDone: React.FC = () => {
-  const intl = useFormatMessage();
-  return (
-    <div className="flex flex-col gap-6 md:gap-4 items-center justify-center">
-      <div className="flex flex-col md:flex-row items-center gap-2">
-        <CheckCircleV2 className="w-6 h-6 stroke-brand-500" />
-        <Typography tag="h1" className="text-subtitle-1 font-bold">
-          {intl("checkout.payment.done")}
-        </Typography>
-      </div>
-
-      <div className="flex gap-4">
-        <Link to={Web.Tutors} tabIndex={-1}>
-          <Button type="main" variant="primary" size="large">
-            <Typography tag="span" className="text text-body font-medium">
-              {intl("checkout.payment.done.book-lesson-now")}
-            </Typography>
-          </Button>
-        </Link>
-        <Link to={Web.Root} tabIndex={-1}>
-          <Button type="main" variant="secondary" size="large">
-            <Typography tag="span" className="text text-body font-medium">
-              {intl("checkout.payment.done.main-page")}
-            </Typography>
-          </Button>
-        </Link>
-      </div>
-    </div>
+function useTxTypeDataQuery(txTypePayload: TxTypePayload): TxTypeDataQuery {
+  const plan = useFindPlanById(
+    txTypePayload.type === "paid-plan" ? txTypePayload.planId : undefined
   );
-};
+  const tutor = useFindTutorInfo(
+    txTypePayload.type === "paid-lesson" ? txTypePayload.tutorId : undefined
+  );
+
+  useOnError({
+    type: "query",
+    error: plan.error,
+    keys: plan.keys,
+  });
+
+  useOnError({
+    type: "query",
+    error: tutor.error,
+    keys: tutor.keys,
+  });
+
+  return useMemo((): TxTypeDataQuery => {
+    if (txTypePayload.type === "paid-lesson")
+      return {
+        type: "paid-lesson",
+        data: {
+          tutor: tutor.data,
+          slotId: txTypePayload.slotId,
+          start: txTypePayload.start,
+          duration: txTypePayload.duration,
+        },
+        loading: tutor.isLoading,
+        fetching: tutor.isFetching,
+        error: tutor.isError,
+        refetch: tutor.refetch,
+      };
+
+    return {
+      type: "paid-plan",
+      data: { plan: plan.data, period: txTypePayload.period },
+      loading: plan.isLoading,
+      fetching: tutor.isFetching,
+      error: plan.isError,
+      refetch: plan.refetch,
+    };
+  }, [
+    plan.data,
+    plan.isError,
+    plan.isLoading,
+    plan.refetch,
+    tutor.data,
+    tutor.isError,
+    tutor.isFetching,
+    tutor.isLoading,
+    tutor.refetch,
+    txTypePayload,
+  ]);
+}
 
 export default Content;

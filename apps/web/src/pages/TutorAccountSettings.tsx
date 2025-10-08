@@ -8,7 +8,6 @@ import { TabId } from "@/components/TutorAccountSettings/types";
 import { isValidTab } from "@/components/TutorAccountSettings/utils";
 import { Web } from "@litespace/utils/routes";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
-import { nullable } from "@litespace/utils";
 import { useOnError } from "@/hooks/error";
 import { IUser, Void } from "@litespace/types";
 import { Loading, LoadingError } from "@litespace/ui/Loading";
@@ -18,12 +17,12 @@ const TutorSettings: React.FC = () => {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, fetching } = useUser();
-  const { query, keys } = useFindTutorInfo(nullable(user?.id));
+  const query = useFindTutorInfo(user?.id);
 
   useOnError({
     type: "query",
     error: query.error,
-    keys,
+    keys: query.keys,
   });
 
   const tab: TabId = useMemo(() => {
