@@ -68,7 +68,7 @@ export const Content: React.FC<{
           <Link
             className="underline"
             to={router.dashboard({
-              route: Dashboard.Tutor,
+              route: Dashboard.User,
               id: info.getValue(),
             })}
           >

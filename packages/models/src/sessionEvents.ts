@@ -6,7 +6,7 @@ import {
   withPagination,
 } from "@/query";
 import { first, isEmpty } from "lodash";
-import { ISessionEvent, Paginated } from "@litespace/types";
+import { ISessionEvent, IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { users } from "@/users";
@@ -135,6 +135,55 @@ export class SessionEvents {
       list: rows.map((row) => this.fromMeta(row as ISessionEvent.MetaRow)),
       total,
     };
+  }
+
+  async findBySessionId({
+    sessionId,
+    tx,
+  }: WithOptionalTx<ISessionEvent.FindBySessionIdModelQuery>): Promise<ISessionEvent.FindBySessionIdModelResponse> {
+    const rows = await this.builder(tx)
+      .select(
+        this.column("id"),
+        this.column("type"),
+        this.column("user_id"),
+        this.column("session_id"),
+        this.column("created_at"),
+        users.column("name"),
+        users.column("role"),
+        "lessons.start as session_start"
+      )
+      .join(users.table, this.column("user_id"), users.column("id"))
+      .join(
+        lessons.table.lessons,
+        this.column("session_id"),
+        lessons.columns.lessons("session_id")
+      )
+      .where(this.column("session_id"), sessionId)
+      .orderBy(this.column("created_at"));
+
+    const events = rows.map((row) => ({
+      id: row.id,
+      type: row.type,
+      userId: row.user_id,
+      userName: row.name,
+      sessionId: row.session_id,
+      createdAt: row.created_at || row.created_at.toISOString(),
+      sessionStart: row.session_start || row.session_start.toISOString(),
+      role: row.role,
+    }));
+    // Separate events into tutors and students
+    const tutor: ISessionEvent.MetaSelf[] = [];
+    const student: ISessionEvent.MetaSelf[] = [];
+
+    events.forEach((event) => {
+      if (event.role === IUser.Role.Student) {
+        student.push(event);
+      } else {
+        tutor.push(event);
+      }
+    });
+
+    return { tutor, student };
   }
 
   from(row: ISessionEvent.Row): ISessionEvent.Self {

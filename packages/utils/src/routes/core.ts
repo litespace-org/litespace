@@ -153,6 +153,11 @@ type DashboardPayload =
       query?: BaseQuery;
     }
   | {
+      route: Dashboard.LessonEvents;
+      sessionId: string;
+      query?: BaseQuery;
+    }
+  | {
       route: Exclude<Dashboard, Dashboard.User>;
       query?: BaseQuery;
     };

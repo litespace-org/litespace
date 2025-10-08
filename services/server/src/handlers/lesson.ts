@@ -7,6 +7,7 @@ import {
   jsonBoolean,
   pageNumber,
   pageSize,
+  sessionId,
   withNamedId,
 } from "@/validation/utils";
 import {
@@ -33,7 +34,13 @@ import { lessons, knex, availabilitySlots } from "@litespace/models";
 import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
-import { isAdmin, isStudent, isTutor, isUser } from "@litespace/utils/user";
+import {
+  isAdmin,
+  isStudent,
+  isTutor,
+  isTutorManager,
+  isUser,
+} from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
 import { isEmpty, isEqual } from "lodash";
 import {
@@ -81,6 +88,11 @@ const updateLessonPayload: ZodSchema<ILesson.UpdateApiPayload> = zod.object({
   start: datetime,
   duration: duration,
 });
+
+const findBySessionIdQuery: ZodSchema<ILesson.FindBySessionIdApiQuery> =
+  zod.object({
+    sessionId: sessionId,
+  });
 
 const findLessonsQuery: ZodSchema<ILesson.FindLessonsApiQuery> = zod.object({
   users: zod.optional(zod.array(id)),
@@ -523,6 +535,30 @@ async function findLessonById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
+async function findBySessionId(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isAdmin(user) || isTutorManager(user);
+  if (!allowed) return next(forbidden());
+
+  const { sessionId } = findBySessionIdQuery.parse(req.params);
+
+  const lesson = await lessons.findBySessionId(sessionId);
+  if (!lesson) return next(bad());
+
+  const members = await lessons.findLessonMembers([lesson.id]);
+
+  const response: ILesson.FindLessonBySessionIdApiResponse = {
+    lesson,
+    members,
+  };
+
+  res.status(200).json(response);
+}
+
 async function cancel(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user);
@@ -610,6 +646,7 @@ export default {
   report: safeRequest(report),
   findLessons: safeRequest(findLessons),
   findLessonById: safeRequest(findLessonById),
+  findBySessionId: safeRequest(findBySessionId),
   findAttendedLessonsStats: safeRequest(findAttendedLessonsStats),
   findRefundableLessons: safeRequest(findRefundableLessons),
   createWithCard: safeRequest(createWithCard),
