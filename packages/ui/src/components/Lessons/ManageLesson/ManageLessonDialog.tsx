@@ -395,6 +395,7 @@ export const ManageLessonDialog: React.FC<{
           {step === "duration-selection" && canBook && !isTutorBusy ? (
             <Animation key="duration-selection" id="duration-selection">
               <DurationSelection
+                subscribed={subscribed}
                 remainingWeeklyMinutes={remainingWeeklyMinutes}
                 value={duration}
                 onChange={setDuration}
