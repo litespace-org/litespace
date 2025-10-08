@@ -12,7 +12,6 @@ import {
   tutors,
   txLessonTemps,
 } from "@litespace/models";
-import { platformConfig } from "@/constants";
 import {
   AFRICA_CAIRO_TIMEZONE,
   MAX_PAID_LESSON_COUNT,
@@ -344,9 +343,7 @@ export async function createLesson({
   });
   if (tutor instanceof Error) return tutor;
 
-  const price = isTutorManager(tutor)
-    ? 0
-    : calculateLessonPrice(platformConfig.tutorHourlyRate, duration);
+  const price = isTutorManager(tutor) ? 0 : calculateLessonPrice(duration);
 
   // Create the lesson with its associated room if it doesn't exist
   const roomMembers = [userId, tutorId];

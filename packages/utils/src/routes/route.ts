@@ -2,7 +2,7 @@ export enum Web {
   Root = "/",
   Chat = "/chat",
   CompleteProfile = "/complete-profile",
-  Checkout = "/checkout/:planId/:period",
+  Checkout = "/checkout",
   Interviews = "/interviews",
   Invoices = "/invoices",
   Login = "/login",

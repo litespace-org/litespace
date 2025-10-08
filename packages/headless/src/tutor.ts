@@ -177,23 +177,22 @@ export function useFindTutorMeta(id?: number) {
   });
 }
 
-export function useFindTutorInfo(id: number | null) {
+export function useFindTutorInfo(id?: number) {
   const api = useApi();
 
   const findTutorInfo = useCallback(async () => {
-    if (!id) return null;
+    if (!id)
+      throw new Error(
+        "Unexpected error: trying to find tutor info with undefined tutor id."
+      );
     return await api.user.findTutorInfo(id);
   }, [api.user, id]);
 
-  const keys = useMemo(() => [QueryKey.FindTutorInfo, id], [id]);
-
-  const query = useQuery({
+  return useExtendedQuery({
     queryFn: findTutorInfo,
-    queryKey: keys,
+    queryKey: [QueryKey.FindTutorInfo, id],
     enabled: !!id,
   });
-
-  return { query, keys };
 }
 
 export function useFindFullTutors() {

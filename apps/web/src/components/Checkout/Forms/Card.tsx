@@ -20,7 +20,7 @@ import { first, isEmpty } from "lodash";
 import { useHotkeys } from "react-hotkeys-hook";
 import { env } from "@/lib/env";
 import { useOnError } from "@/hooks/error";
-import { IPlan, ITransaction, Void } from "@litespace/types";
+import { ITransaction, Void } from "@litespace/types";
 import { useToast } from "@litespace/ui/Toast";
 import { IframeMessage } from "@/constants/iframe";
 import { useLogger } from "@litespace/headless/logger";
@@ -28,6 +28,8 @@ import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import RemoveCard from "@litespace/assets/RemoveCard";
 import { useBlock } from "@litespace/ui/hooks/common";
 import { useRender } from "@litespace/headless/common";
+import { TxTypeData } from "@/components/Checkout/types";
+import { useCreateLessonWithCard } from "@litespace/headless/lessons";
 
 type Form = {
   card: string;
@@ -37,12 +39,11 @@ type Form = {
 
 const Payment: React.FC<{
   userId: number;
-  planId: number;
-  period: IPlan.PeriodLiteral;
+  txTypeData: TxTypeData;
   phone: string | null;
   transactionId?: number;
   transactionStatus?: ITransaction.Status;
-}> = ({ userId, planId, period, phone, transactionId, transactionStatus }) => {
+}> = ({ userId, txTypeData, phone, transactionId, transactionStatus }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const logger = useLogger();
@@ -84,9 +85,8 @@ const Payment: React.FC<{
     },
   });
 
-  const payWithCard = usePayWithCard({
-    onError: onPayError,
-  });
+  const payWithCard = usePayWithCard({ onError: onPayError });
+  const createLessonWithCard = useCreateLessonWithCard({ onError: onPayError });
 
   // ==================== form ====================
   const validators = useMakeValidators<Form>({
@@ -109,13 +109,25 @@ const Payment: React.FC<{
     },
     validators,
     onSubmit(data) {
-      payWithCard.mutate({
-        cardToken: data.card,
-        cvv: data.cvv,
-        phone: data.phone,
-        period,
-        planId,
-      });
+      if (txTypeData.type === "paid-plan" && txTypeData.data.plan)
+        payWithCard.mutate({
+          period: txTypeData.data.period,
+          planId: txTypeData.data.plan.id,
+          cardToken: data.card,
+          phone: data.phone,
+          cvv: data.cvv,
+        });
+
+      if (txTypeData.type === "paid-lesson" && txTypeData.data.tutor)
+        createLessonWithCard.mutate({
+          tutorId: txTypeData.data.tutor.id,
+          slotId: txTypeData.data.slotId,
+          start: txTypeData.data.start,
+          duration: txTypeData.data.duration,
+          cardToken: data.card,
+          phone: data.phone,
+          cvv: data.cvv,
+        });
     },
   });
 

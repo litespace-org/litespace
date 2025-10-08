@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import Logo from "@litespace/assets/Logo";
 import { Typography } from "@litespace/ui/Typography";
 import { useFindLastTransaction } from "@litespace/headless/transaction";
@@ -7,7 +7,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useOnError } from "@/hooks/error";
 import StatusContainer from "@/components/Checkout/Status";
 import Tabs from "@/components/Checkout/Tabs";
-import { IPlan, ITransaction, Void, Wss } from "@litespace/types";
+import { ITransaction, Void, Wss } from "@litespace/types";
 import { useFindPlanById } from "@litespace/headless/plans";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useSyncPaymentStatus } from "@litespace/headless/fawry";
@@ -21,27 +21,22 @@ import { Web } from "@litespace/utils/routes";
 import { useSubscription } from "@litespace/headless/context/subscription";
 import cn from "classnames";
 import { useToast } from "@litespace/ui/Toast";
+import { TxTypeDataQuery, TxTypePayload } from "@/components/Checkout/types";
+import { useFindTutorInfo } from "@litespace/headless/tutor";
 
 const Content: React.FC<{
   userId: number;
-  planId: number;
-  period: IPlan.PeriodLiteral;
   userPhone: string | null;
-}> = ({ userId, planId, period, userPhone }) => {
+  txTypePayload: TxTypePayload;
+}> = ({ userId, txTypePayload, userPhone }) => {
   const transaction = useFindLastTransaction();
-  const plan = useFindPlanById(planId);
+  const txTypeDataQuery = useTxTypeDataQuery(txTypePayload);
   const { info: subscription } = useSubscription();
 
   useOnError({
     type: "query",
     error: transaction.query.error,
     keys: transaction.keys,
-  });
-
-  useOnError({
-    type: "query",
-    error: plan.query.error,
-    keys: plan.keys,
   });
 
   return (
@@ -51,13 +46,7 @@ const Content: React.FC<{
         userId={userId}
         subscribed={!!subscription}
         userPhone={userPhone}
-        period={period}
-        plan={{
-          loading: plan.query.isLoading,
-          error: plan.query.isError,
-          data: plan.query.data,
-          refetch: plan.query.refetch,
-        }}
+        txTypeDataQuery={txTypeDataQuery}
         transaction={{
           fetching: transaction.query.isFetching,
           loading: transaction.query.isLoading,
@@ -91,15 +80,9 @@ const Header: React.FC = () => {
 
 const Body: React.FC<{
   userId: number;
-  period: IPlan.PeriodLiteral;
   userPhone: string | null;
   subscribed: boolean;
-  plan: {
-    loading: boolean;
-    error: boolean;
-    data?: IPlan.Self;
-    refetch: Void;
-  };
+  txTypeDataQuery: TxTypeDataQuery;
   transaction: {
     fetching: boolean;
     loading: boolean;
@@ -107,7 +90,7 @@ const Body: React.FC<{
     data: ITransaction.Self | null;
     refetch: Void;
   };
-}> = ({ userId, plan, transaction, period, userPhone, subscribed }) => {
+}> = ({ userId, txTypeDataQuery, transaction, userPhone, subscribed }) => {
   const intl = useFormatMessage();
   const logger = useLogger();
   const toast = useToast();
@@ -181,15 +164,17 @@ const Body: React.FC<{
     };
   }, [onTransactionStatusUpdate, socket]);
 
-  if (plan.loading || transaction.loading) return <Loading size="large" />;
+  if (txTypeDataQuery.loading || transaction.loading)
+    return <Loading size="large" />;
 
-  if (plan.error || transaction.error || !plan.data)
+  if (txTypeDataQuery.error || transaction.error || !txTypeDataQuery.data)
     return (
       <LoadingError
         error={intl("checkout.loading-error")}
         size="small"
         retry={() => {
-          if (plan.error || !plan.data) plan.refetch();
+          if (txTypeDataQuery.error || !txTypeDataQuery.data)
+            txTypeDataQuery.refetch();
           if (transaction.error) transaction.refetch();
         }}
       />
@@ -212,8 +197,7 @@ const Body: React.FC<{
   return (
     <Tabs
       userId={userId}
-      plan={plan.data}
-      period={period}
+      txTypeData={txTypeDataQuery}
       phone={userPhone}
       sync={transaction.refetch}
       syncing={transaction.fetching}
@@ -253,5 +237,63 @@ const TransactionDone: React.FC = () => {
     </div>
   );
 };
+
+function useTxTypeDataQuery(txTypePayload: TxTypePayload): TxTypeDataQuery {
+  const plan = useFindPlanById(
+    txTypePayload.type === "paid-plan" ? txTypePayload.planId : undefined
+  );
+  const tutor = useFindTutorInfo(
+    txTypePayload.type === "paid-lesson" ? txTypePayload.tutorId : undefined
+  );
+
+  useOnError({
+    type: "query",
+    error: plan.error,
+    keys: plan.keys,
+  });
+
+  useOnError({
+    type: "query",
+    error: tutor.error,
+    keys: tutor.keys,
+  });
+
+  return useMemo((): TxTypeDataQuery => {
+    if (txTypePayload.type === "paid-lesson")
+      return {
+        type: "paid-lesson",
+        data: {
+          tutor: tutor.data,
+          slotId: txTypePayload.slotId,
+          start: txTypePayload.start,
+          duration: txTypePayload.duration,
+        },
+        loading: tutor.isLoading,
+        fetching: tutor.isFetching,
+        error: tutor.isError,
+        refetch: tutor.refetch,
+      };
+
+    return {
+      type: "paid-plan",
+      data: { plan: plan.data, period: txTypePayload.period },
+      loading: plan.isLoading,
+      fetching: tutor.isFetching,
+      error: plan.isError,
+      refetch: plan.refetch,
+    };
+  }, [
+    plan.data,
+    plan.isError,
+    plan.isLoading,
+    plan.refetch,
+    tutor.data,
+    tutor.isError,
+    tutor.isFetching,
+    tutor.isLoading,
+    tutor.refetch,
+    txTypePayload,
+  ]);
+}
 
 export default Content;

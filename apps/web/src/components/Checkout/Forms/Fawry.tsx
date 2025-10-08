@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
@@ -6,22 +6,23 @@ import { Typography } from "@litespace/ui/Typography";
 import { useForm } from "@litespace/headless/form";
 import { validatePhone } from "@litespace/ui/lib/validate";
 import { PatternInput } from "@litespace/ui/PatternInput";
-import { IPlan, Void } from "@litespace/types";
+import { Void } from "@litespace/types";
 import { useOnError } from "@/hooks/error";
 import { usePayWithFawry } from "@litespace/headless/fawry";
 import { useToast } from "@litespace/ui/Toast";
+import { TxTypeData } from "@/components/Checkout/types";
+import { useCreateLessonWithFawry } from "@litespace/headless/lessons";
 
 type Form = {
   phone: string;
 };
 
 const Payment: React.FC<{
-  planId: number;
-  period: IPlan.PeriodLiteral;
+  txTypeData: TxTypeData;
   phone: string | null;
   syncing: boolean;
   sync: Void;
-}> = ({ phone, planId, period, syncing, sync }) => {
+}> = ({ phone, txTypeData, syncing, sync }) => {
   const intl = useFormatMessage();
   const toast = useToast();
 
@@ -36,11 +37,14 @@ const Payment: React.FC<{
     },
   });
 
-  const payWithFawry = usePayWithFawry({
+  const onSuccess = useCallback(() => {
+    sync();
+  }, [sync]);
+
+  const payWithFawry = usePayWithFawry({ onError, onSuccess });
+  const createLessonWithFawry = useCreateLessonWithFawry({
     onError,
-    onSuccess() {
-      sync();
-    },
+    onSuccess,
   });
 
   // ==================== form ====================
@@ -57,11 +61,21 @@ const Payment: React.FC<{
     },
     validators,
     onSubmit(data) {
-      payWithFawry.mutate({
-        phone: data.phone,
-        planId,
-        period,
-      });
+      if (txTypeData.type === "paid-plan" && txTypeData.data.plan)
+        payWithFawry.mutate({
+          phone: data.phone,
+          planId: txTypeData.data.plan.id,
+          period: txTypeData.data.period,
+        });
+
+      if (txTypeData.type === "paid-lesson" && txTypeData.data.tutor)
+        createLessonWithFawry.mutate({
+          tutorId: txTypeData.data.tutor.id,
+          slotId: txTypeData.data.slotId,
+          start: txTypeData.data.start,
+          duration: txTypeData.data.duration,
+          phone: data.phone,
+        });
     },
   });
 

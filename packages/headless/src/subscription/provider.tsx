@@ -4,6 +4,7 @@ import { useCurrentSubscription } from "@/subscription";
 import { useServer } from "@/server";
 import { useUser } from "@/user/context";
 import { isStudent } from "@litespace/utils";
+import { ILesson } from "@litespace/types";
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -20,6 +21,8 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
     return {
       info: query.data?.info || null,
       remainingWeeklyMinutes: query.data?.remainingWeeklyMinutes || 0,
+      paidLessonStatus:
+        query.data?.paidLessonStatus || ILesson.PaidLessonStatus.NotEligible,
       loading: query.isLoading,
       isError: query.isError,
       error: query.error,

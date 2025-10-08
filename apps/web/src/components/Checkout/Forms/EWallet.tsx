@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
@@ -8,22 +8,22 @@ import { validatePhone } from "@litespace/ui/lib/validate";
 import { PatternInput } from "@litespace/ui/PatternInput";
 import { useOnError } from "@/hooks/error";
 import { usePayWithEWallet } from "@litespace/headless/fawry";
-import { IPlan, Void } from "@litespace/types";
+import { IFawry, ILesson, Void } from "@litespace/types";
 import { walletPaymentQrCode } from "@/lib/cache";
 import { useToast } from "@litespace/ui/Toast";
+import { TxTypeData } from "@/components/Checkout/types";
+import { useCreateLessonWithEWallet } from "@litespace/headless/lessons";
 
 type Form = {
   phone: string;
-  wphone: string;
 };
 
 const Payment: React.FC<{
-  planId: number;
-  period: IPlan.PeriodLiteral;
+  txTypeData: TxTypeData;
   phone: string | null;
   syncing: boolean;
   sync: Void;
-}> = ({ phone, planId, period, syncing, sync }) => {
+}> = ({ phone, txTypeData, syncing, sync }) => {
   const intl = useFormatMessage();
   const toast = useToast();
 
@@ -38,12 +38,22 @@ const Payment: React.FC<{
     },
   });
 
-  const payWithEWallet = usePayWithEWallet({
-    onError,
-    onSuccess(response) {
+  const onSuccess = useCallback(
+    (
+      response:
+        | ILesson.CreateWithEWalletApiResponse
+        | IFawry.PayWithEWalletResponse
+    ) => {
       if (response.walletQr) walletPaymentQrCode.save(response.walletQr);
       sync();
     },
+    [sync]
+  );
+
+  const payWithEWallet = usePayWithEWallet({ onError, onSuccess });
+  const createLessonWithEWallet = useCreateLessonWithEWallet({
+    onError,
+    onSuccess,
   });
 
   // ==================== form ====================
@@ -52,25 +62,29 @@ const Payment: React.FC<{
       required: true,
       validate: validatePhone,
     },
-    wphone: {
-      required: true,
-      validate: validatePhone,
-    },
   });
 
   const form = useForm<Form>({
     defaults: {
       phone: phone || "",
-      wphone: "",
     },
     validators,
     onSubmit(data) {
-      payWithEWallet.mutate({
-        planId,
-        period,
-        wallet: data.wphone,
-        phone: data.phone,
-      });
+      if (txTypeData.type === "paid-plan" && txTypeData.data.plan)
+        payWithEWallet.mutate({
+          planId: txTypeData.data.plan.id,
+          period: txTypeData.data.period,
+          phone: data.phone,
+        });
+
+      if (txTypeData.type === "paid-lesson" && txTypeData.data.tutor)
+        createLessonWithEWallet.mutate({
+          tutorId: txTypeData.data.tutor.id,
+          slotId: txTypeData.data.slotId,
+          start: txTypeData.data.start,
+          duration: txTypeData.data.duration,
+          phone: data.phone,
+        });
     },
   });
 
@@ -87,25 +101,6 @@ const Payment: React.FC<{
           <Typography tag="p" className="text-caption md:text-body font-medium">
             {intl("checkout.payment.description")}
           </Typography>
-
-          <PatternInput
-            id="wallet-phone"
-            mask=" "
-            idleDir="ltr"
-            inputSize="large"
-            name="wallet-phone"
-            format="### #### ####"
-            label={intl("checkout.payment.ewallet.wallet-phone-number")}
-            placeholder={intl(
-              "checkout.payment.ewallet.wallet-phone-number-placeholder"
-            )}
-            state={form.errors.wphone ? "error" : undefined}
-            helper={form.errors.wphone}
-            value={form.state.wphone}
-            autoComplete="off"
-            onValueChange={({ value }) => form.set("wphone", value)}
-            disabled={syncing || payWithEWallet.isPending}
-          />
 
           <PatternInput
             id="phone"
