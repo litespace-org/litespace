@@ -21,6 +21,7 @@ import { capture } from "@/lib/sentry";
 import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isStudent } from "@litespace/utils/user";
+import { useSubscription } from "@litespace/headless/context/subscription";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -33,6 +34,7 @@ export const Content: React.FC<{
   more: Void;
   refetch: Void;
 }> = ({ list, loading, fetching, error, hasMore, more, refetch }) => {
+  const subscription = useSubscription();
   const { lg } = useMediaQuery();
   const queryClient = useQueryClient();
   const intl = useFormatMessage();
@@ -45,14 +47,13 @@ export const Content: React.FC<{
     useState<ManageLessonPayload | null>(null);
 
   const onCancelSuccess = useCallback(() => {
-    toast.success({
-      title: intl("cancel-lesson.success"),
-    });
+    toast.success({ title: intl("cancel-lesson.success") });
+    subscription.refetch();
     setCancelLessonId(null);
     queryClient.invalidateQueries({
       queryKey: [QueryKey.FindInfiniteLessons],
     });
-  }, [toast, intl, queryClient]);
+  }, [toast, intl, subscription, queryClient]);
 
   const onCancelError = useCallback(
     (error: unknown) => {

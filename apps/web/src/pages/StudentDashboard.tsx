@@ -37,7 +37,11 @@ const StudentDashboard: React.FC = () => {
       </div>
     );
 
-  if (query.data?.completedLessonCount === 0) return <EmptyDashboard />;
+  if (
+    query.data?.completedLessonCount === 0 &&
+    query.data?.upcomingLessonCount === 0
+  )
+    return <EmptyDashboard />;
 
   return (
     <div className="flex flex-col lg:flex-row p-4 sm:p-6 gap-6 max-w-screen-3xl mx-auto w-full">

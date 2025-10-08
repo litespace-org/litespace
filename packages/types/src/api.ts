@@ -15,7 +15,6 @@ export enum ApiError {
   SubscriptionExists = "subscription-exists",
   SubscriptionRequired = "subscription-required",
   SubscriptionUncancellable = "subscription-uncancellable",
-  NoEnoughMinutes = "no-enough-minutes",
   BusyTutor = "busy-tutor",
   BusyTutorManager = "busy-tutor-manager",
   InvalidEmail = "invalid-email-address",
@@ -71,7 +70,6 @@ export enum ApiError {
   NotRoomMember = "not-room-member",
   InvalidUserName = "api-invalid-user-name",
   PhoneRequired = "phone-required",
-  WeekBoundariesViolation = "week-boundaries-violation",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

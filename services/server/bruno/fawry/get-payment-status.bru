@@ -5,13 +5,17 @@ meta {
 }
 
 get {
-  url: {{api}}/api/v1/fawry/payment-status?transactionId=4
+  url: {{api}}/api/v1/fawry/payment-status?transactionId=23
   body: json
   auth: inherit
 }
 
+params:query {
+  transactionId: 23
+}
+
 body:json {
   {
-    "transactionId":  14
+    "transactionId":  21
   }
 }

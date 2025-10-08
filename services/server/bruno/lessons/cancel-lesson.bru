@@ -1,0 +1,15 @@
+meta {
+  name: cancel-lesson
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{api}}/api/v1/lesson/cancel/146
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

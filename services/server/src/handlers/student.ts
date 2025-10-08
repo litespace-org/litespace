@@ -1,6 +1,6 @@
 import { students, users, knex, confirmationCodes } from "@litespace/models";
 import { IUser, IStudent, IConfirmationCode } from "@litespace/types";
-import { exists, forbidden, invalidEmail } from "@/lib/error";
+import { exists, forbidden, invalidEmail } from "@/lib/error/api";
 import { hashPassword } from "@/lib/user";
 import { isEmailValid } from "@/lib/validateEmail";
 import safeRequest from "express-async-handler";

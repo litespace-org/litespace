@@ -14,50 +14,52 @@ import {
   busyTutor,
   forbidden,
   notfound,
-  noEnoughMinutes,
   illegal,
   lessonTimePassed,
-  weekBoundariesViolation,
   lessonAlreadyStarted,
   lessonNotStarted,
-} from "@/lib/error";
-import { IAvailabilitySlot, ILesson, Wss } from "@litespace/types";
+  fawryError,
+  unexpected,
+} from "@/lib/error/api";
 import {
-  lessons,
-  knex,
-  rooms,
-  availabilitySlots,
-  subscriptions,
-  tutors,
-} from "@litespace/models";
-import { Knex } from "knex";
+  IAvailabilitySlot,
+  ILesson,
+  ITransaction,
+  Wss,
+} from "@litespace/types";
+import { lessons, knex, availabilitySlots } from "@litespace/models";
 import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
-import {
-  isAdmin,
-  isStudent,
-  isTutor,
-  isTutorManager,
-  isUser,
-} from "@litespace/utils/user";
-import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
-import { first, isEmpty, isEqual } from "lodash";
-import { AFRICA_CAIRO_TIMEZONE, genSessionId } from "@litespace/utils";
-import { withImageUrls } from "@/lib/user";
+import { isAdmin, isStudent, isTutor, isUser } from "@litespace/utils/user";
+import { MAX_FULL_FLAG_DAYS } from "@/constants";
+import { isEmpty, isEqual } from "lodash";
+import { AFRICA_CAIRO_TIMEZONE, price } from "@litespace/utils";
+import { withImageUrls, withPhone } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import {
-  calcRemainingWeeklyMinutesBySubscription,
-  generateFreeSubscription,
-} from "@/lib/subscription";
-import {
-  getCurrentWeekBoundaries,
-  getPseudoWeekBoundaries,
-  isPseudoSubscription,
-} from "@litespace/utils/subscription";
-import { getDayLessonsMap, inflateDayLessonsMap } from "@/lib/lesson";
+  createLesson,
+  getDayLessonsMap,
+  inflateDayLessonsMap,
+  checkBookingLessonEligibilityState,
+  validateCreateLessonPayload,
+} from "@/lib/lesson";
 import { isBookable } from "@/lib/session";
 import { sendMsg } from "@/lib/messenger";
+import { createPaidLessonTx } from "@/lib/transaction";
+import {
+  performPayWithCardTx,
+  performPayWithEWalletTx,
+  performPayWithFawryRefNumTx,
+} from "@/lib/fawry";
+import {
+  BusyTutor,
+  FawryError,
+  InvalidLessonStart,
+  SlotNotFound,
+  TutorNotFound,
+  Unexpected,
+} from "@/lib/error/local";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
@@ -93,6 +95,166 @@ const findAttendedLessonsStatsQuery = zod.object({
   before: zod.string().datetime(),
 });
 
+const createWithCardPayload: ZodSchema<ILesson.CreateWithCardApiPayload> =
+  createLessonPayload.and(
+    zod.object({
+      cardToken: zod.string(),
+      cvv: zod.string().length(3),
+      phone: zod.string().optional(),
+    })
+  );
+
+const createWithFawryRefNumPayload: ZodSchema<ILesson.CreateWithFawryRefNumApiPayload> =
+  createLessonPayload.and(zod.object({ phone: zod.string().optional() }));
+
+const createWithEWalletPayload: ZodSchema<ILesson.CreateWithEWalletApiPayload> =
+  createLessonPayload.and(zod.object({ phone: zod.string().optional() }));
+
+async function createWithCard(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const payload = createWithCardPayload.parse(req.body);
+  const phone = await withPhone(user, payload.phone);
+  if (phone instanceof Error) return next(bad(phone.message));
+
+  const valid = await validateCreateLessonPayload(payload);
+  if (valid instanceof TutorNotFound) return next(notfound.tutor());
+  if (valid instanceof SlotNotFound) return next(notfound.slot());
+  if (valid instanceof InvalidLessonStart) return next(bad());
+  if (valid instanceof BusyTutor) return next(busyTutor());
+
+  const scaledAmount = calculateLessonPrice(payload.duration);
+  const unscaledAmount = price.unscale(scaledAmount);
+  const transaction = await createPaidLessonTx({
+    userId: user.id,
+    scaledAmount,
+    tutorId: payload.tutorId,
+    slotId: payload.slotId,
+    start: payload.start,
+    duration: payload.duration,
+    paymentMethod: ITransaction.PaymentMethod.Card,
+  });
+
+  const result = await performPayWithCardTx({
+    user,
+    phone,
+    transaction,
+    unscaledAmount,
+    cvv: payload.cvv,
+    cardToken: payload.cardToken,
+  });
+
+  if (result instanceof FawryError) return next(fawryError(result.message));
+
+  const response: ILesson.CreateWithCardApiResponse = {
+    transactionId: transaction.id,
+    redirectUrl: result.redirectUrl,
+  };
+
+  res.status(200).json(response);
+}
+
+async function createWithFawryRefNum(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const payload = createWithFawryRefNumPayload.parse(req.body);
+  const phone = await withPhone(user, payload.phone);
+  if (phone instanceof Error) return next(bad(phone.message));
+
+  const valid = await validateCreateLessonPayload(payload);
+  if (valid instanceof TutorNotFound) return next(notfound.tutor());
+  if (valid instanceof SlotNotFound) return next(notfound.slot());
+  if (valid instanceof InvalidLessonStart) return next(bad());
+  if (valid instanceof BusyTutor) return next(busyTutor());
+
+  const scaledAmount = calculateLessonPrice(payload.duration);
+  const unscaledAmount = price.unscale(scaledAmount);
+
+  const transaction = await createPaidLessonTx({
+    userId: user.id,
+    scaledAmount,
+    tutorId: payload.tutorId,
+    slotId: payload.slotId,
+    start: payload.start,
+    duration: payload.duration,
+    paymentMethod: ITransaction.PaymentMethod.Fawry,
+  });
+
+  const result = await performPayWithFawryRefNumTx({
+    user,
+    phone,
+    transaction,
+    unscaledAmount,
+  });
+
+  if (result instanceof FawryError) return next(fawryError(result.message));
+
+  const response: ILesson.CreateWithFawryRefNumApiResponse = {
+    transactionId: transaction.id,
+    referenceNumber: Number(result.referenceNumber),
+  };
+
+  res.status(200).json(response);
+}
+
+async function createWithEWallet(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const payload = createWithEWalletPayload.parse(req.body);
+  const phone = await withPhone(user, payload.phone);
+  if (phone instanceof Error) return next(bad(phone.message));
+
+  const valid = await validateCreateLessonPayload(payload);
+  if (valid instanceof TutorNotFound) return next(notfound.tutor());
+  if (valid instanceof SlotNotFound) return next(notfound.slot());
+  if (valid instanceof InvalidLessonStart) return next(bad());
+  if (valid instanceof BusyTutor) return next(busyTutor());
+
+  const scaledAmount = calculateLessonPrice(payload.duration);
+  const unscaledAmount = price.unscale(scaledAmount);
+
+  const transaction = await createPaidLessonTx({
+    userId: user.id,
+    scaledAmount,
+    tutorId: payload.tutorId,
+    slotId: payload.slotId,
+    start: payload.start,
+    duration: payload.duration,
+    paymentMethod: ITransaction.PaymentMethod.EWallet,
+  });
+
+  const result = await performPayWithEWalletTx({
+    user,
+    phone,
+    transaction,
+    unscaledAmount,
+  });
+
+  if (result instanceof FawryError) return next(fawryError(result.message));
+
+  const response: ILesson.CreateWithEWalletApiResponse = {
+    transactionId: transaction.id,
+    referenceNumber: result.referenceNumber,
+    walletQr: result.walletQr,
+  };
+
+  res.status(200).json(response);
+}
+
 function create(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -104,113 +266,34 @@ function create(context: ApiContext) {
         req.body
       );
 
-      const tutor = await tutors.findById(payload.tutorId);
-      if (!tutor) return next(notfound.tutor());
+      const state = await checkBookingLessonEligibilityState({
+        userId: user.id,
+        start: payload.start,
+        duration: payload.duration,
+      });
+      if (state instanceof Unexpected) return next(unexpected(state.message));
+      if (!state.eligible) return next(forbidden());
 
-      const slot = await availabilitySlots.findById(payload.slotId);
-      if (!slot) return next(notfound.slot());
-
-      // lesson should be in the future & before the tutors' notice period
-      if (
-        dayjs
-          .utc(payload.start)
-          .isBefore(dayjs.utc().subtract(tutor.notice, "minute"))
-      )
-        return next(bad());
-
-      const sub =
-        (await subscriptions
-          .find({
-            users: [user.id],
-            terminated: false,
-            end: { after: dayjs.utc().toISOString() },
-          })
-          .then(({ list }) => first(list))) ||
-        generateFreeSubscription({
+      const lesson = await knex.transaction((tx) =>
+        createLesson({
           userId: user.id,
-          userCreatedAt: user.createdAt,
-        });
-
-      const remainingMinutes =
-        await calcRemainingWeeklyMinutesBySubscription(sub);
-
-      if (remainingMinutes < payload.duration) return next(noEnoughMinutes());
-
-      // subscribed users should not be able to book lessons not within the
-      // current week
-      const weekBoundaries = isPseudoSubscription(sub)
-        ? getPseudoWeekBoundaries()
-        : getCurrentWeekBoundaries(sub.start);
-      const within = dayjs
-        .utc(payload.start)
-        .add(payload.duration, "minutes")
-        .isBetween(weekBoundaries.start, weekBoundaries.end, "minutes", "[]");
-      if (!within) return next(weekBoundariesViolation());
-
-      const price = isTutorManager(tutor)
-        ? 0
-        : calculateLessonPrice(
-            platformConfig.tutorHourlyRate,
-            payload.duration
-          );
-
-      // Check if the new lessons intercepts any of current subslots
-      if (
-        !(await isBookable({
-          slot,
-          bookInfo: {
-            start: payload.start,
-            duration: payload.duration,
-          },
-        }))
-      )
-        return next(busyTutor());
-
-      // create the lesson with its associated room if it doesn't exist
-      const roomMembers = [user.id, tutor.id];
-      const room = await rooms.findRoomByMembers(roomMembers);
-
-      const { lesson } = await knex.transaction(
-        async (tx: Knex.Transaction) => {
-          if (!room) await rooms.create(roomMembers, tx);
-          const lesson = await lessons.create({
-            tutor: payload.tutorId,
-            student: user.id,
-            start: payload.start,
-            duration: payload.duration,
-            slot: payload.slotId,
-            session: genSessionId("lesson"),
-            price,
-            tx,
-          });
-          return lesson;
-        }
+          tutorId: payload.tutorId,
+          slotId: payload.slotId,
+          start: payload.start,
+          duration: payload.duration,
+          txId: state.txId,
+          io: context.io,
+          tx,
+        })
       );
 
-      if (tutor.phone && tutor.notificationMethod)
-        sendMsg({
-          to: tutor.phone,
-          template: {
-            name: "new_lesson_booked",
-            parameters: {
-              duration: lesson.duration,
-              date: dayjs(lesson.start)
-                .tz(AFRICA_CAIRO_TIMEZONE)
-                .format("ddd D MMM hh:mm A"),
-            },
-          },
-          method: tutor.notificationMethod,
-        });
+      if (lesson instanceof TutorNotFound) return next(notfound.tutor());
+      if (lesson instanceof SlotNotFound) return next(notfound.slot());
+      if (lesson instanceof InvalidLessonStart) return next(bad());
+      if (lesson instanceof BusyTutor) return next(busyTutor());
 
       const response: ILesson.CreateLessonApiResponse = lesson;
       res.status(200).json(response);
-
-      context.io.sockets
-        .in(Wss.Room.TutorsCache)
-        .emit(Wss.ServerEvent.LessonBooked, {
-          tutor: tutor.id,
-          lesson: lesson.id,
-        });
     }
   );
 }
@@ -488,4 +571,7 @@ export default {
   findLessons: safeRequest(findLessons),
   findLessonById: safeRequest(findLessonById),
   findAttendedLessonsStats: safeRequest(findAttendedLessonsStats),
+  createWithCard: safeRequest(createWithCard),
+  createWithFawrRefNum: safeRequest(createWithFawryRefNum),
+  createWithEWallet: safeRequest(createWithEWallet),
 };

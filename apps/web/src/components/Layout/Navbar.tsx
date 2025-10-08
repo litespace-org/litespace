@@ -48,7 +48,7 @@ const Subscription: React.FC = () => {
 
   if (loading || !user || isTutorRole(user.role)) return null;
 
-  if ((info?.id === -1 && remainingWeeklyMinutes === 0) || ended)
+  if (!info || ended)
     return (
       <Link to={Web.Plans} tabIndex={-1}>
         <Button

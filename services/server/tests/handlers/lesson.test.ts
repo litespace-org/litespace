@@ -8,10 +8,8 @@ import {
   forbidden,
   busyTutor,
   bad,
-  noEnoughMinutes,
   lessonTimePassed,
-  weekBoundariesViolation,
-} from "@/lib/error";
+} from "@/lib/error/api";
 import { dayjs, getSubSlots, nameof, safe } from "@litespace/utils";
 import { ILesson, IUser } from "@litespace/types";
 import { lessons } from "@litespace/models";
@@ -43,7 +41,7 @@ const findAttendedLessonsStats = mockApi<
   ILesson.FindAttendedLessonsStatsApiResponse
 >(handlers.findAttendedLessonsStats);
 
-describe("/api/v1/lesson/", () => {
+describe("Lessons API", () => {
   beforeAll(async () => {
     await cache.connect();
   });
@@ -57,7 +55,7 @@ describe("/api/v1/lesson/", () => {
     await cache.flush();
   });
 
-  describe("GET /api/v1/lesson/list", () => {
+  describe(nameof(createLesson), () => {
     it("should filter lessons using the `after` and `before` flag", async () => {
       const tutor = await db.tutorUser();
 
@@ -154,6 +152,12 @@ describe("/api/v1/lesson/", () => {
     it("should respond with tutor notfound in case the tutorId is not found", async () => {
       const student = await db.student();
 
+      await db.subscription({
+        userId: student.id,
+        start: dayjs().toISOString(),
+        end: dayjs().add(1, "week").toISOString(),
+      });
+
       const res = await createLesson({
         user: student,
         body: {
@@ -171,6 +175,12 @@ describe("/api/v1/lesson/", () => {
       const student = await db.student();
       const tutor = await db.tutor();
 
+      await db.subscription({
+        userId: student.id,
+        start: dayjs().toISOString(),
+        end: dayjs().add(1, "week").toISOString(),
+      });
+
       const res = await createLesson({
         user: student,
         body: {
@@ -186,6 +196,12 @@ describe("/api/v1/lesson/", () => {
 
     it("should respond with bad in case the start date is before now", async () => {
       const student = await db.student();
+
+      await db.subscription({
+        userId: student.id,
+        start: dayjs().toISOString(),
+        end: dayjs().add(1, "week").toISOString(),
+      });
 
       const tutor = await db.tutor();
       const slot = await db.slot({
@@ -209,6 +225,7 @@ describe("/api/v1/lesson/", () => {
     it("should respond with busyTutor in case the tutor has already a lesson at the specified time", async () => {
       const student = await db.student();
       const tutor = await db.tutorManager();
+
       const slot = await db.slot({
         userId: tutor.id,
         start: dayjs().add(1, "day").toISOString(),
@@ -224,6 +241,12 @@ describe("/api/v1/lesson/", () => {
 
       const student2 = await db.student();
 
+      await db.subscription({
+        userId: student2.id,
+        start: dayjs().toISOString(),
+        end: dayjs().add(1, "week").toISOString(),
+      });
+
       const res = await createLesson({
         user: student2,
         body: {
@@ -235,96 +258,6 @@ describe("/api/v1/lesson/", () => {
       });
 
       expect(res).to.deep.eq(busyTutor());
-    });
-
-    it("should respond with noEnoughMinutes in case the student remaining minutes quota is less than the lesson dur", async () => {
-      const student = await db.student();
-      const tutor = await db.tutor();
-      const slot = await db.slot({ userId: tutor.id });
-
-      const start = dayjs().startOf("week");
-
-      // create a one week subscription
-      const sub = await db.subscription({
-        userId: student.id,
-        start: start.toISOString(),
-        end: start.add(1, "week").toISOString(),
-      });
-
-      for (let i = 0; i < Math.ceil(sub.weeklyMinutes / 30); i++) {
-        await db.lesson({
-          student: student.id,
-          tutor: tutor.id,
-          start: start.add(i * 30, "minute").toISOString(),
-          duration: ILesson.Duration.Long,
-        });
-      }
-
-      const res = await createLesson({
-        user: student,
-        body: {
-          tutorId: tutor.id,
-          slotId: slot.id,
-          start: slot.start,
-          duration: ILesson.Duration.Short,
-        },
-      });
-
-      expect(res).to.deep.eq(noEnoughMinutes());
-    });
-
-    it("should respond with weekBoundariesViolation in case the lesson doesn't start within the current week", async () => {
-      const student = await db.student();
-      const start = dayjs().startOf("week");
-      await db.subscription({
-        userId: student.id,
-        start: start.toISOString(),
-        end: start.add(2, "week").toISOString(),
-        weeklyMinutes: 120,
-      });
-
-      const tutor = await db.tutor();
-      const slot = await db.slot({
-        userId: tutor.id,
-        start: start.add(7, "day").toISOString(),
-        end: start.add(8, "day").toISOString(),
-      });
-
-      const res = await createLesson({
-        user: student,
-        body: {
-          tutorId: tutor.id,
-          slotId: slot.id,
-          start: slot.start,
-          duration: ILesson.Duration.Short,
-        },
-      });
-
-      expect(res).to.deep.eq(weekBoundariesViolation());
-    });
-
-    it("should successfully create the lesson when an unsubscribed student books a lesson with a tutor-manager", async () => {
-      const student = await db.student();
-
-      const tutor = await db.tutorManager();
-      const slot = await db.slot({
-        userId: tutor.id,
-        start: dayjs().add(1, "day").toISOString(),
-        end: dayjs().add(2, "day").toISOString(),
-      });
-
-      const res = await createLesson({
-        user: student,
-        body: {
-          tutorId: tutor.id,
-          slotId: slot.id,
-          start: slot.start,
-          duration: ILesson.Duration.Short,
-        },
-      });
-
-      expect(res).to.not.be.instanceof(Error);
-      expect(res.status).to.eq(200);
     });
 
     it("should successfully create the lesson when a subscribed student books a lesson with a regular tutor", async () => {
@@ -577,7 +510,7 @@ describe("/api/v1/lesson/", () => {
     });
   });
 
-  describe("DELETE /api/v1/lesson/:lessonId", () => {
+  describe(nameof(cancelLesson), () => {
     it("should respond with not found status in case the lesson does not exist.", async () => {
       const student = await db.student();
       const res = await cancelLesson({

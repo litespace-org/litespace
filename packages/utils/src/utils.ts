@@ -1,6 +1,6 @@
 import { sanitizeMessage } from "@/chat";
 import { HTML_TAGS_REGEX, MILLISECONDS_IN_SECOND } from "@/constants";
-import { ObjectKey } from "@litespace/types";
+import { NumericString, ObjectKey } from "@litespace/types";
 import { isEmpty, invert as invertBase } from "lodash";
 
 export function optional<T>(value: T): NonNullable<T> | undefined {
@@ -98,6 +98,13 @@ export function composeSerialAsync(
   };
 }
 
+/**
+ * @description convert number into a numeric string.
+ */
+export function nstr(value: number): NumericString {
+  return `${value}`;
+}
+
 export function invert<K extends ObjectKey, V extends ObjectKey>(
   object: Record<K, V>
 ): Record<V, K> {
@@ -106,4 +113,14 @@ export function invert<K extends ObjectKey, V extends ObjectKey>(
 
 export function keys<T extends object>(object: T): Array<keyof T> {
   return Object.keys(object) as Array<keyof T>;
+}
+
+export function count<T>(list: T[], callback: (item: T) => boolean): number {
+  let counter = 0;
+
+  for (const item of list) {
+    if (callback(item)) counter += 1;
+  }
+
+  return counter;
 }

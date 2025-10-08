@@ -20,7 +20,7 @@ import { first, isEmpty } from "lodash";
 import { useHotkeys } from "react-hotkeys-hook";
 import { env } from "@/lib/env";
 import { useOnError } from "@/hooks/error";
-import { IPlan, ITransaction, Void } from "@litespace/types";
+import { ITransaction, Void } from "@litespace/types";
 import { useToast } from "@litespace/ui/Toast";
 import { IframeMessage } from "@/constants/iframe";
 import { useLogger } from "@litespace/headless/logger";
@@ -28,6 +28,8 @@ import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import RemoveCard from "@litespace/assets/RemoveCard";
 import { useBlock } from "@litespace/ui/hooks/common";
 import { useRender } from "@litespace/headless/common";
+import { TxTypeData } from "@/components/Checkout/types";
+import { useCreateLessonWithCard } from "@litespace/headless/lessons";
 
 type Form = {
   card: string;
@@ -37,12 +39,11 @@ type Form = {
 
 const Payment: React.FC<{
   userId: number;
-  planId: number;
-  period: IPlan.PeriodLiteral;
+  txTypeData: TxTypeData;
   phone: string | null;
   transactionId?: number;
   transactionStatus?: ITransaction.Status;
-}> = ({ userId, planId, period, phone, transactionId, transactionStatus }) => {
+}> = ({ userId, txTypeData, phone, transactionId, transactionStatus }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const logger = useLogger();
@@ -66,7 +67,8 @@ const Payment: React.FC<{
     onError: onCancelError,
     onSuccess() {
       confirmClosePayDialog.hide();
-      payWithCard.reset();
+      pay.reset();
+      createLesson.reset();
       toast.success({
         title: intl("checkout.payment.cancel-success"),
       });
@@ -84,9 +86,8 @@ const Payment: React.FC<{
     },
   });
 
-  const payWithCard = usePayWithCard({
-    onError: onPayError,
-  });
+  const pay = usePayWithCard({ onError: onPayError });
+  const createLesson = useCreateLessonWithCard({ onError: onPayError });
 
   // ==================== form ====================
   const validators = useMakeValidators<Form>({
@@ -109,13 +110,25 @@ const Payment: React.FC<{
     },
     validators,
     onSubmit(data) {
-      payWithCard.mutate({
-        cardToken: data.card,
-        cvv: data.cvv,
-        phone: data.phone,
-        period,
-        planId,
-      });
+      if (txTypeData.type === "paid-plan" && txTypeData.data.plan)
+        pay.mutate({
+          period: txTypeData.data.period,
+          planId: txTypeData.data.plan.id,
+          cardToken: data.card,
+          phone: data.phone,
+          cvv: data.cvv,
+        });
+
+      if (txTypeData.type === "paid-lesson" && txTypeData.data.tutor)
+        createLesson.mutate({
+          tutorId: txTypeData.data.tutor.id,
+          slotId: txTypeData.data.slotId,
+          start: txTypeData.data.start,
+          duration: txTypeData.data.duration,
+          cardToken: data.card,
+          phone: data.phone,
+          cvv: data.cvv,
+        });
     },
   });
 
@@ -202,14 +215,26 @@ const Payment: React.FC<{
   );
 
   // ==================== transaction status ====================
-
   const isTransactionPending = useMemo(() => {
-    return (
-      payWithCard.data?.transactionId !== transactionId ||
-      (payWithCard.data?.transactionId === transactionId &&
-        transactionStatus === ITransaction.Status.New)
-    );
-  }, [payWithCard.data, transactionId, transactionStatus]);
+    const pendingTx =
+      transactionStatus === ITransaction.Status.New ||
+      transactionStatus === ITransaction.Status.Processed;
+
+    const pendingPlanPayment =
+      pay.data?.transactionId !== transactionId ||
+      (pay.data?.transactionId === transactionId && pendingTx);
+
+    const pendingLessonPayment =
+      createLesson.data?.transactionId !== transactionId ||
+      (createLesson.data?.transactionId === transactionId && pendingTx);
+
+    return pendingPlanPayment || pendingLessonPayment;
+  }, [
+    createLesson.data?.transactionId,
+    pay.data?.transactionId,
+    transactionId,
+    transactionStatus,
+  ]);
 
   // ==================== unsaved changes ====================
 
@@ -218,16 +243,19 @@ const Payment: React.FC<{
       return (
         addCardDialog.open ||
         confirmCloseAddCardDialog.open ||
-        !!payWithCard.data ||
+        !!pay.data ||
+        !!createLesson.data ||
         confirmClosePayDialog.open ||
-        payWithCard.isPending
+        pay.isPending ||
+        createLesson.isPending
       );
     },
     () => {
-      if (isTransactionPending && payWithCard.data)
-        return cancelUnpaidOrder.mutate({
-          transactionId: payWithCard.data.transactionId,
-        });
+      const transactionId =
+        pay.data?.transactionId || createLesson?.data?.transactionId;
+
+      if (isTransactionPending && transactionId)
+        return cancelUnpaidOrder.mutate({ transactionId });
     }
   );
 
@@ -326,8 +354,8 @@ const Payment: React.FC<{
           size="large"
           htmlType="submit"
           className="w-full"
-          disabled={payWithCard.isPending}
-          loading={payWithCard.isPending}
+          disabled={pay.isPending || createLesson.isPending}
+          loading={pay.isPending || createLesson.isPending}
         >
           <Typography tag="span" className="text text-body font-medium">
             {intl("checkout.payment.confirm")}
@@ -359,15 +387,16 @@ const Payment: React.FC<{
         }}
       />
 
-      {payWithCard.data ? (
+      {pay.data || createLesson.data ? (
         <IframeDialog
           open
           onOpenChange={(open) => {
             if (!open && isTransactionPending)
               return confirmClosePayDialog.show();
-            return payWithCard.reset();
+            createLesson.reset();
+            pay.reset();
           }}
-          url={payWithCard.data.redirectUrl}
+          url={pay.data?.redirectUrl || createLesson.data?.redirectUrl}
         />
       ) : null}
 
@@ -378,18 +407,22 @@ const Payment: React.FC<{
         }}
         canceling={cancelUnpaidOrder.isPending}
         cancel={() => {
-          if (!payWithCard.data) return;
+          if (!pay.data && !createLesson.data) return;
 
+          const pendingTx =
+            transactionStatus !== ITransaction.Status.New &&
+            transactionStatus === ITransaction.Status.Processed;
+          const sameTx =
+            pay.data?.transactionId === transactionId ||
+            createLesson.data?.transactionId === transactionId;
           // only cancel the transaction in case it is still in the `new` status
-          if (
-            payWithCard.data.transactionId === transactionId &&
-            transactionStatus !== ITransaction.Status.New
-          )
-            return;
+          if (sameTx && !pendingTx) return;
 
-          cancelUnpaidOrder.mutate({
-            transactionId: payWithCard.data.transactionId,
-          });
+          const cancelTxId =
+            pay.data?.transactionId || createLesson?.data?.transactionId;
+
+          if (cancelTxId)
+            cancelUnpaidOrder.mutate({ transactionId: cancelTxId });
         }}
       />
     </div>

@@ -1,5 +1,5 @@
 import { IConfirmationCode, IPlan, IUser } from "@litespace/types";
-import { percentage } from "@/value";
+import { percentage, price } from "@/value";
 
 export const WEEKS_IN_YEAR = 52;
 export const WEEKS_IN_MONTH = 4;
@@ -191,5 +191,6 @@ export const PLAN_PERIOD_TO_WEEK_COUNT: Record<IPlan.Period, number> = {
 };
 
 export const INTRO_VIDEO_EXPIRY_MONTHS = 3;
-
 export const STUDENT_FREE_WEEKLY_MINUTES = 60;
+export const MAX_PAID_LESSON_COUNT = 2;
+export const TOTAL_LESSON_HOURLY_RATE = price.scale(255);

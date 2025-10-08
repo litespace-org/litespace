@@ -1,5 +1,11 @@
 import { Dashboard, Landing, StudentSettingsTabId, Web } from "@/routes/route";
-import { Env, IPlan, ISession, IShortUrl } from "@litespace/types";
+import {
+  Env,
+  IPlan,
+  ISession,
+  IShortUrl,
+  NumericString,
+} from "@litespace/types";
 import { clients } from "@/routes/clients";
 import { asRegex } from "@/routes/utils";
 
@@ -32,7 +38,7 @@ function withParams(
   return result;
 }
 
-function withQuery<T extends Record<string, string> | string>(
+function withQuery<T extends Record<string, string | NumericString> | string>(
   route: string,
   query: T
 ): string {
@@ -81,15 +87,23 @@ type WebPayload =
     }
   | {
       route: Web.Checkout;
-      planId: number;
-      period: IPlan.PeriodLiteral;
-      query?: BaseQuery;
+      query:
+        | {
+            type: "paid-lesson";
+            tutorId: NumericString;
+            slotId: NumericString;
+            start: string;
+            duration: NumericString;
+          }
+        | {
+            type: "paid-plan";
+            planId: NumericString;
+            period: IPlan.PeriodLiteral;
+          };
     }
   | {
       route: Web.StudentSettings;
-      query?: {
-        tab?: StudentSettingsTabId;
-      };
+      query?: { tab?: StudentSettingsTabId };
     }
   | {
       route: Exclude<
@@ -152,6 +166,9 @@ export type UrlParamsOf<T extends Web | Landing | Dashboard> = Omit<
   PayloadOf<T>,
   "query" | "route"
 >;
+
+export type UrlQueryOf<T extends Web | Landing | Dashboard> =
+  PayloadOf<T>["query"];
 
 export class RoutesManager {
   constructor(public readonly client: Env.Client) {}

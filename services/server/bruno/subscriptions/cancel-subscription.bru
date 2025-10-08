@@ -1,0 +1,15 @@
+meta {
+  name: cancel-subscription
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{api}}/api/v1/sub/cancel
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

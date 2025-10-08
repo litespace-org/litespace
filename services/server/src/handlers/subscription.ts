@@ -1,5 +1,5 @@
 import zod, { ZodSchema } from "zod";
-import { IPlan, ISubscription } from "@litespace/types";
+import { ILesson, IPlan, ISubscription } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import {
@@ -8,7 +8,8 @@ import {
   forbidden,
   notfound,
   subscriptionUncancellable,
-} from "@/lib/error";
+  unexpected,
+} from "@/lib/error/api";
 import {
   id,
   pageNumber,
@@ -20,14 +21,16 @@ import { isAdmin, isStudent, isSuperAdmin } from "@litespace/utils/user";
 import { lessons, subscriptions, transactions } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
 import { first, max, sum } from "lodash";
-import {
-  calcRemainingWeeklyMinutesBySubscription,
-  generateFreeSubscription,
-} from "@/lib/subscription";
+import { calcRemainingWeeklyMinutesBySubscription } from "@/lib/subscription";
 import { price, safe } from "@litespace/utils";
 import { fawry } from "@/fawry/api";
 import { fawryConfig } from "@/constants";
 import { genSignature } from "@/fawry/lib";
+import {
+  checkStudentPaidLessonState,
+  CheckStudentPaidLessonStateReturn,
+} from "@/lib/lesson";
+import { Unexpected } from "@/lib/error/local";
 
 const findQuery: ZodSchema<ISubscription.FindApiQuery> = zod.object({
   ids: id.array().optional(),
@@ -119,19 +122,25 @@ async function findUserSubscription(
     end: { after: now.toISOString() },
   });
 
-  const subscription =
-    first(list) ||
-    generateFreeSubscription({
-      userId: user.id,
-      userCreatedAt: user.createdAt,
-    });
+  const subscription = first(list) || null;
+  const state: CheckStudentPaidLessonStateReturn = !subscription
+    ? await checkStudentPaidLessonState(user.id)
+    : {
+        status: ILesson.PaidLessonStatus.NotEligible,
+        hasPendingPaidLesson: false,
+      };
 
-  const remainingWeeklyMinutes =
-    await calcRemainingWeeklyMinutesBySubscription(subscription);
+  if (state instanceof Unexpected) return next(unexpected(state.message));
+
+  const remainingWeeklyMinutes = subscription
+    ? await calcRemainingWeeklyMinutesBySubscription(subscription)
+    : 0;
 
   const response: ISubscription.FindUserSubscriptionApiResponse = {
-    info: subscription || null,
+    info: subscription,
     remainingWeeklyMinutes,
+    paidLessonStatus: state.status,
+    hasPendingPaidLesson: state.hasPendingPaidLesson,
   };
 
   res.status(200).json(response);

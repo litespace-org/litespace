@@ -5,4 +5,5 @@ export {
   isValidRoute,
   PayloadOf,
   UrlParamsOf,
+  UrlQueryOf,
 } from "@/routes/core";

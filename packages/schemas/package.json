@@ -34,7 +34,7 @@
   "dependencies": {
     "@litespace/types": "workspace:^",
     "ts-patch": "^3.2.1",
-    "typescript": "^5.4.5",
+    "typescript": "5.9.2",
     "typescript-transform-paths": "^3.5.2",
     "zod": "^3.24.4"
   },

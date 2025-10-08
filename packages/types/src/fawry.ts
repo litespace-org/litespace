@@ -53,7 +53,6 @@ export type PayWithRefNumResponse = {
 export type PayWithEWalletPayload = {
   planId: number;
   period: IPlan.PeriodLiteral;
-  wallet: string;
   phone?: string;
 };
 

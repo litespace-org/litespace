@@ -36,8 +36,8 @@ const variants = {
 const LessonsSchedule: React.FC = () => {
   const { md, lg } = useMediaQuery();
 
-  const { info } = useSubscription();
-  const weekBoundaries = useSubscriptionWeekBoundaries(info);
+  const subscription = useSubscription();
+  const weekBoundaries = useSubscriptionWeekBoundaries(subscription.info);
 
   const [date, setDate] = useState(weekBoundaries.start);
   const [view, setView] = useState<View>("list");
@@ -82,9 +82,10 @@ const LessonsSchedule: React.FC = () => {
 
   const onCancelSuccess = useCallback(() => {
     toast.success({ title: intl("cancel-lesson.success") });
+    subscription.refetch();
     setLessonId(null);
     invalidate([QueryKey.FindInfiniteLessons]);
-  }, [toast, intl, invalidate]);
+  }, [toast, intl, subscription, invalidate]);
 
   const onCancelError = useCallback(
     (error: unknown) => {

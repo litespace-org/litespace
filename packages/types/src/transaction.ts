@@ -1,4 +1,11 @@
-import { IFilter, IPlan, Paginated } from "@/index";
+import { IFilter, Paginated } from "@/index";
+
+export type TypeLiteral = "paid-plan" | "paid-lesson";
+
+export enum Type {
+  PaidPlan,
+  PaidLesson,
+}
 
 export enum Status {
   New,
@@ -21,10 +28,9 @@ export enum PaymentMethod {
 export type Row = {
   id: number;
   user_id: number;
-  plan_id: number;
-  plan_period: IPlan.Period;
   amount: number;
   status: Status;
+  type: Type;
   payment_method: PaymentMethod;
   provider_ref_num: string | null;
   created_at: Date;
@@ -34,13 +40,12 @@ export type Row = {
 export type Self = {
   id: number;
   userId: number;
-  planId: number;
-  planPeriod: IPlan.Period;
   /**
    * the price, with two decimal point, represeted as an integer (multiplies by 100)
    */
   amount: number;
   status: Status;
+  type: Type;
   paymentMethod: PaymentMethod;
   /**
    * this is defined to map between transactions and ref numbers
@@ -57,17 +62,20 @@ export type Self = {
   updatedAt: string;
 };
 
+export type Field = keyof Self;
+
+export type Column = keyof Row;
+
 export type FindFilterModel = {
-  ids?: number[];
-  users?: number[];
-  plans?: number[];
-  planPeriods?: IPlan.Period[];
-  amount?: number | { gte: number; lte: number; gt: number; lt: number };
-  statuses?: Status[];
-  paymentMethods?: PaymentMethod[];
-  providerRefNums?: Array<string | null>;
-  after?: string;
-  before?: string;
+  ids?: IFilter.List<number>;
+  users?: IFilter.List<number>;
+  amount?: IFilter.Numeric;
+  statuses?: IFilter.List<Status>;
+  types?: IFilter.List<Type>;
+  paymentMethods?: IFilter.List<PaymentMethod>;
+  providerRefNums?: IFilter.NullableList<string>;
+  createdAt?: IFilter.Date;
+  updatedAt?: IFilter.Date;
 };
 
 export type FindQueryModel = IFilter.SkippablePagination & FindFilterModel;
@@ -82,10 +90,9 @@ export type FindByIdApiResponse = Self;
 
 export type CreatePayload = {
   userId: number;
-  planId: number;
-  planPeriod: IPlan.Period;
   amount: number;
   paymentMethod: PaymentMethod;
+  type: Type;
   /**
    * this is defined to map between transactions and ref numbers
    * from third party services. e.g. fawry orderRefNum.
@@ -94,7 +101,8 @@ export type CreatePayload = {
   status?: Status;
 };
 
-export type UpdatePayload = {
+export type UpdateModelPayload = {
+  id: number;
   status?: Status;
   /**
    * this is defined to map between transactions and ref numbers

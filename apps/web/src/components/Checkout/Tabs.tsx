@@ -1,60 +1,44 @@
-import React, { useMemo } from "react";
-import { IPlan, ITransaction, Void } from "@litespace/types";
+import React from "react";
+import { ITransaction, Void } from "@litespace/types";
 import { Tabs } from "@litespace/ui/Tabs";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { useSearchParams } from "react-router-dom";
-import Plan from "@/components/Checkout/Plan";
+import TxTypeDetails from "@/components/Checkout/TxTypeDetails";
 import Card from "@/components/Checkout/Forms/Card";
 import EWallet from "@/components/Checkout/Forms/EWallet";
 import Fawry from "@/components/Checkout/Forms/Fawry";
-import PayWithPaymob from "@/components/Checkout/PayWithPaymob";
-import { PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD } from "@litespace/utils";
-import { env } from "@/lib/env";
-
-type Tab = "card" | "ewallet" | "fawry";
-
-function isValidTab(tab: string): tab is Tab {
-  return tab === "card" || tab === "ewallet" || tab === "fawry";
-}
+import { Tab, TxTypeData } from "@/components/Checkout/types";
 
 const TapsContainer: React.FC<{
   userId: number;
-  plan: IPlan.Self;
-  period: IPlan.PeriodLiteral;
+  txTypeData: TxTypeData;
   phone: string | null;
   sync: Void;
   syncing: boolean;
   transactionId?: number;
   transactionStatus?: ITransaction.Status;
+  tab: Tab;
+  setTab(tab: Tab): void;
 }> = ({
   userId,
-  plan,
-  period,
+  txTypeData,
   phone,
   syncing,
   sync,
   transactionId,
   transactionStatus,
+  tab,
+  setTab,
 }) => {
-  const [params, setParams] = useSearchParams({});
-
-  const tab = useMemo((): Tab => {
-    const tab = params.get("tab");
-    if (!tab || !isValidTab(tab)) return "card";
-    return tab;
-  }, [params]);
-
   return (
     <div>
-      <Header tab={tab} setTab={(tab) => setParams({ tab })} />
+      <Header tab={tab} setTab={setTab} />
       <Body
         userId={userId}
         tab={tab}
-        plan={plan}
         phone={phone}
-        period={period}
         syncing={syncing}
         sync={sync}
+        txTypeData={txTypeData}
         transactionId={transactionId}
         transactionStatus={transactionStatus}
       />
@@ -94,9 +78,8 @@ const Header: React.FC<{ tab: Tab; setTab(tab: Tab): void }> = ({
 const Body: React.FC<{
   userId: number;
   tab: Tab;
-  plan: IPlan.Self;
+  txTypeData: TxTypeData;
   phone: string | null;
-  period: IPlan.PeriodLiteral;
   syncing: boolean;
   sync: Void;
   transactionId?: number;
@@ -105,41 +88,26 @@ const Body: React.FC<{
   userId,
   tab,
   phone,
-  period,
   syncing,
   sync,
-  plan,
+  txTypeData,
   transactionId,
   transactionStatus,
 }) => {
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      {tab !== "fawry" && env.client !== "production" ? (
-        <PayWithPaymob
-          className="mb-4"
-          planId={plan.id}
-          planPeriod={PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[period]}
-          paymentMethod={
-            tab === "card"
-              ? ITransaction.PaymentMethod.Card
-              : ITransaction.PaymentMethod.EWallet
-          }
-        />
-      ) : null}
-
       <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-4 lg:gap-10 lg:min-w-[1004px] ">
         <PaymentPannel
           userId={userId}
-          planId={plan.id}
           tab={tab}
           phone={phone}
-          period={period}
           syncing={syncing}
           sync={sync}
+          txTypeData={txTypeData}
           transactionId={transactionId}
           transactionStatus={transactionStatus}
         />
-        <PlansPannel plan={plan} period={period} />
+        <TxTypeDetailsPannel txTypeData={txTypeData} />
       </div>
     </div>
   );
@@ -148,9 +116,8 @@ const Body: React.FC<{
 const PaymentPannel: React.FC<{
   tab: Tab;
   userId: number;
-  planId: number;
   phone: string | null;
-  period: IPlan.PeriodLiteral;
+  txTypeData: TxTypeData;
   syncing: boolean;
   sync: Void;
   transactionId?: number;
@@ -158,11 +125,10 @@ const PaymentPannel: React.FC<{
 }> = ({
   tab,
   userId,
-  planId,
   phone,
-  period,
   syncing,
   sync,
+  txTypeData,
   transactionId,
   transactionStatus,
 }) => {
@@ -172,18 +138,16 @@ const PaymentPannel: React.FC<{
         <Card
           transactionId={transactionId}
           transactionStatus={transactionStatus}
+          txTypeData={txTypeData}
           userId={userId}
-          planId={planId}
           phone={phone}
-          period={period}
         />
       ) : null}
 
       {tab === "ewallet" ? (
         <EWallet
-          planId={planId}
           phone={phone}
-          period={period}
+          txTypeData={txTypeData}
           syncing={syncing}
           sync={sync}
         />
@@ -191,9 +155,8 @@ const PaymentPannel: React.FC<{
 
       {tab === "fawry" ? (
         <Fawry
-          planId={planId}
+          txTypeData={txTypeData}
           phone={phone}
-          period={period}
           syncing={syncing}
           sync={sync}
         />
@@ -202,13 +165,12 @@ const PaymentPannel: React.FC<{
   );
 };
 
-const PlansPannel: React.FC<{
-  plan: IPlan.Self;
-  period: IPlan.PeriodLiteral;
-}> = ({ plan, period }) => {
+const TxTypeDetailsPannel: React.FC<{ txTypeData: TxTypeData }> = ({
+  txTypeData,
+}) => {
   return (
     <div className="w-full md:flex-1 flex flex-col">
-      <Plan data={plan} period={period} />
+      <TxTypeDetails txTypeData={txTypeData} />
     </div>
   );
 };

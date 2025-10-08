@@ -1,0 +1,24 @@
+meta {
+  name: create-lesson-with-fawry
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{api}}/api/v1/lesson/fawry
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "tutorId": 30,
+    "slotId": 174,
+    "start": "2025-10-25T08:00:00.000Z",
+    "duration": 30
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,37 +1,139 @@
-import { BaseRequestPayload, Customer } from "@/fawry/types/requests";
-import { PaymentMethod } from "@/fawry/types/ancillaries";
-import { fawryConfig } from "@/constants";
+import { fawry } from "@/fawry/api";
+import { encodeMerchantRefNumber } from "@/fawry/lib/ids";
+import { Customer } from "@/fawry/types/requests";
+import { transactions } from "@litespace/models";
+import { ITransaction, IUser } from "@litespace/types";
+import { FawryError } from "@/lib/error/local";
 
-export function forgeFawryPayload({
-  merchantRefNum,
-  paymentMethod,
-  chargeItems = [],
-  description,
-  signature,
-  amount,
-  customer,
-}: {
-  chargeItems?: BaseRequestPayload["chargeItems"];
-  paymentMethod: PaymentMethod;
-  merchantRefNum: number;
-  description: string;
-  signature: string;
-  customer: Customer;
-  amount: number;
-}): BaseRequestPayload {
+export function asFawryCustomer({
+  id,
+  name,
+  email,
+  phone,
+}: Pick<IUser.Self, "id" | "name" | "email"> & { phone: string }): Customer {
   return {
-    merchantRefNum,
-    paymentMethod,
-    customerProfileId: customer.id,
-    customerName: customer.name,
-    customerMobile: customer.phone,
-    customerEmail: customer.email,
-    chargeItems,
-    description,
-    currencyCode: "EGP",
-    language: "ar-eg",
-    merchantCode: fawryConfig.merchantCode,
-    signature,
-    amount,
+    id,
+    email,
+    phone,
+    name: name || "LiteSpace Student",
+  };
+}
+
+export async function performPayWithCardTx({
+  user,
+  phone,
+  transaction,
+  unscaledAmount,
+  cardToken,
+  cvv,
+}: {
+  user: IUser.Self;
+  phone: string;
+  transaction: ITransaction.Self;
+  unscaledAmount: number;
+  cardToken: string;
+  cvv: string;
+}): Promise<{ redirectUrl: string; type: string } | FawryError> {
+  const result = await fawry.payWithCard({
+    customer: asFawryCustomer({ ...user, phone }),
+    merchantRefNum: encodeMerchantRefNumber({
+      transactionId: transaction.id,
+      createdAt: transaction.createdAt,
+    }),
+    amount: unscaledAmount,
+    cardToken,
+    cvv,
+  });
+
+  if (result.statusCode !== 200) {
+    await transactions.update({
+      id: transaction.id,
+      status: ITransaction.Status.Failed,
+    });
+    return new FawryError(result.statusDescription);
+  }
+
+  await transactions.update({
+    id: transaction.id,
+    status: ITransaction.Status.Processed,
+  });
+
+  return result.nextAction;
+}
+
+export async function performPayWithFawryRefNumTx({
+  user,
+  phone,
+  transaction,
+  unscaledAmount,
+}: {
+  user: IUser.Self;
+  phone: string;
+  transaction: ITransaction.Self;
+  unscaledAmount: number;
+}): Promise<{ referenceNumber: string } | FawryError> {
+  const { statusCode, referenceNumber, statusDescription } =
+    await fawry.payWithRefNum({
+      customer: asFawryCustomer({ ...user, phone }),
+      merchantRefNum: encodeMerchantRefNumber({
+        transactionId: transaction.id,
+        createdAt: transaction.createdAt,
+      }),
+      amount: unscaledAmount,
+    });
+
+  if (statusCode !== 200 || !referenceNumber) {
+    await transactions.update({
+      id: transaction.id,
+      status: ITransaction.Status.Failed,
+    });
+    return new FawryError(statusDescription);
+  }
+
+  await transactions.update({
+    id: transaction.id,
+    status: ITransaction.Status.Processed,
+    providerRefNum: referenceNumber,
+  });
+
+  return { referenceNumber };
+}
+
+export async function performPayWithEWalletTx({
+  user,
+  phone,
+  transaction,
+  unscaledAmount,
+}: {
+  user: IUser.Self;
+  phone: string;
+  transaction: ITransaction.Self;
+  unscaledAmount: number;
+}): Promise<{ referenceNumber: string; walletQr: string | null } | FawryError> {
+  const result = await fawry.payWithEWallet({
+    customer: asFawryCustomer({ ...user, phone }),
+    merchantRefNum: encodeMerchantRefNumber({
+      transactionId: transaction.id,
+      createdAt: transaction.createdAt,
+    }),
+    amount: unscaledAmount,
+  });
+
+  if (result.statusCode !== 200) {
+    await transactions.update({
+      id: transaction.id,
+      status: ITransaction.Status.Failed,
+    });
+    return new FawryError(result.statusDescription);
+  }
+
+  await transactions.update({
+    id: transaction.id,
+    status: ITransaction.Status.Processed,
+  });
+
+  return {
+    referenceNumber: result.referenceNumber,
+    walletQr: result.walletQr || null,
   };
 }
