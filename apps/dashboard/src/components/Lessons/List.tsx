@@ -37,9 +37,9 @@ const List: React.FC<{
           const members = info.getValue();
           return (
             <div className="flex flex-row items-start justify-start gap-2">
-              {/*{members.map((member) => (
+              {members.map((member) => (
                 <UserPopover id={member.userId} key={member.userId} />
-              ))}*/}
+              ))}
             </div>
           );
         },
