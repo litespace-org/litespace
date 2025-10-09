@@ -182,6 +182,8 @@
     "./StudentMaleDark": "./dist/StudentMaleDark.tsx",
     "./StudentMaleLight": "./dist/StudentMaleLight.tsx",
     "./Success": "./dist/Success.tsx",
+    "./SunFog": "./dist/SunFog.tsx",
+    "./Sun": "./dist/Sun.tsx",
     "./Switch": "./dist/Switch.tsx",
     "./Tag": "./dist/Tag.tsx",
     "./TelegramWithCircle": "./dist/TelegramWithCircle.tsx",

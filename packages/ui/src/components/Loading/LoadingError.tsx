@@ -40,7 +40,8 @@ export const LoadingError: React.FC<{
   }, [intl, logger, toast]);
 
   return (
-    // NOTE: don't specify a size for it, do it in the parent component
+    // NOTE: don't specify a size for it, do it in the parent component.
+    // TODO: make width here full.
     <div className="flex flex-col items-center justify-center mx-auto">
       <div
         className={cn(
@@ -68,7 +69,7 @@ export const LoadingError: React.FC<{
           size={size === "large" ? "medium" : "small"}
           onClick={retry}
           variant="primary"
-          className="w-full text-tiny"
+          className="w-full text-tiny _whitespace-nowrap"
         >
           {intl("labels.retry")}
         </Button>
