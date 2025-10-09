@@ -26,6 +26,7 @@ import { IframeMessage } from "@/constants/iframe";
 import { useLogger } from "@litespace/headless/logger";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import RemoveCard from "@litespace/assets/RemoveCard";
+import Lock from "@litespace/assets/Lock";
 import { useBlock } from "@litespace/ui/hooks/common";
 import { useRender } from "@litespace/headless/common";
 import { TxTypeData } from "@/components/Checkout/types";
@@ -335,7 +336,7 @@ const Payment: React.FC<{
               >
                 <Typography
                   tag="span"
-                  className="text-caption md:text-body font-medium"
+                  className="text-body font-medium text-natural-700"
                 >
                   {intl("checkout.payment.card.add-card")}
                 </Typography>
@@ -383,22 +384,42 @@ const Payment: React.FC<{
           </div>
         </div>
 
-        <Button
-          type="main"
-          size="large"
-          htmlType="submit"
-          className="w-full"
-          disabled={pay.isPending || createLesson.isPending}
-          loading={pay.isPending || createLesson.isPending}
-        >
-          <Typography tag="span" className="text text-body font-medium">
-            {intl("checkout.payment.confirm")}
+        <div>
+          <Typography
+            tag="p"
+            className="hidden md:block text-caption text-brand-700 mb-1"
+          >
+            {intl("checkout.payment.conditions-acceptance")}
           </Typography>
-        </Button>
+          <Button
+            type="main"
+            size="large"
+            htmlType="submit"
+            className="w-full"
+            disabled={pay.isPending || createLesson.isPending}
+            loading={pay.isPending || createLesson.isPending}
+          >
+            <Typography tag="span" className="text text-body font-medium">
+              {intl("checkout.payment.confirm")}
+            </Typography>
+          </Button>
+        </div>
 
         <Typography tag="p" className="text-tiny font-normal text-natural-800">
           {intl("checkout.payment.card.confirmation-code-note")}
         </Typography>
+
+        <div className="hidden md:flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Lock className="w-6 h-6" />
+            <Typography tag="p" className="text-body font-semibold">
+              {intl("checkout.payment.safe-and-crypted")}
+            </Typography>
+          </div>
+          <Typography tag="p" className="text-caption text-natural-600">
+            {intl("checkout.payment.ensure-your-financial-privacy")}
+          </Typography>
+        </div>
       </form>
 
       <IframeDialog
