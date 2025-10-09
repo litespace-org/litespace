@@ -17,6 +17,8 @@ describe(nameof(calcRefundAmount), () => {
       type: ITransaction.Type.PaidLesson,
       fees: price.scale(100),
     });
+    await db.lesson({ txId: tx.id });
+
     const refundAmount = await calcRefundAmount(tx);
     expect(refundAmount).to.not.be.instanceof(Error);
     expect(refundAmount).to.eq(0);
@@ -28,8 +30,36 @@ describe(nameof(calcRefundAmount), () => {
       type: ITransaction.Type.PaidLesson,
       fees: price.scale(100),
     });
+    await db.lesson({ txId: tx.id, canceled: true });
+
     const refundAmount = await calcRefundAmount(tx);
     expect(refundAmount).to.eq(price.scale(1));
+  });
+
+  it("should return zero when canceled lesson transaction is used for another lesson", async () => {
+    const student = await db.student();
+
+    const tx = await db.transaction({
+      userId: student.id,
+      amount: price.scale(250),
+      type: ITransaction.Type.PaidLesson,
+      fees: price.scale(10),
+    });
+    await db.lesson({
+      student: student.id,
+      txId: tx.id,
+      canceled: true,
+    });
+
+    // new lesson with the same transaction
+    await db.lesson({
+      student: student.id,
+      txId: tx.id,
+    });
+
+    const refundAmount = await calcRefundAmount(tx);
+    expect(refundAmount).to.not.be.instanceof(Error);
+    expect(refundAmount).to.eq(0);
   });
 
   it("should return not found error when subscription is not found for non-paid lesson transaction", async () => {

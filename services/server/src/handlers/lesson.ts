@@ -476,6 +476,23 @@ async function findAttendedLessonsStats(
   res.status(200).json(result);
 }
 
+async function findRefundableLessons(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  // TODO: add pagination
+  const list = await lessons.findRefundable(user.id);
+
+  const result: ILesson.FindRefundableLessonsApiResponse = list;
+
+  res.status(200).json(result);
+}
+
 async function findLessonById(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isUser(user);
@@ -594,6 +611,7 @@ export default {
   findLessons: safeRequest(findLessons),
   findLessonById: safeRequest(findLessonById),
   findAttendedLessonsStats: safeRequest(findAttendedLessonsStats),
+  findRefundableLessons: safeRequest(findRefundableLessons),
   createWithCard: safeRequest(createWithCard),
   createWithFawrRefNum: safeRequest(createWithFawryRefNum),
   createWithEWallet: safeRequest(createWithEWallet),

@@ -71,4 +71,5 @@ export type StudentSettingsTabId =
   | "personal"
   | "password"
   | "notifications"
-  | "topics";
+  | "topics"
+  | "refunds";

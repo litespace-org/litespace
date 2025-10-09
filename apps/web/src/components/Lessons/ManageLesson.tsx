@@ -17,7 +17,11 @@ import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
 import { ManageLessonDialog } from "@litespace/ui/Lessons";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { isTutorManager, MAX_LESSON_DURATION } from "@litespace/utils";
+import {
+  isTutorManager,
+  MAX_LESSON_DURATION,
+  MIN_LESSON_DURATION,
+} from "@litespace/utils";
 import { useSubscriptionWeekBoundaries } from "@litespace/headless/subscription";
 import { nstr, nullable } from "@litespace/utils/utils";
 import React, { useCallback, useMemo, useRef } from "react";
@@ -244,7 +248,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
         type={payload.type}
         slotId={payload.type === "update" ? payload.slotId : undefined}
         start={payload.type === "update" ? payload.start : undefined}
-        duration={payload.type === "update" ? payload.duration : undefined}
+        duration={payload.type === "update" ? MIN_LESSON_DURATION : undefined} // TODO: make it dynamic
         imageUrl={nullable(tutor.data?.image)}
         name={nullable(tutor.data?.name)}
         tutorId={tutorId}

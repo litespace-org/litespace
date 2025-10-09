@@ -19,8 +19,10 @@ import {
   withSkippablePagination,
   withBooleanFilter,
   withNullableListFilter,
+  withNullableFilter,
 } from "@/query";
 import zod from "zod";
+import { transactions } from "@/transactions";
 
 type SearchFilter = {
   /**
@@ -576,6 +578,51 @@ export class Lessons {
       builder.whereIn(this.columns.lessons("slot_id"), slots);
 
     return builder;
+  }
+
+  async findRefundable(userId: number): Promise<Array<ILesson.MetaSelf>> {
+    const builder = this.builder().lessons;
+
+    builder
+      .join(
+        this.table.members,
+        this.columns.members("lesson_id"),
+        this.columns.lessons("id")
+      )
+      .whereIn(this.columns.members("user_id"), [userId]);
+
+    builder.join(
+      transactions.table,
+      this.columns.lessons("tx_id"),
+      transactions.column("id")
+    );
+
+    withNullableFilter(
+      builder,
+      this.columns.lessons("canceled_by"),
+      true
+    ).orWhere(this.columns.lessons("reported"), true);
+
+    const query = builder
+      .select(
+        "*",
+        `${transactions.column("fees")} as tx_fees`,
+        `${transactions.column("amount")} as tx_amount`,
+        `${transactions.column("status")} as tx_status`,
+        `${transactions.column("provider_ref_num")} as order_ref_num`
+      )
+      .orderBy(this.columns.lessons("tx_id"), "desc")
+      .orderBy(this.columns.lessons("created_at"), "desc")
+      .distinctOn(this.columns.lessons("tx_id"));
+
+    const rows = await query;
+    return rows.map((row) => ({
+      ...this.from(row),
+      txFees: row["tx_fees"],
+      txAmount: row["tx_amount"],
+      txStatus: row["tx_status"],
+      orderRefNum: row["order_ref_num"],
+    }));
   }
 
   from(row: ILesson.Row): ILesson.Self {

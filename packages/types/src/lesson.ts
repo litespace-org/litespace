@@ -1,4 +1,11 @@
-import { ISession, IFilter, IUser, Paginated, IFawry } from "@/index";
+import {
+  ISession,
+  IFilter,
+  IUser,
+  Paginated,
+  IFawry,
+  ITransaction,
+} from "@/index";
 
 export type Row = {
   id: number;
@@ -64,6 +71,13 @@ export type Self = {
    * Updated every time the lesson row is updated.
    */
   updatedAt: string;
+};
+
+export type MetaSelf = Self & {
+  txStatus: ITransaction.Status;
+  txFees: number;
+  txAmount: number;
+  orderRefNum: ITransaction.Self["providerRefNum"];
 };
 
 export type MemberRow = {
@@ -184,7 +198,7 @@ export type FindUserLessonsApiResponse = Paginated<{
 }>;
 
 export enum Duration {
-  Short = 15,
+  // Short = 15, // TODO: uncomment once the policy change
   Long = 30,
 }
 
@@ -227,6 +241,9 @@ export type FindAttendedLessonsStatsApiResponse = Array<{
   paidLessonCount: number;
   freeLessonCount: number;
 }>;
+
+export type FindRefundableLessonsApiPayload = unknown;
+export type FindRefundableLessonsApiResponse = Array<MetaSelf>;
 
 export type CreateWithCardApiPayload = CreateApiPayload & {
   cardToken: string;

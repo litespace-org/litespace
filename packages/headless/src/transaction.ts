@@ -23,6 +23,23 @@ export function useFindTxById(id?: number) {
   return { query, keys };
 }
 
+export function useFindRefundableAmount(id?: number) {
+  const api = useApi();
+
+  const findById = useCallback(async () => {
+    return id ? api.transaction.findRefundableAmount(id) : null;
+  }, [api.transaction, id]);
+
+  const keys = [QueryKey.FindRefundableAmount, id];
+
+  const query = useQuery({
+    queryFn: findById,
+    queryKey: keys,
+  });
+
+  return { query, keys };
+}
+
 export function useFindLastTransaction(config?: { enabled?: boolean }) {
   const api = useApi();
 

@@ -7,6 +7,7 @@ export default function router(context: ApiContext) {
 
   router.get("/attended/stats", lesson.findAttendedLessonsStats);
   router.get("/list", lesson.findLessons);
+  router.get("/refundable", lesson.findRefundableLessons);
   router.get("/:id", lesson.findLessonById);
   router.post("/", lesson.create(context));
   router.post("/card", lesson.createWithCard);

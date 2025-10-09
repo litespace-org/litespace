@@ -537,7 +537,7 @@ async function main(): Promise<void> {
     start: string;
   }) {
     return await knex.transaction(async (tx: Knex.Transaction) => {
-      const duration = sample([ILesson.Duration.Short, ILesson.Duration.Long]);
+      const duration = sample([ILesson.Duration.Long]); // TODO: add other durations
 
       const { lesson } = await lessons.create({
         session: `lesson:${randomUUID()}`,

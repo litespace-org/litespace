@@ -35,6 +35,15 @@ export class Lesson extends Base {
     });
   }
 
+  async findRefundableLessons(
+    payload: ILesson.FindRefundableLessonsApiPayload
+  ): Promise<ILesson.FindRefundableLessonsApiResponse> {
+    return this.get({
+      route: `/api/v1/lesson/refundable/`,
+      payload,
+    });
+  }
+
   async findLesson(id: number): Promise<ILesson.FindLessonByIdApiResponse> {
     return await this.get({ route: `/api/v1/lesson/${id}` });
   }

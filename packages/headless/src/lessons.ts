@@ -2,7 +2,7 @@ import { Element, IFilter, ILesson } from "@litespace/types";
 import { useCallback } from "react";
 import { useApi } from "@/api/index";
 import { MutationKey, QueryKey } from "@/constants";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { UsePaginateResult, usePaginate } from "@/pagination";
 import {
   InfiniteQueryHandler,
@@ -33,6 +33,19 @@ export function useFindLessons({
   );
 
   return usePaginate(findLessons, [QueryKey.FindLessons, query]);
+}
+
+export function useFindRefundableLessons(): UseQueryResult<ILesson.FindRefundableLessonsApiResponse> {
+  const api = useApi();
+
+  const findRefundableLessons = useCallback(async () => {
+    return await api.lesson.findRefundableLessons({});
+  }, [api.lesson]);
+
+  return useQuery({
+    queryFn: findRefundableLessons,
+    queryKey: [QueryKey.FindRefundableLessons],
+  });
 }
 
 /**
