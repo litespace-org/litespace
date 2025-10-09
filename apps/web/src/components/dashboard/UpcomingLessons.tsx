@@ -51,7 +51,7 @@ export const UpcomingLessons = () => {
         loading={lessonsQuery.query.isPending}
         error={lessonsQuery.query.isError}
         retry={lessonsQuery.query.refetch}
-        lessonsUrl={Web.UpcomingLessons}
+        lessonsUrl={Web.Lessons}
         tutorsUrl={Web.Tutors}
         lessons={lessons}
         isTutor={isTutor(user)}

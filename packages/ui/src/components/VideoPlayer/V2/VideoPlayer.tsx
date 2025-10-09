@@ -14,11 +14,12 @@ import { PlayButton } from "@/components/VideoPlayer/V2/PlayButton";
 import { Loading } from "@/components/Loading";
 import mergeRefs from "merge-refs";
 import { Maximize, Minimize } from "react-feather";
+import { Void } from "@litespace/types";
 
-type Props = React.VideoHTMLAttributes<HTMLVideoElement>;
+type Props = React.VideoHTMLAttributes<HTMLVideoElement> & { onPlay?: Void };
 
 export const VideoPlayer = React.forwardRef<HTMLVideoElement, Props>(
-  ({ className, ...props }, ref) => {
+  ({ className, onClick, onPlay, ...props }, ref) => {
     const intl = useFormatMessage();
 
     // True if something in the bar is opened e.g., settings
@@ -77,7 +78,10 @@ export const VideoPlayer = React.forwardRef<HTMLVideoElement, Props>(
           onError={onError}
           onTimeUpdate={onTimeUpdate}
           data-ready={readyState >= 2}
-          onClick={togglePlay}
+          onClick={(event) => {
+            onClick?.(event);
+            togglePlay();
+          }}
           muted={muted}
           ref={mergeRefs(videoRef, ref)}
           className={cn(
@@ -94,7 +98,12 @@ export const VideoPlayer = React.forwardRef<HTMLVideoElement, Props>(
               "flex justify-center items-center"
             )}
           >
-            <PlayButton togglePlay={togglePlay} />
+            <PlayButton
+              togglePlay={() => {
+                onPlay?.();
+                togglePlay();
+              }}
+            />
           </div>
         ) : null}
         {currentTime !== 0 ? (

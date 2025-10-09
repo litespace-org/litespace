@@ -23,7 +23,7 @@ export enum Web {
   DemoSession = "/demo-session/:id",
   Tutors = "/tutors",
   TutorProfile = "/t/:id",
-  UpcomingLessons = "/upcoming-lessons",
+  Lessons = "/lessons",
   ForgetPassword = "/forget-password",
   Lesson = "/lesson/:id",
   Session = "/session",

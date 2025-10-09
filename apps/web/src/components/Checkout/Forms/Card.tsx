@@ -30,6 +30,7 @@ import { useBlock } from "@litespace/ui/hooks/common";
 import { useRender } from "@litespace/headless/common";
 import { TxTypeData } from "@/components/Checkout/types";
 import { useCreateLessonWithCard } from "@litespace/headless/lessons";
+import { track } from "@/lib/ga";
 
 type Form = {
   card: string;
@@ -55,6 +56,7 @@ const Payment: React.FC<{
   const onCancelError = useOnError({
     type: "mutation",
     handler(payload) {
+      track("cancel_payment_err", "checkout");
       toast.error({
         id: "cancel-ewallet-payment",
         title: intl("checkout.payment.cancel-error"),
@@ -66,6 +68,7 @@ const Payment: React.FC<{
   const cancelUnpaidOrder = useCancelUnpaidOrder({
     onError: onCancelError,
     onSuccess() {
+      track("cancel_payment_ok", "checkout");
       confirmClosePayDialog.hide();
       pay.reset();
       createLesson.reset();
@@ -79,6 +82,7 @@ const Payment: React.FC<{
   const onPayError = useOnError({
     type: "mutation",
     handler({ messageId }) {
+      track("pay_with_card_err", "checkout");
       toast.error({
         title: intl("checkout.payment.failed.title"),
         description: intl(messageId),
@@ -110,6 +114,7 @@ const Payment: React.FC<{
     },
     validators,
     onSubmit(data) {
+      track("pay_with_card", "checkout", txTypeData.type);
       if (txTypeData.type === "paid-plan" && txTypeData.data.plan)
         pay.mutate({
           period: txTypeData.data.period,
@@ -165,12 +170,19 @@ const Payment: React.FC<{
 
   const onWindowMessage = useCallback(
     (event: MessageEvent<IframeMessage>) => {
-      if (event.data.action === "close") addCardDialog.hide();
+      if (event.data.action === "close") {
+        addCardDialog.hide();
+        track("add_card_ok", "checkout");
+      }
 
       if (event.data.action === "try-again") {
         // close then re-open the dialog
         addCardDialog.hide();
-        setTimeout(() => addCardDialog.show(), 200);
+        track("add_card_err", "checkout");
+        setTimeout(() => {
+          addCardDialog.show();
+          track("add_card", "checkout");
+        }, 200);
       }
 
       if (event.data.action === "report") {
@@ -198,6 +210,10 @@ const Payment: React.FC<{
   const deleteCardToken = useDeleteCardToken({
     onSuccess() {
       findCardTokensQuery.refetch();
+      track("remove_card_ok", "checkout");
+    },
+    onError() {
+      track("remove_card_err", "checkout");
     },
   });
 
@@ -205,6 +221,7 @@ const Payment: React.FC<{
     "ctrl+d",
     () => {
       if (!form.state.card) return;
+      track("remove_card", "checkout");
       deleteCardToken.mutate({ cardToken: form.state.card, userId });
     },
     {
@@ -254,14 +271,17 @@ const Payment: React.FC<{
       const transactionId =
         pay.data?.transactionId || createLesson?.data?.transactionId;
 
-      if (isTransactionPending && transactionId)
+      if (isTransactionPending && transactionId) {
+        track("cancel_payment", "checkout");
         return cancelUnpaidOrder.mutate({ transactionId });
+      }
     }
   );
 
   return (
     <div>
       <form
+        name="pay-with-card"
         onSubmit={(e) => {
           e.preventDefault();
           form.submit();
@@ -281,17 +301,22 @@ const Payment: React.FC<{
             options={cardOptions}
             placeholder={intl("checkout.payment.card.card-number-placeholder")}
             valueDir="ltr"
-            onChange={(value) => form.set("card", value)}
+            onChange={(value) => {
+              form.set("card", value);
+              track("select_card", "checkout");
+            }}
             state={form.errors.card ? "error" : undefined}
             helper={form.errors.card}
             asButton={isEmpty(cardOptions)}
             onTriggerClick={() => {
               if (!isEmpty(cardOptions)) return;
               addCardDialog.show();
+              track("add_card", "checkout");
             }}
             onOpenChange={(open) => {
               if (!open || !isEmpty(cardOptions)) return;
               addCardDialog.show();
+              track("add_card", "checkout");
             }}
             post={
               <Button
@@ -302,7 +327,10 @@ const Payment: React.FC<{
                 startIcon={<AddCard className="icon" />}
                 disabled={false}
                 loading={false}
-                onClick={() => addCardDialog.show()}
+                onClick={() => {
+                  addCardDialog.show();
+                  track("add_card", "checkout");
+                }}
                 className="ms-2 lg:ms-4 flex-shrink-0"
               >
                 <Typography
@@ -329,6 +357,9 @@ const Payment: React.FC<{
               helper={form.errors.cvv}
               onValueChange={({ value }) => form.set("cvv", value)}
               autoComplete="off"
+              onBlur={() => {
+                track("enter_cvv", "checkout", form.state.cvv);
+              }}
             />
             <PatternInput
               id="phone"
@@ -345,6 +376,9 @@ const Payment: React.FC<{
               autoComplete="off"
               disabled={!!phone}
               onValueChange={({ value }) => form.set("phone", value)}
+              onBlur={() => {
+                track("enter_phone", "checkout", form.state.phone);
+              }}
             />
           </div>
         </div>
@@ -421,8 +455,10 @@ const Payment: React.FC<{
           const cancelTxId =
             pay.data?.transactionId || createLesson?.data?.transactionId;
 
-          if (cancelTxId)
+          if (cancelTxId) {
+            track("cancel_payment", "checkout");
             cancelUnpaidOrder.mutate({ transactionId: cancelTxId });
+          }
         }}
       />
     </div>

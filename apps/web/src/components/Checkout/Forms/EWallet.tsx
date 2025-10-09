@@ -13,6 +13,7 @@ import { walletPaymentQrCode } from "@/lib/cache";
 import { useToast } from "@litespace/ui/Toast";
 import { TxTypeData } from "@/components/Checkout/types";
 import { useCreateLessonWithEWallet } from "@litespace/headless/lessons";
+import { track } from "@/lib/ga";
 
 type Form = {
   phone: string;
@@ -31,6 +32,7 @@ const Payment: React.FC<{
   const onError = useOnError({
     type: "mutation",
     handler({ messageId }) {
+      track("pay_with_ewallet_err", "checkout");
       toast.error({
         title: intl("checkout.payment.failed.title"),
         description: intl(messageId),
@@ -70,6 +72,7 @@ const Payment: React.FC<{
     },
     validators,
     onSubmit(data) {
+      track("pay_with_ewallet", "checkout", txTypeData.type);
       if (txTypeData.type === "paid-plan" && txTypeData.data.plan)
         pay.mutate({
           planId: txTypeData.data.plan.id,
@@ -91,6 +94,7 @@ const Payment: React.FC<{
   return (
     <div>
       <form
+        name="pay-with-ewallet"
         onSubmit={(e) => {
           e.preventDefault();
           form.submit();
@@ -121,6 +125,9 @@ const Payment: React.FC<{
               !!phone || syncing || pay.isPending || createLesson.isPending
             }
             onValueChange={({ value }) => form.set("phone", value)}
+            onBlur={() => {
+              track("enter_phone", "checkout", form.state.phone);
+            }}
           />
         </div>
 

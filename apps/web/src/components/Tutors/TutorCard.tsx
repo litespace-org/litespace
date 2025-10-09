@@ -1,3 +1,4 @@
+import { track } from "@/lib/ga";
 import { router } from "@/lib/routes";
 import Star from "@litespace/assets/Star";
 import { Void } from "@litespace/types";
@@ -32,6 +33,13 @@ export const TutorCard: React.FC<{
     <Link
       id={id}
       to={router.web({ route: Web.TutorProfile, id: tutorId })}
+      onClick={() => {
+        track(
+          "click_tutor_card",
+          "tutors",
+          "click_tutor_card_from_tutors_page"
+        );
+      }}
       className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 @container block rounded-lg"
     >
       <div className="w-full border border-natural-200 rounded-lg p-4 flex flex-col gap-2 h-full">

@@ -7,7 +7,7 @@ import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { RiveAnimate } from "@/components/Common/RiveAnimate";
 
-const CTA: React.FC = () => {
+export const CTA: React.FC = () => {
   const intl = useFormatMessage();
 
   return (

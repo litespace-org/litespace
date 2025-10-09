@@ -150,7 +150,7 @@ const InSession: React.FC<{
   });
 
   const reportLesson = useReportLesson({
-    onSuccess: () => navigate(Web.UpcomingLessons),
+    onSuccess: () => navigate(Web.Lessons),
     onError,
   });
 

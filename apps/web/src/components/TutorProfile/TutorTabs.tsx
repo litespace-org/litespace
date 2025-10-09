@@ -10,6 +10,7 @@ import ProfileInfo from "@/components/TutorProfile/ProfileInfo";
 import Ratings from "@/components/TutorProfile/Ratings";
 import { Animate } from "@/components/Common/Animate";
 import { useSearchParams } from "react-router-dom";
+import { track } from "@/lib/ga";
 
 type Tab = "profile" | "ratings";
 const URL_TAB_KEY = "tab";
@@ -49,6 +50,7 @@ export const TutorTabs: React.FC<{
       onValueChange={(value: string) => {
         if (!isValidTab(value)) return;
         setParams({ [URL_TAB_KEY]: value });
+        if (value === "ratings") track("view_tutor_ratings", "tutor_profile");
       }}
     >
       <Tabs.List className="border-b border-natural-300 flex gap-14 md:px-10">

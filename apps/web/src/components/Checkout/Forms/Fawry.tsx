@@ -12,6 +12,7 @@ import { usePayWithFawry } from "@litespace/headless/fawry";
 import { useToast } from "@litespace/ui/Toast";
 import { TxTypeData } from "@/components/Checkout/types";
 import { useCreateLessonWithFawry } from "@litespace/headless/lessons";
+import { track } from "@/lib/ga";
 
 type Form = {
   phone: string;
@@ -30,6 +31,7 @@ const Payment: React.FC<{
   const onError = useOnError({
     type: "mutation",
     handler({ messageId }) {
+      track("pay_with_fawry_err", "checkout");
       toast.error({
         title: intl("checkout.payment.failed.title"),
         description: intl(messageId),
@@ -61,6 +63,7 @@ const Payment: React.FC<{
     },
     validators,
     onSubmit(data) {
+      track("pay_with_fawry", "checkout", txTypeData.type);
       if (txTypeData.type === "paid-plan" && txTypeData.data.plan)
         pay.mutate({
           phone: data.phone,
@@ -81,7 +84,11 @@ const Payment: React.FC<{
 
   return (
     <div>
-      <form onSubmit={form.onSubmit} className="flex flex-col gap-6">
+      <form
+        name="pay-with-fawry"
+        onSubmit={form.onSubmit}
+        className="flex flex-col gap-6"
+      >
         <div className="flex flex-col gap-4">
           <Typography tag="p" className="text-caption md:text-body font-medium">
             {intl("checkout.payment.description")}
@@ -104,6 +111,9 @@ const Payment: React.FC<{
               !!phone || pay.isPending || createLesson.isPending || syncing
             }
             onValueChange={({ value }) => form.set("phone", value)}
+            onBlur={() => {
+              track("enter_phone", "checkout", form.state.phone);
+            }}
           />
         </div>
 

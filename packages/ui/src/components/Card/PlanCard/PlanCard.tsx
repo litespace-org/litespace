@@ -2,7 +2,7 @@ import { Button } from "@/components/Button";
 import { Typography } from "@/components/Typography";
 import { formatNumber } from "@/components/utils";
 import CheckMark from "@litespace/assets/CheckMark";
-import { IPlan } from "@litespace/types";
+import { IPlan, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { PLAN_PERIOD_LITERAL_TO_MONTH_COUNT } from "@litespace/utils";
 import cn from "classnames";
@@ -19,7 +19,7 @@ export const PlanCard: React.FC<{
   weeklyMinutes: number;
   subscriptionLink: string;
   mostCommon?: boolean;
-  onSelect?: () => void;
+  onSelect?: Void;
 }> = ({
   period,
   title,
@@ -55,7 +55,6 @@ export const PlanCard: React.FC<{
         "min-w-[323px] max-w-[400px]",
         "bg-natural-50 rounded-2xl border border-natural-100"
       )}
-      onClick={onSelect}
     >
       {mostCommon ? (
         <Typography
@@ -107,6 +106,7 @@ export const PlanCard: React.FC<{
           {discount > 0 ? (
             <Typography
               tag="span"
+              key="discount"
               className="text-caption font-semibold text-natural-700"
             >
               {intl.rich("plan.instead-of", {
@@ -130,7 +130,12 @@ export const PlanCard: React.FC<{
           ) : null}
         </div>
       </div>
-      <Link to={subscriptionLink} tabIndex={-1} className="w-full">
+      <Link
+        onClick={onSelect}
+        to={subscriptionLink}
+        tabIndex={-1}
+        className="w-full"
+      >
         <Button
           size="large"
           className="mt-6 w-full justify-center py-2 bg-primary-500 font-cairo hover:bg-brand-700"

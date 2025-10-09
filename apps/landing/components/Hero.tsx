@@ -35,14 +35,8 @@ const Hero: React.FC = () => {
         </div>
         <Link
           href={router.web({ route: Web.Root, full: true })}
-          track={{
-            event: "register",
-            params: {
-              src: "hero",
-              action: "link",
-            },
-          }}
           className="flex justify-center lg:justify-start w-fit"
+          track={{ action: "click_hero_section_cta", category: "home" }}
         >
           <Button size="large" className="py-2 px-4">
             <Typography

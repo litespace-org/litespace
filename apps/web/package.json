@@ -45,6 +45,7 @@
     "peerjs": "^1.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-ga4": "^2.1.0",
     "react-feather": "^2.0.10",
     "react-hook-form": "^7.51.5",
     "react-hotkeys-hook": "^5.0.1",

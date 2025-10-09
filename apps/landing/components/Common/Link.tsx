@@ -2,21 +2,18 @@
 
 import React, { ComponentProps } from "react";
 import BaseLink from "next/link";
-import { Event, Params, track as ga } from "@/lib/ga";
+import { Params, track as ga } from "@/lib/ga";
 
 const Link: React.FC<
   ComponentProps<typeof BaseLink> & {
-    track?: {
-      event: Event;
-      params?: Params;
-    };
+    track?: Params;
   }
 > = ({ track, ...props }) => {
   return (
     <BaseLink
       {...props}
       onClick={(event) => {
-        if (track) ga(track.event, track.params);
+        if (track) ga(track.action, track.category, track.label, track.value);
         if (props.onClick) props.onClick(event);
       }}
     />

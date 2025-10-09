@@ -22,6 +22,7 @@ import Star from "@litespace/assets/Star";
 import Calendar from "@litespace/assets/Calendar";
 import Clock from "@litespace/assets/Clock";
 import dayjs from "@/lib/dayjs";
+import { track } from "@/lib/ga";
 
 const PLAN_PERIOD_LITERAL_TO_MESSAGE_ID: Record<IPlan.PeriodLiteral, LocalId> =
   {
@@ -134,7 +135,15 @@ const Plan: React.FC<{
         </Typography>
       </div>
 
-      <Link to={Web.Plans} className="px-4 lg:px-6 mt-6 lg:mt-8" tabIndex={-1}>
+      <Link
+        onClick={() => {
+          track("change_plan", "checkout");
+          track("leave_checkout", "checkout", "user_clicked_change_plan");
+        }}
+        to={Web.Plans}
+        className="px-4 lg:px-6 mt-6 lg:mt-8"
+        tabIndex={-1}
+      >
         <Button type="main" size="large" variant="secondary" className="w-full">
           <Typography
             tag="span"
