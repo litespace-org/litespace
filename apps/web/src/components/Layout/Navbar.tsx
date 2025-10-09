@@ -15,6 +15,7 @@ import { Tooltip } from "@litespace/ui/Tooltip";
 import { Typography } from "@litespace/ui/Typography";
 import { isTutorRole } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
+import { track } from "@/lib/ga";
 
 const Navbar: React.FC = () => {
   return (
@@ -50,7 +51,13 @@ const Subscription: React.FC = () => {
 
   if (!info || ended)
     return (
-      <Link to={Web.Plans} tabIndex={-1}>
+      <Link
+        onClick={() => {
+          track("click_subscribe", "navbar");
+        }}
+        to={Web.Plans}
+        tabIndex={-1}
+      >
         <Button
           size="large"
           htmlType="button"

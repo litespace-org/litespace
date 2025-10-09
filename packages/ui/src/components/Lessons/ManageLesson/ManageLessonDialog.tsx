@@ -298,7 +298,7 @@ export const ManageLessonDialog: React.FC<{
 
   const depletedSubscription = useMemo(
     () => subscribed && remainingWeeklyMinutes < MIN_LESSON_DURATION,
-    [remainingWeeklyMinutes]
+    [remainingWeeklyMinutes, subscribed]
   );
 
   const canBook = useMemo(

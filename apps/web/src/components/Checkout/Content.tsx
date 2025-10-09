@@ -26,6 +26,7 @@ import {
 } from "@/components/Checkout/types";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import Success from "@/components/Checkout/Success";
+import { track } from "@/lib/ga";
 
 const Content: React.FC<{
   userId: number;
@@ -68,6 +69,9 @@ const Header: React.FC = () => {
   const intl = useFormatMessage();
   return (
     <Link
+      onClick={() => {
+        track("leave_checkout", "checkout", "user_clicked_the_logo");
+      }}
       to={Web.Root}
       dir="ltr"
       className={cn(

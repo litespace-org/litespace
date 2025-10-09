@@ -17,6 +17,7 @@ import { Web } from "@litespace/utils/routes";
 import ProfileCard from "@/components/TutorProfile/ProfileCard";
 import { useUser } from "@litespace/headless/context/user";
 import { router } from "@/lib/routes";
+import { track } from "@/lib/ga";
 
 const TutorProfile: React.FC = () => {
   const { md, lg } = useMediaQuery();
@@ -90,6 +91,7 @@ const TutorProfile: React.FC = () => {
           <ProfileCard
             {...tutor.data}
             onBook={() => {
+              track("book_lesson", "tutor_profile");
               if (!tutor.data) return;
               if (!user)
                 return navigate(

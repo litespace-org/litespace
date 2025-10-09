@@ -29,6 +29,7 @@ import cn from "classnames";
 import React, { SVGProps, useCallback, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { StudentDashboardTour } from "@/constants/tour";
+import { track } from "@/lib/ga";
 
 type LinkInfo = {
   label: string;
@@ -103,11 +104,11 @@ const MainPages: React.FC = () => {
         (match(Web.TutorDashboard) && !moreActive),
     };
 
-    const upcomingLessons = {
+    const lessons = {
       label: intl("sidebar.lessons"),
-      route: Web.UpcomingLessons,
+      route: Web.Lessons,
       Icon: Video,
-      isActive: match(Web.UpcomingLessons) && !moreActive,
+      isActive: match(Web.Lessons) && !moreActive,
     };
 
     const lessonsSchedule = {
@@ -168,13 +169,13 @@ const MainPages: React.FC = () => {
       (user?.role === IUser.Role.Tutor && !md) ||
       (user?.role === IUser.Role.TutorManager && !md)
     )
-      return [chat, upcomingLessons, dashboard, scheduleManagement, more];
+      return [chat, lessons, dashboard, scheduleManagement, more];
 
     // tutor and large screen
     if (user?.role === IUser.Role.Tutor && md)
       return [
         dashboard,
-        upcomingLessons,
+        lessons,
         lessonsSchedule,
         scheduleManagement,
         chat,
@@ -182,21 +183,15 @@ const MainPages: React.FC = () => {
       ];
     // tutor manager and large screen
     if (user?.role === IUser.Role.TutorManager && md)
-      return [
-        dashboard,
-        upcomingLessons,
-        lessonsSchedule,
-        scheduleManagement,
-        chat,
-      ];
+      return [dashboard, lessons, lessonsSchedule, scheduleManagement, chat];
 
     // student and large screen
     if (user?.role === IUser.Role.Student && md)
-      return [dashboard, tutors, upcomingLessons, chat, subscribtions];
+      return [dashboard, tutors, lessons, chat, subscribtions];
 
     // student and small screen
     if (user?.role === IUser.Role.Student && !md)
-      return [tutors, upcomingLessons, dashboard, chat, more];
+      return [tutors, lessons, dashboard, chat, more];
 
     return [];
   }, [intl, match, md, moreActive, user?.role]);
@@ -923,6 +918,7 @@ const LogoutButton: React.FC = () => {
       onClick={() => {
         navigate(Web.Login);
         logout();
+        track("logout", "sidebar");
       }}
       className={cn(
         "flex flex-row justify-start md:justify-center lg:justify-start gap-2 md:gap-0 lg:gap-4 px-[14px] py-2 rounded-lg",

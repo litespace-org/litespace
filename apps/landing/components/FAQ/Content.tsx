@@ -7,17 +7,16 @@ import Link from "@/components/Common/Link";
 import { router } from "@/lib/routes";
 import { Landing, Web } from "@litespace/utils/routes";
 import { LITESPACE_TUTORS_TELEGRAM } from "@/constants/links";
-import InViewTrack from "@/components/Common/InViewTrack";
 
 type Question = {
   title: string;
   content: string | React.ReactNode;
 };
 
-const Content: React.FC<{ role?: "student" | "tutor"; home?: boolean }> = ({
-  role,
-  home,
-}) => {
+export const Content: React.FC<{
+  role?: "student" | "tutor";
+  home?: boolean;
+}> = ({ role, home }) => {
   const intl = useFormatMessage();
 
   const sharedQuestions: Question[] = [
@@ -35,8 +34,9 @@ const Content: React.FC<{ role?: "student" | "tutor"; home?: boolean }> = ({
         here: (chunks) => (
           <Link
             track={{
-              event: "view_pricing_list",
-              params: { action: "link", src: "faq" },
+              action: "view_pricing",
+              category: "home",
+              label: "from_faq",
             }}
             className="text-brand-700"
             href={Landing.Pricing}
@@ -83,8 +83,9 @@ const Content: React.FC<{ role?: "student" | "tutor"; home?: boolean }> = ({
         here: (chunks) => (
           <Link
             track={{
-              event: "register",
-              params: { action: "link", src: "faq" },
+              action: "click_register",
+              category: "home",
+              label: "from_faq",
             }}
             className="text-brand-700"
             href={router.web({
@@ -138,10 +139,6 @@ const Content: React.FC<{ role?: "student" | "tutor"; home?: boolean }> = ({
             className="text-brand-700"
             href={LITESPACE_TUTORS_TELEGRAM}
             target="_blank"
-            track={{
-              event: "join_group",
-              params: { action: "link", src: "faq" },
-            }}
           >
             {chunks}
           </Link>
@@ -207,8 +204,9 @@ const Content: React.FC<{ role?: "student" | "tutor"; home?: boolean }> = ({
         here: (chunks) => (
           <Link
             track={{
-              event: "view_pricing_list",
-              params: { action: "link", src: "faq" },
+              action: "view_pricing",
+              category: "home",
+              label: "from_faq",
             }}
             className="text-brand-700"
             href={Landing.Pricing}
@@ -277,7 +275,6 @@ const Content: React.FC<{ role?: "student" | "tutor"; home?: boolean }> = ({
 
   return (
     <div className="bg-natural-0 md:py-18 lg:py-24 max-w-screen-3xl mx-auto">
-      <InViewTrack event="view_faq_list" src="faq-section" action="scroll" />
       <div
         className={cn(
           "flex flex-col py-14 sm:py-20 md:py-20 px-4 md:px-8 lg:px-[108px] gap-8 sm:gap-14 lg:gap-20",
@@ -319,10 +316,6 @@ const Content: React.FC<{ role?: "student" | "tutor"; home?: boolean }> = ({
                 {
                   link: (chunks) => (
                     <Link
-                      track={{
-                        event: "view_faq_list",
-                        params: { action: "link", src: "faq", role },
-                      }}
                       href={router.landing({
                         route: Landing.FaqRole,
                         role: role === "student" ? "tutor" : "student",

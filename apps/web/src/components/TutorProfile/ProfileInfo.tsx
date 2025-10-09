@@ -1,4 +1,5 @@
 import { StudentDashboardTour } from "@/constants/tour";
+import { track } from "@/lib/ga";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
@@ -68,7 +69,12 @@ const ProfileInfo: React.FC<{
           >
             {intl("tutor.profile.tabs.profile.video")}
           </Typography>
-          <VideoPlayer src={optional(video)} />
+          <VideoPlayer
+            onPlay={() => {
+              track("play_tutor_video", "tutor_profile");
+            }}
+            src={optional(video)}
+          />
         </div>
       ) : null}
     </div>

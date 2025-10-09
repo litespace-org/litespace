@@ -7,6 +7,7 @@ import { formatNumber } from "@litespace/ui/utils";
 import { Button } from "@litespace/ui/Button";
 import Link from "@/components/Common/Link";
 import cn from "classnames";
+import { track } from "@/lib/ga";
 
 export const TutorCard: React.FC<{
   id: number;
@@ -20,6 +21,9 @@ export const TutorCard: React.FC<{
 
   return (
     <Link
+      onClick={() => {
+        track("select_tutor", "home");
+      }}
       href={profileUrl}
       className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 @container block rounded-lg"
     >

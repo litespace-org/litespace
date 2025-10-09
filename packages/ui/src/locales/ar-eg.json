@@ -746,6 +746,8 @@
   "shared-settings.edit.password.confirm": "تاكيد كلمة المرور الجديدة",
   "shared-settings.edit.password.confirm.not-same": "كلمة المرور غير متطابقة",
   "shared-settings.edit.password-updated-successfully": "تم تحديث كلمة المرور بنجاح",
+  "lessons.title": "الحصص",
+  "lessons.loading-error": "عذرًا، حدث خطأ أثناء تحميل جدول الحصص، برجاء المحاولة مرة أخرى",
   "lessons.button.rebook": "إعادة الحجز",
   "lessons.button.join": "دخول الحصة",
   "lessons.button.send-message": "إرسال رسالة",

@@ -9,6 +9,7 @@ import {
   isValidTab,
 } from "@/components/Checkout/utils";
 import { Tab } from "@/components/Checkout/types";
+import { track } from "@/lib/ga";
 
 const Checkout: React.FC = () => {
   const { txTypePayload, tab, setTab } = useCheckoutUrlQueryParams();
@@ -46,6 +47,7 @@ function useCheckoutUrlQueryParams() {
 
   const setTab = useCallback(
     (tab: Tab) => {
+      track("select_payment_method", "checkout", tab);
       setParams({
         ...(txTypePayload ? asSearchUrlParams(txTypePayload) : {}),
         tab,

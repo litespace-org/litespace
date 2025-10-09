@@ -18,6 +18,7 @@ import { Web } from "@litespace/utils/routes";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@litespace/ui/Toast";
 import { StudentDashboardTour } from "@/constants/tour";
+import { track } from "@/lib/ga";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -89,7 +90,10 @@ const Content: React.FC<{
               about={tutor.about}
               name={tutor.name}
               rating={tutor.avgRating}
-              onBook={() => openBookingDialog(tutor)}
+              onBook={() => {
+                openBookingDialog(tutor);
+                track("book_lesson", "tutors", "book_lesson_from_tutor_card");
+              }}
               image={tutor.image}
               topics={tutor.topics}
             />
@@ -107,7 +111,7 @@ const Content: React.FC<{
               title: intl("book-lesson.success", { tutor: tutor.name }),
             });
             if (!user?.notificationMethod) setNotiDialogOpen(true);
-            else navigate(router.web({ route: Web.UpcomingLessons }));
+            else navigate(router.web({ route: Web.Lessons }));
           }}
         />
       ) : null}
@@ -116,7 +120,7 @@ const Content: React.FC<{
         open={notiDialogOpen}
         close={() => {
           setNotiDialogOpen(false);
-          navigate(router.web({ route: Web.UpcomingLessons }));
+          navigate(router.web({ route: Web.Lessons }));
         }}
       />
 

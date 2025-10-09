@@ -9,7 +9,7 @@ import {
 import { getRateLessonQuery } from "@/lib/query";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { RatingDialog } from "@litespace/ui/RatingDialog";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@litespace/ui/Toast";
 import { first } from "lodash";
@@ -17,7 +17,6 @@ import { IUser } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Web } from "@litespace/utils/routes";
 import { useOnError } from "@/hooks/error";
-import { MAX_LESSON_DURATION } from "@litespace/utils";
 
 type RateLessonParams = {
   tutorId: number | null;
@@ -37,12 +36,11 @@ const defaultRateLessonParams: RateLessonParams = {
   duration: 0,
 };
 
-const UpcomingLessons: React.FC = () => {
+const Lessons: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const { user } = useUser();
   const toast = useToast();
-  const now = useRef(dayjs().toISOString());
 
   const [params, setParams] = useSearchParams();
   const [rateLessonParams, setRateLessonParams] = useState<RateLessonParams>(
@@ -51,10 +49,7 @@ const UpcomingLessons: React.FC = () => {
 
   const { query: ratingQuery, keys: ratingQueryKeys } = useFindTutorRatings(
     rateLessonParams.tutorId,
-    {
-      page: 1,
-      size: 1,
-    }
+    { page: 1, size: 1 }
   );
 
   useOnError({
@@ -66,10 +61,6 @@ const UpcomingLessons: React.FC = () => {
   const lessons = useInfiniteLessons({
     userOnly: true,
     users: user ? [user?.id] : [],
-    after: dayjs(now.current)
-      .subtract(MAX_LESSON_DURATION, "minutes")
-      .toISOString(),
-    canceled: false,
   });
 
   useOnError({
@@ -165,7 +156,7 @@ const UpcomingLessons: React.FC = () => {
 
   return (
     <div className="p-6 max-w-screen-3xl mx-auto w-full h-full">
-      <PageTitle title={intl("upcoming-lessons.title")} className="mb-6" />
+      <PageTitle title={intl("lessons.title")} className="mb-6" />
 
       <Content
         list={lessons.list}
@@ -197,4 +188,4 @@ const UpcomingLessons: React.FC = () => {
   );
 };
 
-export default UpcomingLessons;
+export default Lessons;

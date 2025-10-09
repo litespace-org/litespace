@@ -1,4 +1,5 @@
 import { GeneralTour } from "@/constants/tour";
+import { track } from "@/lib/ga";
 import { getDriver } from "@/lib/tour";
 import { LocalTour, Tour, TourConfig } from "@/types/tour";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -41,7 +42,14 @@ export function useTour(localTour: LocalTour, config?: TourConfig) {
       driver.moveTo(stepNumber);
       setStarted(true);
     },
-    stop: driver.destroy,
+    stop: () => {
+      const lastStep = !driver.hasNextStep();
+      track(
+        lastStep ? "complete_student_tour" : "skip_student_tour",
+        "student_dashboard"
+      );
+      driver.destroy();
+    },
     lastStep: !driver.hasNextStep(),
   };
 }

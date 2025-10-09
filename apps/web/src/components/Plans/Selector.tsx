@@ -1,3 +1,4 @@
+import { track } from "@/lib/ga";
 import { router } from "@/lib/routes";
 import { IPlan } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -96,6 +97,9 @@ export const Selector: React.FC<{
               discount={percentage.unscale(getDiscount())}
               monthlyPrice={price.unscale(plan.baseMonthlyPrice)}
               weeklyMinutes={plan.weeklyMinutes}
+              onSelect={() => {
+                track("select_plan", "plans");
+              }}
               subscriptionLink={router.web({
                 route: Web.Checkout,
                 query: {
