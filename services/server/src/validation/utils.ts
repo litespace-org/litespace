@@ -68,7 +68,8 @@ export const weekday = zod
   .pipe(zod.coerce.number());
 
 export const duration = zod.union([
-  zod.literal(ILesson.Duration.Short),
+  // zod.literal(ILesson.Duration.Short), TODO: temporary policy change
+  zod.literal(ILesson.Duration.Long),
   zod.literal(ILesson.Duration.Long),
 ]);
 

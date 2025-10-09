@@ -11,6 +11,7 @@ import { IUser } from "@litespace/types";
 import { Tab } from "@/components/StudentSettings/types";
 import { isPersonalInfoIncomplete } from "@/components/Settings/utils";
 import { StudentSettingsTabId } from "@litespace/utils/routes";
+import RefundsTable from "@/components/Settings/RefundsTable";
 
 const Content: React.FC<{
   tab: StudentSettingsTabId;
@@ -39,6 +40,11 @@ const Content: React.FC<{
       {
         id: "topics",
         label: intl("student-settings.topics.title"),
+        important: false,
+      },
+      {
+        id: "refunds",
+        label: intl("student-settings.refunds.title"),
         important: false,
       },
     ];
@@ -87,6 +93,8 @@ const Content: React.FC<{
           <TopicSelection />
         </div>
       ) : null}
+
+      {tab === "refunds" ? <RefundsTable /> : null}
     </div>
   );
 };

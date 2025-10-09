@@ -2,7 +2,7 @@ import { platformConfig } from "@/constants";
 import { lessons, subscriptions } from "@litespace/models";
 import { ITransaction } from "@litespace/types";
 import { dayjs, MINUTES_IN_HOUR, ResponseError } from "@litespace/utils";
-import { max } from "lodash";
+import { first, max } from "lodash";
 import { notfound, unexpected } from "@/lib/error/api";
 import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
 
@@ -11,12 +11,24 @@ import { getCurrentWeekBoundaries } from "@litespace/utils/subscription";
  */
 export async function calcRefundAmount(
   tx: Pick<ITransaction.Self, "id" | "amount" | "type" | "userId" | "fees">
+  // TODO: use local errors instead of api errors
 ): Promise<number | ResponseError> {
   // 1) get the paid amount from the transaction
   const paidAmount = tx.amount;
 
-  if (tx.type === ITransaction.Type.PaidLesson)
+  if (tx.type === ITransaction.Type.PaidLesson) {
+    const lesson = first(
+      (
+        await lessons.find({
+          txs: [tx.id],
+          canceled: false,
+          reported: false,
+        })
+      ).list
+    );
+    if (lesson) return 0;
     return max([paidAmount - tx.fees, 0]) || 0;
+  }
 
   // 2) calculate the minutes attended in the current week of the subscription
   // and evaluate the corresponding price.

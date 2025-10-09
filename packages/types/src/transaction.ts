@@ -91,6 +91,9 @@ export type FindApiResponse = Paginated<Self>;
 
 export type FindLastApiResponse = Self | null;
 
+export type FindRefundableAmountApiQuery = { txId: number };
+export type FindRefundableAmountApiResponse = number;
+
 export type FindByIdApiResponse = Self;
 
 export type CreatePayload = {

@@ -44,7 +44,7 @@ export const MIN_NOTE_TEXT_LENGTH = 5;
 export const MIN_INVOICE_AMOUNT = 100;
 export const MAX_INVOICE_AMOUNT = 50_000;
 
-export const MIN_LESSON_DURATION = 15;
+export const MIN_LESSON_DURATION = 30; // TODO: due to temporary policy change.
 export const MAX_LESSON_DURATION = 30;
 export const LESSON_DURATION_LIST = [MAX_LESSON_DURATION, MIN_LESSON_DURATION];
 

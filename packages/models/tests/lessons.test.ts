@@ -441,7 +441,7 @@ describe("Lessons", () => {
           fixtures.lesson({
             tutor: tutor.id,
             start: now.add(1, "hour").toISOString(),
-            duration: ILesson.Duration.Short,
+            duration: ILesson.Duration.Long,
           }),
           fixtures.lesson({
             tutor: tutor.id,
@@ -470,7 +470,7 @@ describe("Lessons", () => {
           canceled: false,
           reported: false,
         });
-        expect(sum).to.eq(ILesson.Duration.Short);
+        expect(sum).to.eq(ILesson.Duration.Long);
       });
     });
 
@@ -1114,13 +1114,13 @@ describe("Lessons", () => {
 
       // @NOTE: this uglyness just for reaching 100% coverage tests
       await lessons.update(lesson.id, { start: startDate });
-      await lessons.update(lesson.id, { duration: ILesson.Duration.Short });
+      await lessons.update(lesson.id, { duration: ILesson.Duration.Long });
 
       const updated = await lessons.findById(lesson.id);
 
       expect(updated).to.not.be.null;
       expect(updated?.id).to.eq(lesson.id);
-      expect(updated?.duration).to.eq(ILesson.Duration.Short);
+      expect(updated?.duration).to.eq(ILesson.Duration.Long);
       expect(dayjs(updated?.updatedAt).isAfter(lesson.updatedAt)).to.be.true;
 
       expect(updated?.price).to.eq(lesson.price);

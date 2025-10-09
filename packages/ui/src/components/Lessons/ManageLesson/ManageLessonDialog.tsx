@@ -6,7 +6,6 @@ import { Typography } from "@/components/Typography";
 import { Stepper } from "@/components/Lessons/ManageLesson/Stepper";
 import { Step } from "@/components/Lessons/ManageLesson/types";
 import { DateSelection } from "@/components/Lessons/ManageLesson/DateSelection";
-import { DurationSelection } from "@/components/Lessons/ManageLesson/DurationSelection";
 import { TimeSelection } from "@/components/Lessons/ManageLesson/TimeSelection";
 import { Confirmation } from "@/components/Lessons/ManageLesson/Confirmation";
 import { Button } from "@/components/Button";
@@ -25,7 +24,7 @@ import {
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Block } from "@/components/Lessons/ManageLesson/Block";
 import NoMoreMinutes from "@litespace/assets/NoMoreMinutes";
-import { MAX_LESSON_DURATION, MIN_LESSON_DURATION } from "@litespace/utils";
+import { MIN_LESSON_DURATION } from "@litespace/utils";
 import LongRightArrow from "@litespace/assets/LongRightArrow";
 import LongLeftArrow from "@litespace/assets/LongLeftArrow";
 
@@ -215,11 +214,7 @@ export const ManageLessonDialog: React.FC<{
   const { sm } = useMediaQuery();
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>("date-selection");
-  const [duration, setDuration] = useState<number>(
-    initials.duration || remainingWeeklyMinutes < MAX_LESSON_DURATION
-      ? MIN_LESSON_DURATION
-      : MAX_LESSON_DURATION
-  );
+  const [duration] = useState<number>(initials.duration || MIN_LESSON_DURATION);
   const [lessonDetails, setLessonDetails] = useState<{
     start: string | null;
     slotId: number | null;
@@ -392,7 +387,8 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {step === "duration-selection" && canBook && !isTutorBusy ? (
+          {/* TODO: uncomment this once other durations added on the 30 minutes
+            step === "duration-selection" && canBook && !isTutorBusy ? (
             <Animation key="duration-selection" id="duration-selection">
               <DurationSelection
                 subscribed={subscribed}
@@ -401,7 +397,8 @@ export const ManageLessonDialog: React.FC<{
                 onChange={setDuration}
               />
             </Animation>
-          ) : null}
+          ) : null
+          */}
 
           {step === "time-selection" && canBook && !isTutorBusy ? (
             <Animation key="time-selection" id="time-selection">
@@ -465,8 +462,9 @@ export const ManageLessonDialog: React.FC<{
               startIcon={<LongRightArrow className="w-4 h-4 icon" />}
               size="large"
               onClick={() => {
-                if (step === "time-selection") setStep("duration-selection");
-                if (step === "duration-selection") setStep("date-selection");
+                // TODO: uncomment this once other durations added
+                // if (step === "time-selection") setStep("date-selection");
+                // if (step === "duration-selection") setStep("date-selection");
               }}
               className={cn({
                 "flex-1":
@@ -488,7 +486,7 @@ export const ManageLessonDialog: React.FC<{
             }
             size="large"
             onClick={() => {
-              if (step === "date-selection") setStep("duration-selection");
+              if (step === "date-selection") setStep("time-selection"); // TODO: make it duration-selection
               if (step === "duration-selection") setStep("time-selection");
               if (step === "time-selection") setStep("confirmation");
             }}

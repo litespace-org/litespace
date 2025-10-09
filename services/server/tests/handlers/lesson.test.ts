@@ -150,7 +150,7 @@ describe("Lessons API", () => {
             tutorId: tutor.id,
             slotId: slot.id,
             start: slot.start,
-            duration: ILesson.Duration.Short,
+            duration: ILesson.Duration.Long,
           },
         });
         expect(res).to.deep.eq(forbidden());
@@ -172,7 +172,7 @@ describe("Lessons API", () => {
           tutorId: 3214,
           slotId: 4132,
           start: dayjs().add(1, "hour").toISOString(),
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
 
@@ -195,7 +195,7 @@ describe("Lessons API", () => {
           tutorId: tutor.id,
           slotId: 3214,
           start: dayjs().add(1, "hour").toISOString(),
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
 
@@ -223,7 +223,7 @@ describe("Lessons API", () => {
           tutorId: tutor.id,
           slotId: slot.id,
           start: slot.start,
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
 
@@ -261,7 +261,7 @@ describe("Lessons API", () => {
           tutorId: tutor.id,
           slotId: slot.id,
           start: slot.start,
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
 
@@ -297,7 +297,7 @@ describe("Lessons API", () => {
           tutorId: tutor.id,
           slotId: slot.id,
           start: slot.start,
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
 
@@ -327,7 +327,7 @@ describe("Lessons API", () => {
           tutorId: tutor.id,
           slotId: slot.id,
           start: slot.start,
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
 
@@ -351,7 +351,7 @@ describe("Lessons API", () => {
           tutorId: tutor.id,
           slotId: slot.id,
           start: slot.start,
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
 
@@ -380,7 +380,7 @@ describe("Lessons API", () => {
           tutorId: tutor.id,
           slotId: slot.id,
           start: slot.start,
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
 
@@ -409,7 +409,7 @@ describe("Lessons API", () => {
           tutorId: tutor.id,
           slotId: slot.id,
           start: slot.start,
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
 
@@ -438,7 +438,7 @@ describe("Lessons API", () => {
           tutorId: tutor1.id,
           slotId: slot1.id,
           start: slot1.start,
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
       expect(res1).to.not.be.instanceof(Error);
@@ -457,7 +457,7 @@ describe("Lessons API", () => {
           tutorId: tutor2.id,
           slotId: slot2.id,
           start: slot2.start,
-          duration: ILesson.Duration.Short,
+          duration: ILesson.Duration.Long,
         },
       });
       expect(res2).to.not.be.instanceof(Error);

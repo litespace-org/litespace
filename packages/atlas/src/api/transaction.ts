@@ -6,6 +6,12 @@ export class Transaction extends Base {
     return this.get({ route: `/api/v1/tx/${id}` });
   }
 
+  async findRefundableAmount(
+    id: number
+  ): Promise<ITransaction.FindRefundableAmountApiResponse> {
+    return this.get({ route: `/api/v1/tx/refund/${id}` });
+  }
+
   async find(
     payload?: ITransaction.FindApiQuery
   ): Promise<ITransaction.FindApiResponse> {

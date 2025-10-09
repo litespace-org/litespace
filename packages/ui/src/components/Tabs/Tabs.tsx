@@ -21,7 +21,7 @@ export const Tabs = <T extends string>({
   setTab: (id: T) => void;
 }) => {
   return (
-    <div className="border border-natural-200 rounded-xl flex items-center justify-between w-full">
+    <div className="flex flex-wrap items-center justify-around w-full border border-natural-200 rounded-xl">
       {tabs.map(({ id, label, important, disabled }) => (
         <Tab
           key={id}
@@ -47,7 +47,7 @@ const Tab: React.FC<{
     <button
       type="button"
       className={cn(
-        "relative px-4 py-[10px] group rounded-xl w-full",
+        "relative px-4 py-[10px] group rounded-xl",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-offset-0 focus-visible:ring-brand-500",
         "flex items-center justify-center"
       )}
