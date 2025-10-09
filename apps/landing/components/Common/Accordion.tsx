@@ -14,10 +14,10 @@ const Accordion: React.FC<ComponentProps<typeof BaseAccordion>> = ({
         if (props.onValueChange) props.onValueChange(value);
         const item = props.items.find((item) => item.id === value);
         if (!item) return;
-        track("view_faq_item", {
-          action: "button",
-          title: item.title,
-          id: item.id,
+        track({
+          category: "other",
+          action: "view_faq_item",
+          label: item.title,
         });
       }}
     />

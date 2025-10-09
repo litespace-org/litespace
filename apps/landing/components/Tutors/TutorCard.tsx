@@ -22,7 +22,10 @@ export const TutorCard: React.FC<{
   return (
     <Link
       onClick={() => {
-        track("select_tutor", "home");
+        track({
+          action: "select_tutor",
+          category: "home",
+        });
       }}
       href={profileUrl}
       className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 @container block rounded-lg"

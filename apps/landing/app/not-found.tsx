@@ -28,12 +28,9 @@ export const Page = () => {
         <Link
           href={Landing.Home}
           track={{
-            event: "navigation",
-            params: {
-              src: "not-found-page",
-              action: "link",
-              label: "Go home",
-            },
+            category: "other",
+            action: "go_to_home",
+            label: "Go home",
           }}
         >
           <Typography

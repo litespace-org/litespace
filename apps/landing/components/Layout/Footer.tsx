@@ -37,12 +37,8 @@ function SocialMediaIcon({
       target="_blank"
       className="flex items-center justify-center p-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-500 rounded-lg"
       track={{
-        event: "view_social_media",
-        params: {
-          src: "footer",
-          action: "link",
-          url: href,
-        },
+        category: "other",
+        action: "view_social_media",
       }}
     >
       <Icon className="[&>*]:fill-natural-600 w-6 h-6" />
