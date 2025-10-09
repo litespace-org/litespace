@@ -61,6 +61,8 @@ const Lessons: React.FC = () => {
   const lessons = useInfiniteLessons({
     userOnly: true,
     users: user ? [user?.id] : [],
+    canceled: false,
+    reported: false,
   });
 
   useOnError({
