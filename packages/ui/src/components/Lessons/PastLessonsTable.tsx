@@ -181,7 +181,8 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                         lesson.currentMember,
                       ]);
                   }}
-                  variant={lg && !xl ? "primary" : "secondary"}
+                  type={!xl ? "main" : "natural"}
+                  variant="secondary"
                   size="large"
                   disabled={!!sendingMessage}
                   loading={sendingMessage === lesson.id}
@@ -190,7 +191,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                   {!lg || xl ? (
                     <Typography
                       tag="span"
-                      className="text-body text-brand-700 font-medium"
+                      className="text-body whitespace-nowrap text-brand-500 xl:text-natural-700 font-medium"
                     >
                       {isTutor
                         ? intl("tutor-dashboard.table.send-message")
@@ -204,7 +205,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
 
                   {lg && !xl && !isTutor ? (
                     <AddCalendarSVG
-                      className="[&>*]:stroke-natural-50"
+                      className="[&>*]:stroke-brand-500"
                       width={16}
                       height={16}
                     />

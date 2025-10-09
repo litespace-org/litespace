@@ -17,8 +17,8 @@ export function useTutors() {
   const api = useApi();
 
   const findTutors = useCallback(
-    ({ page }: { page: number }) => {
-      return api.user.findOnboardedTutors({ page });
+    ({ page, size }: { page: number; size?: number }) => {
+      return api.user.findOnboardedTutors({ page, size });
     },
     [api.user]
   );

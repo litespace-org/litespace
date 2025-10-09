@@ -26,7 +26,20 @@ export const TutorCard: React.FC<{
   rating?: number;
   topics: string[];
   onBook: Void;
-}> = ({ id, tutorId, about, name, image, rating, topics, onBook }) => {
+  buttonSize?: "small" | "medium" | "large";
+  cardHeight?: string;
+}> = ({
+  id,
+  tutorId,
+  about,
+  name,
+  image,
+  rating,
+  topics,
+  onBook,
+  buttonSize = "medium",
+  cardHeight,
+}) => {
   const intl = useFormatMessage();
 
   return (
@@ -45,13 +58,14 @@ export const TutorCard: React.FC<{
       <div className="w-full border border-natural-200 rounded-lg p-4 flex flex-col gap-2 h-full">
         <div
           className={cn(
-            "w-full h-80 max-h-80 @sm:h-[22rem] @sm:max-h-[22rem]",
+            "w-full @sm:h-[22rem] @sm:max-h-[22rem]",
             "@md:h-[26rem] @md:max-h-[26rem]",
             "@2md:h-[30rem] @2md:max-h-[30rem]",
             "@lg:h-[32rem] @lg:max-h-[32rem]",
             "@xl:h-[34rem] @xl:max-h-[34rem]",
             "@2xl:h-[37rem] @xl:max-h-[37rem]",
-            "rounded-xl grow overflow-hidden relative"
+            "rounded-xl grow overflow-hidden relative",
+            cardHeight || "h-80 max-h-80"
           )}
         >
           <AvatarV2 src={image} alt={name} id={tutorId} object="cover" />
@@ -116,7 +130,7 @@ export const TutorCard: React.FC<{
         <Button
           htmlType="button"
           className="w-full mt-auto text-body font-medium"
-          size="medium"
+          size={buttonSize}
           onClick={(event) => {
             event.preventDefault();
             onBook();

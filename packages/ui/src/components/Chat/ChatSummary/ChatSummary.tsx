@@ -158,10 +158,15 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
               className="intline-block w-full mt-auto"
               tabIndex={-1}
             >
-              <Button className="w-full" size="large">
+              <Button
+                className="w-full"
+                type="natural"
+                variant="secondary"
+                size="large"
+              >
                 <Typography
                   tag="span"
-                  className="text-natural-50 text-caption font-semibold"
+                  className="text-natural-700 text-body font-cairo"
                 >
                   {intl("student-dashboard.button.find-chats")}
                 </Typography>
