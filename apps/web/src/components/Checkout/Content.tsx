@@ -79,8 +79,11 @@ const Header: React.FC = () => {
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 rounded-md"
       )}
     >
-      <Logo className="w-14 h-14" />
-      <Typography tag="p" className="text-h4 text-brand-500 font-bold">
+      <Logo className="w-10 h-10 md:w-14 md:h-14" />
+      <Typography
+        tag="p"
+        className="text-subtitle-2 md:text-h4 text-brand-500 font-bold"
+      >
         {intl("labels.litespace")}
       </Typography>
     </Link>

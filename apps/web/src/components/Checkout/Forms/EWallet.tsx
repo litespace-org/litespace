@@ -14,6 +14,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { TxTypeData } from "@/components/Checkout/types";
 import { useCreateLessonWithEWallet } from "@litespace/headless/lessons";
 import { track } from "@/lib/ga";
+import Lock from "@litespace/assets/Lock";
 
 type Form = {
   phone: string;
@@ -130,19 +131,37 @@ const Payment: React.FC<{
             }}
           />
         </div>
-
-        <Button
-          type="main"
-          size="large"
-          htmlType="submit"
-          className="w-full"
-          disabled={pay.isPending || createLesson.isPending || syncing}
-          loading={pay.isPending || createLesson.isPending}
-        >
-          <Typography tag="span" className="text text-body font-medium">
-            {intl("checkout.payment.confirm")}
+        <div>
+          <Typography
+            tag="p"
+            className="hidden md:block text-caption text-brand-700 mb-1"
+          >
+            {intl("checkout.payment.conditions-acceptance")}
           </Typography>
-        </Button>
+          <Button
+            type="main"
+            size="large"
+            htmlType="submit"
+            className="w-full"
+            disabled={pay.isPending || createLesson.isPending || syncing}
+            loading={pay.isPending || createLesson.isPending}
+          >
+            <Typography tag="span" className="text text-body font-medium">
+              {intl("checkout.payment.confirm")}
+            </Typography>
+          </Button>
+        </div>
+        <div className="hidden md:flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Lock className="w-6 h-6" />
+            <Typography tag="p" className="text-body font-semibold">
+              {intl("checkout.payment.safe-and-crypted")}
+            </Typography>
+          </div>
+          <Typography tag="p" className="text-caption text-natural-600">
+            {intl("checkout.payment.ensure-your-financial-privacy")}
+          </Typography>
+        </div>
       </form>
     </div>
   );

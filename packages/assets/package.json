@@ -111,6 +111,7 @@
     "./LandingHomeCta": "./dist/LandingHomeCta.tsx",
     "./LeftArrowHead": "./dist/LeftArrowHead.tsx",
     "./Linkedin": "./dist/Linkedin.tsx",
+    "./Lock": "./dist/Lock.tsx",
     "./LoginDark": "./dist/LoginDark.tsx",
     "./LoginLight": "./dist/LoginLight.tsx",
     "./LogoAvatar": "./dist/LogoAvatar.tsx",

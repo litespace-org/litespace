@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
@@ -23,6 +23,7 @@ import Calendar from "@litespace/assets/Calendar";
 import Clock from "@litespace/assets/Clock";
 import dayjs from "@/lib/dayjs";
 import { track } from "@/lib/ga";
+import { useFindTutorRatings } from "@litespace/headless/rating";
 
 const PLAN_PERIOD_LITERAL_TO_MESSAGE_ID: Record<IPlan.PeriodLiteral, LocalId> =
   {
@@ -165,10 +166,10 @@ const Lesson: React.FC<{
   const intl = useFormatMessage();
   return (
     <Card>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         <Typography
           tag="h4"
-          className="text-subtitle-1 font-bold text-natural-950 px-6"
+          className="text-body lg:text-subtitle-1 font-bold text-natural-950 px-4 lg:px-6 mb-2 lg:mb-4"
         >
           {intl("checkout.lesson.details")}
         </Typography>
@@ -195,39 +196,46 @@ const TutorDetails: React.FC<{ tutor: ITutor.FindTutorInfoApiResponse }> = ({
   tutor,
 }) => {
   const intl = useFormatMessage();
+
+  const tutorRatings = useFindTutorRatings(tutor.id, {});
+  const tutorRatingsCount = useMemo(
+    () => tutorRatings.query.data?.list.length,
+    [tutorRatings.query.data?.list.length]
+  );
+
   return (
-    <div className="px-6">
+    <div className="px-4 lg:px-6 mb-[13px] lg:mb-4">
       <Typography
         tag="p"
-        className="text-subtitle-2 font-semibold text-natural-950 mb-4"
+        className="text-body lg:text-subtitle-2 font-semibold text-natural-950 mb-2 lg:mb-4"
       >
         {intl("checkout.lesson.your-tutor")}
       </Typography>
 
       <div className="flex flex-row gap-2">
-        <div className="w-[74px] h-[74px] rounded-lg overflow-hidden">
+        <div className="w-[66px] h-[66px] lg:w-[74px] lg:h-[74px] rounded-lg overflow-hidden">
           <AvatarV2 id={tutor.id} src={tutor.image} alt={tutor.name} />
         </div>
         <div>
           <Typography
             tag="p"
-            className="text-subtitle-2 font-bold text-natural-950"
+            className="text-caption md:text-subtitle-2 font-bold text-natural-950 mb-2 lg:mb-1"
           >
             {tutor.name}
           </Typography>
           <Typography
             tag="p"
             data-show={!!tutor.bio}
-            className="text-tiny text-natural-600 data-[show=false]:hidden"
+            className="text-extra-tiny lg:text-tiny text-natural-600 data-[show=false]:hidden line-clamp-1"
           >
             {tutor.bio}
           </Typography>
 
-          <div className="flex flex-row gap-2 items-center justify-start">
+          <div className="flex flex-row gap-4 items-center justify-start mt-1">
             <Typography
               tag="span"
               data-show={!!tutor.lessonCount && !!tutor.studentCount}
-              className="text-tiny text-natural-600 data-[show=false]:hidden"
+              className="text-tiny text-natural-700 data-[show=false]:hidden"
             >
               {intl("checkout.lesson.n-lessons-with-n-students", {
                 lessonCount: formatNumber(tutor.lessonCount),
@@ -241,6 +249,12 @@ const TutorDetails: React.FC<{ tutor: ITutor.FindTutorInfoApiResponse }> = ({
               <Star className="w-[18px] h-[18px] [&>*]:fill-warning-500" />
               <Typography tag="span" className="text-tiny text-natural-600">
                 {formatNumber(tutor.avgRating, { maximumFractionDigits: 2 })}
+                &nbsp;
+                {tutorRatingsCount
+                  ? intl("tutor.rate-count", {
+                      value: formatNumber(tutorRatingsCount),
+                    })
+                  : null}
               </Typography>
             </div>
           </div>
@@ -256,20 +270,29 @@ const LessonDetails: React.FC<{
 }> = ({ start, duration }) => {
   const intl = useFormatMessage();
   return (
-    <div className="px-6">
-      <Typography tag="p" className="text-subtitle-2 font-semibold mb-2">
+    <div className="px-4 lg:px-6 mt-4 mb-[10px] md:mb-4">
+      <Typography
+        tag="p"
+        className="text-body lg:text-subtitle-2 font-semibold mb-2"
+      >
         {intl("checkout.lesson.trial-lesson-time")}
       </Typography>
-      <div className="flex flex-row gap-3 items-center justify-start">
-        <div className="flex flex-row gap-2 items-center justify-center">
-          <Calendar className="w-4 h-4 [&>*]:text-natural-700" />
-          <Typography tag="span" className="text-caption font-semibold">
+      <div className="flex flex-row gap-3 items-center justify-between">
+        <div className="flex flex-row gap-1 lg:gap-2 items-center justify-center">
+          <Calendar className="w-6 h-6 [&>*]:stroke-natural-700" />
+          <Typography
+            tag="span"
+            className="text-caption font-semibold text-natural-700"
+          >
             {dayjs(start).format("D MMMM YYYY")}
           </Typography>
         </div>
-        <div className="flex flex-row gap-2 items-center justify-center">
-          <Clock className="w-4 h-4 [&>*]:text-natural-700" />
-          <Typography tag="span" className="text-caption font-semibold">
+        <div className="flex flex-row gap-1 lg:gap-2 items-center justify-center">
+          <Clock className="w-6 h-6 [&>*]:stroke-natural-700" />
+          <Typography
+            tag="span"
+            className="text-caption font-semibold text-natural-700"
+          >
             {dayjs(start).format("H:mm A")} (
             {intl("labels.n-minutes", { count: duration })})
           </Typography>
@@ -284,18 +307,22 @@ const LessonPrice: React.FC<{ duration: ILesson.Duration }> = ({
 }) => {
   const intl = useFormatMessage();
   return (
-    <div className="px-6">
-      <div className="flex flex-row items-center justify-between">
-        <Typography tag="p" className="text-body">
-          {intl("checkout.lesson.lesson-price")}
-        </Typography>
+    <div className="px-4 lg:px-6 mt-4 mb-4 lg:mb-6 flex flex-row items-center justify-between">
+      <Typography
+        tag="p"
+        className="text-caption lg:text-body font-semibold lg:font-normal"
+      >
+        {intl("checkout.lesson.lesson-price")}
+      </Typography>
 
-        <Typography tag="p" className="text-body">
-          {intl("labels.currency.egp", {
-            value: formatNumber(price.unscale(calculateLessonPrice(duration))),
-          })}
-        </Typography>
-      </div>
+      <Typography
+        tag="p"
+        className="text-caption lg:text-body font-semibold lg:font-normal"
+      >
+        {intl("labels.currency.egp", {
+          value: formatNumber(price.unscale(calculateLessonPrice(duration))),
+        })}
+      </Typography>
     </div>
   );
 };
@@ -303,8 +330,8 @@ const LessonPrice: React.FC<{ duration: ILesson.Duration }> = ({
 const ChangeLessonTiming: React.FC<{ start: string }> = ({ start }) => {
   const intl = useFormatMessage();
   return (
-    <div className="px-6 mt-2">
-      <Typography tag="p" className="text-extra-tiny text-natural-400 mb-2">
+    <div className="px-4 lg:px-6">
+      <Typography tag="p" className="text-extra-tiny text-natural-700 mb-2">
         {intl("checkout.lesson.change-lesson-time-note", {
           time: dayjs(start).format("hh:mm A"),
           date: dayjs(start).format("dddd D MMMM"),
@@ -317,10 +344,7 @@ const ChangeLessonTiming: React.FC<{ start: string }> = ({ start }) => {
         className="w-full"
         onClick={() => alert("todo...")}
       >
-        <Typography
-          tag="span"
-          className="text-caption md:text-body font-semibold md:font-medium"
-        >
+        <Typography tag="span" className="text-body font-medium">
           {intl("checkout.lesson.change-lesson-time")}
         </Typography>
       </Button>
