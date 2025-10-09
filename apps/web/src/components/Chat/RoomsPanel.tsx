@@ -17,6 +17,7 @@ import { isEmpty } from "lodash";
 import { ITutor, IUser } from "@litespace/types";
 import { useUser } from "@litespace/headless/context/user";
 import { useOnError } from "@/hooks/error";
+import { useTutors } from "@litespace/headless/tutor";
 
 const RoomsPanel: React.FC<{
   selectedRoom: number | UncontactedTutorRoomId | null;
@@ -38,6 +39,19 @@ const RoomsPanel: React.FC<{
     [user]
   );
   const { rooms, keyword, update } = useRoomManager(isStudent);
+
+  const Tutors = useTutors();
+
+  const Tutorslist = useMemo(() => {
+    const allTutors =
+      (Tutors.query.data?.pages.flatMap(
+        (page) => page.list
+      ) as unknown as ITutor.FullUncontactedTutorInfo[]) ?? [];
+
+    const contactedIds =
+      rooms.all.list?.map((room) => room.otherMember.id) ?? [];
+    return allTutors.filter((tutor) => !contactedIds.includes(tutor.id));
+  }, [Tutors.query.data, rooms.all.list]);
 
   useOnError({
     type: "query",
@@ -140,13 +154,11 @@ const RoomsPanel: React.FC<{
           />
         ) : null}
 
-        {user?.role === IUser.Role.Student &&
-        rooms.uncontactedTutors.list &&
-        !isEmpty(rooms.uncontactedTutors.list) ? (
+        {user?.role === IUser.Role.Student && !isEmpty(Tutorslist) ? (
           <Rooms
             type="uncontacted-tutors"
             selectUncontacted={selectTemporary}
-            data={rooms.uncontactedTutors.list}
+            data={Tutorslist}
             pending={rooms.uncontactedTutors.query.isPending}
             fetching={rooms.uncontactedTutors.query.isFetching}
             refetch={rooms.uncontactedTutors.query.refetch}
