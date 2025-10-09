@@ -267,6 +267,11 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
           lessons.query.isError ||
           tutor.isError
         }
+        tutorsUrl={router.web({
+          route: Web.Tutors,
+          full: true,
+        })}
+        plansUrl={router.web({ route: Web.Plans, full: true })}
       />
     </>
   );

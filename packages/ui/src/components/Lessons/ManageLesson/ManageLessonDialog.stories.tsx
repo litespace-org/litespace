@@ -17,7 +17,7 @@ const meta: Meta<Component> = {
   },
   decorators: [
     (Story) => (
-      <div className="p-5">
+      <div className="p-5 [&>*]:bg-natural-50">
         <Story />
       </div>
     ),
@@ -73,6 +73,7 @@ export const DepletedSubscription: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     hasBookedLessons: false,
+    subscribed: true,
     remainingWeeklyMinutes: 0,
     slots: [
       {
