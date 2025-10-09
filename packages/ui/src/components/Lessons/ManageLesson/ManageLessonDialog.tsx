@@ -465,6 +465,7 @@ export const ManageLessonDialog: React.FC<{
                 // TODO: uncomment this once other durations added
                 // if (step === "time-selection") setStep("date-selection");
                 // if (step === "duration-selection") setStep("date-selection");
+                setStep("date-selection");
               }}
               className={cn({
                 "flex-1":
