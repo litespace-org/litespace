@@ -13,7 +13,13 @@ const Link: React.FC<
     <BaseLink
       {...props}
       onClick={(event) => {
-        if (track) ga(track.action, track.category, track.label, track.value);
+        if (track)
+          ga({
+            action: track.action,
+            category: track.category,
+            label: track.label,
+            value: track.value,
+          });
         if (props.onClick) props.onClick(event);
       }}
     />

@@ -33,8 +33,8 @@ export const SocialLinks: React.FC = () => (
         className="flex items-center justify-center"
         target="_blank"
         track={{
-          event: "view_social_media",
-          params: { url: href },
+          category: "other",
+          action: "view_social_media",
         }}
       >
         {icon}

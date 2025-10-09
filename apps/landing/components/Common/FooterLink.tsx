@@ -11,14 +11,6 @@ export function FooterLink({ route, text }: { route: Route; text: string }) {
         "w-fit rounded group",
         "duration-300 transition-all focus-visible:outline-none ring-offset-2 focus-visible:ring-1 ring-brand-500"
       )}
-      track={{
-        event: "navigation",
-        params: {
-          route,
-          label: text,
-          src: "footer",
-        },
-      }}
     >
       <Typography
         tag="span"

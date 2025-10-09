@@ -30,10 +30,10 @@ export function NavbarLinks({ toggleSidebar }: { toggleSidebar: Void }) {
             href={page.route}
             key={page.route}
             onClick={() => {
-              track("navigation", {
-                action: "link",
-                route: page.route,
-                src: "navbar",
+              track({
+                action: "click_navbar_link",
+                category: "navbar",
+                label: page.route,
               });
             }}
           >
@@ -57,7 +57,11 @@ export function NavbarLinks({ toggleSidebar }: { toggleSidebar: Void }) {
           })}
           className="max-w-[134px] lg:max-w-[144px] flex-1"
           onClick={() => {
-            track("register", { action: "link", src: "navbar" });
+            track({
+              action: "click_navbar_link",
+              category: "navbar",
+              label: "register",
+            });
           }}
         >
           <Button size="large" className="w-full">
@@ -73,7 +77,11 @@ export function NavbarLinks({ toggleSidebar }: { toggleSidebar: Void }) {
           href={router.web({ route: Web.Login, full: true })}
           className="max-w-[134px] lg:max-w-[144px] flex-1"
           onClick={() => {
-            track("register", { action: "link", src: "navbar" });
+            track({
+              action: "click_navbar_link",
+              category: "navbar",
+              label: "login",
+            });
           }}
         >
           <Button
@@ -94,9 +102,10 @@ export function NavbarLinks({ toggleSidebar }: { toggleSidebar: Void }) {
         type="button"
         onClick={() => {
           toggleSidebar();
-          track("toggle_nav_menu", {
-            action: "button",
-            src: "navbar",
+          track({
+            action: "click_navbar_link",
+            category: "navbar",
+            label: "toggle",
           });
         }}
         className="lg:hidden w-6 h-6 bg-natural-100 bg-opacity-50 rounded-[4px] p-[2px]"
