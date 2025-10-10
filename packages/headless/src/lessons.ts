@@ -14,10 +14,9 @@ import { OnError, OnSuccess } from "@/types/query";
 export function useFindLessons({
   userOnly,
   ...query
-}: ILesson.FindLessonsApiQuery & { userOnly?: boolean }): UsePaginateResult<{
-  lesson: ILesson.Self;
-  members: ILesson.PopulatedMember[];
-}> {
+}: ILesson.FindLessonsApiQuery & { userOnly?: boolean }): UsePaginateResult<
+  Element<ILesson.FindUserLessonsApiResponse["list"]>
+> {
   const api = useApi();
 
   const findLessons = useCallback(

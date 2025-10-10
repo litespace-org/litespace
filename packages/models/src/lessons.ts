@@ -20,11 +20,13 @@ import {
   withBooleanFilter,
   withNullableListFilter,
   withNullableFilter,
+  withListFilter,
 } from "@/query";
 import zod from "zod";
 import { transactions } from "@/transactions";
 
 type SearchFilter = {
+  ids?: number[];
   /**
    * User ids to be included in the search query.
    */
@@ -277,6 +279,7 @@ export class Lessons {
     slots,
     strict,
     txs,
+    ids,
     ...pagination
   }: WithOptionalTx<IFilter.SkippablePagination & SearchFilter>): Promise<
     Paginated<ILesson.Self>
@@ -291,6 +294,7 @@ export class Lessons {
       before,
       slots,
       strict,
+      ids,
       txs,
     });
 
@@ -518,6 +522,7 @@ export class Lessons {
       after,
       before,
       slots = [],
+      ids = [],
       txs,
     }: SearchFilter
   ): Knex.QueryBuilder<R, T> {
@@ -548,6 +553,7 @@ export class Lessons {
 
     withBooleanFilter(builder, this.columns.lessons("reported"), reported);
     withNullableListFilter(builder, this.columns.lessons("tx_id"), txs);
+    withListFilter(builder, this.columns.lessons("id"), ids);
 
     const futureOnly = future && !past;
     const pastOnly = past && !future;

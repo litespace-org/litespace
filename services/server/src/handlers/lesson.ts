@@ -35,7 +35,7 @@ import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { isAdmin, isStudent, isTutor, isUser } from "@litespace/utils/user";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
-import { isEmpty, isEqual } from "lodash";
+import { groupBy, isEmpty, isEqual } from "lodash";
 import {
   AFRICA_CAIRO_TIMEZONE,
   UNCANCELLABLE_LESSON_HOURS,
@@ -49,7 +49,7 @@ import {
   checkBookingLessonEligibilityState,
   validateCreateLessonPayload,
 } from "@/lib/lesson";
-import { isBookable } from "@/lib/session";
+import { getSessionsMp4Files, isBookable } from "@/lib/session";
 import { sendMsg } from "@/lib/messenger";
 import { createPaidLessonTx } from "@/lib/transaction";
 import {
@@ -67,6 +67,7 @@ import {
   Unexpected,
   WeekBoundariesViolation,
 } from "@/lib/error/local";
+import s3 from "@/lib/s3";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
@@ -430,21 +431,27 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
   });
 
   const userLesonsIds = userLessons.map((lesson) => lesson.id);
-  const lessonMembers = await withImageUrls(
-    await lessons.findLessonMembers(userLesonsIds)
-  );
+  const userSessionIds = userLessons.map((lesson) => lesson.sessionId);
+  const [lessonMembers, sessionMp4FilesMap] = await Promise.all([
+    await withImageUrls(await lessons.findLessonMembers(userLesonsIds)),
+    await getSessionsMp4Files(userSessionIds, true),
+  ]);
+  const lessonMembersMap = groupBy(lessonMembers, (m) => m.lessonId);
 
   const result: ILesson.FindUserLessonsApiResponse = {
     list: userLessons.map((lesson) => {
-      const members = lessonMembers
-        .filter((member) => member.lessonId === lesson.id)
-        .map((member) => ({
+      const members = lessonMembersMap[lesson.id] || [];
+      const files = sessionMp4FilesMap[lesson.sessionId] || [];
+      return {
+        lesson,
+        members: members.map((member) => ({
           ...member,
           // mask private information
           phone: null,
           verifiedPhone: false,
-        }));
-      return { lesson, members };
+        })),
+        files,
+      };
     }),
     total,
   };
