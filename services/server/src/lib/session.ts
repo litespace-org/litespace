@@ -7,6 +7,7 @@ import {
 import { concat, isEmpty } from "lodash";
 import { demoSessions, interviews, lessons } from "@litespace/models";
 import { asSubSlots, canBook, getSessionType } from "@litespace/utils";
+import s3 from "@/lib/s3";
 
 // todo: impl: each tutor can have interview each 3 months.
 export function canBeInterviewed(sessions: IInterview.Self[]): boolean {
@@ -80,4 +81,29 @@ export async function isBookable({
     ),
     bookInfo,
   });
+}
+
+export async function getSessionMp4Files(
+  sessionId: ISession.Id,
+  signed?: boolean
+): Promise<string[]> {
+  const files = await s3.list(`sessions/${sessionId}`);
+  const mp4 = files.filter((file) => file.endsWith(".mp4"));
+  if (!signed) return mp4;
+  return await Promise.all(mp4.map((file) => s3.get(file)));
+}
+
+export async function getSessionsMp4Files(
+  ids: ISession.Id[],
+  signed?: boolean
+): Promise<Record<ISession.Id, string[]>> {
+  const map: Record<ISession.Id, string[]> = {};
+
+  await Promise.all(
+    ids.map(async (id) => {
+      map[id] = await getSessionMp4Files(id, signed);
+    })
+  );
+
+  return map;
 }
