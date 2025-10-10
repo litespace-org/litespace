@@ -11,14 +11,8 @@ interface ILessonData {
     members: ILesson.PopulatedMember[];
   };
   events: {
-    tutor: {
-      state: ISessionEvent.State;
-      events: ISessionEvent.MetaSelf[];
-    };
-    student: {
-      state: string;
-      events: ISessionEvent.MetaSelf[];
-    };
+    tutor: ISessionEvent.MetaSelf[];
+    student: ISessionEvent.MetaSelf[];
   };
 }
 
@@ -79,11 +73,11 @@ const LessonEvents: React.FC<LessonEventsProps> = ({
       <div className="space-y-8">
         <EventsTable
           title={intl("dashboard.lesson-events.tutor")}
-          events={data.events.tutor.events}
+          events={data.events.tutor}
         />
         <EventsTable
           title={intl("dashboard.lesson-events.student")}
-          events={data.events.student.events}
+          events={data.events.student}
         />
       </div>
     </div>

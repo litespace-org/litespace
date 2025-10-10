@@ -1,24 +1,24 @@
 import PageTitle from "@/components/Common/PageTitle";
 import List from "@/components/LessonEvents";
-import { useFindLessonBySessionId } from "@litespace/headless/lessons";
-import { useFindSessionEventsByLessonId } from "@litespace/headless/sessionEvent";
-import { ISession } from "@litespace/types";
+import { useFindLesson } from "@litespace/headless/lessons";
+import { useFindSessionEventsBySessionId } from "@litespace/headless/sessionEvent";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import cn from "classnames";
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
 type LessonEventsParams = {
-  sessionId: ISession.Id;
+  lessonId: string;
 };
 
 export const LessonEvents: React.FC = () => {
   const intl = useFormatMessage();
   const params = useParams<LessonEventsParams>();
 
-  const events = useFindSessionEventsByLessonId(params.sessionId!);
-  const lesson = useFindLessonBySessionId(params.sessionId!);
-  console.log({ events: events.data, lesson: lesson.data });
+  const lessonId = useMemo(() => Number(params.lessonId), [params]);
+
+  const lesson = useFindLesson(lessonId);
+  const events = useFindSessionEventsBySessionId(lesson.data?.lesson.sessionId);
 
   return (
     <div

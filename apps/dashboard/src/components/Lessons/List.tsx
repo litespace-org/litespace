@@ -37,7 +37,7 @@ const List: React.FC<{
             className="font-bold underline"
             to={router.dashboard({
               route: Dashboard.LessonEvents,
-              sessionId: info.row.original.lesson.sessionId,
+              lessonId: info.row.original.lesson.id,
             })}
           >
             {info.getValue()}

@@ -17,13 +17,13 @@ export function useFindSessionEvents() {
   return usePaginate(findSessionMembers, [QueryKey.FindSessionMembers]);
 }
 
-export function useFindSessionEventsByLessonId(sessionId: ISession.Id) {
+export function useFindSessionEventsBySessionId(sessionId?: ISession.Id) {
   const api = useApi();
 
-  const findBySessionId = useCallback(
-    async () => await api.sessionEvent.findBySessionId({ sessionId }),
-    [api.sessionEvent, sessionId]
-  );
+  const findBySessionId = useCallback(async () => {
+    if (!sessionId) return { tutor: [], student: [] };
+    return await api.sessionEvent.findBySessionId({ sessionId });
+  }, [api.sessionEvent, sessionId]);
 
   return useQuery({
     queryFn: findBySessionId,

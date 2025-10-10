@@ -65,7 +65,7 @@ export enum Dashboard {
   Tutors = "/tutors",
   PlanInvites = "/plan-invites",
   SessionEvents = "/session-events",
-  LessonEvents = "/lessons/:sessionId",
+  LessonEvents = "/lessons/:lessonId",
 }
 
 export type StudentSettingsTabId =

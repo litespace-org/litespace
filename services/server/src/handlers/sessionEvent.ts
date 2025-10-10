@@ -45,8 +45,8 @@ async function findBySessionId(
   const events = await sessionEvents.findBySessionId({ sessionId });
 
   const response: ISessionEvent.FindBySessionIdApiResponse = {
-    tutor: { state: "absent", events: events.tutor },
-    student: { state: "absent", events: events.student },
+    tutor: events.tutor,
+    student: events.student,
   };
 
   res.status(200).json(response);

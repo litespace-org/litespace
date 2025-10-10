@@ -46,8 +46,6 @@ export type FindApiQuery = FindModelQuery;
 
 export type FindApiResponse = Paginated<MetaSelf>;
 
-export type State = "attended-on-time" | "attended-late" | "absent";
-
 export type FindBySessionIdApiQuery = {
   sessionId: ISession.Id;
 };
@@ -60,6 +58,6 @@ export type FindBySessionIdModelResponse = {
 };
 
 export type FindBySessionIdApiResponse = {
-  tutor: { events: MetaSelf[]; state: State };
-  student: { events: MetaSelf[]; state: State };
+  tutor: MetaSelf[];
+  student: MetaSelf[];
 };

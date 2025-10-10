@@ -154,7 +154,7 @@ type DashboardPayload =
     }
   | {
       route: Dashboard.LessonEvents;
-      sessionId: string;
+      lessonId: number;
       query?: BaseQuery;
     }
   | {

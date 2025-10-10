@@ -518,7 +518,8 @@ async function findLessonById(req: Request, res: Response, next: NextFunction) {
   if (!lesson || isEmpty(members)) return next(notfound.lesson());
 
   const isMember = !!members.find((member) => member.userId === user.id);
-  if (!isMember) return next(forbidden());
+  if (!isMember && !isAdmin(user) && !isTutorManager(user))
+    return next(forbidden());
 
   const response: ILesson.FindLessonByIdApiResponse = {
     lesson,

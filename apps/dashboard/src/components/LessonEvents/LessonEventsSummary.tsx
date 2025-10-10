@@ -19,14 +19,8 @@ interface LessonEventsSummaryProps {
     members: ILesson.PopulatedMember[];
   };
   events: {
-    tutor: {
-      state: ISessionEvent.State;
-      events: ISessionEvent.MetaSelf[];
-    };
-    student: {
-      state: string;
-      events: ISessionEvent.MetaSelf[];
-    };
+    tutor: ISessionEvent.MetaSelf[];
+    student: ISessionEvent.MetaSelf[];
   };
 }
 
@@ -43,7 +37,7 @@ const LessonEventsSummary: React.FC<LessonEventsSummaryProps> = ({
     () => [
       {
         role: "tutor",
-        events: events.tutor.events,
+        events: events.tutor,
         member: members.find(
           (m) =>
             m.role === IUser.Role.TutorManager || m.role === IUser.Role.Tutor
@@ -51,7 +45,7 @@ const LessonEventsSummary: React.FC<LessonEventsSummaryProps> = ({
       },
       {
         role: "student",
-        events: events.student.events,
+        events: events.student,
         member: members.find((m) => m.role === IUser.Role.Student),
       },
     ],
