@@ -8,7 +8,7 @@ import { formatCurrency } from "@litespace/ui/utils";
 import { Duration } from "@litespace/utils/duration";
 import { price } from "@litespace/utils/value";
 import UserPopover from "@/components/Common/UserPopover";
-import DateField from "@/components/Common/DateField";
+import DateTimeField from "@/components/Common/DateTimeField";
 import { dayjs } from "@/lib/dayjs";
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
 import { Link } from "react-router-dom";
@@ -36,7 +36,7 @@ const List: React.FC<{
           <Link
             className="font-bold underline"
             to={router.dashboard({
-              route: Dashboard.LessonEvents,
+              route: Dashboard.Lesson,
               lessonId: info.row.original.lesson.id,
             })}
           >
@@ -67,7 +67,7 @@ const List: React.FC<{
       }),
       columnHelper.accessor("lesson.start", {
         header: intl("dashboard.lessons.start"),
-        cell: (info) => <DateField date={info.getValue()} />,
+        cell: (info) => <DateTimeField date={info.getValue()} />,
       }),
       columnHelper.display({
         header: intl("dashboard.lessons.status"),
@@ -101,11 +101,11 @@ const List: React.FC<{
       }),
       columnHelper.accessor("lesson.createdAt", {
         header: intl("global.created-at"),
-        cell: (info) => <DateField date={info.getValue()} />,
+        cell: (info) => <DateTimeField date={info.getValue()} />,
       }),
       columnHelper.accessor("lesson.updatedAt", {
         header: intl("global.updated-at"),
-        cell: (info) => <DateField date={info.getValue()} />,
+        cell: (info) => <DateTimeField date={info.getValue()} />,
       }),
     ];
   }, [columnHelper, intl]);

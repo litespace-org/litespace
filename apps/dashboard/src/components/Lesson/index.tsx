@@ -1,9 +1,9 @@
 import { ILesson, ISessionEvent } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
-import LessonSummary from "@/components/LessonEvents/LessonSummary";
-import EventsTable from "@/components/LessonEvents/EventsTable";
-import LessonEventsSummary from "@/components/LessonEvents/LessonEventsSummary";
+import LessonSummary from "@/components/Lesson/LessonSummary";
+import EventsTable from "@/components/Lesson/EventsTable";
+import LessonEventsSummary from "@/components/Lesson/LessonEventsSummary";
 
 interface ILessonData {
   lesson: {
@@ -16,14 +16,14 @@ interface ILessonData {
   };
 }
 
-interface LessonEventsProps {
+interface LessonProps {
   data: ILessonData | null;
   loading?: boolean;
   error?: Error | null;
   refetch: () => void;
 }
 
-const LessonEvents: React.FC<LessonEventsProps> = ({
+const Lesson: React.FC<LessonProps> = ({
   data,
   loading = false,
   error = null,
@@ -38,7 +38,7 @@ const LessonEvents: React.FC<LessonEventsProps> = ({
         loading={
           loading
             ? {
-                text: intl("dashboard.lesson-events.loading"),
+                text: intl("dashboard.lesson.loading"),
                 size: "large",
               }
             : undefined
@@ -46,7 +46,7 @@ const LessonEvents: React.FC<LessonEventsProps> = ({
         error={
           error
             ? {
-                text: intl("dashboard.lesson-events.error"),
+                text: intl("dashboard.lesson.error"),
                 size: "medium",
               }
             : undefined
@@ -59,9 +59,7 @@ const LessonEvents: React.FC<LessonEventsProps> = ({
   if (!data) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">
-          {intl("dashboard.lesson-events.no-data")}
-        </p>
+        <p className="text-gray-500">{intl("dashboard.lesson.no-data")}</p>
       </div>
     );
   }
@@ -72,11 +70,11 @@ const LessonEvents: React.FC<LessonEventsProps> = ({
       <LessonEventsSummary lesson={data.lesson} events={data.events} />
       <div className="space-y-8">
         <EventsTable
-          title={intl("dashboard.lesson-events.tutor")}
+          title={intl("dashboard.lesson.tutor")}
           events={data.events.tutor}
         />
         <EventsTable
-          title={intl("dashboard.lesson-events.student")}
+          title={intl("dashboard.lesson.student")}
           events={data.events.student}
         />
       </div>
@@ -84,4 +82,4 @@ const LessonEvents: React.FC<LessonEventsProps> = ({
   );
 };
 
-export default LessonEvents;
+export default Lesson;

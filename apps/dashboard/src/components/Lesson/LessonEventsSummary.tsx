@@ -74,22 +74,22 @@ const LessonEventsSummary: React.FC<LessonEventsSummaryProps> = ({
       hasLeft: boolean
     ) => {
       const joinStatusMap: Record<string, LocalId> = {
-        "on-time": "dashboard.lesson-events.punctuality.join.on-time",
-        early: "dashboard.lesson-events.punctuality.join.early",
-        late: "dashboard.lesson-events.punctuality.join.late",
-        absent: "dashboard.lesson-events.punctuality.join.absent",
+        "on-time": "dashboard.lesson.punctuality.join.on-time",
+        early: "dashboard.lesson.punctuality.join.early",
+        late: "dashboard.lesson.punctuality.join.late",
+        absent: "dashboard.lesson.punctuality.join.absent",
       };
 
       const leaveStatusMap: Record<string, LocalId> = {
-        "on-time": "dashboard.lesson-events.punctuality.leave.on-time",
-        early: "dashboard.lesson-events.punctuality.leave.early",
-        late: "dashboard.lesson-events.punctuality.leave.late",
-        absent: "dashboard.lesson-events.punctuality.leave.absent",
+        "on-time": "dashboard.lesson.punctuality.leave.on-time",
+        early: "dashboard.lesson.punctuality.leave.early",
+        late: "dashboard.lesson.punctuality.leave.late",
+        absent: "dashboard.lesson.punctuality.leave.absent",
       };
 
       if (!hasJoined) return intl(joinStatusMap["absent"]);
       if (!hasLeft)
-        return `${joinStatusMap[joinStatus]} - ${intl("dashboard.lesson-events.punctuality.leave.absent")}`;
+        return `${joinStatusMap[joinStatus]} - ${intl("dashboard.lesson.punctuality.leave.absent")}`;
 
       return `${intl(joinStatusMap[joinStatus])} - ${intl(leaveStatusMap[leaveStatus])}`;
     },
@@ -101,12 +101,12 @@ const LessonEventsSummary: React.FC<LessonEventsSummaryProps> = ({
   const columns = useMemo(
     () => [
       columnHelper.accessor("member", {
-        header: intl("dashboard.lesson-events.participant"),
+        header: intl("dashboard.lesson.participant"),
         cell: (info) => <UserPopover id={info.row.original.member!.userId} />,
       }),
       columnHelper.display({
         id: "combined-status",
-        header: intl("dashboard.lesson-events.combined-status"),
+        header: intl("dashboard.lesson.combined-status"),
         cell: (info) => {
           const events = info.row.original.events as ISessionEvent.MetaSelf[];
           const first = getFirstJoinEvent(events);
@@ -144,7 +144,7 @@ const LessonEventsSummary: React.FC<LessonEventsSummaryProps> = ({
         },
       }),
       columnHelper.accessor("events", {
-        header: intl("dashboard.lesson-events.total-attendance"),
+        header: intl("dashboard.lesson.total-attendance"),
         cell: (info) => {
           const events = info.getValue() as ISessionEvent.MetaSelf[];
           const first = getFirstJoinEvent(events);
@@ -173,12 +173,13 @@ const LessonEventsSummary: React.FC<LessonEventsSummaryProps> = ({
     <div className="rounded-lg shadow overflow-hidden mb-8">
       <div className="p-4 border-b">
         <h3 className="text-lg font-semibold">
-          {intl("dashboard.lesson-events.attendance-summary")}
+          {intl("dashboard.lesson.attendance-summary")}
         </h3>
       </div>
 
       <Table
         columns={columns}
+        textAlign="top-start"
         data={participants}
         fetching={false}
         loading={false}

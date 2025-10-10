@@ -23,7 +23,7 @@ const LessonSummary: React.FC<LessonSummaryProps> = ({ lesson }) => {
   return (
     <div className="mb-8 px-4 min-w-full">
       <h2 className="text-xl font-bold mb-4">
-        {intl("dashboard.lesson-events.lesson-summary")}
+        {intl("dashboard.lesson.lesson-summary")}
       </h2>
 
       <LabelsTable
@@ -50,31 +50,28 @@ const LessonSummary: React.FC<LessonSummaryProps> = ({ lesson }) => {
           {
             label: intl("dashboard.lessons.members"),
             value: members.map((member) => (
-              <div
-                key={member.userId}
-                className="flex items-center justify-center gap-2"
-              >
+              <div key={member.userId} className="flex items-center gap-2">
                 <UserPopover id={member.userId} />
               </div>
             )),
           },
           {
-            label: intl("dashboard.lesson-events.status"),
+            label: intl("dashboard.lesson.status"),
             value: lessonDetails.canceledAt ? (
               <span className="text-red-600">
-                {intl("dashboard.lesson-events.cancelled")}
+                {intl("dashboard.lesson.cancelled")}
               </span>
             ) : dayjs().isBefore(start) ? (
               <span className="text-yellow-600">
-                {intl("dashboard.lesson-events.scheduled")}
+                {intl("dashboard.lesson.scheduled")}
               </span>
             ) : dayjs().isBetween(start, end) ? (
               <span className="text-green-600">
-                {intl("dashboard.lesson-events.ongoing")}
+                {intl("dashboard.lesson.ongoing")}
               </span>
             ) : (
               <span className="text-gray-600">
-                {intl("dashboard.lesson-events.completed")}
+                {intl("dashboard.lesson.completed")}
               </span>
             ),
           },

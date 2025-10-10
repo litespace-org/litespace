@@ -1,19 +1,19 @@
 import PageTitle from "@/components/Common/PageTitle";
-import List from "@/components/LessonEvents";
+import List from "@/components/Lesson";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { useFindSessionEventsBySessionId } from "@litespace/headless/sessionEvent";
+import { Replace } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Dashboard, UrlParamsOf } from "@litespace/utils/routes";
 import cn from "classnames";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
-type LessonEventsParams = {
-  lessonId: string;
-};
+type LessonParams = Replace<UrlParamsOf<Dashboard.Lesson>, "lessonId", string>;
 
-export const LessonEvents: React.FC = () => {
+const Lesson: React.FC = () => {
   const intl = useFormatMessage();
-  const params = useParams<LessonEventsParams>();
+  const params = useParams<LessonParams>();
 
   const lessonId = useMemo(() => Number(params.lessonId), [params]);
 
@@ -43,4 +43,4 @@ export const LessonEvents: React.FC = () => {
   );
 };
 
-export default LessonEvents;
+export default Lesson;

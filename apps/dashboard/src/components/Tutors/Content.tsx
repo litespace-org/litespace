@@ -1,7 +1,6 @@
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
 import { ONBOARD_ITEMS_MAP } from "@/components/utils/tutor";
 import { useMissedData } from "@/hooks/tutors";
-import dayjs from "@/lib/dayjs";
 import { router } from "@/lib/route";
 import Calendar from "@litespace/assets/Calendar";
 import InfoCircle from "@litespace/assets/InfoCircle";
@@ -19,6 +18,7 @@ import { Dashboard } from "@litespace/utils/routes";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
+import DateTimeField from "@/components/Common/DateTimeField";
 
 export const Content: React.FC<{
   refetch: Void;
@@ -141,16 +141,7 @@ export const Content: React.FC<{
             </Typography>
           </div>
         ),
-        cell: (info) => (
-          <div className="flex gap-2 items-center">
-            <Typography
-              tag="h5"
-              className="text-body text-natural-800 font-semibold"
-            >
-              {dayjs(info.getValue()).format("D/M/YYYY")}
-            </Typography>
-          </div>
-        ),
+        cell: (info) => <DateTimeField date={info.row.original.createdAt} />,
       }),
       columnHelper.accessor("activated", {
         header: () => (

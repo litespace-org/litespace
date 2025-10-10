@@ -20,7 +20,6 @@ import Settings2 from "@litespace/assets/Settings2";
 import Tag from "@litespace/assets/Tag";
 import Users from "@litespace/assets/Users";
 import Video from "@litespace/assets/Video";
-import Eye from "@litespace/assets/Eye";
 
 import { router } from "@/lib/route";
 import { Icon } from "@/types/common";
@@ -167,13 +166,6 @@ const Sidebar: React.FC = () => {
       Icon: People,
     };
 
-    const sessionEvents: LinkInfo = {
-      label: intl("dashboard.session-events.title"),
-      route: Dashboard.SessionEvents,
-      isActive: match(Dashboard.SessionEvents),
-      Icon: Eye,
-    };
-
     if (user?.role === IUser.Role.Studio) return [photoSession];
 
     return [
@@ -186,7 +178,6 @@ const Sidebar: React.FC = () => {
       photoSession,
       lessons,
       tutors,
-      sessionEvents,
     ];
   }, [intl, location.pathname, user?.role]);
 

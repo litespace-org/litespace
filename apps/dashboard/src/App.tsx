@@ -3,7 +3,6 @@ import { ErrorPage } from "@litespace/ui/ErrorPage";
 import { lazy } from "react";
 import { Dashboard } from "@litespace/utils/routes";
 import Page from "@/components/Layout/Page";
-import { LessonEvents } from "@/pages/LessonEvents";
 
 const Root = lazy(() => import("@/pages/Root"));
 const Invoices = lazy(() => import("@/pages/Invoices"));
@@ -21,7 +20,7 @@ const PhotoSession = lazy(() => import("@/pages/PhotoSession"));
 const Tutor = lazy(() => import("@/pages/Tutor"));
 const Tutors = lazy(() => import("@/pages/Tutors"));
 const PlanInvites = lazy(() => import("@/pages/PlanInvites"));
-const SessionEvents = lazy(() => import("@/pages/SessionEvents"));
+const Lesson = lazy(() => import("@/pages/Lesson"));
 
 const router = createBrowserRouter([
   {
@@ -38,10 +37,6 @@ const router = createBrowserRouter([
       { path: Dashboard.Interviews, element: <Page page={<Interviews />} /> },
       { path: Dashboard.Lessons, element: <Page page={<Lessons />} /> },
       { path: Dashboard.Topics, element: <Page page={<Topics />} /> },
-      {
-        path: Dashboard.SessionEvents,
-        element: <Page page={<SessionEvents />} />,
-      },
       {
         path: Dashboard.PlatformSettings,
         element: <Page page={<PlatformSettings />} />,
@@ -67,8 +62,8 @@ const router = createBrowserRouter([
         element: <Page page={<PlanInvites />} />,
       },
       {
-        path: Dashboard.LessonEvents,
-        element: <Page page={<LessonEvents />} />,
+        path: Dashboard.Lesson,
+        element: <Page page={<Lesson />} />,
       },
     ],
   },

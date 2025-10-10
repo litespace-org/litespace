@@ -16,9 +16,9 @@ const EventsTable: React.FC<EventsTableProps> = ({ title, events }) => {
 
   const getEventType = useCallback(
     (type: number) => {
-      if (type === 1) return intl("dashboard.lesson-events.joined");
-      if (type === 2) return intl("dashboard.lesson-events.left");
-      return intl("dashboard.lesson-events.unknown");
+      if (type === 1) return intl("dashboard.lesson.joined");
+      if (type === 2) return intl("dashboard.lesson.left");
+      return intl("dashboard.lesson.unknown");
     },
     [intl]
   );
@@ -54,7 +54,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ title, events }) => {
       }),
       columnHelper.accessor("createdAt", {
         id: "timeRelativeToSession",
-        header: intl("dashboard.lesson-events.time-relative-to-session"),
+        header: intl("dashboard.lesson.time-relative-to-session"),
         cell: (info) => {
           const eventTime = dayjs(info.getValue());
           const sessionStart = dayjs(info.row.original.sessionStart);
@@ -75,10 +75,10 @@ const EventsTable: React.FC<EventsTableProps> = ({ title, events }) => {
               {formattedValue} {intl("global.labels.minutes")}
               <div className="text-xs text-gray-500 mt-1">
                 {minutesDiff < 0
-                  ? intl("dashboard.lesson-events.before-session")
+                  ? intl("dashboard.lesson.before-session")
                   : minutesDiff > 0
-                    ? intl("dashboard.lesson-events.after-session")
-                    : intl("dashboard.lesson-events.at-session")}
+                    ? intl("dashboard.lesson.after-session")
+                    : intl("dashboard.lesson.at-session")}
               </div>
             </div>
           );
@@ -92,10 +92,10 @@ const EventsTable: React.FC<EventsTableProps> = ({ title, events }) => {
     return (
       <div className="rounded-lg shadow p-6 mb-6">
         <h3 className="text-lg font-semibold mb-3">
-          {intl("dashboard.lesson-events.events")} {title}
+          {intl("dashboard.lesson.events")} {title}
         </h3>
         <p className="text-gray-500 text-center">
-          {intl("dashboard.lesson-events.no-events")}
+          {intl("dashboard.lesson.no-events")}
         </p>
       </div>
     );
@@ -105,10 +105,16 @@ const EventsTable: React.FC<EventsTableProps> = ({ title, events }) => {
     <div className="rounded-lg shadow overflow-hidden mb-6">
       <div className="p-4 border-b">
         <h3 className="text-lg font-semibold">
-          {intl("dashboard.lesson-events.events")} {title}
+          {intl("dashboard.lesson.events")} {title}
         </h3>
       </div>
-      <Table columns={columns} data={events} fetching={false} loading={false} />
+      <Table
+        textAlign="top-start"
+        columns={columns}
+        data={events}
+        fetching={false}
+        loading={false}
+      />
     </div>
   );
 };

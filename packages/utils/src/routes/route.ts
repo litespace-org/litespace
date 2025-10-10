@@ -55,6 +55,7 @@ export enum Dashboard {
   User = "/user/:id",
   Interviews = "/interviews",
   Lessons = "/lessons",
+  Lesson = "/lesson/:lessonId",
   ServerStats = "/server-stats",
   PlatformSettings = "/platform-settings",
   Topics = "/topics",
@@ -65,7 +66,6 @@ export enum Dashboard {
   Tutors = "/tutors",
   PlanInvites = "/plan-invites",
   SessionEvents = "/session-events",
-  LessonEvents = "/lessons/:lessonId",
 }
 
 export type StudentSettingsTabId =
