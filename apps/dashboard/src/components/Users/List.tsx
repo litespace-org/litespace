@@ -7,7 +7,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import { Table } from "@litespace/ui/Table";
 import BooleanField from "@/components/Common/BooleanField";
-import DateField from "@/components/Common/DateField";
+import DateTimeField from "@/components/Common/DateTimeField";
 import TruncateField from "@/components/Common/TruncateField";
 import { Link } from "react-router-dom";
 import ImageField from "@/components/Common/ImageField";
@@ -45,7 +45,14 @@ const List: React.FC<{
       columnHelper.accessor("id", {
         header: intl("labels.id"),
         cell: (info) => {
-          return <Link to={`/user/${info.getValue()}`}>{info.getValue()}</Link>;
+          return (
+            <Link
+              to={`/user/${info.getValue()}`}
+              className="underline font-bold"
+            >
+              {info.getValue()}
+            </Link>
+          );
         },
       }),
       columnHelper.accessor("name", {
@@ -104,11 +111,11 @@ const List: React.FC<{
       }),
       columnHelper.accessor("createdAt", {
         header: intl("global.created-at"),
-        cell: (info) => <DateField date={info.getValue()} />,
+        cell: (info) => <DateTimeField date={info.getValue()} />,
       }),
       columnHelper.accessor("updatedAt", {
         header: intl("global.updated-at"),
-        cell: (info) => <DateField date={info.getValue()} />,
+        cell: (info) => <DateTimeField date={info.getValue()} />,
       }),
 
       columnHelper.accessor("notificationMethod", {

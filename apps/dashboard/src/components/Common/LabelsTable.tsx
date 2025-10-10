@@ -23,7 +23,7 @@ const LabelsTable: React.FC<{ rows: TableLablesRow[] }> = ({ rows }) => {
     [columnHelper]
   );
 
-  return <Table columns={columns} data={rows} headless />;
+  return <Table textAlign="top-start" columns={columns} data={rows} headless />;
 };
 
 export default LabelsTable;

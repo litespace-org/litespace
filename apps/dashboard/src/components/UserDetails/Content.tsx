@@ -1,4 +1,4 @@
-import DateField from "@/components/Common/DateField";
+import DateTimeField from "@/components/Common/DateTimeField";
 import BinaryField from "@/components/Common/BinaryField";
 import GenderField from "@/components/Common/GenderField";
 import React, { useMemo } from "react";
@@ -33,11 +33,11 @@ const Content: React.FC<{
       },
       {
         label: intl("global.created-at"),
-        value: <DateField date={user.createdAt} />,
+        value: <DateTimeField date={user.createdAt} />,
       },
       {
         label: intl("global.updated-at"),
-        value: <DateField date={user.updatedAt} />,
+        value: <DateTimeField date={user.updatedAt} />,
       },
     ];
   }, [intl, user]);

@@ -1,4 +1,4 @@
-import DateField from "@/components/Common/DateField";
+import DateTimeField from "@/components/Common/DateTimeField";
 import { Table, TableNaviationProps } from "@litespace/ui/Table";
 import { IPlanInvites, Void } from "@litespace/types";
 import { Menu } from "@litespace/ui/Menu";
@@ -8,6 +8,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
 import Trash from "@litespace/assets/Trash";
+import UserPopover from "../Common/UserPopover";
 
 const List: React.FC<
   {
@@ -52,14 +53,7 @@ const List: React.FC<
             {intl("dashboard.plan-invites.user-id")}
           </Typography>
         ),
-        cell: (info) => (
-          <Typography
-            tag="span"
-            className="text-body font-semibold text-natural-800"
-          >
-            {info.row.original.userId}
-          </Typography>
-        ),
+        cell: (info) => <UserPopover id={info.row.original.userId} />,
       }),
       columnHelper.accessor("planId", {
         header: () => (
@@ -82,14 +76,7 @@ const List: React.FC<
             {intl("dashboard.plan-invites.created-by")}
           </Typography>
         ),
-        cell: (info) => (
-          <Typography
-            tag="span"
-            className="text-body font-semibold text-natural-800"
-          >
-            {info.row.original.createdBy}
-          </Typography>
-        ),
+        cell: (info) => <UserPopover id={info.row.original.createdBy} />,
       }),
       columnHelper.accessor("createdAt", {
         header: () => (
@@ -98,7 +85,7 @@ const List: React.FC<
           </Typography>
         ),
         cell: (info) => {
-          return <DateField date={info.row.original.createdAt} />;
+          return <DateTimeField date={info.row.original.createdAt} />;
         },
       }),
       columnHelper.display({

@@ -6,7 +6,7 @@ import { formatCurrency } from "@litespace/ui/utils";
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
-import DateField from "@/components/Common/DateField";
+import DateTimeField from "@/components/Common/DateTimeField";
 import { UseQueryResult } from "@tanstack/react-query";
 import Process from "@/components/Invoices/Process";
 import { Action } from "@/components/Invoices/type";
@@ -90,11 +90,11 @@ const List: React.FC<{
       }),
       columnHelper.accessor("createdAt", {
         header: intl("global.created-at"),
-        cell: (info) => <DateField date={info.row.original.updatedAt} />,
+        cell: (info) => <DateTimeField date={info.row.original.updatedAt} />,
       }),
       columnHelper.accessor("updatedAt", {
         header: intl("global.updated-at"),
-        cell: (info) => <DateField date={info.row.original.updatedAt} />,
+        cell: (info) => <DateTimeField date={info.row.original.updatedAt} />,
       }),
       columnHelper.display({
         id: "actions",

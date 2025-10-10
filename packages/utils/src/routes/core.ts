@@ -153,7 +153,7 @@ type DashboardPayload =
       query?: BaseQuery;
     }
   | {
-      route: Dashboard.LessonEvents;
+      route: Dashboard.Lesson;
       lessonId: number;
       query?: BaseQuery;
     }

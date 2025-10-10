@@ -20,7 +20,7 @@ const DateTimeField: React.FC<{ date: string }> = ({ date }) => {
           tag="p"
           className="text-body font-semibold text-natural-800"
         >
-          {dayjs(date).format("YYYY/MM/D hh:mm A")}
+          {dayjs(date).format("hh:mm A - YYYY/MM/D")}
         </Typography>
       </div>
     </Tooltip>
