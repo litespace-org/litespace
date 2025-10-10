@@ -162,7 +162,12 @@ export const livekitConfig = {
     .string({ message: "missing or invalid livekit api secret" })
     .trim()
     .parse(process.env.LIVEKIT_API_SECRET),
-};
+  host: zod
+    .string({ message: "missing or invlaid livekit host" })
+    .trim()
+    .url()
+    .parse(process.env.LIVEKIT_HOST),
+} as const;
 
 export const paymobConfig = {
   publicKey: zod.string().trim().parse(process.env.PAYMOB_PUBLIC_KEY),

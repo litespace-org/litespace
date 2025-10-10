@@ -19,9 +19,9 @@ services:
         log_level: debug
         api_key: devkey
         api_secret: secret
-        ws_url: ws://127.0.0.1:7880
+        ws_url: ws://192.168.65.2:7880
         insecure: true
         redis:
-          address: 127.0.0.1:6378
+          address: 192.168.65.2:6378
     depends_on:
       - livekit-redis
