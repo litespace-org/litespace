@@ -64,6 +64,7 @@ export type Cache = {
   notice: number;
   topics: string[];
   avgRating: number;
+  ratingCount: number;
   studentCount: number;
   lessonCount: number;
 };
@@ -146,6 +147,7 @@ export type FindTutorInfoApiResponse = {
   studentCount: number;
   lessonCount: number;
   avgRating: number;
+  ratingCount: number;
   notice: number;
 };
 

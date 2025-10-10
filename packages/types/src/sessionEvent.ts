@@ -45,3 +45,19 @@ export type FindModelQuery = Pagination & {
 export type FindApiQuery = FindModelQuery;
 
 export type FindApiResponse = Paginated<MetaSelf>;
+
+export type FindBySessionIdApiQuery = {
+  sessionId: ISession.Id;
+};
+
+export type FindBySessionIdModelQuery = FindBySessionIdApiQuery;
+
+export type FindBySessionIdModelResponse = {
+  tutor: MetaSelf[];
+  student: MetaSelf[];
+};
+
+export type FindBySessionIdApiResponse = {
+  tutor: MetaSelf[];
+  student: MetaSelf[];
+};

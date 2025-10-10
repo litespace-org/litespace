@@ -1,5 +1,6 @@
 import { StudentDashboardTour } from "@/constants/tour";
 import { track } from "@/lib/ga";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
@@ -13,8 +14,26 @@ const ProfileInfo: React.FC<{
   video: string | null;
 }> = ({ about, topics, video }) => {
   const intl = useFormatMessage();
+  const { md } = useMediaQuery();
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 pt-4 md:pt-6 md:pb-10 md:px-10 lg:pt-8 gap-4 md:gap-6 lg:gap-[88px]">
+      {video && !md ? (
+        <div className="flex flex-col gap-2 md:gap-4">
+          <Typography
+            tag="span"
+            className="text-natural-950 font-bold text-body lg:text-subtitle-2"
+          >
+            {intl("tutor.profile.tabs.profile.video")}
+          </Typography>
+          <VideoPlayer
+            onPlay={() => {
+              track("play_tutor_video", "tutor_profile");
+            }}
+            src={optional(video)}
+          />
+        </div>
+      ) : null}
       <div>
         {about ? (
           <div className="flex flex-col gap-2 md:gap-4">
@@ -61,7 +80,7 @@ const ProfileInfo: React.FC<{
           </div>
         ) : null}
       </div>
-      {video ? (
+      {video && md ? (
         <div className="flex flex-col gap-2 md:gap-4">
           <Typography
             tag="span"

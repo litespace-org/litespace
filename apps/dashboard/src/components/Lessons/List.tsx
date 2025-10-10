@@ -11,6 +11,9 @@ import UserPopover from "@/components/Common/UserPopover";
 import DateField from "@/components/Common/DateField";
 import { dayjs } from "@/lib/dayjs";
 import { LoadingFragment } from "@/components/Common/LoadingFragment";
+import { Link } from "react-router-dom";
+import { router } from "@/lib/route";
+import { Dashboard } from "@litespace/utils/routes";
 
 const List: React.FC<{
   query: UseQueryResult<ILesson.FindUserLessonsApiResponse, Error>;
@@ -29,7 +32,17 @@ const List: React.FC<{
     return [
       columnHelper.accessor("lesson.id", {
         header: intl("labels.id"),
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+          <Link
+            className="font-bold underline"
+            to={router.dashboard({
+              route: Dashboard.LessonEvents,
+              lessonId: info.row.original.lesson.id,
+            })}
+          >
+            {info.getValue()}
+          </Link>
+        ),
       }),
       columnHelper.accessor((row) => row.members, {
         header: intl("dashboard.lessons.members"),

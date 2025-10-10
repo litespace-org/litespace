@@ -20,6 +20,7 @@ const getMockTutorCache = (id: number) => ({
   notice: faker.number.int(),
   topics: faker.lorem.words(5).split(" "),
   avgRating: faker.number.float(),
+  ratingCount: faker.number.int(),
   studentCount: faker.number.int(),
   lessonCount: faker.number.int(),
 });

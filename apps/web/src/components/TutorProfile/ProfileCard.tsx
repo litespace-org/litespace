@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import Star from "@litespace/assets/Star";
 import { Void } from "@litespace/types";
 import cn from "classnames";
@@ -10,6 +10,10 @@ import { formatNumber } from "@litespace/ui/utils";
 import { Button } from "@litespace/ui/Button";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { StudentDashboardTour } from "@/constants/tour";
+import Chat from "@litespace/assets/Chat";
+import { useFindRoomByMembers } from "@litespace/headless/chat";
+import { useUser } from "@litespace/headless/context/user";
+import { useNavigate } from "react-router-dom";
 
 const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
@@ -21,6 +25,7 @@ export const ProfileCard: React.FC<{
   studentCount: number;
   lessonCount: number;
   avgRating: number;
+  ratingCount: number;
   onBook?: Void;
   loading?: boolean;
   error?: boolean;
@@ -33,34 +38,51 @@ export const ProfileCard: React.FC<{
   studentCount,
   lessonCount,
   avgRating,
+  ratingCount,
   loading,
   error,
   onBook,
   retry,
 }) => {
   const intl = useFormatMessage();
+  const { user } = useUser();
   const { sm } = useMediaQuery();
+  const navigate = useNavigate();
 
   useEffect(() => {
     StudentDashboardTour.goNext();
   }, []);
 
+  const room = useFindRoomByMembers([user!.id, id]);
+  const goToRoom = useCallback(() => {
+    if (room.query.data) navigate(`/chat?room=${room.query.data}`);
+    navigate(`/chat?room=t-${id}`);
+  }, [room.query.data, id, navigate]);
+
   const BookButton = useMemo(
     () => (
-      <Button
-        size="large"
-        onClick={onBook}
-        className="w-full max-w-[360px] sm:max-w-[289px]"
-      >
-        <Typography
-          tag="span"
-          className="text-caption md:text-body font-semibold md:font-medium"
+      <div className="flex gap-4 items-center">
+        <Button
+          size="large"
+          onClick={onBook}
+          className="w-full max-w-[360px] sm:max-w-[289px]"
         >
-          {intl("tutor.book")}
-        </Typography>
-      </Button>
+          <Typography
+            tag="span"
+            className="text-caption md:text-body font-semibold md:font-medium"
+          >
+            {intl("tutor.book")}
+          </Typography>
+        </Button>
+        <Button
+          size="large"
+          variant="secondary"
+          onClick={goToRoom}
+          endIcon={<Chat className="[&>*]:stroke-brand-500" />}
+        />
+      </div>
     ),
-    [intl, onBook]
+    [intl, onBook, goToRoom]
   );
 
   if (loading)
@@ -158,6 +180,12 @@ export const ProfileCard: React.FC<{
                     })}
                   </Typography>
                   <Star className="w-4 h-4 md:w-[30px] md:h-[30px] [&>*]:fill-warning-500" />
+                  <Typography
+                    tag="span"
+                    className="font-norma text-tiny text-natural-600 inline-block"
+                  >
+                    ({intl("tutor-profile.rating", { count: ratingCount })})
+                  </Typography>
                 </div>
               ) : null}
             </div>

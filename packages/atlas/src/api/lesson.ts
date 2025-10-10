@@ -1,5 +1,5 @@
 import { Base } from "@/lib/base";
-import { ILesson } from "@litespace/types";
+import { ILesson, ISession } from "@litespace/types";
 
 export class Lesson extends Base {
   async create(
@@ -46,6 +46,12 @@ export class Lesson extends Base {
 
   async findLesson(id: number): Promise<ILesson.FindLessonByIdApiResponse> {
     return await this.get({ route: `/api/v1/lesson/${id}` });
+  }
+
+  async findBySessionId(
+    id: ISession.Id
+  ): Promise<ILesson.FindLessonBySessionIdApiResponse | null> {
+    return await this.get({ route: `/api/v1/lesson/session/${id}` });
   }
 
   async update(

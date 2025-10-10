@@ -9,6 +9,7 @@ export default function router(context: ApiContext) {
   router.get("/list", lesson.findLessons);
   router.get("/refundable", lesson.findRefundableLessons);
   router.get("/:id", lesson.findLessonById);
+  router.get("/session/:sessionId", lesson.findBySessionId);
   router.post("/", lesson.create(context));
   router.post("/card", lesson.createWithCard);
   router.post("/ewallet", lesson.createWithEWallet);

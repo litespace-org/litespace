@@ -215,7 +215,16 @@ export type LessonDay = {
 export type LessonDayRows = LessonDayRow[];
 export type LessonDays = LessonDay[];
 
+export type FindBySessionIdApiQuery = {
+  sessionId: ISession.Id;
+};
+
 export type FindLessonByIdApiResponse = {
+  lesson: Self;
+  members: PopulatedMember[];
+};
+
+export type FindLessonBySessionIdApiResponse = {
   lesson: Self;
   members: PopulatedMember[];
 };

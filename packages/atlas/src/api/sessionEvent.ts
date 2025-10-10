@@ -10,4 +10,12 @@ export class SessionEvent extends Base {
       params: query,
     });
   }
+
+  async findBySessionId({
+    sessionId,
+  }: ISessionEvent.FindBySessionIdApiQuery): Promise<ISessionEvent.FindBySessionIdApiResponse> {
+    return await this.get({
+      route: `/api/v1/session-event/list/session/${sessionId}`,
+    });
+  }
 }

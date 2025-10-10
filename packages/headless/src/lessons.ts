@@ -1,4 +1,4 @@
-import { Element, IFilter, ILesson } from "@litespace/types";
+import { Element, IFilter, ILesson, ISession } from "@litespace/types";
 import { useCallback } from "react";
 import { useApi } from "@/api/index";
 import { MutationKey, QueryKey } from "@/constants";
@@ -45,6 +45,20 @@ export function useFindRefundableLessons(): UseQueryResult<ILesson.FindRefundabl
   return useQuery({
     queryFn: findRefundableLessons,
     queryKey: [QueryKey.FindRefundableLessons],
+  });
+}
+
+export function useFindLessonBySessionId(sessionId: ISession.Id) {
+  const api = useApi();
+
+  const findBySessionId = useCallback(
+    async () => await api.lesson.findBySessionId(sessionId),
+    [api.lesson, sessionId]
+  );
+
+  return useQuery({
+    queryFn: findBySessionId,
+    queryKey: [QueryKey.FindLessonBySessionId, sessionId],
   });
 }
 
