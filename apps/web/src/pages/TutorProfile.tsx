@@ -7,7 +7,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
-import RightArrow from "@litespace/assets/ArrowRight";
+import RightArrowHead from "@litespace/assets/RightArrowHead";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { TutorTabs } from "@/components/TutorProfile/TutorTabs";
@@ -48,7 +48,7 @@ const TutorProfile: React.FC = () => {
             to={Web.Tutors}
             className="hidden md:flex w-6 h-6 items-center justify-center"
           >
-            <RightArrow className="[&>*]:stroke-brand-700" />
+            <RightArrowHead className="[&>*]:stroke-brand-500 w-6 h-6" />
           </Link>
         ) : null}
         <Typography
@@ -59,7 +59,7 @@ const TutorProfile: React.FC = () => {
           {tutor.data?.name ? (
             <>
               <span>/ </span>
-              <span className=" text-brand-700 inline-block">
+              <span className=" text-brand-500 inline-block underline">
                 {tutor.data.name}
               </span>
             </>
@@ -87,7 +87,7 @@ const TutorProfile: React.FC = () => {
       ) : null}
 
       {!tutor.isLoading && !tutor.isError && tutor.data ? (
-        <div className="md:bg-natural-50 md:border md:border-natural-100 md:shadow-tutor-profile md:rounded-2xl flex flex-col gap-8 md:gap-14 lg:gap-12">
+        <div className="flex flex-col gap-8 md:gap-14 lg:gap-12">
           <ProfileCard
             {...tutor.data}
             onBook={() => {

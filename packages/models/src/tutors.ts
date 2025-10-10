@@ -470,7 +470,7 @@ export class Tutors {
             q2.where("s1.activated", "=", true);
             q2.whereNotNull("s1.video");
             q2.whereNotNull("s1.thumbnail");
-            q2.whereNotNull("s1.studio_id");
+            // q2.whereNotNull("s1.studio_id");
           }
         );
       });
@@ -487,6 +487,8 @@ export class Tutors {
         // in order to optain more sql query performance.
         withPagination(innerSelect.clone(), pagination)
       );
+
+    console.log({ list });
 
     return { list, total };
   }

@@ -13,6 +13,7 @@ import { ApiError, ITutor, IUser } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useOnError } from "@/hooks/error";
+import { useFindTutorInfo } from "@litespace/headless/tutor";
 
 const Chat: React.FC = () => {
   const [temporaryTutor, setTemporaryTutor] =
@@ -27,6 +28,21 @@ const Chat: React.FC = () => {
   const { query: roomMembers, keys } = useFindRoomMembers(
     typeof selected.room === "number" ? selected.room : null
   );
+  const { data: uncontactedTutorData } = useFindTutorInfo(
+    typeof selected.room === `string` && Number(selected.room.split("-")[1])
+      ? Number(selected.room.split("-")[1])
+      : undefined
+  );
+
+  useEffect(() => {
+    if (uncontactedTutorData)
+      setTemporaryTutor({
+        ...uncontactedTutorData,
+        online: false,
+        gender: IUser.Gender.Male,
+        lastSeen: "",
+      });
+  }, [uncontactedTutorData]);
 
   useEffect(() => {
     if (roomMembers.error?.message === ApiError.NotRoomMember)

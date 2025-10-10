@@ -64,6 +64,8 @@ export async function constructTutorsCache(): Promise<TutorsCache> {
       topics: filteredTopics,
       avgRating:
         tutorsRatings.find((rating) => rating.user === tutor.id)?.avg || 0,
+      ratingCount:
+        tutorsRatings.find((rating) => rating.user === tutor.id)?.count || 0,
       studentCount:
         tutorsStudentsCount.find((item) => item.userId === tutor.id)?.count ||
         0,
@@ -172,6 +174,7 @@ async function findTutorCacheMeta(tutorId: number) {
   return {
     topics: tutorTopics.map((topic) => topic.name.ar),
     avgRating: first(avgRatings)?.avg || 0,
+    ratingCount: first(avgRatings)?.count || 0,
     studentCount,
     lessonCount,
     online,
@@ -186,6 +189,7 @@ export async function joinTutorCache(
     ? {
         topics: cacheData.topics,
         avgRating: cacheData.avgRating,
+        ratingCount: cacheData.ratingCount,
         studentCount: cacheData.studentCount,
         lessonCount: cacheData.lessonCount,
       }
@@ -224,6 +228,7 @@ export async function asTutorInfoResponseBody(
     studentCount: ctutor.studentCount,
     lessonCount: ctutor.lessonCount,
     avgRating: ctutor.avgRating,
+    ratingCount: ctutor.ratingCount,
     notice: ctutor.notice,
     ...assets,
   };

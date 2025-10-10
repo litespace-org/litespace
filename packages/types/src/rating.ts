@@ -107,6 +107,10 @@ export type FindTutorRatingsApiQuery = IFilter.Pagination;
 
 export type FindTutorRatingsApiResponse = Paginated<RateeRating>;
 
-export type FindAvgRatingResult = Array<{ user: number; avg: number }>;
+export type FindAvgRatingResult = Array<{
+  user: number;
+  avg: number;
+  count: number;
+}>;
 
 export type FindRatingByIdApiResponse = Populated;

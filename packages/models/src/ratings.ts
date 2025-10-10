@@ -234,9 +234,14 @@ export class Ratings {
     users: number[];
   }>): Promise<IRating.FindAvgRatingResult> {
     const rows = await this.builder(tx)
-      .select({ user: this.column.ratings("ratee_id") })
-      .avg<Array<{ user: number; avg: string }>>({
+      .select({
+        user: this.column.ratings("ratee_id"),
+      })
+      .avg({
         avg: this.column.ratings("value"),
+      })
+      .count({
+        count: this.column.ratings("id"),
       })
       .whereIn(this.column.ratings("ratee_id"), users)
       .groupBy(this.column.ratings("ratee_id"));
@@ -244,6 +249,7 @@ export class Ratings {
     return rows.map((row) => ({
       user: row.user,
       avg: zod.coerce.number().parse(row.avg),
+      count: zod.coerce.number().parse(row.count),
     }));
   }
 
