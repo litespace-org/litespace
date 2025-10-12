@@ -533,6 +533,14 @@ async function findRefundableLessons(
     if (result instanceof Error) return next(result);
 
     const status = ORDER_STATUS_TO_TRANSACTION_STATUS[result.orderStatus];
+
+    if (
+      status === ITransaction.Status.New ||
+      status === ITransaction.Status.Processed ||
+      status === ITransaction.Status.Paid
+    )
+      continue;
+
     lesson.txStatus = status;
     transactions.update({ id: lesson.txId, status });
   }
