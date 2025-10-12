@@ -14,6 +14,7 @@ import Chat from "@litespace/assets/Chat";
 import { useFindRoomByMembers } from "@litespace/headless/chat";
 import { useUser } from "@litespace/headless/context/user";
 import { useNavigate } from "react-router-dom";
+import { Role } from "@litespace/types/dist/esm/user";
 
 const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
@@ -22,6 +23,7 @@ export const ProfileCard: React.FC<{
   name: string | null;
   id: number;
   bio: string | null;
+  role?: number;
   studentCount: number;
   lessonCount: number;
   avgRating: number;
@@ -35,6 +37,7 @@ export const ProfileCard: React.FC<{
   name,
   id,
   bio,
+  role,
   studentCount,
   lessonCount,
   avgRating,
@@ -135,21 +138,46 @@ export const ProfileCard: React.FC<{
         >
           <div
             className={cn(
-              "aspect-square shrink-0 rounded-full overflow-hidden",
+              "relative aspect-square shrink-0 rounded-full overflow-hidden",
               "w-[90px] h-[90px] md:w-[242px] md:h-[242px]"
             )}
           >
+            {role === Role.TutorManager && (
+              <Typography
+                tag="p"
+                className={cn(
+                  "hidden z-[3] md:flex absolute md:top-[43px] md:left-[-45px] md:w-[190px] md:h-[28px]",
+                  "bg-success-600 text-natural-0 font-cairo font-bold text-tiny",
+                  "flex items-center justify-center",
+                  "-rotate-45"
+                )}
+              >
+                {intl("tutor.recommended")}
+              </Typography>
+            )}
             <AvatarV2 src={image} alt={name} id={id} object="cover" />
           </div>
 
           <div className="sm:flex sm:flex-col w-full sm:gap-5 min-w-max">
             <div className="flex flex-col gap-1 md:gap-2">
-              <Typography
-                tag="h3"
-                className="font-bold text-natural-950 dark:text-natural-50 text-body md:text-h2"
-              >
-                {name}
-              </Typography>
+              <div className="flex items-center gap-1">
+                <Typography
+                  tag="h3"
+                  className="font-bold text-natural-950 dark:text-natural-50 text-body md:text-h2"
+                >
+                  {name}
+                </Typography>
+
+                {role === Role.TutorManager && (
+                  <Typography
+                    tag="p"
+                    className="hidden max-sm:flex font-cairo font-normal text-tiny text-success-700"
+                  >
+                    {`(${intl("tutor.recommended")})`}
+                  </Typography>
+                )}
+              </div>
+
               <div className="flex flex-col gap-1 md:gap-2">
                 <Typography
                   tag="span"
