@@ -212,6 +212,7 @@
     "./WarningFill": "./dist/WarningFill.tsx",
     "./WarningInfo": "./dist/WarningInfo.tsx",
     "./We": "./dist/We.tsx",
+    "./WhatsAppV2": "./dist/WhatsAppV2.tsx",
     "./WhatsApp": "./dist/WhatsApp.tsx",
     "./XErroredFill": "./dist/XErroredFill.tsx",
     "./X": "./dist/X.tsx",

@@ -70,8 +70,10 @@ export default {
         "free-badge": "2",
         "online-indicator": "2",
         "session-movable-stream": "3",
+        "floating-buttons": "9",
         quote: "10",
         "dialog-overlay": "10",
+        "mobile-sidebar": "10",
         dialog: "11",
         "confirm-dialog-overlay": "12",
         "confirm-dialog-content": "13",
@@ -84,6 +86,7 @@ export default {
         "video-player-settings-menu": "20",
       },
       screens: {
+        "2xs": "400px",
         xs: "480px",
         "3xl": "1600px",
       },

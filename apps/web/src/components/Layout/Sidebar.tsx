@@ -970,7 +970,7 @@ const Dome: React.FC = () => {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="26.4755 -0.85 55.18 55.95"
-      className="md:hidden absolute -left-3 -top-2 -z-10 w-[68px]"
+      className="md:hidden absolute -left-3 -top-2 -z-mobile-sidebar w-[68px]"
     >
       <path
         d="M 35 40 C 30 5 24 18 35 10 C 47 -4 63 -4 75 10 C 86 17 78 3 74 40 C 74 46 75 51 75 55 C 60 55 40 55 35 55 C 35 50 35 45 35 40"
@@ -990,7 +990,7 @@ const MobileSidebar: React.FC<{
     <div
       className={cn(
         "fixed bottom-0 start-1/2 translate-x-1/2 max-w-[360px] w-full h-[90px] bg-natural-50 rounded-t-xl",
-        "flex gap-3 shadow-mobile-sidebar z-10 pb-6 px-4"
+        "flex gap-3 shadow-mobile-sidebar z-mobile-sidebar pb-6 px-4"
       )}
     >
       {pages.map((page) => (
