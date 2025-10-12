@@ -19,7 +19,6 @@ import {
   withSkippablePagination,
   withBooleanFilter,
   withNullableListFilter,
-  withNullableFilter,
   withListFilter,
 } from "@/query";
 import zod from "zod";
@@ -589,6 +588,7 @@ export class Lessons {
   async findRefundable(userId: number): Promise<Array<ILesson.MetaSelf>> {
     const builder = this.builder().lessons;
 
+    // Get lessons for a specific user
     builder
       .join(
         this.table.members,
@@ -597,29 +597,33 @@ export class Lessons {
       )
       .whereIn(this.columns.members("user_id"), [userId]);
 
+    // Get only lessons with transactions attached
     builder.join(
       transactions.table,
       this.columns.lessons("tx_id"),
       transactions.column("id")
     );
 
-    withNullableFilter(
-      builder,
-      this.columns.lessons("canceled_by"),
-      true
-    ).orWhere(this.columns.lessons("reported"), true);
-
-    const query = builder
+    // Get the last lesson attached to each transaction
+    const innerSelect = builder
       .select(
         "*",
         `${transactions.column("fees")} as tx_fees`,
         `${transactions.column("amount")} as tx_amount`,
         `${transactions.column("status")} as tx_status`,
+        `${transactions.column("created_at")} as tx_created_at`,
         `${transactions.column("provider_ref_num")} as order_ref_num`
       )
       .orderBy(this.columns.lessons("tx_id"), "desc")
       .orderBy(this.columns.lessons("created_at"), "desc")
       .distinctOn(this.columns.lessons("tx_id"));
+
+    // Get only canceled and/or reported lessons
+    const query = this.builder()
+      .lessons.select("*")
+      .from(innerSelect)
+      .whereNot("canceled_by", null)
+      .orWhere("reported", true);
 
     const rows = await query;
     return rows.map((row) => ({
@@ -627,6 +631,7 @@ export class Lessons {
       txFees: row["tx_fees"],
       txAmount: row["tx_amount"],
       txStatus: row["tx_status"],
+      txCreatedAt: row["tx_created_at"],
       orderRefNum: row["order_ref_num"],
     }));
   }

@@ -11,6 +11,7 @@ import { useUser } from "@litespace/headless/context/user";
 import { Button } from "@litespace/ui/Button";
 import { useRender } from "@litespace/headless/common";
 import RefundDialog from "@/components/StudentSettings/RefundDialog";
+import { Loading } from "@litespace/ui/Loading";
 
 const RefundsTable: React.FC = () => {
   const intl = useFormatMessage();
@@ -24,6 +25,8 @@ const RefundsTable: React.FC = () => {
     () => lessons.data?.filter((l) => l.reported) || [],
     [lessons.data]
   );
+
+  if (lessons.isPending) return <Loading />;
 
   if (isEmpty(canceledLessons) && isEmpty(reportedLessons))
     return (

@@ -30,7 +30,12 @@ import {
   ITransaction,
   Wss,
 } from "@litespace/types";
-import { lessons, knex, availabilitySlots } from "@litespace/models";
+import {
+  lessons,
+  knex,
+  availabilitySlots,
+  transactions,
+} from "@litespace/models";
 import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
@@ -45,6 +50,7 @@ import { MAX_FULL_FLAG_DAYS } from "@/constants";
 import { groupBy, isEmpty, isEqual } from "lodash";
 import {
   AFRICA_CAIRO_TIMEZONE,
+  safePromise,
   UNCANCELLABLE_LESSON_HOURS,
 } from "@litespace/utils";
 import { withImageUrls, withPhone } from "@/lib/user";
@@ -74,6 +80,9 @@ import {
   Unexpected,
   WeekBoundariesViolation,
 } from "@/lib/error/local";
+import { encodeMerchantRefNumber } from "@/fawry/lib/ids";
+import { fawry } from "@/fawry/api";
+import { ORDER_STATUS_TO_TRANSACTION_STATUS } from "@/fawry/constants";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
@@ -375,22 +384,25 @@ function update(context: ApiContext) {
       const otherMember = members.find((member) => member.userId !== user.id);
       if (!otherMember) return;
 
-      if (otherMember.phone && otherMember.notificationMethod)
-        sendMsg({
-          to: otherMember.phone,
-          template: {
-            name: "lesson_updated",
-            parameters: {
-              predate: dayjs(lesson.start)
-                .tz(AFRICA_CAIRO_TIMEZONE)
-                .format("ddd D MMM hh:mm A"),
-              curdate: dayjs(updated.start)
-                .tz(AFRICA_CAIRO_TIMEZONE)
-                .format("ddd D MMM hh:mm A"),
+      if (otherMember.phone)
+        sendMsg(
+          {
+            to: otherMember.phone,
+            template: {
+              name: "lesson_updated",
+              parameters: {
+                predate: dayjs(lesson.start)
+                  .tz(AFRICA_CAIRO_TIMEZONE)
+                  .format("ddd D MMM hh:mm A"),
+                curdate: dayjs(updated.start)
+                  .tz(AFRICA_CAIRO_TIMEZONE)
+                  .format("ddd D MMM hh:mm A"),
+              },
             },
+            method: otherMember.notificationMethod,
           },
-          method: otherMember.notificationMethod,
-        });
+          true
+        );
 
       // notify tutors that lessons have been rebooked
       context.io.sockets
@@ -506,6 +518,25 @@ async function findRefundableLessons(
   // TODO: add pagination
   const list = await lessons.findRefundable(user.id);
 
+  // Retrieve the last transaction status from fawry.
+  // NOTE: fawry doesn't inform us for refunds via the web hook.
+  for (const lesson of list) {
+    if (!lesson.txId) continue;
+    if (lesson.txStatus !== ITransaction.Status.Refunding) continue;
+
+    const merchantRefNumber = encodeMerchantRefNumber({
+      transactionId: lesson.txId,
+      createdAt: lesson.txCreatedAt,
+    });
+
+    const result = await safePromise(fawry.getPaymentStatus(merchantRefNumber));
+    if (result instanceof Error) return next(result);
+
+    const status = ORDER_STATUS_TO_TRANSACTION_STATUS[result.orderStatus];
+    lesson.txStatus = status;
+    transactions.update({ id: lesson.txId, status });
+  }
+
   const result: ILesson.FindRefundableLessonsApiResponse = list;
 
   res.status(200).json(result);
@@ -604,19 +635,22 @@ async function cancel(req: Request, res: Response, next: NextFunction) {
   const otherMember = members.find((member) => member.userId !== user.id);
   if (!otherMember) return;
 
-  if (otherMember.phone && otherMember.notificationMethod)
-    sendMsg({
-      to: otherMember.phone,
-      template: {
-        name: "lesson_canceled",
-        parameters: {
-          date: dayjs(lesson.start)
-            .tz(AFRICA_CAIRO_TIMEZONE)
-            .format("ddd D MMM hh:mm A"),
+  if (otherMember.phone)
+    sendMsg(
+      {
+        to: otherMember.phone,
+        template: {
+          name: "lesson_canceled",
+          parameters: {
+            date: dayjs(lesson.start)
+              .tz(AFRICA_CAIRO_TIMEZONE)
+              .format("ddd D MMM hh:mm A"),
+          },
         },
+        method: otherMember.notificationMethod,
       },
-      method: otherMember.notificationMethod,
-    });
+      true
+    );
 }
 
 async function report(req: Request, res: Response, next: NextFunction) {
