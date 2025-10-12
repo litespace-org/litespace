@@ -18,6 +18,7 @@ export const messenger = new Messenger({
  * @param force - if true, the message will be sent even if the method is undefined.
  */
 export function sendMsg(msg: Required<IMessenger.Message>, force?: boolean) {
+  if (!messengerConfig.whatsAppAPI.accessToken) return;
   if (force || msg.method === IUser.NotificationMethod.Whatsapp) {
     messenger.whatsapp
       .sendSimpleMessage({

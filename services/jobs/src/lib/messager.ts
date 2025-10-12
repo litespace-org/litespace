@@ -12,6 +12,7 @@ export const messenger = new Messenger({
 });
 
 export function sendMsg(msg: Required<IMessenger.Message>, force?: boolean) {
+  if (!config.whatsAppAPI.accessToken) return;
   if (force || msg.method === IUser.NotificationMethod.Whatsapp) {
     messenger.whatsapp
       .sendSimpleMessage({
