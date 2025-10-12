@@ -159,7 +159,8 @@ const LessonRow: React.FC<{ data: ILesson.MetaSelf }> = ({ data }) => {
         {buttonLabel}
       </Button>
 
-      {data.orderRefNum && data.txId ? (
+      {/* refundDialog.open is important here to prevent within query requests */}
+      {data.orderRefNum && data.txId && refundDialog.open ? (
         <RefundDialog
           isOpen={refundDialog.open}
           txId={data.txId}
