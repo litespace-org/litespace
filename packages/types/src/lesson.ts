@@ -77,6 +77,7 @@ export type MetaSelf = Self & {
   txStatus: ITransaction.Status;
   txFees: number;
   txAmount: number;
+  txCreatedAt: string;
   orderRefNum: ITransaction.Self["providerRefNum"];
 };
 

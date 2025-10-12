@@ -742,7 +742,8 @@ async function syncPaymentStatus(
     // terminate subscription in case the tx was canceled, refunded, or failed.
     if (
       subscription &&
-      (status === ITransaction.Status.Canceled ||
+      (transaction.status === ITransaction.Status.Refunding ||
+        status === ITransaction.Status.Canceled ||
         status === ITransaction.Status.Refunded ||
         status === ITransaction.Status.Failed)
     )

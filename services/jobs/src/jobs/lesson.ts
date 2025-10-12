@@ -118,7 +118,8 @@ function getReminderMsgForMember({
 
 async function send(messages: IMessenger.Message[]) {
   if (isEmpty(messages)) return;
-  for (const msg of messages) sendMsg({ ...msg, method: msg.method || null });
+  for (const msg of messages)
+    sendMsg({ ...msg, method: msg.method || null }, true);
 }
 
 export default { start };

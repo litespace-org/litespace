@@ -11,8 +11,8 @@ export const messenger = new Messenger({
   profileId: config.whatsAppAPI.profileId,
 });
 
-export function sendMsg(msg: Required<IMessenger.Message>) {
-  if (msg.method === IUser.NotificationMethod.Whatsapp) {
+export function sendMsg(msg: Required<IMessenger.Message>, force?: boolean) {
+  if (force || msg.method === IUser.NotificationMethod.Whatsapp) {
     messenger.whatsapp
       .sendSimpleMessage({
         to: msg.to.startsWith("2") ? msg.to : `2${msg.to}`,
