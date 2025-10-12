@@ -15,7 +15,7 @@ import { isEmpty } from "lodash";
 import React from "react";
 import { Link } from "react-router-dom";
 import { useFindTutorRatings } from "@litespace/headless/rating";
-import { Role } from "@litespace/types/dist/esm/user";
+import { IUser } from "@litespace/types";
 
 const MAXIMUM_CARD_TOPICS_NUM = 4;
 
@@ -72,7 +72,7 @@ export const TutorCard: React.FC<{
             cardHeight || "h-80 max-h-80"
           )}
         >
-          {role === Role.TutorManager && (
+          {role === IUser.Role.TutorManager && (
             <Typography
               tag="p"
               className={cn(
