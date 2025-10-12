@@ -14,7 +14,7 @@ import Chat from "@litespace/assets/Chat";
 import { useFindRoomByMembers } from "@litespace/headless/chat";
 import { useUser } from "@litespace/headless/context/user";
 import { useNavigate } from "react-router-dom";
-import { Role } from "@litespace/types/dist/esm/user";
+import { IUser } from "@litespace/types";
 
 const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
@@ -142,7 +142,7 @@ export const ProfileCard: React.FC<{
               "w-[90px] h-[90px] md:w-[242px] md:h-[242px]"
             )}
           >
-            {role === Role.TutorManager && (
+            {role === IUser.Role.TutorManager && (
               <Typography
                 tag="p"
                 className={cn(
@@ -168,7 +168,7 @@ export const ProfileCard: React.FC<{
                   {name}
                 </Typography>
 
-                {role === Role.TutorManager && (
+                {role === IUser.Role.TutorManager && (
                   <Typography
                     tag="p"
                     className="hidden max-sm:flex font-cairo font-normal text-tiny text-success-700"
