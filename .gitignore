@@ -7,6 +7,9 @@ dist/
 vercel-urls.json
 .DS_Store
 
+.env.egress.dev
+.env.egress.prod
+
 # ui
 ui/src/index.css
 storybook-static/

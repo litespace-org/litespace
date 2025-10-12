@@ -1,9 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ILesson, Void } from "@litespace/types";
 import { Table } from "@litespace/ui/Table";
-import { UseQueryResult } from "@tanstack/react-query";
 import { formatCurrency } from "@litespace/ui/utils";
 import { Duration } from "@litespace/utils/duration";
 import { price } from "@litespace/utils/value";
@@ -14,9 +13,13 @@ import { LoadingFragment } from "@/components/Common/LoadingFragment";
 import { Link } from "react-router-dom";
 import { router } from "@/lib/route";
 import { Dashboard } from "@litespace/utils/routes";
+import { UseExtendedQueryResult } from "@litespace/headless/query";
+import { isEmpty } from "lodash";
+import { Button } from "@litespace/ui/Button";
+import VideoListDialog from "@/components/Lessons/VideoListDialog";
 
 const List: React.FC<{
-  query: UseQueryResult<ILesson.FindUserLessonsApiResponse, Error>;
+  query: UseExtendedQueryResult<ILesson.FindUserLessonsApiResponse>;
   next: Void;
   prev: Void;
   goto: (pageNumber: number) => void;
@@ -24,6 +27,7 @@ const List: React.FC<{
   totalPages: number;
 }> = ({ query, next, prev, goto, page, totalPages }) => {
   const intl = useFormatMessage();
+  const [videoUrls, setVideoUrls] = useState<string[]>([]);
 
   const columnHelper =
     createColumnHelper<ILesson.FindUserLessonsApiResponse["list"][number]>();
@@ -99,6 +103,22 @@ const List: React.FC<{
           return "-";
         },
       }),
+      columnHelper.accessor("files", {
+        header: intl("dashboard.lessons.files"),
+        cell: (info) => {
+          const files = info.getValue();
+          if (isEmpty(files)) return "-";
+          return (
+            <Button
+              onClick={() => setVideoUrls(files)}
+              variant="secondary"
+              type="natural"
+            >
+              {intl("labels.show")}
+            </Button>
+          );
+        },
+      }),
       columnHelper.accessor("lesson.createdAt", {
         header: intl("global.created-at"),
         cell: (info) => <DateTimeField date={info.getValue()} />,
@@ -139,6 +159,12 @@ const List: React.FC<{
         loading={query.isLoading}
         totalPages={totalPages}
         page={page}
+      />
+
+      <VideoListDialog
+        open={!isEmpty(videoUrls)}
+        close={() => setVideoUrls([])}
+        urls={videoUrls}
       />
     </div>
   );

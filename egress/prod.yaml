@@ -1,0 +1,7 @@
+log_level: debug
+api_key: ${LIVEKIT_API_KEY}
+api_secret: ${LIVEKIT_API_SECRET}
+ws_url: ws://192.168.65.2:7880
+insecure: true
+redis:
+  address: 192.168.65.2:6379

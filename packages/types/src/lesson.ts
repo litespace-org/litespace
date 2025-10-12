@@ -195,6 +195,7 @@ export type FindLessonsApiQuery = IFilter.SkippablePagination & {
 export type FindUserLessonsApiResponse = Paginated<{
   lesson: Self;
   members: PopulatedMember[];
+  files: string[];
 }>;
 
 export enum Duration {

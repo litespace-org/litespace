@@ -71,7 +71,9 @@
     "studio": "pnpm --filter @litespace/studio",
     "kafka": "pnpm --filter @litespace/kafka",
     "lens": "pnpm --filter @litespace/lens",
-    "livekit:dev": "livekit-server --dev --config livekit.config.yaml"
+    "livekit:dev": "livekit-server --dev --config livekit.config.yaml",
+    "docker:egress:dev": "docker compose -f docker-compose-egress-dev.yaml --env-file .env.egress.dev",
+    "docker:egress:prod": "docker compose -f docker-compose-egress-prod.yaml --env-file .env.egress.prod"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.2",

@@ -193,6 +193,8 @@ To create a new package, follow these steps:
 
 We are using [livekit](https://livekit.io/) as our real-time media server. Make sure to install [likevit-server](https://docs.livekit.io/home/self-hosting/local/) and the [livekit-cli](https://docs.livekit.io/home/cli/cli-setup/).
 
+Use the command `pnpm livekit:dev` to run the livekit server locally. To run livekit egress in development mode, you will need to copy the content of `.env.egress.example` into a `.env.egress.dev` file and then run the command `pnpm docker:egress:dev up -d`.
+
 ## Important values
 
 - "LiteSpace Dev Updates" Telegram channel id: -4520756689
