@@ -45,8 +45,8 @@
     "peerjs": "^1.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-ga4": "^2.1.0",
     "react-feather": "^2.0.10",
+    "react-ga4": "^2.1.0",
     "react-hook-form": "^7.51.5",
     "react-hotkeys-hook": "^5.0.1",
     "react-intersection-observer": "^9.13.1",
@@ -100,6 +100,7 @@
     "typescript": "5.9.2",
     "vercel": "^34.2.7",
     "vite": "^5.2.0",
+    "vite-plugin-mkcert": "^1.17.9",
     "vite-plugin-static-copy": "^1.0.6"
   }
 }

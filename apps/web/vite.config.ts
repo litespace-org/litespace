@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
+import mkcert from "vite-plugin-mkcert";
 import path from "node:path";
 
 // const backend = process.env.VITE_BACKEND;
@@ -11,7 +12,7 @@ export default defineConfig({
   // prevent vite from obscuring rust errors
   clearScreen: false,
   // tauri expects a fixed port, fail if that port is not available
-  server: { strictPort: true },
+  server: { strictPort: true, https: true },
   // to access the Tauri environment variables set by the CLI with information about the current target
   envPrefix: [
     "VITE_",
@@ -48,6 +49,7 @@ export default defineConfig({
   },
   plugins: [
     react({}),
+    mkcert(),
     {
       name: "configure-response-headers",
       configureServer: (server) => {

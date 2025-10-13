@@ -114,16 +114,14 @@ const CallMembers: React.FC<{
         ) : null}
 
         {/* Bottom Panel */}
-        <div
-          className={cn(
-            "flex gap-4 absolute -bottom-4 sm:-bottom-8 right-4",
-            "z-session-movable-stream shadow-session-movable-stream rounded-lg"
-          )}
-        >
+        <div className="flex gap-4 absolute -bottom-4 sm:-bottom-8 right-4 z-session-movable-stream">
           {panelStreams.map((streamInfo, i) => (
             <div
               key={i}
-              className="w-32 sm:w-60 lg:w-72 aspect-mobile md:aspect-desktop"
+              className={cn(
+                "w-32 sm:w-60 lg:w-72 aspect-mobile bg-natural-100",
+                "md:aspect-desktop shadow-session-movable-stream rounded-lg"
+              )}
             >
               <MemberStream
                 currentMember={streamInfo.userId === user.id}
