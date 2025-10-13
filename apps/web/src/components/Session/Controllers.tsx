@@ -17,6 +17,7 @@ import { useRender } from "@litespace/headless/common";
 import { useMediaCall } from "@/hooks/mediaCall";
 import { Device } from "@/modules/MediaCall/types";
 import { Typography } from "@litespace/ui/Typography";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Icon = "microphone" | "camera" | "blur" | "screen" | "chat";
 
@@ -156,6 +157,7 @@ const Controllers: React.FC<{
   className?: string;
 }> = ({ audio, video, screen, devices, blur, leave, chat, className }) => {
   const call = useMediaCall();
+  const mq = useMediaQuery();
 
   const microphones = useMemo(
     () => devices.filter((d) => d.type === "mic") || [],
@@ -210,7 +212,7 @@ const Controllers: React.FC<{
         }))}
       />
 
-      {screen ? (
+      {mq.md && screen ? (
         <Toggle
           toggle={() => screen.toggle()}
           enabled={screen.enabled}
