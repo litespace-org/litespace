@@ -12,7 +12,7 @@ export type StringLiteral<T> = T extends `${string & T}` ? T : never;
 
 export type Void = () => void;
 
-export type Size = "large" | "medium" | "small";
+export type Size = "large" | "medium" | "small" | "custom";
 
 export type Optional<T> = T | undefined;
 
