@@ -80,6 +80,14 @@ export type FindModelQuery<T extends Field = Field> =
     roles?: IUser.Role[];
     start?: IFilter.Date;
     end?: IFilter.Date;
+    /**
+     * @deprecated use `start` and `after` instead.
+     */
+    before?: string;
+    /**
+     * @deprecated use `start` and `after` instead.
+     */
+    after?: string;
     createdAt?: IFilter.Date;
     deleted?: boolean;
     purposes?: IAvailabilitySlot.Purpose[];

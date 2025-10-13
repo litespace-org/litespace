@@ -1,10 +1,12 @@
 import schedule from "node-schedule";
 import lesson from "@/jobs/lesson";
 import backup from "@/jobs/backup";
+import dailyReport from "@/jobs/dailyReport";
 
 async function main() {
   schedule.scheduleJob("*/15 * * * *", lesson.start);
   schedule.scheduleJob("0 0 * * *", backup.start);
+  schedule.scheduleJob("1 0 * *", dailyReport.start);
 
   process.on("SIGINT", async function () {
     await schedule.gracefulShutdown();

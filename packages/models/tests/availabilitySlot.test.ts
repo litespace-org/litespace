@@ -209,14 +209,8 @@ describe("AvailabilitySlots", () => {
       ]);
 
       const res = await availabilitySlots.find({
-        start: {
-          gte: dayjs.utc().add(0.5, "hour").toISOString(),
-          lt: dayjs.utc().add(6.5, "hour").toISOString(),
-        },
-        end: {
-          gt: dayjs.utc().add(0.5, "hour").toISOString(),
-          lte: dayjs.utc().add(6.5, "hour").toISOString(),
-        },
+        after: dayjs.utc().add(0.5, "hour").toISOString(),
+        before: dayjs.utc().add(6.5, "hour").toISOString(),
       });
 
       expect(res.total).to.eq(3);

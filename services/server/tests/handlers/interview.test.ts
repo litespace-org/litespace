@@ -501,7 +501,7 @@ describe("/api/v1/interview/", () => {
       const tutor = await db.user({ role: IUser.Role.Tutor });
       const res = await selectInterviewer({ user: tutor });
       expect(res).to.not.be.instanceof(Error);
-      expect(res.body?.id).to.deep.eq(tutorManager2.id);
+      expect(res.body?.id).to.deep.eq(tutorManager3.id);
     });
   });
 });
