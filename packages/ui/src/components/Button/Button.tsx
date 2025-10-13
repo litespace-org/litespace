@@ -52,6 +52,7 @@ export const Button: React.FC<{
       small: size === "small",
       medium: size === "medium",
       large: size === "large",
+      custom: size === "custom",
     }),
     [variant, type, size]
   );

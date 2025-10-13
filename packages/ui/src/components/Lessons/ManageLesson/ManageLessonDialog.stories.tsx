@@ -85,6 +85,26 @@ export const DepletedSubscription: Story = {
         deleted: false,
         userId: 4,
       },
+      {
+        id: 2,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().startOf("day").add(8, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Lesson,
+        createdAt: faker.date.past().toISOString(),
+        updatedAt: faker.date.past().toISOString(),
+        deleted: false,
+        userId: 4,
+      },
+      {
+        id: 3,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().startOf("day").add(12, "hours").toISOString(),
+        purpose: IAvailabilitySlot.Purpose.Lesson,
+        createdAt: faker.date.past().toISOString(),
+        updatedAt: faker.date.past().toISOString(),
+        deleted: false,
+        userId: 4,
+      },
     ],
     bookedSlots: [
       {

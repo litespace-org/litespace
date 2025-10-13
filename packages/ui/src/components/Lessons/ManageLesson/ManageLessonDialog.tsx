@@ -1,32 +1,31 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { Dialog } from "@/components/Dialog";
-import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
-import { useFormatMessage } from "@/hooks";
-import { Typography } from "@/components/Typography";
-import { Stepper } from "@/components/Lessons/ManageLesson/Stepper";
-import { Step } from "@/components/Lessons/ManageLesson/types";
-import { DateSelection } from "@/components/Lessons/ManageLesson/DateSelection";
-import { TimeSelection } from "@/components/Lessons/ManageLesson/TimeSelection";
-import { Confirmation } from "@/components/Lessons/ManageLesson/Confirmation";
+import { AvatarV2 } from "@/components/Avatar";
 import { Button } from "@/components/Button";
-import { AnimatePresence, motion } from "framer-motion";
-import dayjs from "@/lib/dayjs";
-import { Dayjs } from "dayjs";
-import { concat, isEmpty } from "lodash";
-import cn from "classnames";
-import CalendarEmpty from "@litespace/assets/CalendarEmpty";
+import { Dialog } from "@/components/Dialog";
+import { Block } from "@/components/Lessons/ManageLesson/Block";
+import { Confirmation } from "@/components/Lessons/ManageLesson/Confirmation";
+import { DateSelection } from "@/components/Lessons/ManageLesson/DateSelection";
+import { Step } from "@/components/Lessons/ManageLesson/types";
 import { Loading, LoadingError } from "@/components/Loading";
+import { Typography } from "@/components/Typography";
+import { useFormatMessage } from "@/hooks";
+import NoMoreMinutes from "@litespace/assets/NoMoreMinutes";
+import Sun from "@litespace/assets/Sun";
+import SunFog from "@litespace/assets/SunFog";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
+import { MIN_LESSON_DURATION } from "@litespace/utils";
 import {
   getSubSlotsBatch as getSubSlots,
   orderSlots,
   subtractSlotsBatch as subtractSlots,
 } from "@litespace/utils/availabilitySlots";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { Block } from "@/components/Lessons/ManageLesson/Block";
-import NoMoreMinutes from "@litespace/assets/NoMoreMinutes";
-import { MIN_LESSON_DURATION } from "@litespace/utils";
-import LongRightArrow from "@litespace/assets/LongRightArrow";
-import LongLeftArrow from "@litespace/assets/LongLeftArrow";
+import cn from "classnames";
+import { Dayjs } from "dayjs";
+import dayjs from "@/lib/dayjs";
+import { AnimatePresence, motion } from "framer-motion";
+import { concat, isEmpty } from "lodash";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { arabicTimezoneNames } from "@/constants/labels";
 
 const LoadingWrapper: React.FC<{
   tutorName: string | null;
@@ -66,25 +65,6 @@ const Error: React.FC<{
   );
 };
 
-const BusyTutor: React.FC = () => {
-  const intl = useFormatMessage();
-  return (
-    <div
-      className={cn(
-        "flex items-center flex-col gap-8 mt-10 justify-center mx-auto"
-      )}
-    >
-      <CalendarEmpty />
-      <Typography
-        tag="span"
-        className="text-natural-700 text-center font-bold text-body"
-      >
-        {intl("book-lesson.empty-slots")}
-      </Typography>
-    </div>
-  );
-};
-
 const Animation: React.FC<{
   id?:
     | Step
@@ -97,7 +77,7 @@ const Animation: React.FC<{
   children: React.ReactNode;
 }> = ({ id, children }) => {
   const duration = useMemo(() => {
-    if (id === "date-selection" || id === "loading" || id === "busy-tutor")
+    if (id === "selection" || id === "loading" || id === "busy-tutor")
       return 0.5;
     return 0.4;
   }, [id]);
@@ -213,7 +193,7 @@ export const ManageLessonDialog: React.FC<{
 }) => {
   const { sm } = useMediaQuery();
   const intl = useFormatMessage();
-  const [step, setStep] = useState<Step>("date-selection");
+  const [step, setStep] = useState<Step>("selection");
   const [duration] = useState<number>(initials.duration || MIN_LESSON_DURATION);
   const [lessonDetails, setLessonDetails] = useState<{
     start: string | null;
@@ -224,22 +204,26 @@ export const ManageLessonDialog: React.FC<{
   });
 
   const [date, setDate] = useState<Dayjs | null>(
-    initials.start ? dayjs.utc(initials.start).startOf("day") : null
+    initials.start ? dayjs.utc(initials.start).startOf("day") : dayjs()
   );
 
-  const dateBounds = useMemo(() => {
-    if (dateBoundaries) return dateBoundaries;
+  const [dateBounds, setDateBounds] = useState(() => {
+    if (dateBoundaries)
+      return {
+        start: dateBoundaries.start,
+        end: dateBoundaries.end,
+      };
     const start = dayjs();
     const end = dayjs().startOf("day").add(1, "week");
     return { start, end };
-  }, [dateBoundaries]);
+  });
 
   const unbookedSlots = useMemo(
     () =>
       subtractSlots({ slots, subslots: bookedSlots }).filter((slot) =>
-        dayjs(slot.start).isBefore(dateBounds.end)
+        dayjs(slot.start).isBefore(dateBounds?.end)
       ),
-    [slots, bookedSlots, dateBounds.end]
+    [slots, bookedSlots, dateBounds?.end]
   );
 
   const selectDaySlots = useCallback(
@@ -253,13 +237,33 @@ export const ManageLessonDialog: React.FC<{
     [duration, unbookedSlots]
   );
 
+  const isOutOfSubscribtion = useCallback(
+    (date: Dayjs | null) =>
+      (!!date && date.isAfter(dateBounds?.end)) ||
+      (!!date && date.isBefore(dateBounds?.start)),
+    [dateBounds?.end, dateBounds?.start]
+  );
+
   /**
    * Date is considered valid in case it has at least one bookable (free) slot.
    */
   const isValidDate = useCallback(
-    (date: Dayjs | null) => !!date && !isEmpty(selectDaySlots(date)),
-    [selectDaySlots]
+    (date: Dayjs | null) =>
+      !!date &&
+      !isEmpty(selectDaySlots(date)) &&
+      !isOutOfSubscribtion(date) &&
+      dayjs().isBefore(date.endOf("day")),
+    [isOutOfSubscribtion, selectDaySlots]
   );
+
+  // search for the first available day to book lessons
+  // for better user experience
+  useEffect(() => {
+    if (!date || date.isAfter(dateBounds?.end)) return;
+    if (isEmpty(unbookedSlots)) return;
+    if (isValidDate(date)) return;
+    setDate((prev) => prev?.add(1, "day") || null);
+  }, [date, unbookedSlots, dateBounds, isValidDate]);
 
   /**
    * List of all slots including booked and unbooked slots.
@@ -289,7 +293,15 @@ export const ManageLessonDialog: React.FC<{
     );
   }, [selectDaySlots, date, bookedSlots]);
 
-  const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
+  const daySlots = useMemo(
+    () => allSlots.filter((slot) => dayjs(slot.start).hour() <= 12),
+    [allSlots]
+  );
+
+  const nightSlots = useMemo(
+    () => allSlots.filter((slot) => dayjs(slot.start).hour() > 12),
+    [allSlots]
+  );
 
   const depletedSubscription = useMemo(
     () => subscribed && remainingWeeklyMinutes < MIN_LESSON_DURATION,
@@ -301,8 +313,8 @@ export const ManageLessonDialog: React.FC<{
       !error &&
       !loading &&
       !depletedSubscription &&
-      (!hasBookedLessons || type === "update"),
-    [error, loading, depletedSubscription, hasBookedLessons, type]
+      (!hasBookedLessons || subscribed || type === "update"),
+    [error, loading, depletedSubscription, hasBookedLessons, type, subscribed]
   );
 
   return (
@@ -310,35 +322,30 @@ export const ManageLessonDialog: React.FC<{
       open={open}
       close={close}
       title={
-        <Typography
-          tag="header"
-          className="text-natural-950 font-bold text-body md:text-subtitle-2"
-        >
-          {name
-            ? intl("book-lesson.title", { tutor: name })
-            : intl("book-lesson.title.placeholder")}
-        </Typography>
+        <div className="flex gap-2 pb-4">
+          <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
+            <AvatarV2 alt={name} id={tutorId} src={imageUrl} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Typography tag="p" className="text-caption font-bold">
+              {intl("book-lesson.title-1")}
+            </Typography>
+            <Typography tag="p" className="text-tiny text-natural-600">
+              {name
+                ? intl("book-lesson.title-2", { tutor: name })
+                : intl("book-lesson.title.placeholder")}
+            </Typography>
+          </div>
+        </div>
       }
       className={cn(
-        "w-full max-w-[550px] mx-auto px-0 py-4 lg:!py-6 sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0",
+        "!w-auto max-w-[350px] md:max-w-[550px] mx-auto py-4 lg:!py-6 _sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0",
         {
           "!left-0 right-0 translate-x-0": !sm,
         }
       )}
     >
-      {canBook && !isTutorBusy ? (
-        <div className="mt-6 md:mt-8 px-4 sm:px-0">
-          <Stepper step={step} />
-        </div>
-      ) : null}
-
-      <div
-        className={cn({
-          "!mt-4": hasBookedLessons,
-          "mt-6": step === "date-selection",
-          "mt-3 lg:mt-4": step === "time-selection",
-        })}
-      >
+      <div className="mt-4">
         <AnimatePresence initial={false} mode="wait">
           {loading ? (
             <Animation key="loading" id="loading">
@@ -369,57 +376,93 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {isTutorBusy && canBook ? (
-            <Animation key="busy-tutor" id="busy-tutor">
-              <BusyTutor />
+          {step === "selection" && canBook ? (
+            <Animation key="date-selection" id="selection">
+              <div className="flex flex-col gap-6 !max-w-[350px]">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <LessonDuration />
+                    <Divider />
+                  </div>
+
+                  <DateSelection
+                    min={dateBounds.start}
+                    max={dateBounds.start.add(1, "week")}
+                    selected={date}
+                    onSelect={setDate}
+                    isSelectable={isValidDate}
+                    prev={() => {
+                      setDateBounds((prev) => {
+                        setDate(prev.start.subtract(1, "week"));
+                        return {
+                          start: prev.start.subtract(1, "week"),
+                          end: prev.end.subtract(1, "week"),
+                        };
+                      });
+                    }}
+                    next={() => {
+                      setDateBounds((prev) => {
+                        setDate(prev.start.add(1, "week"));
+                        return {
+                          start: prev.start.add(1, "week"),
+                          end: prev.end.add(1, "week"),
+                        };
+                      });
+                    }}
+                  />
+
+                  <Divider />
+
+                  <div className="flex flex-col">
+                    <div
+                      className={cn(
+                        "flex flex-col gap-4",
+                        "max-h-[322px] overflow-y-scroll pe-2 [direction:ltr] scrollbar !scrollbar-thumb-natural-500 !scrollbar-track-natural-100"
+                      )}
+                    >
+                      <SlotsContainer
+                        slots={daySlots}
+                        atNight={false}
+                        setLessonDetails={(start, slotId) =>
+                          setLessonDetails(() => ({ start, slotId }))
+                        }
+                      />
+                      <SlotsContainer
+                        slots={nightSlots}
+                        atNight={true}
+                        setLessonDetails={(start, slotId) =>
+                          setLessonDetails(() => ({ start, slotId }))
+                        }
+                      />
+                    </div>
+                    <Typography
+                      tag="p"
+                      className="text-tiny text-natural-600 mt-2"
+                    >
+                      {intl("book-lesson.labels.time-zone", {
+                        value:
+                          arabicTimezoneNames[
+                            dayjs.tz.guess() as keyof typeof arabicTimezoneNames
+                          ],
+                      })}
+                    </Typography>
+                  </div>
+                </div>
+                <Button
+                  size="large"
+                  className="w-full"
+                  disabled={!lessonDetails.slotId && !lessonDetails.start}
+                  onClick={() => setStep("confirmation")}
+                >
+                  <Typography tag="span" className="text-body font-medium">
+                    {intl("book-lesson.confirm")}
+                  </Typography>
+                </Button>
+              </div>
             </Animation>
           ) : null}
 
-          {step === "date-selection" && canBook && !isTutorBusy ? (
-            <Animation key="date-selection" id="date-selection">
-              <DateSelection
-                min={dateBounds.start}
-                max={dateBounds.end}
-                selected={date}
-                onSelect={setDate}
-                isSelectable={isValidDate}
-              />
-            </Animation>
-          ) : null}
-
-          {/* TODO: uncomment this once other durations added on the 30 minutes
-            step === "duration-selection" && canBook && !isTutorBusy ? (
-            <Animation key="duration-selection" id="duration-selection">
-              <DurationSelection
-                subscribed={subscribed}
-                remainingWeeklyMinutes={remainingWeeklyMinutes}
-                value={duration}
-                onChange={setDuration}
-              />
-            </Animation>
-          ) : null
-          */}
-
-          {step === "time-selection" && canBook && !isTutorBusy ? (
-            <Animation key="time-selection" id="time-selection">
-              <TimeSelection
-                slots={allSlots}
-                start={lessonDetails.start}
-                slotId={lessonDetails.slotId}
-                select={(slotId: number, start: string) => {
-                  setLessonDetails({
-                    slotId,
-                    start,
-                  });
-                }}
-              />
-            </Animation>
-          ) : null}
-
-          {step === "confirmation" &&
-          !isTutorBusy &&
-          lessonDetails.start &&
-          canBook ? (
+          {step === "confirmation" && lessonDetails.start && canBook ? (
             <Animation key="confimration" id="confirmation">
               <div className="px-4 md:px-0">
                 <Confirmation
@@ -438,7 +481,7 @@ export const ManageLessonDialog: React.FC<{
                     });
                   }}
                   onEdit={() => {
-                    setStep("date-selection");
+                    setStep("selection");
                   }}
                 />
               </div>
@@ -446,67 +489,98 @@ export const ManageLessonDialog: React.FC<{
           ) : null}
         </AnimatePresence>
       </div>
-
-      {step !== "confirmation" && canBook && !isTutorBusy ? (
-        <div
-          className={cn(
-            "flex flex-row gap-4 md:gap-[14px] w-full md:ms-auto md:w-fit px-4 sm:px-0",
-            {
-              "mt-6": step === "date-selection",
-              "mt-5 md:mt-3": step === "time-selection",
-            }
-          )}
-        >
-          {step !== "date-selection" ? (
-            <Button
-              startIcon={<LongRightArrow className="w-4 h-4 icon" />}
-              size="large"
-              onClick={() => {
-                // TODO: uncomment this once other durations added
-                // if (step === "time-selection") setStep("date-selection");
-                // if (step === "duration-selection") setStep("date-selection");
-                setStep("date-selection");
-              }}
-              className={cn({
-                "flex-1":
-                  step === "duration-selection" || step === "time-selection",
-              })}
-            >
-              <Typography
-                tag="span"
-                className="text-caption md:text-body font-semibold md:font-medium text-natural-50 inline-block"
-              >
-                {intl("book-lesson.steps.prev")}
-              </Typography>
-            </Button>
-          ) : null}
-
-          <Button
-            endIcon={
-              <LongLeftArrow className="[&>*]:stroke-natural-50 w-4 h-4 icon" />
-            }
-            size="large"
-            onClick={() => {
-              if (step === "date-selection") setStep("time-selection"); // TODO: make it duration-selection
-              if (step === "duration-selection") setStep("time-selection");
-              if (step === "time-selection") setStep("confirmation");
-            }}
-            disabled={
-              (step === "time-selection" && !lessonDetails.start) ||
-              !isValidDate(date)
-            }
-            className={cn({
-              "ms-auto": step === "date-selection",
-              "flex-1":
-                step === "duration-selection" || step === "time-selection",
-            })}
-          >
-            <Typography tag="span" className="font-semibold text-natural-50">
-              {intl("book-lesson.steps.next")}
-            </Typography>
-          </Button>
-        </div>
-      ) : null}
     </Dialog>
   );
+};
+
+const SlotsContainer: React.FC<{
+  slots: IAvailabilitySlot.SubSlot[];
+  atNight: boolean;
+  setLessonDetails: (start: string, slotId: number) => void;
+}> = ({ slots, atNight, setLessonDetails }) => {
+  const intl = useFormatMessage();
+  const [selectedSlotDetails, setSelectedSlotDetails] = useState<{
+    id: number;
+    start: string;
+  } | null>(null);
+
+  return (
+    <div className="[direction:rtl] flex flex-col gap-2">
+      <div className="flex gap-1 items-center">
+        {atNight ? (
+          <SunFog className="w-4 h-4 [&>*]:stroke-[#292D32]" />
+        ) : (
+          <Sun className="w-4 h-4 [&>*]:stroke-[#292D32]" />
+        )}
+        <Typography tag="p" className="text-tiny font-bold">
+          {atNight
+            ? intl("book-lesson.labels.pm")
+            : intl("book-lesson.labels.am")}
+        </Typography>
+      </div>
+      <div>
+        <div className={cn({ grid: !isEmpty(slots) }, "grid-cols-3 gap-2")}>
+          {isEmpty(slots) ? (
+            <Typography
+              tag="p"
+              className="text-caption font-semibold text-center my-6"
+            >
+              {intl("book-lesson.empty-slots-at-this-time")}
+            </Typography>
+          ) : null}
+
+          {slots.map((slot, i) => {
+            const isSelected =
+              selectedSlotDetails?.id === slot.parent &&
+              selectedSlotDetails?.start === slot.start;
+
+            return (
+              <Button
+                key={i}
+                size="custom"
+                variant={isSelected ? "primary" : "secondary"}
+                type={isSelected ? "main" : "natural"}
+                className={cn(
+                  "w-full h-[37px] !rounded-[4px]",
+                  isSelected ? "border-brand-500" : "!border-natural-200"
+                )}
+                onClick={() => {
+                  setSelectedSlotDetails(() => ({
+                    id: slot.parent,
+                    start: slot.start,
+                  }));
+                  setLessonDetails(slot.start, slot.parent);
+                }}
+              >
+                <Typography tag="p" className="text-caption font-normal">
+                  {dayjs(slot.start).format("hh:mm")}
+                </Typography>
+              </Button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LessonDuration: React.FC = () => {
+  const intl = useFormatMessage();
+
+  return (
+    <div
+      className={cn(
+        "border border-natural-200 rounded-lg bg-natural-0 py-2",
+        "flex items-center justify-center"
+      )}
+    >
+      <Typography tag="span" className="text-extra-tiny">
+        {intl("book-lesson.durations.30-minutes")}
+      </Typography>
+    </div>
+  );
+};
+
+const Divider: React.FC = () => {
+  return <div className="w-full border-b border-natural-100" />;
 };

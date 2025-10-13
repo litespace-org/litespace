@@ -1,7 +1,7 @@
 import SubscriptionDialog from "@/components/Lessons/SubscriptionDialog";
 import { useOnError } from "@/hooks/error";
 import dayjs from "@/lib/dayjs";
-import { asSlotBoundries } from "@/lib/lesson";
+import { router } from "@/lib/routes";
 import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
 import { QueryKey } from "@litespace/headless/constants";
 import { useSubscription } from "@litespace/headless/context/subscription";
@@ -22,12 +22,10 @@ import {
   MAX_LESSON_DURATION,
   MIN_LESSON_DURATION,
 } from "@litespace/utils";
-import { useSubscriptionWeekBoundaries } from "@litespace/headless/subscription";
+import { Web } from "@litespace/utils/routes";
 import { nstr, nullable } from "@litespace/utils/utils";
 import React, { useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { router } from "@/lib/routes";
-import { Web } from "@litespace/utils/routes";
 
 type Base = {
   close: Void;
@@ -66,16 +64,16 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
   const { info, remainingWeeklyMinutes, refetch, paidLessonStatus } =
     useSubscription();
 
-  const weekBoundaries = useSubscriptionWeekBoundaries(info);
+  // const weekBoundaries = useSubscriptionWeekBoundaries(info);
 
-  const slotBoundries = useMemo(
-    () =>
-      asSlotBoundries({
-        start: weekBoundaries.start.toISOString(),
-        end: weekBoundaries.end.toISOString(),
-      }),
-    [weekBoundaries.start, weekBoundaries.end]
-  );
+  // const slotBoundries = useMemo(
+  //   () =>
+  //     asSlotBoundries({
+  //       start: info?.start,
+  //       end: info?.end,
+  //     }),
+  //   [info?.start, info?.end]
+  // );
 
   // ====== get tutorInfo =========
   const tutor = useFindTutorInfo(tutorId);
@@ -102,7 +100,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
       IAvailabilitySlot.Purpose.General,
       IAvailabilitySlot.Purpose.Lesson,
     ],
-    ...slotBoundries,
+    // ...slotBoundries,
   });
 
   /**
@@ -252,7 +250,9 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
         imageUrl={nullable(tutor.data?.image)}
         name={nullable(tutor.data?.name)}
         tutorId={tutorId}
-        dateBoundaries={weekBoundaries}
+        dateBoundaries={
+          info ? { start: dayjs(info.start), end: dayjs(info.end) } : undefined
+        }
         close={close}
         confirmationLoading={createLessonMutation.isPending}
         loading={
