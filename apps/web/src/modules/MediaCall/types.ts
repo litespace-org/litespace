@@ -35,8 +35,10 @@ export enum CallError {
   FullSession,
   TrackNotFound,
   UserMediaAccessDenied,
+  DisplayMediaAccessDenied,
   MicNotFound,
   CamNotFound,
+  ScreenNotFound,
 }
 
 export const CallErrorMessage: Record<CallError, string> = Object.freeze({
@@ -47,8 +49,11 @@ export const CallErrorMessage: Record<CallError, string> = Object.freeze({
   [CallError.FullSession]: "the session is full!",
   [CallError.TrackNotFound]: "no track found!",
   [CallError.UserMediaAccessDenied]: "counldn't get access to user media.",
+  [CallError.DisplayMediaAccessDenied]:
+    "counldn't get access to display media.",
   [CallError.MicNotFound]: "cannot find a mic device.",
   [CallError.CamNotFound]: "cannot find a cam device",
+  [CallError.ScreenNotFound]: "cannot find a monitor device!",
 });
 
 export enum MemberConnectionState {

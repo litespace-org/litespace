@@ -31,6 +31,7 @@ const InSession: React.FC<{
   controllers: {
     audio: Controller;
     video: Controller;
+    screen: Controller;
   };
   devices: Device[];
   startDate?: string;
@@ -273,7 +274,6 @@ const InSession: React.FC<{
 
         <div className="flex gap-6 h-full">
           <CallMembers
-            remoteMember={remoteMember}
             sessionStartDate={startDate}
             sessionDuration={sessionDuration}
           />
@@ -296,6 +296,7 @@ const InSession: React.FC<{
 
       <div className="absolute flex justify-center items-center w-screen bottom-4 right-0">
         <Controllers
+          devices={devices}
           chat={{
             enabled: chat,
             toggle: () => {
@@ -314,7 +315,7 @@ const InSession: React.FC<{
           }
           audio={controllers.audio}
           video={controllers.video}
-          devices={devices}
+          screen={controllers.screen}
         />
       </div>
 

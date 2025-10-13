@@ -156,6 +156,11 @@ export abstract class CallSession {
     this.execEventExt(this.ext.onMemberCamPublish?.after);
   }
 
+  onMemberScreenPublish(_memberId: CallMember["id"], _track: VideoTrack) {
+    this.execEventExt(this.ext.onMemberScreenPublish?.before);
+    this.execEventExt(this.ext.onMemberScreenPublish?.after);
+  }
+
   onMemberMicChange(_memberId: CallMember["id"], _state: boolean) {
     this.execEventExt(this.ext.onMemberMicChange?.before);
     this.execEventExt(this.ext.onMemberMicChange?.after);

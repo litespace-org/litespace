@@ -15,8 +15,9 @@ const MemberStream: React.FC<{
   videoTrack?: VideoTrack;
   audioTrack?: AudioTrack;
   muted?: boolean;
-  video?: boolean;
   audio?: boolean;
+  video?: boolean;
+  reverse?: boolean;
   currentMember?: boolean;
   size?: "sm" | "md" | "lg";
   userId: number;
@@ -28,8 +29,9 @@ const MemberStream: React.FC<{
 }> = ({
   videoTrack,
   audioTrack,
-  video,
   audio,
+  video,
+  reverse,
   currentMember,
   userId,
   userImage,
@@ -55,7 +57,7 @@ const MemberStream: React.FC<{
       className={cn(
         "relative flex items-center justify-center bg-natural-100 rounded-2xl",
         "w-full h-full max-h-full overflow-hidden",
-        isSpeaking && "ring-4 ring-secondary-400"
+        { "ring-4 ring-secondary-400": isSpeaking }
       )}
     >
       <div
@@ -148,7 +150,7 @@ const MemberStream: React.FC<{
          *
          * @tip disable the `transform` to notice the difference.
          */
-        style={{ transform: "scale(-1,1)" }}
+        style={{ transform: reverse ? "scale(1,1)" : "scale(-1,1)" }}
         className={
           /**
            * a video must be positioned absolute as it will overflow from its

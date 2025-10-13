@@ -8,12 +8,19 @@ import {
 } from "@/modules/MediaCall/types";
 import { ErrorHandler } from "@/modules/MediaCall/ErrorHandler";
 
+type Info = {
+  name?: string;
+  imgSrc?: string;
+};
+
 export class CallMember {
   readonly id: string;
   readonly tracks: MemberTracks;
   private session: CallSession;
   private eh: ErrorHandler;
   private connState: MemberConnectionState;
+
+  private _info: Info = {};
 
   constructor(id: string, session: CallSession, eh?: ErrorHandler) {
     this.id = id;
@@ -27,9 +34,17 @@ export class CallMember {
     return this.connState;
   }
 
+  get info() {
+    return Object.assign({}, this._info);
+  }
+
   setConnectionState(state: MemberConnectionState) {
     this.connState = state;
     this.session.onMemberConnectionStateChange(this.id, this.connectionState);
+  }
+
+  setInfo(info: Info) {
+    Object.assign(this._info, info);
   }
 
   publishMicTrack(track?: AudioTrack) {
@@ -47,8 +62,10 @@ export class CallMember {
   }
 
   publishScreenTrack(track?: VideoTrack) {
-    this.tracks.screen = track;
-    // TODO onMemberScreenPublish
+    if (!this.tracks.screen && !track)
+      return this.eh.throw(CallError.TrackNotFound);
+    if (track) this.tracks.screen = track;
+    this.session.onMemberScreenPublish(this.id, this.tracks.screen!);
   }
 
   setMicStatus(state: boolean) {
