@@ -14,9 +14,11 @@ export class ErrorHandler {
       [CallError.NotAllowedToJoinSession]: [],
       [CallError.MemberAlreadyInSession]: [],
       [CallError.UserMediaAccessDenied]: [],
+      [CallError.DisplayMediaAccessDenied]: [],
       [CallError.TrackNotFound]: [],
       [CallError.MicNotFound]: [],
       [CallError.CamNotFound]: [],
+      [CallError.ScreenNotFound]: [],
     };
     if (logFn) this.log = logFn;
   }
@@ -40,9 +42,11 @@ export class ErrorHandler {
       [CallError.NotAllowedToJoinSession]: [],
       [CallError.MemberAlreadyInSession]: [],
       [CallError.UserMediaAccessDenied]: [],
+      [CallError.DisplayMediaAccessDenied]: [],
       [CallError.TrackNotFound]: [],
       [CallError.MicNotFound]: [],
       [CallError.CamNotFound]: [],
+      [CallError.ScreenNotFound]: [],
     };
   }
 }

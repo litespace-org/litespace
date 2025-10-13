@@ -162,9 +162,31 @@ const PreSession: React.FC<{
       error: !call.curMember?.tracks.cam,
     };
 
+    const screen: Controller = {
+      toggle: () => {
+        const screenTrack = call.curMember?.tracks.screen;
+        // publish/republish the screen
+        if (!screenTrack || !screenTrack.enabled) {
+          const screenDevice = devices.find((d) => d.type === "screen");
+          if (!screenDevice)
+            return call.errorHandler?.throw(CallError.ScreenNotFound);
+          return call.manager?.publishTrackFromDevice(
+            screenDevice.id,
+            "screen"
+          );
+        }
+        // turning the screen off
+        if (screenTrack.enabled) {
+          return call.curMember?.setScreenStatus(false);
+        }
+      },
+      enabled: !!call.curMember?.tracks.screen?.enabled,
+    };
+
     return {
       audio,
       video,
+      screen,
     };
   }, [call.curMember, call.manager, devices, call.errorHandler]);
 
@@ -214,9 +236,9 @@ const PreSession: React.FC<{
         </div>
 
         <Controllers
+          devices={devices}
           audio={controllers.audio}
           video={controllers.video}
-          devices={devices}
         />
       </div>
 

@@ -41,6 +41,12 @@ export class WebDeviceManager implements DeviceManager {
       });
     }
 
+    this.devices.push({
+      id: "dump-screen",
+      name: "dump",
+      type: "screen",
+    });
+
     return this.devices;
   }
 
@@ -63,6 +69,11 @@ export class WebDeviceManager implements DeviceManager {
       });
       const tracks = mediaStream.getTracks();
       return tracks[0];
+    }
+
+    if (device.type === "screen") {
+      const track = await this.grantScreenPerm();
+      return track;
     }
 
     return null;
@@ -89,13 +100,10 @@ export class WebDeviceManager implements DeviceManager {
   }
 
   async grantScreenPerm(): Promise<VideoTrack | null> {
-    const devices = await this.detectDevices();
-    const screen = devices.find((d) => d.type === "screen");
-    if (!screen) throw Error("couldn't find screen media!");
-
-    const track = await this.grantPermissionFor(screen);
-    if (track?.kind !== "video") return null;
-    return track as VideoTrack;
+    const mediaStream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+    });
+    return mediaStream.getVideoTracks()[0];
   }
 
   private mediaKindToDeviceType(kind: MediaDeviceKind): DeviceType {

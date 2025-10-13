@@ -1,7 +1,11 @@
 import { CallMember } from "@/modules/MediaCall/CallMember";
 import { CallSession, EventsExtensions } from "@/modules/MediaCall/CallSession";
 import { ErrorHandler } from "@/modules/MediaCall/ErrorHandler";
-import { AudioTrack, MemberConnectionState } from "@/modules/MediaCall/types";
+import {
+  VideoTrack,
+  AudioTrack,
+  MemberConnectionState,
+} from "@/modules/MediaCall/types";
 import {
   ConnectionQuality,
   ConnectionState,
@@ -99,14 +103,28 @@ export class LivekitCallSession extends CallSession {
 
     this.room.on(RoomEvent.TrackSubscribed, (track, pub, p) => {
       console.log(`subscribed to: ${p.identity} track: ${track.kind}.`);
+      if (p.isScreenShareEnabled)
+        return this.getMember(p.identity)?.publishScreenTrack(
+          track.mediaStreamTrack
+        );
+
       if (pub.kind === Track.Kind.Audio)
         return this.getMember(p.identity)?.publishMicTrack(
           track.mediaStreamTrack
         );
+
       if (pub.kind === Track.Kind.Video)
         return this.getMember(p.identity)?.publishCamTrack(
           track.mediaStreamTrack
         );
+    });
+
+    this.room.on(RoomEvent.TrackUnsubscribed, (track, _pub, p) => {
+      if (
+        track.mediaStreamTrack.id ===
+        this.getMember(p.identity)?.tracks.screen?.id
+      )
+        this.getMember(p.identity)?.setScreenStatus(false);
     });
 
     this.room.on(RoomEvent.TrackMuted, (pub, p) => {
@@ -166,7 +184,7 @@ export class LivekitCallSession extends CallSession {
     }
   }
 
-  onMemberCamPublish(memberId: CallMember["id"], track: AudioTrack): void {
+  onMemberCamPublish(memberId: CallMember["id"], track: VideoTrack): void {
     super.onMemberCamPublish(memberId, track);
     if (
       track.enabled &&
@@ -178,6 +196,22 @@ export class LivekitCallSession extends CallSession {
       if (camPub?.track) p.unpublishTrack(camPub?.track);
       this.room.localParticipant.publishTrack(track, {
         source: Track.Source.Camera,
+      });
+    }
+  }
+
+  onMemberScreenPublish(memberId: CallMember["id"], track: VideoTrack): void {
+    super.onMemberScreenPublish(memberId, track);
+    if (
+      track.enabled &&
+      this.curMember.id === memberId &&
+      this.room.state === ConnectionState.Connected
+    ) {
+      const p = this.room.localParticipant;
+      const screenPub = p.getTrackPublication(Track.Source.ScreenShare);
+      if (screenPub?.track) p.unpublishTrack(screenPub?.track);
+      this.room.localParticipant.publishTrack(track, {
+        source: Track.Source.ScreenShare,
       });
     }
   }
@@ -205,5 +239,12 @@ export class LivekitCallSession extends CallSession {
         source: Track.Source.Camera,
       });
     }
+  }
+
+  onMemberScreenChange(memberId: CallMember["id"], state: boolean): void {
+    super.onMemberScreenChange(memberId, state);
+    if (memberId !== this.curMember.id) return;
+    if (this.room.state !== ConnectionState.Connected) return;
+    this.room.localParticipant.setScreenShareEnabled(state);
   }
 }

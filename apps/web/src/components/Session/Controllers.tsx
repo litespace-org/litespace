@@ -142,9 +142,10 @@ export const Toggle: React.FC<Controller & { icon: Icon }> = ({
 };
 
 const Controllers: React.FC<{
+  devices: Device[];
   audio: Controller;
   video: Controller;
-  devices: Device[];
+  screen?: Controller;
   blur?: Controller;
   chat?: {
     toggle: Void;
@@ -153,13 +154,14 @@ const Controllers: React.FC<{
   };
   leave?: Void;
   className?: string;
-}> = ({ audio, video, devices, blur, leave, chat, className }) => {
+}> = ({ audio, video, screen, devices, blur, leave, chat, className }) => {
   const call = useMediaCall();
 
   const microphones = useMemo(
     () => devices.filter((d) => d.type === "mic") || [],
     [devices]
   );
+
   const cameras = useMemo(
     () => devices.filter((d) => d.type === "cam") || [],
     [devices]
@@ -207,6 +209,17 @@ const Controllers: React.FC<{
           action: () => call.manager?.publishTrackFromDevice(m.id, m.type),
         }))}
       />
+
+      {screen ? (
+        <Toggle
+          toggle={() => screen.toggle()}
+          enabled={screen.enabled}
+          error={screen.error}
+          loading={screen.loading}
+          disabled={screen.disabled}
+          icon="screen"
+        />
+      ) : null}
 
       {blur ? (
         <Toggle

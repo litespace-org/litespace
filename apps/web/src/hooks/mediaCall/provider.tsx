@@ -20,10 +20,11 @@ export const MediaCallProvider: React.FC<{
   const callManager = useMemo(() => {
     if (!user || !lessonQuery.data) return null;
 
-    const memberIds = lessonQuery.data?.members.map((m) => m.userId);
+    const members = lessonQuery.data?.members;
+    const memberIds = members.map((m) => m.userId);
     const ordered = [user.id, ...memberIds.filter((id) => id !== user.id)];
 
-    return makeCall(
+    const call = makeCall(
       ordered.map((id) => id.toString()),
       {
         onMemberConnect: {
@@ -41,11 +42,23 @@ export const MediaCallProvider: React.FC<{
         onMemberCamPublish: {
           after: (s) => setCurMember(() => s.curMember.clone()),
         },
+        onMemberScreenPublish: {
+          after: (s) => {
+            setInMembers(() => [...(s.getJoinedMembers() || [])]);
+            setCurMember(() => s.curMember.clone());
+          },
+        },
         onMemberMicChange: {
           after: (s) => setCurMember(() => s.curMember.clone()),
         },
         onMemberCamChange: {
           after: (s) => setCurMember(() => s.curMember.clone()),
+        },
+        onMemberScreenChange: {
+          after: (s) => {
+            setInMembers(() => [...(s.getJoinedMembers() || [])]);
+            setCurMember(() => s.curMember.clone());
+          },
         },
         onMemberConnectionStateChange: {
           after: (s) => {
@@ -56,6 +69,17 @@ export const MediaCallProvider: React.FC<{
       },
       errorHandler || undefined
     );
+
+    // Set members info
+    for (const member of members) {
+      const memObj = call.session.getMember(member.userId.toString());
+      memObj?.setInfo({
+        name: member.name || undefined,
+        imgSrc: member.image || undefined,
+      });
+    }
+
+    return call;
   }, [lessonQuery.data, user, setInMembers, errorHandler]);
 
   const connected = useMemo(() => {
