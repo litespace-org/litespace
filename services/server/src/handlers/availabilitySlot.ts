@@ -93,14 +93,8 @@ async function find(req: Request, res: Response, next: NextFunction) {
     userIds,
     roles,
     purposes,
-    start: {
-      gte: after,
-      lt: before,
-    },
-    end: {
-      gt: after,
-      lte: before,
-    },
+    after,
+    before,
     page,
     size,
     full,

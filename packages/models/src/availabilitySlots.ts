@@ -105,6 +105,8 @@ export class AvailabilitySlots extends Model<
     roles,
     start,
     end,
+    after,
+    before,
     createdAt,
     deleted,
     purposes,
@@ -126,12 +128,22 @@ export class AvailabilitySlots extends Model<
 
     // ============== date fields ========
     withDateFilter(base, this.column("created_at"), createdAt);
-    // @moehab TODO: refactor this; make an or utility filter function
-    base.where((b1) =>
-      withDateFilter(b1, this.column("start"), start).orWhere((b2) =>
-        withDateFilter(b2, this.column("end"), end)
-      )
-    );
+    withDateFilter(base, this.column("start"), start);
+    withDateFilter(base, this.column("end"), end);
+
+    if (after)
+      base.where((builder) => {
+        builder
+          .where(this.column("start"), ">=", dayjs.utc(after).toDate())
+          .orWhere(this.column("end"), ">", dayjs.utc(after).toDate());
+      });
+
+    if (before)
+      base.where((builder) => {
+        builder
+          .where(this.column("end"), "<=", dayjs.utc(before).toDate())
+          .orWhere(this.column("start"), "<", dayjs.utc(before).toDate());
+      });
 
     // ============== boolean fields ========
     withBooleanFilter(base, this.column("deleted"), deleted);

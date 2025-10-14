@@ -5,7 +5,7 @@ import {
   ILesson,
 } from "@litespace/types";
 import { dayjs } from "@/dayjs";
-import { flatten, isEmpty, orderBy } from "lodash";
+import { flatten, isEmpty, orderBy, sum } from "lodash";
 import { DEMO_SESSION_DURATION, INTERVIEW_DURATION } from "@/constants";
 
 /**
@@ -275,4 +275,22 @@ export function expandGeneralPurposeSlot(
     { ...slot, purpose: IAvailabilitySlot.Purpose.Interview },
     { ...slot, purpose: IAvailabilitySlot.Purpose.DemoSession },
   ];
+}
+
+/**
+ * Calculate slot duration in minutes
+ */
+export function calculateSlotDuration(
+  slot: IAvailabilitySlot.GeneralSlot
+): number {
+  return dayjs(slot.end).diff(slot.start, "minutes");
+}
+
+/**
+ * Sum slots duration in minutes
+ */
+export function sumSlotsDuration(
+  slots: IAvailabilitySlot.GeneralSlot[]
+): number {
+  return sum(slots.map(calculateSlotDuration));
 }

@@ -28,6 +28,10 @@ const schema = zod.object({
     accessToken: zod.string().trim(),
     profileId: zod.coerce.number(),
   }),
+  mattermost: zod.object({
+    token: zod.string(),
+    channel: zod.string(),
+  }),
 });
 
 type ConfigSchema = Zod.infer<typeof schema>;
@@ -48,5 +52,9 @@ export const config: ConfigSchema = schema.parse({
   whatsAppAPI: {
     accessToken: process.env.WHATSAPP_API_ACCESS_TOKEN,
     profileId: process.env.WHATSAPP_API_PROFILE_ID,
+  },
+  mattermost: {
+    token: process.env.MATTERMOST_TOKEN,
+    channel: process.env.MATTERMOST_CHANNEL,
   },
 });
