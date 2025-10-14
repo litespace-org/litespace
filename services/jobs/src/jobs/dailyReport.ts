@@ -67,7 +67,7 @@ async function start() {
 
   const channel = await mattermost.getChannelByNameAndTeamName(
     "litespace",
-    "dev"
+    config.mattermost.channel
   );
 
   await mattermost.createPost({
