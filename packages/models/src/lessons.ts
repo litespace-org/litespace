@@ -613,6 +613,8 @@ export class Lessons {
         `${transactions.column("fees")} as tx_fees`,
         `${transactions.column("amount")} as tx_amount`,
         `${transactions.column("status")} as tx_status`,
+        `${transactions.column("type")} as tx_type`,
+        `${transactions.column("payment_method")} as tx_payment_method`,
         `${transactions.column("created_at")} as tx_created_at`,
         `${transactions.column("provider_ref_num")} as order_ref_num`
       )
@@ -633,6 +635,8 @@ export class Lessons {
       txFees: row["tx_fees"],
       txAmount: row["tx_amount"],
       txStatus: row["tx_status"],
+      txType: row["tx_type"],
+      txPaymentMethod: row["tx_payment_method"],
       txCreatedAt: row["tx_created_at"],
       orderRefNum: row["order_ref_num"],
     }));
