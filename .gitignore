@@ -37,3 +37,9 @@ packages/models/coverage/
 
 # web
 apps/web/cypress/screenshots/
+
+# landing
+apps/landing/next-env.d.ts
+
+# dashboard
+apps/dashboard/tsconfig.*.tsbuildinfo
