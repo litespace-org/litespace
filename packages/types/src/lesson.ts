@@ -75,6 +75,8 @@ export type Self = {
 
 export type MetaSelf = Self & {
   txStatus: ITransaction.Status;
+  txType: ITransaction.Type;
+  txPaymentMethod: ITransaction.PaymentMethod;
   txFees: number;
   txAmount: number;
   txCreatedAt: string;

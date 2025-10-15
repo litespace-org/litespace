@@ -11,7 +11,9 @@ import { IUser } from "@litespace/types";
 import { Tab } from "@/components/StudentSettings/types";
 import { isPersonalInfoIncomplete } from "@/components/Settings/utils";
 import { StudentSettingsTabId } from "@litespace/utils/routes";
-import RefundsTable from "@/components/Settings/RefundsTable";
+import RefundsList from "@/components/Settings/RefundsList";
+import RefundsTable from "@/components/StudentSettings/RefundsTable";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Content: React.FC<{
   tab: StudentSettingsTabId;
@@ -19,7 +21,7 @@ const Content: React.FC<{
   user: IUser.Self;
 }> = ({ tab, setTab, user }) => {
   const intl = useFormatMessage();
-
+  const mq = useMediaQuery();
   const tabs: Tab[] = useMemo(() => {
     return [
       {
@@ -94,7 +96,8 @@ const Content: React.FC<{
         </div>
       ) : null}
 
-      {tab === "refunds" ? <RefundsTable /> : null}
+      {mq.md && tab === "refunds" ? <RefundsTable /> : null}
+      {!mq.md && tab === "refunds" ? <RefundsList /> : null}
     </div>
   );
 };
