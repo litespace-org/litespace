@@ -83,6 +83,9 @@ const routeConfigMap: Record<Dashboard, RouteConfig> = {
   [Dashboard.Lesson]: {
     whitelist: [superAdmin, regularAdmin],
   },
+  [Dashboard.Main]: {
+    whitelist: [superAdmin, regularAdmin],
+  },
 };
 
 export function useAuthRoutes() {
