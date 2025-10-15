@@ -1,10 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Calendar, LessonProps } from "@litespace/ui/Calendar";
 import dayjs from "@/lib/dayjs";
-import {
-  useCancelLesson,
-  useInfiniteLessons,
-} from "@litespace/headless/lessons";
+import { useCancelLesson } from "@litespace/headless/lessons";
 import Header, { View } from "@/components/LessonSchedule/Header";
 import { AnimatePresence, motion } from "framer-motion";
 import LessonsList from "@/components/UpcomingLessons/Content";
@@ -27,6 +24,7 @@ import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { useSubscription } from "@litespace/headless/context/subscription";
 import { useSubscriptionWeekBoundaries } from "@litespace/headless/subscription";
+import { useFindThisWeekSortedLessons } from "@/hooks/lesson";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -50,13 +48,7 @@ const LessonsSchedule: React.FC = () => {
   const toast = useToast();
   const invalidate = useInvalidateQuery();
 
-  const lessons = useInfiniteLessons({
-    userOnly: true,
-    users: user ? [user.id] : [],
-    after: date.toISOString(),
-    before: date.add(1, "week").toISOString(),
-    full: true,
-  });
+  const lessons = useFindThisWeekSortedLessons(date.toISOString());
 
   const calendarLessons: LessonProps[] = useMemo(() => {
     if (!lessons.list || !user) return [];
@@ -173,9 +165,11 @@ const LessonsSchedule: React.FC = () => {
           date={date}
           nextWeek={() => {
             setDate((prev) => prev.add(1, "week"));
+            lessons.reset();
           }}
           prevWeek={() => {
             setDate((prev) => prev.subtract(1, "week"));
+            lessons.reset();
           }}
           view={view}
           setView={setView}
@@ -199,9 +193,9 @@ const LessonsSchedule: React.FC = () => {
                 onEdit,
                 onRebook,
               }}
-              loading={lessons.query.isPending}
-              error={lessons.query.isError}
-              retry={lessons.query.refetch}
+              loading={lessons.isPending}
+              error={lessons.isError}
+              retry={lessons.refetch}
             />
           </motion.div>
         ) : null}
@@ -218,12 +212,12 @@ const LessonsSchedule: React.FC = () => {
             <LessonsList
               key="list"
               list={lessons.list}
-              loading={lessons.query.isLoading}
-              error={lessons.query.isError}
-              fetching={lessons.query.isFetching && !lessons.query.isLoading}
+              loading={lessons.isPending}
+              error={lessons.isError}
+              fetching={lessons.isFetching && !lessons.isPending}
               more={lessons.more}
-              hasMore={lessons.query.hasNextPage && !lessons.query.isPending}
-              refetch={lessons.query.refetch}
+              hasMore={lessons.hasNextPage && !lessons.isPending}
+              refetch={lessons.refetch}
             />
           </motion.div>
         ) : null}

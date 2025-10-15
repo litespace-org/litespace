@@ -8,6 +8,7 @@ import { concat, isEmpty } from "lodash";
 import { demoSessions, interviews, lessons } from "@litespace/models";
 import { asSubSlots, canBook, getSessionType } from "@litespace/utils";
 import s3 from "@/lib/s3";
+import { environment } from "@/constants";
 
 // todo: impl: each tutor can have interview each 3 months.
 export function canBeInterviewed(sessions: IInterview.Self[]): boolean {
@@ -97,6 +98,8 @@ export async function getSessionsMp4Files(
   ids: ISession.Id[],
   signed?: boolean
 ): Promise<Record<ISession.Id, string[]>> {
+  if (environment === "local") return {};
+
   const map: Record<ISession.Id, string[]> = {};
 
   await Promise.all(

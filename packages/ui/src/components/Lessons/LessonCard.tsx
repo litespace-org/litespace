@@ -16,6 +16,7 @@ export type Props = {
   start: string;
   duration: number;
   canceled: "tutor" | "student" | null;
+  reported: boolean;
   member: {
     id: number;
     name: string | null;
@@ -39,6 +40,7 @@ export const LessonCard: React.FC<Props> = ({
   duration,
   member,
   canceled,
+  reported,
   sendingMessage,
   disabled,
   onJoin,
@@ -60,6 +62,9 @@ export const LessonCard: React.FC<Props> = ({
 
   const getTitle = useCallback(() => {
     const now = dayjs();
+
+    // reported by the student
+    if (reported) return intl("lessons.reported-by-you");
 
     // canceled by the cur user
     if (canceled === currentUserRole) return intl("lessons.canceled-by-you");
@@ -114,7 +119,7 @@ export const LessonCard: React.FC<Props> = ({
 
     // after finish of the lesson
     if (!canceled && now.isAfter(end)) return intl("lessons.end");
-  }, [canceled, currentUserRole, intl, start, duration, end]);
+  }, [reported, canceled, currentUserRole, intl, start, duration, end]);
 
   const [title, setTitle] = useState<string | undefined>(getTitle());
 
@@ -214,7 +219,9 @@ export const LessonCard: React.FC<Props> = ({
               tag="h1"
               className={cn(
                 "line-clamp-1 text-caption font-semibold",
-                !canceled ? "text-brand-700" : "text-destructive-600"
+                !canceled && !reported
+                  ? "text-brand-700"
+                  : "text-destructive-600"
               )}
             >
               {title}

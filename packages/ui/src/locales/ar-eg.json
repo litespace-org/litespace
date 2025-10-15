@@ -809,6 +809,7 @@
   "lessons.canceled-by-tutor": "لقد تم إلغاء الحصة من قبل المعلم",
   "lessons.canceled-by-student": "لقد قام الطالب بإلغاء الحصة",
   "lessons.canceled-by-you": "لقد قمت بإلغاء الحصة",
+  "lessons.reported-by-you": "تم الإبلاغ عن الحصة",
   "lessons.time-to-join": "باقي علي الجلسة {value}",
   "lessons.time-to-end-lesson": "باقي علي انتهاء الجلسة {value}",
   "lessons.time-from-start": "بدأ الجلسة منذ {value} دقائق",
