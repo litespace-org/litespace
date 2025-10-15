@@ -178,8 +178,13 @@ const Root: React.FC = () => {
   });
 
   useEffect(() => {
-    clarity.identify(getCustomeId(), sessionId, location.pathname);
-  }, [location.pathname]);
+    clarity.identify(
+      user?.id.toString() || getCustomeId(),
+      sessionId,
+      location.pathname,
+      user?.name || undefined
+    );
+  }, [location.pathname, user?.id, user?.name]);
 
   return (
     <div className="flex relative w-full">
