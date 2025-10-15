@@ -3,6 +3,7 @@ import {
   HOURS_IN_DAY,
   MILLISECONDS_IN_SECOND,
   MINUTES_IN_HOUR,
+  percentage,
   SECONDS_IN_MINUTE,
 } from "@litespace/utils";
 import humanize, { Options } from "humanize-duration";
@@ -19,11 +20,15 @@ export function formatNumber(
  * @note numbers between 0 and 100 are mapped to 0% and 100%
  * @returns
  */
-export function formatPercentage(value: number): string {
+export function formatPercentage(
+  value: number,
+  options?: Intl.NumberFormatOptions
+): string {
   return new Intl.NumberFormat("en", {
     style: "percent",
     maximumFractionDigits: 2,
-  }).format(value / 100);
+    ...options,
+  }).format(percentage.unscale(value));
 }
 
 export function formatCurrency(value: number): string {

@@ -6,7 +6,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { Link } from "react-router-dom";
 import Info from "@litespace/assets/InfoCircle";
 
-const PageTitle: React.FC<{
+const Title: React.FC<{
   title: string;
   fetching?: boolean;
   count?: number;
@@ -23,7 +23,7 @@ const PageTitle: React.FC<{
         <Info className="[&>*]:stroke-natural-950 w-6 h-6" />
       </Link>
 
-      <div className={cn("flex flex-row items-center gap-4")}>
+      <div className={cn("flex flex-row items-center gap-1")}>
         <Typography
           tag="h1"
           className="text-subtitle-2 font-bold text-natural-950"
@@ -38,4 +38,4 @@ const PageTitle: React.FC<{
   );
 };
 
-export default PageTitle;
+export default Title;

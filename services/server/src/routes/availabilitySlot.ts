@@ -4,6 +4,7 @@ import availabilitySlot from "@/handlers/availabilitySlot";
 const router = Router();
 
 router.get("/", availabilitySlot.find);
+router.get("/stats", availabilitySlot.getStats);
 router.post("/", availabilitySlot.set);
 
 export default router;

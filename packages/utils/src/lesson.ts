@@ -1,5 +1,6 @@
 import { ILesson } from "@litespace/types";
 import { MINUTES_IN_HOUR, TOTAL_LESSON_HOURLY_RATE } from "@/constants";
+import { sumBy } from "lodash";
 
 /**
  * @param duration  {ILesson.Duration}
@@ -7,4 +8,8 @@ import { MINUTES_IN_HOUR, TOTAL_LESSON_HOURLY_RATE } from "@/constants";
  */
 export function calculateLessonPrice(duration: ILesson.Duration): number {
   return Math.floor((duration / MINUTES_IN_HOUR) * TOTAL_LESSON_HOURLY_RATE);
+}
+
+export function sumLessonsDuration(lessons: ILesson.Self[]): number {
+  return sumBy(lessons, (lesson) => lesson.duration);
 }

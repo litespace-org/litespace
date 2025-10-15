@@ -1,4 +1,4 @@
-import PageTitle from "@/components/Common/PageTitle";
+import Title from "@/components/Common/Title";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { usePaginatedTopics } from "@litespace/headless/topic";
 import List from "@/components/Topics/List";
@@ -23,7 +23,7 @@ const Topics = () => {
   return (
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
       <div className="flex flex-row justify-between">
-        <PageTitle
+        <Title
           title={intl("dashboard.topics.title")}
           fetching={query.query.isFetching && !query.query.isLoading}
           count={query.query.data?.total}

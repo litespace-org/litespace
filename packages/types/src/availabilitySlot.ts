@@ -137,3 +137,14 @@ export type FindAvailabilitySlotsApiResponse = {
 };
 
 export type SetAvailabilitySlotsApiResponse = void;
+
+export type GetStatsApiResponse = {
+  slotsSumOfYesterday: number;
+  slotsSumOfToday: number;
+  slotsSumOfTomorrow: number;
+  slotsSumOfNextWeek: number;
+  lessonsSumOfYesterday: number;
+  lessonsSumOfToday: number;
+  lessonsSumOfTomorrow: number;
+  lessonsSumOfNextWeek: number;
+};

@@ -21,6 +21,7 @@ const Tutor = lazy(() => import("@/pages/Tutor"));
 const Tutors = lazy(() => import("@/pages/Tutors"));
 const PlanInvites = lazy(() => import("@/pages/PlanInvites"));
 const Lesson = lazy(() => import("@/pages/Lesson"));
+const Main = lazy(() => import("@/pages/Main"));
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
     element: <Page page={<Root />} />,
     errorElement: <Page page={<ErrorPage />} />,
     children: [
+      { path: Dashboard.Main, element: <Page page={<Main />} /> },
       { path: Dashboard.Invoices, element: <Page page={<Invoices />} /> },
       { path: Dashboard.Login, element: <Page page={<Login />} /> },
       { path: Dashboard.Plans, element: <Page page={<Plans />} /> },

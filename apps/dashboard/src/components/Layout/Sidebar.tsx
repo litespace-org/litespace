@@ -20,6 +20,7 @@ import Settings2 from "@litespace/assets/Settings2";
 import Tag from "@litespace/assets/Tag";
 import Users from "@litespace/assets/Users";
 import Video from "@litespace/assets/Video";
+import Home from "@litespace/assets/Home";
 
 import { router } from "@/lib/route";
 import { Icon } from "@/types/common";
@@ -103,6 +104,13 @@ const Sidebar: React.FC = () => {
   const mainPages: LinkInfo[] = useMemo(() => {
     const match = (route: Dashboard) => router.match(route, location.pathname);
 
+    const main: LinkInfo = {
+      label: intl("dashboard.sidebar.main"),
+      route: Dashboard.Main,
+      Icon: Home,
+      isActive: match(Dashboard.Main),
+    };
+
     const photoSession: LinkInfo = {
       label: intl("dashboard.sidebar.photo-sessions"),
       route: Dashboard.PhotoSessions,
@@ -169,6 +177,7 @@ const Sidebar: React.FC = () => {
     if (user?.role === IUser.Role.Studio) return [photoSession];
 
     return [
+      main,
       users,
       invoices,
       plans,

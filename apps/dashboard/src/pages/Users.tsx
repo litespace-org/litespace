@@ -1,4 +1,4 @@
-import PageTitle from "@/components/Common/PageTitle";
+import Title from "@/components/Common/Title";
 import List from "@/components/Users/List";
 import UserForm from "@/components/Users/UserForm";
 import { useUsers } from "@litespace/headless/users";
@@ -169,7 +169,7 @@ export const Users: React.FC = () => {
     <div className={cn("w-full flex flex-col p-6 max-w-screen-3xl mx-auto")}>
       <header className="flex items-center justify-between mb-3">
         <div className="flex items-center justify-center gap-2">
-          <PageTitle
+          <Title
             title={intl("dashboard.users.title")}
             fetching={users.query.isFetching && !users.query.isLoading}
             count={users.query.data?.total}

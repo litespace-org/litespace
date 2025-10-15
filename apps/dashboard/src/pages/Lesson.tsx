@@ -1,4 +1,4 @@
-import PageTitle from "@/components/Common/PageTitle";
+import Title from "@/components/Common/Title";
 import List from "@/components/Lesson";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { useFindSessionEventsBySessionId } from "@litespace/headless/sessionEvent";
@@ -25,7 +25,7 @@ const Lesson: React.FC = () => {
       className={cn("w-full flex flex-col gap-6 max-w-screen-3xl mx-auto p-6")}
     >
       <header className="flex items-center justify-between">
-        <PageTitle
+        <Title
           title={intl("dashboard.session-events.title")}
           fetching={events.isFetching && !events.isLoading}
         />

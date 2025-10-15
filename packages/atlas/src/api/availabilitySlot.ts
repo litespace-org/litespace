@@ -17,4 +17,8 @@ export class AvailabilitySlot extends Base {
       payload,
     });
   }
+
+  async getStats(): Promise<IAvailabilitySlot.GetStatsApiResponse> {
+    return await this.get({ route: "/api/v1/availability-slot/stats" });
+  }
 }
