@@ -9,9 +9,9 @@ import {
   role,
   slotPurpose,
 } from "@/validation/utils";
-import { isTutor, isUser } from "@litespace/utils/user";
+import { isTutor, isUser, isAdmin } from "@litespace/utils/user";
 import { IAvailabilitySlot } from "@litespace/types";
-import { availabilitySlots, knex } from "@litespace/models";
+import { availabilitySlots, knex, lessons } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
@@ -24,6 +24,7 @@ import {
   updateSlot,
 } from "@/lib/availabilitySlot";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
+import { sumLessonsDuration, sumSlotsDuration } from "@litespace/utils";
 
 const findQuery: ZodSchema<IAvailabilitySlot.FindAvailabilitySlotsApiQuery> =
   zod.object({
@@ -223,7 +224,95 @@ async function set(req: Request, res: Response, next: NextFunction) {
   res.sendStatus(200);
 }
 
+async function getStats(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const now = dayjs.utc();
+
+  const [slotsOfYesterday, slotsOfToday, slotsOfTomorrow, slotsOfNextWeek] =
+    await Promise.all([
+      availabilitySlots.find({
+        start: { gte: now.subtract(1, "day").startOf("day").toISOString() },
+        end: { lte: now.subtract(1, "day").endOf("day").toISOString() },
+        full: true,
+        deleted: false,
+      }),
+      availabilitySlots.find({
+        start: { gte: now.startOf("day").toISOString() },
+        end: { lte: now.endOf("day").toISOString() },
+        full: true,
+        deleted: false,
+      }),
+      availabilitySlots.find({
+        start: { gte: now.add(1, "day").startOf("day").toISOString() },
+        end: { lte: now.add(1, "day").endOf("day").toISOString() },
+        full: true,
+        deleted: false,
+      }),
+      availabilitySlots.find({
+        start: { gte: now.startOf("day").toISOString() },
+        end: { lte: now.add(7, "day").endOf("day").toISOString() },
+        full: true,
+        deleted: false,
+      }),
+    ]);
+
+  const [
+    lessonsOfYesterday,
+    lessonsOfToday,
+    lessonsOfTomorrow,
+    lessonsOfNextWeek,
+  ] = await Promise.all([
+    await lessons.find({
+      slots: slotsOfYesterday.list.map((s) => s.id),
+      full: true,
+      canceled: false,
+    }),
+    await lessons.find({
+      slots: slotsOfToday.list.map((s) => s.id),
+      full: true,
+      canceled: false,
+    }),
+    await lessons.find({
+      slots: slotsOfTomorrow.list.map((s) => s.id),
+      full: true,
+      canceled: false,
+    }),
+    await lessons.find({
+      slots: slotsOfNextWeek.list.map((s) => s.id),
+      full: true,
+      canceled: false,
+    }),
+  ]);
+
+  const slotsSumOfYesterday = sumSlotsDuration(slotsOfYesterday.list);
+  const slotsSumOfToday = sumSlotsDuration(slotsOfToday.list);
+  const slotsSumOfTomorrow = sumSlotsDuration(slotsOfTomorrow.list);
+  const slotsSumOfNextWeek = sumSlotsDuration(slotsOfNextWeek.list);
+
+  const lessonsSumOfYesterday = sumLessonsDuration(lessonsOfYesterday.list);
+  const lessonsSumOfToday = sumLessonsDuration(lessonsOfToday.list);
+  const lessonsSumOfTomorrow = sumLessonsDuration(lessonsOfTomorrow.list);
+  const lessonsSumOfNextWeek = sumLessonsDuration(lessonsOfNextWeek.list);
+
+  const response: IAvailabilitySlot.GetStatsApiResponse = {
+    slotsSumOfYesterday,
+    slotsSumOfToday,
+    slotsSumOfTomorrow,
+    slotsSumOfNextWeek,
+    lessonsSumOfYesterday,
+    lessonsSumOfToday,
+    lessonsSumOfTomorrow,
+    lessonsSumOfNextWeek,
+  };
+
+  res.status(200).json(response);
+}
+
 export default {
   find: safeRequest(find),
   set: safeRequest(set),
+  getStats: safeRequest(getStats),
 };

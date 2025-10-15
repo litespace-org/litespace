@@ -1,4 +1,4 @@
-import PageTitle from "@/components/Common/PageTitle";
+import Title from "@/components/Common/Title";
 import List from "@/components/Invoices/List";
 import { isEqual } from "lodash";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -275,7 +275,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
     <div className="w-full">
       <header className="flex items-center justify-between mb-3">
         <div className="flex items-center justify-center gap-2">
-          <PageTitle
+          <Title
             title={intl("invoices.title")}
             fetching={query.isFetching && !query.isLoading}
             count={query.data?.total}

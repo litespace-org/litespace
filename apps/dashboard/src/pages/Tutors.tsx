@@ -1,4 +1,4 @@
-import PageTitle from "@/components/Common/PageTitle";
+import Title from "@/components/Common/Title";
 import { CreateTutor, Content } from "@/components/Tutors";
 import { useFindFullTutors } from "@litespace/headless/tutor";
 import { Button } from "@litespace/ui/Button";
@@ -19,7 +19,7 @@ const Tutors: React.FC = () => {
   return (
     <div className="flex flex-col gap-6 p-6 max-w-screen-3xl mx-auto w-full">
       <div className="flex justify-between items-center">
-        <PageTitle
+        <Title
           title={intl("dashboard.tutors.title")}
           count={query.data?.total}
           fetching={query.isFetching}

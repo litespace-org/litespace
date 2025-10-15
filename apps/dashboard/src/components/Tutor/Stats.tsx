@@ -1,4 +1,4 @@
-import PageTitle from "@/components/Common/PageTitle";
+import Title from "@/components/Common/Title";
 import StatsContent from "@/components/Tutor/StatsContent";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IInvoice } from "@litespace/types";
@@ -13,7 +13,7 @@ const Stats: React.FC<{
   return (
     <>
       <header className="flex items-center justify-between mb-3">
-        <PageTitle
+        <Title
           title={intl("stats.tutor.financial.title")}
           fetching={stats.isFetching && !stats.isLoading}
         />

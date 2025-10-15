@@ -1,4 +1,4 @@
-import PageTitle from "@/components/Common/PageTitle";
+import Title from "@/components/Common/Title";
 import List from "@/components/Plans/List";
 import ManagePlan from "@/components/Plans/ManagePlan";
 import { router } from "@/lib/route";
@@ -24,7 +24,7 @@ export const Plans: React.FC = () => {
       className={cn("w-full flex flex-col gap-6 max-w-screen-3xl mx-auto p-6")}
     >
       <header className="flex items-center justify-between">
-        <PageTitle
+        <Title
           title={intl("dashboard.plans.title")}
           count={plans.query.data?.total}
           fetching={plans.query.isFetching && !plans.query.isLoading}

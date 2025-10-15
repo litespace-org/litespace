@@ -47,6 +47,7 @@ export enum Landing {
 
 export enum Dashboard {
   Root = "/",
+  Main = "/main",
   Invoices = "/invoices",
   Media = "/media",
   Login = "/login",

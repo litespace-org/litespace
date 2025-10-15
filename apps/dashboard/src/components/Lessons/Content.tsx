@@ -1,6 +1,6 @@
 import React from "react";
 import List from "@/components/Lessons/List";
-import PageTitle from "@/components/Common/PageTitle";
+import Title from "@/components/Common/Title";
 import { useFindLessons } from "@litespace/headless/lessons";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -121,7 +121,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
     <div>
       <header className="flex items-center justify-between mb-3">
         <div className="flex items-center justify-center gap-2">
-          <PageTitle
+          <Title
             fetching={query.isFetching && !query.isLoading}
             title={intl("dashboard.lessons.title")}
             count={query.data?.total}

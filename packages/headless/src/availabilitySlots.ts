@@ -23,6 +23,20 @@ export function useFindAvailabilitySlots(
   });
 }
 
+export function useGetAvailabilitySlotsStats() {
+  const api = useApi();
+
+  const findSlots = useCallback(
+    () => api.availabilitySlot.getStats(),
+    [api.availabilitySlot]
+  );
+
+  return useExtendedQuery({
+    queryFn: findSlots,
+    queryKey: [QueryKey.GetAvailabilitySlotsStats],
+  });
+}
+
 export function useSetAvailabilitySlots({
   onSuccess,
   onError,
