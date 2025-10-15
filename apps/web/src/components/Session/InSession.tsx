@@ -207,6 +207,8 @@ const InSession: React.FC<{
     const interval = setInterval(() => {
       const now = dayjs();
 
+      if (dayjs(startDate).add(3, "minutes").isBefore(now)) return;
+
       if (now.isAfter(startDate)) {
         setTimeAlertData({
           title: intl("session.alert.wait-tutor"),

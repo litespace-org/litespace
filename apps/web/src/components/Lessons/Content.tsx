@@ -203,6 +203,7 @@ export const Content: React.FC<{
                   item.lesson.canceledBy,
                   tutor.userId
                 )}
+                reported={item.lesson.reported}
                 member={{
                   id: otherMember.userId,
                   name: otherMember.name,

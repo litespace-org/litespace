@@ -1,7 +1,6 @@
 import PageTitle from "@/components/Common/PageTitle";
 import Content from "@/components/UpcomingLessons/Content";
 import { useUser } from "@litespace/headless/context/user";
-import { useInfiniteLessons } from "@litespace/headless/lessons";
 import {
   useCreateRatingTutor,
   useFindTutorRatings,
@@ -17,6 +16,7 @@ import { IUser } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Web } from "@litespace/utils/routes";
 import { useOnError } from "@/hooks/error";
+import { useFindSortedLessons } from "@/hooks/lesson";
 
 type RateLessonParams = {
   tutorId: number | null;
@@ -58,18 +58,7 @@ const Lessons: React.FC = () => {
     error: ratingQuery.error,
   });
 
-  const lessons = useInfiniteLessons({
-    userOnly: true,
-    users: user ? [user?.id] : [],
-    canceled: false,
-    reported: false,
-  });
-
-  useOnError({
-    type: "query",
-    keys: lessons.keys,
-    error: lessons.query.error,
-  });
+  const lessons = useFindSortedLessons();
 
   const onError = useOnError({
     type: "mutation",
@@ -162,12 +151,12 @@ const Lessons: React.FC = () => {
 
       <Content
         list={lessons.list}
-        loading={lessons.query.isPending}
-        fetching={lessons.query.isFetching && !lessons.query.isPending}
-        error={lessons.query.isError}
+        loading={lessons.isPending}
+        fetching={lessons.isFetching && !lessons.isPending}
+        error={lessons.isError}
         more={lessons.more}
-        hasMore={lessons.query.hasNextPage && !lessons.query.isPending}
-        refetch={lessons.query.refetch}
+        hasMore={lessons.hasNextPage && !lessons.isPending}
+        refetch={lessons.refetch}
       />
 
       {rateLessonParams.lessonId &&

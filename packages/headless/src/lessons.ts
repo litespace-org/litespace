@@ -75,10 +75,7 @@ export function useInfiniteLessons({
   > = useCallback(
     async ({ page }) => {
       if (userOnly && !query.users?.length) return { list: [], total: 0 };
-      return await api.lesson.findLessons({
-        page,
-        ...query,
-      });
+      return await api.lesson.findLessons({ page, ...query });
     },
     [api.lesson, query, userOnly]
   );

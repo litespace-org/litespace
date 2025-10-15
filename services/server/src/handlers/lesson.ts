@@ -446,6 +446,7 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
     users: query.users,
     ratified: query.ratified,
     canceled: query.canceled,
+    reported: query.reported,
     after: query.after,
     before: query.before,
     page: query.page,
