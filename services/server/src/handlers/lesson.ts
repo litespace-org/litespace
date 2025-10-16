@@ -348,6 +348,7 @@ function update(context: ApiContext) {
 
       const members = await lessons.findLessonMembers([payload.lessonId]);
       const member = members.find((member) => member.userId === user.id);
+
       if (!member) return next(forbidden());
 
       const tutor = members.find((member) => member.userId !== user.id);

@@ -40,7 +40,7 @@ export type ManageLessonPayload =
   | {
       type: "update";
       tutorId: number;
-      lessonId: number;
+      lessonId?: number;
       slotId: number;
       start: string;
       duration: number;
@@ -202,14 +202,25 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
           })
           .then(() => refetch());
 
-      updateLessonMutation
-        .mutateAsync({
-          lessonId: payload.lessonId,
-          slotId,
-          duration,
-          start,
-        })
-        .then(() => refetch());
+      if (payload.type === "update" && !payload.lessonId)
+        return createLessonMutation
+          .mutateAsync({
+            tutorId,
+            slotId,
+            duration,
+            start,
+          })
+          .then(() => refetch());
+
+      if (payload.type === "update" && payload.lessonId)
+        return updateLessonMutation
+          .mutateAsync({
+            lessonId: payload.lessonId,
+            slotId,
+            duration,
+            start,
+          })
+          .then(() => refetch());
     },
     [
       payload.type,
