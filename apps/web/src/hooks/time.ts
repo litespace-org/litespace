@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
 import { dayjs } from "@litespace/utils";
-import { useCurrentTZHour } from "@litespace/headless/time";
+import { useCurrentZoneTime } from "@litespace/headless/time";
 
 export function useCheckTimeValidity(): boolean {
   const [valid, setValid] = useState(true);
 
-  const tzHourQuery = useCurrentTZHour(dayjs.tz.guess());
+  const tzQuery = useCurrentZoneTime(dayjs.tz.guess());
 
   useEffect(() => {
     setValid(
-      tzHourQuery.data?.hour === dayjs.tz().hour() ||
-        tzHourQuery.isPending ||
+      dayjs().diff(tzQuery.data?.iso, "seconds") < 10 ||
+        tzQuery.isPending ||
         // NOTE: errors are ignored. In case your considered to
         // remove this condition. Put in mind that if you didn't
         // remove the invalid-time-dialog from the <root> as well,
         // users will get stuck in the login page, as then this
         // query will have 403 error constantly.
-        tzHourQuery.isError
+        tzQuery.isError
     );
-  }, [tzHourQuery.data, tzHourQuery.isPending, tzHourQuery.isError]);
+  }, [tzQuery.data, tzQuery.isPending, tzQuery.isError]);
 
   return valid;
 }
