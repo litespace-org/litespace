@@ -1,4 +1,4 @@
-import CallIncoming from "@litespace/assets/CallIncoming";
+import ProfileAvatar from "@litespace/assets/ProfileAvatar";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import React from "react";
 import { Void } from "@litespace/types";
@@ -16,31 +16,45 @@ export const CancelLesson: React.FC<{
   const intl = useFormatMessage();
   return (
     <ConfirmationDialog
+      title={intl("cancel-lesson.with-tutor.confirm.title", {
+        value: otherMemberName,
+      })}
       open={open}
-      type="error"
-      icon={<CallIncoming />}
+      type="main"
+      icon={<ProfileAvatar className="[&>*]:!stroke-brand-500" />}
+      className="!w-[400px]"
       actions={{
         primary: {
           label: intl("labels.confirm"),
+          onClick: close,
+        },
+        secondary: {
+          label: isStudent ? intl("labels.go-back") : intl("labels.cancel"),
           onClick: onCancel,
           loading: loading,
           disabled: loading,
         },
-        secondary: {
-          label: isStudent ? intl("labels.go-back") : intl("labels.cancel"),
-          onClick: close,
-        },
       }}
       close={close}
-      title={intl("cancel-lesson.with-tutor.confirm.title", {
-        value: otherMemberName,
-      })}
     >
-      <Typography tag="p" className="text-caption mt-4">
-        {intl(
-          isStudent
-            ? "cancel-lesson.with-tutor.confirm.description"
-            : "cancel-lesson.description"
+      <Typography
+        tag="p"
+        className="text-caption text-natural-700 font-cairo mt-1"
+      >
+        {isStudent ? (
+          <>
+            <Typography tag="p">
+              {intl("cancel-lesson.with-tutor.confirm.description", {
+                value: otherMemberName,
+              })}
+            </Typography>
+
+            <Typography tag="p">
+              {intl("cancel-lesson.with-tutor.confirm.description-2")}
+            </Typography>
+          </>
+        ) : (
+          intl("cancel-lesson.description")
         )}
       </Typography>
     </ConfirmationDialog>

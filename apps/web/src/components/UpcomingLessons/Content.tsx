@@ -22,12 +22,12 @@ import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 import { isStudent } from "@litespace/utils/user";
 import { useSubscription } from "@litespace/headless/context/subscription";
-import { Dialog } from "@litespace/ui/Dialog";
 import dayjs from "dayjs";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
 import { UNCANCELLABLE_LESSON_HOURS } from "@litespace/utils";
-
+import CloseCircle from "@litespace/assets/CloseCircle";
+import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
 export const Content: React.FC<{
@@ -293,7 +293,6 @@ const CancelDialogs: React.FC<{
   cancel: Void;
 }> = ({ isStudent, start, otherMemberName, close, onEdit, cancel }) => {
   const intl = useFormatMessage();
-  const { md } = useMediaQuery();
 
   const [canCancel, setCanCancel] = useState<boolean>(!isStudent);
 
@@ -303,87 +302,103 @@ const CancelDialogs: React.FC<{
     return diff;
   }, [start]);
 
-  const dialogTitle = useMemo(
-    () => intl("cancel-lesson.with-tutor.title", { value: otherMemberName }),
-    [intl, otherMemberName]
-  );
-
   return (
     <div>
       {isStudent ? (
-        <Dialog
-          open={hoursToStart <= UNCANCELLABLE_LESSON_HOURS}
+        <ConfirmationDialog
+          title=""
+          type="main"
+          className="!w-[400px]"
           close={close}
-          title={dialogTitle}
-          className="w-full sm:max-w-[500px]"
-          position={md ? "center" : "bottom"}
+          open={hoursToStart <= UNCANCELLABLE_LESSON_HOURS}
+          actions={{
+            primary: {
+              label: intl("labels.ok"),
+              onClick: close,
+            },
+          }}
+          icon={<CloseCircle className="[&>*]:!stroke-brand-500" />}
         >
-          <Typography tag="p" className="mt-4">
-            {intl("cancel-lesson.labels.pleased-to-help")}
+          <Typography tag="p" className="font-cairo font-semibold text-body">
+            {intl("cancel-lesson.with-tutor.title", {
+              value: otherMemberName,
+            })}
           </Typography>
-          <Typography tag="p" className="mt-1">
+
+          <Typography
+            tag="p"
+            className="mt-1 text-caption text-natural-700 font-cairo font-normal"
+          >
             {intl("cancel-lesson.description.within-6-hours")}
           </Typography>
-          <Button size="large" onClick={close} className="w-full mt-4">
-            {intl("labels.ok")}
-          </Button>
-        </Dialog>
+        </ConfirmationDialog>
       ) : null}
-
       {isStudent ? (
-        <Dialog
+        <ConfirmationDialog
+          title=""
           open={hoursToStart > UNCANCELLABLE_LESSON_HOURS && !canCancel}
+          className="!w-[100%] max-w-[550px] md:max-w-[400px] mx-auto"
+          icon={<CloseCircle className="[&>*]:!stroke-brand-500" />}
           close={close}
-          title={dialogTitle}
-          className="w-full sm:max-w-[500px]"
-          position={md ? "center" : "bottom"}
         >
           <Typography
             tag="p"
-            className="font-semibold text-subtitle-1 mt-4 mb-2"
+            className="font-cairo font-semibold text-body mb-1"
           >
-            {intl("cancel-lesson.description.before-6-hours-1")}
+            {intl("cancel-lesson.description.before-6-hours-1", {
+              value: otherMemberName,
+            })}
           </Typography>
-          <Typography tag="p" className="font-semibold text-caption mb-1">
+
+          <Typography
+            tag="p"
+            className="font-cairo font-normal text-caption text-natural-700"
+          >
             {intl("cancel-lesson.description.before-6-hours-2")}
           </Typography>
-          <Typography tag="p" className="font-semibold text-caption mb-1">
+
+          <Typography
+            tag="p"
+            className="font-cairo font-normal text-caption text-natural-700"
+          >
             {intl("cancel-lesson.description.before-6-hours-3")}
           </Typography>
-          <Typography tag="p" className="font-semibold text-caption">
+
+          <Typography
+            tag="p"
+            className="font-cairo font-normal text-caption text-natural-700"
+          >
             {intl("cancel-lesson.description.before-6-hours-4")}
           </Typography>
 
-          <div className="flex flex-col items-center gap-4 mt-8">
+          <div className="flex flex-row items-center gap-3 mt-[24px]">
             <Button
-              type="natural"
+              className="flex-1"
               variant="secondary"
-              onClick={() => setCanCancel(true)}
+              size="large"
+              onClick={() => {
+                onEdit();
+                close();
+              }}
             >
-              {intl("cancel-lesson.with-tutor.buttons.cancel")}
+              {intl("cancel-lesson.with-tutor.buttons.change-date")}
             </Button>
-            <div className="flex w-full gap-4">
-              <Button
-                className="flex-1"
-                size="large"
-                onClick={() => {
-                  onEdit();
-                  close();
-                }}
-              >
-                {intl("cancel-lesson.with-tutor.buttons.change-date")}
-              </Button>
-              <Button
-                variant="secondary"
-                className="flex-1"
-                size="large"
-                onClick={close}
-              >
-                {intl("labels.go-back")}
-              </Button>
-            </div>
+
+            <Button className="flex-1" size="large" onClick={close}>
+              {intl("labels.confirm")}
+            </Button>
           </div>
-        </Dialog>
+
+          <Button
+            className="w-full mt-[16px] "
+            size="large"
+            type="natural"
+            variant="secondary"
+            onClick={() => setCanCancel(true)}
+          >
+            {intl("cancel-lesson.with-tutor.buttons.cancel")}
+          </Button>
+        </ConfirmationDialog>
       ) : null}
 
       <CancelLesson
