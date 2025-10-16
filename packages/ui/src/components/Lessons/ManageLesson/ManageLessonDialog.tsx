@@ -1,8 +1,6 @@
 import { AvatarV2 } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { Dialog } from "@/components/Dialog";
-import { Block } from "@/components/Lessons/ManageLesson/Block";
-import { Confirmation } from "@/components/Lessons/ManageLesson/Confirmation";
 import { DateSelection } from "@/components/Lessons/ManageLesson/DateSelection";
 import { Step } from "@/components/Lessons/ManageLesson/types";
 import { Loading, LoadingError } from "@/components/Loading";
@@ -26,6 +24,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { concat, isEmpty } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { arabicTimezoneNames } from "@/constants/labels";
+import { Block } from "@/components/Lessons/ManageLesson/Block";
 
 const LoadingWrapper: React.FC<{
   tutorName: string | null;
@@ -155,7 +154,7 @@ export const ManageLessonDialog: React.FC<{
   slots: IAvailabilitySlot.Self[];
   bookedSlots: IAvailabilitySlot.SubSlot[];
   subscribed: boolean;
-  hasBookedLessons: boolean;
+  hasBookedMaxLessons: boolean;
   remainingWeeklyMinutes: number;
   retry: Void;
   /**
@@ -182,7 +181,7 @@ export const ManageLessonDialog: React.FC<{
   error,
   confirmationLoading,
   subscribed,
-  hasBookedLessons,
+  hasBookedMaxLessons,
   remainingWeeklyMinutes,
   dateBoundaries,
   close,
@@ -193,7 +192,6 @@ export const ManageLessonDialog: React.FC<{
 }) => {
   const { sm } = useMediaQuery();
   const intl = useFormatMessage();
-  const [step, setStep] = useState<Step>("selection");
   const [duration] = useState<number>(initials.duration || MIN_LESSON_DURATION);
   const [lessonDetails, setLessonDetails] = useState<{
     start: string | null;
@@ -220,8 +218,10 @@ export const ManageLessonDialog: React.FC<{
 
   const unbookedSlots = useMemo(
     () =>
-      subtractSlots({ slots, subslots: bookedSlots }).filter((slot) =>
-        dayjs(slot.start).isBefore(dateBounds?.end)
+      subtractSlots({ slots, subslots: bookedSlots }).filter(
+        (slot) =>
+          dayjs(slot.start).isAfter(dayjs()) &&
+          dayjs(slot.start).isBefore(dateBounds?.end)
       ),
     [slots, bookedSlots, dateBounds?.end]
   );
@@ -313,8 +313,15 @@ export const ManageLessonDialog: React.FC<{
       !error &&
       !loading &&
       !depletedSubscription &&
-      (!hasBookedLessons || subscribed || type === "update"),
-    [error, loading, depletedSubscription, hasBookedLessons, type, subscribed]
+      (!hasBookedMaxLessons || subscribed || type === "update"), // NOTE: !hasBookedLessons condition no longer used
+    [
+      error,
+      loading,
+      depletedSubscription,
+      hasBookedMaxLessons,
+      type,
+      subscribed,
+    ]
   );
 
   return (
@@ -365,7 +372,8 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {hasBookedLessons &&
+          {/* TODO: substitute this with subscription promotion */}
+          {hasBookedMaxLessons &&
           !subscribed &&
           !depletedSubscription &&
           !error &&
@@ -376,7 +384,7 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {step === "selection" && canBook ? (
+          {canBook ? (
             <Animation key="date-selection" id="selection">
               <div className="flex flex-col gap-6 !max-w-[350px]">
                 <div className="flex flex-col gap-4">
@@ -389,9 +397,13 @@ export const ManageLessonDialog: React.FC<{
                     min={dateBounds.start}
                     max={dateBounds.start.add(1, "week")}
                     selected={date}
-                    onSelect={setDate}
+                    onSelect={(params) => {
+                      setDate(params);
+                      setLessonDetails({ start: null, slotId: null });
+                    }}
                     isSelectable={isValidDate}
                     prev={() => {
+                      setLessonDetails({ start: null, slotId: null });
                       setDateBounds((prev) => {
                         setDate(prev.start.subtract(1, "week"));
                         return {
@@ -401,6 +413,7 @@ export const ManageLessonDialog: React.FC<{
                       });
                     }}
                     next={() => {
+                      setLessonDetails({ start: null, slotId: null });
                       setDateBounds((prev) => {
                         setDate(prev.start.add(1, "week"));
                         return {
@@ -451,28 +464,8 @@ export const ManageLessonDialog: React.FC<{
                 <Button
                   size="large"
                   className="w-full"
-                  disabled={!lessonDetails.slotId && !lessonDetails.start}
-                  onClick={() => setStep("confirmation")}
-                >
-                  <Typography tag="span" className="text-body font-medium">
-                    {intl("book-lesson.confirm")}
-                  </Typography>
-                </Button>
-              </div>
-            </Animation>
-          ) : null}
-
-          {step === "confirmation" && lessonDetails.start && canBook ? (
-            <Animation key="confimration" id="confirmation">
-              <div className="px-4 md:px-0">
-                <Confirmation
-                  tutorId={tutorId}
-                  name={name}
-                  imageUrl={imageUrl}
-                  start={lessonDetails.start}
-                  confirmationLoading={confirmationLoading}
-                  duration={duration}
-                  onConfrim={() => {
+                  disabled={!lessonDetails.slotId || !lessonDetails.start}
+                  onClick={() => {
                     if (!lessonDetails.start || !lessonDetails.slotId) return;
                     return onSubmit({
                       start: lessonDetails.start,
@@ -480,10 +473,11 @@ export const ManageLessonDialog: React.FC<{
                       duration,
                     });
                   }}
-                  onEdit={() => {
-                    setStep("selection");
-                  }}
-                />
+                >
+                  <Typography tag="span" className="text-body font-medium">
+                    {intl("book-lesson.confirm")}
+                  </Typography>
+                </Button>
               </div>
             </Animation>
           ) : null}

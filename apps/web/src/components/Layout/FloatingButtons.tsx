@@ -21,7 +21,13 @@ const FloatingWhatsapp: React.FC = () => {
   const location = useLocation();
 
   const showFloatingWhatsapp = useMemo(() => {
-    const routes: Web[] = [Web.Login, Web.Lessons, Web.Lesson, Web.Chat];
+    const routes: Web[] = [
+      Web.Login,
+      Web.Lessons,
+      Web.Lesson,
+      Web.Chat,
+      Web.Checkout,
+    ];
     return !routes.some((route) => router.match(route, location.pathname));
   }, [location.pathname]);
 

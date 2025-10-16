@@ -20,6 +20,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import {
   isTutorManager,
   MAX_LESSON_DURATION,
+  MAX_PAID_LESSON_COUNT,
   MIN_LESSON_DURATION,
 } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
@@ -86,8 +87,11 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
     userOnly: true,
     size: 1,
   });
-  const hasBookedLessons = useMemo(() => {
-    return !!lessons.query.data && !!lessons.query.data.list.length;
+  const hasBookedMaxLessons = useMemo(() => {
+    return (
+      !!lessons.query.data &&
+      lessons.query.data.list.length >= MAX_PAID_LESSON_COUNT
+    );
   }, [lessons]);
 
   const canBook = useMemo(() => {
@@ -264,7 +268,7 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
         slots={tutorAvailabilitySlots.data?.slots.list || []}
         onSubmit={onSubmit}
         subscribed={!!info}
-        hasBookedLessons={hasBookedLessons}
+        hasBookedMaxLessons={hasBookedMaxLessons}
         retry={tutorAvailabilitySlots.refetch}
         error={
           tutorAvailabilitySlots.isError ||
