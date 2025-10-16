@@ -7,6 +7,7 @@ import { Web } from "@litespace/utils/routes";
 import { ILesson, IPlan, ITutor } from "@litespace/types";
 import { formatMinutes, formatNumber, formatWeeks } from "@litespace/ui/utils";
 import {
+  MAX_LESSON_DURATION,
   PLAN_PERIOD_LITERAL_TO_WEEK_COUNT,
   calculateLessonPrice,
   price,
@@ -16,7 +17,7 @@ import {
   calculateTotalPriceAfterDiscount,
   calculateTotalPriceBeforeDiscount,
 } from "@litespace/utils/plan";
-import { TxTypeData } from "@/components/Checkout/types";
+import { BookInfo, TxTypeDataQuery } from "@/components/Checkout/types";
 import { AvatarV2 } from "@litespace/ui/Avatar";
 import Star from "@litespace/assets/Star";
 import Calendar from "@litespace/assets/Calendar";
@@ -24,6 +25,9 @@ import Clock from "@litespace/assets/Clock";
 import dayjs from "@/lib/dayjs";
 import { track } from "@/lib/analytics";
 import { useFindTutorRatings } from "@litespace/headless/rating";
+import ManageLesson from "@/components/Lessons/ManageLesson";
+import { useRender } from "@litespace/headless/common";
+import Error from "@litespace/assets/Error";
 
 const PLAN_PERIOD_LITERAL_TO_MESSAGE_ID: Record<IPlan.PeriodLiteral, LocalId> =
   {
@@ -33,20 +37,19 @@ const PLAN_PERIOD_LITERAL_TO_MESSAGE_ID: Record<IPlan.PeriodLiteral, LocalId> =
     "free-trial": "checkout.plan.period.free-trial",
   };
 
-const TxTypeDetails: React.FC<{ txTypeData: TxTypeData }> = ({
-  txTypeData,
+const TxTypeDetails: React.FC<{ txTypeDataQuery: TxTypeDataQuery }> = ({
+  txTypeDataQuery,
 }) => {
-  if (txTypeData.type === "paid-lesson" && txTypeData.data.tutor)
+  if (txTypeDataQuery.type === "paid-lesson" && txTypeDataQuery.data.tutor)
+    return <Lesson txTypeDataQuery={txTypeDataQuery} />;
+
+  if (txTypeDataQuery.type === "paid-plan" && txTypeDataQuery.data.plan)
     return (
-      <Lesson
-        tutor={txTypeData.data.tutor}
-        start={txTypeData.data.start}
-        duration={txTypeData.data.duration}
+      <Plan
+        plan={txTypeDataQuery.data.plan}
+        period={txTypeDataQuery.data.period}
       />
     );
-
-  if (txTypeData.type === "paid-plan" && txTypeData.data.plan)
-    return <Plan plan={txTypeData.data.plan} period={txTypeData.data.period} />;
 };
 
 const Plan: React.FC<{
@@ -159,11 +162,13 @@ const Plan: React.FC<{
 };
 
 const Lesson: React.FC<{
-  tutor: ITutor.FindTutorInfoApiResponse;
-  start: string;
-  duration: ILesson.Duration;
-}> = ({ tutor, start, duration }) => {
+  txTypeDataQuery: TxTypeDataQuery;
+}> = ({ txTypeDataQuery }) => {
   const intl = useFormatMessage();
+
+  if (txTypeDataQuery.type !== "paid-lesson" || !txTypeDataQuery.data.tutor)
+    return <Error />;
+
   return (
     <Card>
       <div className="flex flex-col">
@@ -173,12 +178,22 @@ const Lesson: React.FC<{
         >
           {intl("checkout.lesson.details")}
         </Typography>
-        <TutorDetails tutor={tutor} />
+        <TutorDetails tutor={txTypeDataQuery.data.tutor} />
+
         <Divider />
-        <LessonDetails start={start} duration={duration} />
+
+        <LessonDetails
+          bookInfo={{
+            ...txTypeDataQuery.data,
+            tutorId: txTypeDataQuery.data.tutor.id,
+          }}
+        />
+
         <Divider />
-        <LessonPrice duration={duration} />
-        <ChangeLessonTiming start={start} />
+
+        <LessonPrice duration={txTypeDataQuery.data.duration} />
+
+        <ChangeLessonTiming txTypeDataQuery={txTypeDataQuery} />
       </div>
     </Card>
   );
@@ -265,9 +280,8 @@ const TutorDetails: React.FC<{ tutor: ITutor.FindTutorInfoApiResponse }> = ({
 };
 
 const LessonDetails: React.FC<{
-  start: string;
-  duration: ILesson.Duration;
-}> = ({ start, duration }) => {
+  bookInfo: BookInfo;
+}> = ({ bookInfo }) => {
   const intl = useFormatMessage();
   return (
     <div className="px-4 lg:px-6 mt-4 mb-[10px] md:mb-4">
@@ -284,7 +298,7 @@ const LessonDetails: React.FC<{
             tag="span"
             className="text-caption font-semibold text-natural-700"
           >
-            {dayjs(start).format("D MMMM YYYY")}
+            {dayjs(bookInfo.start).format("D MMMM YYYY")}
           </Typography>
         </div>
         <div className="flex flex-row gap-1 lg:gap-2 items-center justify-center">
@@ -293,8 +307,8 @@ const LessonDetails: React.FC<{
             tag="span"
             className="text-caption font-semibold text-natural-700"
           >
-            {dayjs(start).format("H:mm A")} (
-            {intl("labels.n-minutes", { count: duration })})
+            {dayjs(bookInfo.start).format("hh:mm A")} (
+            {intl("labels.n-minutes", { count: bookInfo.duration })})
           </Typography>
         </div>
       </div>
@@ -327,14 +341,24 @@ const LessonPrice: React.FC<{ duration: ILesson.Duration }> = ({
   );
 };
 
-const ChangeLessonTiming: React.FC<{ start: string }> = ({ start }) => {
+const ChangeLessonTiming: React.FC<{
+  txTypeDataQuery: TxTypeDataQuery;
+}> = ({ txTypeDataQuery }) => {
   const intl = useFormatMessage();
+  const updateDialog = useRender();
+
+  if (txTypeDataQuery.type !== "paid-lesson") return <Error />;
+
   return (
     <div className="px-4 lg:px-6">
       <Typography tag="p" className="text-extra-tiny text-natural-700 mb-2">
         {intl("checkout.lesson.change-lesson-time-note", {
-          time: dayjs(start).format("hh:mm A"),
-          date: dayjs(start).format("dddd D MMMM"),
+          time: dayjs(txTypeDataQuery.data.start)
+            .subtract(6, "h")
+            .format("hh:mm A"),
+          date: dayjs(txTypeDataQuery.data.start)
+            .subtract(6, "h")
+            .format("dddd D MMMM"),
         })}
       </Typography>
       <Button
@@ -342,12 +366,28 @@ const ChangeLessonTiming: React.FC<{ start: string }> = ({ start }) => {
         size="large"
         variant="primary"
         className="w-full"
-        onClick={() => alert("todo...")}
+        onClick={updateDialog.show}
       >
         <Typography tag="span" className="text-body font-medium">
           {intl("checkout.lesson.change-lesson-time")}
         </Typography>
       </Button>
+      {updateDialog.open ? (
+        <ManageLesson
+          type="update"
+          close={updateDialog.hide}
+          duration={MAX_LESSON_DURATION}
+          slotId={txTypeDataQuery.data.slotId}
+          start={txTypeDataQuery.data.start}
+          tutorId={txTypeDataQuery.data.tutor?.id || -1}
+          updateBookInfo={(info) => {
+            if (txTypeDataQuery.setBookInfo) {
+              txTypeDataQuery.setBookInfo({ ...txTypeDataQuery.data, ...info });
+            }
+            updateDialog.hide();
+          }}
+        />
+      ) : null}
     </div>
   );
 };
