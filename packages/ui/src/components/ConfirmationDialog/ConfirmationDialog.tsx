@@ -7,7 +7,7 @@ import {
   Title,
 } from "@radix-ui/react-dialog";
 import cn from "classnames";
-import React from "react";
+import React, { useMemo } from "react";
 import { Action, DialogType } from "@/components/ConfirmationDialog/types";
 import X from "@litespace/assets/X";
 import { Button } from "@/components/Button";
@@ -16,6 +16,7 @@ import { Typography } from "@/components/Typography";
 import { formatPercentage } from "@/components/utils";
 import { motion } from "framer-motion";
 import Spinner from "@litespace/assets/Spinner";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Progress: React.FC<{
   value: number;
@@ -57,19 +58,6 @@ const Actions: React.FC<{
 }> = ({ type, primary, secondary }) => {
   return (
     <div className="flex items-center justify-center gap-3 mt-4 lg:mt-6">
-      <Button
-        type={type}
-        size="large"
-        variant="primary"
-        className="w-full"
-        onClick={primary.onClick}
-        loading={primary.loading}
-        disabled={primary.disabled}
-        autoFocus
-      >
-        {primary.label}
-      </Button>
-
       {secondary ? (
         <Button
           size="large"
@@ -83,6 +71,19 @@ const Actions: React.FC<{
           {secondary.label}
         </Button>
       ) : null}
+
+      <Button
+        type={type}
+        size="large"
+        variant="primary"
+        className="w-full"
+        onClick={primary.onClick}
+        loading={primary.loading}
+        disabled={primary.disabled}
+        autoFocus
+      >
+        {primary.label}
+      </Button>
     </div>
   );
 };
@@ -91,6 +92,7 @@ export const ConfirmationDialog: React.FC<{
   title: string;
   description?: string;
   open?: boolean;
+  position?: "center" | "bottom";
   progress?: {
     /**
      * The progress value should be between 0 and 100 (inclusive)
@@ -115,6 +117,7 @@ export const ConfirmationDialog: React.FC<{
   close?: Void;
   closable?: boolean;
   type?: DialogType;
+  className?: string;
   icon: React.ReactNode;
   loading?: boolean;
   children?: React.ReactNode;
@@ -123,6 +126,8 @@ export const ConfirmationDialog: React.FC<{
   description,
   title,
   open,
+  position,
+  className,
   icon,
   actions,
   progress,
@@ -131,6 +136,12 @@ export const ConfirmationDialog: React.FC<{
   loading,
   children,
 }) => {
+  const mq = useMediaQuery();
+
+  const dialogPosition = useMemo<"center" | "bottom">(() => {
+    if (position) return position;
+    return mq.sm ? "center" : "bottom";
+  }, [position, mq.sm]);
   return (
     <Root open={open}>
       <Portal>
@@ -143,9 +154,15 @@ export const ConfirmationDialog: React.FC<{
           aria-describedby={description}
           dir="rtl"
           className={cn(
-            "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-natural-50",
-            "border border-border-strong rounded-xl w-[328px] md:w-[550px] lg:w-[650px] shadow-lg z-confirm-dialog-content",
-            "shadow-dialog-confirm p-6"
+            "fixed bg-natural-50 border border-border-strong rounded-xl shadow-lg shadow-dialog-confirm p-6 z-confirm-dialog-content",
+            {
+              "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2":
+                dialogPosition === "center",
+
+              "left-1/2 bottom-0 w-full -translate-x-1/2":
+                dialogPosition === "bottom",
+            },
+            className
           )}
         >
           <div className="flex items-center justify-between mb-4">
