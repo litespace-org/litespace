@@ -5,7 +5,7 @@ export type Context = {
   info: ISubscription.Self | null;
   remainingWeeklyMinutes: number;
   paidLessonStatus: ILesson.PaidLessonStatus;
-  hasPendingPaidLeson: boolean;
+  hasPendingPaidLesson: boolean;
   loading: boolean;
   isError: boolean;
   error: unknown | null;

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Logo from "@litespace/assets/Logo";
 import { Typography } from "@litespace/ui/Typography";
 import { useFindLastTransaction } from "@litespace/headless/transaction";
@@ -27,6 +27,7 @@ import {
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import Success from "@/components/Checkout/Success";
 import { track } from "@/lib/ga";
+import LessonBookedDialog from "@/components/Checkout/LessonBookedDialog";
 
 const Content: React.FC<{
   userId: number;
@@ -37,6 +38,12 @@ const Content: React.FC<{
 }> = ({ userId, txTypePayload, userPhone, tab, setTab }) => {
   const transaction = useFindLastTransaction();
   const txTypeDataQuery = useTxTypeDataQuery(txTypePayload);
+  const [txStateChanged, setTxStateChanged] = useState(false);
+
+  const logger = useLogger();
+  const toast = useToast();
+  const intl = useFormatMessage();
+  const subscription = useSubscription();
 
   useOnError({
     type: "query",
@@ -44,9 +51,42 @@ const Content: React.FC<{
     keys: transaction.keys,
   });
 
+  // ====== handle transaction status updates ======
+  const { socket } = useSocket();
+
+  const onTransactionStatusUpdate = useCallback(
+    (payload: Wss.EventPayload<Wss.ServerEvent.TransactionStatusUpdate>) => {
+      if (payload.status === ITransaction.Status.Failed)
+        toast.error({
+          title: intl("checkout.transaction.failed.title"),
+          description: intl("checkout.transaction.failed.desc"),
+        });
+
+      logger.debug("transaction status update", payload);
+      transaction.refetch();
+      subscription.refetch();
+      setTxStateChanged(true);
+    },
+    [intl, logger, toast, transaction, subscription]
+  );
+
+  useEffect(() => {
+    socket?.on(
+      Wss.ServerEvent.TransactionStatusUpdate,
+      onTransactionStatusUpdate
+    );
+    return () => {
+      socket?.off(
+        Wss.ServerEvent.TransactionStatusUpdate,
+        onTransactionStatusUpdate
+      );
+    };
+  }, [onTransactionStatusUpdate, socket]);
+
   return (
-    <div className="h-full gap-4 md:gap-8 flex flex-col items-center mt-0 md:mt-[8vh] lg:mt-[15vh] mx-auto">
+    <div className="h-full gap-4 md:gap-8 flex flex-col items-center mt-[15vh] mx-auto">
       <Header />
+
       <Body
         userId={userId}
         userPhone={userPhone}
@@ -60,6 +100,15 @@ const Content: React.FC<{
           data: transaction.data || null,
           refetch: transaction.refetch,
         }}
+      />
+
+      <LessonBookedDialog
+        open={
+          txTypePayload.type === "paid-lesson" &&
+          transaction.data?.type === ITransaction.Type.PaidLesson &&
+          transaction.data?.status === ITransaction.Status.Paid &&
+          txStateChanged
+        }
       />
     </div>
   );
@@ -105,9 +154,6 @@ const Body: React.FC<{
   };
 }> = ({ userId, txTypeDataQuery, transaction, userPhone, tab, setTab }) => {
   const intl = useFormatMessage();
-  const logger = useLogger();
-  const toast = useToast();
-  const subscription = useSubscription();
 
   // =================== sync payment manually =====================
   const syncPayment = useSyncPaymentStatus({
@@ -145,38 +191,6 @@ const Body: React.FC<{
     }
   );
 
-  // =================== handle transaction status updates =====================
-  const { socket } = useSocket();
-
-  const onTransactionStatusUpdate = useCallback(
-    (payload: Wss.EventPayload<Wss.ServerEvent.TransactionStatusUpdate>) => {
-      if (payload.status === ITransaction.Status.Failed)
-        toast.error({
-          title: intl("checkout.transaction.failed.title"),
-          description: intl("checkout.transaction.failed.desc"),
-        });
-
-      logger.debug("transaction status update", payload);
-      transaction.refetch();
-      subscription.refetch();
-    },
-    [intl, logger, toast, transaction, subscription]
-  );
-
-  useEffect(() => {
-    socket?.on(
-      Wss.ServerEvent.TransactionStatusUpdate,
-      onTransactionStatusUpdate
-    );
-
-    return () => {
-      socket?.off(
-        Wss.ServerEvent.TransactionStatusUpdate,
-        onTransactionStatusUpdate
-      );
-    };
-  }, [onTransactionStatusUpdate, socket]);
-
   if (txTypeDataQuery.loading || transaction.loading)
     return <Loading size="large" />;
 
@@ -195,7 +209,7 @@ const Body: React.FC<{
 
   if (
     transaction.data?.status === ITransaction.Status.Paid &&
-    (subscription.info || subscription.hasPendingPaidLeson)
+    transaction.data.type === ITransaction.Type.PaidPlan
   )
     return <Success type={transaction.data.type} />;
 

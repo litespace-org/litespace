@@ -23,7 +23,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       remainingWeeklyMinutes: query.data?.remainingWeeklyMinutes || 0,
       paidLessonStatus:
         query.data?.paidLessonStatus || ILesson.PaidLessonStatus.NotEligible,
-      hasPendingPaidLeson: query.data?.hasPendingPaidLesson || false,
+      hasPendingPaidLesson: query.data?.hasPendingPaidLesson || false,
       loading: query.isLoading,
       isError: query.isError,
       error: query.error,
