@@ -57,19 +57,6 @@ const Actions: React.FC<{
 }> = ({ type, primary, secondary }) => {
   return (
     <div className="flex items-center justify-center gap-3 mt-4 lg:mt-6">
-      <Button
-        type={type}
-        size="large"
-        variant="primary"
-        className="w-full"
-        onClick={primary.onClick}
-        loading={primary.loading}
-        disabled={primary.disabled}
-        autoFocus
-      >
-        {primary.label}
-      </Button>
-
       {secondary ? (
         <Button
           size="large"
@@ -83,6 +70,19 @@ const Actions: React.FC<{
           {secondary.label}
         </Button>
       ) : null}
+
+      <Button
+        type={type}
+        size="large"
+        variant="primary"
+        className="w-full"
+        onClick={primary.onClick}
+        loading={primary.loading}
+        disabled={primary.disabled}
+        autoFocus
+      >
+        {primary.label}
+      </Button>
     </div>
   );
 };
@@ -115,6 +115,7 @@ export const ConfirmationDialog: React.FC<{
   close?: Void;
   closable?: boolean;
   type?: DialogType;
+  className?: string;
   icon: React.ReactNode;
   loading?: boolean;
   children?: React.ReactNode;
@@ -123,6 +124,7 @@ export const ConfirmationDialog: React.FC<{
   description,
   title,
   open,
+  className,
   icon,
   actions,
   progress,
@@ -145,7 +147,8 @@ export const ConfirmationDialog: React.FC<{
           className={cn(
             "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-natural-50",
             "border border-border-strong rounded-xl w-[328px] md:w-[550px] lg:w-[650px] shadow-lg z-confirm-dialog-content",
-            "shadow-dialog-confirm p-6"
+            "shadow-dialog-confirm p-6",
+            className
           )}
         >
           <div className="flex items-center justify-between mb-4">
