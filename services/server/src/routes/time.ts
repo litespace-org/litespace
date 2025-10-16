@@ -3,6 +3,6 @@ import time from "@/handlers/time";
 
 const router = Router();
 
-router.get("/hour", time.currentHour);
+router.get("/current", time.currentZoneTime);
 
 export default router;
