@@ -27,6 +27,7 @@ import { Web } from "@litespace/utils/routes";
 import { nstr, nullable } from "@litespace/utils/utils";
 import React, { useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { BookInfo } from "@/components/Checkout/types";
 
 type Base = {
   close: Void;
@@ -41,10 +42,11 @@ export type ManageLessonPayload =
   | {
       type: "update";
       tutorId: number;
-      lessonId: number;
+      lessonId?: number;
       slotId: number;
       start: string;
       duration: number;
+      updateBookInfo?: (_: BookInfo) => void;
     };
 
 type Props = Base & ManageLessonPayload;
@@ -206,25 +208,30 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
           })
           .then(() => refetch());
 
-      updateLessonMutation
-        .mutateAsync({
-          lessonId: payload.lessonId,
-          slotId,
-          duration,
-          start,
-        })
-        .then(() => refetch());
+      if (payload.type === "update" && !payload.lessonId) {
+        if (payload.updateBookInfo)
+          payload.updateBookInfo({ tutorId, slotId, start, duration });
+        return;
+      }
+
+      if (payload.type === "update" && payload.lessonId)
+        return updateLessonMutation
+          .mutateAsync({
+            lessonId: payload.lessonId,
+            slotId,
+            duration,
+            start,
+          })
+          .then(() => refetch());
     },
     [
-      payload.type,
-      // @ts-expect-error property 'lessonId' does not exist on type payload all the time.
-      payload.lessonId,
       paidLessonStatus,
       navigate,
       tutorId,
       createLessonMutation,
       updateLessonMutation,
       refetch,
+      payload,
     ]
   );
 

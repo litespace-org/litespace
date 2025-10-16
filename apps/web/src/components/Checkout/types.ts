@@ -1,5 +1,12 @@
 import { ILesson, IPlan, ITutor, Void } from "@litespace/types";
 
+export type BookInfo = {
+  slotId: number;
+  tutorId: number;
+  start: string;
+  duration: ILesson.Duration;
+};
+
 export type TxTypePayload =
   | {
       type: "paid-lesson";
@@ -34,6 +41,7 @@ export type TxTypeDataQuery = TxTypeData & {
   fetching: boolean;
   error: boolean;
   refetch: Void;
+  setBookInfo?: (_: BookInfo) => void;
 };
 
 export type Tab = "card" | "ewallet" | "fawry";

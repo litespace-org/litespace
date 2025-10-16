@@ -436,6 +436,7 @@ export const ManageLessonDialog: React.FC<{
                       <SlotsContainer
                         slots={daySlots}
                         atNight={false}
+                        lessonDetails={lessonDetails}
                         setLessonDetails={(start, slotId) =>
                           setLessonDetails(() => ({ start, slotId }))
                         }
@@ -443,6 +444,7 @@ export const ManageLessonDialog: React.FC<{
                       <SlotsContainer
                         slots={nightSlots}
                         atNight={true}
+                        lessonDetails={lessonDetails}
                         setLessonDetails={(start, slotId) =>
                           setLessonDetails(() => ({ start, slotId }))
                         }
@@ -490,13 +492,14 @@ export const ManageLessonDialog: React.FC<{
 const SlotsContainer: React.FC<{
   slots: IAvailabilitySlot.SubSlot[];
   atNight: boolean;
+  lessonDetails: { start: string | null; slotId: number | null };
   setLessonDetails: (start: string, slotId: number) => void;
-}> = ({ slots, atNight, setLessonDetails }) => {
+}> = ({ slots, atNight, lessonDetails, setLessonDetails }) => {
   const intl = useFormatMessage();
-  const [selectedSlotDetails, setSelectedSlotDetails] = useState<{
-    id: number;
-    start: string;
-  } | null>(null);
+  // const [selectedSlotDetails, setSelectedSlotDetails] = useState<{
+  //   id: number;
+  //   start: string;
+  // } | null>(null);
 
   return (
     <div className="[direction:rtl] flex flex-col gap-2">
@@ -525,8 +528,8 @@ const SlotsContainer: React.FC<{
 
           {slots.map((slot, i) => {
             const isSelected =
-              selectedSlotDetails?.id === slot.parent &&
-              selectedSlotDetails?.start === slot.start;
+              lessonDetails.slotId === slot.parent &&
+              lessonDetails.start === slot.start;
 
             return (
               <Button
@@ -539,10 +542,6 @@ const SlotsContainer: React.FC<{
                   isSelected ? "border-brand-500" : "!border-natural-200"
                 )}
                 onClick={() => {
-                  setSelectedSlotDetails(() => ({
-                    id: slot.parent,
-                    start: slot.start,
-                  }));
                   setLessonDetails(slot.start, slot.parent);
                 }}
               >

@@ -20,6 +20,7 @@ import { useSubscription } from "@litespace/headless/context/subscription";
 import cn from "classnames";
 import { useToast } from "@litespace/ui/Toast";
 import {
+  BookInfo,
   Tab,
   TxTypeDataQuery,
   TxTypePayload,
@@ -142,7 +143,7 @@ const Header: React.FC = () => {
 const Body: React.FC<{
   userId: number;
   userPhone: string | null;
-  txTypeDataQuery: TxTypeDataQuery;
+  txTypeDataQuery: TxTypeDataQuery | null;
   tab: Tab;
   setTab(tab: Tab): void;
   transaction: {
@@ -191,7 +192,7 @@ const Body: React.FC<{
     }
   );
 
-  if (txTypeDataQuery.loading || transaction.loading)
+  if (!txTypeDataQuery || txTypeDataQuery.loading || transaction.loading)
     return <Loading size="large" />;
 
   if (txTypeDataQuery.error || transaction.error || !txTypeDataQuery.data)
@@ -227,7 +228,7 @@ const Body: React.FC<{
   return (
     <Tabs
       userId={userId}
-      txTypeData={txTypeDataQuery}
+      txTypeDataQuery={txTypeDataQuery}
       phone={userPhone}
       sync={transaction.refetch}
       syncing={transaction.fetching}
@@ -239,7 +240,20 @@ const Body: React.FC<{
   );
 };
 
-function useTxTypeDataQuery(txTypePayload: TxTypePayload): TxTypeDataQuery {
+function useTxTypeDataQuery(
+  txTypePayload: TxTypePayload
+): TxTypeDataQuery | null {
+  const [bookInfo, setBookInfo] = useState<BookInfo | null>(
+    txTypePayload.type === "paid-lesson"
+      ? {
+          slotId: txTypePayload.slotId,
+          tutorId: txTypePayload.tutorId,
+          start: txTypePayload.start,
+          duration: txTypePayload.duration,
+        }
+      : null
+  );
+
   const plan = useFindPlanById(
     txTypePayload.type === "paid-plan" ? txTypePayload.planId : undefined
   );
@@ -259,30 +273,34 @@ function useTxTypeDataQuery(txTypePayload: TxTypePayload): TxTypeDataQuery {
     keys: tutor.keys,
   });
 
-  return useMemo((): TxTypeDataQuery => {
-    if (txTypePayload.type === "paid-lesson")
+  return useMemo((): TxTypeDataQuery | null => {
+    if (txTypePayload.type === "paid-lesson" && bookInfo) {
       return {
         type: "paid-lesson",
         data: {
           tutor: tutor.data,
-          slotId: txTypePayload.slotId,
-          start: txTypePayload.start,
-          duration: txTypePayload.duration,
+          ...bookInfo,
         },
         loading: tutor.isLoading,
         fetching: tutor.isFetching,
         error: tutor.isError,
         refetch: tutor.refetch,
+        setBookInfo,
       };
+    }
 
-    return {
-      type: "paid-plan",
-      data: { plan: plan.data, period: txTypePayload.period },
-      loading: plan.isLoading,
-      fetching: tutor.isFetching,
-      error: plan.isError,
-      refetch: plan.refetch,
-    };
+    if (txTypePayload.type === "paid-plan") {
+      return {
+        type: "paid-plan",
+        data: { plan: plan.data, period: txTypePayload.period },
+        loading: plan.isLoading,
+        fetching: tutor.isFetching,
+        error: plan.isError,
+        refetch: plan.refetch,
+      };
+    }
+
+    return null;
   }, [
     plan.data,
     plan.isError,
@@ -294,6 +312,7 @@ function useTxTypeDataQuery(txTypePayload: TxTypePayload): TxTypeDataQuery {
     tutor.isLoading,
     tutor.refetch,
     txTypePayload,
+    bookInfo,
   ]);
 }
 

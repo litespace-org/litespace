@@ -6,11 +6,11 @@ import TxTypeDetails from "@/components/Checkout/TxTypeDetails";
 import Card from "@/components/Checkout/Forms/Card";
 import EWallet from "@/components/Checkout/Forms/EWallet";
 import Fawry from "@/components/Checkout/Forms/Fawry";
-import { Tab, TxTypeData } from "@/components/Checkout/types";
+import { Tab, TxTypeData, TxTypeDataQuery } from "@/components/Checkout/types";
 
 const TapsContainer: React.FC<{
   userId: number;
-  txTypeData: TxTypeData;
+  txTypeDataQuery: TxTypeDataQuery;
   phone: string | null;
   sync: Void;
   syncing: boolean;
@@ -20,7 +20,7 @@ const TapsContainer: React.FC<{
   setTab(tab: Tab): void;
 }> = ({
   userId,
-  txTypeData,
+  txTypeDataQuery,
   phone,
   syncing,
   sync,
@@ -38,7 +38,7 @@ const TapsContainer: React.FC<{
         phone={phone}
         syncing={syncing}
         sync={sync}
-        txTypeData={txTypeData}
+        txTypeDataQuery={txTypeDataQuery}
         transactionId={transactionId}
         transactionStatus={transactionStatus}
       />
@@ -78,7 +78,7 @@ const Header: React.FC<{ tab: Tab; setTab(tab: Tab): void }> = ({
 const Body: React.FC<{
   userId: number;
   tab: Tab;
-  txTypeData: TxTypeData;
+  txTypeDataQuery: TxTypeDataQuery;
   phone: string | null;
   syncing: boolean;
   sync: Void;
@@ -90,7 +90,7 @@ const Body: React.FC<{
   phone,
   syncing,
   sync,
-  txTypeData,
+  txTypeDataQuery,
   transactionId,
   transactionStatus,
 }) => {
@@ -103,11 +103,11 @@ const Body: React.FC<{
           phone={phone}
           syncing={syncing}
           sync={sync}
-          txTypeData={txTypeData}
+          txTypeData={txTypeDataQuery}
           transactionId={transactionId}
           transactionStatus={transactionStatus}
         />
-        <TxTypeDetailsPannel txTypeData={txTypeData} />
+        <TxTypeDetailsPannel txTypeDataQuery={txTypeDataQuery} />
       </div>
     </div>
   );
@@ -165,12 +165,12 @@ const PaymentPannel: React.FC<{
   );
 };
 
-const TxTypeDetailsPannel: React.FC<{ txTypeData: TxTypeData }> = ({
-  txTypeData,
+const TxTypeDetailsPannel: React.FC<{ txTypeDataQuery: TxTypeDataQuery }> = ({
+  txTypeDataQuery,
 }) => {
   return (
     <div className="w-full md:flex-1 flex flex-col">
-      <TxTypeDetails txTypeData={txTypeData} />
+      <TxTypeDetails txTypeDataQuery={txTypeDataQuery} />
     </div>
   );
 };
