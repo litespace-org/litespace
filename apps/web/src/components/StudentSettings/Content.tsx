@@ -1,6 +1,6 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useMemo } from "react";
-import { Tabs } from "@litespace/ui/Tabs";
+import { TabsV2 } from "@litespace/ui/Tabs";
 
 import NotificationSettings from "@/components/Settings/NotificationSettings";
 import UpdatePassword from "@/components/Settings/UpdatePassword";
@@ -14,6 +14,9 @@ import { StudentSettingsTabId } from "@litespace/utils/routes";
 import RefundsList from "@/components/Settings/RefundsList";
 import RefundsTable from "@/components/StudentSettings/RefundsTable";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import ProfileAvatar from "@litespace/assets/ProfileAvatar";
+import { Lock, Paperclip, DollarSign } from "react-feather";
+import Notification from "@litespace/assets/Notification";
 
 const Content: React.FC<{
   tab: StudentSettingsTabId;
@@ -26,26 +29,31 @@ const Content: React.FC<{
     return [
       {
         id: "personal",
+        Icon: ProfileAvatar,
         label: intl("shared-settings.personal.title"),
         important: isPersonalInfoIncomplete(user),
       },
       {
         id: "password",
+        Icon: Lock,
         label: intl("shared-settings.password.title"),
         important: !user.password,
       },
       {
         id: "notifications",
+        Icon: Notification,
         label: intl("shared-settings.notification.title"),
         important: !user.notificationMethod,
       },
       {
         id: "topics",
+        Icon: Paperclip,
         label: intl("student-settings.topics.title"),
         important: false,
       },
       {
         id: "refunds",
+        Icon: DollarSign,
         label: intl("student-settings.refunds.title"),
         important: false,
       },
@@ -58,8 +66,8 @@ const Content: React.FC<{
         <UploadPhoto id={user.id} name={user.name} image={user.image} />
       </div>
 
-      <div className="md:max-w-fit mb-6 lg:mb-10">
-        <Tabs tabs={tabs} tab={tab} setTab={setTab} />
+      <div className="max-w-[450px] md:max-w-fit mb-6 lg:mb-10">
+        <TabsV2 tabs={tabs} tab={tab} setTab={setTab} />
       </div>
 
       {tab === "personal" ? (

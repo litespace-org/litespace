@@ -44,7 +44,7 @@ export const RateTutor: React.FC<{
   if (!user) return null;
 
   return (
-    <div className="flex gap-6 lg:gap-10 flex-col items-center justify-center">
+    <div className="flex gap-6 lg:gap-10 flex-col items-center justify-center max-w-[450px] mx-auto">
       <Typography
         tag="span"
         className="text-natural-700 md:text-natural-950 text-center max-w-[631px] text-caption md:text-body lg:text-subtitle-1 font-semibold md:font-bold lg:font-medium"

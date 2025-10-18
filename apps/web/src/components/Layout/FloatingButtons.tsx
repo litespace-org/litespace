@@ -9,7 +9,7 @@ import { router } from "@/lib/routes";
 
 const FloatingButtons: React.FC = () => {
   return (
-    <div className="fixed left-4 bottom-24 sm:left-6 sm:bottom-6 z-floating-buttons">
+    <div className="hidden sm:flex sm:fixed left-4 bottom-24 sm:left-6 sm:bottom-6 z-floating-buttons">
       <FloatingWhatsapp />
     </div>
   );
@@ -34,7 +34,7 @@ const FloatingWhatsapp: React.FC = () => {
   if (!showFloatingWhatsapp) return;
 
   return (
-    <Link to={LITESPACE_WHATSAPP} className="" tabIndex={-1} target="_blank">
+    <Link to={LITESPACE_WHATSAPP} tabIndex={-1} target="_blank">
       <WhatsApp className="w-16 h-16" />
     </Link>
   );
