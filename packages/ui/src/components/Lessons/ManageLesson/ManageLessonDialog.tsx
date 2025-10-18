@@ -220,7 +220,7 @@ export const ManageLessonDialog: React.FC<{
     () =>
       subtractSlots({ slots, subslots: bookedSlots }).filter(
         (slot) =>
-          dayjs(slot.start).isAfter(dayjs()) &&
+          dayjs(slot.start).isAfter(dayjs().startOf("day")) &&
           dayjs(slot.start).isBefore(dateBounds?.end)
       ),
     [slots, bookedSlots, dateBounds?.end]
