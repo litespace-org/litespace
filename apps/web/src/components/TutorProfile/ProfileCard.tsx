@@ -118,9 +118,7 @@ export const ProfileCard: React.FC<{
             })
           : undefined
       }
-      className={cn(
-        "md:pt-10 md:px-10 flex flex-col gap-4 sm:gap-0 items-stretch w-full"
-      )}
+      className={cn("flex flex-col gap-4 sm:gap-0 items-stretch w-full")}
     >
       <div className="flex">
         <div
@@ -178,9 +176,14 @@ export const ProfileCard: React.FC<{
                 )}
               </div>
 
-              <div className="flex flex-col gap-1 md:gap-2">
+              <div
+                className={cn(
+                  "flex flex-col gap-1 md:gap-2",
+                  "max-w-[200px] xs:max-w-full md:max-w-[350px] lg:max-w-[450px] xl:max-w-full"
+                )}
+              >
                 <Typography
-                  tag="span"
+                  tag="p"
                   className="inline-block font-semibold text-natural-950 text-tiny md:text-subtitle-2"
                 >
                   {bio}

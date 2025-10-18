@@ -117,7 +117,7 @@ const EmptyDashboard: React.FC = () => {
   const intl = useFormatMessage();
 
   return (
-    <div className="mt-[20vh] flex flex-col gap-6 mx-auto">
+    <div className="my-auto flex flex-col gap-6 mx-auto">
       <EmptyStudentDashboard className="w-[328px] h-[258px] md:w-[433px] md:h-[342px]" />
       <div className="flex flex-col gap-4 text-center w-max mx-auto">
         <Typography tag="p" className="text-subtitle-2 font-medium">
