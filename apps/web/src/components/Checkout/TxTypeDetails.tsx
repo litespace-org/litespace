@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
@@ -7,6 +7,7 @@ import { Web } from "@litespace/utils/routes";
 import { ILesson, IPlan, ITutor } from "@litespace/types";
 import { formatMinutes, formatNumber, formatWeeks } from "@litespace/ui/utils";
 import {
+  MAX_LESSON_DURATION,
   PLAN_PERIOD_LITERAL_TO_WEEK_COUNT,
   calculateLessonPrice,
   price,
@@ -24,6 +25,7 @@ import Clock from "@litespace/assets/Clock";
 import dayjs from "@/lib/dayjs";
 import { track } from "@/lib/ga";
 import { useFindTutorRatings } from "@litespace/headless/rating";
+import ManageLesson from "@/components/Lessons/ManageLesson";
 
 const PLAN_PERIOD_LITERAL_TO_MESSAGE_ID: Record<IPlan.PeriodLiteral, LocalId> =
   {
@@ -42,6 +44,7 @@ const TxTypeDetails: React.FC<{ txTypeData: TxTypeData }> = ({
         tutor={txTypeData.data.tutor}
         start={txTypeData.data.start}
         duration={txTypeData.data.duration}
+        slotId={txTypeData.data.slotId}
       />
     );
 
@@ -162,7 +165,8 @@ const Lesson: React.FC<{
   tutor: ITutor.FindTutorInfoApiResponse;
   start: string;
   duration: ILesson.Duration;
-}> = ({ tutor, start, duration }) => {
+  slotId: number;
+}> = ({ tutor, start, duration, slotId }) => {
   const intl = useFormatMessage();
   return (
     <Card>
@@ -178,7 +182,7 @@ const Lesson: React.FC<{
         <LessonDetails start={start} duration={duration} />
         <Divider />
         <LessonPrice duration={duration} />
-        <ChangeLessonTiming start={start} />
+        <ChangeLessonTiming start={start} slotId={slotId} tutorId={tutor.id} />
       </div>
     </Card>
   );
@@ -327,8 +331,14 @@ const LessonPrice: React.FC<{ duration: ILesson.Duration }> = ({
   );
 };
 
-const ChangeLessonTiming: React.FC<{ start: string }> = ({ start }) => {
+const ChangeLessonTiming: React.FC<{
+  start: string;
+  tutorId: number;
+  slotId: number;
+}> = ({ start, tutorId, slotId }) => {
   const intl = useFormatMessage();
+  const [updateOpen, setUpdateOpen] = useState<boolean>(false);
+
   return (
     <div className="px-4 lg:px-6">
       <Typography tag="p" className="text-extra-tiny text-natural-700 mb-2">
@@ -342,12 +352,22 @@ const ChangeLessonTiming: React.FC<{ start: string }> = ({ start }) => {
         size="large"
         variant="primary"
         className="w-full"
-        onClick={() => alert("todo...")}
+        onClick={() => setUpdateOpen(true)}
       >
         <Typography tag="span" className="text-body font-medium">
           {intl("checkout.lesson.change-lesson-time")}
         </Typography>
       </Button>
+      {updateOpen ? (
+        <ManageLesson
+          type="update"
+          close={() => setUpdateOpen(false)}
+          duration={MAX_LESSON_DURATION}
+          slotId={slotId}
+          start={start}
+          tutorId={tutorId}
+        />
+      ) : null}
     </div>
   );
 };
