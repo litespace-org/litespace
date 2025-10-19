@@ -31,7 +31,7 @@ import { useBlock } from "@litespace/ui/hooks/common";
 import { useRender } from "@litespace/headless/common";
 import { TxTypeData } from "@/components/Checkout/types";
 import { useCreateLessonWithCard } from "@litespace/headless/lessons";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 type Form = {
   card: string;

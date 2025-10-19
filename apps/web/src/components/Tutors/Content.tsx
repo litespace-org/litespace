@@ -18,7 +18,7 @@ import { Web } from "@litespace/utils/routes";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@litespace/ui/Toast";
 import { StudentDashboardTour } from "@/constants/tour";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 

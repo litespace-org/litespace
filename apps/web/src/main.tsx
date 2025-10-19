@@ -19,7 +19,7 @@ import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
 import App from "@/App";
 
-import "@/lib/ga";
+import "@/lib/analytics";
 import "@/lib/clarity";
 import "@/lib/window";
 import "@litespace/ui/tailwind.css";

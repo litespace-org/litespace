@@ -9,7 +9,7 @@ import {
   isValidTab,
 } from "@/components/Checkout/utils";
 import { Tab } from "@/components/Checkout/types";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 const Checkout: React.FC = () => {
   const { txTypePayload, tab, setTab } = useCheckoutUrlQueryParams();

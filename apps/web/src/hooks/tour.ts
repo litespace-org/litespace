@@ -1,5 +1,5 @@
 import { GeneralTour } from "@/constants/tour";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 import { getDriver } from "@/lib/tour";
 import { LocalTour, Tour, TourConfig } from "@/types/tour";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";

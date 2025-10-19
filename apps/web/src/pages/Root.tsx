@@ -8,6 +8,7 @@ import { CacheKey } from "@/constants/cache";
 import { StudentDashboardTour } from "@/constants/tour";
 import { useSaveLogs } from "@/hooks/logger";
 import { useTour } from "@/hooks/tour";
+import { identify } from "@/lib/analytics";
 import { cache } from "@/lib/cache";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 import { router } from "@/lib/routes";
@@ -185,6 +186,15 @@ const Root: React.FC = () => {
       user?.name || undefined
     );
   }, [location.pathname, user?.id, user?.name]);
+
+  useEffect(() => {
+    if (user?.id && user.email)
+      identify({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      });
+  }, [user?.email, user?.id, user?.name]);
 
   return (
     <div className="flex relative w-full">

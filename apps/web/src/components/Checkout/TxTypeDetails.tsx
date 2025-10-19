@@ -22,7 +22,7 @@ import Star from "@litespace/assets/Star";
 import Calendar from "@litespace/assets/Calendar";
 import Clock from "@litespace/assets/Clock";
 import dayjs from "@/lib/dayjs";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 import { useFindTutorRatings } from "@litespace/headless/rating";
 
 const PLAN_PERIOD_LITERAL_TO_MESSAGE_ID: Record<IPlan.PeriodLiteral, LocalId> =

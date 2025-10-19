@@ -15,7 +15,7 @@ import { Tooltip } from "@litespace/ui/Tooltip";
 import { Typography } from "@litespace/ui/Typography";
 import { isTutorRole } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 const Navbar: React.FC = () => {
   return (

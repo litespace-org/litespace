@@ -12,7 +12,7 @@ import { usePayWithFawry } from "@litespace/headless/fawry";
 import { useToast } from "@litespace/ui/Toast";
 import { TxTypeData } from "@/components/Checkout/types";
 import { useCreateLessonWithFawry } from "@litespace/headless/lessons";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 type Form = {
   phone: string;

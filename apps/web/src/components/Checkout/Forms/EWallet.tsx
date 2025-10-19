@@ -13,7 +13,7 @@ import { walletPaymentQrCode } from "@/lib/cache";
 import { useToast } from "@litespace/ui/Toast";
 import { TxTypeData } from "@/components/Checkout/types";
 import { useCreateLessonWithEWallet } from "@litespace/headless/lessons";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 import Lock from "@litespace/assets/Lock";
 
 type Form = {

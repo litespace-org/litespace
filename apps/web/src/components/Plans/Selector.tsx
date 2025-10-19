@@ -1,4 +1,4 @@
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 import { router } from "@/lib/routes";
 import { IPlan } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";

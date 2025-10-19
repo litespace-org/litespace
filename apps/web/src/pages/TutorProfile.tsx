@@ -17,7 +17,7 @@ import { Web } from "@litespace/utils/routes";
 import ProfileCard from "@/components/TutorProfile/ProfileCard";
 import { useUser } from "@litespace/headless/context/user";
 import { router } from "@/lib/routes";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 const TutorProfile: React.FC = () => {
   const { md, lg } = useMediaQuery();
