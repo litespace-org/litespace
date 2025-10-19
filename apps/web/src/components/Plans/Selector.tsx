@@ -72,7 +72,7 @@ export const Selector: React.FC<{
     <div className="flex flex-col gap-6 md:gap-[81px] max-w-screen-xl mx-auto">
       <PlansPanel period={period} setPeriod={setPeriod} />
 
-      <div className="flex flex-col items-center md:flex-row justify-items-center justify-center gap-4 lg:gap-6">
+      <div className="flex flex-wrap items-center md:flex-row justify-items-center justify-center gap-4 lg:gap-6">
         {sortedPlans.map((plan, idx) => {
           const index =
             idx < description.current.length

@@ -990,7 +990,7 @@ const MobileSidebar: React.FC<{
     <div
       className={cn(
         "fixed justify-evenly bottom-0 start-1/2 translate-x-1/2 w-full h-[90px] bg-natural-50 rounded-t-xl",
-        "flex gap-3 shadow-mobile-sidebar z-mobile-sidebar pb-6 px-4"
+        "flex gap-3 shadow-mobile-sidebar z-[10] pb-6 px-4"
       )}
     >
       {pages.map((page) => (
