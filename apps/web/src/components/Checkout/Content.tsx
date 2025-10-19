@@ -26,7 +26,7 @@ import {
 } from "@/components/Checkout/types";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import Success from "@/components/Checkout/Success";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 import LessonBookedDialog from "@/components/Checkout/LessonBookedDialog";
 
 const Content: React.FC<{

@@ -19,6 +19,7 @@ const schema = zod.object({
   gaMeasurementId: zod.string().startsWith("G-").length(12),
   clarityProjectId: zod.string().length(10),
   fawryAccountNumber: zod.string(),
+  mixpanelToken: zod.string(),
 });
 
 export const env = schema.parse({
@@ -29,4 +30,5 @@ export const env = schema.parse({
   gaMeasurementId: import.meta.env.VITE_GA_MEASUREMENT_ID,
   clarityProjectId: import.meta.env.VITE_CLARITY_PROJECT_ID,
   fawryAccountNumber: import.meta.env.VITE_FAWRY_ACCOUNT_NUMBER,
+  mixpanelToken: import.meta.env.VITE_MIXPANEL_TOKEN,
 });

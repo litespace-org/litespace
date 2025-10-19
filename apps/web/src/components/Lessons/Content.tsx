@@ -27,7 +27,7 @@ import dayjs from "dayjs";
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
 import { UNCANCELLABLE_LESSON_HOURS } from "@litespace/utils";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 

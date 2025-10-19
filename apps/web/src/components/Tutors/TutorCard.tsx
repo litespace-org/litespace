@@ -1,4 +1,4 @@
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 import { router } from "@/lib/routes";
 import Star from "@litespace/assets/Star";
 import { Void } from "@litespace/types";

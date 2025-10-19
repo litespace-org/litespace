@@ -29,7 +29,7 @@ import cn from "classnames";
 import React, { SVGProps, useCallback, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { StudentDashboardTour } from "@/constants/tour";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 type LinkInfo = {
   label: string;

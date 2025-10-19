@@ -10,7 +10,7 @@ import ProfileInfo from "@/components/TutorProfile/ProfileInfo";
 import Ratings from "@/components/TutorProfile/Ratings";
 import { Animate } from "@/components/Common/Animate";
 import { useSearchParams } from "react-router-dom";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 type Tab = "profile" | "ratings";
 const URL_TAB_KEY = "tab";

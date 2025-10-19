@@ -42,6 +42,7 @@
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.1",
     "marked": "^14.0.0",
+    "mixpanel-browser": "^2.71.0",
     "peerjs": "^1.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",

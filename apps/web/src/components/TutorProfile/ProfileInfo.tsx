@@ -1,5 +1,5 @@
 import { StudentDashboardTour } from "@/constants/tour";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
