@@ -2,7 +2,7 @@ import axios from "axios";
 import { Command } from "commander";
 
 const regex =
-  /```release(\r|\n|\r\n)(?<workspaces>[A-Za-z@/,]*)(\r|\n|\r\n)```/;
+  /```release\s*(\r|\n|\r\n)(?<workspaces>[A-Za-z@/,]*)\s*(\r|\n|\r\n)```/;
 
 const client = axios.create({
   baseURL: "https://deployer.litespace.org",
