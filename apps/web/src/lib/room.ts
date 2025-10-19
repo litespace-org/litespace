@@ -28,7 +28,7 @@ export function asOtherMember({
     gender: otherMember.gender || null,
     image: otherMember.image || null,
     role: otherMember.role,
-    lastSeen: otherMember.updatedAt,
+    lastSeen: otherMember.lastSeen,
     online: otherMember.online,
   };
 }

@@ -15,6 +15,7 @@ export type MemberRow = {
   room_id: number;
   pinned: boolean;
   muted: boolean;
+  last_seen: Date | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -24,6 +25,7 @@ export type Member = {
   roomId: number;
   pinned: boolean;
   muted: boolean;
+  lastSeen: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -38,6 +40,7 @@ export type PopulatedMemberRow = {
   gender: IUser.Row["gender"];
   image: IUser.Row["image"];
   role: IUser.Row["role"];
+  lastSeen: string;
   createdAt: IUser.Row["created_at"];
   updatedAt: IUser.Row["updated_at"];
 };
@@ -52,6 +55,7 @@ export type PopulatedMember = {
   gender: IUser.Self["gender"];
   image: IUser.Self["image"];
   role: IUser.Self["role"];
+  lastSeen: string;
   createdAt: IUser.Self["createdAt"];
   updatedAt: IUser.Self["updatedAt"];
 };

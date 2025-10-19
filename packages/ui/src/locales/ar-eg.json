@@ -218,7 +218,7 @@
   "tutor.rate.delete.title": "إزالة تقييم المعلم",
   "tutor.rate.delete.titleWarning": "أنت على وشك إزالة تقييمك للمعلم",
   "tutor.rate.delete.success": "تم إزالة التقييم بنجاح",
-  "tutor.recommended": "معلم موصي به",
+  "tutor.recommended": "معلم موصى به",
   "tutor.rate.delete.error": "عفوًا! حدث خطأ أثناء إزالة تقييمك",
   "tutor.rate-count": "({value} تقييم)",
   "tutor.achievements": "{lessonCount} حصة مع {studentCount} طالب",

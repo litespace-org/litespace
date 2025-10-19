@@ -496,10 +496,11 @@ const SlotsContainer: React.FC<{
   setLessonDetails: (start: string, slotId: number) => void;
 }> = ({ slots, atNight, lessonDetails, setLessonDetails }) => {
   const intl = useFormatMessage();
-  // const [selectedSlotDetails, setSelectedSlotDetails] = useState<{
-  //   id: number;
-  //   start: string;
-  // } | null>(null);
+
+  const filtered = useMemo(
+    () => slots.filter((s) => dayjs().isBefore(s.start)),
+    [slots]
+  );
 
   return (
     <div className="[direction:rtl] flex flex-col gap-2">
@@ -516,17 +517,17 @@ const SlotsContainer: React.FC<{
         </Typography>
       </div>
       <div>
-        <div className={cn({ grid: !isEmpty(slots) }, "grid-cols-3 gap-2")}>
-          {isEmpty(slots) ? (
-            <Typography
-              tag="p"
-              className="text-caption font-semibold text-center my-6"
-            >
-              {intl("book-lesson.empty-slots-at-this-time")}
-            </Typography>
-          ) : null}
+        {isEmpty(filtered) ? (
+          <Typography
+            tag="p"
+            className="text-caption font-semibold text-center my-6"
+          >
+            {intl("book-lesson.empty-slots-at-this-time")}
+          </Typography>
+        ) : null}
 
-          {slots.map((slot, i) => {
+        <div className={cn({ grid: !isEmpty(slots) }, "grid-cols-3 gap-2")}>
+          {filtered.map((slot, i) => {
             const isSelected =
               lessonDetails.slotId === slot.parent &&
               lessonDetails.start === slot.start;
