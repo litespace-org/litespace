@@ -249,7 +249,11 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
 
   return (
     <>
-      <SubscriptionDialog open={!canBook} close={close} />
+      <SubscriptionDialog
+        tutorName={tutor.data?.name || ""}
+        open={!canBook}
+        close={close}
+      />
 
       <ManageLessonDialog
         remainingWeeklyMinutes={asRemainingWeeklyMinutes}
