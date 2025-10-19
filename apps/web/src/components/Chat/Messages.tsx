@@ -297,6 +297,8 @@ const Messages: React.FC<{
     el.scrollTop += 100;
   }, [messageGroups]);
 
+  console.log(otherMember);
+
   return (
     <div
       id="messages-container"

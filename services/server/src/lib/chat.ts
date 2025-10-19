@@ -28,7 +28,7 @@ export function asFindUserRoomsApiRecord({
       name: otherMember.name,
       image: otherMember.image,
       role: otherMember.role,
-      lastSeen: otherMember.updatedAt,
+      lastSeen: otherMember.lastSeen,
       online: otherMemberOnlineStatus,
       gender: otherMember.gender,
     },

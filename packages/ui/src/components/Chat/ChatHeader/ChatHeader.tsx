@@ -104,7 +104,9 @@ export const ChatHeader: React.FC<{
             >
               {online
                 ? intl("chat.online")
-                : intl("chat.offline", { time: dayjs(lastSeen).fromNow() })}
+                : lastSeen
+                  ? intl("chat.offline", { time: dayjs(lastSeen).fromNow() })
+                  : ""}
             </Typography>
           </div>
         </div>

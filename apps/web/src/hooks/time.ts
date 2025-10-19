@@ -9,9 +9,9 @@ export function useCheckTimeValidity(): boolean {
 
   useEffect(() => {
     setValid(
-      dayjs().diff(tzQuery.data?.iso, "seconds") < 10 ||
+      dayjs().diff(tzQuery.data?.iso, "seconds") < 30 ||
         tzQuery.isPending ||
-        // NOTE: errors are ignored. In case your considered to
+        // NOTE: errors are ignored. In case you considered to
         // remove this condition. Put in mind that if you didn't
         // remove the invalid-time-dialog from the <root> as well,
         // users will get stuck in the login page, as then this

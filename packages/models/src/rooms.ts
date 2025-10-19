@@ -81,7 +81,10 @@ export class Rooms {
   }) {
     const now = dayjs.utc();
     await this.builder(tx)
-      .members.update({ updated_at: now.toDate() })
+      .members.update({
+        last_seen: now.toDate(),
+        updated_at: now.toDate(),
+      })
       .where(this.column.members("user_id"), userId);
   }
 
@@ -114,6 +117,7 @@ export class Rooms {
       gender: users.column("gender"),
       pinned: this.column.members("pinned"),
       muted: this.column.members("muted"),
+      lastSeen: this.column.members("last_seen"),
       createdAt: this.column.members("created_at"),
       updatedAt: this.column.members("updated_at"),
     };
@@ -264,6 +268,7 @@ export class Rooms {
       roomId: row.room_id,
       muted: row.muted,
       pinned: row.pinned,
+      lastSeen: row.last_seen?.toISOString() || null,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
