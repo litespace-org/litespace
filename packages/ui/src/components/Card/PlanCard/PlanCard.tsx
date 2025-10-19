@@ -52,7 +52,7 @@ export const PlanCard: React.FC<{
         "xl:first:justify-self-auto xl:[&>nth-of-type(2)]:justify-self-auto",
         "relative flex flex-col",
         "w-full h-full p-[24px] xl:p-[32px]",
-        "min-w-[323px] max-w-[400px]",
+        "min-w-[323px] max-w-[400px] md:min-w-[224px] md:max-w-[300px] xl:min-w-[323px] xl:max-w-[400px]",
         "bg-natural-50 rounded-2xl border border-natural-100"
       )}
     >
@@ -68,14 +68,19 @@ export const PlanCard: React.FC<{
           {intl("plans.card.advance.layout")}
         </Typography>
       ) : null}
+
       <div className={cn("flex gap-2 md:items-start mb-2")}>
         <Typography
           tag="p"
-          className="text-subtitle-2 font-bold text-natural-950 text-center"
+          className="text-subtitle-2 font-bold text-natural-950"
         >
+          <DiscountBadge
+            discount={discount}
+            className="hidden md:flex mb-2 xl:hidden"
+          />
           {title}
         </Typography>
-        <DiscountBadge discount={discount} />
+        <DiscountBadge discount={discount} className="md:hidden xl:flex" />
       </div>
 
       <Typography
@@ -167,7 +172,8 @@ const FeaturesList: React.FC<{ features: string[] }> = ({ features }) => {
 
 const DiscountBadge: React.FC<{
   discount: number;
-}> = ({ discount }) => {
+  className?: string;
+}> = ({ discount, className }) => {
   const intl = useFormatMessage();
 
   if (discount <= 0) return null;
@@ -175,9 +181,10 @@ const DiscountBadge: React.FC<{
   return (
     <Typography
       tag="p"
-      className={
-        "text-tiny font-semibold px-2 py-1 rounded-lg border bg-natural-100 text-natural-600"
-      }
+      className={cn(
+        "text-tiny font-semibold px-2 py-1 rounded-lg border bg-natural-100 text-natural-600",
+        className
+      )}
     >
       {intl.rich("plan.discount", {
         value: discount,
