@@ -7,7 +7,7 @@ import { formatNumber } from "@litespace/ui/utils";
 import { Button } from "@litespace/ui/Button";
 import Link from "@/components/Common/Link";
 import cn from "classnames";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 export const TutorCard: React.FC<{
   id: number;

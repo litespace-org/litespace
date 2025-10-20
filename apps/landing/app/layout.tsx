@@ -5,7 +5,8 @@ import { getLocale } from "next-intl/server";
 import { getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 
-import "@/lib/ga";
+import "@/lib/analytics/mixpanel";
+import "@/lib/analytics/ga";
 import "@/lib/clarity";
 import "@litespace/ui/tailwind.css";
 

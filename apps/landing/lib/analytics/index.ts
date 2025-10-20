@@ -1,5 +1,5 @@
-import ga from "react-ga4";
-import { env } from "@/lib/env";
+import { ga } from "@/lib/analytics/ga";
+import { mixpanel } from "@/lib/analytics/mixpanel";
 
 // [GA4] Recommended events
 // https://developers.google.com/tag-platform/gtagjs/reference/events
@@ -28,8 +28,6 @@ export type Params = {
   value?: number;
 };
 
-ga.initialize(env.gaMeasurementId);
-
 export function track({
   action,
   category,
@@ -42,6 +40,12 @@ export function track({
   value?: number;
 }) {
   ga.gtag("event", action, {
+    category,
+    label,
+    value,
+  });
+
+  mixpanel.track(action, {
     category,
     label,
     value,

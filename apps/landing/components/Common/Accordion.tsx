@@ -2,7 +2,7 @@
 
 import React, { ComponentProps } from "react";
 import { Accordion as BaseAccordion } from "@litespace/ui/Accordion";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 const Accordion: React.FC<ComponentProps<typeof BaseAccordion>> = ({
   ...props
