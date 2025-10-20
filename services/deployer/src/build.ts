@@ -5,7 +5,8 @@ import { ChildProcess, spawn } from "node:child_process";
 
 const services = ["api", "jobs", "landing"];
 
-const stopServicesCommands = services.map((s) => `pm2 stop ${s}`);
+const stopServicesCommands =
+  config.env !== "production" ? services.map((s) => `pm2 stop ${s}`) : [];
 const restartServicesCommands = services.map((s) => `pm2 restart ${s}`);
 
 const workspaceBuildCommand: Record<Workspace, string[]> = {
