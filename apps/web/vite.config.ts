@@ -35,6 +35,8 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
+        entryFileNames: `[name]-[hash].js`,
+        chunkFileNames: `[name]-[hash].js`,
         manualChunks: {
           lodash: ["lodash"],
           motion: ["framer-motion"],
