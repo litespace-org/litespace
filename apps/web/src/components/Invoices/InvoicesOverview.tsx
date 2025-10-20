@@ -27,9 +27,9 @@ export const InvoicesOverview: React.FC<{ tutorId?: number }> = ({
       </Typography>
 
       <Overview
-        totalRevenue={query.data?.invoices.total || 0}
+        fulfilledRevenue={query.data?.invoices.fulfilled || 0}
         availableRevenue={query.data?.spendable || 0}
-        pendingInvoicesCount={query.data?.invoices.pending || 0}
+        pendingRevenue={query.data?.invoices.pending || 0}
         futureRevenue={query.data?.income.future || 0}
         loading={query.isPending}
         error={query.isError}

@@ -8,19 +8,20 @@ import Money from "@litespace/assets/Money";
 import TransactionMinus from "@litespace/assets/TransactionMinus";
 import EmptyWalletTime from "@litespace/assets/EmptyWalletTime";
 import { formatNumber } from "@/components/utils";
+import { price } from "@litespace/utils";
 
 export const InvoicesOverview: React.FC<{
-  totalRevenue: number;
+  fulfilledRevenue: number;
   availableRevenue: number;
-  pendingInvoicesCount: number;
+  pendingRevenue: number;
   futureRevenue: number;
   loading: boolean;
   error: boolean;
   retry: Void;
 }> = ({
-  totalRevenue,
+  fulfilledRevenue,
   availableRevenue,
-  pendingInvoicesCount,
+  pendingRevenue,
   futureRevenue,
   loading,
   error,
@@ -52,9 +53,9 @@ export const InvoicesOverview: React.FC<{
         icon={
           <ChartSquare className="[&>*]:stroke-natural-50 w-3 h-3 md:w-4 md:h-4" />
         }
-        title="tutor-invoices.overview.total-revenue"
+        title="tutor-invoices.overview.fulfilled-revenue"
         value={intl("labels.currency.egp", {
-          value: formatNumber(totalRevenue),
+          value: formatNumber(price.unscale(fulfilledRevenue)),
         })}
         color="brand"
         className="col-span-2 lg:col-span-1"
@@ -64,7 +65,7 @@ export const InvoicesOverview: React.FC<{
         icon={<Money className="[&>*]:stroke-natural-50 h-3 md:w-4 md:h-4" />}
         title="tutor-invoices.overview.available-revenue"
         value={intl("labels.currency.egp", {
-          value: formatNumber(availableRevenue),
+          value: formatNumber(price.unscale(availableRevenue)),
         })}
         color="secondary"
         className="col-span-2 lg:col-span-1"
@@ -75,7 +76,9 @@ export const InvoicesOverview: React.FC<{
           <TransactionMinus className="[&>*]:stroke-natural-50 h-3 md:w-4 md:h-4" />
         }
         title="tutor-invoices.overview.pending-invoices-count"
-        value={formatNumber(pendingInvoicesCount)}
+        value={intl("labels.currency.egp", {
+          value: formatNumber(price.unscale(pendingRevenue)),
+        })}
         color="warning"
         className="col-span-2 lg:col-span-1"
       />
@@ -85,7 +88,7 @@ export const InvoicesOverview: React.FC<{
           <EmptyWalletTime className="[&>*]:stroke-natural-50 h-3 md:w-4 md:h-4" />
         }
         value={intl("labels.currency.egp", {
-          value: formatNumber(futureRevenue),
+          value: formatNumber(price.unscale(futureRevenue)),
         })}
         title="tutor-invoices.overview.future-revenue"
         color="destructive"

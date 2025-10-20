@@ -36,9 +36,12 @@ export const List: React.FC<{ userId?: number }> = ({ userId }) => {
 
   const onError = useOnError({
     type: "mutation",
-    handler: () => {
+    handler: (error) => {
       setId(0);
-      toast.error({ title: intl("invoices.cancel-toast.error") });
+      toast.error({
+        title: intl("invoices.cancel-toast.error"),
+        description: intl(error.messageId),
+      });
     },
   });
 
@@ -53,6 +56,7 @@ export const List: React.FC<{ userId?: number }> = ({ userId }) => {
         >
           {intl("invoices.table.title")}
         </Typography>
+
         <Button
           size="large"
           endIcon={<TransactionMinus className="icon stroke-[1.5]" />}
@@ -62,6 +66,7 @@ export const List: React.FC<{ userId?: number }> = ({ userId }) => {
             {intl("invoices.withdrawal-request.create")}
           </Typography>
         </Button>
+
         <CreateInvoiceDialog
           open={open}
           close={() => setOpen(false)}

@@ -24,11 +24,13 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod, { ZodSchema } from "zod";
 import {
+  dayjs,
   isValidInvoiceAmount,
   isValidInvoiceNote,
   isValidInvoiceReceiver,
 } from "@litespace/utils";
 import bytes from "bytes";
+import { calculateWithdrawableAmount } from "@/lib/invoice";
 
 const createPayload: ZodSchema<IInvoice.CreateApiPayload> = zod.object({
   method: withdrawMethod,
@@ -65,47 +67,51 @@ async function stats(req: Request, res: Response, next: NextFunction) {
     (isRegularTutor(user) && user.id === tutorId) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const users: number[] = [tutorId];
-  const canceled: boolean = false;
+  const now = dayjs();
+
   /**
    * Total tutor earnings including "past" and "future" lessons
-   *
-   * Canceled lessons are not included.
    */
   const totalIncome = await lessons.sumPrice({
-    users,
-    canceled,
-    future: true,
+    users: [tutorId],
+    canceled: false,
+    reported: false,
   });
+
   /**
    * Total tutor "past" earnings.
-   *
-   * Canceled lessons are not included.
    */
   const pastIncome = await lessons.sumPrice({
-    users,
-    canceled,
-    future: false,
+    users: [tutorId],
+    canceled: false,
+    reported: false,
+    before: now.toISOString(),
   });
 
   /**
    * Tutor earning from future lessons (pending funds)
-   *
    * Cannot be spent until the lesson is fulfilled.
    */
   const futureIncome = totalIncome - pastIncome;
 
   /**
    * Total sum for all invoices created by the tutor including "fulfilled" and "pending".
-   *
    * Canceled or rejected invoices are not included.
    */
-  const totalInvoices = await invoices.sumAmounts({ users });
+  const totalInvoices = await invoices.sumAmounts({
+    users: [tutorId],
+    status: [
+      IInvoice.Status.Approved,
+      IInvoice.Status.PendingApproval,
+      IInvoice.Status.PendingCancellation,
+    ],
+  });
+
   /**
    * Total sum for all "fulfulled" invoices created by the tutor.
    */
   const fulfilledInvoices = await invoices.sumAmounts({
-    users,
+    users: [tutorId],
     status: [IInvoice.Status.Approved],
   });
 
@@ -149,16 +155,13 @@ async function create(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const payload: IInvoice.CreateApiPayload = createPayload.parse(req.body);
-  const acquired = await lessons.sumPrice({
-    users: [user.id],
-    future: false,
-    canceled: false,
-  });
+
+  const withdrawable = await calculateWithdrawableAmount(user.id);
 
   // todo: add verbose error response about what is wrong with the invoice
   const validations = [
     isValidInvoiceReceiver(payload.receiver, payload.method),
-    isValidInvoiceAmount(payload.amount, 0, acquired),
+    isValidInvoiceAmount(payload.amount, 0, withdrawable),
     isValidInvoiceNote(payload.note),
   ];
 
@@ -220,7 +223,7 @@ function update(context: ApiContext) {
         status: payload.status,
         receipt: receiptId,
         addressedBy: itsTutor ? undefined : (user as IUser.Self).id,
-        note: itsTutor ? payload.note : undefined,
+        note: !itsTutor ? payload.note : undefined,
       });
 
       context.io.sockets

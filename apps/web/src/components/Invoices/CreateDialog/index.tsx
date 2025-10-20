@@ -42,7 +42,11 @@ export const CreateInvoiceDialog: React.FC<{
 
   const onError = useOnError({
     type: "mutation",
-    handler: () => toast.error({ title: intl("invoices.create-toast.error") }),
+    handler: (error) =>
+      toast.error({
+        title: intl("invoices.create-toast.error"),
+        description: intl(error.messageId),
+      }),
   });
 
   const createInvoice = useCreateInvoice({ onSuccess, onError });

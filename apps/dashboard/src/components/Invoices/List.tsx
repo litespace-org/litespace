@@ -17,6 +17,7 @@ import {
 } from "@/components/utils/invoice";
 import { Typography } from "@litespace/ui/Typography";
 import ImageField from "@/components/Common/ImageField";
+import { price } from "@litespace/utils";
 
 const List: React.FC<{
   data: Paginated<IInvoice.Self>;
@@ -58,7 +59,7 @@ const List: React.FC<{
       }),
       columnHelper.accessor("amount", {
         header: intl("dashboard.invoices.amount"),
-        cell: (info) => formatCurrency(info.getValue()),
+        cell: (info) => formatCurrency(price.unscale(info.getValue())),
       }),
       columnHelper.accessor("status", {
         header: intl("dashboard.invoices.status"),

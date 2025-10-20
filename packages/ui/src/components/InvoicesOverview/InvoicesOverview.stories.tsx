@@ -22,9 +22,9 @@ type Story = StoryObj<typeof InvoicesOverview>;
 
 export const Primary: Story = {
   args: {
-    totalRevenue: faker.number.int({ min: 100, max: 10_000 }),
+    fulfilledRevenue: faker.number.int({ min: 100, max: 10_000 }),
     availableRevenue: faker.number.int({ min: 100, max: 10_000 }),
-    pendingInvoicesCount: faker.number.int({ min: 0, max: 10 }),
+    pendingRevenue: faker.number.int({ min: 0, max: 10 }),
     futureRevenue: faker.number.int({ min: 100, max: 10_000 }),
     loading: false,
     error: false,
@@ -34,9 +34,9 @@ export const Primary: Story = {
 
 export const LargeNumbers: Story = {
   args: {
-    totalRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
+    fulfilledRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
     availableRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
-    pendingInvoicesCount: faker.number.int({ min: 0, max: 10 }),
+    pendingRevenue: faker.number.int({ min: 0, max: 10 }),
     futureRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
     loading: false,
     error: false,
@@ -46,9 +46,9 @@ export const LargeNumbers: Story = {
 
 export const Loading: Story = {
   args: {
-    totalRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
+    fulfilledRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
     availableRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
-    pendingInvoicesCount: faker.number.int({ min: 0, max: 10 }),
+    pendingRevenue: faker.number.int({ min: 0, max: 10 }),
     futureRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
     loading: true,
     error: false,
@@ -58,9 +58,9 @@ export const Loading: Story = {
 
 export const Error: Story = {
   args: {
-    totalRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
+    fulfilledRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
     availableRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
-    pendingInvoicesCount: faker.number.int({ min: 0, max: 10 }),
+    pendingRevenue: faker.number.int({ min: 0, max: 10 }),
     futureRevenue: faker.number.int({ min: 100_000, max: 1_000_000 }),
     loading: false,
     error: true,
