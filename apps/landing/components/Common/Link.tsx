@@ -2,7 +2,7 @@
 
 import React, { ComponentProps } from "react";
 import BaseLink from "next/link";
-import { Params, track as ga } from "@/lib/ga";
+import { Params, track as ga } from "@/lib/analytics";
 
 const Link: React.FC<
   ComponentProps<typeof BaseLink> & {

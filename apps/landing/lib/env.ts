@@ -16,6 +16,7 @@ const schema = zod.object({
   }),
   gaMeasurementId: zod.string().startsWith("G-").length(12),
   clarityProjectId: zod.string().length(10),
+  mixpanelToken: zod.string(),
 });
 
 export const env = schema.parse({
@@ -23,4 +24,5 @@ export const env = schema.parse({
   client: process.env.CLIENT,
   gaMeasurementId: process.env.GA_MEASUREMENT_ID,
   clarityProjectId: process.env.CLARITY_PROJECT_ID,
+  mixpanelToken: process.env.MIXPANEL_TOKEN,
 });

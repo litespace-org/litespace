@@ -9,7 +9,7 @@ import cn from "classnames";
 import { Void } from "@litespace/types";
 import { router } from "@/lib/routes";
 import { Landing, Web } from "@litespace/utils/routes";
-import { track } from "@/lib/ga";
+import { track } from "@/lib/analytics";
 
 export function NavbarLinks({ toggleSidebar }: { toggleSidebar: Void }) {
   const intl = useFormatMessage();
