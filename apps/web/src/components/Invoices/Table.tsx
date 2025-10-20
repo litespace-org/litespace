@@ -1,9 +1,9 @@
 import dayjs from "@/lib/dayjs";
+import { formatBankString } from "@/lib/format";
 import AlertCircle from "@litespace/assets/AlertCircle";
 import Calendar from "@litespace/assets/Calendar";
 import DollarCircle from "@litespace/assets/DollarCircle";
 import EmptyInvoices from "@litespace/assets/EmptyInvoices";
-import TransactionMinus from "@litespace/assets/TransactionMinus";
 import Trash from "@litespace/assets/Trash";
 import Wallet from "@litespace/assets/Wallet";
 import { IInvoice, Void } from "@litespace/types";
@@ -17,6 +17,7 @@ import {
 } from "@litespace/ui/Table";
 import { Typography } from "@litespace/ui/Typography";
 import { formatNumber } from "@litespace/ui/utils";
+import { price } from "@litespace/utils";
 import { createColumnHelper } from "@tanstack/react-table";
 import cn from "classnames";
 import { isEmpty } from "lodash";
@@ -76,7 +77,7 @@ export const Table: React.FC<{
             className="text-natural-800 font-semibold text-body"
           >
             {intl("labels.currency.egp", {
-              value: formatNumber(info.getValue()),
+              value: formatNumber(price.unscale(info.getValue())),
             })}
           </Typography>
         ),
@@ -97,7 +98,9 @@ export const Table: React.FC<{
               tag="p"
               className="text-body font-semibold text-natural-800"
             >
-              {info.row.original.receiver}
+              {info.getValue() !== IInvoice.WithdrawMethod.Bank
+                ? info.row.original.receiver
+                : formatBankString(info.row.original.receiver)}
             </Typography>
           </div>
         ),
@@ -192,14 +195,6 @@ const EmptyList = () => {
         >
           {intl("invoices.table.empty")}
         </Typography>
-        <Button
-          size="large"
-          endIcon={<TransactionMinus className="icon stroke-[1.5]" />}
-        >
-          <Typography tag="span" className="text">
-            {intl("invoices.withdrawal-request.create")}
-          </Typography>
-        </Button>
       </div>
     </div>
   );

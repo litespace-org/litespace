@@ -64,10 +64,10 @@ export const Bank: React.FC<{
 
   const options: SelectList<IInvoice.Bank> = useMemo(() => {
     return BANKS.map((bank) => ({
-      label: getBankIntlId(bank),
+      label: intl(getBankIntlId(bank)),
       value: bank,
     }));
-  }, []);
+  }, [intl]);
 
   return (
     <div className="flex flex-col gap-8 md:gap-6">
@@ -108,7 +108,7 @@ export const Bank: React.FC<{
           />
           <PatternInput
             mask=" "
-            format="#### #### #### ####"
+            format="#### #### #### #### ####"
             type="text"
             id="account-number"
             label={intl("invoices.account")}
