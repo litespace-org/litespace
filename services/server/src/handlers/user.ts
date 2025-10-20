@@ -204,6 +204,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
       {
         role: payload.role,
         email: payload.email,
+        name: getEmailUserName(payload.email) || "",
         password: hashPassword(payload.password),
       },
       tx

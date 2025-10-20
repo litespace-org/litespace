@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { capture } from "@/lib/sentry";
 import { Landing, Web } from "@litespace/utils/routes";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { isRegularUser } from "@litespace/utils";
+import { dayjs, isRegularUser } from "@litespace/utils";
 import { router } from "@/lib/routes";
 import { useLogger } from "@litespace/headless/logger";
 
@@ -64,7 +64,10 @@ export function useGoogle({
 
       if (redirect) return navigate(redirect);
 
-      if (role === IUser.Role.Student && !info.user.name)
+      if (
+        role === IUser.Role.Student &&
+        dayjs().diff(info.user.createdAt, "minutes") <= 5
+      )
         return navigate(Web.CompleteProfile);
 
       return navigate(Web.Root);
