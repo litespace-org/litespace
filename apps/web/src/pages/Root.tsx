@@ -29,6 +29,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import Splash from "@/pages/Splash";
 
 const publicRoutes: Web[] = [
   Web.Login,
@@ -236,7 +237,9 @@ const Root: React.FC = () => {
 
         {showNavigation ? <Navbar /> : null}
 
-        <Outlet />
+        <Splash position="top">
+          <Outlet />
+        </Splash>
 
         <FloatingButtons />
       </div>

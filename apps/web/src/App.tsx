@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import React from "react";
 import {
   RouteObject,
   RouterProvider,
@@ -7,40 +7,51 @@ import {
 import { Web } from "@litespace/utils/routes";
 import * as Sentry from "@sentry/react";
 import Splash from "@/pages/Splash";
+import { lazyWithRetry } from "@/lib/lazy";
 
-const Root = lazy(() => import("@/pages/Root"));
-const Login = lazy(() => import("@/pages/Login"));
-const Register = lazy(() => import("@/pages/Register"));
-const Crash = lazy(() => import("@/pages/Crash"));
-const TutorProfile = lazy(() => import("@/pages/TutorProfile"));
-const CompleteProfile = lazy(() => import("@/pages/CompleteProfile"));
-const StudentDashboard = lazy(() => import("@/pages/StudentDashboard"));
-const LessonsSchedule = lazy(() => import("@/pages/LessonsSchedule"));
-const StudentSettings = lazy(() => import("@/pages/StudentSettings"));
-const Payments = lazy(() => import("@/pages/Payments"));
-const Tutors = lazy(() => import("@/pages/Tutors"));
-const Chat = lazy(() => import("@/pages/Chat"));
-const Lessons = lazy(() => import("@/pages/Lessons"));
-const Plans = lazy(() => import("@/pages/Plans"));
-const Lesson = lazy(() => import("@/pages/Lesson"));
-const TutorAccountSettings = lazy(() => import("@/pages/TutorAccountSettings"));
-const TutorProfileSettings = lazy(() => import("@/pages/TutorProfileSettings"));
-const ScheduleManagement = lazy(() => import("@/pages/ScheduleManagement"));
-const TutorDashboard = lazy(() => import("@/pages/TutorDashboard"));
-const Invoices = lazy(() => import("@/pages/Invoices"));
-const CardAdded = lazy(() => import("@/pages/CardAdded"));
-const Checkout = lazy(() => import("@/pages/Checkout"));
-const CompleteTutorProfile = lazy(() => import("@/pages/CompleteTutorProfile"));
-const TutorOnboarding = lazy(() => import("@/pages/TutorOnboarding"));
-const Interview = lazy(() => import("@/pages/Interview"));
-const DemoSession = lazy(() => import("@/pages/DemoSession"));
+const Root = lazyWithRetry(() => import("@/pages/Root"));
+const Login = lazyWithRetry(() => import("@/pages/Login"));
+const Register = lazyWithRetry(() => import("@/pages/Register"));
+const TutorProfile = lazyWithRetry(() => import("@/pages/TutorProfile"));
+const CompleteProfile = lazyWithRetry(() => import("@/pages/CompleteProfile"));
+const StudentDashboard = lazyWithRetry(
+  () => import("@/pages/StudentDashboard")
+);
+const LessonsSchedule = lazyWithRetry(() => import("@/pages/LessonsSchedule"));
+const StudentSettings = lazyWithRetry(() => import("@/pages/StudentSettings"));
+const Payments = lazyWithRetry(() => import("@/pages/Payments"));
+const Tutors = lazyWithRetry(() => import("@/pages/Tutors"));
+const Chat = lazyWithRetry(() => import("@/pages/Chat"));
+const Lessons = lazyWithRetry(() => import("@/pages/Lessons"));
+const Plans = lazyWithRetry(() => import("@/pages/Plans"));
+const Lesson = lazyWithRetry(() => import("@/pages/Lesson"));
+const TutorAccountSettings = lazyWithRetry(
+  () => import("@/pages/TutorAccountSettings")
+);
+const TutorProfileSettings = lazyWithRetry(
+  () => import("@/pages/TutorProfileSettings")
+);
+const ScheduleManagement = lazyWithRetry(
+  () => import("@/pages/ScheduleManagement")
+);
+const TutorDashboard = lazyWithRetry(() => import("@/pages/TutorDashboard"));
+const Invoices = lazyWithRetry(() => import("@/pages/Invoices"));
+const CardAdded = lazyWithRetry(() => import("@/pages/CardAdded"));
+const Checkout = lazyWithRetry(() => import("@/pages/Checkout"));
+const CompleteTutorProfile = lazyWithRetry(
+  () => import("@/pages/CompleteTutorProfile")
+);
+const TutorOnboarding = lazyWithRetry(() => import("@/pages/TutorOnboarding"));
+const Interview = lazyWithRetry(() => import("@/pages/Interview"));
+const DemoSession = lazyWithRetry(() => import("@/pages/DemoSession"));
+const Crash = lazyWithRetry(() => import("@/pages/Crash"));
 
 const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
 function withCrash(routes: RouteObject[]): RouteObject[] {
   return routes.map((route) => ({
     ...route,
-    element: <Splash children={route.element} position="top" />,
+    element: route.element,
     errorElement: <Splash children={<Crash />} position="top" />,
   }));
 }
@@ -80,7 +91,11 @@ const router = createRouter([
 ]);
 
 function App(): React.JSX.Element {
-  return <RouterProvider router={router} />;
+  return (
+    <Splash position="top">
+      <RouterProvider router={router} />;
+    </Splash>
+  );
 }
 
 export default App;
