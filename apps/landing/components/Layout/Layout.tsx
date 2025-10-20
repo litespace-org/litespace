@@ -7,6 +7,7 @@ import Sidebar from "@/components/Layout/Sidebar";
 import Footer from "@/components/Layout/Footer";
 import clarity, { getCustomeId, sessionId } from "@/lib/clarity";
 import { usePathname } from "next/navigation";
+import FacebookPixel from "@/components/Layout/FacebookPixel";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -23,6 +24,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           showSidebar,
       })}
     >
+      <FacebookPixel />
       <Navbar toggleSidebar={() => setShowSidebar((prev) => !prev)} />
       {showSidebar ? <Sidebar hide={() => setShowSidebar(false)} /> : null}
       {children}
