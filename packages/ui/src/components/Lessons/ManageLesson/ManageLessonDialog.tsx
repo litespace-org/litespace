@@ -430,7 +430,7 @@ export const ManageLessonDialog: React.FC<{
                     <div
                       className={cn(
                         "flex flex-col gap-4",
-                        "max-h-[322px] overflow-y-scroll pe-2 [direction:ltr] scrollbar !scrollbar-thumb-natural-500 !scrollbar-track-natural-100"
+                        "max-h-[35vh] overflow-y-scroll pe-2 [direction:ltr] scrollbar !scrollbar-thumb-natural-500 !scrollbar-track-natural-100"
                       )}
                     >
                       <SlotsContainer
