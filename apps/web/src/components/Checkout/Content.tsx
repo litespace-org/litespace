@@ -85,7 +85,7 @@ const Content: React.FC<{
   }, [onTransactionStatusUpdate, socket]);
 
   return (
-    <div className="h-full gap-4 md:gap-8 flex flex-col items-center mt-[15vh] mx-auto">
+    <div className="h-full gap-4 md:gap-8 flex flex-col items-center mt-6 short:mt-6 md:mt-[15vh] mx-auto">
       <Header />
 
       <Body
