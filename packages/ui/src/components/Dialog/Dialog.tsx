@@ -29,6 +29,7 @@ export const Dialog: React.FC<{
   variant?: "default" | "media";
   mediaLoading?: boolean;
   mediaError?: boolean;
+  actions?: React.ReactNode;
   mediaRefetch?: Void;
   setOpen?: (open: boolean) => void;
   close?: Void;
@@ -43,6 +44,7 @@ export const Dialog: React.FC<{
   variant = "default",
   mediaLoading,
   mediaError,
+  actions,
   mediaRefetch,
   setOpen,
   close,
@@ -161,9 +163,18 @@ export const Dialog: React.FC<{
 
           {(variant === "media" && !mediaLoading && !mediaError) ||
           variant === "default" ? (
-            <>
+            <div
+              className={cn("relative", {
+                "mb-14": actions,
+              })}
+            >
               <Optional show={!hiddenTitle}>
-                <div className="flex justify-between items-center w-full">
+                <div
+                  className={cn(
+                    "flex justify-between items-center w-full",
+                    "fixed top-0 right-0 left-0 pt-4 pb-2 px-6 bg-natural-50 shadow-dialog-title"
+                  )}
+                >
                   <Title>{title}</Title>
                   <Optional show={!!close}>
                     <Close
@@ -175,8 +186,25 @@ export const Dialog: React.FC<{
                   </Optional>
                 </div>
               </Optional>
-              {children}
-            </>
+              <div
+                className={cn(
+                  "max-h-[80vh] pt-4 overflow-y-scroll scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent",
+                  { "mt-8": !hiddenTitle }
+                )}
+              >
+                {children}
+              </div>
+              {actions ? (
+                <div
+                  className={cn(
+                    "fixed z-[100] py-4 px-6 bottom-0 right-0 left-0",
+                    "bg-natural-50 shadow-dialog-actions"
+                  )}
+                >
+                  {actions}
+                </div>
+              ) : null}
+            </div>
           ) : null}
         </Content>
       </Portal>

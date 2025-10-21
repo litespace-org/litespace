@@ -329,7 +329,7 @@ export const ManageLessonDialog: React.FC<{
       open={open}
       close={close}
       title={
-        <div className="flex gap-2 pb-4">
+        <div className="flex gap-2 _pb-4">
           <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
             <AvatarV2 alt={name} id={tutorId} src={imageUrl} />
           </div>
@@ -344,6 +344,25 @@ export const ManageLessonDialog: React.FC<{
             </Typography>
           </div>
         </div>
+      }
+      actions={
+        <Button
+          size="large"
+          className="w-full"
+          disabled={!lessonDetails.slotId || !lessonDetails.start}
+          onClick={() => {
+            if (!lessonDetails.start || !lessonDetails.slotId) return;
+            return onSubmit({
+              start: lessonDetails.start,
+              slotId: lessonDetails.slotId,
+              duration,
+            });
+          }}
+        >
+          <Typography tag="span" className="text-body font-medium">
+            {intl("book-lesson.confirm")}
+          </Typography>
+        </Button>
       }
       className={cn(
         "!w-auto max-w-[350px] md:max-w-[550px] mx-auto py-4 lg:!py-6 _sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0",
@@ -463,23 +482,6 @@ export const ManageLessonDialog: React.FC<{
                     </Typography>
                   </div>
                 </div>
-                <Button
-                  size="large"
-                  className="w-full"
-                  disabled={!lessonDetails.slotId || !lessonDetails.start}
-                  onClick={() => {
-                    if (!lessonDetails.start || !lessonDetails.slotId) return;
-                    return onSubmit({
-                      start: lessonDetails.start,
-                      slotId: lessonDetails.slotId,
-                      duration,
-                    });
-                  }}
-                >
-                  <Typography tag="span" className="text-body font-medium">
-                    {intl("book-lesson.confirm")}
-                  </Typography>
-                </Button>
               </div>
             </Animation>
           ) : null}
