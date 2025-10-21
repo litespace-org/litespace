@@ -9,6 +9,7 @@ export function useFindSortedLessons(): {
   list: ILesson.FindUserLessonsApiResponse["list"];
   more: Void;
   refetch: Void;
+  reset: Void;
   isPending: boolean;
   isFetching: boolean;
   isError: boolean;
@@ -25,16 +26,22 @@ export function useFindSortedLessons(): {
   const lessons = useInfiniteLessons({
     userOnly: true,
     users: user ? [user?.id] : [],
+    size: 15,
   });
 
   useEffect(() => {
     const now = dayjs().subtract(ILesson.Duration.Long, "minutes");
 
+    const futureList = lessons.list?.slice(pastLessons.length) || [];
+    const newFutureLessons = [
+      ...futureList.filter(
+        ({ lesson }) =>
+          !futureLessons.map((l) => l.lesson.id).includes(lesson.id)
+      ),
+    ];
+
     const newList =
       lessons.list?.slice(futureLessons.length + pastLessons.length) || [];
-    const newFutureLessons = newList.filter((l) =>
-      now.isBefore(l.lesson.start)
-    );
     const newPastLessons = newList.filter((l) => now.isAfter(l.lesson.start));
 
     setFutureLessons((prev) =>
@@ -45,13 +52,17 @@ export function useFindSortedLessons(): {
       )
     );
     setPastLessons((prev) => [...prev, ...newPastLessons]);
-  }, [lessons.list, futureLessons.length, pastLessons.length]);
+  }, [lessons.list, futureLessons, futureLessons.length, pastLessons.length]);
 
   return useMemo(
     () => ({
       list: [...futureLessons, ...pastLessons],
       more: lessons.more,
       refetch: lessons.query.refetch,
+      reset: () => {
+        setFutureLessons([]);
+        setPastLessons([]);
+      },
       isPending: lessons.query.isPending,
       isFetching: lessons.query.isFetching,
       isError: lessons.query.isError,

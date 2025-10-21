@@ -22,7 +22,7 @@ export const CancelLesson: React.FC<{
       open={open}
       type="main"
       icon={<ProfileAvatar className="[&>*]:!stroke-brand-500" />}
-      className="!w-[400px]"
+      className="!w-[400px] text-caption text-natural-700"
       actions={{
         primary: {
           label: intl("labels.confirm"),
@@ -37,26 +37,25 @@ export const CancelLesson: React.FC<{
       }}
       close={close}
     >
-      <Typography
-        tag="p"
-        className="text-caption text-natural-700 font-cairo mt-1"
-      >
-        {isStudent ? (
-          <>
-            <Typography tag="p">
-              {intl("cancel-lesson.with-tutor.confirm.description", {
-                value: otherMemberName,
-              })}
-            </Typography>
+      {isStudent ? (
+        <div className="flex flex-col mt-1">
+          <Typography tag="p">
+            {intl("cancel-lesson.with-tutor.confirm.description", {
+              value: otherMemberName,
+            })}
+          </Typography>
 
-            <Typography tag="p">
-              {intl("cancel-lesson.with-tutor.confirm.description-2")}
-            </Typography>
-          </>
-        ) : (
-          intl("cancel-lesson.description")
-        )}
-      </Typography>
+          <Typography tag="p">
+            {intl("cancel-lesson.with-tutor.confirm.description-2")}
+          </Typography>
+        </div>
+      ) : null}
+
+      {!isStudent ? (
+        <Typography tag="p" className="mt-1">
+          {intl("cancel-lesson.description")}
+        </Typography>
+      ) : null}
     </ConfirmationDialog>
   );
 };
