@@ -1,6 +1,4 @@
 import { InvalidTimeDialog } from "@/components/Common/InvalidTimeDialog";
-import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowserDialog";
-import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 import FloatingButtons from "@/components/Layout/FloatingButtons";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
@@ -209,8 +207,6 @@ const Root: React.FC = () => {
         )}
       >
         <InvalidTimeDialog />
-        <UnsupportedBrowserDialog />
-        <WebrtcCheckDialog />
 
         <ConfirmationDialog
           open={tourDialogOpen && stepNumber !== studentTour.tour.steps.length}
