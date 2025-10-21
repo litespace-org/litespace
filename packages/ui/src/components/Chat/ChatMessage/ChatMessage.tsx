@@ -191,11 +191,8 @@ export const ChatMessage: React.FC<{
         <Typography
           dir="auto"
           tag="span"
-          style={{
-            lineBreak: "anywhere",
-          }}
           className={cn(
-            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] font-normal text-caption",
+            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] font-normal text-wrap text-caption",
             {
               "lg:text-tiny": inSession && !owner,
               "text-natural-950": !error,

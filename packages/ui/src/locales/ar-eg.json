@@ -28,7 +28,7 @@
   "checkout.payment.ewallet.personal-phone-placeholder": "010 1234 5678",
   "checkout.payment.cancel-error": "حدث خطأ أثناء إلغاء عملية الدفع",
   "checkout.payment.cancel-success": "تم إلغاء عملية الدفع بنجاح",
-  "checkout.payment.fawry.phone": "رقم الهاتف",
+  "checkout.payment.fawry.phone": "رقم الهاتف الشخصي",
   "checkout.payment.fawry.phone-placeholder": "010 1234 5678",
   "checkout.payment.cancel-and-retry": "إلغاء و إعادة المحاولة",
   "checkout.payment.done": "تمت عملية الدفع بنجاح",

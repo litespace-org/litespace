@@ -77,8 +77,8 @@ const Animation: React.FC<{
 }> = ({ id, children }) => {
   const duration = useMemo(() => {
     if (id === "selection" || id === "loading" || id === "busy-tutor")
-      return 0.5;
-    return 0.4;
+      return 0.4;
+    return 0.3;
   }, [id]);
 
   return (
