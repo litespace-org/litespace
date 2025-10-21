@@ -9,6 +9,8 @@ import { useUser } from "@litespace/headless/context/user";
 import cn from "classnames";
 import { useSocket } from "@litespace/headless/socket";
 import { MediaCallProvider } from "@/hooks/mediaCall";
+import { UnsupportedBrowserDialog } from "@/components/Common/UnsupportedBrowserDialog";
+import { WebrtcCheckDialog } from "@/components/Common/WebrtcCheckDialog";
 
 type Params = Replace<UrlParamsOf<Web.Lesson>, "id", string>;
 
@@ -56,6 +58,8 @@ const Lesson: React.FC = () => {
       >
         <Content lessonId={lessonId} self={user} />
       </div>
+      <UnsupportedBrowserDialog />
+      <WebrtcCheckDialog />
     </MediaCallProvider>
   );
 };
