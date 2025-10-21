@@ -108,7 +108,7 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
       </div>
       <div
         className={cn(
-          "bg-brand-500 w-[54px] h-[54px] md:w-[123px] md:h-[124px] rounded-full",
+          "bg-natural-600 w-[54px] h-[54px] md:w-[123px] md:h-[124px] rounded-full",
           "flex flex-col justify-center items-center",
           "border-[2px] border-natural-200"
         )}

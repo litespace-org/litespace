@@ -71,7 +71,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
           </div>
           <div
             className={cn(
-              "bg-brand-500 rounded-full absolute flex justify-center items-center z-[2]",
+              "bg-natural-600 rounded-full absolute flex justify-center items-center z-[2]",
               isEditing
                 ? "w-[42px] h-[42px] -right-[7.5px] -bottom-[7.5px]"
                 : "w-8 h-8 md:w-[39px] md:h-[39px] lg:w-14 lg:h-14 -right-[12px] -bottom-[12px]"

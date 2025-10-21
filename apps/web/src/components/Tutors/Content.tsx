@@ -87,7 +87,7 @@ const Content: React.FC<{
               }
               key={tutor.id}
               tutorId={tutor.id}
-              about={tutor.about}
+              about={tutor.bio}
               name={tutor.name}
               role={tutor.role}
               rating={tutor.avgRating}
