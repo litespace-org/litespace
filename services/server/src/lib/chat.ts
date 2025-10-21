@@ -26,6 +26,7 @@ export function asFindUserRoomsApiRecord({
     otherMember: {
       id: otherMember.id,
       name: otherMember.name,
+      email: otherMember.email,
       image: otherMember.image,
       role: otherMember.role,
       lastSeen: otherMember.lastSeen,

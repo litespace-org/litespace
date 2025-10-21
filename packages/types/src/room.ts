@@ -75,6 +75,7 @@ export type FindUserRoomsApiRecord = {
   otherMember: {
     id: number;
     name: string | null;
+    email?: string | null;
     image: string | null;
     role: IUser.Role;
     lastSeen: string;
