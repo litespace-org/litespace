@@ -100,7 +100,7 @@ const Animation: React.FC<{
         opacity: 0,
         height: 0,
       }}
-      className="overflow-hidden"
+      className="flex flex-col overflow-hidden"
     >
       {children}
     </motion.div>
@@ -294,12 +294,18 @@ export const ManageLessonDialog: React.FC<{
   }, [selectDaySlots, date, bookedSlots]);
 
   const daySlots = useMemo(
-    () => allSlots.filter((slot) => dayjs(slot.start).hour() <= 12),
+    () =>
+      allSlots.filter(
+        (slot) => dayjs(slot.start).hour() <= 12 && dayjs().isBefore(slot.start)
+      ),
     [allSlots]
   );
 
   const nightSlots = useMemo(
-    () => allSlots.filter((slot) => dayjs(slot.start).hour() > 12),
+    () =>
+      allSlots.filter(
+        (slot) => dayjs(slot.start).hour() > 12 && dayjs().isBefore(slot.start)
+      ),
     [allSlots]
   );
 
@@ -346,123 +352,126 @@ export const ManageLessonDialog: React.FC<{
         </div>
       }
       className={cn(
-        "!w-auto max-w-[350px] md:max-w-[550px] mx-auto py-4 lg:!py-6 _sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0",
+        "flex flex-col !w-auto max-w-[350px] md:max-w-[550px] mx-auto py-4 lg:!py-6 _sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0",
         {
           "!left-0 right-0 translate-x-0": !sm,
         }
       )}
     >
-      <div className="mt-4">
-        <AnimatePresence initial={false} mode="wait">
-          {loading ? (
-            <Animation key="loading" id="loading">
-              <LoadingWrapper tutorName={name} />
-            </Animation>
-          ) : null}
+      <AnimatePresence initial={false} mode="wait">
+        {loading ? (
+          <Animation key="loading" id="loading">
+            <LoadingWrapper tutorName={name} />
+          </Animation>
+        ) : null}
 
-          {error && !loading ? (
-            <Animation key="error" id="error">
-              <Error retry={retry} tutorName={name} />
-            </Animation>
-          ) : null}
+        {error && !loading ? (
+          <Animation key="error" id="error">
+            <Error retry={retry} tutorName={name} />
+          </Animation>
+        ) : null}
 
-          {depletedSubscription && !error && !loading ? (
-            <Animation key="depleted-subscription" id="depleted-subscription">
-              <DepletedSubscription />
-            </Animation>
-          ) : null}
+        {depletedSubscription && !error && !loading ? (
+          <Animation key="depleted-subscription" id="depleted-subscription">
+            <DepletedSubscription />
+          </Animation>
+        ) : null}
 
-          {/* TODO: substitute this with subscription promotion */}
-          {hasBookedMaxLessons &&
-          !subscribed &&
-          !depletedSubscription &&
-          !error &&
-          !loading &&
-          type === "book" ? (
-            <Animation key="has-booked-lesson" id="has-booked-lesson">
-              <Block close={close} type="has-booked" />
-            </Animation>
-          ) : null}
+        {/* TODO: substitute this with subscription promotion */}
+        {hasBookedMaxLessons &&
+        !subscribed &&
+        !depletedSubscription &&
+        !error &&
+        !loading &&
+        type === "book" ? (
+          <Animation key="has-booked-lesson" id="has-booked-lesson">
+            <Block close={close} type="has-booked" />
+          </Animation>
+        ) : null}
 
-          {canBook ? (
-            <Animation key="date-selection" id="selection">
-              <div className="flex flex-col gap-6 !max-w-[350px]">
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-2">
-                    <LessonDuration />
-                    <Divider />
-                  </div>
-
-                  <DateSelection
-                    min={dateBounds.start}
-                    max={dateBounds.start.add(1, "week")}
-                    selected={date}
-                    onSelect={(params) => {
-                      setDate(params);
-                      setLessonDetails({ start: null, slotId: null });
-                    }}
-                    isSelectable={isValidDate}
-                    prev={() => {
-                      setLessonDetails({ start: null, slotId: null });
-                      setDateBounds((prev) => {
-                        setDate(prev.start.subtract(1, "week"));
-                        return {
-                          start: prev.start.subtract(1, "week"),
-                          end: prev.end.subtract(1, "week"),
-                        };
-                      });
-                    }}
-                    next={() => {
-                      setLessonDetails({ start: null, slotId: null });
-                      setDateBounds((prev) => {
-                        setDate(prev.start.add(1, "week"));
-                        return {
-                          start: prev.start.add(1, "week"),
-                          end: prev.end.add(1, "week"),
-                        };
-                      });
-                    }}
-                  />
-
+        {canBook ? (
+          <Animation key="date-selection" id="selection">
+            <div className="flex-1 flex flex-col gap-6 !max-w-[350px] overflow-hidden">
+              <div className="flex flex-col gap-4 overflow-hidden">
+                <div className="flex flex-col gap-2">
+                  <LessonDuration />
                   <Divider />
+                </div>
 
-                  <div className="flex flex-col">
-                    <div
-                      className={cn(
-                        "flex flex-col gap-4",
-                        "max-h-[322px] overflow-y-scroll pe-2 [direction:ltr] scrollbar !scrollbar-thumb-natural-500 !scrollbar-track-natural-100"
-                      )}
-                    >
-                      <SlotsContainer
-                        slots={daySlots}
-                        atNight={false}
-                        lessonDetails={lessonDetails}
-                        setLessonDetails={(start, slotId) =>
-                          setLessonDetails(() => ({ start, slotId }))
-                        }
-                      />
-                      <SlotsContainer
-                        slots={nightSlots}
-                        atNight={true}
-                        lessonDetails={lessonDetails}
-                        setLessonDetails={(start, slotId) =>
-                          setLessonDetails(() => ({ start, slotId }))
-                        }
-                      />
-                    </div>
-                    <Typography
-                      tag="p"
-                      className="text-tiny text-natural-600 mt-2"
-                    >
-                      {intl("book-lesson.labels.time-zone", {
-                        value:
-                          arabicTimezoneNames[
-                            dayjs.tz.guess() as keyof typeof arabicTimezoneNames
-                          ],
-                      })}
-                    </Typography>
+                <DateSelection
+                  min={dateBounds.start}
+                  max={dateBounds.start.add(1, "week")}
+                  selected={date}
+                  onSelect={(params) => {
+                    setDate(params);
+                    setLessonDetails({ start: null, slotId: null });
+                  }}
+                  isSelectable={isValidDate}
+                  prev={() => {
+                    setLessonDetails({ start: null, slotId: null });
+                    setDateBounds((prev) => {
+                      setDate(prev.start.subtract(1, "week"));
+                      return {
+                        start: prev.start.subtract(1, "week"),
+                        end: prev.end.subtract(1, "week"),
+                      };
+                    });
+                  }}
+                  next={() => {
+                    setLessonDetails({ start: null, slotId: null });
+                    setDateBounds((prev) => {
+                      setDate(prev.start.add(1, "week"));
+                      return {
+                        start: prev.start.add(1, "week"),
+                        end: prev.end.add(1, "week"),
+                      };
+                    });
+                  }}
+                />
+
+                <Divider />
+
+                <div
+                  className={cn(
+                    "flex flex-col",
+                    "[direction:ltr] scrollbar",
+                    "!scrollbar-thumb-natural-500 !scrollbar-track-natural-100",
+                    {
+                      "overflow-y-auto":
+                        daySlots.length + nightSlots.length > 10,
+                    }
+                  )}
+                >
+                  <div className="flex flex-col gap-4 max-h-[322px] pe-2">
+                    <SlotsContainer
+                      slots={daySlots}
+                      atNight={false}
+                      lessonDetails={lessonDetails}
+                      setLessonDetails={(start, slotId) =>
+                        setLessonDetails(() => ({ start, slotId }))
+                      }
+                    />
+                    <SlotsContainer
+                      slots={nightSlots}
+                      atNight={true}
+                      lessonDetails={lessonDetails}
+                      setLessonDetails={(start, slotId) =>
+                        setLessonDetails(() => ({ start, slotId }))
+                      }
+                    />
                   </div>
                 </div>
+              </div>
+
+              <div className="flex flex-col gap-1 w-full">
+                <Typography tag="p" className="text-tiny text-natural-600">
+                  {intl("book-lesson.labels.time-zone", {
+                    value:
+                      arabicTimezoneNames[
+                        dayjs.tz.guess() as keyof typeof arabicTimezoneNames
+                      ],
+                  })}
+                </Typography>
                 <Button
                   size="large"
                   className="w-full"
@@ -481,10 +490,10 @@ export const ManageLessonDialog: React.FC<{
                   </Typography>
                 </Button>
               </div>
-            </Animation>
-          ) : null}
-        </AnimatePresence>
-      </div>
+            </div>
+          </Animation>
+        ) : null}
+      </AnimatePresence>
     </Dialog>
   );
 };
@@ -496,11 +505,6 @@ const SlotsContainer: React.FC<{
   setLessonDetails: (start: string, slotId: number) => void;
 }> = ({ slots, atNight, lessonDetails, setLessonDetails }) => {
   const intl = useFormatMessage();
-
-  const filtered = useMemo(
-    () => slots.filter((s) => dayjs().isBefore(s.start)),
-    [slots]
-  );
 
   return (
     <div className="[direction:rtl] flex flex-col gap-2">
@@ -517,7 +521,7 @@ const SlotsContainer: React.FC<{
         </Typography>
       </div>
       <div>
-        {isEmpty(filtered) ? (
+        {isEmpty(slots) ? (
           <Typography
             tag="p"
             className="text-caption font-semibold text-center my-6"
@@ -527,7 +531,7 @@ const SlotsContainer: React.FC<{
         ) : null}
 
         <div className={cn({ grid: !isEmpty(slots) }, "grid-cols-3 gap-2")}>
-          {filtered.map((slot, i) => {
+          {slots.map((slot, i) => {
             const isSelected =
               lessonDetails.slotId === slot.parent &&
               lessonDetails.start === slot.start;
