@@ -17,7 +17,7 @@ import { isTutor as isUserTutor } from "@litespace/utils";
 import cn from "classnames";
 import AddCircle from "@litespace/assets/AddCircle";
 
-const TopicSelection: React.FC = () => {
+export const PublicInfo: React.FC = () => {
   const intl = useFormatMessage();
   const [showDialog, setShowDialog] = useState<boolean>(false);
 
@@ -400,4 +400,4 @@ const TopicBadge: React.FC<{ onRemove: Void; label: string }> = ({
   );
 };
 
-export default TopicSelection;
+export default PublicInfo;

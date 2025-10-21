@@ -174,7 +174,7 @@ const NotificationSettings: React.FC<{
     <div className="md:max-w-[344px] lg:max-w-[400px] grow md:grow-0 h-full flex flex-col">
       <Typography
         tag="h2"
-        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
+        className="hidden md:block text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6"
       >
         {intl("shared-settings.notification.title")}
       </Typography>

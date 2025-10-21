@@ -73,7 +73,7 @@ const Tab: React.FC<{
         {Icon ? (
           <Icon
             className={cn(
-              "w-4 h-4",
+              "w-4 h-4 [&>*]:fill-transparent",
               active ? "[&>*]:stroke-brand-500" : "[&>*]:stroke-natural-700"
             )}
           />

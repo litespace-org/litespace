@@ -5,7 +5,7 @@ export function isValidTab(tab: string): tab is StudentSettingsTabId {
     "personal",
     "password",
     "notifications",
-    "topics",
+    "public-info",
     "refunds",
   ].includes(tab);
 }

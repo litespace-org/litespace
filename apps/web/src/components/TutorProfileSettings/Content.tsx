@@ -16,7 +16,7 @@ import { useForm } from "@litespace/headless/form";
 import { MAX_TUTOR_ABOUT_TEXT_LENGTH } from "@litespace/utils/constants";
 import { Textarea } from "@litespace/ui/Textarea";
 import { Input } from "@litespace/ui/Input";
-import TopicSelection from "@/components/Settings/TopicSelection";
+import TopicSelection from "@/components/Settings/PublicInfo";
 import { useBlock } from "@litespace/ui/hooks/common";
 import { Button } from "@litespace/ui/Button";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
