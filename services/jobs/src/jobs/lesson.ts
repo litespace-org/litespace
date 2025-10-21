@@ -28,6 +28,7 @@ async function sendReminders() {
     strict: true,
     full: true,
     canceled: false,
+    reported: false,
   });
 
   if (isEmpty(list)) return;
@@ -48,6 +49,12 @@ async function sendReminders() {
     });
     whatsappMessages.push(...msgs);
   }
+
+  console.log({
+    lessons: list,
+    lessonMembers,
+    whatsappMessages,
+  });
 
   await send(whatsappMessages);
 }
