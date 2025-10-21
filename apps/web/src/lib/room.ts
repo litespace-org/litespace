@@ -5,6 +5,7 @@ import { IRoom, IUser } from "@litespace/types";
 type OtherMember = {
   id: number;
   name: string | null;
+  email: string;
   image: string | null;
   role: IUser.Role;
   lastSeen: string;
@@ -25,6 +26,7 @@ export function asOtherMember({
   return {
     id: otherMember.id,
     name: otherMember.name || null,
+    email: otherMember.email,
     gender: otherMember.gender || null,
     image: otherMember.image || null,
     role: otherMember.role,

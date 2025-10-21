@@ -114,6 +114,7 @@ export type Assets = {
 export type UncontactedTutorInfo = {
   id: number;
   name: string | null;
+  email?: string;
   image: string | null;
   bio: string | null;
   role: IUser.Role;

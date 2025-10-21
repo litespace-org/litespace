@@ -19,6 +19,7 @@ import People from "@litespace/assets/People";
 import { optional } from "@litespace/utils/utils";
 import dayjs from "@/lib/dayjs";
 import { InView } from "react-intersection-observer";
+import { getEmailUserName } from "@litespace/utils";
 
 type RoomsData = {
   icon: React.ReactNode;
@@ -144,7 +145,12 @@ const Rooms: React.FC<{
                   : data.id // tutor id
               }
               imageUrl={optional(room ? data.otherMember.image : data.image)}
-              name={optional(room ? data.otherMember.name : data.name)}
+              name={optional(
+                room
+                  ? data.otherMember.name ||
+                      getEmailUserName(data.otherMember.email || "")
+                  : data.name || getEmailUserName(data.email || "")
+              )}
               message={asRoomMessage({
                 message: room ? data.latestMessage : null,
                 bio: !room ? data.bio : null,
