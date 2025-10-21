@@ -5,6 +5,7 @@ import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { Typography } from "@/components/Typography";
 import { faker } from "@faker-js/faker/locale/ar";
 import { VideoPlayer } from "@/components/VideoPlayer/V2";
+import { Button } from "@/components/Button";
 
 type Component = typeof Dialog;
 type Story = StoryObj<Component>;
@@ -23,9 +24,9 @@ const meta: Meta<Component> = {
       </Typography>
     ),
     children: (
-      <div className="my-2">
-        <Typography tag="span">{faker.lorem.lines(12)}</Typography>
-      </div>
+      // <div className="my-2">
+      <Typography tag="span">{faker.lorem.lines(212)}</Typography>
+      // </div>
     ),
   },
 };
@@ -35,6 +36,14 @@ export const Primary: Story = {
     open: true,
     className: "w-[600px]",
     close: () => alert("closing..."),
+    actions: (
+      <div className="flex [&>*]:flex-1 gap-4">
+        <Button size="large">yes</Button>
+        <Button size="large" variant="secondary">
+          No
+        </Button>
+      </div>
+    ),
   },
 };
 
