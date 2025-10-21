@@ -29,16 +29,19 @@ export function useFindSortedLessons(): {
     size: 15,
   });
 
+  // a callback function that returns true if the futureLessons
+  // state includes the passed lesson id.
+  const futureIncludes = (lessonId: number): boolean => {
+    return !!futureLessons.find(({ lesson }) => lesson.id === lessonId);
+  };
+
   useEffect(() => {
     const now = dayjs().subtract(ILesson.Duration.Long, "minutes");
 
     const futureList = lessons.list?.slice(pastLessons.length) || [];
-    const newFutureLessons = [
-      ...futureList.filter(
-        ({ lesson }) =>
-          !futureLessons.map((l) => l.lesson.id).includes(lesson.id)
-      ),
-    ];
+    const newFutureLessons = futureList.filter(
+      ({ lesson }) => !futureIncludes(lesson.id)
+    );
 
     const newList =
       lessons.list?.slice(futureLessons.length + pastLessons.length) || [];
@@ -52,7 +55,7 @@ export function useFindSortedLessons(): {
       )
     );
     setPastLessons((prev) => [...prev, ...newPastLessons]);
-  }, [lessons.list, futureLessons, futureLessons.length, pastLessons.length]);
+  }, [lessons.list, futureLessons.length, pastLessons.length]);
 
   return useMemo(
     () => ({
