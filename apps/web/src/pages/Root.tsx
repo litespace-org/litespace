@@ -130,12 +130,12 @@ const Root: React.FC = () => {
         !cache.load(CacheKey.TourFinished)
       ) {
         navigate(Web.Tutors);
-        studentTour.start();
+        // studentTour.start();
         return;
       }
       return navigate(Web.StudentDashboard);
     }
-  }, [navigate, location.pathname, user, publicRoute, meta, studentTour]);
+  }, [navigate, location.pathname, user, publicRoute, meta]);
 
   const showNavigation = useMemo(() => {
     if (params.get("nav") === "false") return false;

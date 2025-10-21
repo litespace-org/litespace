@@ -25,11 +25,11 @@ export const CancelLesson: React.FC<{
       className="!w-[400px] text-caption text-natural-700"
       actions={{
         primary: {
-          label: intl("labels.confirm"),
+          label: intl("labels.i-will-continue"),
           onClick: close,
         },
         secondary: {
-          label: isStudent ? intl("labels.go-back") : intl("labels.cancel"),
+          label: intl("labels.cancel-lesson"),
           onClick: onCancel,
           loading: loading,
           disabled: loading,

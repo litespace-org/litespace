@@ -120,7 +120,7 @@ export const Dialog: React.FC<{
           dir="rtl"
           aria-describedby={description}
           className={cn(
-            "fixed bg-natural-50 focus-visible:ring-brand-500 overflow-hidden z-dialog",
+            "fixed max-h-screen bg-natural-50 focus-visible:ring-brand-500 overflow-hidden z-dialog",
             {
               "w-full": !mq.sm,
               "p-4 sm:p-6": variant === "default",

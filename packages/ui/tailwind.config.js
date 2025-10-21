@@ -90,6 +90,7 @@ export default {
         "2xs": "400px",
         xs: "480px",
         "3xl": "1600px",
+        short: { raw: "(max-height: 600px)" },
       },
       containers: {
         "2md": "30rem",

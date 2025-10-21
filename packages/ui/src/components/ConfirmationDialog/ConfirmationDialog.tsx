@@ -154,7 +154,8 @@ export const ConfirmationDialog: React.FC<{
           aria-describedby={description}
           dir="rtl"
           className={cn(
-            "fixed bg-natural-50 border border-border-strong rounded-xl shadow-lg shadow-dialog-confirm p-6 z-confirm-dialog-content",
+            "fixed bg-natural-50 border border-border-strong rounded-xl",
+            "shadow-lg shadow-dialog-confirm p-6 z-confirm-dialog-content",
             {
               "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2":
                 dialogPosition === "center",
@@ -165,7 +166,7 @@ export const ConfirmationDialog: React.FC<{
             className
           )}
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex max-h-screen items-center justify-between mb-4">
             <div
               className={cn(
                 "w-12 h-12 border-8 rounded-full flex items-center justify-center",
