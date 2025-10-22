@@ -13,6 +13,7 @@ import {
   IAvailabilitySlot,
   IDemoSession,
   IStudent,
+  ITransaction,
 } from "@litespace/types";
 import zod, { ZodLiteral } from "zod";
 
@@ -69,11 +70,13 @@ export const weekday = zod
   ])
   .pipe(zod.coerce.number());
 
-export const duration = zod.union([
-  // zod.literal(ILesson.Duration.Short), TODO: temporary policy change
-  zod.literal(ILesson.Duration.Long),
-  zod.literal(ILesson.Duration.Long),
-]);
+export const duration = zod.coerce.number(
+  zod.union([
+    // zod.literal(ILesson.Duration.Short), TODO: temporary policy change
+    zod.literal(ILesson.Duration.Long),
+    zod.literal(ILesson.Duration.Long),
+  ])
+);
 
 export const monthday = zod.coerce.number().min(1).max(31);
 
@@ -94,7 +97,7 @@ export const role = zod.coerce.number(zod.nativeEnum(IUser.Role));
 
 export const url = zod.string().url().trim();
 
-export const planPeriod = zod.nativeEnum(IPlan.Period);
+export const planPeriod = zod.coerce.number(zod.nativeEnum(IPlan.Period));
 
 export const interviewStatus = zod.coerce.number(
   zod.nativeEnum(IInterview.Status)
@@ -109,6 +112,12 @@ export const timePeriod = zod.coerce.number(zod.nativeEnum(IUser.TimePeriod));
 export const slotPurpose = zod.coerce.number(
   zod.nativeEnum(IAvailabilitySlot.Purpose)
 );
+
+export const paymentMethod = zod.coerce.number(
+  zod.nativeEnum(ITransaction.PaymentMethod)
+);
+
+export const txType = zod.coerce.number(zod.nativeEnum(ITransaction.Type));
 
 export const demoSessionStatus = zod.coerce.number(
   zod.nativeEnum(IDemoSession.Status)

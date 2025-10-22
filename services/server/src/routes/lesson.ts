@@ -7,6 +7,7 @@ export default function router(context: ApiContext) {
 
   router.get("/attended/stats", lesson.findAttendedLessonsStats);
   router.get("/list", lesson.findLessons);
+  router.get("/checkout", lesson.checkout);
   router.get("/refundable", lesson.findRefundableLessons);
   router.get("/:id", lesson.findLessonById);
   router.get("/session/:sessionId", lesson.findBySessionId);

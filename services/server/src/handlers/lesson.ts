@@ -9,6 +9,8 @@ import {
   pageSize,
   pseudoId,
   sessionId,
+  unionOfLiterals,
+  url,
   withNamedId,
 } from "@/validation/utils";
 import {
@@ -24,9 +26,11 @@ import {
   unexpected,
   noEnoughMinutes,
   weekBoundariesViolation,
+  phoneRequired,
 } from "@/lib/error/api";
 import {
   IAvailabilitySlot,
+  IFawry,
   ILesson,
   ITransaction,
   Wss,
@@ -51,6 +55,7 @@ import { MAX_FULL_FLAG_DAYS } from "@/constants";
 import { groupBy, isEmpty, isEqual } from "lodash";
 import {
   AFRICA_CAIRO_TIMEZONE,
+  price,
   safePromise,
   UNCANCELLABLE_LESSON_HOURS,
 } from "@litespace/utils";
@@ -97,7 +102,7 @@ const updateLessonPayload: ZodSchema<ILesson.UpdateApiPayload> = zod.object({
   lessonId: id,
   slotId: id,
   start: datetime,
-  duration: duration,
+  duration,
 });
 
 const findBySessionIdQuery: ZodSchema<ILesson.FindBySessionIdApiQuery> =
@@ -139,6 +144,22 @@ const createWithFawryRefNumPayload: ZodSchema<ILesson.CreateWithFawryRefNumApiPa
 
 const createWithEWalletPayload: ZodSchema<ILesson.CreateWithEWalletApiPayload> =
   createLessonPayload.and(zod.object({ phone: zod.string().optional() }));
+
+const checkoutPayload: ZodSchema<ILesson.CheckoutPayload> = zod.object({
+  duration,
+  tutorId: id,
+  slotId: id,
+  start: datetime,
+  returnUrl: url,
+  paymentMethod: unionOfLiterals<IFawry.PaymentMethod>([
+    "CARD",
+    "MWALLET",
+    "PAYATFAWRY",
+    "Mobile Wallet",
+  ]),
+  saveCardInfo: jsonBoolean.optional(),
+  authCaptureModePayment: jsonBoolean.optional(),
+});
 
 async function createWithCard(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
@@ -729,6 +750,57 @@ async function report(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
+async function checkout(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user) || isAdmin(user);
+  if (!allowed) return next(forbidden());
+  if (!user.phone) return next(phoneRequired());
+
+  const payload = checkoutPayload.parse(req.query);
+
+  const valid = await validateCreateLessonPayload(payload);
+  if (valid instanceof TutorNotFound) return next(notfound.tutor());
+  if (valid instanceof SlotNotFound) return next(notfound.slot());
+  if (valid instanceof InvalidLessonStart) return next(bad());
+  if (valid instanceof BusyTutor) return next(busyTutor());
+
+  const amount = calculateLessonPrice(payload.duration);
+
+  const transaction = await createPaidLessonTx({
+    userId: user.id,
+    amount,
+    phone: user.phone,
+    tutorId: payload.tutorId,
+    slotId: payload.slotId,
+    start: payload.start,
+    duration: payload.duration,
+    paymentMethod: ITransaction.PaymentMethod.Card,
+  });
+
+  const result = await fawry.initExpressCheckout({
+    merchantRefNum: encodeMerchantRefNumber({
+      transactionId: transaction.id,
+      createdAt: transaction.createdAt,
+    }),
+    amount: price.unscale(amount),
+    customer: {
+      id: user.id,
+      name: user.name || "",
+      phone: user.phone,
+      email: user.email,
+    },
+    paymentMethod: payload.paymentMethod,
+    returnUrl: payload.returnUrl,
+    saveCardInfo: payload.saveCardInfo,
+    authCaptureModePayment: payload.authCaptureModePayment,
+  });
+  if (result instanceof Error) return next(result);
+  if (typeof result !== "string") return next(unexpected());
+
+  const response: IFawry.InitExpressCheckoutResponse = result;
+  res.status(200).json(response);
+}
+
 export default {
   create,
   update,
@@ -742,4 +814,5 @@ export default {
   createWithCard: safeRequest(createWithCard),
   createWithFawrRefNum: safeRequest(createWithFawryRefNum),
   createWithEWallet: safeRequest(createWithEWallet),
+  checkout: safeRequest(checkout),
 };

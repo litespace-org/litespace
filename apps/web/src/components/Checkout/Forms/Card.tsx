@@ -1,13 +1,9 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { Button } from "@litespace/ui/Button";
-import AddCard from "@litespace/assets/AddCard";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useMakeValidators } from "@litespace/ui/hooks/validation";
-import { Typography } from "@litespace/ui/Typography";
 import { useForm } from "@litespace/headless/form";
 import { validateCvv, validatePhone } from "@litespace/ui/lib/validate";
-import { Select, SelectList } from "@litespace/ui/Select";
-import { PatternInput } from "@litespace/ui/PatternInput";
+import { SelectList } from "@litespace/ui/Select";
 import {
   useGetAddCardUrl,
   useFindCardTokens,
@@ -16,7 +12,7 @@ import {
   useCancelUnpaidOrder,
 } from "@litespace/headless/fawry";
 import { IframeDialog } from "@litespace/ui/IframeDilaog";
-import { first, isEmpty } from "lodash";
+import { first } from "lodash";
 import { useHotkeys } from "react-hotkeys-hook";
 import { env } from "@/lib/env";
 import { useOnError } from "@/hooks/error";
@@ -26,12 +22,16 @@ import { IframeMessage } from "@/constants/iframe";
 import { useLogger } from "@litespace/headless/logger";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import RemoveCard from "@litespace/assets/RemoveCard";
-import Lock from "@litespace/assets/Lock";
 import { useBlock } from "@litespace/ui/hooks/common";
 import { useRender } from "@litespace/headless/common";
 import { TxTypeData } from "@/components/Checkout/types";
-import { useCreateLessonWithCard } from "@litespace/headless/lessons";
+import {
+  useCreateLessonWithCard,
+  useLessonCheckoutUrl,
+} from "@litespace/headless/lessons";
 import { track } from "@/lib/analytics";
+import { PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD } from "@litespace/utils";
+import { usePlanCheckoutUrl } from "@litespace/headless/plans";
 
 type Form = {
   card: string;
@@ -95,6 +95,40 @@ const Payment: React.FC<{
   const createLesson = useCreateLessonWithCard({ onError: onPayError });
 
   // ==================== form ====================
+  const planCheckoutQuery = usePlanCheckoutUrl(
+    txTypeData.type === "paid-plan"
+      ? {
+          planId: txTypeData.data.plan?.id || -1,
+          period: PLAN_PERIOD_LITERAL_TO_PLAN_PERIOD[txTypeData.data.period],
+          returnUrl: document.location.toString(),
+          paymentMethod: "CARD",
+          saveCardInfo: true,
+        }
+      : undefined
+  );
+
+  const lessonCheckoutQuery = useLessonCheckoutUrl(
+    txTypeData.type === "paid-lesson"
+      ? {
+          duration: txTypeData.data.duration,
+          tutorId: txTypeData.data.tutor?.id || -1,
+          slotId: txTypeData.data.slotId,
+          start: txTypeData.data.start,
+          returnUrl: document.location.toString(),
+          paymentMethod: "CARD",
+          saveCardInfo: true,
+        }
+      : undefined
+  );
+
+  const fawryExpressUrl = useMemo(
+    () =>
+      txTypeData.type === "paid-plan"
+        ? planCheckoutQuery?.data
+        : lessonCheckoutQuery?.data,
+    [planCheckoutQuery?.data, lessonCheckoutQuery?.data, txTypeData.type]
+  );
+
   const validators = useMakeValidators<Form>({
     phone: {
       required: true,
@@ -281,146 +315,152 @@ const Payment: React.FC<{
 
   return (
     <div>
-      <form
-        name="pay-with-card"
-        onSubmit={(e) => {
-          e.preventDefault();
-          form.submit();
-        }}
-        className="flex flex-col gap-6 md:gap-4 lg:gap-6"
-      >
-        <div className="flex flex-col gap-4">
-          <Typography tag="p" className="text-caption md:text-body font-medium">
-            {intl("checkout.payment.description")}
-          </Typography>
-
-          <Select
-            id="card"
-            label={intl("checkout.payment.card.card-number")}
-            className="flex-1"
-            value={form.state.card}
-            options={cardOptions}
-            placeholder={intl("checkout.payment.card.card-number-placeholder")}
-            valueDir="ltr"
-            onChange={(value) => {
-              form.set("card", value);
-              track("select_card", "checkout");
-            }}
-            state={form.errors.card ? "error" : undefined}
-            helper={form.errors.card}
-            asButton={isEmpty(cardOptions)}
-            onTriggerClick={() => {
-              if (!isEmpty(cardOptions)) return;
-              addCardDialog.show();
-              track("add_card", "checkout");
-            }}
-            onOpenChange={(open) => {
-              if (!open || !isEmpty(cardOptions)) return;
-              addCardDialog.show();
-              track("add_card", "checkout");
-            }}
-            post={
-              <Button
-                type="natural"
-                variant="primary"
-                size="large"
-                htmlType="button"
-                startIcon={<AddCard className="icon" />}
-                disabled={false}
-                loading={false}
-                onClick={() => {
-                  addCardDialog.show();
-                  track("add_card", "checkout");
-                }}
-                className="ms-2 lg:ms-4 flex-shrink-0"
-              >
-                <Typography
-                  tag="span"
-                  className="text-body font-medium text-natural-700"
-                >
-                  {intl("checkout.payment.card.add-card")}
-                </Typography>
-              </Button>
-            }
-          />
-
-          <div className="flex flex-col lg:flex-row gap-4">
-            <PatternInput
-              id="cvv"
-              size={3}
-              mask=" "
-              format="###"
-              idleDir="rtl"
-              inputSize="large"
-              label={intl("checkout.payment.card.cvv")}
-              placeholder={intl("checkout.payment.card.cvv-placeholder")}
-              state={form.errors.cvv ? "error" : undefined}
-              helper={form.errors.cvv}
-              onValueChange={({ value }) => form.set("cvv", value)}
-              autoComplete="off"
-              onBlur={() => {
-                track("enter_cvv", "checkout", form.state.cvv);
-              }}
-            />
-            <PatternInput
-              id="phone"
-              mask=" "
-              idleDir="ltr"
-              inputSize="large"
-              name="phone"
-              format="### #### ####"
-              label={intl("checkout.payment.card.phone")}
-              placeholder={intl("checkout.payment.card.phone-placeholder")}
-              state={form.errors.phone ? "error" : undefined}
-              helper={form.errors.phone}
-              value={form.state.phone}
-              autoComplete="off"
-              disabled={!!phone}
-              onValueChange={({ value }) => form.set("phone", value)}
-              onBlur={() => {
-                track("enter_phone", "checkout", form.state.phone);
-              }}
-            />
-          </div>
-        </div>
-
-        <div>
-          <Typography
-            tag="p"
-            className="hidden md:block text-caption text-brand-700 mb-1"
-          >
-            {intl("checkout.payment.conditions-acceptance")}
-          </Typography>
-          <Button
-            type="main"
-            size="large"
-            htmlType="submit"
-            className="w-full"
-            disabled={pay.isPending || createLesson.isPending}
-            loading={pay.isPending || createLesson.isPending}
-          >
-            <Typography tag="span" className="text text-body font-medium">
-              {intl("checkout.payment.confirm")}
-            </Typography>
-          </Button>
-        </div>
-
-        <Typography tag="p" className="text-tiny font-normal text-natural-800">
-          {intl("checkout.payment.card.confirmation-code-note")}
-        </Typography>
-
-        <div className="hidden md:flex flex-col gap-2">
-          <div className="flex gap-2">
-            <Lock className="w-6 h-6" />
-            <Typography tag="p" className="text-body font-semibold">
-              {intl("checkout.payment.safe-and-crypted")}
-            </Typography>
-          </div>
-          <Typography tag="p" className="text-caption text-natural-600">
-            {intl("checkout.payment.ensure-your-financial-privacy")}
-          </Typography>
-        </div>
-      </form>
+      {/* <iframe */}
+      {/*   name="iframe" */}
+      {/*   className="h-[400px] w-full sm:rounded-md" */}
+      {/*   src={fawryExpressUrl || ""} */}
+      {/* /> */}
+      <a href={fawryExpressUrl || ""}>Fawry Express</a>
+      {/* <form */}
+      {/*   name="pay-with-card" */}
+      {/*   onSubmit={(e) => { */}
+      {/*     e.preventDefault(); */}
+      {/*     form.submit(); */}
+      {/*   }} */}
+      {/*   className="flex flex-col gap-6 md:gap-4 lg:gap-6" */}
+      {/* > */}
+      {/*   <div className="flex flex-col gap-4"> */}
+      {/*     <Typography tag="p" className="text-caption md:text-body font-medium"> */}
+      {/*       {intl("checkout.payment.description")} */}
+      {/*     </Typography> */}
+      {/**/}
+      {/*     <Select */}
+      {/*       id="card" */}
+      {/*       label={intl("checkout.payment.card.card-number")} */}
+      {/*       className="flex-1" */}
+      {/*       value={form.state.card} */}
+      {/*       options={cardOptions} */}
+      {/*       placeholder={intl("checkout.payment.card.card-number-placeholder")} */}
+      {/*       valueDir="ltr" */}
+      {/*       onChange={(value) => { */}
+      {/*         form.set("card", value); */}
+      {/*         track("select_card", "checkout"); */}
+      {/*       }} */}
+      {/*       state={form.errors.card ? "error" : undefined} */}
+      {/*       helper={form.errors.card} */}
+      {/*       asButton={isEmpty(cardOptions)} */}
+      {/*       onTriggerClick={() => { */}
+      {/*         if (!isEmpty(cardOptions)) return; */}
+      {/*         addCardDialog.show(); */}
+      {/*         track("add_card", "checkout"); */}
+      {/*       }} */}
+      {/*       onOpenChange={(open) => { */}
+      {/*         if (!open || !isEmpty(cardOptions)) return; */}
+      {/*         addCardDialog.show(); */}
+      {/*         track("add_card", "checkout"); */}
+      {/*       }} */}
+      {/*       post={ */}
+      {/*         <Button */}
+      {/*           type="natural" */}
+      {/*           variant="primary" */}
+      {/*           size="large" */}
+      {/*           htmlType="button" */}
+      {/*           startIcon={<AddCard className="icon" />} */}
+      {/*           disabled={false} */}
+      {/*           loading={false} */}
+      {/*           onClick={() => { */}
+      {/*             addCardDialog.show(); */}
+      {/*             track("add_card", "checkout"); */}
+      {/*           }} */}
+      {/*           className="ms-2 lg:ms-4 flex-shrink-0" */}
+      {/*         > */}
+      {/*           <Typography */}
+      {/*             tag="span" */}
+      {/*             className="text-body font-medium text-natural-700" */}
+      {/*           > */}
+      {/*             {intl("checkout.payment.card.add-card")} */}
+      {/*           </Typography> */}
+      {/*         </Button> */}
+      {/*       } */}
+      {/*     /> */}
+      {/**/}
+      {/*     <div className="flex flex-col lg:flex-row gap-4"> */}
+      {/*       <PatternInput */}
+      {/*         id="cvv" */}
+      {/*         size={3} */}
+      {/*         mask=" " */}
+      {/*         format="###" */}
+      {/*         idleDir="rtl" */}
+      {/*         inputSize="large" */}
+      {/*         label={intl("checkout.payment.card.cvv")} */}
+      {/*         placeholder={intl("checkout.payment.card.cvv-placeholder")} */}
+      {/*         state={form.errors.cvv ? "error" : undefined} */}
+      {/*         helper={form.errors.cvv} */}
+      {/*         onValueChange={({ value }) => form.set("cvv", value)} */}
+      {/*         autoComplete="off" */}
+      {/*         onBlur={() => { */}
+      {/*           track("enter_cvv", "checkout", form.state.cvv); */}
+      {/*         }} */}
+      {/*       /> */}
+      {/*       <PatternInput */}
+      {/*         id="phone" */}
+      {/*         mask=" " */}
+      {/*         idleDir="ltr" */}
+      {/*         inputSize="large" */}
+      {/*         name="phone" */}
+      {/*         format="### #### ####" */}
+      {/*         label={intl("checkout.payment.card.phone")} */}
+      {/*         placeholder={intl("checkout.payment.card.phone-placeholder")} */}
+      {/*         state={form.errors.phone ? "error" : undefined} */}
+      {/*         helper={form.errors.phone} */}
+      {/*         value={form.state.phone} */}
+      {/*         autoComplete="off" */}
+      {/*         disabled={!!phone} */}
+      {/*         onValueChange={({ value }) => form.set("phone", value)} */}
+      {/*         onBlur={() => { */}
+      {/*           track("enter_phone", "checkout", form.state.phone); */}
+      {/*         }} */}
+      {/*       /> */}
+      {/*     </div> */}
+      {/*   </div> */}
+      {/**/}
+      {/*   <div> */}
+      {/*     <Typography */}
+      {/*       tag="p" */}
+      {/*       className="hidden md:block text-caption text-brand-700 mb-1" */}
+      {/*     > */}
+      {/*       {intl("checkout.payment.conditions-acceptance")} */}
+      {/*     </Typography> */}
+      {/*     <Button */}
+      {/*       type="main" */}
+      {/*       size="large" */}
+      {/*       htmlType="submit" */}
+      {/*       className="w-full" */}
+      {/*       disabled={pay.isPending || createLesson.isPending} */}
+      {/*       loading={pay.isPending || createLesson.isPending} */}
+      {/*     > */}
+      {/*       <Typography tag="span" className="text text-body font-medium"> */}
+      {/*         {intl("checkout.payment.confirm")} */}
+      {/*       </Typography> */}
+      {/*     </Button> */}
+      {/*   </div> */}
+      {/**/}
+      {/*   <Typography tag="p" className="text-tiny font-normal text-natural-800"> */}
+      {/*     {intl("checkout.payment.card.confirmation-code-note")} */}
+      {/*   </Typography> */}
+      {/**/}
+      {/*   <div className="hidden md:flex flex-col gap-2"> */}
+      {/*     <div className="flex gap-2"> */}
+      {/*       <Lock className="w-6 h-6" /> */}
+      {/*       <Typography tag="p" className="text-body font-semibold"> */}
+      {/*         {intl("checkout.payment.safe-and-crypted")} */}
+      {/*       </Typography> */}
+      {/*     </div> */}
+      {/*     <Typography tag="p" className="text-caption text-natural-600"> */}
+      {/*       {intl("checkout.payment.ensure-your-financial-privacy")} */}
+      {/*     </Typography> */}
+      {/*   </div> */}
+      {/* </form> */}
 
       <IframeDialog
         open={addCardDialog.open}

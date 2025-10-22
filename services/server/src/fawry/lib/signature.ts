@@ -9,9 +9,11 @@ import {
   PayWithEWalletPayload,
   PayWithCardAndBankInstallmentsPayload,
   GetPaymentStatusPayload,
+  InitExpressCheckout,
 } from "@/fawry/types/requests";
 import { createHash } from "node:crypto";
 import { PaymentDetails, PaymentMethod } from "@/fawry/types/ancillaries";
+import { flatten } from "lodash";
 
 function generateSignature(...data: Array<string | number | undefined>) {
   const payload = data
@@ -319,6 +321,42 @@ export function forPaymentDetails(
     data.orderStatus,
     data.paymentMethod,
     data.paymentRefrenceNumber,
+    fawryConfig.secureKey
+  );
+}
+
+/*
+ * "merchantCode + merchantRefNum + customerProfileId (if exists, otherwise insert "") + returnUrl + itemId + quantity + Price (in tow decimal format like ‘10.00’) + Secure hash key
+ */
+
+/**
+ * SHA-256 with the following order:
+ * 1. merchantCode
+ * 2. merchantRefNum
+ * 3. customerProfileId
+ * 4. returnUrl
+ * 5. item (itemId + quantity + price "in to decimals")
+ * 6. secureKey
+ */
+export function forInitExpressCheckout(
+  data: Pick<
+    InitExpressCheckout,
+    "merchantRefNum" | "customerProfileId" | "returnUrl" | "chargeItems"
+  >
+): string {
+  const items = flatten([
+    ...data.chargeItems.map((item) => [
+      item.itemId,
+      item.quantity,
+      item.price.toFixed(2),
+    ]),
+  ]);
+  return generateSignature(
+    fawryConfig.merchantCode,
+    data.merchantRefNum,
+    data.customerProfileId,
+    data.returnUrl,
+    ...items,
     fawryConfig.secureKey
   );
 }

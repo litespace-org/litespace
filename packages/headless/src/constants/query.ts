@@ -53,6 +53,8 @@ export enum QueryKey {
   FindPlans = "find-plans",
   FindPlanInvites = "find-plan-invites",
   FindPlanById = "find-plan-by-id",
+  PlanCheckout = "plan-checkout",
+  LessonCheckout = "lesson-checkout",
   FindTxById = "find-tx-by-id",
   FindRefundableAmount = "find-refundable-amount",
   FindStudios = "find-studios",

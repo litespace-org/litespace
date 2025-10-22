@@ -53,4 +53,5 @@ export enum MutationKey {
   UpdatePlanInvite = "update-plan-invite",
   DeletePlanInvite = "delete-plan-invite",
   FawryRefund = "fawry-refund",
+  FawryExpress = "fawry-express",
 }
