@@ -21,4 +21,10 @@ export class Plan extends Base {
   async find(query?: IPlan.FindApiQuery): Promise<IPlan.FindApiResponse> {
     return this.get({ route: `/api/v1/plan/list`, params: query });
   }
+
+  async checkout(
+    params: IPlan.CheckoutPayload
+  ): Promise<IPlan.CheckoutResponse> {
+    return this.get({ route: `/api/v1/plan/checkout`, params });
+  }
 }

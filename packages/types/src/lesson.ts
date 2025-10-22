@@ -277,3 +277,16 @@ export type CreateWithCardApiResponse = IFawry.PayWithCardResponse;
 export type CreateWithFawryRefNumApiResponse = IFawry.PayWithRefNumResponse;
 
 export type CreateWithEWalletApiResponse = IFawry.PayWithEWalletResponse;
+
+export type CheckoutPayload = {
+  duration: number;
+  tutorId: number;
+  slotId: number;
+  start: string;
+  returnUrl: string;
+  paymentMethod: IFawry.PaymentMethod;
+  saveCardInfo?: boolean;
+  authCaptureModePayment?: boolean;
+};
+
+export type CheckoutResponse = string;

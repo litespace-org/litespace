@@ -76,4 +76,10 @@ export class Lesson extends Base {
   ): Promise<ILesson.FindAttendedLessonsStatsApiQuery> {
     return this.get({ route: `/api/v1/lesson/attended/stats`, params: query });
   }
+
+  async checkout(
+    params: ILesson.CheckoutPayload
+  ): Promise<ILesson.CheckoutResponse> {
+    return this.get({ route: `/api/v1/lesson/checkout`, params });
+  }
 }

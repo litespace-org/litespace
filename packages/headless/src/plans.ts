@@ -1,6 +1,6 @@
 import { useApi } from "@/api/context";
 import { IPlan, Void } from "@litespace/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { QueryKey } from "@/constants";
 import { usePaginate } from "@/pagination";
@@ -95,5 +95,16 @@ export function useFindPlanById(id?: number) {
     queryFn: findById,
     queryKey: [QueryKey.FindPlanById, id],
     enabled: !!id,
+  });
+}
+
+export function usePlanCheckoutUrl(payload: IPlan.CheckoutPayload) {
+  const api = useApi();
+
+  const initExpress = useCallback(() => api.plan.checkout(payload), [api.plan]);
+
+  return useQuery({
+    queryFn: initExpress,
+    queryKey: [QueryKey.PlanCheckout],
   });
 }

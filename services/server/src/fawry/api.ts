@@ -6,6 +6,8 @@ import { genSignature } from "@/fawry/lib";
 import { forgeFawryPayload } from "@/fawry/lib/utils";
 import axios, { AxiosInstance } from "axios";
 import https from "node:https";
+import { PaymentMethod } from "@/fawry/types/ancillaries";
+import { forInitExpressCheckout } from "@/fawry/lib/signature";
 
 export function createClient(): AxiosInstance {
   return axios.create({
@@ -281,6 +283,57 @@ class Api extends Base {
       route: FAWRY_ROUTES.DELETE_CARD_TOKEN,
       params: payload,
     });
+  }
+
+  async initExpressCheckout({
+    merchantRefNum,
+    amount,
+    customer,
+    paymentMethod,
+    saveCardInfo,
+    authCaptureModePayment,
+    returnUrl,
+  }: {
+    merchantRefNum: number;
+    amount: number;
+    customer: Requests.Customer;
+    paymentMethod: PaymentMethod;
+    returnUrl: string;
+    saveCardInfo?: boolean;
+    authCaptureModePayment?: boolean;
+  }): Promise<Responses.InitExpressCheckout> {
+    const chargeItems = [
+      {
+        itemId: merchantRefNum.toString(),
+        description: "LiteSpace subscription",
+        price: amount,
+        quantity: 1,
+      },
+    ];
+
+    const forgedPayload = forgeFawryPayload({
+      merchantRefNum,
+      paymentMethod,
+      amount,
+      signature: forInitExpressCheckout({
+        merchantRefNum,
+        customerProfileId: customer.id,
+        returnUrl,
+        chargeItems,
+      }),
+      customer,
+      chargeItems,
+      description: "Pay LiteSpace subscription",
+    });
+
+    const payload: Requests.InitExpressCheckout = {
+      ...forgedPayload,
+      returnUrl,
+      saveCardInfo: saveCardInfo,
+      authCaptureModePayment: authCaptureModePayment,
+    };
+
+    return await this.post({ route: FAWRY_ROUTES.EXPRESS, payload });
   }
 }
 
