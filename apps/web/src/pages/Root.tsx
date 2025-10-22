@@ -20,7 +20,7 @@ import { Landing, Web } from "@litespace/utils/routes";
 import { isProfileComplete } from "@litespace/utils/tutor";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
 import cn from "classnames";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Outlet,
   useLocation,
@@ -70,8 +70,18 @@ const Root: React.FC = () => {
    */
   const [params] = useSearchParams({ nav: "true" });
 
-  const navigate = useNavigate();
+  const navigateBase = useNavigate();
   const location = useLocation();
+
+  const navigate = useCallback(
+    (route: Web) => {
+      navigateBase({
+        pathname: route,
+        search: params.toString(),
+      });
+    },
+    [navigateBase, params]
+  );
 
   const publicRoute = useMemo(() => {
     return publicRoutes.some((route) => router.match(route, location.pathname));
