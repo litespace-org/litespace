@@ -16,7 +16,7 @@ const Complete: React.FC = () => {
           <HorizontalLogo />
           <Description />
         </div>
-        <Form  />
+        <Form />
       </main>
       {mq.lg ? <Aside /> : null}
     </div>

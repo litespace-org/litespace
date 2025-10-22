@@ -8,7 +8,7 @@ const CompleteProfile: React.FC = () => {
 
   const goRoot = useCallback(() => navigate(Web.Tutors), [navigate]);
 
-   return <MainInfo next={goRoot} />;
+  return <MainInfo next={goRoot} />;
 };
 
 export default CompleteProfile;

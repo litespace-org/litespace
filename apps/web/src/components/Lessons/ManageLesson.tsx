@@ -28,6 +28,7 @@ import { nstr, nullable } from "@litespace/utils/utils";
 import React, { useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookInfo } from "@/components/Checkout/types";
+import { track } from "@/lib/analytics";
 
 type Base = {
   close: Void;
@@ -279,6 +280,13 @@ const ManageLesson: React.FC<Props> = ({ close, tutorId, ...payload }) => {
         slots={tutorAvailabilitySlots.data?.slots.list || []}
         onSubmit={onSubmit}
         subscribed={!!info}
+        track={() => {
+          track("remind_me", "lessons", "user clicked remind me", tutorId);
+          toast.success({
+            title: intl("labels.track.remind-me.success"),
+          });
+          close();
+        }}
         hasBookedMaxLessons={hasBookedMaxLessons}
         retry={tutorAvailabilitySlots.refetch}
         error={

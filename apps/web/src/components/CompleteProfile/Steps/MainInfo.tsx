@@ -1,12 +1,12 @@
-import {  timePeriods } from "@/constants/user";
+import { timePeriods } from "@/constants/user";
 import { useOnError } from "@/hooks/error";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUser } from "@litespace/headless/context/user";
 import { useForm } from "@litespace/headless/form";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { useUpdateUser } from "@litespace/headless/user";
-import { useUpdateStudent} from "@litespace/headless/student";
-import {   IUser,  Void } from "@litespace/types";
+import { useUpdateStudent } from "@litespace/headless/student";
+import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { Form } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -26,7 +26,7 @@ import React, { useCallback, useMemo } from "react";
 type IForm = {
   name: string;
   phone: string;
-  timePeriod?: IUser.TimePeriod; 
+  timePeriod?: IUser.TimePeriod;
   password: string;
 };
 
@@ -76,7 +76,7 @@ const MainInfo: React.FC<{ next: Void }> = ({ next }) => {
     defaults: {
       name: user?.name || "",
       phone: user?.phone || "",
-      timePeriod:  undefined,
+      timePeriod: undefined,
       password: "",
     },
     validators,
@@ -95,7 +95,7 @@ const MainInfo: React.FC<{ next: Void }> = ({ next }) => {
       updateStudent.mutate({
         payload: {
           id: user.id,
-          timePeriod:  data.timePeriod 
+          timePeriod: data.timePeriod,
         },
       });
     },

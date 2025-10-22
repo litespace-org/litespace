@@ -132,6 +132,7 @@ export const ManageLessonDialog: React.FC<{
    * Handler to close the dialog.
    */
   close: Void;
+  track: Void;
   tutorId: number;
   /**
    * Tutor name.
@@ -185,6 +186,7 @@ export const ManageLessonDialog: React.FC<{
   remainingWeeklyMinutes,
   dateBoundaries,
   close,
+  track,
   onSubmit,
   retry,
   type = "book",
@@ -352,7 +354,7 @@ export const ManageLessonDialog: React.FC<{
         </div>
       }
       className={cn(
-        "flex flex-col !w-auto max-w-[350px] md:max-w-[550px] mx-auto py-4 lg:!py-6 _sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0",
+        "flex flex-col !w-auto max-w-[350px] md:min-w-[450px] md:max-w-max mx-auto py-4 lg:!py-6 _sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0",
         {
           "!left-0 right-0 translate-x-0": !sm,
         }
@@ -391,7 +393,7 @@ export const ManageLessonDialog: React.FC<{
 
         {canBook ? (
           <Animation key="date-selection" id="selection">
-            <div className="flex-1 flex flex-col gap-6 !max-w-[350px] overflow-hidden">
+            <div className="flex-1 flex flex-col gap-6  overflow-hidden">
               <div className="flex flex-col gap-4 overflow-hidden">
                 <div className="flex flex-col gap-2">
                   <LessonDuration />
@@ -472,10 +474,9 @@ export const ManageLessonDialog: React.FC<{
                       ],
                   })}
                 </Typography>
-                <Button
-                  size="large"
-                  className="w-full"
+                <Confirm
                   disabled={!lessonDetails.slotId || !lessonDetails.start}
+                  track={track}
                   onClick={() => {
                     if (!lessonDetails.start || !lessonDetails.slotId) return;
                     return onSubmit({
@@ -484,17 +485,46 @@ export const ManageLessonDialog: React.FC<{
                       duration,
                     });
                   }}
-                >
-                  <Typography tag="span" className="text-body font-medium">
-                    {intl("book-lesson.confirm")}
-                  </Typography>
-                </Button>
+                />
               </div>
             </div>
           </Animation>
         ) : null}
       </AnimatePresence>
     </Dialog>
+  );
+};
+
+const Confirm: React.FC<{ disabled: boolean; onClick: Void; track: Void }> = ({
+  disabled,
+  onClick,
+  track,
+}) => {
+  const intl = useFormatMessage();
+
+  return (
+    <div className="grid gap-2 md:flex md:gap-4 items-center">
+      <Button
+        size="large"
+        className="w-full"
+        disabled={disabled}
+        onClick={onClick}
+      >
+        <Typography tag="span" className="text-body font-medium">
+          {intl("book-lesson.confirm")}
+        </Typography>
+      </Button>
+      <Button
+        size="large"
+        className="w-full"
+        variant="secondary"
+        onClick={track}
+      >
+        <Typography tag="span" className="text-sm font-medium">
+          {intl("book-lesson.remind-me")}
+        </Typography>
+      </Button>
+    </div>
   );
 };
 
