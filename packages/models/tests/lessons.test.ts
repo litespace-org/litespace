@@ -816,7 +816,7 @@ describe("Lessons", () => {
         await fixtures.lesson({
           slot: slot.id,
           start: date.add(i, "hour").toISOString(),
-          duration: 30,
+          duration: ILesson.Duration.Long,
           tutor: tutor.id,
           student: student.id,
         });
@@ -867,9 +867,18 @@ describe("Lessons", () => {
     });
 
     it("should filter lessons that all totally or partially before `after` when providing the `strict` flag", async () => {
-      await fixtures.lesson({ start: imin(0), duration: 30 });
-      await fixtures.lesson({ start: imin(15), duration: 30 });
-      await fixtures.lesson({ start: imin(30), duration: 30 });
+      await fixtures.lesson({
+        start: imin(0),
+        duration: ILesson.Duration.Long,
+      });
+      await fixtures.lesson({
+        start: imin(15),
+        duration: ILesson.Duration.Long,
+      });
+      await fixtures.lesson({
+        start: imin(30),
+        duration: ILesson.Duration.Long,
+      });
 
       expect(
         await lessons.find({ after: imin(5) }).then((result) => result.list)
@@ -899,84 +908,139 @@ describe("Lessons", () => {
     });
 
     it("should filter lessons that all totally or partially after `before` when providing the `strict` flag", async () => {
-      await fixtures.lesson({ start: imin(0), duration: 30 });
-      await fixtures.lesson({ start: imin(15), duration: 30 });
-      await fixtures.lesson({ start: imin(30), duration: 30 });
+      const t1 = min(ILesson.Duration.Long * 0);
+      const t2 = min(ILesson.Duration.Long * 0.5);
+      const t3 = min(ILesson.Duration.Long);
+      const t3_2 = min(ILesson.Duration.Long * 1.5);
+      const t4 = min(ILesson.Duration.Long * 2);
+
+      await fixtures.lesson({
+        start: t1.toISOString(),
+        duration: ILesson.Duration.Long,
+      });
+      await fixtures.lesson({
+        start: t2.toISOString(),
+        duration: ILesson.Duration.Long,
+      });
+      await fixtures.lesson({
+        start: t3.toISOString(),
+        duration: ILesson.Duration.Long,
+      });
 
       expect(
-        await lessons.find({ before: imin(5) }).then((result) => result.list)
+        await lessons
+          .find({ before: t1.add(5, "minutes").toISOString() })
+          .then((result) => result.list)
       ).to.be.of.length(1);
 
       expect(
-        await lessons.find({ before: imin(16) }).then((result) => result.list)
+        await lessons
+          .find({ before: t2.add(1, "minutes").toISOString() })
+          .then((result) => result.list)
       ).to.be.of.length(2);
 
       expect(
-        await lessons.find({ before: imin(30) }).then((result) => result.list)
+        await lessons
+          .find({ before: t3.toISOString() })
+          .then((result) => result.list)
       ).to.be.of.length(2);
 
       expect(
-        await lessons.find({ before: imin(60) }).then((result) => result.list)
+        await lessons
+          .find({ before: t4.toISOString() })
+          .then((result) => result.list)
       ).to.be.of.length(3);
 
       expect(
         await lessons
-          .find({ before: imin(5), strict: true })
+          .find({ before: t1.add(5, "minutes").toISOString(), strict: true })
           .then((result) => result.list)
       ).to.be.of.length(0);
 
       expect(
         await lessons
-          .find({ before: imin(16), strict: true })
+          .find({ before: t2.add(1, "minutes").toISOString(), strict: true })
           .then((result) => result.list)
       ).to.be.of.length(0);
 
       expect(
         await lessons
-          .find({ before: imin(30), strict: true })
+          .find({ before: t3.toISOString(), strict: true })
           .then((result) => result.list)
       ).to.be.of.length(1);
 
       expect(
         await lessons
-          .find({ before: imin(45), strict: true })
+          .find({ before: t3_2.toISOString(), strict: true })
           .then((result) => result.list)
       ).to.be.of.length(2);
 
       expect(
         await lessons
-          .find({ before: imin(60), strict: true })
+          .find({ before: t4.toISOString(), strict: true })
           .then((result) => result.list)
       ).to.be.of.length(3);
     });
 
     it("should filter lessons that all totally or partially after `before` and before `after` when providing the `strict` flag", async () => {
-      await fixtures.lesson({ start: imin(0), duration: 15 });
-      await fixtures.lesson({ start: imin(0), duration: 30 });
-      await fixtures.lesson({ start: imin(15), duration: 30 });
-      await fixtures.lesson({ start: imin(30), duration: 30 });
+      const t1 = min(ILesson.Duration.Long * 0);
+      const t2 = min(ILesson.Duration.Long * 0.5);
+      const t3 = min(ILesson.Duration.Long);
+      const t3_2 = min(ILesson.Duration.Long * 1.5);
+      const t4 = min(ILesson.Duration.Long * 2);
+
+      await fixtures.lesson({
+        start: t1.toISOString(),
+        duration: ILesson.Duration.Long,
+      });
+      await fixtures.lesson({
+        start: t1.toISOString(),
+        duration: ILesson.Duration.Long,
+      });
+      await fixtures.lesson({
+        start: t2.toISOString(),
+        duration: ILesson.Duration.Long,
+      });
+      await fixtures.lesson({
+        start: t3.toISOString(),
+        duration: ILesson.Duration.Long,
+      });
 
       expect(
         await lessons
-          .find({ after: imin(0), before: imin(31) })
+          .find({
+            after: t1.toISOString(),
+            before: t3.add(1, "minute").toISOString(),
+          })
           .then((result) => result.list)
       ).to.be.of.length(4);
 
       expect(
         await lessons
-          .find({ after: imin(5), before: imin(45) })
+          .find({
+            after: t1.add(5, "minutes").toISOString(),
+            before: t3_2.toISOString(),
+          })
           .then((result) => result.list)
       ).to.be.of.length(4);
 
       expect(
         await lessons
-          .find({ after: imin(5), before: imin(45), strict: true })
+          .find({
+            after: t1.add(5, "minutes").toISOString(),
+            before: t3_2.toISOString(),
+            strict: true,
+          })
           .then((result) => result.list)
       ).to.be.of.length(1);
 
       expect(
         await lessons
-          .find({ after: imin(5), before: imin(60), strict: true })
+          .find({
+            after: t1.add(5, "minutes").toISOString(),
+            before: t4.toISOString(),
+            strict: true,
+          })
           .then((result) => result.list)
       ).to.be.of.length(2);
     });

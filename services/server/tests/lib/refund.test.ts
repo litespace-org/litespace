@@ -120,8 +120,8 @@ describe(nameof(calcRefundAmount), () => {
         canceled: true,
       }),
       // NOTE: the lessons in the current day are included
-      // NOTE: this's non-deterministic; can cause an console
-      // if your run the test at the end of the day.
+      // NOTE: this's non-deterministic; can produce an error
+      // if you run the test at the end of the day.
       db.lesson({
         student: tx.userId,
         start: now.add(5, "minutes").toISOString(),
@@ -134,7 +134,7 @@ describe(nameof(calcRefundAmount), () => {
       }),
     ]);
 
-    const timeAttended = 1; // Hour
+    const timeAttended = (2 * ILesson.Duration.Long) / MINUTES_IN_HOUR; // In Hours
     const timePrice =
       timeAttended * price.unscale(platformConfig.totalHourlyRate); // EGP
 
@@ -228,7 +228,6 @@ describe(nameof(calcRefundAmount), () => {
       weeklyMinutes,
     });
 
-    // insert lessons in current week
     await Promise.all([
       db.lesson({
         student: tx.userId,
@@ -248,7 +247,8 @@ describe(nameof(calcRefundAmount), () => {
     ]);
 
     // the past three weeks and the attended lesson of the current week
-    const timeAttended = 3 * (weeklyMinutes / MINUTES_IN_HOUR) + 0.5; // Hour
+    const timeAttended =
+      (3 * weeklyMinutes + ILesson.Duration.Long) / MINUTES_IN_HOUR; // Hour
     const timePrice =
       timeAttended * price.unscale(platformConfig.totalHourlyRate); // EGP
 

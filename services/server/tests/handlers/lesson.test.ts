@@ -73,16 +73,18 @@ describe("Lessons API", () => {
       const slot = await db.slot({
         userId: tutor.id,
         start: date.toISOString(),
-        end: date.add(lessonsCount / 2, "hour").toISOString(),
+        end: date
+          .add(lessonsCount * ILesson.Duration.Long, "minutes")
+          .toISOString(),
       });
 
-      const subslots = getSubSlots(slot, 30);
+      const subslots = getSubSlots(slot, ILesson.Duration.Long);
 
       for (const subslot of subslots) {
         await db.lesson({
           start: subslot.start,
           slot: slot.id,
-          duration: 30,
+          duration: ILesson.Duration.Long,
           tutor: tutor.id,
         });
       }
@@ -472,7 +474,7 @@ describe("Lessons API", () => {
           body: {
             lessonId: 123,
             start: dayjs().toISOString(),
-            duration: 30,
+            duration: ILesson.Duration.Long,
             slotId: 1,
           },
           user: IUser.Role.Tutor,
@@ -507,7 +509,7 @@ describe("Lessons API", () => {
           body: {
             lessonId: 123,
             start: dayjs().toISOString(),
-            duration: 30,
+            duration: ILesson.Duration.Long,
             slotId: 1,
           },
           user: IUser.Role.Student,
@@ -794,9 +796,9 @@ describe("Lessons API", () => {
         {
           date: start.format("YYYY-MM-DD"),
           paidLessonCount: 1,
-          paidTutoringMinutes: 30,
+          paidTutoringMinutes: ILesson.Duration.Long,
           freeLessonCount: 1,
-          freeTutoringMinutes: 30,
+          freeTutoringMinutes: ILesson.Duration.Long,
         },
       ]);
 
@@ -812,30 +814,30 @@ describe("Lessons API", () => {
         {
           date: start.add(3, "day").format("YYYY-MM-DD"),
           paidLessonCount: 1,
-          paidTutoringMinutes: 30,
+          paidTutoringMinutes: ILesson.Duration.Long,
           freeLessonCount: 0,
           freeTutoringMinutes: 0,
         },
         {
           date: start.add(2, "day").format("YYYY-MM-DD"),
           paidLessonCount: 1,
-          paidTutoringMinutes: 30,
+          paidTutoringMinutes: ILesson.Duration.Long,
           freeLessonCount: 0,
           freeTutoringMinutes: 0,
         },
         {
           date: start.add(1, "day").format("YYYY-MM-DD"),
           paidLessonCount: 1,
-          paidTutoringMinutes: 30,
+          paidTutoringMinutes: ILesson.Duration.Long,
           freeLessonCount: 0,
           freeTutoringMinutes: 0,
         },
         {
           date: start.format("YYYY-MM-DD"),
           paidLessonCount: 1,
-          paidTutoringMinutes: 30,
+          paidTutoringMinutes: ILesson.Duration.Long,
           freeLessonCount: 1,
-          freeTutoringMinutes: 30,
+          freeTutoringMinutes: ILesson.Duration.Long,
         },
       ]);
     });

@@ -4,6 +4,7 @@ import { nameof } from "@litespace/utils";
 import { expect } from "@fixtures/chai";
 import db from "@fixtures/db";
 import { subscriptions } from "@litespace/models";
+import { ILesson } from "@litespace/types";
 
 describe(nameof(calcRemainingWeeklyMinutesByUserId), () => {
   beforeEach(async () => {
@@ -79,12 +80,12 @@ describe(nameof(calcRemainingWeeklyMinutesByUserId), () => {
     await db.lesson({
       student: user.id,
       start: time.week(0).add(1, "day").toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
     });
 
     await expect(
       calcRemainingWeeklyMinutesByUserId(user.id)
-    ).to.eventually.be.eq(90);
+    ).to.eventually.be.eq(120 - ILesson.Duration.Long);
   });
 
   it("should exclude booked lessons from the remaining minutes #2", async () => {
@@ -100,18 +101,18 @@ describe(nameof(calcRemainingWeeklyMinutesByUserId), () => {
     await db.lesson({
       student: user.id,
       start: time.week(0).add(1, "day").toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
     });
 
     await db.lesson({
       student: user.id,
       start: time.week(0).toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
     });
 
     await expect(
       calcRemainingWeeklyMinutesByUserId(user.id)
-    ).to.eventually.be.eq(60);
+    ).to.eventually.be.eq(120 - 2 * ILesson.Duration.Long);
   });
 
   it("should ignore canceled lessons", async () => {
@@ -127,19 +128,19 @@ describe(nameof(calcRemainingWeeklyMinutesByUserId), () => {
     await db.lesson({
       student: user.id,
       start: time.week(0).add(1, "day").toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
     });
 
     await db.lesson({
       student: user.id,
       start: time.week(0).toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
       canceled: true,
     });
 
     await expect(
       calcRemainingWeeklyMinutesByUserId(user.id)
-    ).to.eventually.be.eq(90);
+    ).to.eventually.be.eq(120 - ILesson.Duration.Long);
   });
 
   it("should ignore lessons out of the current week range", async () => {
@@ -155,24 +156,24 @@ describe(nameof(calcRemainingWeeklyMinutesByUserId), () => {
     await db.lesson({
       student: user.id,
       start: time.week(0).subtract(1, "day").toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
     });
 
     await db.lesson({
       student: user.id,
       start: time.week(0).toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
       canceled: true,
     });
 
     await db.lesson({
       student: user.id,
       start: time.week(0).add(30, "minutes").toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
     });
 
     await expect(
       calcRemainingWeeklyMinutesByUserId(user.id)
-    ).to.eventually.be.eq(90);
+    ).to.eventually.be.eq(120 - ILesson.Duration.Long);
   });
 });

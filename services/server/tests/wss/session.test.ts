@@ -1,7 +1,7 @@
 import { Api } from "@fixtures/api";
 import db from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
-import { IUser, Wss } from "@litespace/types";
+import { ILesson, IUser, Wss } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { expect } from "chai";
 import { cache } from "@/lib/cache";
@@ -49,7 +49,7 @@ describe("sessions test suite", () => {
 
     const lesson = await studentApi.api.lesson.create({
       start: now.add(1, "hour").toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
       slotId: slot.id,
       tutorId: tutor.id,
     });
@@ -85,7 +85,7 @@ describe("sessions test suite", () => {
 
     const lesson = await studentApi.api.lesson.create({
       start: now.add(1, "hour").toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
       slotId: slot.id,
       tutorId: tutor.id,
     });
@@ -124,7 +124,7 @@ describe("sessions test suite", () => {
 
     const lesson = await studentApi.api.lesson.create({
       start: now.add(1, "hour").toISOString(),
-      duration: 30,
+      duration: ILesson.Duration.Long,
       slotId: slot.id,
       tutorId: tutor.id,
     });
@@ -156,7 +156,7 @@ describe("sessions test suite", () => {
 
     const lesson = await studentApi.api.lesson.create({
       start: slot.start,
-      duration: 30,
+      duration: ILesson.Duration.Long,
       slotId: slot.id,
       tutorId: tutor.id,
     });
