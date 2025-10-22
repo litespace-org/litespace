@@ -22,4 +22,5 @@ export const FAWRY_ROUTES = {
   CREATE_CARD_TOKEN_V2: "/fawrypay-api/api/cards/cardToken",
   LIST_CARD_TOKENS: "/ECommerceWeb/Fawry/cards/cardToken",
   DELETE_CARD_TOKEN: "/ECommerceWeb/Fawry/cards/cardToken",
+  EXPRESS: "/fawrypay-api/api/payments/init",
 } as const;

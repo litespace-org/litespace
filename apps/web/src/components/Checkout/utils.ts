@@ -2,6 +2,7 @@ import zod from "zod";
 import { Tab, TxTypePayload } from "@/components/Checkout/types";
 import { UrlQueryOf, Web } from "@litespace/utils/routes";
 import { nstr } from "@litespace/utils";
+import { ITransaction } from "@litespace/types";
 
 const schema: Zod.Schema<TxTypePayload> = zod.union([
   zod.object({
@@ -50,4 +51,12 @@ export function asSearchUrlParams(
 
 export function isValidTab(tab: string): tab is Tab {
   return tab === "card" || tab === "ewallet" || tab === "fawry";
+}
+
+export function parseTxType(
+  type: "paid-lesson" | "paid-plan"
+): ITransaction.Type | null {
+  if (type === "paid-plan") return ITransaction.Type.PaidPlan;
+  if (type === "paid-lesson") return ITransaction.Type.PaidLesson;
+  return null;
 }

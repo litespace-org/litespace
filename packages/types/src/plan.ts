@@ -1,5 +1,5 @@
 import { Paginated } from "@/utils";
-import { IFilter } from "@/index";
+import { IFawry, IFilter } from "@/index";
 
 export enum Period {
   Month,
@@ -96,3 +96,14 @@ export type FindApiQuery = FindQueryModel;
 export type FindApiResponse = Paginated<Self>;
 
 export type FindByIdApiResponse = Self;
+
+export type CheckoutPayload = {
+  planId: number;
+  period: Period;
+  returnUrl: string;
+  paymentMethod: IFawry.PaymentMethod;
+  saveCardInfo?: boolean;
+  authCaptureModePayment?: boolean;
+};
+
+export type CheckoutResponse = string;

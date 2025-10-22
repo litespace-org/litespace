@@ -263,3 +263,17 @@ export function useFindLesson(id?: number) {
     enabled: !!id,
   });
 }
+
+export function useLessonCheckoutUrl(payload?: ILesson.CheckoutPayload) {
+  const api = useApi();
+
+  const initExpress = useCallback(
+    () => (payload ? api.lesson.checkout(payload) : null),
+    [api.lesson, payload]
+  );
+
+  return useQuery({
+    queryFn: initExpress,
+    queryKey: [QueryKey.LessonCheckout],
+  });
+}
