@@ -200,3 +200,14 @@ export const TOTAL_LESSON_HOURLY_RATE = price.scale(255);
  * that makes any lesson uncancellable.
  */
 export const UNCANCELLABLE_LESSON_HOURS = 6;
+
+export const TIME_PERIODS: Record<
+  IUser.TimePeriod,
+  { start: string; end: string }
+> = {
+  [IUser.TimePeriod.Morning]: { start: "06:00", end: "11:59" },
+  [IUser.TimePeriod.Noon]: { start: "12:00", end: "15:59" },
+  [IUser.TimePeriod.Afternoon]: { start: "16:00", end: "18:59" },
+  [IUser.TimePeriod.Evening]: { start: "19:00", end: "23:59" },
+  [IUser.TimePeriod.Night]: { start: "00:00", end: "05:59" },
+};

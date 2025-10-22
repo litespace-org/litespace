@@ -102,6 +102,8 @@ export const studentEnglishLevel = zod.coerce.number(
   zod.nativeEnum(IStudent.EnglishLevel)
 );
 
+export const timePeriod = zod.coerce.number(zod.nativeEnum(IUser.TimePeriod));
+
 export const slotPurpose = zod.coerce.number(
   zod.nativeEnum(IAvailabilitySlot.Purpose)
 );

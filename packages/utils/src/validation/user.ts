@@ -6,7 +6,7 @@ import {
   MIN_PASSWORD_LENGTH,
   MIN_USER_AGE,
   MIN_USER_NAME_LENGTH,
-  PASSWORD_REGEX,
+  // PASSWORD_REGEX,
   PHONE_NUMBER_REGEX,
   USER_NAME_REGEX,
 } from "@/constants";
@@ -48,7 +48,7 @@ export function isValidPassword(
   if (typeof password !== "string") return FieldError.InvalidPassword;
   if (password.length < MIN_PASSWORD_LENGTH) return FieldError.ShortPassword;
   if (password.length > MAX_PASSWORD_LENGTH) return FieldError.LongPassword;
-  if (!PASSWORD_REGEX.test(password)) return FieldError.InvalidPassword;
+  // if (!PASSWORD_REGEX.test(password)) return FieldError.InvalidPassword;
 
   return true;
 }

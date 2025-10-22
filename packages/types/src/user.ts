@@ -48,6 +48,14 @@ export enum City {
   GizaCity = 30,
 }
 
+export enum TimePeriod {
+  Morning,
+  Noon,
+  Afternoon,
+  Evening,
+  Night,
+}
+
 export type Self = {
   id: number;
   email: string;

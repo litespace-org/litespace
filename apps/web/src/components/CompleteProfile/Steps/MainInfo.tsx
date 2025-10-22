@@ -1,11 +1,12 @@
-import { governorates } from "@/constants/user";
+import {  timePeriods } from "@/constants/user";
 import { useOnError } from "@/hooks/error";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUser } from "@litespace/headless/context/user";
 import { useForm } from "@litespace/headless/form";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { useUpdateUser } from "@litespace/headless/user";
-import { IUser, Void } from "@litespace/types";
+import { useUpdateStudent} from "@litespace/headless/student";
+import {   IUser,  Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { Form } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -25,7 +26,7 @@ import React, { useCallback, useMemo } from "react";
 type IForm = {
   name: string;
   phone: string;
-  city?: IUser.City;
+  timePeriod?: IUser.TimePeriod; 
   password: string;
 };
 
@@ -36,9 +37,9 @@ const MainInfo: React.FC<{ next: Void }> = ({ next }) => {
   const invalidateQuery = useInvalidateQuery();
 
   // ============= Complete Profile Mutation ==============
-  const cityOptions = useMemo(
+  const timePeriodOptions = useMemo(
     () =>
-      Object.entries(governorates).map(([key, value]) => ({
+      Object.entries(timePeriods).map(([key, value]) => ({
         label: intl(value),
         value: Number(key),
       })),
@@ -61,7 +62,8 @@ const MainInfo: React.FC<{ next: Void }> = ({ next }) => {
   });
 
   // @galal TODO: use useUpdateStudent once the backend the done.
-  const updateStudent = useUpdateUser({ onSuccess, onError });
+  const updateUser = useUpdateUser({ onSuccess, onError });
+  const updateStudent = useUpdateStudent({ onSuccess, onError });
 
   // ============= Form ==============
   const validators = useMakeValidators<IForm>({
@@ -74,21 +76,26 @@ const MainInfo: React.FC<{ next: Void }> = ({ next }) => {
     defaults: {
       name: user?.name || "",
       phone: user?.phone || "",
-      city: user?.city || undefined,
+      timePeriod:  undefined,
       password: "",
     },
     validators,
     onSubmit: (data) => {
       if (!user) return;
-      updateStudent.mutate({
+      updateUser.mutate({
         id: user.id,
         payload: {
           name: getNullableFieldUpdatedValue(user.name, data.name.trim()),
           phone: getNullableFieldUpdatedValue(user.phone, data.phone.trim()),
-          city: getNullableFieldUpdatedValue(user.city, data.city),
           password: data.password
             ? { new: data.password, current: null }
             : undefined,
+        },
+      });
+      updateStudent.mutate({
+        payload: {
+          id: user.id,
+          timePeriod:  data.timePeriod 
         },
       });
     },
@@ -129,13 +136,13 @@ const MainInfo: React.FC<{ next: Void }> = ({ next }) => {
           />
 
           <Select
-            id="city"
-            value={form.state.city}
-            onChange={(value) => form.set("city", value)}
-            options={cityOptions}
-            label={intl("labels.city")}
-            placeholder={intl("labels.city.placeholder")}
-            helper={form.errors.city || intl("complete-profile.city.helper")}
+            id="timePeriod"
+            value={form.state.timePeriod}
+            onChange={(value) => form.set("timePeriod", value)}
+            options={timePeriodOptions}
+            label={intl("labels.time-period")}
+            placeholder={intl("labels.time-period.placeholder")}
+            helper={form.errors.timePeriod}
           />
 
           {!user?.password ? (

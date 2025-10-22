@@ -15,6 +15,7 @@ export type Self = {
   jobTitle: string | null;
   englishLevel: EnglishLevel | null;
   learningObjective: string | null;
+  timePeriod: IUser.TimePeriod | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -24,6 +25,7 @@ export type Row = {
   job_title: string | null;
   english_level: EnglishLevel | null;
   learning_objective: string | null;
+  time_period: IUser.TimePeriod | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -36,6 +38,7 @@ export type CreateModelPayload = {
   jobTitle?: string | null;
   englishLevel?: EnglishLevel | null;
   learningObjective?: string | null;
+  timePeriod?: IUser.TimePeriod | null;
 };
 
 export type UpdateModelPayload = {
@@ -43,6 +46,7 @@ export type UpdateModelPayload = {
   jobTitle?: string | null;
   englishLevel?: EnglishLevel | null;
   learningObjective?: string | null;
+  timePeriod?: IUser.TimePeriod | null;
 };
 
 export type FindModelQuery = IFilter.SkippablePagination & {
@@ -50,6 +54,7 @@ export type FindModelQuery = IFilter.SkippablePagination & {
   jobTitle?: string;
   englishLevels?: EnglishLevel[];
   learningObjective?: string;
+  timePeriods?: IUser.TimePeriod[];
 };
 
 // API Types
@@ -57,6 +62,7 @@ export type CreateApiPayload = Omit<IUser.CreateApiPayload, "role"> & {
   jobTitle?: string;
   englishLevel?: EnglishLevel;
   learningObjective?: string;
+  timePeriod?: IUser.TimePeriod;
 };
 
 export type CreateApiResponse = IUser.RegisterApiResponse & {
@@ -68,6 +74,7 @@ export type UpdateApiPayload = {
   jobTitle?: string;
   englishLevel?: EnglishLevel;
   learningObjective?: string;
+  timePeriod?: IUser.TimePeriod | null;
 };
 
 export type UpdateApiResponse = unknown;
