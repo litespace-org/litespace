@@ -15,7 +15,6 @@ import { isEmpty } from "lodash";
 import React from "react";
 import { Link } from "react-router-dom";
 import { useFindTutorRatings } from "@litespace/headless/rating";
-import { IUser } from "@litespace/types";
 
 const MAXIMUM_CARD_TOPICS_NUM = 4;
 
@@ -37,12 +36,10 @@ export const TutorCard: React.FC<{
   about,
   name,
   image,
-  rating,
   topics,
   onBook,
   buttonSize = "medium",
   cardHeight,
-  role,
 }) => {
   const intl = useFormatMessage();
 
@@ -72,7 +69,8 @@ export const TutorCard: React.FC<{
             cardHeight || "h-80 max-h-80"
           )}
         >
-          {role === IUser.Role.TutorManager && (
+          {/* TODO: re-enable the recommended band */}
+          {/* role === IUser.Role.TutorManager && (
             <Typography
               tag="p"
               className={cn(
@@ -84,7 +82,7 @@ export const TutorCard: React.FC<{
             >
               {intl("tutor.recommended")}
             </Typography>
-          )}
+          ) */}
           <AvatarV2 src={image} alt={name} id={tutorId} object="cover" />
         </div>
 
@@ -96,7 +94,8 @@ export const TutorCard: React.FC<{
             >
               {name}
             </Typography>
-            {rating ? <Rating tutorId={tutorId} rating={rating} /> : null}
+            {/* TODO: re-enable the ratings once view */}
+            {/* rating ? <Rating tutorId={tutorId} rating={rating} /> : null */}
           </div>
           <Optional show={!!about}>
             <Typography
@@ -161,7 +160,7 @@ export const TutorCard: React.FC<{
   );
 };
 
-const Rating: React.FC<{ tutorId: number; rating: number }> = ({
+export const Rating: React.FC<{ tutorId: number; rating: number }> = ({
   tutorId,
   rating,
 }) => {

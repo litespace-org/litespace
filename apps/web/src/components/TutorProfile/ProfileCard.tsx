@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import Star from "@litespace/assets/Star";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -40,8 +39,6 @@ export const ProfileCard: React.FC<{
   role,
   studentCount,
   lessonCount,
-  avgRating,
-  ratingCount,
   loading,
   error,
   onBook,
@@ -140,7 +137,8 @@ export const ProfileCard: React.FC<{
               "w-[90px] h-[90px] md:w-[242px] md:h-[242px]"
             )}
           >
-            {role === IUser.Role.TutorManager && (
+            {/* TODO: re-enable the recommended band */}
+            {/* role === IUser.Role.TutorManager && (
               <Typography
                 tag="p"
                 className={cn(
@@ -152,7 +150,7 @@ export const ProfileCard: React.FC<{
               >
                 {intl("tutor.recommended")}
               </Typography>
-            )}
+            ) */}
             <AvatarV2 src={image} alt={name} id={id} object="cover" />
           </div>
 
@@ -200,7 +198,8 @@ export const ProfileCard: React.FC<{
                   </Typography>
                 ) : null}
               </div>
-              {avgRating > 0 ? (
+              {/* TODO: re-enable the rating view */}
+              {/* avgRating > 0 ? (
                 <div className="flex items-center gap-2">
                   <Typography
                     tag="span"
@@ -218,7 +217,7 @@ export const ProfileCard: React.FC<{
                     ({intl("tutor-profile.rating", { count: ratingCount })})
                   </Typography>
                 </div>
-              ) : null}
+              ) : null */}
             </div>
             {sm ? BookButton : null}
           </div>
