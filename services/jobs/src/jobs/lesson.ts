@@ -4,11 +4,7 @@ import { lessons } from "@litespace/models";
 import { ILesson, IMessenger, IUser } from "@litespace/types";
 import { Web } from "@litespace/utils/routes";
 import { isEmpty } from "lodash";
-import {
-  AFRICA_CAIRO_TIMEZONE,
-  MAX_LESSON_DURATION,
-  safePromise,
-} from "@litespace/utils";
+import { AFRICA_CAIRO_TIMEZONE, safePromise } from "@litespace/utils";
 import { msg } from "@/lib/bot";
 import { sendMsg } from "@/lib/messager";
 
@@ -24,7 +20,7 @@ async function start() {
 async function sendReminders() {
   const { list } = await lessons.find({
     after: dayjs.utc().toISOString(),
-    before: dayjs.utc().add(MAX_LESSON_DURATION, "minutes").toISOString(),
+    before: dayjs.utc().add(15, "minutes").toISOString(),
     strict: true,
     full: true,
     canceled: false,

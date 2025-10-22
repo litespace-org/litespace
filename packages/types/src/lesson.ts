@@ -203,7 +203,7 @@ export type FindUserLessonsApiResponse = Paginated<{
 
 export enum Duration {
   // Short = 15, // TODO: uncomment once the policy change
-  Long = 30,
+  Long = 45,
 }
 
 export type LessonDayRow = {
