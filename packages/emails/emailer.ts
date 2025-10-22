@@ -59,11 +59,11 @@ export class Emailer {
   }
 
   async send({ to, ...email }: { to: string } & SendEmail) {
-    await this.transporter.sendMail({
+    this.transporter.sendMail({
       from: `"LiteSpace" <${this.email}>`,
       to,
       subject: EMAIL_SUBJECT[email.template],
-      html: render(this.template(email)),
+      html: await render(this.template(email)),
     });
   }
 
