@@ -219,6 +219,8 @@
   "tutor.recommended": "معلم موصى به",
   "tutor.rate.delete.error": "عفوًا! حدث خطأ أثناء إزالة تقييمك",
   "tutor.rate-count": "({value} تقييم)",
+  "tutor.rate.create.success": "تم إضافة التقييم بنجاح",
+  "tutor.rate.create.error": "حدث خطأ أثناء إضافة التقييم",
   "tutor.achievements": "{lessonCount} حصة مع {studentCount} طالب",
   "tutor.book": "حجز حصة",
   "tutor.rating.rate": "رأيك في {tutor}",
