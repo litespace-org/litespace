@@ -53,3 +53,11 @@ export const genders: Record<IUser.Gender, LocalId> = {
   [IUser.Gender.Male]: "global.genders.male",
   [IUser.Gender.Female]: "global.genders.female",
 };
+
+export const timePeriods: Record<IUser.TimePeriod, LocalId> = {
+  [IUser.TimePeriod.Morning]: "global.time-period.morning",
+  [IUser.TimePeriod.Noon]: "global.time-period.noon",
+  [IUser.TimePeriod.Afternoon]: "global.time-period.afternoon",
+  [IUser.TimePeriod.Evening]: "global.time-period.evening",
+  [IUser.TimePeriod.Night]: "global.time-period.night",
+};

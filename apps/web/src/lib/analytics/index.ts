@@ -46,7 +46,8 @@ export type Action =
   | "send_message"
   | "play_tutor_video"
   | "complete_student_tour"
-  | "skip_student_tour";
+  | "skip_student_tour"
+  | "remind_me";
 
 export type Params = {
   category: Category;

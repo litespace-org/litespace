@@ -14,6 +14,7 @@ import {
   pageNumber,
   pageSize,
   studentEnglishLevel,
+  timePeriod,
 } from "@/validation/utils";
 import { encodeAuthJwt } from "@litespace/auth";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
@@ -28,22 +29,23 @@ const createStudentPayload: ZodSchema<IStudent.CreateApiPayload> = zod.object({
   password,
   jobTitle: string.optional(),
   englishLevel: studentEnglishLevel.optional(),
+  timePeriod: timePeriod.optional(),
   learningObjective: string.optional(),
 });
 
 const updateStudentSchema: ZodSchema<IStudent.UpdateApiPayload> = zod.object({
   id,
   jobTitle: string.optional(),
-  englishLevel: zod.coerce
-    .number(zod.nativeEnum(IStudent.EnglishLevel))
-    .optional(),
+  englishLevel: zod.coerce.number(studentEnglishLevel).optional(),
   learningObjective: string.optional(),
+  timePeriod: zod.coerce.number(timePeriod).optional(),
 });
 
 const findStudentsQuery: ZodSchema<IStudent.FindApiQuery> = zod.object({
   ids: id.array().optional(),
   jobTitle: string.optional(),
   englishLevels: studentEnglishLevel.array().optional(),
+  timePeriods: timePeriod.array().optional(),
   learningObjective: string.optional(),
   page: zod.optional(pageNumber),
   size: zod.optional(pageSize),
@@ -77,6 +79,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
       jobTitle: payload.jobTitle || null,
       englishLevel: payload.englishLevel || null,
       learningObjective: payload.learningObjective || null,
+      timePeriod: payload.timePeriod || null,
       tx,
     });
 

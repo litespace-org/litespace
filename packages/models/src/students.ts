@@ -18,6 +18,7 @@ const FIELD_TO_COLUMN = {
   learningObjective: "learning_objective",
   createdAt: "created_at",
   updatedAt: "updated_at",
+  timePeriod: "time_period",
 } satisfies Record<IStudent.Field, IStudent.Column>;
 
 export class Students extends Model<
@@ -40,6 +41,7 @@ export class Students extends Model<
         job_title: payload.jobTitle,
         english_level: payload.englishLevel,
         learning_objective: payload.learningObjective,
+        time_period: payload.timePeriod,
         created_at: now,
         updated_at: now,
       },
@@ -57,6 +59,7 @@ export class Students extends Model<
     jobTitle,
     englishLevel,
     learningObjective,
+    timePeriod,
   }: WithOptionalTx<IStudent.UpdateModelPayload>): Promise<void> {
     const now = dayjs.utc().toDate();
     await this.builder(tx)
@@ -64,6 +67,7 @@ export class Students extends Model<
         job_title: jobTitle,
         english_level: englishLevel,
         learning_objective: learningObjective,
+        time_period: timePeriod,
         updated_at: now,
       })
       .where(this.column("id"), id);
@@ -75,6 +79,7 @@ export class Students extends Model<
     jobTitle,
     englishLevels,
     learningObjective,
+    timePeriods,
     ...pagination
   }: WithOptionalTx<IStudent.FindModelQuery>): Promise<
     Paginated<IStudent.Self>
@@ -84,6 +89,7 @@ export class Students extends Model<
     // ============== list-based fields ========
     withListFilter(builder, this.column("id"), ids);
     withListFilter(builder, this.column("english_level"), englishLevels);
+    withListFilter(builder, this.column("time_period"), timePeriods);
 
     // ============== string fields ========
     withStringFilter(builder, this.column("job_title"), jobTitle);
