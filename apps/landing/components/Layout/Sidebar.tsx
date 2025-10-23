@@ -57,7 +57,7 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
         <Link
           href={router.web({
             route: Web.Register,
-            role: "tutor",
+            role: "student",
             full: true,
           })}
           className="w-[134px] flex-1"
