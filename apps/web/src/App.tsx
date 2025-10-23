@@ -93,7 +93,7 @@ const router = createRouter([
 function App(): React.JSX.Element {
   return (
     <Splash position="top">
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
     </Splash>
   );
 }
