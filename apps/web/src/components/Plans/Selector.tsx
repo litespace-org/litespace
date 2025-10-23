@@ -68,7 +68,9 @@ export const Selector: React.FC<{
       <PlansPanel period={period} setPeriod={setPeriod} />
 
       <div className="flex flex-wrap items-stretch md:flex-row justify-items-center justify-center gap-4 lg:gap-6">
-        <TrialSessionCard />
+        <TrialSessionCard
+          onClick={() => track("browse_tutors_from_pricing", "info")}
+        />
         {sortedPlans.map((plan, idx) => {
           const index =
             idx < description.current.length

@@ -9,7 +9,8 @@ export type Category =
   | "plans"
   | "checkout"
   | "lessons"
-  | "tutors";
+  | "tutors"
+  | "info";
 
 export type Action =
   | "book_lesson"
@@ -47,7 +48,9 @@ export type Action =
   | "play_tutor_video"
   | "complete_student_tour"
   | "skip_student_tour"
-  | "remind_me";
+  | "remind_me"
+  | "browse_tutors_from_pricing"
+  | "view_web_faq";
 
 export type Params = {
   category: Category;
