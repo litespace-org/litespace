@@ -170,3 +170,16 @@ export type SyncPaymentStatusResponse = void;
 export type GetAddCardTokenUrlResponse = {
   url: string;
 };
+
+export type InitExpressCheckoutForLessonPayload = {
+  duration: number;
+  tutorId: number;
+  slotId: number;
+  start: string;
+  returnUrl: string;
+  paymentMethod: PaymentMethod;
+  saveCardInfo?: boolean;
+  authCaptureModePayment?: boolean;
+};
+
+export type InitExpressCheckoutResponse = string;

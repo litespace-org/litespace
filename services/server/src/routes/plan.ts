@@ -5,6 +5,7 @@ const router = Router();
 
 router.post("/", plan.create);
 router.get("/list", plan.find);
+router.get("/checkout", plan.checkout);
 router.get("/:id", plan.findById);
 router.patch("/:id", plan.update);
 router.delete("/:id", plan.delete);

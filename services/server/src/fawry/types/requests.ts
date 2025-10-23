@@ -347,3 +347,32 @@ export type GetPaymentStatusPayload = {
    */
   signature: string;
 };
+
+export type InitExpressCheckout = BaseRequestPayload & {
+  /**
+   * Encrypt with SHA-256 the following: "merchantCode + merchantRefNum +
+   * customerProfileId (if exists, otherwise insert "") + returnUrl + itemId + quantity +
+   * Price (in tow decimal format like ‘10.00’) + Secure hash key
+   *
+   * NOTE: In case of the order contains multiple items the list will be sorted by
+   * itemId and concatenated one by one for example itemId1+ Item1quantity + Item1price +
+   * itemId2 + Item2quantity + Item2price
+   */
+  signature: string;
+  /**
+   * After the card issuing bank process the authentication process,
+   * this will be the redirection URL where your customer will be redirected to.
+   * Example: "https://www.google.com/"
+   */
+  returnUrl: string;
+  /**
+   * All payment methods are included by default
+   */
+  paymentMethod?: PaymentMethod;
+  saveCardInfo?: boolean;
+  /**
+   * True to enable authenticate and capture:
+   * https://developer.fawrystaging.com/docs/server-apis/auth-capture-payment-apis
+   */
+  authCaptureModePayment?: boolean;
+};

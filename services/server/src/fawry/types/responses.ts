@@ -332,3 +332,8 @@ export type CancelPaymentAuth = Base & {
 };
 
 export type GetPaymentStatus = PaymentDetails;
+
+/**
+ * For example: https://atfawry.fawrystaging.com/atfawry/plugin?payment-id=kCk0R85FuTY=&locale=en
+ */
+export type InitExpressCheckout = string | ErrorResponse;
