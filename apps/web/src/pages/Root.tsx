@@ -15,7 +15,7 @@ import { useUser } from "@litespace/headless/context/user";
 import { Button } from "@litespace/ui/Button";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { dayjs, isForbidden } from "@litespace/utils";
+import { dayjs, isUnauthenticated } from "@litespace/utils";
 import { Landing, Web } from "@litespace/utils/routes";
 import { isProfileComplete } from "@litespace/utils/tutor";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
@@ -88,7 +88,7 @@ const Root: React.FC = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!isForbidden(error) || publicRoute) return;
+    if (!isUnauthenticated(error) || publicRoute) return;
     navigate(Web.Login);
   }, [error, logout, navigate, publicRoute]);
 
