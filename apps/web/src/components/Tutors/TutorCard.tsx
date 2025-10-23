@@ -85,7 +85,6 @@ export const TutorCard: React.FC<{
           ) */}
           <AvatarV2 src={image} alt={name} id={tutorId} object="cover" />
         </div>
-
         <div className="flex flex-col">
           <div className="flex justify-between mb-1">
             <Typography
@@ -143,7 +142,6 @@ export const TutorCard: React.FC<{
             </div>
           </Optional>
         </div>
-
         <Button
           htmlType="button"
           className="w-full mt-auto text-body font-medium"
@@ -155,6 +153,21 @@ export const TutorCard: React.FC<{
         >
           {intl("tutor-card.book-now")}
         </Button>
+        <Link
+          to={router.web({
+            route: Web.TutorProfile,
+            id: tutorId,
+          })}
+        >
+          <Button
+            htmlType="button"
+            className="w-full md:hidden mt-auto text-body font-medium"
+            variant="secondary"
+            size={buttonSize}
+          >
+            {intl("tutor-card.show-profile")}
+          </Button>{" "}
+        </Link>
       </div>
     </Link>
   );

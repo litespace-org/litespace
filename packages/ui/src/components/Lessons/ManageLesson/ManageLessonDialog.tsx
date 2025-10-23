@@ -338,7 +338,7 @@ export const ManageLessonDialog: React.FC<{
       close={close}
       title={
         <div className="flex gap-2 pb-4">
-          <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
+          <div className="w-[43px] h-[43px] flex-shrink-0 rounded-[4px] overflow-hidden">
             <AvatarV2 alt={name} id={tutorId} src={imageUrl} />
           </div>
           <div className="flex flex-col gap-1">
@@ -346,9 +346,7 @@ export const ManageLessonDialog: React.FC<{
               {intl("book-lesson.title-1")}
             </Typography>
             <Typography tag="p" className="text-tiny text-natural-600">
-              {name
-                ? intl("book-lesson.title-2", { tutor: name })
-                : intl("book-lesson.title.placeholder")}
+              {intl("book-lesson.title-2")}
             </Typography>
           </div>
         </div>
@@ -603,7 +601,7 @@ const LessonDuration: React.FC = () => {
       )}
     >
       <Typography tag="span" className="text-extra-tiny">
-        {intl("book-lesson.durations.30-minutes")}
+        {intl("book-lesson.durations.45-minutes")}
       </Typography>
     </div>
   );

@@ -154,6 +154,7 @@
     "./PlaybackSpeed": "./dist/PlaybackSpeed.tsx",
     "./ProfileAvatar": "./dist/ProfileAvatar.tsx",
     "./Quote": "./dist/Quote.tsx",
+    "./Question": "./dist/Question.tsx",
     "./Rate": "./dist/Rate.tsx",
     "./Receipt": "./dist/Receipt.tsx",
     "./RecordCircle": "./dist/RecordCircle.tsx",
