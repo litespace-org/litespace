@@ -9,7 +9,7 @@ import {
   role,
   slotPurpose,
 } from "@/validation/utils";
-import { isTutor, isUser, isAdmin } from "@litespace/utils/user";
+import { isTutor, isUser, isAdmin, isStudent } from "@litespace/utils/user";
 import { IAvailabilitySlot } from "@litespace/types";
 import { availabilitySlots, knex, lessons } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
@@ -19,6 +19,7 @@ import zod, { ZodSchema } from "zod";
 import { isEmpty } from "lodash";
 import {
   deleteSlots,
+  generatePseudoSlots,
   getSubslots,
   isValidSlots,
   updateSlot,
@@ -101,6 +102,19 @@ async function find(req: Request, res: Response, next: NextFunction) {
     full,
     deleted: false,
   });
+
+  // TODO: remove this once the business policy changes back
+  if (isStudent(user)) {
+    const pseudoSlots = generatePseudoSlots(userIds || []);
+    if (pseudoSlots) {
+      const result: IAvailabilitySlot.FindAvailabilitySlotsApiResponse = {
+        slots: pseudoSlots,
+        subslots: [],
+      };
+      res.status(200).json(result);
+      return;
+    }
+  }
 
   // NOTE: return only-slots only if the user is a tutor
   const slotIds = paginatedSlots.list.map((slot) => slot.id);

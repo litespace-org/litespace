@@ -18,6 +18,8 @@ import zod, { ZodLiteral } from "zod";
 
 export const id = zod.coerce.number().positive().int();
 
+export const pseudoId = zod.coerce.number().int();
+
 export const ids = id.array();
 
 export const sessionId = zod.custom<ISession.Id>(
