@@ -149,6 +149,15 @@ async function createWithCard(req: Request, res: Response, next: NextFunction) {
   const phone = await withPhone(user, payload.phone);
   if (phone instanceof Error) return next(bad(phone.message));
 
+  if (payload.slotId < 0) {
+    const pseudoSlot = await createPseudoLessonSlot({
+      tutorId: payload.tutorId,
+      duration: payload.duration,
+      start: payload.start,
+    });
+    payload.slotId = pseudoSlot.id;
+  }
+
   const valid = await validateCreateLessonPayload(payload);
   if (valid instanceof TutorNotFound) return next(notfound.tutor());
   if (valid instanceof SlotNotFound) return next(notfound.slot());
@@ -200,6 +209,15 @@ async function createWithFawryRefNum(
   const phone = await withPhone(user, payload.phone);
   if (phone instanceof Error) return next(bad(phone.message));
 
+  if (payload.slotId < 0) {
+    const pseudoSlot = await createPseudoLessonSlot({
+      tutorId: payload.tutorId,
+      duration: payload.duration,
+      start: payload.start,
+    });
+    payload.slotId = pseudoSlot.id;
+  }
+
   const valid = await validateCreateLessonPayload(payload);
   if (valid instanceof TutorNotFound) return next(notfound.tutor());
   if (valid instanceof SlotNotFound) return next(notfound.slot());
@@ -248,6 +266,15 @@ async function createWithEWallet(
   const payload = createWithEWalletPayload.parse(req.body);
   const phone = await withPhone(user, payload.phone);
   if (phone instanceof Error) return next(bad(phone.message));
+
+  if (payload.slotId < 0) {
+    const pseudoSlot = await createPseudoLessonSlot({
+      tutorId: payload.tutorId,
+      duration: payload.duration,
+      start: payload.start,
+    });
+    payload.slotId = pseudoSlot.id;
+  }
 
   const valid = await validateCreateLessonPayload(payload);
   if (valid instanceof TutorNotFound) return next(notfound.tutor());
