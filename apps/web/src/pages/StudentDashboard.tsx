@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import { useTutors } from "@litespace/headless/tutor";
 import { Tabs } from "@litespace/ui/Tabs";
 import { track } from "@/lib/analytics";
+import { Typography } from "@litespace/ui/Typography";
 
 const StudentDashboard: React.FC = () => {
   const mq = useMediaQuery();
@@ -257,7 +258,11 @@ const LearningApproachMobile = () => {
 
   return (
     <div className="block md:hidden">
+      <Typography className="mb-2 text-subtitle-2 font-bold" tag={"h1"}>
+        {intl("student-dashboard.learning-approach.title")}
+      </Typography>
       <Accordion
+        defaultValue={items[0].id}
         onValueChange={(value) => {
           const item = items.find((item) => item.id === value);
           if (!item) return;

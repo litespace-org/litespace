@@ -345,7 +345,10 @@ export const ManageLessonDialog: React.FC<{
             <Typography tag="p" className="text-caption font-bold">
               {intl("book-lesson.title-1")}
             </Typography>
-            <Typography tag="p" className="text-tiny text-natural-600">
+            <Typography
+              tag="p"
+              className="text-tiny md:max-w-[340px] text-natural-600"
+            >
               {intl("book-lesson.title-2")}
             </Typography>
           </div>
