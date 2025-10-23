@@ -260,7 +260,7 @@ export function generatePseudoSlots(
   tutorIds: number[]
 ): Paginated<IAvailabilitySlot.Self> {
   const list: IAvailabilitySlot.Self[] = [];
-  const currentDay = dayjs().startOf("day");
+  const currentDay = dayjs().tz("Africa/Cairo").startOf("day");
 
   const p1 = (dayStart: Dayjs) => ({
     start: dayStart.add(9, "hours").toISOString(),
