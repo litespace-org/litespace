@@ -7,11 +7,18 @@ import {
 import {
   asSubSlot,
   asSubSlots,
+  Dayjs,
+  DAYS_IN_WEEK,
   expandGeneralPurposeSlot,
   isIntersecting,
   isSuperSlot,
 } from "@litespace/utils";
-import { IAvailabilitySlot, IDemoSession, IInterview } from "@litespace/types";
+import {
+  IAvailabilitySlot,
+  IDemoSession,
+  IInterview,
+  Paginated,
+} from "@litespace/types";
 import { Knex } from "knex";
 import { isEmpty, uniqBy } from "lodash";
 import dayjs from "@/lib/dayjs";
@@ -247,4 +254,78 @@ export async function isValidSlots({
   }
 
   return null;
+}
+
+export function generatePseudoSlots(
+  tutorIds: number[]
+): Paginated<IAvailabilitySlot.Self> {
+  const list: IAvailabilitySlot.Self[] = [];
+  const currentDay = dayjs().startOf("day");
+
+  const p1 = (dayStart: Dayjs) => ({
+    start: dayStart.add(9, "hours").toISOString(),
+    end: dayStart.add(13, "hours").toISOString(),
+  });
+  const p2 = (dayStart: Dayjs) => ({
+    start: dayStart.add(15, "hours").toISOString(),
+    end: dayStart.add(18, "hours").toISOString(),
+  });
+  const p3 = (dayStart: Dayjs) => ({
+    start: dayStart.add(19, "hours").toISOString(),
+    end: dayStart.add(23, "hours").toISOString(),
+  });
+
+  let pseudoId = -1;
+
+  for (const tutorId of tutorIds) {
+    for (let i = 0; i < DAYS_IN_WEEK; i++) {
+      for (const p of [p1, p2, p3]) {
+        list.push({
+          id: pseudoId,
+          userId: tutorId,
+          purpose: IAvailabilitySlot.Purpose.Lesson,
+          start: p(currentDay.add(i, "day")).start,
+          end: p(currentDay.add(i, "day")).end,
+          deleted: false,
+          createdAt: currentDay.toISOString(),
+          updatedAt: currentDay.toISOString(),
+        });
+        pseudoId -= 1;
+      }
+    }
+  }
+
+  return {
+    list,
+    total: list.length,
+  };
+}
+
+export async function createPseudoLessonSlot({
+  tutorId,
+  duration,
+  start,
+}: {
+  tutorId: number;
+  duration: number;
+  start: string;
+}): Promise<IAvailabilitySlot.Self> {
+  const foundSlot = await availabilitySlots.find({
+    userIds: [tutorId],
+    after: start,
+    before: dayjs(start).add(duration, "minutes").toISOString(),
+  });
+
+  if (foundSlot.list[0]) return foundSlot.list[0];
+
+  const [created] = await availabilitySlots.create([
+    {
+      userId: tutorId,
+      purpose: IAvailabilitySlot.Purpose.Lesson,
+      start: start,
+      end: dayjs(start).add(duration, "minutes").toISOString(),
+    },
+  ]);
+
+  return created;
 }

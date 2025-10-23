@@ -7,6 +7,7 @@ import {
   jsonBoolean,
   pageNumber,
   pageSize,
+  pseudoId,
   sessionId,
   withNamedId,
 } from "@/validation/utils";
@@ -83,10 +84,11 @@ import {
 import { encodeMerchantRefNumber } from "@/fawry/lib/ids";
 import { fawry } from "@/fawry/api";
 import { ORDER_STATUS_TO_TRANSACTION_STATUS } from "@/fawry/constants";
+import { createPseudoLessonSlot } from "@/lib/availabilitySlot";
 
 const createLessonPayload: ZodSchema<ILesson.CreateApiPayload> = zod.object({
   tutorId: id,
-  slotId: id,
+  slotId: id.or(pseudoId),
   start: datetime,
   duration,
 });
@@ -296,6 +298,16 @@ function create(context: ApiContext) {
       );
 
       if (dayjs().isAfter(payload.start)) return next(bad());
+
+      // TODO: remove once the policy changes back
+      if (payload.slotId < 0) {
+        const pseudoSlot = await createPseudoLessonSlot({
+          tutorId: payload.tutorId,
+          start: payload.start,
+          duration: payload.duration,
+        });
+        payload.slotId = pseudoSlot.id;
+      }
 
       const state = await checkBookingLessonEligibilityState({
         userId: user.id,
