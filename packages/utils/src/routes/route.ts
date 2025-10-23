@@ -73,5 +73,13 @@ export type StudentSettingsTabId =
   | "personal"
   | "password"
   | "notifications"
-  | "topics"
+  | "public-info"
+  | "refunds";
+
+export type MobileStudentSettingsTabId =
+  | "settings"
+  | "personal"
+  | "password"
+  | "notifications"
+  | "public-info"
   | "refunds";

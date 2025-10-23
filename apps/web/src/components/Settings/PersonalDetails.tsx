@@ -201,7 +201,7 @@ const PersonalDetails: React.FC<Props> = ({
       <Typography
         data-student={forStudent}
         tag="h2"
-        className="text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6 data-[student=false]:block"
+        className="hidden md:block text-subtitle-1 font-bold text-natural-950 mb-4 md:mb-6 data-[student=false]:block"
       >
         {intl("tutor-settings.tabs.personal-settings")}
       </Typography>

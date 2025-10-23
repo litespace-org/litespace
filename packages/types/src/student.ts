@@ -82,3 +82,7 @@ export type UpdateApiResponse = unknown;
 export type FindApiQuery = FindModelQuery;
 
 export type FindApiResponse = Paginated<Self>;
+
+export type FindByIdApiQuery = { id: number };
+
+export type FindByIdApiResponse = Self;
