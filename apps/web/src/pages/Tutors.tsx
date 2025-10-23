@@ -3,6 +3,7 @@ import Content from "@/components/Tutors/Content";
 import { useOnError } from "@/hooks/error";
 import { useTutors } from "@litespace/headless/tutor";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Typography } from "@litespace/ui/Typography";
 import React from "react";
 
 const Tutors: React.FC = () => {
@@ -22,7 +23,12 @@ const Tutors: React.FC = () => {
         fetching={tutors.query.isFetching && !tutors.query.isLoading}
         className="mb-6"
       />
-
+      <Typography
+        tag="p"
+        className="text-natural-700 -mt-4 mb-4 md:max-w-3xl mx-auto text-center"
+      >
+        {intl("tutors.description")}
+      </Typography>
       <Content
         tutors={tutors.list}
         loading={tutors.query.isLoading}

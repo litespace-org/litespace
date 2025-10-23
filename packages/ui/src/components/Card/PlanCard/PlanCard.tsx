@@ -51,7 +51,7 @@ export const PlanCard: React.FC<{
         "md:last:col-span-2 xl:last:col-span-1 md:first:justify-self-end md:[&:nth-of-type(2)]:justify-self-start",
         "xl:first:justify-self-auto xl:[&>nth-of-type(2)]:justify-self-auto",
         "relative flex flex-col",
-        "w-full h-full p-[24px] xl:p-[32px]",
+        "w-full min-h-[360px] md:min-h-[416px] h-full p-[24px] xl:p-[32px]",
         "min-w-[323px] max-w-[400px]",
         "bg-natural-50 rounded-2xl border border-natural-100"
       )}

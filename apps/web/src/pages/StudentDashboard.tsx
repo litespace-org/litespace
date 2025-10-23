@@ -5,17 +5,17 @@ import { UpcomingLessons } from "@/components/dashboard/UpcomingLessons";
 import { SuggestedTutors } from "@/components/dashboard/SuggestedTutors";
 import { useOnError } from "@/hooks/error";
 import { router } from "@/lib/routes";
-import EmptyStudentDashboard from "@litespace/assets/EmptyStudentDashboard";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useFindPersonalizedStudentStats } from "@litespace/headless/student";
 import { Button } from "@litespace/ui/Button";
 import { Loading } from "@litespace/ui/Loading";
-import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Accordion } from "@litespace/ui/Accordion";
 import { Web } from "@litespace/utils/routes";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTutors } from "@litespace/headless/tutor";
+import { Tabs } from "@litespace/ui/Tabs";
 
 const StudentDashboard: React.FC = () => {
   const mq = useMediaQuery();
@@ -62,6 +62,7 @@ const StudentDashboard: React.FC = () => {
               isPending={query.isLoading}
               refetch={query.refetch}
             />
+            <Questions />
 
             <PastLessons />
 
@@ -90,9 +91,11 @@ const StudentDashboard: React.FC = () => {
             isPending={query.isLoading}
             refetch={query.refetch}
           />
-
+          <LearningApproachMobile />
+          <div className="flex-1">
+            <UpcomingLessons />
+          </div>
           <PastLessons />
-
           <SuggestedTutors
             tutors={dashboardTutor}
             loading={tutors.query.isLoading}
@@ -103,9 +106,6 @@ const StudentDashboard: React.FC = () => {
             <div className="flex-1 ">
               <ChatSummary />
             </div>
-            <div className="flex-1">
-              <UpcomingLessons />
-            </div>
           </div>
         </div>
       ) : null}
@@ -115,20 +115,144 @@ const StudentDashboard: React.FC = () => {
 
 const EmptyDashboard: React.FC = () => {
   const intl = useFormatMessage();
+  const { md } = useMediaQuery();
 
   return (
-    <div className="my-auto flex flex-col gap-6 mx-auto">
-      <EmptyStudentDashboard className="w-[328px] h-[258px] md:w-[433px] md:h-[342px]" />
-      <div className="flex flex-col gap-4 text-center w-max mx-auto">
-        <Typography tag="p" className="text-subtitle-2 font-medium">
-          {intl("student-dashboard.empty-state.desc")}
-        </Typography>
-        <Link to={router.web({ route: Web.Tutors, full: true })} tabIndex={-1}>
-          <Button className="w-full" type="main" size="large">
-            {intl("student-dashboard.empty-state.btn")}
-          </Button>
-        </Link>
+    <div className="my-auto md:my-12 flex flex-col gap-3 mx-auto p-4">
+      {md ? <Questions /> : null}
+      {!md ? <LearningApproachMobile /> : null}
+      <Link to={router.web({ route: Web.Tutors, full: true })} tabIndex={-1}>
+        <Button
+          className="w-full md:max-w-[250px] mx-auto"
+          type="main"
+          size="large"
+        >
+          {intl("student-dashboard.empty-state.btn")}
+        </Button>
+      </Link>
+    </div>
+  );
+};
+
+const Questions = () => {
+  const [tab, setTab] = useState("methodology");
+  const intl = useFormatMessage();
+
+  const tabs = useMemo(
+    () => [
+      { id: "methodology", label: intl("questions.methodology-tab") },
+      { id: "benefits", label: intl("questions.benefits-tab") },
+    ],
+    [intl]
+  );
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="md:max-w-max md:mx-auto">
+        <Tabs tabs={tabs} setTab={setTab} tab={tab} />
       </div>
+      <div>
+        {tab === "methodology" ? <Methodology /> : null}
+        {tab === "benefits" ? <Benefits /> : null}
+      </div>
+    </div>
+  );
+};
+
+const Methodology = () => {
+  const intl = useFormatMessage();
+  return (
+    <div className="px-4 grid gap-4 md:gap-8 md:grid-cols-3">
+      <div className="border shadow-md rounded-2xl p-4">
+        <h2 className="text-xl font-semibold mb-2 text-natural-700">
+          {intl("questions.methodology.card1.title")}
+        </h2>
+        <p className="text-natural-600 leading-relaxed text-sm">
+          {intl("questions.methodology.card1.desc")}
+        </p>
+      </div>
+
+      <div className="border shadow-md rounded-2xl p-4">
+        <h2 className="text-xl font-semibold mb-2 text-natural-700">
+          {intl("questions.methodology.card2.title")}
+        </h2>
+        <p className="text-natural-600 leading-relaxed text-sm">
+          {intl("questions.methodology.card2.desc")}
+        </p>
+      </div>
+
+      <div className="border shadow-md rounded-2xl p-4">
+        <h2 className="text-xl font-semibold mb-2 text-natural-700">
+          {intl("questions.methodology.card3.title")}
+        </h2>
+        <p className="text-natural-600 leading-relaxed text-sm">
+          {intl("questions.methodology.card3.desc")}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const Benefits = () => {
+  const intl = useFormatMessage();
+  return (
+    <div className="px-4 grid gap-4 md:gap-8 md:grid-cols-3">
+      <div className="border shadow-md rounded-2xl p-4">
+        <h2 className="text-xl font-semibold mb-2 text-natural-700">
+          {intl("questions.benefits.card1.title")}
+        </h2>
+        <p className="text-natural-600 leading-relaxed text-sm">
+          {intl("questions.benefits.card1.desc")}
+        </p>
+      </div>
+
+      <div className="border shadow-md rounded-2xl p-4">
+        <h2 className="text-xl font-semibold mb-2 text-natural-700">
+          {intl("questions.benefits.card2.title")}
+        </h2>
+        <p className="text-natural-600 leading-relaxed text-sm">
+          {intl("questions.benefits.card2.desc")}
+        </p>
+      </div>
+
+      <div className="border shadow-md rounded-2xl p-4">
+        <h2 className="text-xl font-semibold mb-2 text-natural-700">
+          {intl("questions.benefits.card3.title")}
+        </h2>
+        <p className="text-natural-600 leading-relaxed text-sm">
+          {intl("questions.benefits.card3.desc")}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const LearningApproachMobile = () => {
+  const intl = useFormatMessage();
+
+  const methodologyContent = intl("questions.methodology.mobile-content");
+  const studentTipsContent = intl("questions.benefits.mobile-content");
+
+  const questions = [
+    {
+      title: intl("questions.methodology.mobile-title"),
+      content: methodologyContent,
+    },
+    {
+      title: intl("questions.benefits.mobile-title"),
+      content: studentTipsContent,
+    },
+  ];
+
+  return (
+    <div className="block md:hidden">
+      <Accordion
+        items={questions.map(({ title, content }, i) => ({
+          id: i.toString(),
+          title,
+          content,
+        }))}
+      />
     </div>
   );
 };

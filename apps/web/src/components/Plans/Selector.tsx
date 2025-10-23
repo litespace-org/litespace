@@ -3,7 +3,7 @@ import { router } from "@/lib/routes";
 import { IPlan } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { LocalId } from "@litespace/ui/locales";
-import { PlanCard } from "@litespace/ui/PlanCard";
+import { PlanCard, TrialSessionCard } from "@litespace/ui/PlanCard";
 import { Tabs } from "@litespace/ui/Tabs";
 import { nstr, percentage, price } from "@litespace/utils";
 import { Web } from "@litespace/utils/routes";
@@ -56,15 +56,10 @@ export const Selector: React.FC<{
       "plans.card.beginning.description-1",
       "plans.card.beginning.description-2",
     ],
-    [
-      "plans.card.advance.description",
-      "plans.card.advance.description-1",
-      "plans.card.advance.description-2",
-    ],
+    ["plans.card.advance.description", "plans.card.advance.description-1"],
     [
       "plans.card.professional.description",
       "plans.card.professional.description-1",
-      "plans.card.professional.description-2",
     ],
   ]);
 
@@ -72,7 +67,8 @@ export const Selector: React.FC<{
     <div className="flex flex-col gap-6 md:gap-[81px] max-w-screen-xl mx-auto">
       <PlansPanel period={period} setPeriod={setPeriod} />
 
-      <div className="flex flex-wrap items-center md:flex-row justify-items-center justify-center gap-4 lg:gap-6">
+      <div className="flex flex-wrap items-stretch md:flex-row justify-items-center justify-center gap-4 lg:gap-6">
+        <TrialSessionCard />
         {sortedPlans.map((plan, idx) => {
           const index =
             idx < description.current.length

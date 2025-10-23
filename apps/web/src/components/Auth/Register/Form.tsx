@@ -45,9 +45,10 @@ const RegisterForm: React.FC<{ role?: Role }> = ({ role }) => {
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
       user.set({ user: info, token });
-      verifyEmailDialog.show();
+      navigate(Web.CompleteProfile);
+      // verifyEmailDialog.show();
     },
-    [user, verifyEmailDialog]
+    [user, navigate]
   );
 
   const onError = useOnError({
