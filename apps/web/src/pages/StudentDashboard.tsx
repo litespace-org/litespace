@@ -16,6 +16,7 @@ import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTutors } from "@litespace/headless/tutor";
 import { Tabs } from "@litespace/ui/Tabs";
+import { track } from "@/lib/analytics";
 
 const StudentDashboard: React.FC = () => {
   const mq = useMediaQuery();
@@ -230,28 +231,39 @@ const Benefits = () => {
 const LearningApproachMobile = () => {
   const intl = useFormatMessage();
 
-  const methodologyContent = intl("questions.methodology.mobile-content");
-  const studentTipsContent = intl("questions.benefits.mobile-content");
+  const questions = useMemo(
+    () => [
+      {
+        title: intl("questions.methodology.mobile-title"),
+        content: intl("questions.methodology.mobile-content"),
+      },
+      {
+        title: intl("questions.benefits.mobile-title"),
+        content: intl("questions.benefits.mobile-content"),
+      },
+    ],
+    [intl]
+  );
 
-  const questions = [
-    {
-      title: intl("questions.methodology.mobile-title"),
-      content: methodologyContent,
-    },
-    {
-      title: intl("questions.benefits.mobile-title"),
-      content: studentTipsContent,
-    },
-  ];
+  const items = useMemo(
+    () =>
+      questions.map(({ title, content }, i) => ({
+        id: i.toString(),
+        title,
+        content,
+      })),
+    [questions]
+  );
 
   return (
     <div className="block md:hidden">
       <Accordion
-        items={questions.map(({ title, content }, i) => ({
-          id: i.toString(),
-          title,
-          content,
-        }))}
+        onValueChange={(value) => {
+          const item = items.find((item) => item.id === value);
+          if (!item) return;
+          track("view_web_faq", "student_dashboard", item.title);
+        }}
+        items={items}
       />
     </div>
   );

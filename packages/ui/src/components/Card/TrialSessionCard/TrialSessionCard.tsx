@@ -1,7 +1,7 @@
 import { Button } from "@/components/Button";
 import { Typography } from "@/components/Typography";
 import CheckMark from "@litespace/assets/CheckMark";
-import { ILesson } from "@litespace/types";
+import { ILesson, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { price, TOTAL_LESSON_HOURLY_RATE } from "@litespace/utils";
 import cn from "classnames";
@@ -9,7 +9,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Web } from "@litespace/utils/routes";
 
-export const TrialSessionCard: React.FC = () => {
+export const TrialSessionCard: React.FC<{ onClick: Void }> = ({ onClick }) => {
   const intl = useFormatMessage();
 
   return (
@@ -68,7 +68,7 @@ export const TrialSessionCard: React.FC = () => {
           </Typography>
         </div>
       </div>
-      <Link to={Web.Tutors} tabIndex={-1} className="w-full">
+      <Link onClick={onClick} to={Web.Tutors} tabIndex={-1} className="w-full">
         <Button
           size="large"
           className="mt-6 w-full justify-center py-2 bg-primary-500 font-cairo hover:bg-brand-700"
