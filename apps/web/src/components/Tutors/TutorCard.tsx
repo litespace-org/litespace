@@ -13,7 +13,7 @@ import { Web } from "@litespace/utils/routes";
 import cn from "classnames";
 import { isEmpty } from "lodash";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFindTutorRatings } from "@litespace/headless/rating";
 
 const MAXIMUM_CARD_TOPICS_NUM = 4;
@@ -42,6 +42,7 @@ export const TutorCard: React.FC<{
   cardHeight,
 }) => {
   const intl = useFormatMessage();
+  const navigate = useNavigate();
 
   return (
     <Link
@@ -153,21 +154,22 @@ export const TutorCard: React.FC<{
         >
           {intl("tutor-card.book-now")}
         </Button>
-        <Link
-          to={router.web({
-            route: Web.TutorProfile,
-            id: tutorId,
-          })}
+        <Button
+          htmlType="button"
+          className="w-full md:hidden mt-auto text-body font-medium"
+          variant="secondary"
+          size={buttonSize}
+          onClick={() =>
+            navigate(
+              router.web({
+                route: Web.TutorProfile,
+                id: tutorId,
+              })
+            )
+          }
         >
-          <Button
-            htmlType="button"
-            className="w-full md:hidden mt-auto text-body font-medium"
-            variant="secondary"
-            size={buttonSize}
-          >
-            {intl("tutor-card.show-profile")}
-          </Button>{" "}
-        </Link>
+          {intl("tutor-card.show-profile")}
+        </Button>{" "}
       </div>
     </Link>
   );

@@ -14,13 +14,15 @@ import { Typography } from "@/components/Typography";
 export const Accordion: React.FC<{
   items: AccordionItem[];
   onValueChange?: (value: string) => void;
-}> = ({ items, onValueChange }) => {
+  defaultValue?: string;
+}> = ({ items, defaultValue, onValueChange }) => {
   return (
     <Root
       collapsible
       type="single"
       className={cn("flex flex-col w-full rounded-2xl overflow-hidden gap-2")}
       onValueChange={onValueChange}
+      defaultValue={defaultValue}
     >
       {items.map((item) => (
         <Item
