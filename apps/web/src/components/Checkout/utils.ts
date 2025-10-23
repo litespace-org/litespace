@@ -7,7 +7,7 @@ const schema: Zod.Schema<TxTypePayload> = zod.union([
   zod.object({
     type: zod.literal("paid-lesson"),
     tutorId: zod.coerce.number().int().positive(),
-    slotId: zod.coerce.number().int().positive(),
+    slotId: zod.coerce.number().int(),
     start: zod.string().datetime(),
     duration: zod.coerce.number().int().positive(),
   }),
