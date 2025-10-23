@@ -28,8 +28,8 @@ export type Props = {
      * @note role shall be `student` when the current user is tutor and vice versa
      */
     role: "tutor" | "student";
-    topics: Array<string>;
-    level: string;
+    topics?: string[];
+    level?: string;
   };
 
   sendingMessage: boolean;
@@ -138,10 +138,12 @@ export const LessonCard: React.FC<Props> = ({
   }, [getTitle]);
 
   const isEnded = useMemo(() => end.isBefore(dayjs()), [end]);
+
   const isOngoing = useMemo(
     () => !canceled && dayjs().isBetween(dayjs(start), end),
     [canceled, start, end]
   );
+
   const isFuture = useMemo(
     () => !canceled && dayjs().isBefore(dayjs(start)),
     [canceled, start]
@@ -203,8 +205,8 @@ export const LessonCard: React.FC<Props> = ({
   }, [canceled, currentUserRole, isEnded, intl, onJoin, onRebook, onSendMsg]);
 
   const buttonType = useMemo(
-    () => (currentUserRole === "tutor" && isOngoing ? "main" : "natural"),
-    [currentUserRole, isOngoing]
+    () => (isOngoing ? "main" : "natural"),
+    [isOngoing]
   );
 
   const button = (
@@ -216,15 +218,21 @@ export const LessonCard: React.FC<Props> = ({
       onClick={action.onClick}
       loading={sendingMessage}
     >
-      <Typography
-        tag="span"
-        className={cn(
-          "text-caption font-semibold",
-          isOngoing ? "text-natural-50" : "text-natural-700"
-        )}
-      >
-        {action.label}
-      </Typography>
+      {isOngoing ? (
+        <Typography
+          tag="span"
+          className={cn("text-caption font-semibold text-natural-50")}
+        >
+          {action.label}
+        </Typography>
+      ) : (
+        <Typography
+          tag="span"
+          className="text-caption font-semibold text-natural-700"
+        >
+          {action.label}
+        </Typography>
+      )}
     </Button>
   );
 
@@ -261,28 +269,35 @@ export const LessonCard: React.FC<Props> = ({
             >
               {title}
             </Typography>
+
             {!canceled ? (
-              <Menu actions={actions}>
-                <More className="[&>*]:fill-natural-800 w-4 h-1" />
-              </Menu>
+              <div className="border border-natural-100  rounded-lg py-1 px-2">
+                <Menu actions={actions}>
+                  <More className="w-4 h-1 transform -rotate-90 [&>*]:fill-natural-800" />
+                </Menu>
+              </div>
             ) : null}
           </>
         )}
       </div>
+
       <div className="flex flex-col gap-6">
         <div className="flex gap-2">
           <div className="relative min-w-[74px] min-h-[74px] aspect-square shrink-0">
-            <div
-              className={cn(
-                "absolute w-[19px] h-[19px] right-0 top-0  p-0.5 bg-success-700 rounded-full z-10",
-                "flex items-center justify-center"
-              )}
-            >
-              <Typography tag="span" className="text-natural-0 text-[10px]">
-                {member.level}
-              </Typography>
-            </div>
-            <div className="w-full h-full rounded-full overflow-hidden">
+            {currentUserRole === "tutor" ? (
+              <div
+                className={cn(
+                  "absolute w-[19px] h-[19px] right-0 top-0 p-0.5 bg-success-700 rounded-full z-10",
+                  "flex items-center justify-center"
+                )}
+              >
+                <Typography tag="span" className="text-natural-0 text-[10px]">
+                  {member.level}
+                </Typography>
+              </div>
+            ) : null}
+
+            <div className="w-full h-full max-w-[75px] max-h-[75px] rounded-full overflow-hidden">
               <AvatarV2 src={member.image} alt={member.name} id={member.id} />
             </div>
           </div>
@@ -299,10 +314,10 @@ export const LessonCard: React.FC<Props> = ({
                 <Clock className="w-3.5 h-3.5" />
                 <Typography
                   tag="span"
-                  className="text-natural-700 flex items-center text-tiny font-normal"
+                  className="flex items-center text-tiny text-natural-700"
                 >
                   {dayjs(start).format("h:mm a")}
-                  {" - "}
+                  {" الي "}
                   {dayjs(start).add(duration, "minutes").format("h:mm a")}
                 </Typography>
               </div>
@@ -318,26 +333,31 @@ export const LessonCard: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className="mt-2 flex items-center gap-1">
-              {member.topics.slice(0, 4).map((topic) => (
-                <Typography
-                  key={topic}
-                  tag="span"
-                  className="border border-natural-500 rounded-[200px] px-1.5 py-1"
-                >
-                  {topic}
-                </Typography>
-              ))}
-              {member.topics.length > 4 && (
-                <Typography
-                  key="remaining"
-                  tag="span"
-                  className="border border-natural-500 rounded-[200px] px-1.5 py-1"
-                >
-                  {member.topics.length - 4}+
-                </Typography>
-              )}
-            </div>
+            {currentUserRole === "tutor" &&
+            member.topics &&
+            member.topics.length > 0 ? (
+              <div className="mt-2 flex items-center gap-1">
+                {member.topics.slice(0, 4).map((topic) => (
+                  <Typography
+                    key={topic}
+                    tag="span"
+                    className="text-tiny text-natural-500 border border-natural-500 rounded-[200px] px-1.5 py-1"
+                  >
+                    {topic}
+                  </Typography>
+                ))}
+
+                {member.topics.length > 4 && (
+                  <Typography
+                    key="remaining"
+                    tag="span"
+                    className="text-tiny text-natural-500 border border-natural-500 rounded-[200px] px-1.5 py-1"
+                  >
+                    {member.topics.length - 4}+
+                  </Typography>
+                )}
+              </div>
+            ) : null}
           </div>
         </div>
         <div className="flex gap-4">
@@ -346,7 +366,9 @@ export const LessonCard: React.FC<Props> = ({
             <Button
               startIcon={<AllMessages className="icon w-4 h-4" />}
               type="natural"
+              variant="secondary"
               size="large"
+              onClick={onSendMsg}
             />
           )}
         </div>
