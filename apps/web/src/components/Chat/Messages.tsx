@@ -41,6 +41,7 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { capture } from "@/lib/sentry";
 import { useOnError } from "@/hooks/error";
+import { getEmailUserName } from "@litespace/utils";
 
 type RetryFnMap = Record<
   "send" | "update" | "delete",
@@ -92,6 +93,12 @@ const Messages: React.FC<{
   onNewMessage,
 }) => {
   const { user } = useUser();
+
+  const displayName = useMemo(
+    () => otherMember?.name || getEmailUserName(otherMember?.email || ""),
+    [otherMember]
+  );
+
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLUListElement>(null);
 
@@ -309,7 +316,7 @@ const Messages: React.FC<{
       {otherMember ? (
         <ChatHeader
           id={otherMember.id}
-          name={otherMember.name}
+          name={displayName}
           image={otherMember.image}
           role={otherMember.role}
           online={isOnline}

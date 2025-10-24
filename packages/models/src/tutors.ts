@@ -431,6 +431,7 @@ export class Tutors {
       image: users.column("image"),
       bio: this.column("bio"),
       name: users.column("name"),
+      email: users.column("email"),
       gender: users.column("gender"),
       role: users.column("role"),
       lastSeen: users.column("updated_at"),
