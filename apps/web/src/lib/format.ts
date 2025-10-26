@@ -4,6 +4,8 @@
  */
 export function formatBankString(bankReceiver: string) {
   const [bankName, bankAccountNumber] = bankReceiver.split(":");
+  if (!bankAccountNumber) return bankName;
+
   const numOfGroups = Math.ceil(bankAccountNumber.length / 4);
 
   const crafted: string[] = [`${bankName}:`];
