@@ -5,14 +5,9 @@ import { useForm } from "@litespace/headless/form";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { useUpdateUser } from "@litespace/headless/user";
 import { IUser } from "@litespace/types";
-import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Select } from "@litespace/ui/Select";
 import { useToast } from "@litespace/ui/Toast";
-import {
-  NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL,
-  optional,
-} from "@litespace/utils";
+import { NOTIFICATION_METHOD_TO_NOTIFICATION_METHOD_LITERAL } from "@litespace/utils";
 import { useCallback, useMemo, useState } from "react";
 import {
   useSendPhoneCode,
@@ -45,9 +40,9 @@ const NotificationSettings: React.FC<{
   phone: string | null;
   verifiedWhatsApp: boolean;
   verifiedPhone: boolean;
-}> = ({ id, notificationMethod, verifiedWhatsApp, phone, verifiedPhone }) => {
+}> = ({ id, notificationMethod, phone, verifiedPhone }) => {
   const intl = useFormatMessage();
-  const [step, setStep] = useState<"enable" | "choose">("enable");
+  const [step] = useState<"enable" | "choose">("enable");
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [sentCode, setSentCode] = useState<boolean>(false);
   const [unresolvedPhone, setUnresolvedPhone] = useState<boolean>(false);
@@ -55,19 +50,19 @@ const NotificationSettings: React.FC<{
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
 
-  const options = useMemo(
-    () => [
-      {
-        label: intl("shared-settings.edit.notification.none"),
-        value: 0,
-      },
-      {
-        label: intl("shared-settings.edit.notification.whatsapp"),
-        value: IUser.NotificationMethod.Whatsapp,
-      },
-    ],
-    [intl]
-  );
+  // const options = useMemo(
+  //   () => [
+  //     {
+  //       label: intl("shared-settings.edit.notification.none"),
+  //       value: 0,
+  //     },
+  //     {
+  //       label: intl("shared-settings.edit.notification.whatsapp"),
+  //       value: IUser.NotificationMethod.Whatsapp,
+  //     },
+  //   ],
+  //   [intl]
+  // );
 
   const onUpdateUserSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
@@ -180,11 +175,13 @@ const NotificationSettings: React.FC<{
       updateUserMutation.mutate({
         id,
         payload: {
-          notificationMethod: enabled ? IUser.NotificationMethod.Whatsapp : null,
+          notificationMethod: enabled
+            ? IUser.NotificationMethod.Whatsapp
+            : null,
         },
       });
     },
-    [verifiedPhone]
+    [verifiedPhone, id, updateUserMutation]
   );
 
   return (

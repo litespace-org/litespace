@@ -49,7 +49,7 @@ const MenuItem: React.FC<{
       )}
       onClick={!disabled ? onClick : undefined}
     >
-      <p className="truncate leading-normal">{label}</p>
+      <div className="truncate leading-normal">{label}</div>
       {checked ? <CheckIcon /> : null}
     </Item>
   );
