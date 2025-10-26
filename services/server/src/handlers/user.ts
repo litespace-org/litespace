@@ -280,6 +280,7 @@ function update(_: ApiContext) {
         city,
         activated,
         bypassOnboarding,
+        notificationMethod,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
       // input fields validations
@@ -356,9 +357,11 @@ function update(_: ApiContext) {
           verifiedWhatsApp: newPhone ? false : undefined,
           password: password ? hashPassword(password.new) : undefined,
           notificationMethod:
-            newPhone && !target.phone
-              ? IUser.NotificationMethod.Whatsapp
-              : undefined,
+            notificationMethod || notificationMethod === null
+              ? notificationMethod
+              : newPhone && !target.phone
+                ? IUser.NotificationMethod.Whatsapp
+                : undefined,
         };
 
         // Update Lead document in ErpNext server

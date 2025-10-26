@@ -1,8 +1,8 @@
 import crypto from "node:crypto";
 import s3 from "@/lib/s3";
 import { isValidPhone } from "@litespace/utils";
-import { users } from "@litespace/models";
-import { IUser } from "@litespace/types";
+import { knex, users, students } from "@litespace/models";
+import { IStudent, IUser } from "@litespace/types";
 import { InvalidPhoneNumber, MissingPhoneNumber } from "@/lib/error/local";
 
 export function hashPassword(password: string): string {
@@ -79,4 +79,32 @@ export async function withPhone(
   // update user phone if needed.
   if (update) await users.update(user.id, { phone });
   return phone;
+}
+
+export async function registerNewStudent(
+  payload: Partial<IUser.CreateApiPayload> &
+    Partial<IStudent.CreateApiPayload> & { verifiedEmail?: boolean }
+) {
+  return await knex.transaction(async (tx) => {
+    const user = await users.create(
+      {
+        role: IUser.Role.Student,
+        email: payload.email,
+        password: payload.password ? hashPassword(payload.password) : "",
+        verifiedEmail: payload.verifiedEmail,
+      },
+      tx
+    );
+
+    const student = await students.create({
+      userId: user.id,
+      jobTitle: payload.jobTitle || null,
+      englishLevel: payload.englishLevel || null,
+      learningObjective: payload.learningObjective || null,
+      timePeriod: payload.timePeriod || null,
+      tx,
+    });
+
+    return { user, student };
+  });
 }

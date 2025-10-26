@@ -7,9 +7,9 @@ import {
   serviceUnavailable,
   wrongPassword,
 } from "@/lib/error/api";
-import { knex, users } from "@litespace/models";
+import { users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
-import { isSamePassword, withImageUrl } from "@/lib/user";
+import { isSamePassword, registerNewStudent, withImageUrl } from "@/lib/user";
 import { IUser } from "@litespace/types";
 import { email, password, string } from "@/validation/utils";
 import { googleConfig, jwtSecret } from "@/constants";
@@ -127,16 +127,13 @@ async function loginWithGoogle(
     // TODO: remove this condition once the turor onboarding is finalized.
     if (role === IUser.Role.Tutor) return next(serviceUnavailable());
 
-    const freshUser = await knex.transaction(async (tx) => {
-      const user = await users.create(
-        { email: data.email, role, verifiedEmail: data.verified },
-        tx
-      );
-      // TODO: uncomment this once the tutor onboarding is finalized.
-      // if (role === IUser.Role.Tutor) await tutors.create(user.id, tx);
-      return user;
+    const { user } = await registerNewStudent({
+      email: data.email,
+      verifiedEmail: data.verified,
+      role,
     });
-    return await success(freshUser);
+
+    return await success(user);
   }
 
   return next(notfound.user());
