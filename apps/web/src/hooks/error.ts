@@ -9,8 +9,10 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { LocalId } from "@litespace/ui/locales";
 import { useToast } from "@litespace/ui/Toast";
 import { isUnauthenticated, ResponseError } from "@litespace/utils";
+import { Web } from "@litespace/utils/routes";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export type ErrorPayload = {
   raw: unknown;
@@ -38,6 +40,7 @@ export function useOnError(
   const handlerRef = useRef<Optional<Handler | null>>(payload.handler);
   const resetQueryRef = useRef<Optional<Void>>(undefined);
   const logger = useLogger();
+  const navigate = useNavigate();
 
   useEffect(() => {
     handlerRef.current = payload.handler;
@@ -56,7 +59,8 @@ export function useOnError(
 
       // Direct the user to the login page.
       if (isUnauthenticated(error) && !disableAutoNavigate) {
-        return user.logout();
+        user.logout();
+        return navigate(Web.Login);
       }
 
       if (!handlerRef.current) return;
@@ -67,7 +71,7 @@ export function useOnError(
         errorCode: error instanceof ResponseError ? error.errorCode : undefined,
       });
     },
-    [logger, disableAutoNavigate, user]
+    [logger, disableAutoNavigate, user, navigate]
   );
 
   useEffect(() => {

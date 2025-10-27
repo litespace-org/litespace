@@ -1,8 +1,8 @@
 import { useApi } from "@/api/context";
 import { IPlan, Void } from "@litespace/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { QueryKey } from "@/constants";
+import { MutationKey, QueryKey } from "@/constants";
 import { usePaginate } from "@/pagination";
 import { useExtendedQuery } from "@/query";
 
@@ -98,16 +98,24 @@ export function useFindPlanById(id?: number) {
   });
 }
 
-export function usePlanCheckoutUrl(payload?: IPlan.CheckoutPayload) {
+export function usePlanCheckoutUrl({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: (url: string) => void;
+  onError?: (error: Error) => void;
+}) {
   const api = useApi();
 
   const initExpress = useCallback(
-    () => (payload ? api.plan.checkout(payload) : null),
-    [api.plan, payload]
+    (payload: IPlan.CheckoutPayload) => api.plan.checkout(payload),
+    [api.plan]
   );
 
-  return useQuery({
-    queryFn: initExpress,
-    queryKey: [QueryKey.PlanCheckout],
+  return useMutation({
+    mutationFn: initExpress,
+    mutationKey: [MutationKey.PlanCheckout],
+    onSuccess,
+    onError,
   });
 }

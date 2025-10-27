@@ -23,8 +23,8 @@ export class Plan extends Base {
   }
 
   async checkout(
-    params: IPlan.CheckoutPayload
+    payload: IPlan.CheckoutPayload
   ): Promise<IPlan.CheckoutResponse> {
-    return this.get({ route: `/api/v1/plan/checkout`, params });
+    return this.post({ route: `/api/v1/plan/checkout`, payload });
   }
 }

@@ -3,10 +3,10 @@ import { Router } from "express";
 
 const router = Router();
 
-router.post("/", plan.create);
 router.get("/list", plan.find);
-router.get("/checkout", plan.checkout);
 router.get("/:id", plan.findById);
+router.post("/", plan.create);
+router.post("/checkout", plan.checkout);
 router.patch("/:id", plan.update);
 router.delete("/:id", plan.delete);
 

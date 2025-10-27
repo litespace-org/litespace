@@ -78,8 +78,8 @@ export class Lesson extends Base {
   }
 
   async checkout(
-    params: ILesson.CheckoutPayload
+    payload: ILesson.CheckoutPayload
   ): Promise<ILesson.CheckoutResponse> {
-    return this.get({ route: `/api/v1/lesson/checkout`, params });
+    return this.post({ route: `/api/v1/lesson/checkout`, payload });
   }
 }

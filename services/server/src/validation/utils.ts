@@ -19,7 +19,7 @@ import zod, { ZodLiteral } from "zod";
 
 export const id = zod.coerce.number().positive().int();
 
-export const pseudoId = zod.coerce.number().int();
+export const pseudoId = zod.coerce.number().negative().int();
 
 export const ids = id.array();
 

@@ -214,7 +214,10 @@ const Body: React.FC<{
   )
     return <Success type={transaction.data.type} />;
 
-  if (transaction.data?.status === ITransaction.Status.Processed)
+  if (
+    transaction.data?.status === ITransaction.Status.New ||
+    transaction.data?.status === ITransaction.Status.Processed
+  )
     return (
       <StatusContainer
         transactionId={transaction.data.id}

@@ -5,6 +5,7 @@ import {
   duration,
   id,
   jsonBoolean,
+  boolean,
   pageNumber,
   pageSize,
   pseudoId,
@@ -148,7 +149,7 @@ const createWithEWalletPayload: ZodSchema<ILesson.CreateWithEWalletApiPayload> =
 const checkoutPayload: ZodSchema<ILesson.CheckoutPayload> = zod.object({
   duration,
   tutorId: id,
-  slotId: id,
+  slotId: id.or(pseudoId),
   start: datetime,
   returnUrl: url,
   paymentMethod: unionOfLiterals<IFawry.PaymentMethod>([
@@ -157,8 +158,8 @@ const checkoutPayload: ZodSchema<ILesson.CheckoutPayload> = zod.object({
     "PAYATFAWRY",
     "Mobile Wallet",
   ]),
-  saveCardInfo: jsonBoolean.optional(),
-  authCaptureModePayment: jsonBoolean.optional(),
+  saveCardInfo: boolean.optional(),
+  authCaptureModePayment: boolean.optional(),
 });
 
 async function createWithCard(req: Request, res: Response, next: NextFunction) {
@@ -756,7 +757,17 @@ async function checkout(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
   if (!user.phone) return next(phoneRequired());
 
-  const payload = checkoutPayload.parse(req.query);
+  const payload = checkoutPayload.parse(req.body);
+
+  // TODO: remove once the policy changes back
+  if (payload.slotId < 0) {
+    const pseudoSlot = await createPseudoLessonSlot({
+      tutorId: payload.tutorId,
+      start: payload.start,
+      duration: payload.duration,
+    });
+    payload.slotId = pseudoSlot.id;
+  }
 
   const valid = await validateCreateLessonPayload(payload);
   if (valid instanceof TutorNotFound) return next(notfound.tutor());
