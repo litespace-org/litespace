@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
-import Spinner from "@litespace/assets/Spinner";
+import LoadingV2 from "@litespace/assets/LoadingV2";
 
 export const Loading: React.FC<{
   text?: string;
@@ -9,15 +9,13 @@ export const Loading: React.FC<{
 }> = ({ text, size = "small" }) => {
   return (
     <div className="flex flex-col justify-center items-center gap-4">
-      <Spinner
-        className={cn("stroke-natural-600", {
-          "w-spinner-2x h-spinner-2x [&_circle]:stroke-[2]": size === "small",
-          "w-spinner-3x h-spinner-3x [&_circle]:stroke-[1.5]":
-            size === "medium",
-          "w-spinner-4x h-spinner-4x [&_circle]:stroke-[1]": size === "large",
+      <LoadingV2
+        className={cn({
+          "w-spinner-2x h-spinner-2x [&_path]:fill-[2]": size === "small",
+          "w-spinner-3x h-spinner-3x [&_path]:fill-[1.5]": size === "medium",
+          "w-spinner-4x h-spinner-4x [&_path]:fill-[2]": size === "large",
         })}
       />
-
       {text ? (
         <Typography
           tag="span"
