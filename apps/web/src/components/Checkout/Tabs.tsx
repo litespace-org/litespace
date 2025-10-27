@@ -58,16 +58,16 @@ const Header: React.FC<{ tab: Tab; setTab(tab: Tab): void }> = ({
         setTab={setTab}
         tabs={[
           {
-            id: "card",
-            label: intl("checkout.tabs.paywithcard"),
+            id: "fawry",
+            label: intl("checkout.tabs.fawry"),
           },
           {
             id: "ewallet",
             label: intl("checkout.tabs.ewallet"),
           },
           {
-            id: "fawry",
-            label: intl("checkout.tabs.fawry"),
+            id: "card",
+            label: intl("checkout.tabs.paywithcard"),
           },
         ]}
       />
@@ -95,7 +95,7 @@ const Body: React.FC<{
   transactionStatus,
 }) => {
   return (
-    <div className="flex flex-col justify-center items-center w-full">
+    <div className="flex flex-col justify-center items-center sm:w-full">
       <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-4 lg:gap-10 lg:min-w-[950px] ">
         <PaymentPannel
           userId={userId}

@@ -41,7 +41,7 @@ function useCheckoutUrlQueryParams() {
 
   const tab = useMemo((): Tab => {
     const tab = params.get("tab");
-    if (!tab || !isValidTab(tab)) return "card";
+    if (!tab || !isValidTab(tab)) return "fawry";
     return tab;
   }, [params]);
 

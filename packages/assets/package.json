@@ -148,6 +148,7 @@
     "./PaperMessage2": "./dist/PaperMessage2.tsx",
     "./Paperclip": "./dist/Paperclip.tsx",
     "./Pause": "./dist/Pause.tsx",
+    "./PayWithVisa": "./dist/PayWithVisa.tsx",
     "./People": "./dist/People.tsx",
     "./Pin": "./dist/Pin.tsx",
     "./Play": "./dist/Play.tsx",
