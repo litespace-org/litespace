@@ -86,3 +86,11 @@ export type FindApiResponse = Paginated<Self>;
 export type FindByIdApiQuery = { id: number };
 
 export type FindByIdApiResponse = Self;
+
+export type SendAdMessageApiPayload = {
+  createdAt: IFilter.Date;
+};
+
+export type SendAdMessageApiResponse = {
+  count: number;
+};

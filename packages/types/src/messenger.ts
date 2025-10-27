@@ -48,6 +48,10 @@ export type Template =
         time: string;
         url: string;
       };
+    }
+  | {
+      name: "ad_message";
+      parameters: object;
     };
 
 export type Message = {

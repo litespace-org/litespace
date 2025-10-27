@@ -210,6 +210,7 @@ export type FindModelQuery<T extends Field = Field> =
     gender?: Gender;
     city?: City;
     select?: T[];
+    createdAt?: IFilter.Date;
   };
 
 export type FindUsersApiQuery = IFilter.SkippablePagination & {
@@ -217,6 +218,7 @@ export type FindUsersApiQuery = IFilter.SkippablePagination & {
   verified?: boolean;
   gender?: Gender;
   city?: City;
+  createdAt?: IFilter.Date;
 };
 
 export type FindStudentStatsApiResponse = {

@@ -16,6 +16,7 @@ import {
   studentEnglishLevel,
   timePeriod,
   withNamedId,
+  dateFilter,
 } from "@/validation/utils";
 import { encodeAuthJwt } from "@litespace/auth";
 import { generateConfirmationCode } from "@/lib/confirmationCodes";
@@ -24,6 +25,7 @@ import { environment, jwtSecret } from "@/constants";
 import dayjs from "@/lib/dayjs";
 import { sendBackgroundMessage } from "@/workers";
 import { isAdmin, isStudent, isTutor } from "@litespace/utils/user";
+import { sendMsg } from "@/lib/messenger";
 
 const createStudentPayload: ZodSchema<IStudent.CreateApiPayload> = zod.object({
   email,
@@ -51,6 +53,11 @@ const findStudentsQuery: ZodSchema<IStudent.FindApiQuery> = zod.object({
   page: zod.optional(pageNumber),
   size: zod.optional(pageSize),
 });
+
+const sendAdMessagePayload: ZodSchema<IStudent.SendAdMessageApiPayload> =
+  zod.object({
+    createdAt: dateFilter,
+  });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const payload: IStudent.CreateApiPayload = createStudentPayload.parse(
@@ -151,9 +158,52 @@ export async function findById(
   res.status(200).json(result);
 }
 
+export async function sendAdMessage(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const payload = sendAdMessagePayload.parse(req.body);
+  const result = await users.find({
+    role: IUser.Role.Student,
+    createdAt: payload.createdAt,
+    full: true,
+  });
+
+  const students = result.list.filter((s) => s.phone);
+
+  await Promise.all(
+    students.map((student) =>
+      student.phone
+        ? sendMsg(
+            {
+              to: student.phone,
+              template: {
+                name: "ad_message",
+                parameters: {},
+              },
+              method: IUser.NotificationMethod.Whatsapp,
+            },
+            true
+          )
+        : undefined
+    )
+  );
+
+  const response: IStudent.SendAdMessageApiResponse = {
+    count: students.length,
+  };
+  res.status(200).json(response);
+}
+
 export default {
   create: safeRequest(create),
   update: safeRequest(update),
   find: safeRequest(find),
   findById: safeRequest(findById),
+  sendAdMessage: safeRequest(sendAdMessage),
 };

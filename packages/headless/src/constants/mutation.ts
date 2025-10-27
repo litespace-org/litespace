@@ -55,4 +55,5 @@ export enum MutationKey {
   FawryRefund = "fawry-refund",
   PlanCheckout = "plan-checkout",
   LessonCheckout = "lesson-checkout",
+  SendAdMessage = "send-ad-message",
 }

@@ -1,6 +1,7 @@
 import {
   countRows,
   knex,
+  withDateFilter,
   withListFilter,
   WithOptionalTx,
   withSkippablePagination,
@@ -151,6 +152,7 @@ export class Users extends Model<
     gender,
     city,
     select,
+    createdAt,
     ...pagination
   }: WithOptionalTx<IUser.FindModelQuery<T>>): Promise<
     Paginated<Pick<IUser.Self, T>>
@@ -162,6 +164,7 @@ export class Users extends Model<
     if (verified) base.andWhere(this.column("verified_email"), verified);
     if (gender) base.andWhere(this.column("gender"), gender);
     if (city) base.andWhere(this.column("city"), city);
+    withDateFilter(base, this.column("created_at"), createdAt);
 
     const total = await countRows(base.clone(), {
       column: this.column("id"),
