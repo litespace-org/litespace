@@ -178,6 +178,7 @@ const Lesson: React.FC<{
         >
           {intl("checkout.lesson.details")}
         </Typography>
+
         <TutorDetails tutor={txTypeDataQuery.data.tutor} />
 
         <Divider />
