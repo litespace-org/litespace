@@ -21,6 +21,7 @@ import Tag from "@litespace/assets/Tag";
 import Users from "@litespace/assets/Users";
 import Video from "@litespace/assets/Video";
 import Home from "@litespace/assets/Home";
+import Messages from "@litespace/assets/Monitor";
 
 import { router } from "@/lib/route";
 import { Icon } from "@/types/common";
@@ -174,6 +175,13 @@ const Sidebar: React.FC = () => {
       Icon: People,
     };
 
+    const adMessage: LinkInfo = {
+      label: intl("dashboard.ad-message.title"),
+      route: Dashboard.AdMessage,
+      isActive: match(Dashboard.AdMessage),
+      Icon: Messages,
+    };
+
     if (user?.role === IUser.Role.Studio) return [photoSession];
 
     return [
@@ -187,6 +195,7 @@ const Sidebar: React.FC = () => {
       photoSession,
       lessons,
       tutors,
+      adMessage,
     ];
   }, [intl, location.pathname, user?.role]);
 

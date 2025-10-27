@@ -96,3 +96,26 @@ export function useFindStudentById(id: number): UseQueryResult<IStudent.Self> {
     queryKey: [QueryKey.FindStudentById],
   });
 }
+
+export function useSendAdMessage({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<IStudent.SendAdMessageApiResponse>;
+  onError?: OnError;
+}) {
+  const api = useApi();
+
+  const send = useCallback(
+    async ({ payload }: { payload: IStudent.SendAdMessageApiPayload }) =>
+      api.student.sendAdMessage(payload),
+    [api.student]
+  );
+
+  return useMutation({
+    mutationFn: send,
+    mutationKey: [MutationKey.SendAdMessage],
+    onSuccess,
+    onError,
+  });
+}

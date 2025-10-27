@@ -49,6 +49,7 @@ import {
   id,
   queryBoolean,
   datetime,
+  dateFilter,
 } from "@/validation/utils";
 import { environment, jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, first, groupBy } from "lodash";
@@ -141,6 +142,7 @@ const findUsersQuery: ZodSchema<IUser.FindUsersApiQuery> = zod.object({
   city: zod.nativeEnum(IUser.City).optional(),
   page: pageNumber.optional(),
   size: pageSize.optional(),
+  createdAt: dateFilter.optional(),
 });
 
 const findOnboardedTutorsQuery: ZodSchema<ITutor.FindOnboardedTutorsQuery> =

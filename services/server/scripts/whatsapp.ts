@@ -32,16 +32,28 @@ const sendMessageCommand = new Command()
     "-r, --receiver <string>",
     "The phone number that should recieve the message"
   )
-  .action(async ({ receiver }: { receiver: string }) => {
-    sendMsg({
-      to: receiver,
-      template: {
-        name: "hello_world",
-        parameters: {},
-      },
-      method: IUser.NotificationMethod.Whatsapp,
-    });
-  });
+  .option(
+    "-t, --template <string>",
+    "The template to be sent: hello_world or ad_message"
+  )
+  .action(
+    async ({
+      receiver,
+      template,
+    }: {
+      receiver: string;
+      template?: "hello_world" | "ad_message";
+    }) => {
+      sendMsg({
+        to: receiver,
+        template: {
+          name: template || "hello_world",
+          parameters: {},
+        },
+        method: IUser.NotificationMethod.Whatsapp,
+      });
+    }
+  );
 
 new Command()
   .name("WhatsApp API")
