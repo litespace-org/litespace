@@ -34,7 +34,7 @@ export function isFieldError(value: unknown): value is FieldError {
 export function isForbidden(error: unknown) {
   return (
     error instanceof ResponseError &&
-    (error.statusCode === 401 || error.errorCode === ApiError.Forbidden)
+    (error.statusCode === 403 || error.errorCode === ApiError.Forbidden)
   );
 }
 

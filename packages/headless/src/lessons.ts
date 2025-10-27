@@ -264,16 +264,24 @@ export function useFindLesson(id?: number) {
   });
 }
 
-export function useLessonCheckoutUrl(payload?: ILesson.CheckoutPayload) {
+export function useLessonCheckoutUrl({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: (url: string) => void;
+  onError?: (error: Error) => void;
+}) {
   const api = useApi();
 
   const initExpress = useCallback(
-    () => (payload ? api.lesson.checkout(payload) : null),
-    [api.lesson, payload]
+    (payload: ILesson.CheckoutPayload) => api.lesson.checkout(payload),
+    [api.lesson]
   );
 
-  return useQuery({
-    queryFn: initExpress,
-    queryKey: [QueryKey.LessonCheckout],
+  return useMutation({
+    mutationFn: initExpress,
+    mutationKey: [MutationKey.LessonCheckout],
+    onSuccess,
+    onError,
   });
 }

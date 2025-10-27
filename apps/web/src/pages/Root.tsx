@@ -15,7 +15,7 @@ import { useUser } from "@litespace/headless/context/user";
 import { Button } from "@litespace/ui/Button";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { dayjs, isUnauthenticated } from "@litespace/utils";
+import { dayjs } from "@litespace/utils";
 import { Landing, Web } from "@litespace/utils/routes";
 import { isProfileComplete } from "@litespace/utils/tutor";
 import { destructureRole, isRegularUser } from "@litespace/utils/user";
@@ -38,7 +38,7 @@ const publicRoutes: Web[] = [
 ];
 
 const Root: React.FC = () => {
-  const { user, meta, error, logout } = useUser();
+  const { user, meta, logout } = useUser();
   const intl = useFormatMessage();
 
   const [stepNumber, setStepNumber] = useState(0);
@@ -86,11 +86,6 @@ const Root: React.FC = () => {
   const publicRoute = useMemo(() => {
     return publicRoutes.some((route) => router.match(route, location.pathname));
   }, [location.pathname]);
-
-  useEffect(() => {
-    if (!isUnauthenticated(error) || publicRoute) return;
-    navigate(Web.Login);
-  }, [error, logout, navigate, publicRoute]);
 
   useEffect(() => {
     const root = router.match(Web.Root, location.pathname);

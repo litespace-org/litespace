@@ -16,10 +16,9 @@ import {
   queryBoolean,
   withNamedId,
   unionOfLiterals,
-  jsonBoolean,
   planPeriod,
 } from "@/validation/utils";
-import { IFawry, IPlan, ITransaction } from "@litespace/types";
+import { IFawry, IPlan } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import {
@@ -35,6 +34,7 @@ import { calculatePlanPrice } from "@/lib/plan";
 import { createPaidPlanTx } from "@/lib/transaction";
 import { fawry } from "@/fawry/api";
 import { encodeMerchantRefNumber } from "@/fawry/lib/ids";
+import { TRANSACTION_PAYMENT_METHOD_TO_FAWRY_PAYMENT_METHOD } from "@/fawry/constants";
 
 const number = zod.number().int().positive().gt(0);
 const discount = zod.number().int().gte(0);
@@ -49,8 +49,8 @@ const checkoutPayload: ZodSchema<IPlan.CheckoutPayload> = zod.object({
     "PAYATFAWRY",
     "Mobile Wallet",
   ]),
-  saveCardInfo: jsonBoolean.optional(),
-  authCaptureModePayment: jsonBoolean.optional(),
+  saveCardInfo: boolean.optional(),
+  authCaptureModePayment: boolean.optional(),
 });
 
 const createPlanPayload: ZodSchema<IPlan.CreateApiPayload> = zod.object({
@@ -212,7 +212,7 @@ async function checkout(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
   if (!user.phone) return next(phoneRequired());
 
-  const payload = checkoutPayload.parse(req.query);
+  const payload = checkoutPayload.parse(req.body);
 
   const plan = await plans.findById(payload.planId);
   if (!plan) return next(notfound.plan());
@@ -232,7 +232,8 @@ async function checkout(req: Request, res: Response, next: NextFunction) {
     userId: user.id,
     phone: user.phone,
     amount: planPrice,
-    paymentMethod: ITransaction.PaymentMethod.Card,
+    paymentMethod:
+      TRANSACTION_PAYMENT_METHOD_TO_FAWRY_PAYMENT_METHOD[payload.paymentMethod],
     planId: plan.id,
     planPeriod: period,
   });

@@ -66,6 +66,7 @@ import { FawryError } from "@/lib/error/local";
 import { forgeFawryPayload } from "@/fawry/lib/utils";
 import { withDevLog } from "@/lib/utils";
 import { calcRefundAmount, performRefundRepercussion } from "@/lib/refund";
+import { isAxiosError } from "axios";
 
 const planPeroid = unionOfLiterals<IPlan.PeriodLiteral>([
   "month",
@@ -435,9 +436,26 @@ async function cancelUnpaidOrder(
     createdAt: transaction.createdAt,
   });
 
-  const { fawryRefNumber } = await fawry.getPaymentStatus(merchantRefNumber);
+  const paymentStatus = await safePromise(
+    fawry.getPaymentStatus(merchantRefNumber)
+  );
 
-  const result = await safePromise(fawry.cancelUnpaidOrder(fawryRefNumber));
+  if (paymentStatus instanceof Error) {
+    if (isAxiosError(paymentStatus) && paymentStatus.status === 404) {
+      await transactions.update({
+        id: transaction.id,
+        status: ITransaction.Status.Canceled,
+      });
+      res.sendStatus(200);
+      return;
+    }
+    return next(fawryError("Failed to cancel order"));
+  }
+
+  const result = await safePromise(
+    fawry.cancelUnpaidOrder(paymentStatus.fawryRefNumber)
+  );
+
   if (result instanceof Error)
     return next(fawryError("Failed to cancel order"));
 

@@ -122,26 +122,11 @@ const PaymentPannel: React.FC<{
   sync: Void;
   transactionId?: number;
   transactionStatus?: ITransaction.Status;
-}> = ({
-  tab,
-  userId,
-  phone,
-  syncing,
-  sync,
-  txTypeData,
-  transactionId,
-  transactionStatus,
-}) => {
+}> = ({ tab, phone, syncing, sync, txTypeData, transactionStatus }) => {
   return (
     <div className="w-full md:flex-1 flex flex-col">
       {tab === "card" ? (
-        <Card
-          transactionId={transactionId}
-          transactionStatus={transactionStatus}
-          txTypeData={txTypeData}
-          userId={userId}
-          phone={phone}
-        />
+        <Card transactionStatus={transactionStatus} txTypeData={txTypeData} />
       ) : null}
 
       {tab === "ewallet" ? (
