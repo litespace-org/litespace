@@ -99,7 +99,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           {title}
         </Typography>
       }
-      className="w-full md:w-[512px]"
+      className="w-full sm:w-[512px]"
       close={confirming ? undefined : onClose}
       open={opened}
     >
