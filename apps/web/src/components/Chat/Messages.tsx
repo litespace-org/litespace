@@ -328,7 +328,7 @@ const Messages: React.FC<{
       ) : null}
 
       {room ? (
-        <div className={"flex flex-col h-[85%] gap-2"}>
+        <div className={"flex flex-col min-h-[85%] gap-2"}>
           <div
             id="messages-content"
             className={cn(
