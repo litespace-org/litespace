@@ -822,6 +822,7 @@
   "lessons.button.rebook": "إعادة الحجز",
   "lessons.button.join": "دخول الجلسة",
   "lessons.button.send-message": "إرسال رسالة",
+  "lessons.button.contact-student": "تواصل مع الطالب",
   "lessons.button.find-tutors": "تصفح المعلمين",
   "lessons.canceled-by-tutor": "لقد تم إلغاء الجلسة من قبل المعلم",
   "lessons.canceled-by-student": "لقد قام الطالب بإلغاء الجلسة",

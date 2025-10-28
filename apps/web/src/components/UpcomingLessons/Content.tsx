@@ -28,6 +28,8 @@ import { Button } from "@litespace/ui/Button";
 import { UNCANCELLABLE_LESSON_HOURS } from "@litespace/utils";
 import CloseCircle from "@litespace/assets/CloseCircle";
 import { ConfirmationDialog } from "@litespace/ui/ConfirmationDialog";
+import { useUserTopics } from "@litespace/headless/topic";
+
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
 export const Content: React.FC<{
@@ -46,7 +48,8 @@ export const Content: React.FC<{
   const toast = useToast();
   const { user } = useUser();
   const navigate = useNavigate();
-
+  const { query } = useUserTopics();
+  const userTopics = query.data;
   const [cancelLessonData, setCancelLessonData] = useState<{
     id: number | null;
     start: string | null;
@@ -64,6 +67,8 @@ export const Content: React.FC<{
   });
   const [manageLessonData, setManageLessonData] =
     useState<ManageLessonPayload | null>(null);
+
+  console.log(userTopics);
 
   const onCancelSuccess = useCallback(() => {
     toast.success({ title: intl("cancel-lesson.success") });
@@ -140,8 +145,9 @@ export const Content: React.FC<{
 
   return (
     <div>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-2 md:gap-x-3 gap-y-4 md:gap-y-6">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(385px,1fr))] gap-x-2 md:gap-x-3 gap-y-4 md:gap-y-6">
         {list.map((item) => {
+          // console.log("list", item.lesson);
           const tutor = item.members.find(
             (member) =>
               member.role === IUser.Role.Tutor ||
@@ -153,6 +159,11 @@ export const Content: React.FC<{
           );
 
           if (!tutor || !otherMember) return null;
+
+          const userOfStudent = userTopics
+            ?.filter((t) => t.userId === otherMember.userId)
+            .map((t) => t.name.ar);
+          console.log(userOfStudent);
           return (
             <motion.div
               initial={{ opacity: 0 }}
@@ -209,6 +220,8 @@ export const Content: React.FC<{
                     otherMember.role === IUser.Role.Student
                       ? "student"
                       : "tutor",
+                  topics: userOfStudent,
+                  // level: "A1",
                 }}
                 sendingMessage={sendingMessageLessonId === item.lesson.id}
                 disabled={!!sendingMessageLessonId}
