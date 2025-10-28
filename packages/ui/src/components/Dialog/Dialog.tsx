@@ -163,7 +163,7 @@ export const Dialog: React.FC<{
           variant === "default" ? (
             <>
               <Optional show={!hiddenTitle}>
-                <div className="flex justify-between items-center md:items-start w-full">
+                <div className="flex justify-between border-b items-center md:items-start w-full">
                   <Title>{title}</Title>
                   <Optional show={!!close}>
                     <Close

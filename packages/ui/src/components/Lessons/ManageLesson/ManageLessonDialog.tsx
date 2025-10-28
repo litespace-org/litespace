@@ -25,22 +25,20 @@ import { concat, isEmpty } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { arabicTimezoneNames } from "@/constants/labels";
 import { Block } from "@/components/Lessons/ManageLesson/Block";
+import { Link } from "react-router-dom";
+import { Web } from "@litespace/utils/routes";
 
 const LoadingWrapper: React.FC<{
   tutorName: string | null;
-}> = ({ tutorName }) => {
+}> = () => {
   const intl = useFormatMessage();
   const { md } = useMediaQuery();
 
   return (
-    <div className="w-full flex flex-col justify-center items-center gap-8 md:mt-[109px] md:mb-[110px]">
+    <div className="w-full flex flex-col justify-center items-center gap-8 mt-4">
       <Loading
-        size={md ? "medium" : "small"}
-        text={
-          tutorName
-            ? intl("book-lesson.loading-slots", { tutor: tutorName })
-            : undefined
-        }
+        size={md ? "large" : "small"}
+        text={intl("book-lesson.loading-slots")}
       />
     </div>
   );
@@ -54,7 +52,7 @@ const Error: React.FC<{
   const { md } = useMediaQuery();
 
   return (
-    <div className="md:w-full flex flex-col justify-center items-center gap-8 md:mt-[82px] md:mb-[82px]">
+    <div className="md:w-full mt-4">
       <LoadingError
         error={intl("book-lesson.error-slots", { tutor: tutorName })}
         retry={retry}
@@ -115,7 +113,7 @@ const DepletedSubscription: React.FC = () => {
       <NoMoreMinutes className="w-[168px] h-[168px]" />
       <Typography
         tag="p"
-        className="text-caption sm:text-body font-bold text-natural-700"
+        className="text-caption sm:text-body text-natural-700"
       >
         {intl("book-lesson.depleted-subscription")}
       </Typography>
@@ -345,17 +343,18 @@ export const ManageLessonDialog: React.FC<{
             <Typography tag="p" className="text-caption font-bold">
               {intl("book-lesson.title-1")}
             </Typography>
+
             <Typography
               tag="p"
               className="text-tiny md:max-w-[340px] text-natural-600"
             >
-              {intl("book-lesson.title-2")}
+              {intl("book-lesson.title-2", { value: name })}
             </Typography>
           </div>
         </div>
       }
       className={cn(
-        "flex flex-col !w-auto max-w-[350px] md:min-w-[450px] md:max-w-max mx-auto py-4 lg:!py-6 _sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0",
+        "flex flex-col !w-auto max-w-[350px] max-h-[324px] md:min-w-[450px] md:max-w-max mx-auto py-4 lg:!py-6 _sm:w-[512px] [&>div:first-child]:!px-4 sm:[&>div:first-child]:!px-0 ",
         {
           "!left-0 right-0 translate-x-0": !sm,
         }
@@ -377,6 +376,15 @@ export const ManageLessonDialog: React.FC<{
         {depletedSubscription && !error && !loading ? (
           <Animation key="depleted-subscription" id="depleted-subscription">
             <DepletedSubscription />
+
+            <Link to={Web.Plans}>
+              <Button
+                className="w-full text-body font-medium mt-4"
+                size="medium"
+              >
+                {intl("book-lesson.button.plans")}
+              </Button>
+            </Link>
           </Animation>
         ) : null}
 
@@ -475,6 +483,7 @@ export const ManageLessonDialog: React.FC<{
                       ],
                   })}
                 </Typography>
+
                 <Confirm
                   disabled={!lessonDetails.slotId || !lessonDetails.start}
                   track={track}

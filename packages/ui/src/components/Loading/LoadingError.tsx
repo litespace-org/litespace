@@ -41,48 +41,50 @@ export const LoadingError: React.FC<{
 
   return (
     // NOTE: don't specify a size for it, do it in the parent component
-    <div className="flex flex-col items-center justify-center mx-auto">
-      <div
-        className={cn(
-          "flex items-center justify-center rounded-full bg-destructive-200 p-[2.5px]",
-          {
-            "w-8 h-8": size === "small",
-            "w-16 h-16": size === "medium",
-            "w-20 h-20": size === "large",
-          }
-        )}
-      >
-        <ExclaimationMarkCircle />
-      </div>
-      <Typography
-        tag="span"
-        className={cn("text-natural-950 text-center mt-6 sm:mt-4 mb-4", {
-          "text-tiny font-normal": size === "small",
-          "text-caption font-semibold": size !== "small",
-        })}
-      >
-        {error || intl("error.loading-error")}
-      </Typography>
-      <div className="flex flex-row items-center justify-center gap-4 w-full">
-        <Button
-          size={size === "large" ? "medium" : "small"}
-          onClick={retry}
-          variant="primary"
-          className="w-full text-tiny"
+      <div className="flex flex-col items-center justify-center mx-auto">
+        <div
+          className={cn(
+            "flex items-center justify-center rounded-full bg-destructive-200 p-[2.5px]",
+            {
+              "w-8 h-8": size === "small",
+              "w-16 h-16": size === "medium",
+              "w-20 h-20": size === "large",
+            }
+          )}
         >
-          {intl("labels.retry")}
-        </Button>
+          <ExclaimationMarkCircle />
+        </div>
+
+        <Typography
+          tag="span"
+          className={cn("text-natural-950 text-center mt-6 sm:mt-4 mb-4", {
+            "text-tiny font-normal": size === "small",
+            "text-caption font-semibold": size !== "small",
+          })}
+        >
+          {error || intl("error.loading-error")}
+        </Typography> <div className="flex flex-row justify-center gap-4 w-full">
         <Button
-          size={size === "large" ? "medium" : "small"}
+          size={size === "large" ? "small" : "medium"}
           variant="secondary"
-          className="w-full text-tiny"
+          className="w-full text-tiny flex-1"
           disabled={saving}
           loading={saving}
           onClick={save}
         >
           {intl("labels.report")}
         </Button>
+
+        <Button
+          size={size === "large" ? "small" : "medium"}
+          onClick={retry}
+          variant="primary"
+          className="w-full text-tiny flex-1"
+        >
+          {intl("labels.retry")}
+        </Button>
+
       </div>
-    </div>
+</div>
   );
 };

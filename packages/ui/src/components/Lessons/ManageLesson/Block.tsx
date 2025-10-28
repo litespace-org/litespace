@@ -38,12 +38,7 @@ export const Block: React.FC<{
   }, [type]);
 
   return (
-    <div className="px-4 md:px-0 md:w-full">
-      <div className="w-12 h-12 flex items-center justify-center bg-brand-50 rounded-full">
-        <div className="w-7 h-7 flex items-center justify-center bg-brand-100 rounded-full ">
-          {<data.icon className="[&>*]:stroke-brand-700 w-6 h-6" />}
-        </div>
-      </div>
+    <div className="px-4 md:px-0 md:max-w-[350px]">
       <div className="flex flex-col gap-1 mt-4 mb-6">
         <Typography
           tag="p"
@@ -56,13 +51,6 @@ export const Block: React.FC<{
         </Typography>
       </div>
       <div className="flex items-center gap-3">
-        <Button
-          size="large"
-          onClick={type === "unverified" ? submit : close}
-          className="w-full whitespace-nowrap"
-        >
-          {intl(data.action)}
-        </Button>
 
         {type === "unverified" ? (
           <Button
@@ -74,6 +62,15 @@ export const Block: React.FC<{
             {intl("global.labels.cancel")}
           </Button>
         ) : null}
+
+        <Button
+          size="large"
+          onClick={type === "unverified" ? submit : close}
+          className="w-full whitespace-nowrap"
+        >
+          {intl(data.action)}
+        </Button>
+
       </div>
     </div>
   );
