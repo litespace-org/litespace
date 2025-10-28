@@ -7,10 +7,13 @@ import {
   MIN_USER_AGE,
   MIN_USER_NAME_LENGTH,
   // PASSWORD_REGEX,
-  PHONE_NUMBER_REGEX,
+  REGION_MAP,
   USER_NAME_REGEX,
 } from "@/constants";
 import { FieldError } from "@litespace/types";
+import { PhoneNumberUtil } from "google-libphonenumber";
+
+const phoneUtil = PhoneNumberUtil.getInstance();
 
 export function isValidUserName(
   name: unknown
@@ -32,10 +35,33 @@ export function isValidEmail(email: unknown): FieldError.InvalidEmail | true {
   return true;
 }
 
-export function isValidPhone(phone: unknown) {
-  if (typeof phone !== "string" || !PHONE_NUMBER_REGEX.test(phone))
+export function isValidPhone(phone: unknown, region?: unknown) {
+  // validate region
+  if (
+    typeof region !== "string" ||
+    !Object.keys(REGION_MAP).includes(region.toUpperCase())
+  )
+    return FieldError.InvalidRegion;
+
+  const regionCode = region.toUpperCase();
+
+  // validate phone type
+  if (typeof phone !== "string" || phone.trim() === "")
     return FieldError.InvalidPhone;
-  return true;
+
+  const phoneStr = phone.trim();
+
+  try {
+    const number = phoneUtil.parseAndKeepRawInput(phoneStr, regionCode);
+    const isValid = phoneUtil.isValidNumberForRegion(number, regionCode);
+
+    if (!isValid) {
+      return FieldError.PhoneNotValidForRegion;
+    }
+    return true;
+  } catch (_) {
+    return FieldError.PhoneParsingError;
+  }
 }
 
 export function isValidPassword(

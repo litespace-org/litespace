@@ -131,6 +131,7 @@
     "@faker-js/faker": "^9.6.0",
     "@jest/globals": "^29.7.0",
     "@types/chai": "^4.3.16",
+    "@types/google-libphonenumber": "^7.4.30",
     "@types/jest": "^29.5.12",
     "babel-jest": "^29.7.0",
     "chai": "^5.1.1",
@@ -148,6 +149,7 @@
   "dependencies": {
     "@litespace/types": "workspace:^",
     "dayjs": "^1.11.13",
+    "google-libphonenumber": "^3.2.43",
     "rrule": "^2.8.1",
     "uuid": "^11.0.3",
     "zod": "^3.23.8",

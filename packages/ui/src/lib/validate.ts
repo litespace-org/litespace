@@ -49,6 +49,21 @@ export function validatePhone(phone: string): LocalId | null {
   return "error.phone-number.invlaid";
 }
 
+export function validatePhoneGlobally(
+  phone: string,
+  region?: string
+): LocalId | null {
+  const valid = isValidPhoneBase(phone, region);
+
+  if (valid === true) return null;
+  if (valid === FieldError.InvalidRegion) return "error.phone-region.invalid";
+  if (valid === FieldError.InvalidPhone) return "error.phone-number.invlaid";
+  if (valid === FieldError.PhoneNotValidForRegion)
+    return "error.phone-number.not-valid-for-region";
+
+  return "error.phone.parsing.error";
+}
+
 export function validateCvv(cvv: string): LocalId | null {
   const valid = isValidCvvBase(cvv);
   return !valid ? "error.invlaid-cvv" : null;

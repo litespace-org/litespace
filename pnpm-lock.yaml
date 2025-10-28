@@ -1503,6 +1503,9 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13(patch_hash=aa81ceb75c492cff223134948ee626fc02bb04b49873a531b674f73099fd868b)
+      google-libphonenumber:
+        specifier: ^3.2.43
+        version: 3.2.43
       rrule:
         specifier: ^2.8.1
         version: 2.8.1
@@ -1525,6 +1528,9 @@ importers:
       '@types/chai':
         specifier: ^4.3.16
         version: 4.3.20
+      '@types/google-libphonenumber':
+        specifier: ^7.4.30
+        version: 7.4.30
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.14
@@ -7746,6 +7752,9 @@ packages:
   '@types/file-saver@2.0.7':
     resolution: {integrity: sha512-dNKVfHd/jk0SkR/exKGj2ggkB45MAkzvWCaqLUUgkyjITkGNzH8H+yUwr+BLJUBjZOe9w8X3wgmXhZDRg1ED6A==}
 
+  '@types/google-libphonenumber@7.4.30':
+    resolution: {integrity: sha512-Td1X1ayRxePEm6/jPHUBs2tT6TzW1lrVB6ZX7ViPGellyzO/0xMNi+wx5nH6jEitjznq276VGIqjK5qAju0XVw==}
+
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
 
@@ -11165,6 +11174,10 @@ packages:
   google-auth-library@9.15.1:
     resolution: {integrity: sha512-Jb6Z0+nvECVz+2lzSMt9u98UsoakXxA2HGHMCxh+so3n90XgYWkq5dur19JAJV7ONiJY22yBTyJB1TSkvPq9Ng==}
     engines: {node: '>=14'}
+
+  google-libphonenumber@3.2.43:
+    resolution: {integrity: sha512-TbIX/UC3BFRJwCxbBeCPwuRC4Qws9Jz/CECmfTM1t9RFoI3X6eRThurv6AYr9wSrt640IA9KFIHuAD/vlyjqRw==}
+    engines: {node: '>=0.10'}
 
   google-logging-utils@0.0.2:
     resolution: {integrity: sha512-NEgUnEcBiP5HrPzufUkBzJOD/Sxsco3rLNo1F1TNf7ieU8ryUzBhqba8r756CjLX7rn3fHl6iLEwPYuqpoKgQQ==}
@@ -23709,6 +23722,8 @@ snapshots:
 
   '@types/file-saver@2.0.7': {}
 
+  '@types/google-libphonenumber@7.4.30': {}
+
   '@types/graceful-fs@4.1.9':
     dependencies:
       '@types/node': 20.17.46
@@ -28085,6 +28100,8 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+
+  google-libphonenumber@3.2.43: {}
 
   google-logging-utils@0.0.2: {}
 
