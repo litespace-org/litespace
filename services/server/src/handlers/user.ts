@@ -273,6 +273,7 @@ function update(_: ApiContext) {
         video,
         bio,
         about,
+        price,
         notice,
         studioId,
         phone,
@@ -379,6 +380,7 @@ function update(_: ApiContext) {
         const updateTutorPayload: ITutor.UpdatePayload = {
           bio,
           about,
+          price,
           notice,
           studioId,
           video,

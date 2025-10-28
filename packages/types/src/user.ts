@@ -156,6 +156,7 @@ export type UpdateApiPayload = {
   video?: null;
   bio?: string | null;
   about?: string | null;
+  price?: number | null;
   phone?: string | null;
   city?: City | null;
   studioId?: number | null;

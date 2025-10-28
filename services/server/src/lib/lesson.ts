@@ -374,10 +374,13 @@ export async function createLesson({
     slotId,
     start,
     duration,
+    price,
   });
   if (tutor instanceof Error) return tutor;
 
-  const price = isTutorManager(tutor) ? 0 : calculateLessonPrice(duration);
+  const price = isTutorManager(tutor)
+    ? 0
+    : calculateLessonPrice(duration, tutor.price);
 
   // Create the lesson with its associated room if it doesn't exist
   const roomMembers = [userId, tutorId];
