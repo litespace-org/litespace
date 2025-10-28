@@ -18,7 +18,7 @@ const Content: React.FC = () => {
   }, [params.role]);
 
   useEffect(() => {
-    if (!role) return navigate(Web.Root);
+    if (!role) return navigate(Web.Login);
   }, [navigate, role]);
 
   return (

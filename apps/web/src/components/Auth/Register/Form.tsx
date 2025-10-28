@@ -37,9 +37,7 @@ const RegisterForm: React.FC<{ role?: Role }> = ({ role }) => {
   const verifyEmailDialog = useRender();
 
   // ======== Google Registeration ============
-  const google = useGoogle({
-    role,
-  });
+  const google = useGoogle({ role });
 
   // ========== manual registeration ============
   const onSuccess = useCallback(

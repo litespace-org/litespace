@@ -4,12 +4,16 @@ import {
   forbidden,
   noPassword,
   notfound,
-  serviceUnavailable,
   wrongPassword,
 } from "@/lib/error/api";
 import { users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
-import { isSamePassword, registerNewStudent, withImageUrl } from "@/lib/user";
+import {
+  isSamePassword,
+  registerNewStudent,
+  registerNewTutor,
+  withImageUrl,
+} from "@/lib/user";
 import { IUser } from "@litespace/types";
 import { email, password, string } from "@/validation/utils";
 import { googleConfig, jwtSecret } from "@/constants";
@@ -121,22 +125,21 @@ async function loginWithGoogle(
   if (user && role && role !== user.role) return next(bad());
   if (user && (!role || role === user.role)) return await success(user);
 
-  const register = !user;
-  if (register && !role) return next(bad());
-  if (register) {
-    // TODO: remove this condition once the turor onboarding is finalized.
-    if (role === IUser.Role.Tutor) return next(serviceUnavailable());
+  const canRegister = !user && role !== undefined;
+  if (!canRegister) return next(notfound.user());
 
-    const { user } = await registerNewStudent({
-      email: data.email,
-      verifiedEmail: data.verified,
-      role,
-    });
+  const { user: registeredUser } =
+    role === IUser.Role.Student
+      ? await registerNewStudent({
+          email: data.email,
+          verifiedEmail: data.verified,
+        })
+      : await registerNewTutor({
+          email: data.email,
+          verifiedEmail: data.verified,
+        });
 
-    return await success(user);
-  }
-
-  return next(notfound.user());
+  return await success(registeredUser);
 }
 
 async function loginWithAuthToken(

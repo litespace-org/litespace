@@ -186,11 +186,8 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   const payload: IUser.CreateApiPayload = createUserPayload.parse(req.body);
   const creator = req.user;
   const admin = isAdmin(creator);
-  // both students and tutors can create/register account on the application,
-  // hover, currently only students can register. (that's temporary)
-  // TODO: check if its a regular user rather than just a student, once the tutor
-  // on-boarding is finalized.
-  if (payload.role !== IUser.Role.Student && !admin) return next(forbidden());
+  if (!admin && ![IUser.Role.Student, IUser.Role.Tutor].includes(payload.role))
+    return next(forbidden());
 
   const userObject = await users.findByEmail(payload.email);
   if (userObject) return next(exists.user());

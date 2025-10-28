@@ -48,12 +48,7 @@ const LoginForm: React.FC<{
     return router.generic({ route, query: omit(query, "redirect") });
   }, [searchParams]);
 
-  const google = useGoogle({
-    // TODO: this should cover both tutors and students.
-    // should be implemented once the tutor onboarding is finalized.
-    role: IUser.Role.Student,
-    redirect,
-  });
+  const google = useGoogle({ redirect });
 
   // ========== manual login ============
   const onSuccess = useCallback(

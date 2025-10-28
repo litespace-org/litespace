@@ -2,7 +2,7 @@ import { useApi } from "@litespace/headless/api";
 import { useUser } from "@litespace/headless/context/user";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
-import { safe } from "@litespace/utils/error";
+import { ResponseError, safe } from "@litespace/utils/error";
 import { IUser } from "@litespace/types";
 import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
 import { useCallback, useMemo, useState } from "react";
@@ -46,11 +46,27 @@ export function useGoogle({
         api.auth.google({ token, type, role })
       );
 
-      if (info instanceof Error)
+      if (info instanceof ResponseError) {
+        if (info.statusCode === 404) {
+          return navigate(
+            router.web({
+              route: Web.Register,
+              role: "student",
+            })
+          );
+        }
         return toast.error({
           title: intl("login.error"),
           description: intl(getErrorMessageId(info)),
         });
+      }
+
+      if (info instanceof Error) {
+        return toast.error({
+          title: intl("login.error"),
+          description: intl(getErrorMessageId(info)),
+        });
+      }
 
       const regularUser = isRegularUser(info.user);
       if (info.user && !regularUser) {
