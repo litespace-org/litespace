@@ -5,6 +5,7 @@ export type Self = {
   id: number;
   bio: string | null;
   about: string | null;
+  price: number | null;
   video: string | null;
   studioId: number | null;
   thumbnail: string | null;
@@ -74,6 +75,7 @@ export type Row = {
   notice: number;
   bio: string | null;
   about: string | null;
+  price: number | null;
   video: string | null;
   role: IUser.Role;
   activated: boolean;
@@ -95,6 +97,7 @@ export type TutorMedia = {
 export type UpdatePayload = {
   bio?: string | null;
   about?: string | null;
+  price?: number | null;
   video?: string | null;
   thumbnail?: string | null;
   studioId?: number | null;

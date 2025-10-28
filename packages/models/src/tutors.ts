@@ -55,6 +55,7 @@ const fullTutorFields: FullTutorFieldsMap = {
   thumbnail: tutorColumn("thumbnail"),
   notice: tutorColumn("notice"),
   activated: tutorColumn("activated"),
+  price: tutorColumn("price"),
   bypass_onboarding: tutorColumn("bypass_onboarding"),
 } as const;
 
@@ -85,6 +86,7 @@ export class Tutors {
       .update({
         bio: payload.bio,
         about: payload.about,
+        price: payload.price,
         video: payload.video,
         notice: payload.notice,
         thumbnail: payload.thumbnail,
@@ -507,6 +509,7 @@ export class Tutors {
       id: row.id,
       bio: row.bio,
       about: row.about,
+      price: row.price,
       video: row.video,
       thumbnail: row.thumbnail,
       studioId: row.studio_id,
@@ -543,6 +546,7 @@ export class Tutors {
       id: row.id,
       bio: row.bio,
       about: row.about,
+      price: row.price,
       video: row.video,
       thumbnail: row.thumbnail,
       studioId: row.studio_id,

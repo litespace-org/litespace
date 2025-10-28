@@ -130,6 +130,7 @@ export function useFindTutorActivityScore(id: number | null): {
 type IForm = {
   bio: string;
   about: string;
+  price: number;
 };
 
 export function useIntroduceTutor({
@@ -149,6 +150,7 @@ export function useIntroduceTutor({
       return await api.user.update(profile.id, {
         bio: fields.bio,
         about: fields.about,
+        price: fields.price,
       });
     },
     [api.user, profile]

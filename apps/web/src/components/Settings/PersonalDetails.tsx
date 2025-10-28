@@ -35,6 +35,7 @@ import { useBlock } from "@litespace/ui/hooks/common";
 type Form = {
   name: string;
   email: string;
+  price?: number;
   phone: string;
   city: IUser.City | null;
   notice: number;
@@ -97,6 +98,7 @@ const PersonalDetails: React.FC<Props> = ({
   const validators = useMakeValidators<Form>({
     name: { required: !!name, validate: validateUserName },
     email: { required: true, validate: validateEmail },
+    price: { required: true },
     phone: { required: false, validate: validatePhone },
     notice: { required: false, validate: validateNotice },
   });
@@ -239,6 +241,20 @@ const PersonalDetails: React.FC<Props> = ({
                 autoComplete="off"
                 disabled={!forStudent}
               />
+
+              {!forStudent ? (
+                <Input
+                  id="price"
+                  name="price"
+                  value={form.state.email}
+                  onChange={(e) => form.set("email", e.target.value)}
+                  label={intl("labels.email")}
+                  placeholder={intl("labels.email.placeholder")}
+                  state={form.errors?.email ? "error" : undefined}
+                  helper={form.errors?.email}
+                  autoComplete="off"
+                />
+              ) : null}
 
               <PatternInput
                 id="phone"
